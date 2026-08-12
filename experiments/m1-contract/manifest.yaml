@@ -3,7 +3,7 @@ run_id: m1-contract
 state: foundation-only
 captured_at: 2026-08-12T19:20:00+08:00
 host_id: n1-neon128
-project_commit: <filled-by-git>
+project_commit: ecb96a532baf7c8258736b3c29e872330d54532e
 x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
 artifacts:
   spec_ir: optimizer/ir/spec_ir.py
