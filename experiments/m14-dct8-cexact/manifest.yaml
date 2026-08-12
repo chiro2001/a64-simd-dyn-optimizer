@@ -1,0 +1,18 @@
+schema_version: 1
+run_id: m14-dct8-cexact
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+project_commit: 76e6e1c
+candidate:
+  source: generated/dct8/roundtrip_dct8_widen.cpp
+  symbol: dynopt_dct8_neon_candidate
+  static_insns: 347
+  simd_insns: 282
+gates:
+  - {name: cand_eq_c_oracle, result: pass, detail: "local qemu 200k; N1/920B 20k each"}
+  - {name: paired_vs_upstream_neon_n1, result: "0.891x (CI 0.884-0.903)"}
+  - {name: paired_vs_upstream_neon_920b, result: "0.981x (CI 0.979-0.983)"}
+fix:
+  rewrite: optimizer/ir/rewrites.py::widen_dct8_pass2_odd
+  upstream_bug: pass2 vsub_s16 wraps |coef[k]-coef[7-k]| > 32767
