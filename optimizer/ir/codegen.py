@@ -205,12 +205,24 @@ def _sve_flat_indices(node):
 
 def emit_sve_intrinsics(machine_ir,
                         func_name="dynopt_sa8d_8x8_neon_sve2",
-                        active_lanes=8):
-    """SVE2 backend: same seed MachineIR, 8 active s16 lanes of a VL=256
-    vector, permutes via svtbl2 with constant index vectors, reduction via
-    svuaddv. Correct for any VL >= 128; the fixed VL=256 contract is enforced
-    at build/dispatch time.
+                        active_lanes=8,
+                        pack=1):
+    """SVE2 backend over the same seed MachineIR.
+
+    pack=1: `active_lanes` active s16 lanes (default 8), single 8x8 tile.
+    pack=2: 16 active s16 lanes, two horizontally adjacent 8x8 tiles packed
+    into one vector (tile A in lanes 0-7, tile B in lanes 8-15). The
+    per-tile reduction tail is duplicated with half-vector predicates and the
+    two rounded results are summed, preserving bit-exact per-tile rounding.
+
+    Permutes use svtbl2 with constant index vectors; the lane offset of the
+    upper 8-lane half is derived from the same NEON shuffle mask, so the
+    packed candidate is correct for any VL >= 256 (and VL=128 with the low
+    16 lanes active).
     """
+    if pack not in (1, 2):
+        raise ValueError("pack must be 1 or 2, got %r" % (pack,))
+    lanes = 16 if pack == 2 else active_lanes
     lines = [
         "#include <arm_sve.h>",
         "#include <cstddef>",
@@ -219,7 +231,7 @@ def emit_sve_intrinsics(machine_ir,
         "extern \"C\" int %s(const uint8_t* pix1, intptr_t stride_pix1,"
         " const uint8_t* pix2, intptr_t stride_pix2)" % func_name,
         "{",
-        "    svbool_t pg = svwhilelt_b16(0, %d);" % active_lanes,
+        "    svbool_t pg = svwhilelt_b16(0, %d);" % lanes,
     ]
     env = {"pix1": ("pix1", 0), "pix2": ("pix2", 0),
            "i_pix1": 1, "i_pix2": 1}
@@ -230,6 +242,12 @@ def emit_sve_intrinsics(machine_ir,
         if name not in cname:
             cname[name] = "v%d" % len(cname)
         return cname[name]
+
+    def pair_cid(name):
+        """Register a pair of scalar C variables (per-tile results)."""
+        if name not in cname:
+            cname[name] = "p%d" % len(cname)
+        return cname[name] + "_a", cname[name] + "_b"
 
     for node in machine_ir.nodes:
         op = node["op"]
@@ -250,9 +268,20 @@ def emit_sve_intrinsics(machine_ir,
         elif op in ("add", "sub"):
             if "<" not in node["type"]:
                 opc = "+" if op == "add" else "-"
-                lines.append("    uint64_t %s = %s %s %d;"
-                             % (cid(dst), cid(node["src"][0]), opc,
-                                node.get("const", 0)))
+                srcv = env.get(node["src"][0])
+                if pack == 2 and isinstance(srcv, tuple) and \
+                        srcv[0] == "pair":
+                    _, a, b = srcv
+                    na, nb = pair_cid(dst)
+                    lines.append("    uint64_t %s = %s %s %d;"
+                                 % (na, a, opc, node.get("const", 0)))
+                    lines.append("    uint64_t %s = %s %s %d;"
+                                 % (nb, b, opc, node.get("const", 0)))
+                    env[dst] = ("pair", na, nb)
+                else:
+                    lines.append("    uint64_t %s = %s %s %d;"
+                                 % (cid(dst), cid(node["src"][0]), opc,
+                                    node.get("const", 0)))
             else:
                 fn = "svadd_u16_x" if op == "add" else "svsub_u16_x"
                 if len(node["src"]) == 2:
@@ -277,6 +306,9 @@ def emit_sve_intrinsics(machine_ir,
                 else:
                     lo.append(x - 8)
                     bmask.append(1)
+            if pack == 2:
+                lo = lo + [x + 8 for x in lo]
+                bmask = bmask + bmask
             arr_lo = ", ".join(str(x) for x in lo)
             arr_b = ", ".join(str(x) for x in bmask)
             lines.append("    static const uint16_t idx%d_lo[16] = { %s };"
@@ -312,15 +344,41 @@ def emit_sve_intrinsics(machine_ir,
                              % (cid(dst), cid(node["src"][0]),
                                 cid(node["src"][1])))
             elif name == "uaddlv":
-                lines.append("    uint64_t %s = svaddv_u16(pg, %s);"
-                             % (cid(dst), cid(node["src"][0])))
+                if pack == 2:
+                    a, b = pair_cid(dst)
+                    lines.append("    uint64_t %s = svaddv_u16("
+                                 "svwhilelt_b16(0, 8), %s);"
+                                 % (a, cid(node["src"][0])))
+                    lines.append("    uint64_t %s = svaddv_u16("
+                                 "pg, %s);"
+                                 % (b, cid(node["src"][0])))
+                    # svwhilelt only yields prefix predicates; the upper
+                    # half-sum is the full sum minus the lower half-sum.
+                    lines.append("    %s -= %s;" % (b, a))
+                    env[dst] = ("pair", a, b)
+                else:
+                    lines.append("    uint64_t %s = svaddv_u16(pg, %s);"
+                                 % (cid(dst), cid(node["src"][0])))
             else:
                 raise ValueError("SVE codegen unknown intrinsic %r" % name)
         elif op == "lshr":
-            lines.append("    uint64_t %s = %s >> %d;"
-                         % (cid(dst), cid(node["src"][0]), node["amt"]))
+            if pack == 2 and isinstance(env.get(node["src"][0]), tuple) \
+                    and env[node["src"][0]][0] == "pair":
+                _, a, b = env[node["src"][0]]
+                na, nb = pair_cid(dst)
+                lines.append("    uint64_t %s = %s >> %d;" % (na, a, node["amt"]))
+                lines.append("    uint64_t %s = %s >> %d;" % (nb, b, node["amt"]))
+                env[dst] = ("pair", na, nb)
+            else:
+                lines.append("    uint64_t %s = %s >> %d;"
+                             % (cid(dst), cid(node["src"][0]), node["amt"]))
         elif op == "ret":
-            lines.append("    return (int)%s;" % cid(node["operand"]))
+            if pack == 2 and isinstance(env.get(node["operand"]), tuple) \
+                    and env[node["operand"]][0] == "pair":
+                _, a, b = env[node["operand"]]
+                lines.append("    return (int)(%s + %s);" % (a, b))
+            else:
+                lines.append("    return (int)%s;" % cid(node["operand"]))
         else:
             raise ValueError("SVE codegen unsupported op %r" % op)
     lines.append("}")

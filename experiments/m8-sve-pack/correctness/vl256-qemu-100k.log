@@ -1,0 +1,6 @@
+=== VL=256 (vq=2) ===
+cases=100000 mismatches=0
+x2_cases=100000 mismatches=0
+=== VL=512 (vq=4) ===
+cases=100000 mismatches=0
+x2_cases=100000 mismatches=0

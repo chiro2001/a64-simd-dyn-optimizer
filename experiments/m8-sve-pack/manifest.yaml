@@ -1,0 +1,24 @@
+run-id: m8-sve-pack
+milestone: M6
+state: accepted
+hypothesis: >-
+  同一个 8x8 MachineIR 可以打包两个相邻 8x8 tile 进 16 个 s16 lane，
+  每 tile 静态指令数约减半。
+target: sve2-vl256 (qemu, vq=2/4)
+baseline_candidate: generated/sa8d/sve_roundtrip_sa8d_8x8.cpp
+candidate: generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp
+correctness:
+  tool: qemu-aarch64 -cpu max,sve-max-vq=2 / =4 build/sve_verify
+  cases: 100000
+  result: "0 mismatches (single + x2, both VLs)"
+static:
+  single_tile_total: 309
+  single_tile_simd: 202
+  two_tile_total: 317
+  two_tile_simd: 204
+  per_tile_simd_reduction: "-49%"
+perf: blocked-environment (real SVE2 VL=256 hardware required)
+commands:
+  - bash scripts/build-sve-sa8d.sh
+  - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 100000
+  - qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 100000

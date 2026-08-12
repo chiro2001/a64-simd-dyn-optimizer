@@ -11,6 +11,10 @@ extern "C" int dynopt_sa8d_8x8_neon_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
     const uint8_t* pix2, intptr_t stride_pix2);
 
+extern "C" int dynopt_sa8d_8x8x2_neon_sve2(
+    const uint8_t* pix1, intptr_t stride_pix1,
+    const uint8_t* pix2, intptr_t stride_pix2);
+
 static int scalar_sa8d_8x8(const uint8_t* a, intptr_t sa,
                            const uint8_t* b, intptr_t sb)
 {
@@ -52,11 +56,21 @@ static std::vector<uint8_t> make_plane(int stride, int off,
     return p;
 }
 
+static std::vector<uint8_t> make_plane16(int stride, int off,
+                                         const uint8_t* vals)
+{
+    std::vector<uint8_t> p((size_t)stride * 8 + off + 16, 0xAA);
+    for (int r = 0; r < 8; r++)
+        memcpy(p.data() + off + (size_t)r * stride, vals + r * 16, 16);
+    return p;
+}
+
 int main(int argc, char** argv)
 {
     const int cases = argc > 1 ? atoi(argv[1]) : 20000;
     std::mt19937 rng(0x5A8D2026u);
     int strides[5] = { 8, 16, 17, 64, 65 };
+    int strides16[4] = { 16, 17, 64, 65 };
     int offs[4] = { 0, 1, 3, 7 };
     int mism = 0;
     for (int i = 0; i < cases; i++)
@@ -86,5 +100,37 @@ int main(int argc, char** argv)
         }
     }
     printf("cases=%d mismatches=%d\n", cases, mism);
-    return mism ? 1 : 0;
+    if (mism)
+        return 1;
+
+    int mism2 = 0;
+    for (int i = 0; i < cases; i++)
+    {
+        uint8_t va[128], vb[128];
+        for (int j = 0; j < 128; j++)
+        {
+            va[j] = (uint8_t)(rng() & 0xFF);
+            vb[j] = (uint8_t)(rng() & 0xFF);
+        }
+        int sa = strides16[rng() % 4];
+        int sb = strides16[rng() % 4];
+        int oa = offs[rng() % 4];
+        int ob = offs[rng() % 4];
+        std::vector<uint8_t> pa = make_plane16(sa, oa, va);
+        std::vector<uint8_t> pb = make_plane16(sb, ob, vb);
+        const uint8_t* a = pa.data() + oa;
+        const uint8_t* b = pb.data() + ob;
+        int want = scalar_sa8d_8x8(a, sa, b, sb)
+                 + scalar_sa8d_8x8(a + 8, sa, b + 8, sb);
+        int got = dynopt_sa8d_8x8x2_neon_sve2(a, sa, b, sb);
+        if (want != got)
+        {
+            if (mism2 < 5)
+                fprintf(stderr, "x2 mismatch %d: scalar=%d sve=%d "
+                        "strides=%d/%d\n", i, want, got, sa, sb);
+            mism2++;
+        }
+    }
+    printf("x2_cases=%d mismatches=%d\n", cases, mism2);
+    return mism2 ? 1 : 0;
 }
