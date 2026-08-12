@@ -61,5 +61,9 @@ echo "[sve-sa8d] running under qemu (sve-max-vq=4 = VL=512)"
 qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 20000
 echo "[sve-sa8d] running under qemu (sve-max-vq=2 = VL=256)"
 qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 20000
+echo "[sve-sa8d] rejection gate under qemu (sve-max-vq=1 = VL=128)"
+qemu-aarch64 -cpu max,sve-max-vq=1 build/sve_verify 200
+echo "[sve-sa8d] rejection gate under qemu (PR_SVE_SET_VL=128, vq=4)"
+qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify --vl-bytes=16 200
 echo "[sve-sa8d] guard-page under qemu (VL=256)"
 qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_guard

@@ -7,6 +7,9 @@
 #include <random>
 #include <vector>
 #include <arm_sve.h>
+#include <sys/prctl.h>
+
+#include "sve_dispatch.h"
 
 extern "C" int dynopt_sa8d_8x8_neon_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
@@ -91,8 +94,29 @@ static std::vector<uint8_t> make_plane16x16(int stride, int off,
 
 int main(int argc, char** argv)
 {
-    const int cases = argc > 1 ? atoi(argv[1]) : 20000;
+    int cases = 20000;
+    int vl_override = 0;
+    for (int i = 1; i < argc; i++)
+    {
+        if (strncmp(argv[i], "--vl-bytes=", 11) == 0)
+            vl_override = atoi(argv[i] + 11);
+        else
+            cases = atoi(argv[i]);
+    }
+    if (vl_override)
+        (void)prctl(PR_SVE_SET_VL, (unsigned long)vl_override);
+
+    dynopt_sve::Sa8dCandidate cands[4] = {
+        { "single", dynopt_sa8d_8x8_neon_sve2, 16, false, 0 },
+        { "x2", dynopt_sa8d_8x8x2_neon_sve2, 32, false, 0 },
+        { "x2raw", dynopt_sa8d_8x8x2raw_neon_sve2, 32, false, 0 },
+        { "16x16", dynopt_sa8d_16x16_neon_sve2, 32, false, 0 },
+    };
+    (void)dynopt_sve::register_candidates(cands, 4);
     printf("vl-bytes=%lu\n", (unsigned long)svcntb());
+    for (int i = 0; i < 4; i++)
+        printf("registered_%s=%d\n", cands[i].name,
+               cands[i].registered ? 1 : 0);
     std::mt19937 rng(0x5A8D2026u);
     int strides[5] = { 8, 16, 17, 64, 65 };
     int strides16[4] = { 16, 17, 64, 65 };
@@ -115,7 +139,7 @@ int main(int argc, char** argv)
         const uint8_t* a = pa.data() + oa;
         const uint8_t* b = pb.data() + ob;
         int want = scalar_sa8d_8x8(a, sa, b, sb);
-        int got = dynopt_sa8d_8x8_neon_sve2(a, sa, b, sb);
+        int got = dynopt_sve::call(cands[0], a, sa, b, sb);
         if (want != got)
         {
             if (mism < 5)
@@ -125,11 +149,10 @@ int main(int argc, char** argv)
         }
     }
     printf("cases=%d mismatches=%d\n", cases, mism);
-    if (mism)
-        return 1;
 
     int mism2 = 0;
-    for (int i = 0; i < cases; i++)
+    const int x2runs = cands[1].registered ? cases : 0;
+    for (int i = 0; i < x2runs; i++)
     {
         uint8_t va[128], vb[128];
         for (int j = 0; j < 128; j++)
@@ -147,7 +170,7 @@ int main(int argc, char** argv)
         const uint8_t* b = pb.data() + ob;
         int want = scalar_sa8d_8x8(a, sa, b, sb)
                  + scalar_sa8d_8x8(a + 8, sa, b + 8, sb);
-        int got = dynopt_sa8d_8x8x2_neon_sve2(a, sa, b, sb);
+        int got = dynopt_sve::call(cands[1], a, sa, b, sb);
         if (want != got)
         {
             if (mism2 < 5)
@@ -156,12 +179,11 @@ int main(int argc, char** argv)
             mism2++;
         }
     }
-    printf("x2_cases=%d mismatches=%d\n", cases, mism2);
-    if (mism2)
-        return 1;
+    printf("x2_cases=%d mismatches=%d\n", x2runs, mism2);
 
     int mism3 = 0;
-    for (int i = 0; i < cases; i++)
+    const int x2rawruns = cands[2].registered ? cases : 0;
+    for (int i = 0; i < x2rawruns; i++)
     {
         uint8_t va[128], vb[128];
         for (int j = 0; j < 128; j++)
@@ -188,7 +210,7 @@ int main(int argc, char** argv)
             continue;
         }
         int want = (ra + rb) / 2;
-        int got = dynopt_sa8d_8x8x2raw_neon_sve2(a, sa, b, sb);
+        int got = dynopt_sve::call(cands[2], a, sa, b, sb);
         if (want != got)
         {
             if (mism3 < 5)
@@ -197,12 +219,11 @@ int main(int argc, char** argv)
             mism3++;
         }
     }
-    printf("x2raw_cases=%d mismatches=%d\n", cases, mism3);
-    if (mism3)
-        return 1;
+    printf("x2raw_cases=%d mismatches=%d\n", x2rawruns, mism3);
 
     int mism4 = 0;
-    for (int i = 0; i < cases; i++)
+    const int m16runs = cands[3].registered ? cases : 0;
+    for (int i = 0; i < m16runs; i++)
     {
         uint8_t va[256], vb[256];
         for (int j = 0; j < 256; j++)
@@ -223,7 +244,7 @@ int main(int argc, char** argv)
         int r10 = sa8d8_raw(a + 8 * sa, sa, b + 8 * sb, sb);
         int r11 = sa8d8_raw(a + 8 * sa + 8, sa, b + 8 * sb + 8, sb);
         int want = (r00 + r01 + r10 + r11 + 2) >> 2;
-        int got = dynopt_sa8d_16x16_neon_sve2(a, sa, b, sb);
+        int got = dynopt_sve::call(cands[3], a, sa, b, sb);
         if (want != got)
         {
             if (mism4 < 5)
@@ -232,6 +253,22 @@ int main(int argc, char** argv)
             mism4++;
         }
     }
-    printf("16x16_cases=%d mismatches=%d\n", cases, mism4);
-    return mism4 ? 1 : 0;
+    printf("16x16_cases=%d mismatches=%d\n", m16runs, mism4);
+
+    for (int i = 0; i < 4; i++)
+        printf("calls_%s=%zu\n", cands[i].name, cands[i].calls);
+
+    const int failed = (mism || mism2 || mism3 || mism4) ? 1 : 0;
+    const unsigned vl = (unsigned)svcntb();
+    if (vl < 32)
+    {
+        int bad = 0;
+        for (int i = 1; i < 4; i++)
+            if (cands[i].registered || cands[i].calls)
+                bad++;
+        printf("rejection_audit=%s\n", (bad || failed) ? "fail" : "pass");
+        return (bad || failed) ? 1 : 0;
+    }
+    printf("rejection_audit=n/a (vl>=256)\n");
+    return failed;
 }
