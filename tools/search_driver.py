@@ -28,7 +28,7 @@ from optimizer.analysis.cost import classify, parse_disasm_hist
 from optimizer.ir.codegen import emit_dct8_c_intrinsics
 from optimizer.ir.machine_ir import MachineIR
 from optimizer.ir.rewrites import (
-    mul64_to_shift, tree_to_mla, wide_loads, widen_overflows)
+    hoist_shuffles, mul64_to_shift, tree_to_mla, wide_loads, widen_overflows)
 
 
 def apply_rewrites(ir, names):
@@ -41,6 +41,8 @@ def apply_rewrites(ir, names):
             wide_loads(ir)
         elif name == "tree_to_mla":
             tree_to_mla(ir)
+        elif name == "hoist_shuffles":
+            hoist_shuffles(ir)
         elif name == "nop":
             pass
         else:

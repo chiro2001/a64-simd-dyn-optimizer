@@ -446,3 +446,58 @@ def tree_to_mla(ir):
         n["id"] = i
     ir.nodes = out
     return ir
+
+
+def hoist_shuffles(ir):
+    """Hoist a common lane permutation out of elementwise add/sub.
+
+    For a permutation P (a single-source shuffle), elementwise add/sub
+    commute with P when P is applied to BOTH operands:
+
+        add(P(x), P(y)) == P(add(x, y))
+        sub(P(x), P(y)) == P(sub(x, y))
+
+    This normalizes the data path so a later pass can push P up toward a
+    permutation-insensitive consumer (a full-lane-sum reduction or a
+    splat-constant multiply) and drop it, or fold it into a per-lane
+    constant. It is the first step of the constant-rearrangement rewrite
+    used by the internal DCT16/DCT32 kernels (user input 2026-08-13).
+    """
+    nodes = ir.nodes
+    bydst = {str(n.get("dst")): n for n in nodes}
+    users = {}
+    for n in nodes:
+        for s in (n.get("src") or []):
+            for r in (s if isinstance(s, list) else [s]):
+                users.setdefault(str(r), []).append(n)
+
+    def single_shuffle(dst):
+        n = bydst.get(dst)
+        if n and n["op"] == "shuffle" and len(n.get("src") or []) == 1:
+            return n
+        return None
+
+    renamed = {}
+    out = []
+    for n in nodes:
+        if n["op"] in ("add", "sub") and len(n.get("src") or []) == 2:
+            pa = single_shuffle(n["src"][0])
+            pb = single_shuffle(n["src"][1])
+            if pa is not None and pb is not None \
+                    and pa["mask"] == pb["mask"] \
+                    and pa["type"] == pb["type"]:
+                # P(add(x, y)): emit the unshuffled add, then the shuffle.
+                inner = "%s_h_%s" % (n["dst"], n["id"])
+                out.append({"op": n["op"], "type": n["type"],
+                            "src": [pa["src"][0], pb["src"][0]],
+                            "dst": inner, "id": n["id"]})
+                out.append({"op": "shuffle", "type": pa["type"],
+                            "mask": pa["mask"], "src": [inner],
+                            "dst": n["dst"], "id": n["id"]})
+                renamed[n["dst"]] = True
+                continue
+        out.append(n)
+    for i, n in enumerate(out):
+        n["id"] = i
+    ir.nodes = out
+    return ir

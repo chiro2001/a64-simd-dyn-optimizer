@@ -168,6 +168,45 @@ class TestTreeToMla(unittest.TestCase):
         self.assertIn("vmlaq_n_s32", text)
         self.assertIn("vget_high_s16", text)
 
+    def test_hoist_shuffles_factors_common_permutation(self):
+        from optimizer.ir.rewrites import hoist_shuffles
+
+        ir = MachineIR(function=None, nodes=[
+            {"op": "load", "type": "<4 x i32>", "dst": "a", "id": 0,
+             "ptr": "0"},
+            {"op": "load", "type": "<4 x i32>", "dst": "b", "id": 1,
+             "ptr": "1"},
+            {"op": "shuffle", "type": "<4 x i32>", "mask": [3, 2, 1, 0],
+             "src": ["a"], "dst": "pa", "id": 2},
+            {"op": "shuffle", "type": "<4 x i32>", "mask": [3, 2, 1, 0],
+             "src": ["b"], "dst": "pb", "id": 3},
+            {"op": "add", "type": "<4 x i32>", "src": ["pa", "pb"],
+             "dst": "s", "id": 4},
+        ])
+        hoist_shuffles(ir)
+        add = next(n for n in ir.nodes if n["op"] == "add")
+        sh = next(n for n in ir.nodes if n["op"] == "shuffle"
+                  and n["dst"] == "s")
+        self.assertEqual(add["src"], ["a", "b"])
+        self.assertEqual(sh["src"], [add["dst"]])
+        self.assertEqual(sh["mask"], [3, 2, 1, 0])
+
+    def test_hoist_shuffles_keeps_mismatched_masks(self):
+        from optimizer.ir.rewrites import hoist_shuffles
+
+        ir = MachineIR(function=None, nodes=[
+            {"op": "shuffle", "type": "<4 x i32>", "mask": [3, 2, 1, 0],
+             "src": ["a"], "dst": "pa", "id": 0},
+            {"op": "shuffle", "type": "<4 x i32>", "mask": [1, 0, 3, 2],
+             "src": ["b"], "dst": "pb", "id": 1},
+            {"op": "add", "type": "<4 x i32>", "src": ["pa", "pb"],
+             "dst": "s", "id": 2},
+        ])
+        before = [dict(n) for n in ir.nodes]
+        hoist_shuffles(ir)
+        self.assertEqual([n["op"] for n in ir.nodes],
+                         [n["op"] for n in before])
+
 
 if __name__ == "__main__":
     unittest.main()
