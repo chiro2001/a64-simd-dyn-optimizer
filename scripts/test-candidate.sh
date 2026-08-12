@@ -38,10 +38,13 @@ g++ -O3 -DNDEBUG -std=c++11 -Wall -Wextra \
   "$BUILD/libx265.a" -lnuma -lpthread -ldl \
   -o "${OUT}_bench"
 
-for impl in neon cand; do
-  for p in 1 2 3 4 5; do
-    taskset -c 0 "${OUT}_bench" 8x8 "$impl" latency 30 4096 --noverify 2>/dev/null \
-      | tail -n +2 | awk -v impl="$impl" -v p="$p" '{print impl "," p "," $0}'
+for mode in latency throughput; do
+  for impl in neon cand; do
+    for p in 1 2 3 4 5; do
+      taskset -c 0 "${OUT}_bench" 8x8 "$impl" "$mode" 30 4096 --noverify 2>/dev/null \
+        | tail -n +2 | awk -v impl="$impl" -v p="$p" -v mode="$mode" \
+          '{print impl "," p "," mode "," $0}'
+    done
   done
 done > "${OUT}_ab.csv"
 
@@ -49,10 +52,14 @@ python3 - "${OUT}_ab.csv" <<'PY'
 import csv, statistics, sys
 rows = {}
 for r in csv.reader(open(sys.argv[1])):
-    rows.setdefault(r[0], []).append(float(r[7]))
-for impl, v in rows.items():
-    print("%s median_ns=%.1f n=%d" % (impl, statistics.median(v), len(v)))
-n = statistics.median(rows["neon"])
-c = statistics.median(rows["cand"])
-print("speedup cand/neon=%.4f" % (n / c))
+    key = (r[0], r[2])
+    rows.setdefault(key, []).append(float(r[8]))
+for key in sorted(rows):
+    impl, mode = key
+    v = rows[key]
+    print("%s %s median_ns=%.1f n=%d" % (impl, mode, statistics.median(v), len(v)))
+for mode in ("latency", "throughput"):
+    n = statistics.median(rows[("neon", mode)])
+    c = statistics.median(rows[("cand", mode)])
+    print("speedup cand/neon %s=%.4f" % (mode, n / c))
 PY

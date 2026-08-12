@@ -1,7 +1,8 @@
 # M4 Search Iteration 0001 — Balanced final reduction
 
 - run-id: `m4-search-cand-0001`
-- state: `retain-experimental`（正确、静态指令数相同、实测 +0.21%，未达接受阈值）
+- state: `rejected-performance`（latency +0.8%，但 throughput 回退 14.4%，
+  超过 3% 回退门禁）
 - date: 2026-08-12（Asia/Shanghai）
 - host: `n1-neon128`
 
@@ -32,14 +33,20 @@ cases=100000 mismatches=0
 
 ## 4. 相对哪个精确 baseline，性能如何
 
-同一 `candidate-..._bench` binary，8x8 latency，batch=4096：
+同一 `candidate-..._bench` binary，8x8，batch=4096，taskset CPU0，
+5 进程×30 样本：
 
-| impl | median ns/batch | ns/call |
+| impl | latency ns/batch | throughput ns/batch |
 | --- | ---: | ---: |
-| upstream NEON | 113481.0 | 26.20 |
-| cand-0001 | 113240.0 | 26.14 |
+| upstream NEON | 113660.5 | 349362.5 |
+| cand-0001 | 112760.5 | 394502.5 |
 
-speedup = 1.0021×。正确但收益远低于 1.03 接受阈值，判定 `retain-experimental`。
+speedup latency = 1.0080×，speedup throughput = 0.8856×。
+
+结论：平衡归约缩短了单次调用的关键路径，但在 4 路独立流下因寄存器/发射
+资源竞争回退 14.4%。主指标未达 1.03，且 throughput 回退超过 3% 门禁，
+判定 `rejected-performance`。该结果作为成本模型数据：N1 上“少 1 级串行
+add”不必然带来吞吐收益，必须同时报告 latency 与 throughput。
 
 ## 5. 下一轮最有信息量的一个实验
 
