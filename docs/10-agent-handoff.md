@@ -174,6 +174,19 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
    `hw_supported` 证据 → 融合不进入排序/搜索（空融合表语义保持）。
 5. **P6'**：无 hw_supported 融合对，排序/相关性验证阶段暂无输入（等目标
    融合表或更强的实机证据后再启）。
+6. **P3''/M18 起：interp8_hpp（tier-a 新目标）**：DCT→quant 融合经分析
+   收益小（中间缓冲必须保留给 RDO、quant 参数矩阵大、bit-exact 风险
+   不对称，见 `experiments/m17-fusion-feasibility/`）。转向
+   `filter_pp_t`：
+   - 合同：`void(const pixel* src, intptr_t srcStride, pixel* dst,
+     intptr_t dstStride, int coeffIdx)`，8-tap 水平 pixel→pixel；
+   - 上游 NEON：`common/aarch64/filter-prim.cpp:769
+     interp8_horiz_pp_neon`（width/height 模板）；
+   - C 参考：`common/ipfilter.cpp:80 interp_horiz_pp_c<8,W,H>`；
+   - oracle：`test/ipfilterharness`；
+   - 复用 M12 DCT8 的闭环配方（独立差分 + 微基准 + paired + importer/
+     range/关键路径工具链）；interp8 是 load-heavy 典型（round-0005 明确
+     可优化）。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
