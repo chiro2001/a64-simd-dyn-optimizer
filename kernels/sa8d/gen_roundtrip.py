@@ -2,7 +2,7 @@
 """Generate C++ NEON or SVE2 intrinsics from imported MachineIR.
 
 Usage: python3 kernels/sa8d/gen_roundtrip.py <machine-ir.json> <out.cpp>
-       [--backend neon|sve2] [--pack x2] [--raw]
+       [--backend neon|sve2] [--pack x2] [--raw] [--shape 8x8|16x16]
 """
 
 import json
@@ -24,17 +24,29 @@ def main():
     if raw and pack != 2:
         print("--raw requires --pack x2", file=sys.stderr)
         return 2
+    shape = "16x16" if "--shape" in sys.argv and \
+        sys.argv[sys.argv.index("--shape") + 1] == "16x16" else "8x8"
     with open(sys.argv[1]) as f:
         doc = json.load(f)
+    from optimizer.ir.codegen import emit_sve_16x16_wrapper
     from optimizer.ir.machine_ir import MachineIR
     ir = MachineIR(function=doc["function"], nodes=doc["nodes"])
     if backend == "sve2":
-        if pack == 2:
-            func = ("dynopt_sa8d_8x8x2raw_neon_sve2" if raw
-                    else "dynopt_sa8d_8x8x2_neon_sve2")
+        if shape == "16x16":
+            if pack != 2 or not raw:
+                print("--shape 16x16 requires --pack x2 --raw",
+                      file=sys.stderr)
+                return 2
+            src = emit_sve_16x16_wrapper(
+                "dynopt_sa8d_16x16_neon_sve2",
+                "dynopt_sa8d_8x8x2raw_neon_sve2")
         else:
-            func = "dynopt_sa8d_8x8_neon_sve2"
-        src = emit_sve_intrinsics(ir, func, pack=pack, raw=raw)
+            if pack == 2:
+                func = ("dynopt_sa8d_8x8x2raw_neon_sve2" if raw
+                        else "dynopt_sa8d_8x8x2_neon_sve2")
+            else:
+                func = "dynopt_sa8d_8x8_neon_sve2"
+            src = emit_sve_intrinsics(ir, func, pack=pack, raw=raw)
     else:
         src = emit_c_intrinsics(ir)
     with open(sys.argv[2], "w") as f:

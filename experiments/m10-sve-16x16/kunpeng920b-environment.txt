@@ -1,0 +1,9 @@
+=== Kunpeng 920B cloud instance probe (chiro@124.70.206.229) ===
+Linux ecs-803a.novalocal 6.6.0-98.0.0.103.oe2403sp2.aarch64
+CPU: HiSilicon Kunpeng 920, 2 vCPU (2 sockets x 1 core? online 0,1), L1 128KiB x2, L2 1MiB x2, L3 32MiB
+Flags: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 sm3 sm4 asimddp sha512 sve asimdfhm dit uscat ilrcpc flagm ssbs sb dcpodp flagm2 frint svei8mm svef32mm svef64mm svebf16 i8mm bf16 dgh rng ecv
+SVE version: v1 (no sve2 flag) with svei8mm/svef32mm/svef64mm/svebf16
+/proc/sys/abi/sve_default_vector_length = 32 (bytes) => default VL = 256 bits
+OS: openEuler 24.03 (LTS-SP2)
+Tools installed: python3 3.11.6 only (gcc/g++/clang/cmake/ninja/qemu/perf/git missing)
+sudo: passwordless sudo available

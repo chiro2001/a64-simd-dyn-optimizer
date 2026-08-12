@@ -1,0 +1,31 @@
+run-id: m10-sve-16x16
+milestone: M6
+state: blocked-environment
+hypothesis: >-
+  两次 x2raw wave + 统一 (sum+1)>>1 精确等于 x265 sa8d16x16，且
+  16x16 footprint 在 guard-page 下无 over-read。
+target: sve2-vl256 (qemu, vq=2/4) + kunpeng-920b (pending toolchain)
+candidates:
+  - generated/sa8d/sve_roundtrip_sa8d_8x8.cpp
+  - generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp
+  - generated/sa8d/sve_roundtrip_sa8d_8x8x2raw.cpp
+  - generated/sa8d/sve_roundtrip_sa8d_16x16.cpp
+correctness:
+  tool: qemu-aarch64 -cpu max,sve-max-vq=2 / =4 build/sve_verify
+  cases: 20000
+  result: "0 mismatches (single+x2+x2raw+16x16, both VLs); guard 8/8"
+static:
+  single_total: 117
+  x2_total: 125
+  x2raw_total: 116
+  wrapper_16x16_total: 23
+  identity: experiments/m10-sve-16x16/static/identity.txt
+perf: blocked-environment (Kunpeng 920B toolchain not installed yet)
+notes: >-
+  R8 even parity lemma enforced per-tile; raw tail shape asserted; 920B
+  default VL=256 confirmed via /proc/sys/abi/sve_default_vector_length.
+commands:
+  - bash scripts/build-sve-sa8d.sh
+  - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 20000
+  - qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 20000
+  - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_guard

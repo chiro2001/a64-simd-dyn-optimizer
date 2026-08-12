@@ -6,6 +6,7 @@
 #include <cstring>
 #include <random>
 #include <vector>
+#include <arm_sve.h>
 
 extern "C" int dynopt_sa8d_8x8_neon_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
@@ -16,6 +17,10 @@ extern "C" int dynopt_sa8d_8x8x2_neon_sve2(
     const uint8_t* pix2, intptr_t stride_pix2);
 
 extern "C" int dynopt_sa8d_8x8x2raw_neon_sve2(
+    const uint8_t* pix1, intptr_t stride_pix1,
+    const uint8_t* pix2, intptr_t stride_pix2);
+
+extern "C" int dynopt_sa8d_16x16_neon_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
     const uint8_t* pix2, intptr_t stride_pix2);
 
@@ -75,9 +80,19 @@ static std::vector<uint8_t> make_plane16(int stride, int off,
     return p;
 }
 
+static std::vector<uint8_t> make_plane16x16(int stride, int off,
+                                            const uint8_t* vals)
+{
+    std::vector<uint8_t> p((size_t)stride * 16 + off + 16, 0xAA);
+    for (int r = 0; r < 16; r++)
+        memcpy(p.data() + off + (size_t)r * stride, vals + r * 16, 16);
+    return p;
+}
+
 int main(int argc, char** argv)
 {
     const int cases = argc > 1 ? atoi(argv[1]) : 20000;
+    printf("vl-bytes=%lu\n", (unsigned long)svcntb());
     std::mt19937 rng(0x5A8D2026u);
     int strides[5] = { 8, 16, 17, 64, 65 };
     int strides16[4] = { 16, 17, 64, 65 };
@@ -162,17 +177,17 @@ int main(int argc, char** argv)
         std::vector<uint8_t> pb = make_plane16(sb, ob, vb);
         const uint8_t* a = pa.data() + oa;
         const uint8_t* b = pb.data() + ob;
-        int raw_sum = sa8d8_raw(a, sa, b, sb)
-                    + sa8d8_raw(a + 8, sa, b + 8, sb);
-        if (raw_sum & 1)
+        int ra = sa8d8_raw(a, sa, b, sb);
+        int rb = sa8d8_raw(a + 8, sa, b + 8, sb);
+        if ((ra & 1) || (rb & 1))
         {
             if (mism3 < 5)
-                fprintf(stderr, "x2raw odd raw_sum=%d (unexpected)\n",
-                        raw_sum);
+                fprintf(stderr, "x2raw odd R8: ra=%d rb=%d (unexpected)\n",
+                        ra, rb);
             mism3++;
             continue;
         }
-        int want = raw_sum / 2;
+        int want = (ra + rb) / 2;
         int got = dynopt_sa8d_8x8x2raw_neon_sve2(a, sa, b, sb);
         if (want != got)
         {
@@ -183,5 +198,40 @@ int main(int argc, char** argv)
         }
     }
     printf("x2raw_cases=%d mismatches=%d\n", cases, mism3);
-    return mism3 ? 1 : 0;
+    if (mism3)
+        return 1;
+
+    int mism4 = 0;
+    for (int i = 0; i < cases; i++)
+    {
+        uint8_t va[256], vb[256];
+        for (int j = 0; j < 256; j++)
+        {
+            va[j] = (uint8_t)(rng() & 0xFF);
+            vb[j] = (uint8_t)(rng() & 0xFF);
+        }
+        int sa = strides16[rng() % 4];
+        int sb = strides16[rng() % 4];
+        int oa = offs[rng() % 4];
+        int ob = offs[rng() % 4];
+        std::vector<uint8_t> pa = make_plane16x16(sa, oa, va);
+        std::vector<uint8_t> pb = make_plane16x16(sb, ob, vb);
+        const uint8_t* a = pa.data() + oa;
+        const uint8_t* b = pb.data() + ob;
+        int r00 = sa8d8_raw(a, sa, b, sb);
+        int r01 = sa8d8_raw(a + 8, sa, b + 8, sb);
+        int r10 = sa8d8_raw(a + 8 * sa, sa, b + 8 * sb, sb);
+        int r11 = sa8d8_raw(a + 8 * sa + 8, sa, b + 8 * sb + 8, sb);
+        int want = (r00 + r01 + r10 + r11 + 2) >> 2;
+        int got = dynopt_sa8d_16x16_neon_sve2(a, sa, b, sb);
+        if (want != got)
+        {
+            if (mism4 < 5)
+                fprintf(stderr, "16x16 mismatch %d: want=%d got=%d "
+                        "strides=%d/%d\n", i, want, got, sa, sb);
+            mism4++;
+        }
+    }
+    printf("16x16_cases=%d mismatches=%d\n", cases, mism4);
+    return mism4 ? 1 : 0;
 }

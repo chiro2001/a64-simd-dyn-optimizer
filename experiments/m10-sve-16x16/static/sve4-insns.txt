@@ -1,0 +1,9 @@
+total=23 simd=0
+  mov           8
+  add           4
+  stp           3
+  ldp           3
+  bl            2
+  sxtw          1
+  ubfx          1
+  ret           1

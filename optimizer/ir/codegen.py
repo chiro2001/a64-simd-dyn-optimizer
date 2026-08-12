@@ -299,8 +299,15 @@ def emit_sve_intrinsics(machine_ir,
                 if pack == 2 and isinstance(srcv, tuple) and \
                         srcv[0] == "pair":
                     if raw:
-                        # Raw helper: skip per-tile rounding entirely; the
-                        # reduction tail (add-const, lshr) is a no-op.
+                        # Raw helper: the reduction tail must be exactly
+                        # `+1` then `>>1` (per-tile rounding), which we skip
+                        # to return the half-R8 sum. Assert the shape so a
+                        # future MachineIR tail change cannot silently mis-
+                        # compile.
+                        if op != "add" or node.get("const") != 1:
+                            raise ValueError(
+                                "raw mode: unexpected pair scalar node %r"
+                                % (node,))
                         env[dst] = srcv
                         continue
                     _, a, b = srcv
@@ -413,6 +420,10 @@ def emit_sve_intrinsics(machine_ir,
             if pack == 2 and isinstance(env.get(node["src"][0]), tuple) \
                     and env[node["src"][0]][0] == "pair":
                 if raw:
+                    if node.get("amt") != 1:
+                        raise ValueError(
+                            "raw mode: unexpected pair lshr amt %r"
+                            % (node.get("amt"),))
                     env[dst] = env[node["src"][0]]
                     continue
                 _, a, b = env[node["src"][0]]
@@ -434,3 +445,30 @@ def emit_sve_intrinsics(machine_ir,
             raise ValueError("SVE codegen unsupported op %r" % op)
     lines.append("}")
     return "\n".join(lines) + "\n"
+
+
+def emit_sve_16x16_wrapper(
+        func_name="dynopt_sa8d_16x16_neon_sve2",
+        raw_name="dynopt_sa8d_8x8x2raw_neon_sve2"):
+    """Two-wave 16x16 wrapper over the raw half-R8 x2 helper.
+
+    top    = raw(a, sa, b, sb)                  # (R8_00 + R8_01) / 2
+    bottom = raw(a + 8*sa, sa, b + 8*sb, sb)    # (R8_10 + R8_11) / 2
+    return (top + bottom + 1) >> 1 == (sum R8 + 2) >> 2
+    """
+    return (
+        "#include <cstdint>\n"
+        "\n"
+        "extern \"C\" int %s(const uint8_t* pix1, intptr_t stride_pix1,"
+        " const uint8_t* pix2, intptr_t stride_pix2);\n"
+        "\n"
+        "extern \"C\" int %s(const uint8_t* pix1, intptr_t stride_pix1,"
+        " const uint8_t* pix2, intptr_t stride_pix2)\n"
+        "{\n"
+        "    uint64_t top = (uint64_t)%s(pix1, stride_pix1,"
+        " pix2, stride_pix2);\n"
+        "    uint64_t bottom = (uint64_t)%s(pix1 + 8 * stride_pix1,"
+        " stride_pix1, pix2 + 8 * stride_pix2, stride_pix2);\n"
+        "    return (int)((top + bottom + 1) >> 1);\n"
+        "}\n"
+        % (raw_name, func_name, raw_name, raw_name))

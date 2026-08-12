@@ -1,0 +1,15 @@
+=== build-sve-sa8d.sh run (GCC 13.3.0, server n1-neon128) ===
+[sve-sa8d] running under qemu (sve-max-vq=4 = VL=512)
+vl-bytes=64
+cases=20000 mismatches=0
+x2_cases=20000 mismatches=0
+x2raw_cases=20000 mismatches=0
+16x16_cases=20000 mismatches=0
+[sve-sa8d] running under qemu (sve-max-vq=2 = VL=256)
+vl-bytes=32
+cases=20000 mismatches=0
+x2_cases=20000 mismatches=0
+x2raw_cases=20000 mismatches=0
+16x16_cases=20000 mismatches=0
+[sve-sa8d] guard-page under qemu (VL=256)
+guard_cases=8 fails=0
