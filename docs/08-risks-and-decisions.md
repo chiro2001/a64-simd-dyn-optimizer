@@ -32,7 +32,7 @@
 | A004 | QEMU 只作功能验证 | 模拟时间不能代表目标核心 | 无；性能仍必须实机 |
 | A005 | seed-guided 分层搜索 | 可控制组合爆炸且至少回退到已知实现 | 小 region exhaustive superopt 有明确优势时局部采用 |
 | A006 | SMT + differential 双验证 | 形式证明与真实 object/oracle 互补 | solver 无法扩展时可 region 化，不能直接删除差分门禁 |
-| A007 | 首个 256-bit SA8D target 是 SVE2 VL=256 | 上游 SA8D 扩展实现实际位于 SVE2 路径 | 目标部署平台只有 SVE1，届时建立独立 SVE1 backend/规格 |
+| A007 | 256-bit SA8D target 分两档：920B=SVE1、N+2=SVE2.3 | 上游 SA8D 扩展实现位于 SVE2 路径；920B 实测无 sve2 flag | 当前候选只用 SVE1 基础指令，920B 可重建验证；N+2 按 SVE2.3 生成/门控；生成路径必须接入 TargetFeatures ISA 门控，不能靠文件名/旧 hash 断言 |
 | A008 | 实机 latency/throughput 是最终成本 | 指令数与静态模型不足 | 无；可换实机 workload，但不以 QEMU 替换 |
 
 ## 3. 必做技术 spike 与判定

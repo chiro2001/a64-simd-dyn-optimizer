@@ -62,8 +62,19 @@ ISA 语义库 + 目标代价模型 ───────────────
 
 - 该机器适合跑 NEON128 正确性与性能基线；`perf` 用户态硬件计数器可用。
 - 该机器不能给出 SVE256/SVE2 性能数据，也不能原生执行这类候选。
-- SVE/SVE2 功能测试可以在交叉编译 + QEMU 中先做，但 M6 之前必须获得真实 VL=256 测试机。
+- SVE/SVE2 功能测试在本地 x86 用 `aarch64-linux-gnu-g++` 交叉编译 +
+  `qemu-aarch64` 完成（本地算力优先，远程 ARM 只做实机验证）。
 - 远端当时没有目标项目目录、x265、CMake、Clang/LLVM、QEMU、Codex CLI 或 ripgrep。启动实现前必须完成 [环境基线里程碑](05-roadmap.md#milestone-m0可复现环境与冻结基线)。
+
+2026-08-13 新增目标/验证环境：
+
+- 鲲鹏 920B（第 N 代，云实例 `chiro@124.70.206.229`）：openEuler 24.03、
+  aarch64、2 vCPU；SVE v1（无 sve2 flag，含 svei8mm/svebf16/svef32mm/
+  svef64mm）；默认 VL=256（`sve_default_vector_length=32`）；NEON 4×128、
+  SVE 2×256；工具链未安装（仅 python3，sudo 可用）。作为 SVE256 中间验证
+  与保留门槛（>10%）验收环境。
+- 鲲鹏 N+2（960，目标）：SVE2.3、SVE 4×256、NEON 4×128，尚未定型；
+  三档目标见 [09-instruction-fusion-analysis.md](09-instruction-fusion-analysis.md)。
 
 上游 x265 的临时审计基于 2026-08-12 拉取到的提交 `b81f650e21e8aacbe6a9ad04ce14aefc05b932c0`。这是审计锚点，不是未经确认就永久锁定的项目依赖；M0 需要显式选择并记录最终基线提交。
 

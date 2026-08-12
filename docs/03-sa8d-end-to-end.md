@@ -232,19 +232,26 @@ p.cu[BLOCK_8x8].sa8d = dynopt_sa8d_8x8_neon_<id>;
 
 在 `8x8` 与 `16x16` 都闭环前，不宣称优化器已具备 SA8D family 泛化能力。
 
-## S8：从同一 SpecIR 生成 SVE2 VL=256
+## S8：从同一 SpecIR 生成 SVE256（920B 中间 / N+2 最终）
 
 ### 目标澄清
 
-上游审计显示 SA8D 扩展实现属于 SVE2。首个 256-bit 目标建议明确为 `sve2-vl256`，另设 `sve-vla` 研究任务；不要把两者混成一个 backend。
+上游审计显示 SA8D 扩展实现属于 SVE2 路径；但实测目标分两档：鲲鹏 920B 为
+**SVE v1、2×256**，鲲鹏 N+2（960）为 **SVE2.3、4×256**。当前自动生成的
+SA8D 候选只用 SVE1 基础指令（`LD1B/ADD/SUB/TRN1/TRN2/ABS/SABD/UMAX/UADDV/
+WHILELT`），已在本地用 `-march=armv8-a+sve` 交叉汇编确认，920B 可直接
+运行。生成路径必须按 TargetFeatures 档位门控，不能把 `+sve2` 构建产物
+直接当作 SVE1 目标。
 
 ### 工作
 
-1. 申请/准备 QEMU 功能节点与真实 SVE2 VL=256 节点。
+1. QEMU 功能验证（本地 x86 交叉 + qemu-aarch64，VL=256/512）；真实
+   920B（SVE1）中间验证；N+2（SVE2.3）最终验收。
 2. 扩展 PackIR：16 个 i16 lane、predicate、NEON-SVE bridge 与 reduction。
 3. 从 SpecIR 重新枚举布局；NEON PackIR 只作 seed/对照，不作机械翻译模板。
 4. 比较一个 8x8、两个 8x8 或 16x16 row pair 填满 256-bit 的策略。
-5. 与同一 SVE2 硬件上的上游 x265 最佳实现比较，而非只与 N1 NEON 数字比较。
+5. 与同一硬件上的上游最佳实现比较（920B 用 SVE1 重建上游/候选；N+2 用
+   SVE2.3），而非只与 N1 NEON 数字比较。
 6. 在至少另一 VL 上验证 VLA 候选；固定 VL 候选必须验证 runtime dispatch。
 
 ### 退出条件

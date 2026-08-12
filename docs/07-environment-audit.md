@@ -84,10 +84,31 @@ x265 commit/submodule status
 | --- | --- | --- | --- |
 | `n1-neon128` | NEON MVP、SA8D 首条链路 | 当前 N1；ASIMD | 可以，但注明 2-vCPU 云噪声 |
 | `qemu-sve256` | SVE/SVE2 功能、非法指令与 VL 测试 | QEMU 固定 CPU/VL 配置 | 不可以 |
-| `hw-sve256` | SVE/SVE2 正式性能 | 真实硬件；记录 MIDR、features、VL=256 | 可以 |
+| `kunpeng-920b-sve256` | SVE1 实机功能与中间性能验收 | 鲲鹏 920B；SVE v1、固定 VL=256；记录 MIDR/features | 可以（保留门槛 >10%；注明 2-vCPU 云噪声与 SVE 2×256 pipe） |
+| `kunpeng-n2-sve2p3-vl256` | 最终验收 | 鲲鹏 N+2（960）；SVE2.3、4×256 | 可以（三档目标） |
 | `hw-sve-vla-alt` | 验证 VLA 可移植性 | 至少另一种 VL（如 128/512） | 只用于正确性/稳健性，性能单独报告 |
 
 若暂时拿不到 `hw-sve256`，可以继续完成 SVE codegen 和功能验证，但相关 milestone 状态必须标记为“功能完成、性能待验证”，不能宣称已达对应档位目标。
+
+## 4b. 鲲鹏 920B 环境探测（2026-08-13）
+
+连接目标：`chiro@124.70.206.229`
+
+| 项目 | 实测值 |
+| --- | --- |
+| OS | openEuler 24.03 (LTS-SP2)，Linux `6.6.0-98.0.0.103.oe2403sp2.aarch64` |
+| CPU | 2 vCPU，HiSilicon 鲲鹏 920B；L1 128KiB×2、L2 1MiB×2、L3 32MiB |
+| SVE | v1（无 `sve2` flag）；含 `svei8mm/svef32mm/svef64mm/svebf16` |
+| NEON | `asimd asimddp asimdhp asimdrdm asimdfhm` |
+| VL | 默认 256 bit（`/proc/sys/abi/sve_default_vector_length = 32`） |
+| 工具链 | 仅 python3 3.11.6；gcc/g++/clang/cmake/ninja/qemu/perf/git 缺失 |
+| sudo | 免密可用 |
+
+结论：920B 是 **SVE1、2×256** 的中间验证机，不是 SVE2 目标；当前 SA8D 候选
+仅用 SVE1 基础指令（已在本地用 `-march=armv8-a+sve` 交叉汇编确认），可在
+920B 上直接运行。正式目标仍是鲲鹏 N+2（SVE2.3、4×256）。920B 的 SVE 吞吐
+上界是 N+2 的一半，实机 cycles 只能用于保留门槛验收（>10%）与估算校准，
+不能直接外推 N+2。
 
 ## 5. 基线冻结记录模板
 
