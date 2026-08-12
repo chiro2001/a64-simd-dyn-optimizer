@@ -1,0 +1,11 @@
+schema_version: 1
+run_id: m17-fusion-feasibility
+state: foundation-only
+captured_at: 2026-08-13T00:00:00+08:00
+host_id: local-x86
+notes: >-
+  Read-only analysis: DCT->quant fusion saves only the quant-side coef
+  reload; the intermediate buffer must persist for RDO, the quant parameter
+  matrix is large, and bit-exactness risk is asymmetric. Recommend
+  redirecting tier-a effort to interp8_hpp or calibrating with the internal
+  30-60% reference disassembly.
