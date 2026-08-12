@@ -10,6 +10,8 @@ cd "$ROOT"
 BUILD="${1:?usage: build-dct8-verify.sh <build-dir> [out]}"
 OUT="${2:-build/dct8_verify}"
 SRC="$ROOT/third_party/x265/source"
+NUMA_LIBS="${NUMA_LIBS:--lnuma}"   # SKIP_NUMA=1 hosts (local cross) have none
+[ "${SKIP_NUMA:-0}" = "1" ] && NUMA_LIBS=""
 
 if [ ! -f "$BUILD/libx265.a" ]; then
   echo "[build-dct8-verify] missing $BUILD/libx265.a" >&2
@@ -21,6 +23,6 @@ mkdir -p "$(dirname "$OUT")"
   -DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 -DX265_NS=x265 \
   -I"$SRC" -I"$SRC/common" -I"$BUILD" \
   "$ROOT/kernels/dct8/dct8_verify.cpp" \
-  "$BUILD/libx265.a" -lnuma -lpthread -ldl \
+  "$BUILD/libx265.a" $NUMA_LIBS -lpthread -ldl \
   -o "$OUT"
 echo "[build-dct8-verify] OK: $OUT"

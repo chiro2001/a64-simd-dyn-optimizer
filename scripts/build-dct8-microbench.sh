@@ -11,6 +11,8 @@ BUILD="${1:?usage: build-dct8-microbench.sh <build-dir> [out] [candidate.cpp]}"
 OUT="${2:-build/dct8_microbench}"
 CAND="${3:-}"
 SRC="$ROOT/third_party/x265/source"
+NUMA_LIBS="${NUMA_LIBS:--lnuma}"
+[ "${SKIP_NUMA:-0}" = "1" ] && NUMA_LIBS=""
 
 if [ ! -f "$BUILD/libx265.a" ]; then
   echo "[build-dct8-microbench] missing $BUILD/libx265.a" >&2
@@ -23,6 +25,6 @@ mkdir -p "$(dirname "$OUT")"
   -DDYNOPT_CANDIDATE=dynopt_dct8_neon_candidate \
   -I"$SRC" -I"$SRC/common" -I"$BUILD" \
   "$ROOT/benchmarks/dct8_microbench.cpp" ${CAND:+"$CAND"} \
-  "$BUILD/libx265.a" -lnuma -lpthread -ldl \
+  "$BUILD/libx265.a" $NUMA_LIBS -lpthread -ldl \
   -o "$OUT"
 echo "[build-dct8-microbench] OK: $OUT"

@@ -86,8 +86,10 @@ static int c_vs_neon_divergence(const EncoderPrimitives& cprim,
     const int maxOff = BUFSZ - shape;
     std::mt19937 rng(0xC8C0u + shape);
     int mismatches = 0;
-    for (int t = 0; t < 20000 && mismatches < 5; t++)
+    for (int t = 0; t < 20000; t++)
     {
+        if (getenv("DCT8_TRACE") && t % 100 == 0)
+            fprintf(stderr, "t=%d\n", t);
         int16_t a[64 * 64], want[64 * 64], got[64 * 64];
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
             a[i] = (int16_t)((int)(rng() & 0x1FF) - 255);
@@ -208,12 +210,15 @@ int main(int argc, char** argv)
 
     if (!skipVerify)
     {
-        const int shapes[] = { 8, 16, 32, 64 };
+        // Only 8x8 is in scope: for 16/32/64 x265 swaps the dct slot to the
+        // lowpass transform (primitives.cpp setupAliasPrimitives), which is a
+        // different kernel family and can diverge/crash independently.
+        const int shapes[] = { 8 };
         int diverged = 0;
         for (size_t i = 0; i < sizeof(shapes) / sizeof(shapes[0]); i++)
             diverged += c_vs_neon_divergence(cprim, neon, shapes[i]);
         fprintf(stderr,
-                "c-vs-neon divergence report: %d/80000 cases differ "
+                "c-vs-neon divergence report: %d/20000 cases differ "
                 "(upstream NEON is not bit-exact with C on all in-range "
                 "inputs; x265 TestBench still passes it).\n", diverged);
         if (verifyOnly && implS != "cand")

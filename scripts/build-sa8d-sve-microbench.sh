@@ -17,6 +17,8 @@ OUT="${2:-build/sa8d_sve_microbench}"
 SRC="$ROOT/third_party/x265/source"
 CXX="${CXX:-g++}"
 SVE_MARCH="${SVE_MARCH:-armv8-a+sve}"
+NUMA_LIBS="${NUMA_LIBS:--lnuma}"
+[ "${SKIP_NUMA:-0}" = "1" ] && NUMA_LIBS=""
 
 if [ ! -f "$BUILD/libx265.a" ]; then
   echo "[build-sa8d-sve-microbench] missing $BUILD/libx265.a" >&2
@@ -44,7 +46,7 @@ PYTHONPATH="$PWD" "$PY" kernels/sa8d/gen_roundtrip.py \
   -DDYNOPT_CANDIDATE16=dynopt_sa8d_16x16_neon_sve2 \
   -I"$SRC" -I"$SRC/common" -I"$BUILD" \
   "$ROOT/benchmarks/sa8d_microbench.cpp" "$GEN1" "$GEN3" "$GEN4" \
-  "$BUILD/libx265.a" -lnuma -lpthread -ldl \
+  "$BUILD/libx265.a" $NUMA_LIBS -lpthread -ldl \
   -o "$OUT"
 
 echo "[build-sa8d-sve-microbench] OK: $OUT"
