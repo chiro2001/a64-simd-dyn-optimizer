@@ -174,6 +174,11 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
    `hw_supported` 证据 → 融合不进入排序/搜索（空融合表语义保持）。
 5. **P6'**：无 hw_supported 融合对，排序/相关性验证阶段暂无输入（等目标
    融合表或更强的实机证据后再启）。
+   - **P6' 成本模型相关性验证（本轮完成，未过）**：7 候选×双机，DCT8
+     拟合权重外推 interp8 失败（sdot/tbl/smlal 无覆盖），留一法 Spearman
+     N1=-0.214/920B=0.607；家族内 920B R²=0.98。结论：模型仅家族内可用，
+     搜索主循环排序继续 gated；改进=按 lane 位宽/指令家族分组延迟 +
+     吞吐/端口项 + 更多实测点（`experiments/m19-cost-validation/`）。
 6. **P3''/M18 起：interp8_hpp（tier-a 新目标）**：DCT→quant 融合经分析
    收益小（中间缓冲必须保留给 RDO、quant 参数矩阵大、bit-exact 风险
    不对称，见 `experiments/m17-fusion-feasibility/`）。转向
