@@ -25,6 +25,26 @@ intrinsic: abs 4, sabd 4, umax 4, uaddlv 1 | lshr 1 | ret 1
 scalar addr: addr 14, shl 2
 ```
 
-All nodes have recognized opcodes; no opaque instructions. PackIR verifier
-passes on the current (loads/sub-only) projection. Next step: full lane
-provenance for butterfly/shuffle/reduction stages and roundtrip codegen.
+All nodes have recognized opcodes; no opaque instructions.
+
+### Semantics validation
+
+`optimizer/ir/interp.py` executes the imported MachineIR; 100,000 random
+cases (stride/offset variants) match the canonical interpreter bit-exact:
+
+```text
+cases=100000 mismatches=0
+```
+
+### PackIR projection
+
+`project_full()` propagates lane provenance through every stage: loads map to
+(base, row, col); arithmetic/sub/shuffle/intrinsic nodes carry full
+provenance trees down to A/B pixels. 149 PackIR values, verifier clean:
+
+```text
+pack violations: []
+projection_ok: True
+```
+
+Next step: roundtrip codegen from MachineIR and TestBench/oracle validation.

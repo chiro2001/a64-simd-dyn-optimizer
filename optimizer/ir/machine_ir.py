@@ -110,12 +110,18 @@ def import_llvm_ir_text(ir_text, function=None):
                     "dst": dst})
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
-            ir.add({"op": "sub", "type": _op_type(rhs),
-                    "src": ops, "dst": dst})
+            node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}
+            if len(ops) == 1:
+                cm = re.search(r",\s*(\d+)\s*$", rhs)
+                node["const"] = int(cm.group(1)) if cm else None
+            ir.add(node)
         elif rhs.startswith("add"):
             ops = _parse_operands(rhs)
-            ir.add({"op": "add", "type": _op_type(rhs),
-                    "src": ops, "dst": dst})
+            node = {"op": "add", "type": _op_type(rhs), "src": ops, "dst": dst}
+            if len(ops) == 1:
+                cm = re.search(r",\s*(\d+)\s*$", rhs)
+                node["const"] = int(cm.group(1)) if cm else None
+            ir.add(node)
         elif rhs.startswith("shufflevector"):
             ops = _parse_operands(rhs)
             mask = _parse_shuffle_mask(rhs)
