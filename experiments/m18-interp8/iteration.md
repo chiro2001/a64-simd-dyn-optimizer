@@ -79,3 +79,16 @@ importer 已知 gap（下一轮按序扩展）：
 结论：水平 PP 在双机上均接近 exact-C 合同下限（1.02–1.04×，离 1.30 远）；
 大形状摊薄收益有限。+30% 的下一候选应是**垂直 vpp / 二维 hvpp**（更多
 数据复用）或 residual→subpel 融合。
+
+## 8. proto_vdot（8x8 垂直）
+
+`kernels/interp8/candidates/proto_vdot.cpp`：滑窗 8 行 + `vmlal_s8`（8 条
+smlal/输出行）+ 64·128 校正 + `vqrshrun_n_s16`，C-exact 全 4 相位（含
+phase 0；上游基座垂直 NEON 对 coeffIdx==0 无 case、什么都不写，已记录）。
+静态 70 条。paired latency 对上游垂直：**N1 0.965×（vs 基座 NEON）、
+920B 0.918×（vs i8mm 垂直）**——滑窗版落后上游垂直变体。
+
+结论（interp8 汇总）：上游在 hpp 8x8/16x16 与 vpp 8x8 上均接近/优于我们
+的 C-exact 结构（hpp 持平 1.01–1.04×，vpp 落后 0.92–0.97×）。垂直的追赶
+需要 i8mm 式转置 4x4 块 + `vusdotq`；二维 hvpp 是唯一仍有结构性复用空间
+的方向。
