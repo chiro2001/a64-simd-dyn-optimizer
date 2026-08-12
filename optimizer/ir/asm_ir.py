@@ -67,19 +67,24 @@ def import_asm_trace(lines, start=None, end=None):
         if mn in STORE_MN:
             reads = regs
         elif mn in LOAD_MN:
-            dst = regs[:1]
-            reads = regs[1:]
+            if mn == "ldp":
+                dst = regs[:2]
+                reads = regs[2:]
+            else:
+                dst = regs[:1]
+                reads = regs[1:]
         elif regs:
             dst = regs[:1]
             reads = regs[1:]
         node = {"id": len(nodes), "addr": addr, "mn": mn, "ops": ops,
                 "dst": dst, "reads": [], "read_regs": reads,
-                "read_ids": []}
+                "read_ids": [], "prev": {}}
         for r in reads:
             node["read_ids"].append(last_writer.get(r))
             if r in last_writer:
                 node["reads"].append(last_writer[r])
         for d in dst:
+            node["prev"][d] = last_writer.get(d)
             last_writer[d] = node["id"]
         node["is_vector"] = any(r.startswith("v") and r[1:].isdigit()
                                 for r in dst + reads)
@@ -110,14 +115,8 @@ def dynamic_counts(nodes):
             "load": load, "simd_load": simd + load}
 
 
-def resolve_tbl_masks(nodes, rodata, last_writer):
-    """Resolve each tbl's index vector to its 16 byte indices.
-
-    rodata: {address: bytes-like} of the static binary's read-only data.
-    The index register of a tbl is defined by `ldr qN, [xM, #imm]` whose
-    base comes from `adrp xM, #base`; the mask is rodata[base + imm][:16].
-    Unresolvable chains keep `mask=None`.
-    """
+def _resolve_load_addr(nodes, rodata):
+    """Annotate each constant load with its resolved .rodata address."""
     by_id = {n["id"]: n for n in nodes}
     # stack-slot tracking per instruction point: str qN, [sp, #imm] writes
     # the slot; a later ldr qM, [sp, #imm] reads the same value (constants
@@ -133,7 +132,7 @@ def resolve_tbl_masks(nodes, rodata, last_writer):
             if sm:
                 n["slot"] = slot.get(int(sm.group(1)))
 
-    def mask_of(node, seen):
+    def addr_of(node, seen):
         if node is None or node["id"] in seen:
             return None
         seen = seen | {node["id"]}
@@ -148,7 +147,7 @@ def resolve_tbl_masks(nodes, rodata, last_writer):
         if base_reg == "sp":
             src = node.get("slot")
             if src and src["reads"]:
-                return mask_of(by_id.get(src["reads"][0]), seen)
+                return addr_of(by_id.get(src["reads"][0]), seen)
             return None
 
         def resolve_addr(n, seen2):
@@ -173,11 +172,36 @@ def resolve_tbl_masks(nodes, rodata, last_writer):
             if pos >= 0 and pos < len(node["read_ids"]) else None
         resolved = resolve_addr(base_node, set())
         if resolved and resolved[0] + resolved[1] + imm in rodata:
-            return list(rodata[resolved[0] + resolved[1] + imm][:16])
+            return resolved[0] + resolved[1] + imm
         return None
 
     for n in nodes:
+        if n["mn"] in ("ldr", "ldur", "ldp"):
+            n["rodata_addr"] = addr_of(n, set())
+    return nodes
+
+
+def resolve_tbl_masks(nodes, rodata, last_writer):
+    """Resolve each tbl's index vector to its 16 byte indices.
+
+    rodata: {address: bytes-like} of the static binary's read-only data.
+    Unresolvable chains keep `mask=None`.
+    """
+    by_id = {n["id"]: n for n in nodes}
+    _resolve_load_addr(nodes, rodata)
+    for n in nodes:
         if n["mn"] == "tbl":
             if len(n["read_ids"]) > 1:
-                n["mask"] = mask_of(by_id.get(n["read_ids"][-1]), set())
+                ldr = by_id.get(n["read_ids"][-1])
+                if ldr is not None and ldr.get("rodata_addr") in rodata:
+                    n["mask"] = list(rodata[ldr["rodata_addr"]][:16])
+    return nodes
+
+
+def resolve_constants(nodes, rodata):
+    """Annotate .rodata loads with their resolved 16 bytes."""
+    _resolve_load_addr(nodes, rodata)
+    for n in nodes:
+        if n.get("rodata_addr") in rodata:
+            n["const_bytes"] = rodata[n["rodata_addr"]][:16]
     return nodes
