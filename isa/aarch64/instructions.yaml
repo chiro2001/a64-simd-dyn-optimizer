@@ -21,6 +21,14 @@ instructions:
      pattern: {op: fold-lo, lanes: 8, bits: 16}, status: known}
   - {id: neon-trn2-2d-s16x8, feature: neon, intrinsic: vtrn2q_s64,
      pattern: {op: fold-hi, lanes: 8, bits: 16}, status: known}
+  - {id: neon-trn1-s16x8, feature: neon, intrinsic: vtrn1q_s16,
+     pattern: {op: trn1, lanes: 8, bits: 16}, status: known}
+  - {id: neon-trn2-s16x8, feature: neon, intrinsic: vtrn2q_s16,
+     pattern: {op: trn2, lanes: 8, bits: 16}, status: known}
+  - {id: neon-trn1-s32x4, feature: neon, intrinsic: vtrn1q_s32,
+     pattern: {op: trn1, lanes: 4, bits: 32}, status: known}
+  - {id: neon-trn2-s32x4, feature: neon, intrinsic: vtrn2q_s32,
+     pattern: {op: trn2, lanes: 4, bits: 32}, status: known}
   - {id: neon-vext-s16x8, feature: neon, intrinsic: vextq_s16,
      pattern: {op: ext, lanes: 8, bits: 16}, status: known}
   - {id: neon-zip1-s16x8, feature: neon, intrinsic: vzip1q_s16,
@@ -39,6 +47,10 @@ instructions:
      pattern: {op: load, lanes: 8, bits: 8}, status: known}
   - {id: neon-ld1q-u8x16, feature: neon, intrinsic: vld1q_u8,
      pattern: {op: load, lanes: 16, bits: 8}, status: known}
+  - {id: neon-add-scalar-u32, feature: neon, intrinsic: null,
+     pattern: {op: add, lanes: 1, bits: 32}, status: known}
+  - {id: neon-lshr-scalar-u32, feature: neon, intrinsic: null,
+     pattern: {op: lshr, lanes: 1, bits: 32}, status: known}
 
   # ---- SVE (scalable, predicated) ----
   - {id: sve-add-u16, feature: sve, intrinsic: svadd_u16_x,

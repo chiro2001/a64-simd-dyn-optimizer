@@ -1,0 +1,3236 @@
+{
+  "patterns": {
+    "abs:8x16": 4,
+    "add:1x32": 1,
+    "add:8x16": 23,
+    "fold-hi:8x16": 4,
+    "fold-lo:8x16": 4,
+    "load:8x8": 16,
+    "lshr:1x32": 1,
+    "sabd:8x16": 4,
+    "sub:8x16": 16,
+    "trn1:4x32": 4,
+    "trn1:8x16": 4,
+    "trn2:4x32": 4,
+    "trn2:8x16": 4,
+    "uaddlv:8x16": 1,
+    "umax:8x16": 4,
+    "usubl:8x8": 8
+  },
+  "targets": {
+    "neon128": {
+      "covered_pattern_count": 102,
+      "gap_patterns": [],
+      "plan": [
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-uaddlv-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "uaddlv"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-scalar-u32"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-lshr-scalar-u32"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "lshr"
+          }
+        }
+      ]
+    },
+    "sve2-vl256": {
+      "covered_pattern_count": 102,
+      "gap_patterns": [],
+      "plan": [
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-uaddlv-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "uaddlv"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-scalar-u32",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-lshr-scalar-u32"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "lshr"
+          }
+        }
+      ]
+    },
+    "sve2p3-vl256": {
+      "covered_pattern_count": 102,
+      "gap_patterns": [],
+      "plan": [
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-ld1-u8x8",
+            "sve-ld1ub"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "load"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-usubl-u8x8"
+          ],
+          "pattern": {
+            "bits": 8,
+            "lanes": 8,
+            "op": "usubl"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sub-s16x8",
+            "sve-sub-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sub"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn1"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-s32x4"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 4,
+            "op": "trn2"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-abs-s16x8",
+            "sve-abs-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "abs"
+          }
+        },
+        {
+          "candidates": [
+            "neon-sabd-s16x8",
+            "sve-sabd-s16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "sabd"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn1-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-lo"
+          }
+        },
+        {
+          "candidates": [
+            "neon-trn2-2d-s16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "fold-hi"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-umax-u16x8",
+            "sve-umax-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "umax"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-s16x8",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-uaddlv-u16x8"
+          ],
+          "pattern": {
+            "bits": 16,
+            "lanes": 8,
+            "op": "uaddlv"
+          }
+        },
+        {
+          "candidates": [
+            "neon-add-scalar-u32",
+            "sve-add-u16"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "add"
+          }
+        },
+        {
+          "candidates": [
+            "neon-lshr-scalar-u32"
+          ],
+          "pattern": {
+            "bits": 32,
+            "lanes": 1,
+            "op": "lshr"
+          }
+        }
+      ]
+    }
+  }
+}
