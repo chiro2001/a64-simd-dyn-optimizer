@@ -8,7 +8,10 @@
 #include <random>
 #include <vector>
 
-extern "C" int dynopt_sa8d_8x8_neon_roundtrip(
+#ifndef DYNOPT_CANDIDATE
+#define DYNOPT_CANDIDATE dynopt_sa8d_8x8_neon_roundtrip
+#endif
+extern "C" int DYNOPT_CANDIDATE(
     const uint8_t* pix1, intptr_t stride_pix1,
     const uint8_t* pix2, intptr_t stride_pix2);
 
@@ -60,7 +63,7 @@ int main(int argc, char** argv)
         const uint8_t* b = pb.data() + ob;
         int rc = c(a, sa, b, sb);
         int rn = neon(a, sa, b, sb);
-        int rg = dynopt_sa8d_8x8_neon_roundtrip(a, sa, b, sb);
+        int rg = DYNOPT_CANDIDATE(a, sa, b, sb);
         if (rc != rn || rc != rg)
         {
             if (mism < 5)
