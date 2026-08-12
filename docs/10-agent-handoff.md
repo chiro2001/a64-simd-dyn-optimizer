@@ -187,6 +187,14 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
    - 复用 M12 DCT8 的闭环配方（独立差分 + 微基准 + paired + importer/
      range/关键路径工具链）；interp8 是 load-heavy 典型（round-0005 明确
      可优化）。
+   - **M18 foundation 已完成**：`benchmarks/interp8_microbench.cpp` +
+     `scripts/build-interp8-microbench.sh`；基线（paired latency，ratio=
+     neon/c<1 表示 NEON 快）：8x8 N1 0.516/920B 0.514，16x16 N1 0.434/
+     920B 0.582——上游 NEON 快 C ~1.9-2.3×，tier-a +30% 基线很强；
+   - **上游分歧发现**：N1 的 dotprod 变体 `interp8_horiz_pp_dotprod` 在
+     **phase=0**（单位滤波器）与 C 参考不一致（want=0 vs got=65），920B
+     的 i8mm 变体通过；与 DCT8 同类潜在 bug，下一轮最小化反例 + importer
+     扩 udot/sdot/usdot dot 家族 + roundtrip→C-exact 候选。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
