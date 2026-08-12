@@ -27,6 +27,8 @@ MODE="${7:-latency}"
 MIN_VALID="${MIN_VALID:-30}"
 KEEP_LO="${KEEP_LO:-1.10}"
 CPU="${CPU:-0}"
+IMPL_A="${IMPL_A:-neon}"   # baseline (A) = numerator of speedup
+IMPL_B="${IMPL_B:-cand}"   # candidate (B) = denominator of speedup
 
 mkdir -p "$OUT"
 RAW="$OUT/paired-pmu-raw.csv"
@@ -63,9 +65,9 @@ for p in $(seq 1 "$PROCS"); do
   for s in $(seq 1 "$PAIRS"); do
     order=$((RANDOM % 2))
     if [ "$order" -eq 0 ]; then
-      n=$(run_perf neon); c=$(run_perf cand)
+      n=$(run_perf "$IMPL_A"); c=$(run_perf "$IMPL_B")
     else
-      c=$(run_perf cand); n=$(run_perf neon)
+      c=$(run_perf "$IMPL_B"); n=$(run_perf "$IMPL_A")
     fi
     echo "$p,$s,$order,$n,$c" >> "$RAW"
   done
