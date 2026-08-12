@@ -1,0 +1,266 @@
+// Standalone 8-tap luma horizontal interpolation (filter_pp_t) A/B harness.
+//
+//   c     - x265 scalar C reference (setupCPrimitives)
+//   neon  - x265 upstream NEON dispatch baseline (setupIntrinsic+Assembly)
+//   empty - loop-only harness, identical call shape
+//   cand  - DYNOPT_CANDIDATE macro symbol (link required)
+//
+// Usage: interp8_microbench <8x8|16x16|32x32> <c|neon|empty|cand>
+//                           <latency|throughput> <samples> <batch>
+//                           [--verify-only|--noverify]
+// The filter phase is fixed to coeffIdx=2 (the symmetric 8-tap luma phase)
+// for the benchmark; verification covers all four phases.
+#include "primitives.h"
+
+#include <chrono>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <random>
+#include <string>
+#include <vector>
+
+using namespace X265_NS;
+
+#ifndef DYNOPT_CANDIDATE
+#define DYNOPT_CANDIDATE dynopt_interp8_hpp_candidate
+#endif
+extern "C" void DYNOPT_CANDIDATE(
+    const pixel*, intptr_t, pixel*, intptr_t, int) __attribute__((weak));
+
+static const int BUFSZ = 64;
+static const int STRIDE = BUFSZ;
+static const int CORPUS = 1024;
+static const int COEFF_IDX = 2;
+
+typedef void (*filter_pp_fn)(const pixel*, intptr_t, pixel*, intptr_t, int);
+
+static inline uint64_t read_cntvct()
+{
+    uint64_t t;
+    __asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(t));
+    return t;
+}
+
+static void empty_filter(const pixel*, intptr_t, pixel*, intptr_t, int)
+{
+}
+
+struct Corpus
+{
+    std::vector<pixel> data;
+    std::vector<int> offs;
+    std::vector<const pixel*> p;
+
+    Corpus(int shape)
+    {
+        std::mt19937 rng(0x1A8u + shape);
+        data.resize((size_t)CORPUS * BUFSZ * BUFSZ);
+        offs.resize(CORPUS);
+        p.resize(CORPUS);
+        for (int i = 0; i < CORPUS; i++)
+        {
+            pixel* a = &data[(size_t)i * BUFSZ * BUFSZ];
+            for (int j = 0; j < BUFSZ * BUFSZ; j++)
+                a[j] = (pixel)(rng() & 0xFF);
+            // left margin of 3 for the 8-tap offset, right margin of 3
+            offs[i] = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
+            p[i] = a;
+        }
+    }
+
+    const pixel* a(int i) const { return p[i]; }
+    int off(int i) const { return offs[i]; }
+};
+
+static bool verify_shape(const EncoderPrimitives& cprim,
+                         const EncoderPrimitives& neon, int shape)
+{
+    const LumaPU idx = shape == 8 ? LUMA_8x8
+                     : shape == 16 ? LUMA_16x16 : LUMA_32x32;
+    std::mt19937 rng(0x1A80u + shape);
+    int mismatches = 0;
+    for (int t = 0; t < 20000 && mismatches < 5; t++)
+    {
+        pixel a[64 * 64], want[64 * 64], got[64 * 64];
+        for (int i = 0; i < BUFSZ * BUFSZ; i++)
+            a[i] = (pixel)(rng() & 0xFF);
+        const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
+        for (int phase = 0; phase < 4; phase++)
+        {
+            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, STRIDE, phase);
+            neon.pu[idx].luma_hpp(a + off, STRIDE, got, STRIDE, phase);
+            if (memcmp(want, got, (size_t)shape * shape) != 0)
+            {
+                fprintf(stderr, "MISMATCH shape=%d phase=%d\n", shape, phase);
+                mismatches++;
+                break;
+            }
+        }
+    }
+    return mismatches == 0;
+}
+
+static bool verify_candidate(filter_pp_fn fn,
+                             const EncoderPrimitives& cprim, int shape)
+{
+    const LumaPU idx = shape == 8 ? LUMA_8x8
+                     : shape == 16 ? LUMA_16x16 : LUMA_32x32;
+    std::mt19937 rng(0xC8E8u + shape);
+    int mismatches = 0;
+    for (int t = 0; t < 20000 && mismatches < 5; t++)
+    {
+        pixel a[64 * 64], want[64 * 64], got[64 * 64];
+        for (int i = 0; i < BUFSZ * BUFSZ; i++)
+            a[i] = (pixel)(rng() & 0xFF);
+        const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
+        for (int phase = 0; phase < 4; phase++)
+        {
+            fn(a + off, STRIDE, got, STRIDE, phase);
+            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, STRIDE, phase);
+            if (memcmp(want, got, (size_t)shape * shape) != 0)
+            {
+                fprintf(stderr, "CAND MISMATCH shape=%d phase=%d\n",
+                        shape, phase);
+                mismatches++;
+                break;
+            }
+        }
+    }
+    return mismatches == 0;
+}
+
+static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
+                         int batch, bool latency, uint64_t* ticksOut)
+{
+    const uint64_t mask = CORPUS - 1;
+    const uint64_t t0 = read_cntvct();
+    pixel out[64 * 64];
+    int64_t checksum = 0;
+    if (latency)
+    {
+        uint64_t sel = 0x9E3779B97F4A7C15ull;
+        for (int i = 0; i < batch; i++)
+        {
+            const size_t idx = (sel + (uint64_t)i) & mask;
+            fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
+               out, STRIDE, COEFF_IDX);
+            sel = (uint64_t)((uint32_t)out[0] * 0x9E3779B9u
+                             + (uint32_t)out[shape * shape - 1]);
+            checksum += out[0] + out[shape * shape - 1];
+        }
+    }
+    else
+    {
+        for (int i = 0; i < batch; i++)
+        {
+            const size_t idx = (uint64_t)i & mask;
+            fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
+               out, STRIDE, COEFF_IDX);
+            checksum += out[0] + out[shape * shape - 1];
+        }
+    }
+    *ticksOut = read_cntvct() - t0;
+    return checksum;
+}
+
+int main(int argc, char** argv)
+{
+    if (argc < 6)
+    {
+        fprintf(stderr,
+                "usage: %s <8x8|16x16|32x32> <c|neon|empty|cand> "
+                "<latency|throughput> <samples> <batch> [--verify-only]\n",
+                argv[0]);
+        return 2;
+    }
+    const std::string shapeS = argv[1];
+    const std::string implS = argv[2];
+    const std::string modeS = argv[3];
+    const int samples = atoi(argv[4]);
+    const int batch = atoi(argv[5]);
+    const bool verifyOnly = argc > 6 && std::string(argv[6]) == "--verify-only";
+    const bool skipVerify = argc > 6 && std::string(argv[6]) == "--noverify";
+
+    int shape = 0;
+    if (shapeS == "8x8") shape = 8;
+    else if (shapeS == "16x16") shape = 16;
+    else if (shapeS == "32x32") shape = 32;
+    else { fprintf(stderr, "bad shape\n"); return 2; }
+
+    EncoderPrimitives cprim, neon;
+    std::memset(&cprim, 0, sizeof(cprim));
+    std::memset(&neon, 0, sizeof(neon));
+    setupCPrimitives(cprim);
+    setupAliasPrimitives(cprim);
+    const int cpu = cpu_detect(false);
+    setupIntrinsicPrimitives(neon, cpu);
+    setupAssemblyPrimitives(neon, cpu);
+    setupAliasPrimitives(neon);
+
+    if (!skipVerify)
+    {
+        const int shapes[] = { 8, 16, 32 };
+        for (size_t i = 0; i < 3; i++)
+            if (!verify_shape(cprim, neon, shapes[i]))
+            {
+                fprintf(stderr, "differential verification FAILED\n");
+                return 1;
+            }
+        fprintf(stderr, "differential verification OK (c == neon, 4 phases)\n");
+        if (verifyOnly && implS != "cand")
+            return 0;
+    }
+
+    filter_pp_fn fn = 0;
+    if (implS == "c")
+        fn = cprim.pu[shape == 8 ? LUMA_8x8
+                      : shape == 16 ? LUMA_16x16
+                      : LUMA_32x32].luma_hpp;
+    else if (implS == "neon")
+        fn = neon.pu[shape == 8 ? LUMA_8x8
+                     : shape == 16 ? LUMA_16x16
+                     : LUMA_32x32].luma_hpp;
+    else if (implS == "empty")
+        fn = empty_filter;
+    else if (implS == "cand")
+        fn = DYNOPT_CANDIDATE;
+    else { fprintf(stderr, "bad impl\n"); return 2; }
+    if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
+
+    if (!skipVerify && implS == "cand")
+    {
+        if (!verify_candidate(fn, cprim, shape))
+        {
+            fprintf(stderr, "candidate differential verification FAILED\n");
+            return 1;
+        }
+        fprintf(stderr, "candidate verification OK (cand == C, 4 phases)\n");
+        if (verifyOnly)
+            return 0;
+    }
+
+    const bool latency = modeS == "latency";
+    if (modeS != "latency" && modeS != "throughput")
+    { fprintf(stderr, "bad mode\n"); return 2; }
+
+    const Corpus corpus(shape);
+    uint64_t dummyTicks = 0;
+    for (int i = 0; i < 64; i++)
+        run_batch(fn, corpus, shape, 512, latency, &dummyTicks);
+
+    printf("shape,impl,mode,sample,batch,ns,ticks,checksum\n");
+    for (int s = 0; s < samples; s++)
+    {
+        const auto t0 = std::chrono::steady_clock::now();
+        uint64_t ticks = 0;
+        const int64_t sum = run_batch(fn, corpus, shape, batch, latency, &ticks);
+        const auto t1 = std::chrono::steady_clock::now();
+        const double ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+        printf("%s,%s,%s,%d,%d,%.0f,%llu,%lld\n",
+               shapeS.c_str(), implS.c_str(), modeS.c_str(), s, batch, ns,
+               (unsigned long long)ticks, (long long)sum);
+    }
+    return 0;
+}
