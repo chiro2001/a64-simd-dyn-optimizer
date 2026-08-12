@@ -188,6 +188,10 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
      idxX, idxY)`，C=`ipfilter.cpp:363 interp_hv_pp_c`（hps+1 垂直 sp），
      上游=`filter-prim.cpp:2014/4756 interp8_hv_pp_neon`；是剩余唯一有
      结构性复用空间的方向，但函数类型不同，需先扩微基准 harness。
+   - **M18 hvpp 差分（本轮）**：`kernels/interp8/hvpp_verify.cpp` 三方
+     差分（oracle==C 精确）；上游基座 NEON hvpp 与 C 在 idx=(3,3) 等有
+     18/180000（0.01%）分歧，待最小化（DCT8 教训：先排除 harness 假阳性，
+     再定上游 bug）。hvpp 候选合同仍定 C 参考。
 6. **P3''/M18 起：interp8_hpp（tier-a 新目标）**：DCT→quant 融合经分析
    收益小（中间缓冲必须保留给 RDO、quant 参数矩阵大、bit-exact 风险
    不对称，见 `experiments/m17-fusion-feasibility/`）。转向
