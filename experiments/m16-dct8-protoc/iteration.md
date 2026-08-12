@@ -52,6 +52,24 @@
 四深链），v0 只有资源/前端项，下一增量必须加 `critical_path_latency`
 依赖图估计器；在此之前不得用线性模型排序候选。
 
+## 7. range-aware 值域分析（止损后 pivot，本里程碑内完成）
+
+`optimizer/analysis/range.py` + `tools/range_analysis.py`：对 MachineIR 做
+前向整数区间传播（load 合同范围、常量表精确解析 `const_name/const_off`、
+sext/add/sub/mul/shl/shuffle、smull/addp/rshrn 语义），任何计算区间超出
+存储类型位宽的节点标记为 overflow risk。
+
+对 dct8 seed（380 节点）静态扫描：**精确命中 8 个 pass2 O 的 s16 `sub`
+（id 203/204/218/219/233/234/248/249）+ 6 个传播它的 rev64 shuffle**；
+其中 4 个（奇数列系数，smull 精确常量）得到**精确上界 [-65280,65280]**，
+其余 4 个（偶数列，区间乘上近似）为保守上界。pass1 无假阳性。此前这一定
+位需要 20 万例差分；现在 `range_analysis.py` 一步静态复现（回归测试
+`optimizer/analysis/test_range.py::test_dct8_seed_flags_pass2_o_subs`）。
+
+这是 round-0006 建议的 range-aware fixed-point IR 的核心；已知限制：朴素
+区间对乘/加链上近似（保守），下一增量可对 dot-product 归约做
+`Σ|g_i|·max|O_i|` 紧界跟踪。
+
 ## 6. 关键路径估计器 v0（本里程碑内完成）
 
 `optimizer/analysis/critical_path.py` + `tools/critical_path.py`：从反汇编
