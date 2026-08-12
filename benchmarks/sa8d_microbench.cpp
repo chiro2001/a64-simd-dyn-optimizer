@@ -112,9 +112,10 @@ static bool verify_shape(const EncoderPrimitives& cprim,
             a[i] = (pixel)(rng() & 0xFF);
             b[i] = (pixel)(rng() & 0xFF);
         }
-        const int off = (int)(rng() % (maxOff * maxOff + 1));
-        const int ox = off % maxOff;
-        const int oy = off / maxOff;
+        const int off = maxOff > 0
+            ? (int)(rng() % (maxOff * maxOff + 1)) : 0;
+        const int ox = maxOff > 0 ? off % maxOff : 0;
+        const int oy = maxOff > 0 ? off / maxOff : 0;
         const pixel* pa = a + (size_t)oy * STRIDE + ox;
         const pixel* pb = b + (size_t)oy * STRIDE + ox;
         const int rc = cprim.cu[idx].sa8d(pa, STRIDE, pb, STRIDE);

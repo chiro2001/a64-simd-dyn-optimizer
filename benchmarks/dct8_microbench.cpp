@@ -91,9 +91,10 @@ static int c_vs_neon_divergence(const EncoderPrimitives& cprim,
         int16_t a[64 * 64], want[64 * 64], got[64 * 64];
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
             a[i] = (int16_t)((int)(rng() & 0x1FF) - 255);
-        const int off = (int)(rng() % (maxOff * maxOff + 1));
-        const int ox = off % maxOff;
-        const int oy = off / maxOff;
+        const int off = maxOff > 0
+            ? (int)(rng() % (maxOff * maxOff + 1)) : 0;
+        const int ox = maxOff > 0 ? off % maxOff : 0;
+        const int oy = maxOff > 0 ? off / maxOff : 0;
         const int16_t* pa = a + (size_t)oy * STRIDE + ox;
         cprim.cu[idx].dct(pa, want, STRIDE);
         neon.cu[idx].dct(pa, got, STRIDE);
@@ -120,9 +121,10 @@ static bool verify_candidate(dct_fn fn, const EncoderPrimitives& cprim,
         int16_t a[64 * 64], want[64 * 64], got[64 * 64];
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
             a[i] = (int16_t)((int)(rng() & 0x1FF) - 255);
-        const int off = (int)(rng() % (maxOff * maxOff + 1));
-        const int ox = off % maxOff;
-        const int oy = off / maxOff;
+        const int off = maxOff > 0
+            ? (int)(rng() % (maxOff * maxOff + 1)) : 0;
+        const int ox = maxOff > 0 ? off % maxOff : 0;
+        const int oy = maxOff > 0 ? off / maxOff : 0;
         const int16_t* pa = a + (size_t)oy * STRIDE + ox;
         fn(pa, got, STRIDE);
         cprim.cu[idx].dct(pa, want, STRIDE);
