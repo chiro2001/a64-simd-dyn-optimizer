@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # Randomized paired A/B benchmark with bootstrap CI.
-# Usage: scripts/bench-paired.sh <bench-binary> [samples_per_proc=30] [procs=5]
+# Usage: scripts/bench-paired.sh <bench-binary> [samples_per_proc=30]
+#                                  [procs=5] [outdir] [latency|throughput]
 set -euo pipefail
 
-BIN="${1:?usage: bench-paired.sh <bench-binary> [samples] [procs]}"
+BIN="${1:?usage: bench-paired.sh <bench-binary> [samples] [procs] [outdir] [mode]}"
 SAMPLES="${2:-30}"
 PROCS="${3:-5}"
 OUT="${4:-experiments/m4-search/benchmark}"
+MODE="${5:-latency}"
+case "$MODE" in
+  latency|throughput) ;;
+  *) echo "mode must be latency or throughput" >&2; exit 2 ;;
+esac
 mkdir -p "$OUT"
 
 : > "$OUT/paired-raw.csv"
@@ -14,7 +20,7 @@ for p in $(seq 1 "$PROCS"); do
   for s in $(seq 1 "$SAMPLES"); do
     order=$((RANDOM % 2))
     run_one() {
-      taskset -c 0 "$BIN" 8x8 "$1" latency 1 4096 --noverify 2>/dev/null \
+      taskset -c 0 "$BIN" 8x8 "$1" "$MODE" 1 4096 --noverify 2>/dev/null \
         | tail -n 1 | cut -d, -f6
     }
     if [ "$order" -eq 0 ]; then

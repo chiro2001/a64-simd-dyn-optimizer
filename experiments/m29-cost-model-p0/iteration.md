@@ -90,3 +90,29 @@ x265 pinned b81f650 的 dct 热调用点只有 `common/quant.cpp` 的
 pack 若要真用，必须先改编码管线的 TU 批量处理方式（超出 kernel 级
 注入范围）。在拿到内部参考实现或 N+2 实机之前，DCT8 family 的性能
 搜索按 round-0007 止损线停止，转向其他 hotspot 或 DCT→quant 融合。
+
+## 7. 双口径补测：latency 与 throughput 排序不同（2026-08-13）
+
+此前所有 DCT8 结论都是 latency 口径。`scripts/bench-paired.sh` 增加
+mode 参数后，对 proto_b/proto_c/widen/proto_fused 四候选做两机双口径
+paired（150 pairs，median neon/cand，>1 表示候选更快）：
+
+| 候选（静态指令） | N1 latency | N1 throughput | 920B latency | 920B throughput |
+| --- | ---: | ---: | ---: | ---: |
+| proto_b（229） | 0.843 | 0.850 | 0.949 | 0.974 |
+| proto_c（254） | 0.829 | 0.864 | 0.958 | **1.040** [1.033,1.049] |
+| widen（347） | 0.870 | 0.876 | 0.976 | 0.990 |
+| proto_fused（269） | 0.815 | 0.863 | 0.910 | 0.960 |
+
+结论：
+
+1. 除 proto_c 在 920B throughput 为 **+4.0%**（CI 下界 1.033，首次有
+   候选 >1）外，其余全部 <1——tier-a +30% 在两种口径、两机上仍未达成；
+2. proto_c 是"宽 q-load + pass 间 q 布局"结构：它在 920B throughput 是
+   正的、在 920B latency（0.958）和 N1 双口径（0.83–0.86）是负的——
+   **排序随口径和机器翻转**，证实 round-0007"必须同时记录 latency 与
+   四路 throughput"的判据，也说明单一微架构模型无法统一排序（P0 取消
+   自动精排的决定因此更稳）；
+3. +4% 未达 1.10 保留门槛，proto_c 不保留；但其"全宽 load/layout"
+   方向是 920B throughput 上唯一正向信号，后续若继续 tier-a 搜索，
+   应在该方向做 N1/920B 双口径复核，而不是回到 mul/addp peephole。
