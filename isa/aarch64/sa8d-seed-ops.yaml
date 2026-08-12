@@ -1,0 +1,76 @@
+# ISA semantics/cost registry for the SA8D 8x8 NEON seed.
+# Status: semantics from LLVM IR / arm_neon; N1 latency/throughput TBD.
+
+target: n1-neon128
+instructions:
+  - mnemonic: vld1_u8
+    semantic: "8x u8 load from pixel plane; lanes -> A/B[row,col]"
+    llvm: load <8 x i8>
+    seed_static_count: 16
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: usubl
+    semantic: "sext(u8 a) - sext(u8 b) per lane, widening to s16"
+    llvm: zext + sub
+    seed_static_count: 8
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: add (s16)
+    semantic: "lane-wise s16 add"
+    llvm: add <8 x i16>
+    seed_static_count: 24
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: sub (s16)
+    semantic: "lane-wise s16 sub"
+    llvm: sub <8 x i16>
+    seed_static_count: 16
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: trn1/trn2
+    semantic: "lane interleave/transpose (v8i16/v4i32/v2i64)"
+    llvm: shufflevector masks [0,8,2,10,...] / [1,9,3,11,...]
+    seed_static_count: 16 (8x8 core)
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: zip1/zip2
+    semantic: "lane interleave (used by 16x16 core)"
+    llvm: shufflevector masks [0,8,1,9,...]
+    seed_static_count: 8 (16x16 core per tile)
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: sabd
+    semantic: "abs(a-b) per s16 lane"
+    llvm: llvm.aarch64.neon.sabd.v8i16
+    seed_static_count: 4
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: abs
+    semantic: "abs per s16 lane"
+    llvm: llvm.aarch64.neon.abs.v8i16
+    seed_static_count: 4
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: umax
+    semantic: "unsigned max per u16 lane"
+    llvm: llvm.aarch64.neon.umax.v8i16
+    seed_static_count: 4
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: uaddlv
+    semantic: "horizontal sum u16x8 -> u32"
+    llvm: llvm.aarch64.neon.uaddlv.i32.v8i16
+    seed_static_count: 1
+    n1_latency_cycles: null
+    n1_throughput: null
+  - mnemonic: lsr (scalar)
+    semantic: "u32 >> 1 (rounding step)"
+    llvm: lshr i32
+    seed_static_count: 1
+    n1_latency_cycles: null
+    n1_throughput: null
+
+measurement_plan:
+  - "Use llvm-mca for static N1-ish estimates (raw, not authoritative)."
+  - "Microbench each op in isolation on N1 with dependency chains for latency."
+  - "Calibrate against M0 PMU: 8x8 seed = 80.4 cycles / 115.9 insns per call."
