@@ -12,6 +12,7 @@ CAND="${3:-}"
 SRC="$ROOT/third_party/x265/source"
 NUMA_LIBS="${NUMA_LIBS:--lnuma}"
 [ "${SKIP_NUMA:-0}" = "1" ] && NUMA_LIBS=""
+MARCH="${MARCH:-}"
 
 if [ ! -f "$BUILD/libx265.a" ]; then
   echo "[build-interp8-microbench] missing $BUILD/libx265.a" >&2
@@ -19,7 +20,7 @@ if [ ! -f "$BUILD/libx265.a" ]; then
 fi
 
 mkdir -p "$(dirname "$OUT")"
-"${CXX:-g++}" -O3 -DNDEBUG -std=c++11 -Wall -Wextra \
+"${CXX:-g++}" -O3 -DNDEBUG -std=c++11 -Wall -Wextra ${MARCH:+$MARCH} \
   -DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 -DX265_NS=x265 \
   -DDYNOPT_CANDIDATE=dynopt_interp8_hpp_candidate \
   -I"$SRC" -I"$SRC/common" -I"$BUILD" \
