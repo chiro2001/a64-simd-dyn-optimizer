@@ -1,0 +1,19 @@
+schema_version: 1
+run_id: m18-interp8
+state: foundation-only
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+project_commit: aa256e4
+contract: filter_pp_t 8-tap luma hpp, 4 phases, C bit-exact
+gates:
+  - {name: local_qemu_c_eq_neon, result: pass}
+  - {name: n1_c_eq_neon, result: fail, detail: "phase=0 only; dotprod variant diverges from C"}
+  - {name: 920b_c_eq_neon, result: pass, detail: "i8mm variant"}
+  - {name: baseline_n1_8x8_neon_vs_c, result: "0.516 (NEON ~1.9x C)"}
+  - {name: baseline_n1_16x16_neon_vs_c, result: "0.434 (NEON ~2.3x C)"}
+  - {name: baseline_920b_8x8_neon_vs_c, result: "0.514"}
+  - {name: baseline_920b_16x16_neon_vs_c, result: "0.582"}
+next:
+  - minimize N1 phase-0 counterexample
+  - importer: add udot/sdot/usdot dot family
+  - roundtrip -> C-exact candidate; target +30% over upstream NEON

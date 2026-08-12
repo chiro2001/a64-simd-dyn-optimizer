@@ -1,0 +1,5 @@
+valid_pairs=30 procs=3
+metric_source=cntvct
+mode=latency
+speedup_median=0.5137 geomean=0.5109 bootstrap95=[0.5006, 0.5230]
+keep_lo=1.100 min_valid=30 verdict=REJECT
