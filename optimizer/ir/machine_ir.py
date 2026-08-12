@@ -63,8 +63,14 @@ def _parse_shuffle_mask(args):
 
 def _shuffle_result_type(args):
     """Result vector type of a shufflevector = the mask vector's type."""
-    types = re.findall(r"<(\d+) x i\d+>", args)
-    return "<%s x i32>" % types[-1] if types else None
+    src = re.match(r"shufflevector\s+<(\d+) x (i\d+)>\s*%", args)
+    if not src:
+        return None
+    elem = src.group(2)
+    mask_lens = re.findall(r"<(\d+) x i32>", args)
+    if not mask_lens:
+        return None
+    return "<%s x %s>" % (mask_lens[-1], elem)
 
 
 def _parse_operands(args):
