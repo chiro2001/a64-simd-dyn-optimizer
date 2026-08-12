@@ -204,6 +204,7 @@ def _sve_flat_indices(node):
 
 
 DCT8_TYPE_MAP = {
+    "<8 x i16>": "int16x8_t",
     "<4 x i16>": "int16x4_t",
     "<4 x i32>": "int32x4_t",
     "<2 x i64>": "int64x2_t",
@@ -215,6 +216,11 @@ DCT8_TYPE_MAP = {
 DCT8_SHUFFLES = {
     ("<4 x i16>", (3, 2, 1, 0)): "vrev64_s16",
     ("<4 x i32>", (1, 0, 3, 2)): "vrev64q_s32",
+}
+
+DCT8_TRNS = {
+    ("<4 x i32>", (0, 4, 2, 6)): "vtrn1q_s32",
+    ("<4 x i32>", (1, 5, 3, 7)): "vtrn2q_s32",
 }
 
 # concat(a[0:2], b[0:2]) / concat(a[2:4], b[2:4]) -- the mask [0,1,4,5] is
@@ -329,7 +335,7 @@ def emit_dct8_c_intrinsics(machine_ir,
         dst = node.get("dst")
         if op == "addr":
             env[dst] = _dct8_ptr(env, node)
-        elif op in ("shl", "mul"):
+        elif op in ("shl", "mul", "mla"):
             src = node["src"]
             if node["type"] and node["type"].startswith("<"):
                 types[dst] = DCT8_TYPE_MAP[node["type"]]
@@ -338,13 +344,32 @@ def emit_dct8_c_intrinsics(machine_ir,
                                  % (types[dst], cid(dst), cid(src[0]),
                                     node["amt"]))
                 elif node.get("const_vec"):
-                    cidn = const_vec_id(node["const_vec"])
-                    lines.append("    %s %s = vmulq_s32(%s,"
-                                 " vld1q_s32((const int32_t*)%s));"
-                                 % (types[dst], cid(dst), cid(src[0]), cidn))
+                    vec = node["const_vec"]
+                    splat = vec[0] == vec[1] == vec[2] == vec[3]
+                    if op == "mla" and splat:
+                        lines.append("    %s %s = vmlaq_n_s32(%s, %s, %d);"
+                                     % (types[dst], cid(dst), cid(src[0]),
+                                        cid(src[1]), vec[0]))
+                    elif op == "mla":
+                        cidn = const_vec_id(vec)
+                        lines.append("    %s %s = vmlaq_s32(%s, %s,"
+                                     " vld1q_s32((const int32_t*)%s));"
+                                     % (types[dst], cid(dst), cid(src[0]),
+                                        cid(src[1]), cidn))
+                    elif splat:
+                        lines.append("    %s %s = vmulq_n_s32(%s, %d);"
+                                     % (types[dst], cid(dst), cid(src[0]),
+                                        vec[0]))
+                    else:
+                        cidn = const_vec_id(vec)
+                        lines.append("    %s %s = vmulq_s32(%s,"
+                                     " vld1q_s32((const int32_t*)%s));"
+                                     % (types[dst], cid(dst), cid(src[0]),
+                                        cidn))
                 else:
-                    lines.append("    %s %s = vmulq_s32(%s, %s);"
-                                 % (types[dst], cid(dst), cid(src[0]),
+                    fn = "vmlaq_s32" if op == "mla" else "vmulq_s32"
+                    lines.append("    %s %s = %s(%s, %s);"
+                                 % (types[dst], cid(dst), fn, cid(src[0]),
                                     cid(src[1])))
             else:
                 a = env[src[0]]
@@ -391,7 +416,8 @@ def emit_dct8_c_intrinsics(machine_ir,
                          % (types[dst], cid(dst), cid(srcs[0])))
         elif op == "shuffle":
             key = (node["type"], tuple(node["mask"]))
-            if key not in DCT8_SHUFFLES and key not in DCT8_COMBINES:
+            if key not in DCT8_SHUFFLES and key not in DCT8_COMBINES \
+                    and key not in DCT8_TRNS:
                 raise ValueError("DCT8 unknown shuffle %r" % (key,))
             types[dst] = DCT8_TYPE_MAP[node["type"]]
             if key in DCT8_SHUFFLES:
@@ -399,6 +425,11 @@ def emit_dct8_c_intrinsics(machine_ir,
                 lines.append("    %s %s = %s(%s);"
                              % (types[dst], cid(dst), fn,
                                 cid(node["src"][0])))
+            elif key in DCT8_TRNS:
+                fn = DCT8_TRNS[key]
+                lines.append("    %s %s = %s(%s, %s);"
+                             % (types[dst], cid(dst), fn,
+                                cid(node["src"][0]), cid(node["src"][1])))
             else:
                 lo, hi = DCT8_COMBINES[key]
                 lines.append("    %s %s = vcombine_s32(vget_%s_s32(%s),"
@@ -407,11 +438,13 @@ def emit_dct8_c_intrinsics(machine_ir,
                                 cid(node["src"][0]), hi,
                                 cid(node["src"][1])))
         elif op == "load":
-            types[dst] = "int16x4_t"
+            types[dst] = DCT8_TYPE_MAP[node["type"]]
+            wide = node["type"] == "<8 x i16>"
             if node.get("const_name"):
-                lines.append("    %s %s = vld1_s16(&dct8_g_t8[0][0]"
-                             " + %d);"
-                             % (types[dst], cid(dst), node["const_off"] // 2))
+                fn = "vld1q_s16" if wide else "vld1_s16"
+                lines.append("    %s %s = %s(&dct8_g_t8[0][0] + %d);"
+                             % (types[dst], cid(dst), fn,
+                                node["const_off"] // 2))
             else:
                 base_val = env[node["ptr"]]
                 if not (isinstance(base_val, tuple) and base_val[0] == "ptr"):
@@ -419,11 +452,17 @@ def emit_dct8_c_intrinsics(machine_ir,
                 base, off = base_val[1], base_val[2]
                 if base == "src":
                     off_s = str(off) if isinstance(off, int) else off
-                    lines.append("    %s %s = vld1_s16((const int16_t*)"
+                    fn = "vld1q_s16" if wide else "vld1_s16"
+                    lines.append("    %s %s = %s((const int16_t*)"
                                  "((const char*)src + (%s)));"
-                                 % (types[dst], cid(dst), off_s))
+                                 % (types[dst], cid(dst), fn, off_s))
                 else:
                     raise ValueError("DCT8 unknown load base %r" % (base,))
+        elif op == "half":
+            types[dst] = "int16x4_t"
+            fn = "vget_%s_s16" % node["half"]
+            lines.append("    %s %s = %s(%s);"
+                         % (types[dst], cid(dst), fn, cid(node["src"])))
         elif op == "store":
             base_val = env[node["ptr"]]
             base, off = base_val[1], base_val[2]

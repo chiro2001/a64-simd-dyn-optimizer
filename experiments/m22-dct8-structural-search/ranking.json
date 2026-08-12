@@ -1,0 +1,145 @@
+[
+ {
+  "tag": "baseline",
+  "rewrites": [],
+  "cost": 7.060000000000008,
+  "insns": 343
+ },
+ {
+  "tag": "widen",
+  "rewrites": [
+   "widen"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 347
+ },
+ {
+  "tag": "shift64",
+  "rewrites": [
+   "shift64"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 343
+ },
+ {
+  "tag": "wide_load",
+  "rewrites": [
+   "wide_load"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 335
+ },
+ {
+  "tag": "tree_to_mla",
+  "rewrites": [
+   "tree_to_mla"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 343
+ },
+ {
+  "tag": "widen-shift64",
+  "rewrites": [
+   "widen",
+   "shift64"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 347
+ },
+ {
+  "tag": "widen-wide_load",
+  "rewrites": [
+   "widen",
+   "wide_load"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 339
+ },
+ {
+  "tag": "shift64-wide_load",
+  "rewrites": [
+   "shift64",
+   "wide_load"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 335
+ },
+ {
+  "tag": "shift64-tree_to_mla",
+  "rewrites": [
+   "shift64",
+   "tree_to_mla"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 343
+ },
+ {
+  "tag": "wide_load-tree_to_mla",
+  "rewrites": [
+   "wide_load",
+   "tree_to_mla"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 335
+ },
+ {
+  "tag": "widen-shift64-wide_load",
+  "rewrites": [
+   "widen",
+   "shift64",
+   "wide_load"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 339
+ },
+ {
+  "tag": "shift64-wide_load-tree_to_mla",
+  "rewrites": [
+   "shift64",
+   "wide_load",
+   "tree_to_mla"
+  ],
+  "cost": 7.060000000000008,
+  "insns": 335
+ },
+ {
+  "tag": "widen-tree_to_mla",
+  "rewrites": [
+   "widen",
+   "tree_to_mla"
+  ],
+  "cost": 7.346485291149005,
+  "insns": 345
+ },
+ {
+  "tag": "widen-shift64-tree_to_mla",
+  "rewrites": [
+   "widen",
+   "shift64",
+   "tree_to_mla"
+  ],
+  "cost": 7.346485291149005,
+  "insns": 345
+ },
+ {
+  "tag": "widen-wide_load-tree_to_mla",
+  "rewrites": [
+   "widen",
+   "wide_load",
+   "tree_to_mla"
+  ],
+  "cost": 7.346485291149005,
+  "insns": 337
+ },
+ {
+  "tag": "widen-shift64-wide_load-tree_to_mla",
+  "rewrites": [
+   "widen",
+   "shift64",
+   "wide_load",
+   "tree_to_mla"
+  ],
+  "cost": 7.346485291149005,
+  "insns": 337
+ }
+]

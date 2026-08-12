@@ -1,0 +1,15 @@
+schema_version: 1
+run_id: m22-dct8-structural-search
+state: tool-foundation-accepted-candidates-rejected
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+deliverables:
+  - optimizer/ir/rewrites.py::wide_loads
+  - optimizer/ir/rewrites.py::tree_to_mla
+  - optimizer/ir/codegen.py
+  - tools/search_driver.py
+gates:
+  - {name: 16_combo_compile_disasm, result: pass}
+  - {name: widened_candidates_cexact_200k, result: pass, detail: "5/5 candidate_mismatches=0"}
+  - {name: n1_latency_all, result: reject, detail: "0.8638..0.8946 median vs neon"}
+  - {name: 920b_latency_all, result: reject, detail: "0.9719..0.9982 median vs neon"}

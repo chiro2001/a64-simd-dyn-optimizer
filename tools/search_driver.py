@@ -22,7 +22,8 @@ from itertools import combinations
 from optimizer.analysis.critical_path import estimate_critical_path, parse_inst
 from optimizer.ir.codegen import emit_dct8_c_intrinsics
 from optimizer.ir.machine_ir import MachineIR
-from optimizer.ir.rewrites import mul64_to_shift, widen_overflows
+from optimizer.ir.rewrites import (
+    mul64_to_shift, tree_to_mla, wide_loads, widen_overflows)
 
 
 def apply_rewrites(ir, names):
@@ -31,6 +32,10 @@ def apply_rewrites(ir, names):
             widen_overflows(ir)
         elif name == "shift64":
             mul64_to_shift(ir)
+        elif name == "wide_load":
+            wide_loads(ir)
+        elif name == "tree_to_mla":
+            tree_to_mla(ir)
         elif name == "nop":
             pass
         else:

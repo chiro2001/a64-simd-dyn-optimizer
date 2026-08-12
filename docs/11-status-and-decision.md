@@ -16,6 +16,10 @@
 | 搜索主循环 | `tools/search_driver.py` | rewrite 组合枚举 + C-exact 验证 |
 | 差分/门禁/paired 微基准 | kernels/benchmarks/scripts | 三算子、双机、CNTVCT/PMU |
 
+M22 更新：rewrite 目录现为 `{widen, shift64, wide_load, tree_to_mla}`，
+可组合枚举 16 个候选；5 个 C-exact 候选 N1/920B paired latency 全部
+0.86–1.00（无突破，与 M15/M16 一致）。
+
 上游 bug 发现与修复：DCT8 pass2 `vsub_s16` 回绕（M14 修复，range 分析可
 静态复现）；harness 两次假阳性（hpp stride、hvpp 行推进）已闭环并记录
 教训。
@@ -64,7 +68,8 @@
    a. 等 N+2 做 SVE256 宽度迁移（对齐 b/c 目标）；
    b. 内部参考数据校准后，把"结构差距"编码为搜索 rewrite；
    c. residual→subpel / DCT→quant 跨 primitive 融合（收益需再评估）；
-   d. 继续 encode M15/M16 结构为 IR rewrite（树↔mla 等）扩充搜索目录。
+   d. ~~继续 encode M15/M16 结构为 IR rewrite~~ **已完成（M22）**；下一步
+      按机器重拟合逐指令延迟（9 个实测校准点）并验证排序一致性。
 
 ## 4. 建议的下一阶段（若无新输入）
 
