@@ -123,7 +123,7 @@ def lane_forms_asm(nodes):
                 else:
                     forms[nid] = lanes
             else:
-                forms[nid] = [{(nid, i): 1.0} for i in range(_arr(n) or 8)]
+                forms[nid] = [{(nid, i): 1.0} for i in range(8)]
             continue
         if mn in ("zip1", "zip2", "uzp1", "uzp2", "trn1", "trn2"):
             a = form_of(n["read_ids"][0])
@@ -231,6 +231,39 @@ def shared_constant_matrix_outputs(nodes, forms):
                         "const": list(next(iter(consts))),
                         "leaf_ids": sorted(leaves)})
     return out
+
+
+def expand_to_raw(output_form, nodes, forms):
+    """Recursively expand a form down to raw data-load lanes.
+
+    Returns per-lane dicts {(raw_node_id, lane): coeff}. A node is a raw
+    leaf when it is a load of the kernel input (ldr/ldp/ld1 without a
+    resolved .rodata constant).
+    """
+    def expand(terms, seen=frozenset()):
+        out = defaultdict(float)
+        for (leaf, lane), coeff in terms.items():
+            if leaf in seen:
+                out[(leaf, lane)] += coeff
+                continue
+            n = nodes[leaf]
+            is_const = "const_bytes" in n
+            is_load = n["mn"] in ("ldr", "ldp", "ldur", "ld1", "ld1r")
+            if is_load and not is_const:
+                out[(leaf, lane)] += coeff
+                continue
+            f = forms.get(leaf)
+            if f is not None and lane < len(f) \
+                    and not _is_const_form(f):
+                for (l2, lane2), c2 in expand(f[lane],
+                                              seen | {leaf}).items():
+                    out[(l2, lane2)] += coeff * c2
+                continue
+            # constants or opaque values stay as terms (numeric if const)
+            out[(leaf, lane)] += coeff
+        return dict(out)
+
+    return [expand(t) for t in output_form]
 
 
 def _widen_narrow_form(n, forms, consts):

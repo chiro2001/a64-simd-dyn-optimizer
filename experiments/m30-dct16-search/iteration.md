@@ -70,3 +70,20 @@ SVE256 后端复用同一 rewrite。
 - `build/dct16_roundtrip.cpp/.o`、`kernels/dct16/roundtrip_verify.cpp`
 - `optimizer/ir/codegen.py::emit_dct16_c_intrinsics`
 - `optimizer/ir/rewrites.py::hoist_shuffles` + 2 单测
+
+## 动态流发现结果（2026-08-13）
+
+在 DCT16 单次执行的 QEMU 动态流上，完整发现链（抓取 → 常量解析 → 语义
+lane 追踪 → 共享矩阵检测）得到：
+
+- **45 个可常量重排的窄化输出**：
+  - 24 个 `[1,1,1,1]` splat 求和（偶数路径，置换可直接删除）；
+  - 21 个 g_t16 奇数行点积，常量逐值精确匹配（`[90,87,80,70,57,43,25,9]`
+    = 行1、`[87,57,9,-43,-80,-90,-70,-25]` = 行3 …）；
+- 每个输出形如 `out[i] = dot(C, O_row_i)`，C 跨输出 lane 共享——即内部
+  DCT16 实现靠常量重排消除数据 shuffle 的结构，由工具自动发现。
+
+待完成（发射）：把检测到的 C 与叶子自身 tbl 置换组合成全量 C'，对每个
+输出发射 `mul(C'_lo, raw_lo) + mul(C'_hi, raw_hi) + addp`；8 个奇数输出
+共享同一组 O，全部改写后 O 链成为死代码，64 个常量 tbl 整体消失；再走
+C-exact 差分 + 两机双口径实测。

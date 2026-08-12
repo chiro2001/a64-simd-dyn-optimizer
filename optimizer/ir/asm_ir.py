@@ -207,7 +207,12 @@ def resolve_tbl_masks(nodes, rodata, last_writer):
 def resolve_constants(nodes, rodata):
     """Annotate .rodata loads with their resolved 16 bytes."""
     _resolve_load_addr(nodes, rodata)
+    by_id = {n["id"]: n for n in nodes}
     for n in nodes:
         if n.get("rodata_addr") in rodata:
             n["const_bytes"] = rodata[n["rodata_addr"]][:16]
+        if n["mn"] == "tbl" and len(n["read_ids"]) > 1:
+            ldr = by_id.get(n["read_ids"][-1])
+            if ldr is not None and ldr.get("rodata_addr") in rodata:
+                n["mask"] = list(rodata[ldr["rodata_addr"]][:16])
     return nodes
