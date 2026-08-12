@@ -1,0 +1,21 @@
+schema_version: 1
+run_id: m15-dct8-protob
+state: rejected-performance
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+project_commit: e85e869
+candidate:
+  source: kernels/dct8/candidates/proto_b.cpp
+  symbol: dynopt_dct8_neon_candidate
+  static_total: 229
+  static_simd: 128
+gates:
+  - {name: cand_eq_c_oracle, result: pass, detail: "200k local + 20k N1 + 20k 920B"}
+  - {name: paired_latency_vs_neon_n1, result: "0.858x CI[0.843,0.881] REJECT"}
+  - {name: paired_latency_vs_neon_920b, result: "1.019x CI[1.012,1.037] REJECT(keep=1.10)"}
+  - {name: paired_tp_vs_neon_n1, result: "0.845x REJECT"}
+  - {name: paired_tp_vs_neon_920b, result: "0.993x REJECT"}
+verdict: >-
+  count-only wins do not translate: mla linearizes the reduction (depth 4 vs 3)
+  and N1 s32 scalar mul latency dominates; 920B slightly positive. Proceed to
+  prototype (c) full-width + tree scheduling, split candidates per machine.
