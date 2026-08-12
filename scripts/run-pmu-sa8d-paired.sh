@@ -34,9 +34,15 @@ mkdir -p "$OUT"
 RAW="$OUT/paired-pmu-raw.csv"
 : > "$RAW"
 
-METRIC="perf"
-if perf stat -e cycles:u true 2>&1 | grep -q "not supported"; then
+METRIC="${METRIC:-auto}"
+if [ "$METRIC" = "auto" ] && perf stat -e cycles:u true 2>&1 | grep -q "not supported"; then
   echo "[run-pmu-sa8d-paired] hardware PMU unavailable; metric=cntvct (microbench ticks)"
+  METRIC="cntvct"
+fi
+if [ "$METRIC" = "auto" ]; then
+  # Even with a hardware PMU, whole-process cycles dominate small kernels;
+  # the microbench's own cntvct ticks measure only the batch loop. Prefer
+  # cntvct unless a perf-based metric is explicitly requested.
   METRIC="cntvct"
 fi
 
