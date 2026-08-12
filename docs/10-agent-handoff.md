@@ -68,7 +68,7 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   - 基线：上游 NEON 比 C 慢 **N1 19%（0.807×）/ 920B 4%（0.961×）**；
   - 微基准 `benchmarks/dct8_microbench.cpp` + `scripts/build-dct8-*.sh`；
   - 本地交叉+qemu 迭代路径已通。
-- **M13（本轮，accepted）**：LLVM importer 扩展 + DCT8 NEON roundtrip：
+- **M13（accepted）**：LLVM importer 扩展 + DCT8 NEON roundtrip：
   - importer 新增 store/sext/mul（含逐 lane 常量向量）/splat 立即数/i16
     gep/内联常量 gep/intrinsic 有序 args（`optimizer/ir/machine_ir.py`，
     单测 `optimizer/ir/test_machine_ir.py`）；
@@ -83,6 +83,13 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
     在 s16 域算 O，`|coef[k]-coef[7-k]|>32767` 时回绕（实测
     -33288→+32248），C 在 int32 域；pass1 输入范围小不触发。修复方向：
     pass2 O 用 `vsubl_s16` 提 s32 后做奇数列点积。
+- **M14（accepted）**：C-exact 修复落地：`optimizer/ir/rewrites.py::
+  widen_dct8_pass2_odd`（s32 奇数列 + `vmulq_s32`），cand==C oracle 本地
+  20 万例 / N1·920B 各 2 万例全 0；静态 347/282（上游 341）；paired vs
+  上游 NEON：N1 0.891×、920B 0.981×（修复的账，搜索要赚回来）。
+- **round-0006 已归档**：response.md + decision.md（独立印证 s16 回绕；
+  三原型 (a/b/c) 与止损点；纠错 vrshrn 非饱和、PR_SVE_SET_VL 单位为字节、
+  m12 合同改 C 参考、微基准 checksum 移出依赖链）。
 
 ## 5. 代码/工具入口
 
@@ -116,14 +123,20 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
 
 ## 7. 下一步任务（P 顺序）
 
-1. **P3' 继续：DCT8 首轮优化（tier a，当前最高价值）**：
-   - 先做 C-exact 修复：pass2 奇数列 O 用 `vsubl_s16` 提升 s32（消除
-     上游 s16 回绕 bug），回归 oracle==cand（候选门禁从“复现 NEON”升级
-     为“==C 参考”）；修完才有资格上 N1/920B paired；
-   - 再做指令选择/布局搜索：`vmull+vpaddq` 配对链、`rev64/zip` 重排、
-     常量复用；目标 N1/920B paired latency 从 0.807×/0.961× 向 1.30×
-     推进。
-2. round-0006 response 落盘后写 decision.md，按建议优先级排下一轮实验。
+1. **P3'/M15-M16：DCT8 三原型（round-0006 建议，C-exact 为硬门禁）**：
+   - (a) pass2 仅 O widening —— 已做（M14）；
+   - (b) 四列并行 s32 `mul/mla` 替代 `smull+addp` 归约链：每 4 行块
+     奇数列从 16 vmull+12 addp+4 rshrn 降到 4×4 mul/mla+4 rshrn+4×4
+     transpose（预估 -4~-8 条/块，先验证 bit-exact 与实测）；
+   - (c) pass1 系数寄存器常驻 + 显式 8×8 transpose，消除 stack 往返
+     （16 st1+16 ld1）并支持 128-bit 全宽行处理；
+   - 目标：N1 对 C 从 1.24× 推到 >=1.30×；920B 对 C 从 ~0.94× 推到
+     >=1.30×；允许两台机器不同候选；
+   - 止损点（round-0006）：三原型后若仍无候选中心 >1.05 且 CI 下界
+     >1.00，停止“上游 NEON 局部 peephole”family，转 range-aware
+     fixed-point transform IR（资源下界模型 docs/09）。
+2. 基准重建（round-0006）：throughput 四路独立 dst、latency 预筛 C==NEON
+   输入链、归档 impl_a/impl_b + CNTFRQ（微基准 checksum 已移出依赖链）。
 3. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
    空融合表时节省为 unknown，不驱动排序/搜索）。
 4. **P5'~P6'**：目标融合对验证（instruction-pair 微基准）→ 有
