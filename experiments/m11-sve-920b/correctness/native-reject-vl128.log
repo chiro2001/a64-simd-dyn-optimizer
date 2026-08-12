@@ -1,0 +1,14 @@
+vl-bytes=16
+registered_single=1
+registered_x2=0
+registered_x2raw=0
+registered_16x16=0
+cases=200 mismatches=0
+x2_cases=0 mismatches=0
+x2raw_cases=0 mismatches=0
+16x16_cases=0 mismatches=0
+calls_single=200
+calls_x2=0
+calls_x2raw=0
+calls_16x16=0
+rejection_audit=pass

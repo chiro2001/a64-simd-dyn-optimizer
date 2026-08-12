@@ -1,0 +1,14 @@
+vl-bytes=32
+registered_single=1
+registered_x2=1
+registered_x2raw=1
+registered_16x16=1
+cases=1000000 mismatches=0
+x2_cases=1000000 mismatches=0
+x2raw_cases=1000000 mismatches=0
+16x16_cases=1000000 mismatches=0
+calls_single=1000000
+calls_x2=1000000
+calls_x2raw=1000000
+calls_16x16=1000000
+rejection_audit=n/a (vl>=256)

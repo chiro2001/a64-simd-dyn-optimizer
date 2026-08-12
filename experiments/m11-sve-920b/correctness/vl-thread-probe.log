@@ -1,0 +1,6 @@
+main-prctl-ret=16
+main-after-prctl vl-bytes=16
+worker-inherit vl-bytes=16
+worker-set-own prctl-ret=16
+worker-set-own vl-bytes=16
+main-end vl-bytes=16

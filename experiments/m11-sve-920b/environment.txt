@@ -1,0 +1,85 @@
+=== uname -a ===
+Linux ecs-803a.novalocal 6.6.0-98.0.0.103.oe2403sp2.aarch64 #1 SMP Wed Jun 25 23:19:26 CST 2025 aarch64 aarch64 aarch64 GNU/Linux
+
+=== /etc/os-release ===
+NAME="openEuler"
+VERSION="24.03 (LTS-SP2)"
+ID="openEuler"
+VERSION_ID="24.03"
+PRETTY_NAME="openEuler 24.03 (LTS-SP2)"
+ANSI_COLOR="0;31"
+
+
+=== lscpu ===
+Architecture:                         aarch64
+CPU op-mode(s):                       64-bit
+Byte Order:                           Little Endian
+CPU(s):                               2
+On-line CPU(s) list:                  0,1
+Vendor ID:                            HiSilicon
+Model name:                           -
+Model:                                0
+Thread(s) per core:                   1
+Core(s) per socket:                   2
+Socket(s):                            1
+Stepping:                             0x0
+BogoMIPS:                             200.00
+Flags:                                fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 sm3 sm4 asimddp sha512 sve asimdfhm dit uscat ilrcpc flagm ssbs sb dcpodp flagm2 frint svei8mm svef32mm svef64mm svebf16 i8mm bf16 dgh rng ecv
+L1d cache:                            128 KiB (2 instances)
+L1i cache:                            128 KiB (2 instances)
+L2 cache:                             1 MiB (2 instances)
+L3 cache:                             32 MiB (1 instance)
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0,1
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:             Not affected
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+
+=== /proc/cpuinfo features ===
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 sm3 sm4 asimddp sha512 sve asimdfhm dit uscat ilrcpc flagm ssbs sb dcpodp flagm2 frint svei8mm svef32mm svef64mm svebf16 i8mm bf16 dgh rng ecv
+
+=== perf_event_paranoid ===
+2
+
+=== tool versions ===
+git: git version 2.43.0
+cmake: cmake version 3.27.9
+ninja: 1.11.1
+gcc: gcc (GCC) 12.3.1 (openEuler 12.3.1-99.oe2403sp2)
+clang: MISSING
+llvm-mc: MISSING
+llvm-objdump: MISSING
+llvm-mca: MISSING
+qemu-aarch64: MISSING
+z3: MISSING
+jq: MISSING
+rg: MISSING
+perf: perf version 6.6.0-145.0.3.144.oe2403sp2.aarch64
+python3: Python 3.11.6
+objdump: GNU objdump (GNU Binutils) 2.41
+
+=== SVE probe ===
+sve
+sve
+sve
+sve
+sve
+
+=== disk ===
+/dev/vda2        38G  2.2G   34G   7% /
+
+=== git status ===
+?? experiments/m11-sve-920b/environment.txt
+25c18f4a71f266557efa87f8622f013ab628a241
+b81f650e21e8aacbe6a9ad04ce14aefc05b932c0

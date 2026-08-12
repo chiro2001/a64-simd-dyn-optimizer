@@ -1,0 +1,16 @@
+target_level=sve1 rank=1
+instructions_scanned=117
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=125
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=116
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=25
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS

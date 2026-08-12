@@ -1,0 +1,151 @@
+wrote /home/chiro/projects/a64-simd-dyn-optimizer/generated/sa8d/sve_roundtrip_sa8d_8x8.cpp (159 lines)
+wrote /home/chiro/projects/a64-simd-dyn-optimizer/generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp (163 lines)
+wrote /home/chiro/projects/a64-simd-dyn-optimizer/generated/sa8d/sve_roundtrip_sa8d_8x8x2raw.cpp (159 lines)
+wrote /home/chiro/projects/a64-simd-dyn-optimizer/generated/sa8d/sve_roundtrip_sa8d_16x16.cpp (10 lines)
+[sve-sa8d] static instruction counts (single / x2 / x2raw / 16x16)
+[sve-sa8d] ISA-level gate (no SVE2+ opcode may reach an SVE1 target)
+target_level=sve1 rank=1
+instructions_scanned=117
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=125
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=116
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+target_level=sve1 rank=1
+instructions_scanned=25
+note: catalog atoms treated as baseline: FEAT_ASMv8p2,FEAT_ATS1A,FEAT_BF16,FEAT_BRBE,FEAT_BTI,FEAT_CHK,FEAT_CLRBHB,FEAT_CMH,FEAT_CMPBR,FEAT_CPA,FEAT_CSSC,FEAT_D128
+verdict=PASS
+--- single-tile ---
+total=117 simd=101
+  add          36  [SIMD]
+  sub          24  [SIMD]
+  ld1b         16  [SIMD]
+  trn1         12  [SIMD]
+  trn2         12  [SIMD]
+  sabd          4  [SIMD]
+  abs           4  [SIMD]
+  umax          4  [SIMD]
+  ptrue         1  [SIMD]
+  uaddv         1  [SIMD]
+  fmov          1
+  ubfx          1
+  ret           1
+--- two-tile pack ---
+total=125 simd=103
+  add          38  [SIMD]
+  sub          25  [SIMD]
+  ld1b         16  [SIMD]
+  trn1         12  [SIMD]
+  trn2         12  [SIMD]
+  sabd          4  [SIMD]
+  abs           4  [SIMD]
+  umax          4  [SIMD]
+  uaddv         2  [SIMD]
+  fmov          2
+  lsr           2
+  mov           1
+  whilelt       1  [SIMD]
+  ptrue         1  [SIMD]
+  ret           1
+--- two-tile raw ---
+total=116 simd=101
+  add          35  [SIMD]
+  sub          24  [SIMD]
+  ld1b         16  [SIMD]
+  trn1         12  [SIMD]
+  trn2         12  [SIMD]
+  sabd          4  [SIMD]
+  abs           4  [SIMD]
+  umax          4  [SIMD]
+  mov           1
+  whilelt       1  [SIMD]
+  uaddv         1  [SIMD]
+  fmov          1
+  ret           1
+--- 16x16 wrapper ---
+total=25 simd=0
+  mov           8
+  add           4
+  stp           3
+  ldp           3
+  bl            2
+  str           1
+  sxtw          1
+  ubfx          1
+  ldr           1
+  ret           1
+[sve-sa8d] identity
+g++ (GCC) 12.3.1 (openEuler 12.3.1-99.oe2403sp2)
+4cd90f42fd3132caf8c9026681121a409075941c4bcfe213df118eebc2913350  build/sve1.o
+054d8d3820f1256366da8993355f3f1ef8f4020e69c941180a44f2136da057ab  build/sve2.o
+2ea6a42018097b286ae97eb9c334f53b1ff6a2533b049a18808e8bd3c8c17efd  build/sve3.o
+2dd5929541bb134aececda8e592af8df4b2ae1bf2c69b716b2882d23b093e5e1  build/sve4.o
+0289eca01b1a03d403093841664f9403ebd48c6beaf7bffd5a2353cc1ad6d4e1  build/sve_verify
+f36818f8eaa66724fd17560365dbd2af413881d1356f4886fc21eca51b988666  build/sve_guard
+[sve-sa8d] running (vq=4 = VL=512)
+vl-bytes=32
+registered_single=1
+registered_x2=1
+registered_x2raw=1
+registered_16x16=1
+cases=20000 mismatches=0
+x2_cases=20000 mismatches=0
+x2raw_cases=20000 mismatches=0
+16x16_cases=20000 mismatches=0
+calls_single=20000
+calls_x2=20000
+calls_x2raw=20000
+calls_16x16=20000
+rejection_audit=n/a (vl>=256)
+[sve-sa8d] running (vq=2 = VL=256)
+vl-bytes=32
+registered_single=1
+registered_x2=1
+registered_x2raw=1
+registered_16x16=1
+cases=20000 mismatches=0
+x2_cases=20000 mismatches=0
+x2raw_cases=20000 mismatches=0
+16x16_cases=20000 mismatches=0
+calls_single=20000
+calls_x2=20000
+calls_x2raw=20000
+calls_16x16=20000
+rejection_audit=n/a (vl>=256)
+[sve-sa8d] rejection gate (vq=1 = VL=128)
+vl-bytes=32
+registered_single=1
+registered_x2=1
+registered_x2raw=1
+registered_16x16=1
+cases=200 mismatches=0
+x2_cases=200 mismatches=0
+x2raw_cases=200 mismatches=0
+16x16_cases=200 mismatches=0
+calls_single=200
+calls_x2=200
+calls_x2raw=200
+calls_16x16=200
+rejection_audit=n/a (vl>=256)
+[sve-sa8d] rejection gate (PR_SVE_SET_VL=128)
+vl-bytes=16
+registered_single=1
+registered_x2=0
+registered_x2raw=0
+registered_16x16=0
+cases=200 mismatches=0
+x2_cases=0 mismatches=0
+x2raw_cases=0 mismatches=0
+16x16_cases=0 mismatches=0
+calls_single=200
+calls_x2=0
+calls_x2raw=0
+calls_16x16=0
+rejection_audit=pass
+[sve-sa8d] guard-page (VL=256)
+guard_cases=8 fails=0

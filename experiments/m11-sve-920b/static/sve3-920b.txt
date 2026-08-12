@@ -1,0 +1,123 @@
+
+build/sve3.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 <dynopt_sa8d_8x8x2raw_neon_sve2>:
+   0:	8b010005 	add	x5, x0, x1
+   4:	8b030044 	add	x4, x2, x3
+   8:	8b0100a7 	add	x7, x5, x1
+   c:	8b030086 	add	x6, x4, x3
+  10:	8b0100e9 	add	x9, x7, x1
+  14:	8b0300c8 	add	x8, x6, x3
+  18:	8b01012b 	add	x11, x9, x1
+  1c:	8b03010a 	add	x10, x8, x3
+  20:	8b01016d 	add	x13, x11, x1
+  24:	8b03014c 	add	x12, x10, x3
+  28:	8b0101af 	add	x15, x13, x1
+  2c:	8b03018e 	add	x14, x12, x3
+  30:	52800210 	mov	w16, #0x10                  	// #16
+  34:	257007e0 	whilelt	p0.h, wzr, w16
+  38:	a42341c0 	ld1b	{z0.h}, p0/z, [x14, x3]
+  3c:	a4234183 	ld1b	{z3.h}, p0/z, [x12, x3]
+  40:	a4234105 	ld1b	{z5.h}, p0/z, [x8, x3]
+  44:	a42141e2 	ld1b	{z2.h}, p0/z, [x15, x1]
+  48:	04600442 	sub	z2.h, z2.h, z0.h
+  4c:	a4234144 	ld1b	{z4.h}, p0/z, [x10, x3]
+  50:	a42141a1 	ld1b	{z1.h}, p0/z, [x13, x1]
+  54:	04630421 	sub	z1.h, z1.h, z3.h
+  58:	04610043 	add	z3.h, z2.h, z1.h
+  5c:	04620421 	sub	z1.h, z1.h, z2.h
+  60:	a4214122 	ld1b	{z2.h}, p0/z, [x9, x1]
+  64:	04650442 	sub	z2.h, z2.h, z5.h
+  68:	a42340c5 	ld1b	{z5.h}, p0/z, [x6, x3]
+  6c:	a4214160 	ld1b	{z0.h}, p0/z, [x11, x1]
+  70:	04640400 	sub	z0.h, z0.h, z4.h
+  74:	a42140e4 	ld1b	{z4.h}, p0/z, [x7, x1]
+  78:	04650484 	sub	z4.h, z4.h, z5.h
+  7c:	a4234085 	ld1b	{z5.h}, p0/z, [x4, x3]
+  80:	04620010 	add	z16.h, z0.h, z2.h
+  84:	04700067 	add	z7.h, z3.h, z16.h
+  88:	04630610 	sub	z16.h, z16.h, z3.h
+  8c:	a42140a3 	ld1b	{z3.h}, p0/z, [x5, x1]
+  90:	04650463 	sub	z3.h, z3.h, z5.h
+  94:	a420a045 	ld1b	{z5.h}, p0/z, [x2]
+  98:	04630091 	add	z17.h, z4.h, z3.h
+  9c:	04600442 	sub	z2.h, z2.h, z0.h
+  a0:	04640463 	sub	z3.h, z3.h, z4.h
+  a4:	a420a000 	ld1b	{z0.h}, p0/z, [x0]
+  a8:	a4214004 	ld1b	{z4.h}, p0/z, [x0, x1]
+  ac:	04650400 	sub	z0.h, z0.h, z5.h
+  b0:	a4234045 	ld1b	{z5.h}, p0/z, [x2, x3]
+  b4:	04650484 	sub	z4.h, z4.h, z5.h
+  b8:	04620026 	add	z6.h, z1.h, z2.h
+  bc:	04610442 	sub	z2.h, z2.h, z1.h
+  c0:	04600081 	add	z1.h, z4.h, z0.h
+  c4:	04640400 	sub	z0.h, z0.h, z4.h
+  c8:	04610225 	add	z5.h, z17.h, z1.h
+  cc:	04710421 	sub	z1.h, z1.h, z17.h
+  d0:	046500f1 	add	z17.h, z7.h, z5.h
+  d4:	046704a5 	sub	z5.h, z5.h, z7.h
+  d8:	04600067 	add	z7.h, z3.h, z0.h
+  dc:	046700c4 	add	z4.h, z6.h, z7.h
+  e0:	04630400 	sub	z0.h, z0.h, z3.h
+  e4:	05647223 	trn1	z3.h, z17.h, z4.h
+  e8:	05647631 	trn2	z17.h, z17.h, z4.h
+  ec:	04610204 	add	z4.h, z16.h, z1.h
+  f0:	04700421 	sub	z1.h, z1.h, z16.h
+  f4:	04600050 	add	z16.h, z2.h, z0.h
+  f8:	046604e7 	sub	z7.h, z7.h, z6.h
+  fc:	04630226 	add	z6.h, z17.h, z3.h
+ 100:	04710463 	sub	z3.h, z3.h, z17.h
+ 104:	05707091 	trn1	z17.h, z4.h, z16.h
+ 108:	05707484 	trn2	z4.h, z4.h, z16.h
+ 10c:	04710090 	add	z16.h, z4.h, z17.h
+ 110:	04620400 	sub	z0.h, z0.h, z2.h
+ 114:	04640631 	sub	z17.h, z17.h, z4.h
+ 118:	056770a2 	trn1	z2.h, z5.h, z7.h
+ 11c:	05b070c4 	trn1	z4.s, z6.s, z16.s
+ 120:	056774a5 	trn2	z5.h, z5.h, z7.h
+ 124:	05b074c6 	trn2	z6.s, z6.s, z16.s
+ 128:	05607030 	trn1	z16.h, z1.h, z0.h
+ 12c:	05607420 	trn2	z0.h, z1.h, z0.h
+ 130:	046400c7 	add	z7.h, z6.h, z4.h
+ 134:	04700012 	add	z18.h, z0.h, z16.h
+ 138:	044c00c4 	sabd	z4.h, p0/m, z4.h, z6.h
+ 13c:	05b17061 	trn1	z1.s, z3.s, z17.s
+ 140:	04600610 	sub	z16.h, z16.h, z0.h
+ 144:	046200a6 	add	z6.h, z5.h, z2.h
+ 148:	05b17460 	trn2	z0.s, z3.s, z17.s
+ 14c:	04650442 	sub	z2.h, z2.h, z5.h
+ 150:	05b270c5 	trn1	z5.s, z6.s, z18.s
+ 154:	05b274c6 	trn2	z6.s, z6.s, z18.s
+ 158:	046500c3 	add	z3.h, z6.h, z5.h
+ 15c:	0456a063 	abs	z3.h, p0/m, z3.h
+ 160:	044c00a6 	sabd	z6.h, p0/m, z6.h, z5.h
+ 164:	0456a0e7 	abs	z7.h, p0/m, z7.h
+ 168:	04610005 	add	z5.h, z0.h, z1.h
+ 16c:	05e370f1 	trn1	z17.d, z7.d, z3.d
+ 170:	044c0001 	sabd	z1.h, p0/m, z1.h, z0.h
+ 174:	05e374e7 	trn2	z7.d, z7.d, z3.d
+ 178:	05b07440 	trn2	z0.s, z2.s, z16.s
+ 17c:	05b07043 	trn1	z3.s, z2.s, z16.s
+ 180:	04630002 	add	z2.h, z0.h, z3.h
+ 184:	0456a042 	abs	z2.h, p0/m, z2.h
+ 188:	044c0003 	sabd	z3.h, p0/m, z3.h, z0.h
+ 18c:	0456a0a5 	abs	z5.h, p0/m, z5.h
+ 190:	044900f1 	umax	z17.h, p0/m, z17.h, z7.h
+ 194:	05e270a0 	trn1	z0.d, z5.d, z2.d
+ 198:	05e67087 	trn1	z7.d, z4.d, z6.d
+ 19c:	05e274a5 	trn2	z5.d, z5.d, z2.d
+ 1a0:	05e67484 	trn2	z4.d, z4.d, z6.d
+ 1a4:	05e37022 	trn1	z2.d, z1.d, z3.d
+ 1a8:	044900e4 	umax	z4.h, p0/m, z4.h, z7.h
+ 1ac:	044900a0 	umax	z0.h, p0/m, z0.h, z5.h
+ 1b0:	05e37421 	trn2	z1.d, z1.d, z3.d
+ 1b4:	04710000 	add	z0.h, z0.h, z17.h
+ 1b8:	04490041 	umax	z1.h, p0/m, z1.h, z2.h
+ 1bc:	04640000 	add	z0.h, z0.h, z4.h
+ 1c0:	04610000 	add	z0.h, z0.h, z1.h
+ 1c4:	04412000 	uaddv	d0, p0, z0.h
+ 1c8:	9e660000 	fmov	x0, d0
+ 1cc:	d65f03c0 	ret

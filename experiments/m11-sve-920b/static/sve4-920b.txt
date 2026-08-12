@@ -1,0 +1,32 @@
+
+build/sve4.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 <dynopt_sa8d_16x16_neon_sve2>:
+   0:	a9bc7bfd 	stp	x29, x30, [sp, #-64]!
+   4:	910003fd 	mov	x29, sp
+   8:	a90153f3 	stp	x19, x20, [sp, #16]
+   c:	aa0103f4 	mov	x20, x1
+  10:	a9025bf5 	stp	x21, x22, [sp, #32]
+  14:	aa0303f5 	mov	x21, x3
+  18:	aa0003f6 	mov	x22, x0
+  1c:	f9001bf7 	str	x23, [sp, #48]
+  20:	aa0203f7 	mov	x23, x2
+  24:	94000000 	bl	0 <dynopt_sa8d_8x8x2raw_neon_sve2>
+  28:	2a0003f3 	mov	w19, w0
+  2c:	8b150ee2 	add	x2, x23, x21, lsl #3
+  30:	aa1503e3 	mov	x3, x21
+  34:	8b140ec0 	add	x0, x22, x20, lsl #3
+  38:	aa1403e1 	mov	x1, x20
+  3c:	94000000 	bl	0 <dynopt_sa8d_8x8x2raw_neon_sve2>
+  40:	93407c00 	sxtw	x0, w0
+  44:	8b33c000 	add	x0, x0, w19, sxtw
+  48:	91000400 	add	x0, x0, #0x1
+  4c:	a94153f3 	ldp	x19, x20, [sp, #16]
+  50:	d3418000 	ubfx	x0, x0, #1, #32
+  54:	a9425bf5 	ldp	x21, x22, [sp, #32]
+  58:	f9401bf7 	ldr	x23, [sp, #48]
+  5c:	a8c47bfd 	ldp	x29, x30, [sp], #64
+  60:	d65f03c0 	ret

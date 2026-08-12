@@ -1,6 +1,6 @@
 schema_version: 1
 run_id: m11-sve-920b
-state: in-progress
+state: closed-negative
 captured_at: 2026-08-13T00:00:00+08:00
 host_id: kunpeng-920b-cloud
 host_connect: chiro@124.70.206.229
@@ -21,11 +21,18 @@ candidates:
   - dynopt_sa8d_8x8x2raw_neon_sve2
   - dynopt_sa8d_16x16_neon_sve2
 gates:
-  - isa_level_sve1
-  - native_differential_vl256
-  - dispatch_reject_vl128
-  - guard_page
-  - asan_ubsan
-  - paired_pmu_8x8_keep_1.10
-  - paired_pmu_16x16_keep_1.10
+  - {name: isa_level_sve1, result: pass, detail: "4/4 PASS (official catalog + TBL2 operand rule)"}
+  - {name: native_differential_vl256, result: pass, detail: "1M cases x 4 candidates, 0 mismatch, svcntb=32"}
+  - {name: dispatch_reject_vl128, result: pass, detail: "registered=0 calls=0 rejection_audit=pass"}
+  - {name: guard_page, result: pass, detail: "8/8"}
+  - {name: asan_ubsan, result: pass, detail: "exit 0, no sanitizer reports"}
+  - {name: cand_eq_neon_same_binary, result: pass, detail: "20k per shape (8x8/16x16), 0 mismatch"}
+  - {name: paired_cycles_8x8, result: reject, detail: "cntvct latency 0.897 / tp 0.932 (<1.10)"}
+  - {name: paired_cycles_16x16, result: reject, detail: "cntvct latency 0.886 / tp 0.681 (<1.10)"}
 baseline: upstream-neon (no upstream SVE1 sa8d at pinned x265 commit)
+notes: >-
+  No hardware PMU in the KVM guest (even for root); paired cycles fall back to
+  CNTVCT_EL0 ticks. 920B SVE 2x256 == NEON 4x128 bit/cycle capacity, so the
+  instruction-count halving does not translate into cycles; N+2 (SVE 4x256)
+  remains the throughput acceptance machine. 16x16 dynamic instructions:
+  NEON 481 -> SVE 257 (-47%).
