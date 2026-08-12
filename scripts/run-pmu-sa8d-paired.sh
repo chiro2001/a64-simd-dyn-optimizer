@@ -30,9 +30,18 @@ RAW="$OUT/paired-pmu-raw.csv"
 
 run_perf() {
   local impl="$1"
-  perf stat -x, -e cycles:u,instructions:u \
+  local tmp
+  tmp="$(mktemp)"
+  if ! perf stat -x, -e cycles:u,instructions:u \
     taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" latency 1 "$BATCH" --noverify \
-    2>&1 | awk -F, '$1=="cycles:u"{c=$2} $1=="instructions:u"{i=$2} END{printf "%.0f,%.0f", c, i}'
+      >/dev/null 2>"$tmp"; then
+    cat "$tmp" >&2
+    rm -f "$tmp"
+    echo ","
+    return 0
+  fi
+  awk -F, '$3=="cycles:u"{c=$4} $3=="instructions:u"{i=$4} END{printf "%.0f,%.0f", c, i}' "$tmp"
+  rm -f "$tmp"
 }
 
 for p in $(seq 1 "$PROCS"); do

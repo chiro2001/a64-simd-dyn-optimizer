@@ -12,6 +12,8 @@ PY="${PYTHON:-python3}"
 CXX="${CXX:-g++}"
 OBJDUMP="${OBJDUMP:-objdump}"
 SVE_MARCH="${SVE_MARCH:-armv8-a+sve2}"
+CXXFLAGS="${CXXFLAGS:--O2 -DNDEBUG}"
+NATIVE="${NATIVE:-0}"
 mkdir -p "$ROOT/generated/sa8d" "$ROOT/build"
 GEN1="$ROOT/generated/sa8d/sve_roundtrip_sa8d_8x8.cpp"
 GEN2="$ROOT/generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp"
@@ -30,13 +32,23 @@ PYTHONPATH="$PWD" "$PY" kernels/sa8d/gen_roundtrip.py \
   experiments/m2-seed/imported/machine-ir.json "$GEN4" --backend sve2 \
   --pack x2 --raw --shape 16x16
 
-"$CXX" -O2 -DNDEBUG -std=c++11 -Wall -Wextra -march="$SVE_MARCH" \
+"$CXX" $CXXFLAGS -std=c++11 -Wall -Wextra -march="$SVE_MARCH" \
   kernels/sa8d/sve_verify.cpp "$GEN1" "$GEN2" "$GEN3" "$GEN4" \
   -o build/sve_verify
 
-"$CXX" -O2 -DNDEBUG -std=c++11 -Wall -Wextra -march="$SVE_MARCH" \
+"$CXX" $CXXFLAGS -std=c++11 -Wall -Wextra -march="$SVE_MARCH" \
   kernels/sa8d/sve_guard.cpp "$GEN3" "$GEN4" \
   -o build/sve_guard
+
+run_vq() {
+  local vq="$1"
+  shift
+  if [ "$NATIVE" = "1" ]; then
+    "$@"
+  else
+    qemu-aarch64 -cpu "max,sve-max-vq=$vq" "$@"
+  fi
+}
 
 echo "[sve-sa8d] static instruction counts (single / x2 / x2raw / 16x16)"
 "$CXX" -O2 -DNDEBUG -march="$SVE_MARCH" -c "$GEN1" -o build/sve1.o
@@ -66,13 +78,13 @@ echo "[sve-sa8d] identity"
 sha256sum build/sve1.o build/sve2.o build/sve3.o build/sve4.o \
   build/sve_verify build/sve_guard
 
-echo "[sve-sa8d] running under qemu (sve-max-vq=4 = VL=512)"
-qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 20000
-echo "[sve-sa8d] running under qemu (sve-max-vq=2 = VL=256)"
-qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 20000
-echo "[sve-sa8d] rejection gate under qemu (sve-max-vq=1 = VL=128)"
-qemu-aarch64 -cpu max,sve-max-vq=1 build/sve_verify 200
-echo "[sve-sa8d] rejection gate under qemu (PR_SVE_SET_VL=128, vq=4)"
-qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify --vl-bytes=16 200
-echo "[sve-sa8d] guard-page under qemu (VL=256)"
-qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_guard
+echo "[sve-sa8d] running (vq=4 = VL=512)"
+run_vq 4 build/sve_verify 20000
+echo "[sve-sa8d] running (vq=2 = VL=256)"
+run_vq 2 build/sve_verify 20000
+echo "[sve-sa8d] rejection gate (vq=1 = VL=128)"
+run_vq 1 build/sve_verify 200
+echo "[sve-sa8d] rejection gate (PR_SVE_SET_VL=128)"
+run_vq 4 build/sve_verify --vl-bytes=16 200
+echo "[sve-sa8d] guard-page (VL=256)"
+run_vq 2 build/sve_guard
