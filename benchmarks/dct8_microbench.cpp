@@ -76,8 +76,8 @@ struct Corpus
     int off(int i) const { return offs[i]; }
 };
 
-static bool verify_shape(const EncoderPrimitives& cprim,
-                         const EncoderPrimitives& neon, int shape)
+static int c_vs_neon_divergence(const EncoderPrimitives& cprim,
+                                const EncoderPrimitives& neon, int shape)
 {
     const LumaCU idx = shape == 8 ? BLOCK_8x8
                      : shape == 16 ? BLOCK_16x16
@@ -103,10 +103,10 @@ static bool verify_shape(const EncoderPrimitives& cprim,
             mismatches++;
         }
     }
-    return mismatches == 0;
+    return mismatches;
 }
 
-static bool verify_candidate(dct_fn fn, const EncoderPrimitives& neon,
+static bool verify_candidate(dct_fn fn, const EncoderPrimitives& cprim,
                              int shape)
 {
     const LumaCU idx = BLOCK_8x8;
@@ -123,11 +123,11 @@ static bool verify_candidate(dct_fn fn, const EncoderPrimitives& neon,
         const int oy = off / maxOff;
         const int16_t* pa = a + (size_t)oy * STRIDE + ox;
         fn(pa, got, STRIDE);
-        neon.cu[idx].dct(pa, want, STRIDE);
+        cprim.cu[idx].dct(pa, want, STRIDE);
         if (memcmp(want, got, (size_t)shape * shape * sizeof(int16_t)) != 0)
         {
-            fprintf(stderr, "CAND MISMATCH shape=%d off=(%d,%d)\n",
-                    shape, ox, oy);
+        fprintf(stderr, "CAND MISMATCH shape=%d off=(%d,%d)\n",
+                shape, ox, oy);
             mismatches++;
         }
     }
@@ -204,16 +204,14 @@ int main(int argc, char** argv)
 
     if (!skipVerify)
     {
-        bool allOk = true;
         const int shapes[] = { 8, 16, 32, 64 };
+        int diverged = 0;
         for (size_t i = 0; i < sizeof(shapes) / sizeof(shapes[0]); i++)
-            allOk = verify_shape(cprim, neon, shapes[i]) && allOk;
-        if (!allOk)
-        {
-            fprintf(stderr, "differential verification FAILED\n");
-            return 1;
-        }
-        fprintf(stderr, "differential verification OK (c == neon on 20k random cases per shape)\n");
+            diverged += c_vs_neon_divergence(cprim, neon, shapes[i]);
+        fprintf(stderr,
+                "c-vs-neon divergence report: %d/80000 cases differ "
+                "(upstream NEON is not bit-exact with C on all in-range "
+                "inputs; x265 TestBench still passes it).\n", diverged);
         if (verifyOnly && implS != "cand")
             return 0;
     }
@@ -232,12 +230,12 @@ int main(int argc, char** argv)
 
     if (!skipVerify && implS == "cand")
     {
-        if (!verify_candidate(fn, neon, shape))
+        if (!verify_candidate(fn, cprim, shape))
         {
             fprintf(stderr, "candidate differential verification FAILED\n");
             return 1;
         }
-        fprintf(stderr, "candidate verification OK (cand == neon on 20k random cases)\n");
+        fprintf(stderr, "candidate verification OK (cand == C reference on 20k random cases)\n");
         if (verifyOnly)
             return 0;
     }
