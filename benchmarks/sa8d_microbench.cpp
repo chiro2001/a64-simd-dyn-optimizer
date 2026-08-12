@@ -130,6 +130,39 @@ static bool verify_shape(const EncoderPrimitives& cprim,
     return mismatches == 0;
 }
 
+static bool verify_candidate(sa8d_fn fn, const EncoderPrimitives& neon,
+                             int shape)
+{
+    const LumaCU idx = shape == 8 ? BLOCK_8x8 : BLOCK_16x16;
+    const int maxOff = BUFSZ - shape;
+    std::mt19937 rng(0xD7A0B + shape);
+    int mismatches = 0;
+    for (int t = 0; t < 20000 && mismatches < 5; t++)
+    {
+        pixel a[64 * 64], b[64 * 64];
+        for (int i = 0; i < BUFSZ * BUFSZ; i++)
+        {
+            a[i] = (pixel)(rng() & 0xFF);
+            b[i] = (pixel)(rng() & 0xFF);
+        }
+        const int off = (int)(rng() % (maxOff * maxOff + 1));
+        const int ox = off % maxOff;
+        const int oy = off / maxOff;
+        const pixel* pa = a + (size_t)oy * STRIDE + ox;
+        const pixel* pb = b + (size_t)oy * STRIDE + ox;
+        const int rc = fn(pa, STRIDE, pb, STRIDE);
+        const int rn = neon.cu[idx].sa8d(pa, STRIDE, pb, STRIDE);
+        if (rc != rn)
+        {
+            fprintf(stderr,
+                    "CAND MISMATCH shape=%d off=(%d,%d) cand=%d neon=%d\n",
+                    shape, ox, oy, rc, rn);
+            mismatches++;
+        }
+    }
+    return mismatches == 0;
+}
+
 static int64_t run_batch(sa8d_fn fn, const Corpus& corpus, int batch,
                          bool latency, uint64_t* ticksOut)
 {
@@ -234,6 +267,19 @@ int main(int argc, char** argv)
     }
     else { fprintf(stderr, "bad impl\n"); return 2; }
     if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
+
+    if (!skipVerify && (implS == "rt" || implS == "cand"))
+    {
+        if (!verify_candidate(fn, neon, shape))
+        {
+            fprintf(stderr, "candidate differential verification FAILED\n");
+            return 1;
+        }
+        fprintf(stderr,
+                "candidate verification OK (cand == neon on 20k random cases)\n");
+        if (verifyOnly)
+            return 0;
+    }
 
     const bool latency = modeS == "latency";
     if (modeS != "latency" && modeS != "throughput")
