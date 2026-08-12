@@ -117,6 +117,8 @@ def import_llvm_ir_text(ir_text, function=None):
            or line.startswith("module") or line.startswith("define") \
            or line.endswith(":") or line == "}":
             continue
+        if "llvm.lifetime.start" in line or "llvm.lifetime.end" in line:
+            continue    # stack lifetime annotations, no runtime semantics
         if line.startswith("@") and "=" in line:
             continue    # global constant/alias declaration
         m = _INSN_RE.match(line)
@@ -137,6 +139,18 @@ def import_llvm_ir_text(ir_text, function=None):
                 continue
             raise ValueError("unhandled IR line: %r" % line)
         dst, rhs = m.group(1), m.group(2)
+        if rhs.startswith("alloca"):
+            am = re.match(
+                r"alloca\s+\[(\d+)\s+x\s+(<\d+ x i\d+>|i\d+)\],\s*align\s+\d+",
+                rhs)
+            if am:
+                # fixed-size vector array on the stack (e.g. DCT16's O[16]):
+                # later constant-indexed getelementptr/load/store reference
+                # its elements through the recorded allocation.
+                ir.add({"op": "alloca", "type": am.group(2),
+                        "count": int(am.group(1)), "dst": dst})
+                continue
+            raise ValueError("unsupported alloca: %r" % rhs)
         if rhs.startswith("load"):
             t = rhs.split("load", 1)[1].split(",")[0].strip()
             ptr = re.search(r"ptr %([A-Za-z0-9._]+)", rhs)

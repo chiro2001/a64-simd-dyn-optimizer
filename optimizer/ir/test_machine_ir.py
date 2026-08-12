@@ -85,6 +85,20 @@ class TestDct8Import(unittest.TestCase):
         self.assertEqual(sh["type"], "<8 x i32>")
         self.assertEqual(sh["mask"], [0, 1, 2, 3, 4, 5, 6, 7])
 
+    def test_imports_alloca_and_lifetime(self):
+        ir = import_llvm_ir_text("""
+  %10 = alloca [16 x <8 x i16>], align 16
+  call void @llvm.lifetime.start.p0(ptr nonnull %10)
+  %11 = alloca [256 x i16], align 32
+  call void @llvm.lifetime.end.p0(ptr nonnull %11)
+""")
+        allocs = [n for n in ir.nodes if n["op"] == "alloca"]
+        self.assertEqual(len(allocs), 2)
+        self.assertEqual(allocs[0]["type"], "<8 x i16>")
+        self.assertEqual(allocs[0]["count"], 16)
+        self.assertEqual(allocs[1]["type"], "i16")
+        self.assertEqual(allocs[1]["count"], 256)
+
 
 if __name__ == "__main__":
     unittest.main()
