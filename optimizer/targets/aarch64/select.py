@@ -39,6 +39,9 @@ def match(db, pattern, features):
     for insn in db:
         if not features.allows(insn["feature"]):
             continue
+        requires = insn.get("requires", {})
+        if any(not features.allows(name) for name in requires):
+            continue
         if not _pattern_compatible(insn["pattern"], pattern):
             continue
         out.append(insn)

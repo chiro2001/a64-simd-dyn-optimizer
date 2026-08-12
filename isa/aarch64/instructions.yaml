@@ -5,87 +5,133 @@
 
 instructions:
   # ---- NEON (ASIMD, 128-bit) ----
-  - {id: neon-add-s16x8, feature: neon, intrinsic: vaddq_s16,
+  - {id: neon-add-s16x8, feature: neon, asm: ADD, intrinsic: vaddq_s16,
      pattern: {op: add, lanes: 8, bits: 16}, status: known}
-  - {id: neon-sub-s16x8, feature: neon, intrinsic: vsubq_s16,
+  - {id: neon-sub-s16x8, feature: neon, asm: SUB, intrinsic: vsubq_s16,
      pattern: {op: sub, lanes: 8, bits: 16}, status: known}
-  - {id: neon-abs-s16x8, feature: neon, intrinsic: vabsq_s16,
+  - {id: neon-abs-s16x8, feature: neon, asm: ABS, intrinsic: vabsq_s16,
      pattern: {op: abs, lanes: 8, bits: 16}, status: known}
-  - {id: neon-sabd-s16x8, feature: neon, intrinsic: vabdq_s16,
+  - {id: neon-sabd-s16x8, feature: neon, asm: SABD, intrinsic: vabdq_s16,
      pattern: {op: sabd, lanes: 8, bits: 16}, status: known}
-  - {id: neon-umax-u16x8, feature: neon, intrinsic: vmaxq_u16,
+  - {id: neon-umax-u16x8, feature: neon, asm: UMAX, intrinsic: vmaxq_u16,
      pattern: {op: umax, lanes: 8, bits: 16}, status: known}
-  - {id: neon-umaxp-u16x8, feature: neon, intrinsic: vpmaxq_u16,
+  - {id: neon-umaxp-u16x8, feature: neon, asm: UMAXP, intrinsic: vpmaxq_u16,
      pattern: {op: umaxp, lanes: 8, bits: 16}, status: known}
-  - {id: neon-trn1-2d-s16x8, feature: neon, intrinsic: vtrn1q_s64,
+  - {id: neon-trn1-2d-s16x8, feature: neon, asm: TRN1, intrinsic: vtrn1q_s64,
      pattern: {op: fold-lo, lanes: 8, bits: 16}, status: known}
-  - {id: neon-trn2-2d-s16x8, feature: neon, intrinsic: vtrn2q_s64,
+  - {id: neon-trn2-2d-s16x8, feature: neon, asm: TRN2, intrinsic: vtrn2q_s64,
      pattern: {op: fold-hi, lanes: 8, bits: 16}, status: known}
-  - {id: neon-trn1-s16x8, feature: neon, intrinsic: vtrn1q_s16,
+  - {id: neon-trn1-s16x8, feature: neon, asm: TRN1, intrinsic: vtrn1q_s16,
      pattern: {op: trn1, lanes: 8, bits: 16}, status: known}
-  - {id: neon-trn2-s16x8, feature: neon, intrinsic: vtrn2q_s16,
+  - {id: neon-trn2-s16x8, feature: neon, asm: TRN2, intrinsic: vtrn2q_s16,
      pattern: {op: trn2, lanes: 8, bits: 16}, status: known}
-  - {id: neon-trn1-s32x4, feature: neon, intrinsic: vtrn1q_s32,
+  - {id: neon-trn1-s32x4, feature: neon, asm: TRN1, intrinsic: vtrn1q_s32,
      pattern: {op: trn1, lanes: 4, bits: 32}, status: known}
-  - {id: neon-trn2-s32x4, feature: neon, intrinsic: vtrn2q_s32,
+  - {id: neon-trn2-s32x4, feature: neon, asm: TRN2, intrinsic: vtrn2q_s32,
      pattern: {op: trn2, lanes: 4, bits: 32}, status: known}
-  - {id: neon-vext-s16x8, feature: neon, intrinsic: vextq_s16,
+  - {id: neon-vext-s16x8, feature: neon, asm: EXT, intrinsic: vextq_s16,
      pattern: {op: ext, lanes: 8, bits: 16}, status: known}
-  - {id: neon-zip1-s16x8, feature: neon, intrinsic: vzip1q_s16,
+  - {id: neon-zip1-s16x8, feature: neon, asm: ZIP1, intrinsic: vzip1q_s16,
      pattern: {op: zip1, lanes: 8, bits: 16}, status: known}
-  - {id: neon-zip2-s16x8, feature: neon, intrinsic: vzip2q_s16,
+  - {id: neon-zip2-s16x8, feature: neon, asm: ZIP2, intrinsic: vzip2q_s16,
      pattern: {op: zip2, lanes: 8, bits: 16}, status: known}
-  - {id: neon-uzp1-s16x8, feature: neon, intrinsic: vuzp1q_s16,
+  - {id: neon-uzp1-s16x8, feature: neon, asm: UZP1, intrinsic: vuzp1q_s16,
      pattern: {op: uzp1, lanes: 8, bits: 16}, status: known}
-  - {id: neon-uzp2-s16x8, feature: neon, intrinsic: vuzp2q_s16,
+  - {id: neon-uzp2-s16x8, feature: neon, asm: UZP2, intrinsic: vuzp2q_s16,
      pattern: {op: uzp2, lanes: 8, bits: 16}, status: known}
-  - {id: neon-uaddlv-u16x8, feature: neon, intrinsic: vaddlvq_u16,
+  - {id: neon-uaddlv-u16x8, feature: neon, asm: UADDLV, intrinsic: vaddlvq_u16,
      pattern: {op: uaddlv, lanes: 8, bits: 16}, status: known}
-  - {id: neon-usubl-u8x8, feature: neon, intrinsic: vsubl_u8,
+  - {id: neon-usubl-u8x8, feature: neon, asm: USUBL, intrinsic: vsubl_u8,
      pattern: {op: usubl, lanes: 8, bits: 8}, status: known}
-  - {id: neon-ld1-u8x8, feature: neon, intrinsic: vld1_u8,
+  - {id: neon-ld1-u8x8, feature: neon, asm: LD1, intrinsic: vld1_u8,
      pattern: {op: load, lanes: 8, bits: 8}, status: known}
-  - {id: neon-ld1q-u8x16, feature: neon, intrinsic: vld1q_u8,
+  - {id: neon-ld1q-u8x16, feature: neon, asm: LD1, intrinsic: vld1q_u8,
      pattern: {op: load, lanes: 16, bits: 8}, status: known}
-  - {id: neon-add-scalar-u32, feature: neon, intrinsic: null,
+  - {id: neon-add-scalar-u32, feature: neon, asm: ADD, intrinsic: null,
      pattern: {op: add, lanes: 1, bits: 32}, status: known}
-  - {id: neon-lshr-scalar-u32, feature: neon, intrinsic: null,
+  - {id: neon-lshr-scalar-u32, feature: neon, asm: LSR, intrinsic: null,
      pattern: {op: lshr, lanes: 1, bits: 32}, status: known}
 
+  # ---- NEON DotProd / I8MM ----
+  - {id: neon-sdot-s32x2, feature: dotprod, asm: SDOT, intrinsic: vdot_s32,
+     pattern: {op: sdot, lanes: 2, bits: 32}, status: verify}
+  - {id: neon-sdotq-s32x4, feature: dotprod, asm: SDOT, intrinsic: vdotq_s32,
+     pattern: {op: sdot, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-udot-u32x2, feature: dotprod, asm: UDOT, intrinsic: vdot_u32,
+     pattern: {op: udot, lanes: 2, bits: 32}, status: verify}
+  - {id: neon-udotq-u32x4, feature: dotprod, asm: UDOT, intrinsic: vdotq_u32,
+     pattern: {op: udot, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-smmla-s32x4, feature: i8mm, asm: SMMLA, intrinsic: vmmlaq_s32,
+     pattern: {op: smmla, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-ummla-u32x4, feature: i8mm, asm: UMMLA, intrinsic: vmmlaq_u32,
+     pattern: {op: ummla, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-usmmla-s32x4, feature: i8mm, asm: USMMLA,
+     intrinsic: vusmmlaq_s32,
+     pattern: {op: usmmla, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-sudot-s32x2, feature: i8mm, asm: SUDOT, intrinsic: vsudot_s32,
+     pattern: {op: sudot, lanes: 2, bits: 32}, status: verify}
+  - {id: neon-sudotq-s32x4, feature: i8mm, asm: SUDOT,
+     intrinsic: vsudotq_s32,
+     pattern: {op: sudot, lanes: 4, bits: 32}, status: verify}
+  - {id: neon-usdot-s32x2, feature: i8mm, asm: USDOT, intrinsic: vusdot_s32,
+     pattern: {op: usdot, lanes: 2, bits: 32}, status: verify}
+  - {id: neon-usdotq-s32x4, feature: i8mm, asm: USDOT,
+     intrinsic: vusdotq_s32,
+     pattern: {op: usdot, lanes: 4, bits: 32}, status: verify}
+
   # ---- SVE (scalable, predicated) ----
-  - {id: sve-add-u16, feature: sve, intrinsic: svadd_u16_x,
+  - {id: sve-add-u16, feature: sve, asm: ADD, intrinsic: svadd_u16_x,
      pattern: {op: add, pred: true}, status: known}
-  - {id: sve-sub-u16, feature: sve, intrinsic: svsub_u16_x,
+  - {id: sve-sub-u16, feature: sve, asm: SUB, intrinsic: svsub_u16_x,
      pattern: {op: sub, pred: true}, status: known}
-  - {id: sve-abs-s16, feature: sve, intrinsic: svabs_s16_x,
+  - {id: sve-abs-s16, feature: sve, asm: ABS, intrinsic: svabs_s16_x,
      pattern: {op: abs, pred: true}, status: known}
-  - {id: sve-sabd-s16, feature: sve, intrinsic: svabd_s16_x,
+  - {id: sve-sabd-s16, feature: sve, asm: SABD, intrinsic: svabd_s16_x,
      pattern: {op: sabd, pred: true}, status: known}
-  - {id: sve-umax-u16, feature: sve, intrinsic: svmax_u16_x,
+  - {id: sve-umax-u16, feature: sve, asm: UMAX, intrinsic: svmax_u16_x,
      pattern: {op: umax, pred: true}, status: known}
-  - {id: sve-umaxp-u16, feature: sve, intrinsic: svmaxp_u16,
+  - {id: sve-umaxp-u16, feature: sve, asm: UMAXP, intrinsic: svmaxp_u16,
      pattern: {op: umaxp, pred: true}, status: verify}
-  - {id: sve-zip1-u16, feature: sve, intrinsic: svzip1_u16,
+  - {id: sve-zip1-u16, feature: sve, asm: ZIP1, intrinsic: svzip1_u16,
      pattern: {op: zip1, pred: false}, status: known}
-  - {id: sve-zip2-u16, feature: sve, intrinsic: svzip2_u16,
+  - {id: sve-zip2-u16, feature: sve, asm: ZIP2, intrinsic: svzip2_u16,
      pattern: {op: zip2, pred: false}, status: known}
-  - {id: sve-tbl-u16, feature: sve, intrinsic: svtbl_u16,
+  - {id: sve-tbl-u16, feature: sve, asm: TBL, intrinsic: svtbl_u16,
      pattern: {op: tbl, pred: false}, status: known}
-  - {id: sve-uaddv-u16, feature: sve, intrinsic: svuaddv_u16,
+  - {id: sve-uaddv-u16, feature: sve, asm: UADDV, intrinsic: svuaddv_u16,
      pattern: {op: uaddv, pred: true}, status: known}
-  - {id: sve-ld1ub, feature: sve, intrinsic: svld1ub_u32,
+  - {id: sve-ld1ub, feature: sve, asm: LD1B, intrinsic: svld1ub_u32,
      pattern: {op: load, pred: true}, status: known}
-  - {id: sve-whilelt, feature: sve, intrinsic: svwhilelt_b32,
+  - {id: sve-whilelt, feature: sve, asm: WHILELT, intrinsic: svwhilelt_b32,
      pattern: {op: whilelt, pred: true}, status: known}
+  - {id: sve-sdot-s32, feature: sve, asm: SDOT, intrinsic: svdot_s32,
+     pattern: {op: sdot, pred: false}, status: verify}
+  - {id: sve-udot-u32, feature: sve, asm: UDOT, intrinsic: svdot_u32,
+     pattern: {op: udot, pred: false}, status: verify}
+  - {id: sve-smmla-s32, feature: sve, asm: SMMLA, intrinsic: svmmla_s32,
+     requires: {i8mm: true}, pattern: {op: smmla, pred: false},
+     status: verify}
+  - {id: sve-ummla-u32, feature: sve, asm: UMMLA, intrinsic: svmmla_u32,
+     requires: {i8mm: true}, pattern: {op: ummla, pred: false},
+     status: verify}
+  - {id: sve-usmmla-s32, feature: sve, asm: USMMLA, intrinsic: svusmmla_s32,
+     requires: {i8mm: true}, pattern: {op: usmmla, pred: false},
+     status: verify}
+  - {id: sve-usdot-s32, feature: sve, asm: USDOT, intrinsic: svusdot_s32,
+     requires: {i8mm: true}, pattern: {op: usdot, pred: false},
+     status: verify}
+  - {id: sve-sudot-s32, feature: sve, asm: SUDOT, intrinsic: svsudot_s32,
+     requires: {i8mm: true}, pattern: {op: sudot, pred: false},
+     status: verify}
 
   # ---- SVE2 ----
-  - {id: sve2-tbl2-u16, feature: sve2, intrinsic: svtbl2_u16,
+  - {id: sve2-tbl2-u16, feature: sve2, asm: TBL, intrinsic: svtbl2_u16,
      pattern: {op: tbl2, pred: false}, status: verify}
-  - {id: sve2-umaxp-u16, feature: sve2, intrinsic: svmaxp_u16,
+  - {id: sve2-umaxp-u16, feature: sve2, asm: UMAXP, intrinsic: svmaxp_u16,
      pattern: {op: umaxp, pred: true}, status: verify}
-  - {id: sve2-histcnt-u32, feature: sve2, intrinsic: svhistcnt_u32,
+  - {id: sve2-histcnt-u32, feature: sve2, asm: HISTCNT, intrinsic: svhistcnt_u32,
      pattern: {op: histcnt, pred: true}, status: verify}
 
   # ---- SVE2p3 (placeholder; confirm ACLE names on toolchain) ----
-  - {id: sve2p3-placeholder, feature: sve2p3, intrinsic: null,
+  - {id: sve2p3-placeholder, feature: sve2p3, asm: null, intrinsic: null,
      pattern: {op: placeholder}, status: verify}

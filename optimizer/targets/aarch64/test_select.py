@@ -37,6 +37,19 @@ def main():
                                     "sve2p3")
                 and t_neon.allows(i["feature"])]
     print("sve_leak_under_neon:", sve_leak)
+
+    # Combined-feature gate: sve+i8mm instructions need both features.
+    t_sve_only = TargetFeatures(neon=True, sve=True)
+    t_sve_i8mm = TargetFeatures(neon=True, dotprod=True, i8mm=True, sve=True)
+    t_bad_i8mm = TargetFeatures(neon=True, i8mm=True, sve=True)
+    mm_pat = {"op": "smmla", "pred": False}
+    mm_sve = [i["id"] for i in match(db, mm_pat, t_sve_only)]
+    mm_i8mm = [i["id"] for i in match(db, mm_pat, t_sve_i8mm)]
+    mm_bad = [i["id"] for i in match(db, mm_pat, t_bad_i8mm)]
+    print("smmla sve-only:", mm_sve, "| sve+i8mm:", mm_i8mm,
+          "| bad-dep:", mm_bad)
+    if mm_sve or "sve-smmla-s32" not in mm_i8mm or mm_bad:
+        return 1
     return 1 if sve_leak else 0
 
 
