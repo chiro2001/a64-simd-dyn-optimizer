@@ -64,3 +64,18 @@ importer 已知 gap（下一轮按序扩展）：
 1. 扩展 importer（上述 gap）+ roundtrip → C-exact 候选；
 2. 结构：i8mm 变体已用 16 宽 vusdotq，参照做 8x8/16x16 全宽 dot 候选，
    目标对上游 NEON +30%。
+
+## 7. proto_dot 候选（8x8 与 16x16）
+
+`kernels/interp8/candidates/proto_dot.cpp`（8x8）与 `proto_dot16.cpp`
+（16x16）：C-exact dotprod 候选（uint8→int8 变换 + dotprod_permute_tbl +
+`vdotq_lane_s32` + 64·128 校正 + `vqrshrun_n_s16`），4 行批量全展开。
+
+| 形状 | 静态 | paired latency vs 上游 NEON（N1 / 920B） |
+| --- | ---: | ---: |
+| 8x8 | 76（16 sdot+12 tbl+4 sqrshrun） | 1.014× / 1.024× |
+| 16x16 | 128（32 sdot） | 1.024× / 1.044× |
+
+结论：水平 PP 在双机上均接近 exact-C 合同下限（1.02–1.04×，离 1.30 远）；
+大形状摊薄收益有限。+30% 的下一候选应是**垂直 vpp / 二维 hvpp**（更多
+数据复用）或 residual→subpel 融合。
