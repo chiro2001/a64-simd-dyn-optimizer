@@ -7,6 +7,7 @@ deliverables: [tools/search_driver.py]
 gates:
   - {name: end_to_end_loop, result: pass, detail: "IR->rewrite->codegen->compile->disasm->cost->rank"}
   - {name: family_scoped_ranking, result: pass, detail: "baseline<widen consistent with M14"}
+  - {name: rewrite_composition_cexact, result: pass, detail: "widen+shift64 C-exact 20k, 0 mismatch"}
 notes: >-
   Search is family-scoped per m19 (cross-family ranking gated). The rewrite
   catalog ({widen,nop}) is the growth area; encode M15/M16 structure choices

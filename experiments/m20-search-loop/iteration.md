@@ -28,7 +28,10 @@ nop），`emit_dct8_c_intrinsics` 出码，aarch64-g++ 编译，objdump →
 
 ## 3. 下一增量
 
-- rewrite 目录扩充是核心增长点：把 M15/M16 的结构选择编码为 IR rewrite
+- ✅ rewrite 目录已加 `mul64_to_shift`（×64 常量乘 → shl 6），组合枚举
+  {baseline, widen, shift64, widen+shift64}；widen+shift64 候选 C-exact
+  （20k 0 mismatch）——搜索循环已能做出并验证真实的指令选择；
+- 继续：把 M15/M16 的结构选择编码为 IR rewrite
   （奇数行 tree↔mla、全宽加载、转置/常量复用），让搜索空间真正展开；
 - 每个新 rewrite 先过 range/cost 分析再进目录；
 - 920B 家族内可信任排序，N1 需先补拟合点。

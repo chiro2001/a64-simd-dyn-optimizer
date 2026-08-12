@@ -181,8 +181,13 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
      吞吐/端口项 + 更多实测点（`experiments/m19-cost-validation/`）。
    - **m20 搜索主循环 v0（本轮完成）**：`tools/search_driver.py` 家族限定
      搜索驱动（rewrite→codegen→编译→反汇编→成本→排序，920B 家族内可信）。
-     当前 rewrite 目录={widen,nop}；核心增长点=把 M15/M16 结构选择（树↔
+     rewrite 目录={widen, shift64, nop}，组合枚举，widen+shift64 候选
+     C-exact（20k 0 mismatch）；核心增长点=把 M15/M16 结构选择（树↔
      mla、全宽加载、转置/常量复用）编码为 IR rewrite 展开搜索空间。
+   - **hvpp 入口（未实现）**：`filter_hvpp_t(src, stride, dst, stride,
+     idxX, idxY)`，C=`ipfilter.cpp:363 interp_hv_pp_c`（hps+1 垂直 sp），
+     上游=`filter-prim.cpp:2014/4756 interp8_hv_pp_neon`；是剩余唯一有
+     结构性复用空间的方向，但函数类型不同，需先扩微基准 harness。
 6. **P3''/M18 起：interp8_hpp（tier-a 新目标）**：DCT→quant 融合经分析
    收益小（中间缓冲必须保留给 RDO、quant 参数矩阵大、bit-exact 风险
    不对称，见 `experiments/m17-fusion-feasibility/`）。转向
