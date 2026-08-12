@@ -17,12 +17,12 @@
 3. [SA8D 端到端纵向切片](03-sa8d-end-to-end.md)：第一条 kernel 从提取到实机 benchmark 的逐步执行方案。
 4. [正确性与性能评测规范](04-validation-benchmark.md)：任何性能结论必须通过的门禁。
 5. [里程碑与重点算子路线](05-roadmap.md)：从环境基线到 SA8D、DCT、`interp8_hpp` 和性能目标的依赖图。
-6. [Agent 单轮迭代协议](06-agent-iteration-protocol.md)：未来执行 Agent 的工作闭环、产物格式与专家建议归档。
+6. [Agent 单轮迭代协议](06-agent-iteration-protocol.md)：未来执行 Agent 的工作闭环、产物格式与专家建议归档（每三个实际优化迭代请求一次，只读后台异步执行）。
 7. [环境与上游审计快照](07-environment-audit.md)：2026-08-12 实测事实、缺口和复现要求。
 8. [风险、决策门和停止条件](08-risks-and-decisions.md)：最容易让项目失控的技术风险与应对策略。
 9. [指令融合分析需求](09-instruction-fusion-analysis.md)：三档性能目标、SIMD 指令数估算模型与融合分析需求。
 
-本初始规划完成后直接进入执行，不安排规划审核轮次。`expert-advice/round-NNNN/` 只保留给后续已经完成验证和 benchmark 的实际优化迭代，并且每个 iteration 最多请求一次建议。
+本初始规划完成后直接进入执行，不安排规划审核轮次。`expert-advice/round-NNNN/` 只保留给后续已经完成验证和 benchmark 的实际优化迭代；咨询频率为**每完成三个实际优化迭代请求一次**，请求以只读模式在后台执行，主流程不阻塞等待，响应落盘后在下一次自然检查点写 `decision.md`。
 
 ## 一页执行摘要
 
@@ -85,7 +85,7 @@ ISA 语义库 + 目标代价模型 ───────────────
 ```text
 .
 ├── docs/                         # 架构、路线、实验规范
-├── expert-advice/                # 每次实际优化迭代后的一次性建议，按 round 独立归档
+├── expert-advice/                # 每三个实际优化迭代后的一次性建议，按 round 独立归档（只读后台异步）
 ├── optimizer/
 │   ├── frontend/                 # DSL、Clang/LLVM IR、受限 AArch64 importer
 │   ├── ir/                       # SpecIR、PackIR、MachineIR
