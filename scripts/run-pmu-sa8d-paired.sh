@@ -43,7 +43,7 @@ run_perf() {
   tmp="$(mktemp)"
   if [ "$METRIC" = "cntvct" ]; then
     taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" latency 1 "$BATCH" --noverify \
-      2>/dev/null | tail -n 1 | awk -F, '{printf "%.0f,", $7}'
+      2>/dev/null | tail -n 1 | awk -F, '{printf "%.0f", $7}'
     return 0
   fi
   if ! perf stat -x, -e cycles:u,instructions:u \
@@ -78,7 +78,7 @@ min_valid, keep_lo, batch = int(min_valid), float(keep_lo), int(batch)
 valid = []
 with open(raw) as f:
     for r in csv.reader(f):
-        if len(r) != 5 or not r[3] or not r[4]:
+        if len(r) < 5 or not r[3] or not r[4]:
             continue
         a = [float(x) for x in r[3].split(",") if x.strip()]
         b = [float(x) for x in r[4].split(",") if x.strip()]
