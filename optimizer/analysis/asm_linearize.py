@@ -61,6 +61,25 @@ def _scale(form, values):
              for k, v in form[i].items()} for i in range(len(form))]
 
 
+def _as_s16(form):
+    """Convert a coarse-granularity form to 8 x s16 sub-lanes.
+
+    Each 32-bit lane spans two s16 sub-lanes carrying the same terms, and a
+    64-bit lane spans four. This makes the register-view mixes in the DCT16
+    dynamic flow (.2d zip/uzp consumed as .8h) trackable.
+    """
+    if not form:
+        return [{} for _ in range(8)]
+    n = len(form)
+    if n == 8:
+        return form
+    if n == 4:
+        return [form[i // 2] for i in range(8)]
+    if n == 2:
+        return [form[i // 4] for i in range(8)]
+    return form
+
+
 def _const_of(nid, consts):
     return consts.get(nid) if nid in consts else None
 
@@ -128,6 +147,17 @@ def lane_forms_asm(nodes):
         if mn in ("zip1", "zip2", "uzp1", "uzp2", "trn1", "trn2"):
             a = form_of(n["read_ids"][0])
             b = form_of(n["read_ids"][1]) if len(n["read_ids"]) > 1 else None
+            arr = re.search(r"\.(\d+[shd])", n["ops"])
+            if arr and arr.group(1) == "2d" and a is not None \
+                    and b is not None:
+                # The .2d zip/uzp over 4-lane s32 values is a 4-lane s32
+                # permute (the 64-bit lanes are s32 pairs):
+                #   zip1/uzp1: [a0,a1,b0,b1], zip2/uzp2: [a2,a3,b2,b3].
+                if mn in ("zip1", "uzp1", "trn1"):
+                    forms[nid] = [a[0], a[1], b[0], b[1]]
+                else:
+                    forms[nid] = [a[2], a[3], b[2], b[3]]
+                continue
             lanes = _arr(n) or 4
             if a is not None and b is not None and len(a) == len(b) == lanes:
                 half = lanes // 2
@@ -143,6 +173,26 @@ def lane_forms_asm(nodes):
         if mn in ("add", "sub"):
             a = form_of(n["read_ids"][0])
             b = form_of(n["read_ids"][1]) if len(n["read_ids"]) > 1 else None
+            # An .8h/.16b op may consume a 4-lane s32 form: the register
+            # view splits each s32 lane into (low, high=0) s16 lanes (the
+            # DCT16 E/EE values fit s16, so the high halves are zero).
+            arr = re.search(r"\.(\d+[shb])", n["ops"])
+            wide = arr and arr.group(1) in ("8h", "16b")
+            if wide:
+                def to8(f):
+                    if f is None:
+                        return None
+                    if len(f) == 8:
+                        return f
+                    if len(f) == 4:
+                        out = []
+                        for lane in f:
+                            out.append(lane)
+                            out.append({})
+                        return out
+                    return f
+                a = to8(a)
+                b = to8(b)
             if a is not None and b is not None and len(a) == len(b):
                 sign = -1.0 if mn == "sub" else 1.0
                 forms[nid] = [_add(x, y, sign) for x, y in zip(a, b)]
