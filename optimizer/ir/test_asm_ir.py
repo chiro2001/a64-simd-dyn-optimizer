@@ -16,7 +16,7 @@ class TestAsmIR(unittest.TestCase):
         nodes, vec, _ = import_asm_trace(lines)
         tbl = vec[1]
         self.assertEqual(tbl["read_regs"], ["v23", "v26"])
-        self.assertEqual(len(tbl["reads"]), 1)
+        self.assertEqual(len(tbl["reads"]), 1)   # only the index resolves
         self.assertEqual(nodes[tbl["reads"][0]]["mn"], "ldr")
 
     def test_dynamic_counts_metric(self):

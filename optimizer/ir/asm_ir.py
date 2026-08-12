@@ -41,13 +41,13 @@ def import_asm_trace(lines, start=None, end=None):
     parse_qemu_trace). Returns (nodes, vector_nodes) where each node is
     {id, addr, mn, ops, dst, reads}; reads are defining node ids.
     """
-    nodes = []
-    last_writer = {}
-    for raw in lines:
-        if isinstance(raw, dict):
-            addr, mn, ops = raw["addr"], raw["mn"], raw["ops"]
+    nodes0 = []
+    writer = {}   # register -> (node_id, register_index), per point
+    for item in lines:
+        if isinstance(item, dict):
+            addr, mn, ops = item["addr"], item["mn"], item["ops"]
         else:
-            parts = raw.strip().split(None, 2)
+            parts = item.strip().split(None, 2)
             if len(parts) < 2:
                 continue
             addr = int(parts[0], 16) if parts[0].startswith("0x") \
@@ -82,20 +82,67 @@ def import_asm_trace(lines, start=None, end=None):
                 # read-modify-write accumulator: the destination register's
                 # previous value is an implicit first read.
                 reads = [dst[0]] + reads
-        node = {"id": len(nodes), "addr": addr, "mn": mn, "ops": ops,
+        node = {"id": len(nodes0), "addr": addr, "mn": mn, "ops": ops,
                 "dst": dst, "reads": [], "read_regs": reads,
                 "read_ids": [], "prev": {}}
         for r in reads:
-            node["read_ids"].append(last_writer.get(r))
-            if r in last_writer:
-                node["reads"].append(last_writer[r])
-        for d in dst:
-            node["prev"][d] = last_writer.get(d)
-            last_writer[d] = node["id"]
+            w = writer.get(r)
+            node["read_ids"].append(w)
+            if w is not None:
+                node["reads"].append(w)
+        for i, d in enumerate(dst):
+            node["prev"][d] = writer.get(d)
+            writer[d] = (node["id"], i)
         node["is_vector"] = any(r.startswith("v") and r[1:].isdigit()
                                 for r in dst + reads)
-        nodes.append(node)
+        nodes0.append(node)
+
+    # split ldp into two single-register loads so each register is its own
+    # 8-lane leaf (the pair loads two rows: row i and its mirror row)
+    split = {}
+    nodes = []
+    for n in nodes0:
+        if n["mn"] == "ldp" and len(n["dst"]) == 2:
+            first = dict(n)
+            second = dict(n)
+            first["dst"] = n["dst"][:1]
+            first["ops"] = re.sub(r",\s*%s[^,\[]*" % re.escape(n["dst"][1]),
+                                  "", n["ops"], count=1)
+            second["dst"] = n["dst"][1:]
+            second["id"] = len(nodes0) + len(split)
+            second["ops"] = n["ops"]
+            split[(n["id"], 0)] = first["id"]
+            split[(n["id"], 1)] = second["id"]
+            nodes.append(first)
+            nodes.append(second)
+        else:
+            nodes.append(n)
+    # remap tuple read references created for ldp pairs
+    for n in nodes:
+        for i, ref in enumerate(n["read_ids"]):
+            if isinstance(ref, tuple):
+                n["read_ids"][i] = split.get(ref, ref[0])
+        n["reads"] = [split.get(r, r[0]) if isinstance(r, tuple) else r
+                      for r in n["reads"]]
+        for k, v in n["prev"].items():
+            if isinstance(v, tuple):
+                n["prev"][k] = split.get(v, v[0])
     vector = [n for n in nodes if n["is_vector"]]
+    last_writer = {}
+    for n in nodes:
+        for d in n["dst"]:
+            last_writer[d] = n["id"]
+    # renumber sequentially so node ids remain list indices
+    renum = {n["id"]: i for i, n in enumerate(nodes)}
+    for n in nodes:
+        n["id"] = renum[n["id"]]
+        n["read_ids"] = [renum.get(r, r) if isinstance(r, int) else r
+                         for r in n["read_ids"]]
+        n["reads"] = [renum.get(r, r) if isinstance(r, int) else r
+                      for r in n["reads"]]
+        n["prev"] = {k: renum.get(v, v) if isinstance(v, int) else v
+                     for k, v in n["prev"].items()}
+    last_writer = {r: renum[v] for r, v in last_writer.items()}
     return nodes, vector, last_writer
 
 

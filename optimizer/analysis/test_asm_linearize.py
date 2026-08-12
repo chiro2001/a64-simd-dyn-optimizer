@@ -57,8 +57,9 @@ class TestAsmLinearize(unittest.TestCase):
         nodes = [{"id": 7, "mn": "rshrn", "ops": "v7.4h, v6.4s, #3"}]
         hits = shared_constant_matrix_outputs(nodes, forms)
         self.assertEqual(len(hits), 1)
-        self.assertEqual(hits[0]["const"], C)
-        self.assertEqual(hits[0]["leaf_ids"], sorted(leaves))
+        self.assertEqual(hits[0]["consts"], [C])
+        self.assertEqual(sorted(l for lane in hits[0]["leaves"]
+                                for l, _ in lane), sorted(leaves))
 
 
 if __name__ == "__main__":

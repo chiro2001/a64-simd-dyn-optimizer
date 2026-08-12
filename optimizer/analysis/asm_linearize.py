@@ -247,7 +247,9 @@ def shared_constant_matrix_outputs(nodes, forms):
     is the shape the internal DCT16/DCT32 kernels optimize by pre-permuting
     C and deleting the runtime data permutes.
 
-    Returns [{node_id, const, leaf_ids}] for every matching narrow output.
+    Returns [{node_id, mn, consts, leaves}] where `consts` is the ordered
+    list of shared coefficient vectors and `leaves` is the per-output-lane
+    list of (leaf_id, const_index) pairs.
     """
     out = []
     for n in nodes:
@@ -256,30 +258,41 @@ def shared_constant_matrix_outputs(nodes, forms):
         f = forms.get(n["id"])
         if not f or len(f) != 4:
             continue
-        # coefficients per output lane: {leaf: [coeff by leaf lane]}
+        # per-lane: {leaf_id: [(lane, coeff)]} -> coefficient vector
         pats = []
-        ok = True
         for lane in f:
             by_leaf = defaultdict(list)
             for (leaf, j), coeff in lane.items():
                 by_leaf[leaf].append((j, coeff))
-            if len(by_leaf) != 1:
-                ok = False
-                break
-            leaf, terms = next(iter(by_leaf.items()))
-            terms.sort()
-            pats.append((leaf, [c for _, c in terms],
-                          [j for j, _ in terms]))
-        if not ok:
+            vecs = []
+            for leaf, terms in by_leaf.items():
+                terms.sort()
+                vecs.append((leaf, [c for _, c in terms],
+                             [j for j, _ in terms]))
+            pats.append(vecs)
+        # shared coefficient-vector signature set (order-insensitive)
+        sigs = [tuple(sorted(tuple(v) for _, v, _ in vec)) for vec in pats]
+        if len(set(sigs)) != 1:
             continue
-        leaves = {p[0] for p in pats}
-        consts = {tuple(p[1]) for p in pats}
-        lanes = {tuple(p[2]) for p in pats}
-        if len(consts) == 1 and len(lanes) == 1 \
-                and len(leaves) == len(pats):
-            out.append({"node_id": n["id"], "mn": n["mn"],
-                        "const": list(next(iter(consts))),
-                        "leaf_ids": sorted(leaves)})
+        # every lane must use the same lane-index pattern per vector
+        lane_pats = [tuple(sorted(tuple(l) for _, _, l in vec))
+                     for vec in pats]
+        if len(set(lane_pats)) != 1:
+            continue
+        # map each lane's leaves onto the shared signature
+        shared = pats[0]
+        const_vectors = [list(v) for _, v, _ in shared]
+        leaves = []
+        for vec in pats:
+            lane_leaves = []
+            for leaf, vec_c, lane_c in vec:
+                for k, (s_leaf, s_vec, s_lane) in enumerate(shared):
+                    if s_vec == vec_c and s_lane == lane_c:
+                        lane_leaves.append((leaf, k))
+                        break
+            leaves.append(lane_leaves)
+        out.append({"node_id": n["id"], "mn": n["mn"],
+                    "consts": const_vectors, "leaves": leaves})
     return out
 
 
