@@ -1,0 +1,20 @@
+schema_version: 1
+run_id: m21-dct8-upstream-contract
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+upstream: third_party/x265 @ b81f650
+question: do untouched upstream dct4/8/16/32_neon pass x265 internal contract
+harness:
+  source: kernels/dct8/upstream_contract.cpp
+  build: scripts/build-upstream-contract.sh
+  semantics: replicate MBDstHarness::check_dct_primitive
+gates:
+  - {name: contract_128_seed7_all_sizes, result: pass, hosts: [qemu, n1, 920b]}
+  - {name: contract_200k_seed12345_all_sizes, result: pass, hosts: [qemu, n1, 920b]}
+  - {name: contract_200_seed_sweep, result: pass, detail: "0/200 failing runs", hosts: [qemu]}
+uniform_diagnostic_200k:
+  dct4_mismatches: 0
+  dct8_mismatches: 1821
+  dct16_mismatches: 7
+  dct32_mismatches: 0
