@@ -1,0 +1,40 @@
+schema_version: 1
+run_id: m0-foundation
+state: foundation-only
+captured_at: 2026-08-12T18:20:00+08:00
+host_id: n1-neon128
+host_connect: chiro@129.146.162.16
+project_commit: e65c745c97e4df9c3079d904615740bbe64b1929
+x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
+x265_management: submodule
+target:
+  arch: aarch64
+  cpu: neoverse-n1
+  features: [neon, dotprod]
+  i8mm: false
+  sve: false
+  sve2: false
+  sve_vl_bits: null
+compiler:
+  id: gcc
+  version: 13.3.0
+build:
+  bit_depth: 8
+  build_type: Release
+  tests: true
+  dir: build/x265-8-gcc
+  binary_sha256_file: experiments/m0-foundation/benchmark/binary-sha256.txt
+benchmark:
+  protocol_version: 2
+  metric: latency_ns_per_call
+  batch_calls: 4096
+  samples_per_process: 30
+  process_runs: 5
+  noise_cv_threshold: 0.10
+  min_valid_processes: 3
+  pin_cpu: 0
+  raw: experiments/m0-foundation/benchmark/all-raw.csv
+  summary: experiments/m0-foundation/benchmark/summary.csv
+  pmu: experiments/m0-foundation/benchmark/pmu/net-per-call.csv
+  disassembly: experiments/m0-foundation/disassembly/
+expert_advice: none

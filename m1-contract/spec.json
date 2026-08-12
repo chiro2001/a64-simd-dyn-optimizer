@@ -1,0 +1,121 @@
+{
+  "interpreter": "kernels/sa8d/spec.py",
+  "sa8d": [
+    {
+      "bit_depth": 8,
+      "interpreter": "python:x265_c_stages",
+      "kernel": "sa8d",
+      "memory_contract": {
+        "a": {
+          "min_stride": 8,
+          "region": "pixel_a",
+          "stride": "intptr"
+        },
+        "b": {
+          "min_stride": 8,
+          "region": "pixel_b",
+          "stride": "intptr"
+        },
+        "over_read": false
+      },
+      "schema_version": "1.0",
+      "semantics": {
+        "abs_sum": "sum(abs(T))",
+        "d": "signed(A) - signed(B), lane s16",
+        "rounding": "sa8d8x8=(R8+2)>>2; 16x16 rounds once after four raw R8; 32x32 sums rounded 8x8; 64x64 sums rounded 16x16",
+        "t": "W8 @ D @ W8^T with x265 HADAMARD4 stage order"
+      },
+      "shape": {
+        "height": 8,
+        "width": 8
+      }
+    },
+    {
+      "bit_depth": 8,
+      "interpreter": "python:x265_c_stages",
+      "kernel": "sa8d",
+      "memory_contract": {
+        "a": {
+          "min_stride": 16,
+          "region": "pixel_a",
+          "stride": "intptr"
+        },
+        "b": {
+          "min_stride": 16,
+          "region": "pixel_b",
+          "stride": "intptr"
+        },
+        "over_read": false
+      },
+      "schema_version": "1.0",
+      "semantics": {
+        "abs_sum": "sum(abs(T))",
+        "d": "signed(A) - signed(B), lane s16",
+        "rounding": "sa8d8x8=(R8+2)>>2; 16x16 rounds once after four raw R8; 32x32 sums rounded 8x8; 64x64 sums rounded 16x16",
+        "t": "W8 @ D @ W8^T with x265 HADAMARD4 stage order"
+      },
+      "shape": {
+        "height": 16,
+        "width": 16
+      }
+    },
+    {
+      "bit_depth": 8,
+      "interpreter": "python:x265_c_stages",
+      "kernel": "sa8d",
+      "memory_contract": {
+        "a": {
+          "min_stride": 32,
+          "region": "pixel_a",
+          "stride": "intptr"
+        },
+        "b": {
+          "min_stride": 32,
+          "region": "pixel_b",
+          "stride": "intptr"
+        },
+        "over_read": false
+      },
+      "schema_version": "1.0",
+      "semantics": {
+        "abs_sum": "sum(abs(T))",
+        "d": "signed(A) - signed(B), lane s16",
+        "rounding": "sa8d8x8=(R8+2)>>2; 16x16 rounds once after four raw R8; 32x32 sums rounded 8x8; 64x64 sums rounded 16x16",
+        "t": "W8 @ D @ W8^T with x265 HADAMARD4 stage order"
+      },
+      "shape": {
+        "height": 32,
+        "width": 32
+      }
+    },
+    {
+      "bit_depth": 8,
+      "interpreter": "python:x265_c_stages",
+      "kernel": "sa8d",
+      "memory_contract": {
+        "a": {
+          "min_stride": 64,
+          "region": "pixel_a",
+          "stride": "intptr"
+        },
+        "b": {
+          "min_stride": 64,
+          "region": "pixel_b",
+          "stride": "intptr"
+        },
+        "over_read": false
+      },
+      "schema_version": "1.0",
+      "semantics": {
+        "abs_sum": "sum(abs(T))",
+        "d": "signed(A) - signed(B), lane s16",
+        "rounding": "sa8d8x8=(R8+2)>>2; 16x16 rounds once after four raw R8; 32x32 sums rounded 8x8; 64x64 sums rounded 16x16",
+        "t": "W8 @ D @ W8^T with x265 HADAMARD4 stage order"
+      },
+      "shape": {
+        "height": 64,
+        "width": 64
+      }
+    }
+  ]
+}

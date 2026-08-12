@@ -1,0 +1,3 @@
+shape,calls,net_cycles,net_instructions,cycles_per_call,instructions_per_call
+8x8,2048000,164628365,237425457,80.4,115.9
+16x16,2048000,563115507,999024919,275.0,487.8

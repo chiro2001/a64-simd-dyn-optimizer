@@ -1,0 +1,1592 @@
+{
+  "function": null,
+  "nodes": [
+    {
+      "amt": 2,
+      "dst": "mul3.i.i",
+      "id": 0,
+      "op": "shl",
+      "src": [
+        "i_pix1"
+      ],
+      "type": "i64"
+    },
+    {
+      "amt": 2,
+      "dst": "mul5.i.i",
+      "id": 1,
+      "op": "shl",
+      "src": [
+        "i_pix2"
+      ],
+      "type": "i64"
+    },
+    {
+      "dst": "0",
+      "id": 2,
+      "op": "load",
+      "ptr": "pix1",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.i.i.i.i",
+      "id": 3,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %pix1, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "1",
+      "id": 4,
+      "op": "load",
+      "ptr": "add.ptr.i.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.1.i.i.i.i",
+      "id": 5,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.i.i.i.i, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "2",
+      "id": 6,
+      "op": "load",
+      "ptr": "add.ptr.1.i.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.2.i.i.i.i",
+      "id": 7,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.1.i.i.i.i, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "3",
+      "id": 8,
+      "op": "load",
+      "ptr": "add.ptr.2.i.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "4",
+      "id": 9,
+      "op": "load",
+      "ptr": "pix2",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.i32.i.i.i",
+      "id": 10,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %pix2, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "5",
+      "id": 11,
+      "op": "load",
+      "ptr": "add.ptr.i32.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.1.i34.i.i.i",
+      "id": 12,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.i32.i.i.i, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "6",
+      "id": 13,
+      "op": "load",
+      "ptr": "add.ptr.1.i34.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.2.i36.i.i.i",
+      "id": 14,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.1.i34.i.i.i, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "7",
+      "id": 15,
+      "op": "load",
+      "ptr": "add.ptr.2.i36.i.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "vmovl.i2.i29.i.i.i",
+      "id": 16,
+      "op": "zext",
+      "src": "0",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i30.i.i.i",
+      "id": 17,
+      "op": "zext",
+      "src": "4",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i31.i.i.i",
+      "id": 18,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i29.i.i.i",
+        "vmovl.i.i30.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i26.i.i.i",
+      "id": 19,
+      "op": "zext",
+      "src": "1",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i27.i.i.i",
+      "id": 20,
+      "op": "zext",
+      "src": "5",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i28.i.i.i",
+      "id": 21,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i26.i.i.i",
+        "vmovl.i.i27.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i23.i.i.i",
+      "id": 22,
+      "op": "zext",
+      "src": "2",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i24.i.i.i",
+      "id": 23,
+      "op": "zext",
+      "src": "6",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i25.i.i.i",
+      "id": 24,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i23.i.i.i",
+        "vmovl.i.i24.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i.i.i.i",
+      "id": 25,
+      "op": "zext",
+      "src": "3",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i.i.i.i",
+      "id": 26,
+      "op": "zext",
+      "src": "7",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i.i",
+      "id": 27,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i.i.i.i",
+        "vmovl.i.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.ptr4.i.i",
+      "id": 28,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %pix1, i64 %mul3.i.i",
+      "type": "ptr"
+    },
+    {
+      "dst": "add.ptr6.i.i",
+      "id": 29,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %pix2, i64 %mul5.i.i",
+      "type": "ptr"
+    },
+    {
+      "dst": "8",
+      "id": 30,
+      "op": "load",
+      "ptr": "add.ptr4.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.i.i17.i.i",
+      "id": 31,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr4.i.i, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "9",
+      "id": 32,
+      "op": "load",
+      "ptr": "add.ptr.i.i17.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.1.i.i18.i.i",
+      "id": 33,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.i.i17.i.i, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "10",
+      "id": 34,
+      "op": "load",
+      "ptr": "add.ptr.1.i.i18.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.2.i.i19.i.i",
+      "id": 35,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.1.i.i18.i.i, i64 %i_pix1",
+      "type": "ptr"
+    },
+    {
+      "dst": "11",
+      "id": 36,
+      "op": "load",
+      "ptr": "add.ptr.2.i.i19.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "12",
+      "id": 37,
+      "op": "load",
+      "ptr": "add.ptr6.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.i32.i20.i.i",
+      "id": 38,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr6.i.i, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "13",
+      "id": 39,
+      "op": "load",
+      "ptr": "add.ptr.i32.i20.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.1.i34.i21.i.i",
+      "id": 40,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.i32.i20.i.i, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "14",
+      "id": 41,
+      "op": "load",
+      "ptr": "add.ptr.1.i34.i21.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "add.ptr.2.i36.i22.i.i",
+      "id": 42,
+      "op": "addr",
+      "rhs": "getelementptr inbounds i8, ptr %add.ptr.1.i34.i21.i.i, i64 %i_pix2",
+      "type": "ptr"
+    },
+    {
+      "dst": "15",
+      "id": 43,
+      "op": "load",
+      "ptr": "add.ptr.2.i36.i22.i.i",
+      "type": "<8 x i8>"
+    },
+    {
+      "dst": "vmovl.i2.i29.i23.i.i",
+      "id": 44,
+      "op": "zext",
+      "src": "8",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i30.i24.i.i",
+      "id": 45,
+      "op": "zext",
+      "src": "12",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i31.i25.i.i",
+      "id": 46,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i29.i23.i.i",
+        "vmovl.i.i30.i24.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i26.i26.i.i",
+      "id": 47,
+      "op": "zext",
+      "src": "9",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i27.i27.i.i",
+      "id": 48,
+      "op": "zext",
+      "src": "13",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i28.i28.i.i",
+      "id": 49,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i26.i26.i.i",
+        "vmovl.i.i27.i27.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i23.i30.i.i",
+      "id": 50,
+      "op": "zext",
+      "src": "10",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i24.i31.i.i",
+      "id": 51,
+      "op": "zext",
+      "src": "14",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i25.i32.i.i",
+      "id": 52,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i23.i30.i.i",
+        "vmovl.i.i24.i31.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i2.i.i34.i.i",
+      "id": 53,
+      "op": "zext",
+      "src": "11",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmovl.i.i.i35.i.i",
+      "id": 54,
+      "op": "zext",
+      "src": "15",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i36.i.i",
+      "id": 55,
+      "op": "sub",
+      "src": [
+        "vmovl.i2.i.i34.i.i",
+        "vmovl.i.i.i35.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i.i.i.i",
+      "id": 56,
+      "op": "add",
+      "src": [
+        "sub.i28.i.i.i",
+        "sub.i31.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i.i.i.i",
+      "id": 57,
+      "op": "sub",
+      "src": [
+        "sub.i31.i.i.i",
+        "sub.i28.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i14.i.i.i.i",
+      "id": 58,
+      "op": "add",
+      "src": [
+        "sub.i.i.i.i",
+        "sub.i25.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i15.i.i.i.i",
+      "id": 59,
+      "op": "sub",
+      "src": [
+        "sub.i25.i.i.i",
+        "sub.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i16.i.i.i.i",
+      "id": 60,
+      "op": "add",
+      "src": [
+        "add.i.i14.i.i.i.i",
+        "add.i.i.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i17.i.i.i.i",
+      "id": 61,
+      "op": "sub",
+      "src": [
+        "add.i.i.i.i.i.i",
+        "add.i.i14.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i18.i.i.i.i",
+      "id": 62,
+      "op": "add",
+      "src": [
+        "sub.i.i15.i.i.i.i",
+        "sub.i.i.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i19.i.i.i.i",
+      "id": 63,
+      "op": "sub",
+      "src": [
+        "sub.i.i.i.i.i.i",
+        "sub.i.i15.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i27.i.i.i",
+      "id": 64,
+      "op": "add",
+      "src": [
+        "sub.i28.i28.i.i",
+        "sub.i31.i25.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i28.i.i.i",
+      "id": 65,
+      "op": "sub",
+      "src": [
+        "sub.i31.i25.i.i",
+        "sub.i28.i28.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i14.i31.i.i.i",
+      "id": 66,
+      "op": "add",
+      "src": [
+        "sub.i.i36.i.i",
+        "sub.i25.i32.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i15.i32.i.i.i",
+      "id": 67,
+      "op": "sub",
+      "src": [
+        "sub.i25.i32.i.i",
+        "sub.i.i36.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i16.i34.i.i.i",
+      "id": 68,
+      "op": "add",
+      "src": [
+        "add.i.i14.i31.i.i.i",
+        "add.i.i.i27.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i17.i35.i.i.i",
+      "id": 69,
+      "op": "sub",
+      "src": [
+        "add.i.i.i27.i.i.i",
+        "add.i.i14.i31.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i18.i38.i.i.i",
+      "id": 70,
+      "op": "add",
+      "src": [
+        "sub.i.i15.i32.i.i.i",
+        "sub.i.i.i28.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i19.i39.i.i.i",
+      "id": 71,
+      "op": "sub",
+      "src": [
+        "sub.i.i.i28.i.i.i",
+        "sub.i.i15.i32.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i.i.i",
+      "id": 72,
+      "op": "add",
+      "src": [
+        "add.i.i16.i34.i.i.i",
+        "add.i.i16.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i.i.i",
+      "id": 73,
+      "op": "sub",
+      "src": [
+        "add.i.i16.i.i.i.i",
+        "add.i.i16.i34.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i40.i.i.i",
+      "id": 74,
+      "op": "add",
+      "src": [
+        "add.i.i18.i38.i.i.i",
+        "add.i.i18.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i41.i.i.i",
+      "id": 75,
+      "op": "sub",
+      "src": [
+        "add.i.i18.i.i.i.i",
+        "add.i.i18.i38.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i42.i.i.i",
+      "id": 76,
+      "op": "add",
+      "src": [
+        "sub.i.i17.i35.i.i.i",
+        "sub.i.i17.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i43.i.i.i",
+      "id": 77,
+      "op": "sub",
+      "src": [
+        "sub.i.i17.i.i.i.i",
+        "sub.i.i17.i35.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i44.i.i.i",
+      "id": 78,
+      "op": "add",
+      "src": [
+        "sub.i.i19.i39.i.i.i",
+        "sub.i.i19.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i45.i.i.i",
+      "id": 79,
+      "op": "sub",
+      "src": [
+        "sub.i.i19.i.i.i.i",
+        "sub.i.i19.i39.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i.i.i.i.i.i",
+      "id": 80,
+      "mask": [
+        0,
+        8,
+        2,
+        10,
+        4,
+        12,
+        6,
+        14
+      ],
+      "op": "shuffle",
+      "src": [
+        "add.i.i.i.i.i",
+        "add.i.i40.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i4.i.i.i.i.i",
+      "id": 81,
+      "mask": [
+        1,
+        9,
+        3,
+        11,
+        5,
+        13,
+        7,
+        15
+      ],
+      "op": "shuffle",
+      "src": [
+        "add.i.i.i.i.i",
+        "add.i.i40.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i.i14.i.i.i.i",
+      "id": 82,
+      "mask": [
+        0,
+        8,
+        2,
+        10,
+        4,
+        12,
+        6,
+        14
+      ],
+      "op": "shuffle",
+      "src": [
+        "add.i.i42.i.i.i",
+        "add.i.i44.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i4.i15.i.i.i.i",
+      "id": 83,
+      "mask": [
+        1,
+        9,
+        3,
+        11,
+        5,
+        13,
+        7,
+        15
+      ],
+      "op": "shuffle",
+      "src": [
+        "add.i.i42.i.i.i",
+        "add.i.i44.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i.i14.i.i",
+      "id": 84,
+      "op": "add",
+      "src": [
+        "shuffle.i4.i.i.i.i.i",
+        "shuffle.i.i.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i.i15.i.i",
+      "id": 85,
+      "op": "sub",
+      "src": [
+        "shuffle.i.i.i.i.i.i",
+        "shuffle.i4.i.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i16.i.i16.i.i",
+      "id": 86,
+      "op": "add",
+      "src": [
+        "shuffle.i4.i15.i.i.i.i",
+        "shuffle.i.i14.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i17.i.i17.i.i",
+      "id": 87,
+      "op": "sub",
+      "src": [
+        "shuffle.i.i14.i.i.i.i",
+        "shuffle.i4.i15.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "16",
+      "id": 88,
+      "op": "bitcast",
+      "src": "add.i.i.i.i14.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "17",
+      "id": 89,
+      "op": "bitcast",
+      "src": "add.i.i16.i.i16.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i.i18.i.i.i.i",
+      "id": 90,
+      "mask": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "op": "shuffle",
+      "src": [
+        "16",
+        "17"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i8.i.i.i.i.i",
+      "id": 91,
+      "mask": [
+        1,
+        5,
+        3,
+        7
+      ],
+      "op": "shuffle",
+      "src": [
+        "16",
+        "17"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "18",
+      "id": 92,
+      "op": "bitcast",
+      "src": "sub.i.i.i.i15.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "19",
+      "id": 93,
+      "op": "bitcast",
+      "src": "sub.i.i17.i.i17.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i.i19.i.i.i.i",
+      "id": 94,
+      "mask": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "op": "shuffle",
+      "src": [
+        "18",
+        "19"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i8.i20.i.i.i.i",
+      "id": 95,
+      "mask": [
+        1,
+        5,
+        3,
+        7
+      ],
+      "op": "shuffle",
+      "src": [
+        "18",
+        "19"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i.i.i49.i.i.i",
+      "id": 96,
+      "mask": [
+        0,
+        8,
+        2,
+        10,
+        4,
+        12,
+        6,
+        14
+      ],
+      "op": "shuffle",
+      "src": [
+        "sub.i.i.i.i.i",
+        "sub.i.i41.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i4.i.i50.i.i.i",
+      "id": 97,
+      "mask": [
+        1,
+        9,
+        3,
+        11,
+        5,
+        13,
+        7,
+        15
+      ],
+      "op": "shuffle",
+      "src": [
+        "sub.i.i.i.i.i",
+        "sub.i.i41.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i.i14.i53.i.i.i",
+      "id": 98,
+      "mask": [
+        0,
+        8,
+        2,
+        10,
+        4,
+        12,
+        6,
+        14
+      ],
+      "op": "shuffle",
+      "src": [
+        "sub.i.i43.i.i.i",
+        "sub.i.i45.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "shuffle.i4.i15.i54.i.i.i",
+      "id": 99,
+      "mask": [
+        1,
+        9,
+        3,
+        11,
+        5,
+        13,
+        7,
+        15
+      ],
+      "op": "shuffle",
+      "src": [
+        "sub.i.i43.i.i.i",
+        "sub.i.i45.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i55.i.i.i",
+      "id": 100,
+      "op": "add",
+      "src": [
+        "shuffle.i4.i.i50.i.i.i",
+        "shuffle.i.i.i49.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i.i56.i.i.i",
+      "id": 101,
+      "op": "sub",
+      "src": [
+        "shuffle.i.i.i49.i.i.i",
+        "shuffle.i4.i.i50.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i16.i57.i.i.i",
+      "id": 102,
+      "op": "add",
+      "src": [
+        "shuffle.i4.i15.i54.i.i.i",
+        "shuffle.i.i14.i53.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "sub.i.i17.i58.i.i.i",
+      "id": 103,
+      "op": "sub",
+      "src": [
+        "shuffle.i.i14.i53.i.i.i",
+        "shuffle.i4.i15.i54.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "20",
+      "id": 104,
+      "op": "bitcast",
+      "src": "add.i.i.i55.i.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "21",
+      "id": 105,
+      "op": "bitcast",
+      "src": "add.i.i16.i57.i.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i.i18.i60.i.i.i",
+      "id": 106,
+      "mask": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "op": "shuffle",
+      "src": [
+        "20",
+        "21"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i8.i.i61.i.i.i",
+      "id": 107,
+      "mask": [
+        1,
+        5,
+        3,
+        7
+      ],
+      "op": "shuffle",
+      "src": [
+        "20",
+        "21"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "22",
+      "id": 108,
+      "op": "bitcast",
+      "src": "sub.i.i.i56.i.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "23",
+      "id": 109,
+      "op": "bitcast",
+      "src": "sub.i.i17.i58.i.i.i",
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i.i19.i64.i.i.i",
+      "id": 110,
+      "mask": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "op": "shuffle",
+      "src": [
+        "22",
+        "23"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "shuffle.i8.i20.i65.i.i.i",
+      "id": 111,
+      "mask": [
+        1,
+        5,
+        3,
+        7
+      ],
+      "op": "shuffle",
+      "src": [
+        "22",
+        "23"
+      ],
+      "type": "<4 x i32>"
+    },
+    {
+      "dst": "24",
+      "id": 112,
+      "op": "bitcast",
+      "src": "shuffle.i.i18.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "25",
+      "id": 113,
+      "op": "bitcast",
+      "src": "shuffle.i8.i.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i.i19.i.i",
+      "id": 114,
+      "op": "add",
+      "src": [
+        "25",
+        "24"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vabs1.i.i.i.i.i",
+      "id": 115,
+      "intrinsic": "abs",
+      "op": "intrinsic",
+      "src": [
+        "add.i.i.i19.i.i"
+      ]
+    },
+    {
+      "dst": "vabd2.i.i.i.i.i",
+      "id": 116,
+      "intrinsic": "sabd",
+      "op": "intrinsic",
+      "src": [
+        "24",
+        "25"
+      ]
+    },
+    {
+      "dst": "26",
+      "id": 117,
+      "op": "bitcast",
+      "src": "shuffle.i.i19.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "27",
+      "id": 118,
+      "op": "bitcast",
+      "src": "shuffle.i8.i20.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i66.i.i.i",
+      "id": 119,
+      "op": "add",
+      "src": [
+        "27",
+        "26"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vabs1.i.i67.i.i.i",
+      "id": 120,
+      "intrinsic": "abs",
+      "op": "intrinsic",
+      "src": [
+        "add.i.i66.i.i.i"
+      ]
+    },
+    {
+      "dst": "vabd2.i.i68.i.i.i",
+      "id": 121,
+      "intrinsic": "sabd",
+      "op": "intrinsic",
+      "src": [
+        "26",
+        "27"
+      ]
+    },
+    {
+      "dst": "28",
+      "id": 122,
+      "op": "bitcast",
+      "src": "shuffle.i.i18.i60.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "29",
+      "id": 123,
+      "op": "bitcast",
+      "src": "shuffle.i8.i.i61.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i69.i.i.i",
+      "id": 124,
+      "op": "add",
+      "src": [
+        "29",
+        "28"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vabs1.i.i70.i.i.i",
+      "id": 125,
+      "intrinsic": "abs",
+      "op": "intrinsic",
+      "src": [
+        "add.i.i69.i.i.i"
+      ]
+    },
+    {
+      "dst": "vabd2.i.i71.i.i.i",
+      "id": 126,
+      "intrinsic": "sabd",
+      "op": "intrinsic",
+      "src": [
+        "28",
+        "29"
+      ]
+    },
+    {
+      "dst": "30",
+      "id": 127,
+      "op": "bitcast",
+      "src": "shuffle.i.i19.i64.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "31",
+      "id": 128,
+      "op": "bitcast",
+      "src": "shuffle.i8.i20.i65.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i72.i.i.i",
+      "id": 129,
+      "op": "add",
+      "src": [
+        "31",
+        "30"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vabs1.i.i73.i.i.i",
+      "id": 130,
+      "intrinsic": "abs",
+      "op": "intrinsic",
+      "src": [
+        "add.i.i72.i.i.i"
+      ]
+    },
+    {
+      "dst": "vabd2.i.i74.i.i.i",
+      "id": 131,
+      "intrinsic": "sabd",
+      "op": "intrinsic",
+      "src": [
+        "30",
+        "31"
+      ]
+    },
+    {
+      "dst": "32",
+      "id": 132,
+      "op": "bitcast",
+      "src": "vabs1.i.i.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "33",
+      "id": 133,
+      "op": "bitcast",
+      "src": "vabs1.i.i70.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i.i.i.i.i",
+      "id": 134,
+      "mask": [
+        0,
+        2
+      ],
+      "op": "shuffle",
+      "src": [
+        "32",
+        "33"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i8.i.i.i.i",
+      "id": 135,
+      "mask": [
+        1,
+        3
+      ],
+      "op": "shuffle",
+      "src": [
+        "32",
+        "33"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "34",
+      "id": 136,
+      "op": "bitcast",
+      "src": "vabs1.i.i67.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "35",
+      "id": 137,
+      "op": "bitcast",
+      "src": "vabs1.i.i73.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i.i75.i.i.i",
+      "id": 138,
+      "mask": [
+        0,
+        2
+      ],
+      "op": "shuffle",
+      "src": [
+        "34",
+        "35"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i8.i76.i.i.i",
+      "id": 139,
+      "mask": [
+        1,
+        3
+      ],
+      "op": "shuffle",
+      "src": [
+        "34",
+        "35"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "36",
+      "id": 140,
+      "op": "bitcast",
+      "src": "vabd2.i.i.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "37",
+      "id": 141,
+      "op": "bitcast",
+      "src": "vabd2.i.i71.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i.i77.i.i.i",
+      "id": 142,
+      "mask": [
+        0,
+        2
+      ],
+      "op": "shuffle",
+      "src": [
+        "36",
+        "37"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i8.i78.i.i.i",
+      "id": 143,
+      "mask": [
+        1,
+        3
+      ],
+      "op": "shuffle",
+      "src": [
+        "36",
+        "37"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "38",
+      "id": 144,
+      "op": "bitcast",
+      "src": "vabd2.i.i68.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "39",
+      "id": 145,
+      "op": "bitcast",
+      "src": "vabd2.i.i74.i.i.i",
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i.i79.i.i.i",
+      "id": 146,
+      "mask": [
+        0,
+        2
+      ],
+      "op": "shuffle",
+      "src": [
+        "38",
+        "39"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "shuffle.i8.i80.i.i.i",
+      "id": 147,
+      "mask": [
+        1,
+        3
+      ],
+      "op": "shuffle",
+      "src": [
+        "38",
+        "39"
+      ],
+      "type": "<2 x i64>"
+    },
+    {
+      "dst": "40",
+      "id": 148,
+      "op": "bitcast",
+      "src": "shuffle.i.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "41",
+      "id": 149,
+      "op": "bitcast",
+      "src": "shuffle.i8.i.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmax2.i47.i.i.i",
+      "id": 150,
+      "intrinsic": "umax",
+      "op": "intrinsic",
+      "src": [
+        "40",
+        "41"
+      ]
+    },
+    {
+      "dst": "42",
+      "id": 151,
+      "op": "bitcast",
+      "src": "shuffle.i.i75.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "43",
+      "id": 152,
+      "op": "bitcast",
+      "src": "shuffle.i8.i76.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmax2.i46.i.i.i",
+      "id": 153,
+      "intrinsic": "umax",
+      "op": "intrinsic",
+      "src": [
+        "42",
+        "43"
+      ]
+    },
+    {
+      "dst": "44",
+      "id": 154,
+      "op": "bitcast",
+      "src": "shuffle.i.i77.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "45",
+      "id": 155,
+      "op": "bitcast",
+      "src": "shuffle.i8.i78.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmax2.i45.i.i.i",
+      "id": 156,
+      "intrinsic": "umax",
+      "op": "intrinsic",
+      "src": [
+        "44",
+        "45"
+      ]
+    },
+    {
+      "dst": "46",
+      "id": 157,
+      "op": "bitcast",
+      "src": "shuffle.i.i79.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "47",
+      "id": 158,
+      "op": "bitcast",
+      "src": "shuffle.i8.i80.i.i.i",
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vmax2.i.i.i.i",
+      "id": 159,
+      "intrinsic": "umax",
+      "op": "intrinsic",
+      "src": [
+        "46",
+        "47"
+      ]
+    },
+    {
+      "dst": "add.i.i.i",
+      "id": 160,
+      "op": "add",
+      "src": [
+        "vmax2.i46.i.i.i",
+        "vmax2.i47.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i10.i.i",
+      "id": 161,
+      "op": "add",
+      "src": [
+        "add.i.i.i",
+        "vmax2.i45.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "add.i.i",
+      "id": 162,
+      "op": "add",
+      "src": [
+        "add.i10.i.i",
+        "vmax2.i.i.i.i"
+      ],
+      "type": "<8 x i16>"
+    },
+    {
+      "dst": "vaddlv.i.i",
+      "id": 163,
+      "intrinsic": "uaddlv",
+      "op": "intrinsic",
+      "src": [
+        "add.i.i"
+      ]
+    },
+    {
+      "dst": "add.i",
+      "id": 164,
+      "op": "add",
+      "src": [
+        "vaddlv.i.i"
+      ],
+      "type": "i32"
+    },
+    {
+      "amt": 1,
+      "dst": "shr.i",
+      "id": 165,
+      "op": "lshr",
+      "src": [
+        "add.i"
+      ],
+      "type": "i32"
+    },
+    {
+      "id": 166,
+      "op": "ret",
+      "operand": "shr.i",
+      "type": "i32"
+    }
+  ],
+  "schema_version": "0.1"
+}

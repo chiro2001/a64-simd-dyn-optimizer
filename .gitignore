@@ -30,3 +30,4 @@ compile_commands.json
 # large regenerable corpus/intermediate oracle outputs (summaries are committed)
 experiments/**/corpus-*.bin
 experiments/**/oracle-*.txt
+experiments/**/llvm-ir/pixel-prim.ll

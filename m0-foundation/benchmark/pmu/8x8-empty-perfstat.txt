@@ -1,0 +1,14 @@
+
+ Performance counter stats for 'taskset -c 0 /home/chiro/projects/a64-simd-dyn-optimizer/build/sa8d_microbench 8x8 empty latency 500 4096 --noverify':
+
+          75181435      cycles:u                                                              
+         229222381      instructions:u                   #    3.05  insn per cycle            
+          24037781      branches:u                                                            
+             24373      branch-misses:u                  #    0.10% of all branches           
+
+       0.030601550 seconds time elapsed
+
+       0.026287000 seconds user
+       0.004044000 seconds sys
+
+
