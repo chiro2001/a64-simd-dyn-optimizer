@@ -7,9 +7,10 @@
 #include <cstring>
 #include <random>
 
-// Upstream symbol (C++ linkage, defined in common/aarch64/dct-prim.cpp):
-// void dct8_neon(const int16_t* src, int16_t* dst, intptr_t srcStride);
+// Upstream symbol (namespace x265, defined in common/aarch64/dct-prim.cpp):
+namespace x265 {
 void dct8_neon(const int16_t* src, int16_t* dst, intptr_t srcStride);
+}
 
 static const int16_t g_t8[8][8] =
 {
@@ -93,7 +94,7 @@ int main(int argc, char** argv)
 
         int16_t want[64], got[64];
         dct8_oracle(buf, want, stride);
-        dct8_neon(buf, got, stride);
+        x265::dct8_neon(buf, got, stride);
         if (memcmp(want, got, sizeof(want)) != 0)
         {
             if (mism < 5)
