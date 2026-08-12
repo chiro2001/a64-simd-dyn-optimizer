@@ -7,6 +7,7 @@ import os
 from optimizer.ir.machine_ir import MachineIR
 from optimizer.ir.rewrites import widen_dct8_pass2_odd
 from optimizer.ir.rewrites import widen_overflows
+from optimizer.ir.rewrites import mul64_to_shift
 
 
 def make_ir():
@@ -72,6 +73,18 @@ class TestWidenDct8Pass2Odd(unittest.TestCase):
         widen_dct8_pass2_odd(a)
         widen_overflows(b)
         self.assertEqual(a.to_dict()["nodes"], b.to_dict()["nodes"])
+
+    def test_mul64_to_shift(self):
+        ir = MachineIR(nodes=[
+            {"id": 0, "op": "mul", "type": "<4 x i32>", "src": ["a"],
+             "const_vec": [64, 64, 64, 64], "dst": "b"},
+            {"id": 1, "op": "mul", "type": "<4 x i32>", "src": ["c"],
+             "const_vec": [83, 36, 83, 36], "dst": "d"},
+        ])
+        mul64_to_shift(ir)
+        self.assertEqual(ir.nodes[0]["op"], "shl")
+        self.assertEqual(ir.nodes[0]["amt"], 6)
+        self.assertEqual(ir.nodes[1]["op"], "mul")
 
 
 if __name__ == "__main__":

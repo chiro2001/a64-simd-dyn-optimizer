@@ -17,17 +17,20 @@ import json
 import os
 import subprocess
 import sys
+from itertools import combinations
 
 from optimizer.analysis.critical_path import estimate_critical_path, parse_inst
 from optimizer.ir.codegen import emit_dct8_c_intrinsics
 from optimizer.ir.machine_ir import MachineIR
-from optimizer.ir.rewrites import widen_overflows
+from optimizer.ir.rewrites import mul64_to_shift, widen_overflows
 
 
 def apply_rewrites(ir, names):
     for name in names:
         if name == "widen":
             widen_overflows(ir)
+        elif name == "shift64":
+            mul64_to_shift(ir)
         elif name == "nop":
             pass
         else:
@@ -65,7 +68,8 @@ def main():
     os.makedirs(outdir, exist_ok=True)
 
     results = []
-    combos = [()] + [(rw,) for rw in rewrites]
+    combos = [()] + [c for r in range(1, len(rewrites) + 1)
+                     for c in combinations(rewrites, r)]
     for combo in combos:
         tag = "-".join(combo) or "baseline"
         ir = MachineIR(function=doc.get("function"),

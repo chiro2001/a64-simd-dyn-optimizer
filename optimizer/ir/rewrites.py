@@ -105,3 +105,22 @@ def widen_overflows(ir, input_range=(-255, 255), constants=None):
     if not sub_ids:
         return ir
     return widen_s16_overflow_subs(ir, sub_ids)
+
+
+def mul64_to_shift(ir):
+    """Replace exact ×64 lane-constant multiplies with a shift by 6.
+
+    In the DCT8 even rows, `mul<s32>(x, <64,64,64,64>)` equals `x << 6`
+    exactly (no overflow for the kernel's value range). vshlq_n is cheaper
+    than vmulq on most pipelines. This is the smallest rewrite in the
+    catalog, demonstrating the search loop making a real instruction
+    selection choice.
+    """
+    changed = 0
+    for n in ir.nodes:
+        if n.get("op") == "mul" and n.get("const_vec") == [64, 64, 64, 64]:
+            n["op"] = "shl"
+            n["amt"] = 6
+            n.pop("const_vec", None)
+            changed += 1
+    return ir
