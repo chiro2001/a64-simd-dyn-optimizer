@@ -10,6 +10,7 @@
 // Upstream symbol (namespace x265, defined in common/aarch64/dct-prim.cpp):
 namespace x265 {
 void dct8_neon(const int16_t* src, int16_t* dst, intptr_t srcStride);
+void dct8_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
 }
 
 static const int16_t g_t8[8][8] =
@@ -85,6 +86,7 @@ int main(int argc, char** argv)
     const int strides[4] = { 8, 16, 17, 32 };
 
     int mism = 0;
+    int mism_c = 0;
     for (int i = 0; i < cases; i++)
     {
         const int stride = strides[rng() % 4];
@@ -93,8 +95,12 @@ int main(int argc, char** argv)
             buf[j] = (int16_t)((int)(rng() & 0x3FF) - 512);   // [-512,511]
 
         int16_t want[64], got[64];
+        int16_t cref[64];
         dct8_oracle(buf, want, stride);
         x265::dct8_neon(buf, got, stride);
+        x265::dct8_c(buf, cref, stride);
+        if (memcmp(want, cref, sizeof(want)) != 0)
+            mism_c++;
         if (memcmp(want, got, sizeof(want)) != 0)
         {
             if (mism < 5)
@@ -114,6 +120,7 @@ int main(int argc, char** argv)
             mism++;
         }
     }
-    printf("cases=%d mismatches=%d\n", cases, mism);
-    return mism ? 1 : 0;
+    printf("cases=%d mismatches_oracle_vs_neon=%d "
+           "mismatches_oracle_vs_c=%d\n", cases, mism, mism_c);
+    return (mism || mism_c) ? 1 : 0;
 }
