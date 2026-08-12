@@ -5,6 +5,7 @@ Usage: python3 tools/count_asm_insns.py <object> [--function <name>]
 """
 
 import argparse
+import os
 import re
 import subprocess
 from collections import Counter
@@ -22,8 +23,8 @@ def main():
     ap.add_argument("--function", default=None)
     args = ap.parse_args()
 
-    text = subprocess.check_output(["objdump", "-d", args.object],
-                                   text=True)
+    objdump = os.environ.get("OBJDUMP", "objdump")
+    text = subprocess.check_output([objdump, "-d", args.object], text=True)
     total = simd = 0
     by_mnemonic = Counter()
     simd_by_mnemonic = Counter()

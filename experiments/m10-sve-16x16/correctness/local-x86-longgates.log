@@ -1,0 +1,20 @@
+=== local x86 cross (aarch64-linux-gnu-g++ 16.1.0, -march=armv8-a+sve) + qemu-aarch64 11.0.3 ===
+=== VL=256 (vq=2) 1,000,000 cases ===
+vl-bytes=32
+cases=1000000 mismatches=0
+x2_cases=1000000 mismatches=0
+x2raw_cases=1000000 mismatches=0
+16x16_cases=1000000 mismatches=0
+=== VL=512 (vq=4) 200,000 cases ===
+vl-bytes=64
+cases=200000 mismatches=0
+x2_cases=200000 mismatches=0
+x2raw_cases=200000 mismatches=0
+16x16_cases=200000 mismatches=0
+=== vq=1 (VL=128) 200 cases: expected FAILURE (dispatch must reject VL<256) ===
+vl-bytes=16
+cases=200 mismatches=0
+x2_cases=200 mismatches=200
+exit=1 (expected)
+=== guard-page VL=256 ===
+guard_cases=8 fails=0

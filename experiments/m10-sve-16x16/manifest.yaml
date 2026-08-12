@@ -12,8 +12,9 @@ candidates:
   - generated/sa8d/sve_roundtrip_sa8d_16x16.cpp
 correctness:
   tool: qemu-aarch64 -cpu max,sve-max-vq=2 / =4 build/sve_verify
-  cases: 20000
-  result: "0 mismatches (single+x2+x2raw+16x16, both VLs); guard 8/8"
+  cases: 1000000 (VL=256) + 200000 (VL=512)
+  result: "0 mismatches (single+x2+x2raw+16x16); vq=1 expected-fail recorded; guard 8/8"
+  host: local x86 cross (aarch64-linux-gnu-g++ 16.1.0) + qemu 11.0.3
 static:
   single_total: 117
   x2_total: 125
@@ -23,9 +24,12 @@ static:
 perf: blocked-environment (Kunpeng 920B toolchain not installed yet)
 notes: >-
   R8 even parity lemma enforced per-tile; raw tail shape asserted; 920B
-  default VL=256 confirmed via /proc/sys/abi/sve_default_vector_length.
+  default VL=256 confirmed via /proc/sys/abi/sve_default_vector_length;
+  candidates assemble with -march=armv8-a+sve (SVE1 only).
 commands:
   - bash scripts/build-sve-sa8d.sh
-  - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 20000
-  - qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 20000
+  - CXX=aarch64-linux-gnu-g++ OBJDUMP=aarch64-linux-gnu-objdump SVE_MARCH=armv8-a+sve bash scripts/build-sve-sa8d.sh
+  - QEMU_LD_PREFIX=/usr/aarch64-linux-gnu qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 1000000
+  - QEMU_LD_PREFIX=/usr/aarch64-linux-gnu qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 200000
+  - QEMU_LD_PREFIX=/usr/aarch64-linux-gnu qemu-aarch64 -cpu max,sve-max-vq=1 build/sve_verify 200
   - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_guard
