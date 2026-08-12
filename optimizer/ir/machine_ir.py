@@ -130,8 +130,10 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("bitcast"):
             ops = _parse_operands(rhs)
             t = rhs.split("to", 1)[1].strip()
-            ir.add({"op": "bitcast", "type": t, "src": ops[0] if ops else None,
-                    "dst": dst})
+            sm = re.match(r"bitcast\s+(<\d+\s+x\s+i\d+>|i\d+)\s+%[A-Za-z0-9._]+ to", rhs)
+            ir.add({"op": "bitcast", "type": t,
+                    "src_type": sm.group(1) if sm else None,
+                    "src": ops[0] if ops else None, "dst": dst})
         elif "llvm.aarch64.neon." in rhs:
             name = re.search(r"@llvm\.aarch64\.neon\.([a-z0-9_]+)", rhs).group(1)
             ops = _parse_operands(rhs)

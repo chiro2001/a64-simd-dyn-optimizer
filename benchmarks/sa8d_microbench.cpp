@@ -4,6 +4,7 @@
 //   c     - x265 scalar C reference (setupCPrimitives)
 //   neon  - x265 upstream NEON dispatch baseline (setupIntrinsic+Assembly)
 //   empty - loop-only harness with identical call shape, returns 0
+//   rt    - generated seed-roundtrip candidate (8x8 only, link required)
 //
 // Usage:
 //   sa8d_microbench <8x8|16x16|32x32|64x64> <c|neon|empty> <latency|throughput>
@@ -23,6 +24,9 @@
 #include <vector>
 
 using namespace X265_NS;
+
+extern "C" int dynopt_sa8d_8x8_neon_roundtrip(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
 static const int BUFSZ = 64;          // 64x64 pixel buffer per image
 static const int STRIDE = BUFSZ;
@@ -207,6 +211,11 @@ int main(int argc, char** argv)
     if (implS == "c")       fn = cprim.cu[shape == 8 ? BLOCK_8x8 : shape == 16 ? BLOCK_16x16 : shape == 32 ? BLOCK_32x32 : BLOCK_64x64].sa8d;
     else if (implS == "neon") fn = neon.cu[shape == 8 ? BLOCK_8x8 : shape == 16 ? BLOCK_16x16 : shape == 32 ? BLOCK_32x32 : BLOCK_64x64].sa8d;
     else if (implS == "empty") fn = empty_sa8d;
+    else if (implS == "rt")
+    {
+        if (shape != 8) { fprintf(stderr, "rt impl only supports 8x8\n"); return 2; }
+        fn = dynopt_sa8d_8x8_neon_roundtrip;
+    }
     else { fprintf(stderr, "bad impl\n"); return 2; }
     if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
 

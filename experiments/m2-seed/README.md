@@ -47,4 +47,21 @@ pack violations: []
 projection_ok: True
 ```
 
-Next step: roundtrip codegen from MachineIR and TestBench/oracle validation.
+### Roundtrip candidate
+
+`optimizer/ir/codegen.py` emits C++ NEON intrinsics from the MachineIR;
+`scripts/build-sa8d-roundtrip.sh` compiles and verifies against x265 C/NEON:
+
+```text
+cases=100000 mismatches=0
+```
+
+Same-binary A/B (taskset CPU0, 5 processes x 30 samples, batch=4096):
+
+```text
+upstream neon: 113480.5 ns/batch (26.19 ns/call)
+roundtrip rt:  112601.0 ns/batch (25.98 ns/call)
+speedup: 1.0078x (within the ±3% M2 gate)
+```
+
+Next step: M3 ISA semantics/cost library and the first search on layouts.
