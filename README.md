@@ -4,10 +4,18 @@
 以标量语义、内存来源和现有 SIMD 调度为输入，搜索更好的布局与指令序列，
 生成、验证并注入 x265，最后以实机数据决定接受或淘汰。
 
-规划文档见 [docs/README.md](docs/README.md)。当前进度：SA8D NEON 基线/搜索
-（M0–M4）、SVE2 功能候选与 16x16 门禁（M6–M10，QEMU VL=256/512 百万级
-差分通过）、需求 v0.4 与融合分析规划；下一步为鲲鹏 920B 实机闭环与
-DCT8。
+规划文档见 [docs/README.md](docs/README.md)。当前进度（M0–M26）：
+
+- 工具主链闭环：LLVM IR→MachineIR 导入、值域分析、范围驱动位宽修复、
+  结构级 rewrite（widen / shift64 / wide_load / tree_to_mla）、搜索主循环、
+  C-exact 差分门禁、双机 paired 微基准；
+- DCT8 上游 pass2 `vsub_s16` 回绕 bug 已静态定位并自动修复（M14）；
+  上游 kernel 通过 x265 内部 test，但全范围 uniform 下 dct8 与 C 分歧
+  0.868%、dct16 0.0045%（M21/M25）；
+- 结构搜索与成本模型结论：M22 五候选、M26 原生调度均未超过上游 NEON；
+  关键路径回归在 9 点留一法上为负（M23），逐指令直接延迟也不能排序
+  （M24）——静态模型只作粗筛，实机复核是唯一可信排序；
+- 性能指标：tier a/b/c 均未达成；待内部参考反汇编/指令直方图与 N+2 实机。
 
 性能目标为三档（详见 [docs/09](docs/09-instruction-fusion-analysis.md)）：
 同算力 NEON→NEON +30%；NEON/SVE128→SVE256 与 SVE256→SVE256 在鲲鹏
