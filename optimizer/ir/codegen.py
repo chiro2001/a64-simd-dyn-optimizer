@@ -216,9 +216,13 @@ def emit_sve_intrinsics(machine_ir,
     two rounded results are summed, preserving bit-exact per-tile rounding.
 
     Permutes use svtbl2 with constant index vectors; the lane offset of the
-    upper 8-lane half is derived from the same NEON shuffle mask, so the
-    packed candidate is correct for any VL >= 256 (and VL=128 with the low
-    16 lanes active).
+    upper 8-lane half is derived from the same NEON shuffle mask. Index
+    vectors are loaded under the active predicate `pg` (not svptrue), so
+    VL=512 never reads past the 16-entry constant arrays.
+
+    Contract: pack=2 requires VL >= 256 (fixed VL=256 or VLA-minimum).
+    At VL=128 the low 8 lanes are active and the upper-half sum is silently
+    zero, so dispatch must never enable this candidate below VL=256.
     """
     if pack not in (1, 2):
         raise ValueError("pack must be 1 or 2, got %r" % (pack,))
@@ -317,10 +321,10 @@ def emit_sve_intrinsics(machine_ir,
                          % (n, arr_b))
             lines.append("    svuint16_t %s = svtbl2_u16("
                          "svcreate2_u16(%s, %s),"
-                         " svadd_u16_x(svptrue_b16(),"
-                         " svld1_u16(svptrue_b16(), idx%d_lo),"
-                         " svmul_u16_x(svptrue_b16(),"
-                         " svld1_u16(svptrue_b16(), idx%d_b),"
+                         " svadd_u16_x(pg,"
+                         " svld1_u16(pg, idx%d_lo),"
+                         " svmul_u16_x(pg,"
+                         " svld1_u16(pg, idx%d_b),"
                          " svdup_u16((uint16_t)(svcntw() * 2)))));"
                          % (cid(dst), cid(node["src"][0]),
                             cid(node["src"][1]), n, n))

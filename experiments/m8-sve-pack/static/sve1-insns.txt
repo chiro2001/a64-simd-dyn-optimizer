@@ -1,22 +1,19 @@
-total=309 simd=202
+total=290 simd=224
   add          84  [SIMD]
+  mov          49  [SIMD]
   ld1h         48  [SIMD]
-  adrp         40
-  mov          25  [SIMD]
   sub          24  [SIMD]
+  mad          24  [SIMD]
   tbl          24  [SIMD]
-  mad          20  [SIMD]
   ld1b         16  [SIMD]
   sabd          4  [SIMD]
-  mla           4  [SIMD]
   abs           4  [SIMD]
   umax          4  [SIMD]
-  movprfx       3  [SIMD]
-  ptrue         2  [SIMD]
-  stp           1
+  movprfx       2  [SIMD]
+  ptrue         1  [SIMD]
+  adrp          1
   cnth          1
   uaddv         1  [SIMD]
   fmov          1
-  ldp           1
   ubfx          1
   ret           1
