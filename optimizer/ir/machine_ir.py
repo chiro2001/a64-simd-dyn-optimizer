@@ -72,7 +72,7 @@ def _op_type(args):
 def _parse_imm(text):
     """Parse an LLVM immediate: plain integer or `splat (i32 N)`."""
     text = text.strip()
-    m = re.match(r"splat \(i\d+\s+(\d+)\)", text)
+    m = re.match(r"splat \(i\d+\s+(-?\d+)\)", text)
     if m:
         return int(m.group(1))
     return int(text)
@@ -157,6 +157,25 @@ def import_llvm_ir_text(ir_text, function=None):
             t = rhs.split("to", 1)[1].strip()
             ir.add({"op": "sext", "type": t, "src": ops[0] if ops else None,
                     "dst": dst})
+        elif rhs.startswith("trunc"):
+            ops = _parse_operands(rhs)
+            t = rhs.split("to", 1)[1].strip()
+            ir.add({"op": "trunc", "type": t, "src": ops[0] if ops else None,
+                    "dst": dst})
+        elif rhs.startswith("extractvalue"):
+            ops = _parse_operands(rhs)
+            idx = int(rhs.rsplit(",", 1)[1].strip())
+            ir.add({"op": "extractvalue", "src": ops, "index": idx,
+                    "dst": dst})
+        elif rhs.startswith("xor"):
+            ops = _parse_operands(rhs)
+            node = {"op": "xor", "type": _op_type(rhs), "src": ops,
+                    "dst": dst}
+            imm = _parse_imm(rhs.rsplit(",", 1)[1]) \
+                if "," in rhs and "splat" in rhs else None
+            if imm is not None:
+                node["imm"] = imm
+            ir.add(node)
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}

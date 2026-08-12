@@ -1,0 +1,1931 @@
+{
+ "function": null,
+ "nodes": [
+  {
+   "dst": "6",
+   "id": 0,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 -3",
+   "type": "ptr"
+  },
+  {
+   "args": [
+    {
+     "raw": "ptr nonnull @_ZN12_GLOBAL__N_119dotprod_permute_tblE"
+    }
+   ],
+   "dst": "7",
+   "id": 1,
+   "intrinsic": "ld1x3",
+   "op": "intrinsic",
+   "src": []
+  },
+  {
+   "dst": "8",
+   "id": 2,
+   "index": 0,
+   "op": "extractvalue",
+   "src": [
+    "7"
+   ]
+  },
+  {
+   "dst": "9",
+   "id": 3,
+   "index": 1,
+   "op": "extractvalue",
+   "src": [
+    "7"
+   ]
+  },
+  {
+   "dst": "10",
+   "id": 4,
+   "index": 2,
+   "op": "extractvalue",
+   "src": [
+    "7"
+   ]
+  },
+  {
+   "dst": "11",
+   "id": 5,
+   "op": "sext",
+   "src": "4",
+   "type": "i64"
+  },
+  {
+   "dst": "12",
+   "id": 6,
+   "op": "addr",
+   "rhs": "getelementptr inbounds [8 x i16], ptr @_ZN4x26512g_lumaFilterE, i64 %11",
+   "type": "ptr"
+  },
+  {
+   "dst": "13",
+   "id": 7,
+   "op": "load",
+   "ptr": "12",
+   "type": "<8 x i16>"
+  },
+  {
+   "dst": "14",
+   "id": 8,
+   "op": "trunc",
+   "src": "13",
+   "type": "<8 x i8>"
+  },
+  {
+   "amt": 1,
+   "dst": "15",
+   "id": 9,
+   "op": "shl",
+   "src": [
+    "1"
+   ],
+   "type": "i64"
+  },
+  {
+   "const": 3,
+   "dst": "16",
+   "id": 10,
+   "op": "mul",
+   "src": [
+    "1"
+   ],
+   "type": "i64"
+  },
+  {
+   "dst": "17",
+   "id": 11,
+   "op": "bitcast",
+   "src": "14",
+   "src_type": "<8 x i8>",
+   "type": "<2 x i32>"
+  },
+  {
+   "dst": "18",
+   "id": 12,
+   "mask": null,
+   "op": "shuffle",
+   "src": [
+    "17"
+   ],
+   "type": "<2 x i32>"
+  },
+  {
+   "dst": "19",
+   "id": 13,
+   "op": "bitcast",
+   "src": "18",
+   "src_type": "<4 x i32>",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "20",
+   "id": 14,
+   "mask": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "op": "shuffle",
+   "src": [
+    "17"
+   ],
+   "type": "<2 x i32>"
+  },
+  {
+   "dst": "21",
+   "id": 15,
+   "op": "bitcast",
+   "src": "20",
+   "src_type": "<4 x i32>",
+   "type": "<16 x i8>"
+  },
+  {
+   "amt": 2,
+   "dst": "22",
+   "id": 16,
+   "op": "shl",
+   "src": [
+    "1"
+   ],
+   "type": "i64"
+  },
+  {
+   "amt": 2,
+   "dst": "23",
+   "id": 17,
+   "op": "shl",
+   "src": [
+    "3"
+   ],
+   "type": "i64"
+  },
+  {
+   "dst": "24",
+   "id": 18,
+   "op": "load",
+   "ptr": "6",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "25",
+   "id": 19,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %6, i64 %1",
+   "type": "ptr"
+  },
+  {
+   "dst": "26",
+   "id": 20,
+   "op": "load",
+   "ptr": "25",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "27",
+   "id": 21,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %6, i64 %15",
+   "type": "ptr"
+  },
+  {
+   "dst": "28",
+   "id": 22,
+   "op": "load",
+   "ptr": "27",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "29",
+   "id": 23,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %6, i64 %16",
+   "type": "ptr"
+  },
+  {
+   "dst": "30",
+   "id": 24,
+   "op": "load",
+   "ptr": "29",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "31",
+   "id": 25,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "24"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "31"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "32",
+   "id": 26,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "31",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "31"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "33",
+   "id": 27,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "31",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "31"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "34",
+   "id": 28,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "31",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "32"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "35",
+   "id": 29,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "32",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "33"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "36",
+   "id": 30,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "33",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "35"
+    },
+    {
+     "ref": "33"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "37",
+   "id": 31,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "35",
+    "33",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "36"
+    },
+    {
+     "ref": "34"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "38",
+   "id": 32,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "36",
+    "34",
+    "21"
+   ]
+  },
+  {
+   "dst": "39",
+   "id": 33,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "37",
+    "38"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "40",
+   "id": 34,
+   "op": "trunc",
+   "src": "39",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "40"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "41",
+   "id": 35,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "40"
+   ]
+  },
+  {
+   "dst": "42",
+   "id": 36,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "26"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "42"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "43",
+   "id": 37,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "42",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "42"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "44",
+   "id": 38,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "42",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "42"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "45",
+   "id": 39,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "42",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "43"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "46",
+   "id": 40,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "43",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "44"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "47",
+   "id": 41,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "44",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "46"
+    },
+    {
+     "ref": "44"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "48",
+   "id": 42,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "46",
+    "44",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "47"
+    },
+    {
+     "ref": "45"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "49",
+   "id": 43,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "47",
+    "45",
+    "21"
+   ]
+  },
+  {
+   "dst": "50",
+   "id": 44,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "48",
+    "49"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "51",
+   "id": 45,
+   "op": "trunc",
+   "src": "50",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "51"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "52",
+   "id": 46,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "51"
+   ]
+  },
+  {
+   "dst": "53",
+   "id": 47,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "28"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "53"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "54",
+   "id": 48,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "53",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "53"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "55",
+   "id": 49,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "53",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "53"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "56",
+   "id": 50,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "53",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "54"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "57",
+   "id": 51,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "54",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "55"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "58",
+   "id": 52,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "55",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "57"
+    },
+    {
+     "ref": "55"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "59",
+   "id": 53,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "57",
+    "55",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "58"
+    },
+    {
+     "ref": "56"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "60",
+   "id": 54,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "58",
+    "56",
+    "21"
+   ]
+  },
+  {
+   "dst": "61",
+   "id": 55,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "59",
+    "60"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "62",
+   "id": 56,
+   "op": "trunc",
+   "src": "61",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "62"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "63",
+   "id": 57,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "62"
+   ]
+  },
+  {
+   "dst": "64",
+   "id": 58,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "30"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "64"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "65",
+   "id": 59,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "64",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "64"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "66",
+   "id": 60,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "64",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "64"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "67",
+   "id": 61,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "64",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "65"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "68",
+   "id": 62,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "65",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "66"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "69",
+   "id": 63,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "66",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "68"
+    },
+    {
+     "ref": "66"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "70",
+   "id": 64,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "68",
+    "66",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "69"
+    },
+    {
+     "ref": "67"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "71",
+   "id": 65,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "69",
+    "67",
+    "21"
+   ]
+  },
+  {
+   "dst": "72",
+   "id": 66,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "70",
+    "71"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "73",
+   "id": 67,
+   "op": "trunc",
+   "src": "72",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "73"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "74",
+   "id": 68,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "73"
+   ]
+  },
+  {
+   "id": 69,
+   "op": "store",
+   "ptr": "2",
+   "src": "41",
+   "type": "<8 x i8> %41"
+  },
+  {
+   "dst": "75",
+   "id": 70,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %2, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 71,
+   "op": "store",
+   "ptr": "75",
+   "src": "52",
+   "type": "<8 x i8> %52"
+  },
+  {
+   "dst": "76",
+   "id": 72,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %75, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 73,
+   "op": "store",
+   "ptr": "76",
+   "src": "63",
+   "type": "<8 x i8> %63"
+  },
+  {
+   "dst": "77",
+   "id": 74,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %76, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 75,
+   "op": "store",
+   "ptr": "77",
+   "src": "74",
+   "type": "<8 x i8> %74"
+  },
+  {
+   "dst": "78",
+   "id": 76,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %6, i64 %22",
+   "type": "ptr"
+  },
+  {
+   "dst": "79",
+   "id": 77,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %2, i64 %23",
+   "type": "ptr"
+  },
+  {
+   "dst": "80",
+   "id": 78,
+   "op": "load",
+   "ptr": "78",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "81",
+   "id": 79,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %78, i64 %1",
+   "type": "ptr"
+  },
+  {
+   "dst": "82",
+   "id": 80,
+   "op": "load",
+   "ptr": "81",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "83",
+   "id": 81,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %78, i64 %15",
+   "type": "ptr"
+  },
+  {
+   "dst": "84",
+   "id": 82,
+   "op": "load",
+   "ptr": "83",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "85",
+   "id": 83,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %78, i64 %16",
+   "type": "ptr"
+  },
+  {
+   "dst": "86",
+   "id": 84,
+   "op": "load",
+   "ptr": "85",
+   "type": "<16 x i8>"
+  },
+  {
+   "dst": "87",
+   "id": 85,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "80"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "87"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "88",
+   "id": 86,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "87",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "87"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "89",
+   "id": 87,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "87",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "87"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "90",
+   "id": 88,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "87",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "88"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "91",
+   "id": 89,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "88",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "89"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "92",
+   "id": 90,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "89",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "91"
+    },
+    {
+     "ref": "89"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "93",
+   "id": 91,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "91",
+    "89",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "92"
+    },
+    {
+     "ref": "90"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "94",
+   "id": 92,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "92",
+    "90",
+    "21"
+   ]
+  },
+  {
+   "dst": "95",
+   "id": 93,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "93",
+    "94"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "96",
+   "id": 94,
+   "op": "trunc",
+   "src": "95",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "96"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "97",
+   "id": 95,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "96"
+   ]
+  },
+  {
+   "dst": "98",
+   "id": 96,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "82"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "98"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "99",
+   "id": 97,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "98",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "98"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "100",
+   "id": 98,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "98",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "98"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "101",
+   "id": 99,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "98",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "99"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "102",
+   "id": 100,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "99",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "100"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "103",
+   "id": 101,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "100",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "102"
+    },
+    {
+     "ref": "100"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "104",
+   "id": 102,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "100",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "103"
+    },
+    {
+     "ref": "101"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "105",
+   "id": 103,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "101",
+    "21"
+   ]
+  },
+  {
+   "dst": "106",
+   "id": 104,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "104",
+    "105"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "107",
+   "id": 105,
+   "op": "trunc",
+   "src": "106",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "107"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "108",
+   "id": 106,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "107"
+   ]
+  },
+  {
+   "dst": "109",
+   "id": 107,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "84"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "109"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "110",
+   "id": 108,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "109",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "109"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "111",
+   "id": 109,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "109",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "109"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "112",
+   "id": 110,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "109",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "110"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "113",
+   "id": 111,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "110",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "111"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "114",
+   "id": 112,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "111",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "113"
+    },
+    {
+     "ref": "111"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "115",
+   "id": 113,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "113",
+    "111",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "114"
+    },
+    {
+     "ref": "112"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "116",
+   "id": 114,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "114",
+    "112",
+    "21"
+   ]
+  },
+  {
+   "dst": "117",
+   "id": 115,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "115",
+    "116"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "118",
+   "id": 116,
+   "op": "trunc",
+   "src": "117",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "118"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "119",
+   "id": 117,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "118"
+   ]
+  },
+  {
+   "dst": "120",
+   "id": 118,
+   "imm": -128,
+   "op": "xor",
+   "src": [
+    "86"
+   ],
+   "type": "<16 x i8>"
+  },
+  {
+   "args": [
+    {
+     "ref": "120"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "121",
+   "id": 119,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "120",
+    "8"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "120"
+    },
+    {
+     "ref": "9"
+    }
+   ],
+   "dst": "122",
+   "id": 120,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "120",
+    "9"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "120"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "123",
+   "id": 121,
+   "intrinsic": "tbl1",
+   "op": "intrinsic",
+   "src": [
+    "120",
+    "10"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "121"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "124",
+   "id": 122,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "121",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "imm": 8192
+    },
+    {
+     "ref": "122"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "125",
+   "id": 123,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "122",
+    "19"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "124"
+    },
+    {
+     "ref": "122"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "126",
+   "id": 124,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "124",
+    "122",
+    "21"
+   ]
+  },
+  {
+   "args": [
+    {
+     "ref": "125"
+    },
+    {
+     "ref": "123"
+    },
+    {
+     "ref": "21"
+    }
+   ],
+   "dst": "127",
+   "id": 125,
+   "intrinsic": "sdot",
+   "op": "intrinsic",
+   "src": [
+    "125",
+    "123",
+    "21"
+   ]
+  },
+  {
+   "dst": "128",
+   "id": 126,
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "op": "shuffle",
+   "src": [
+    "126",
+    "127"
+   ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "129",
+   "id": 127,
+   "op": "trunc",
+   "src": "128",
+   "type": "<8 x i16>"
+  },
+  {
+   "args": [
+    {
+     "ref": "129"
+    },
+    {
+     "imm": 6
+    }
+   ],
+   "dst": "130",
+   "id": 128,
+   "intrinsic": "sqrshrun",
+   "op": "intrinsic",
+   "src": [
+    "129"
+   ]
+  },
+  {
+   "id": 129,
+   "op": "store",
+   "ptr": "79",
+   "src": "97",
+   "type": "<8 x i8> %97"
+  },
+  {
+   "dst": "131",
+   "id": 130,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %79, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 131,
+   "op": "store",
+   "ptr": "131",
+   "src": "108",
+   "type": "<8 x i8> %108"
+  },
+  {
+   "dst": "132",
+   "id": 132,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %131, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 133,
+   "op": "store",
+   "ptr": "132",
+   "src": "119",
+   "type": "<8 x i8> %119"
+  },
+  {
+   "dst": "133",
+   "id": 134,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %132, i64 %3",
+   "type": "ptr"
+  },
+  {
+   "id": 135,
+   "op": "store",
+   "ptr": "133",
+   "src": "130",
+   "type": "<8 x i8> %130"
+  }
+ ],
+ "schema_version": "0.1"
+}

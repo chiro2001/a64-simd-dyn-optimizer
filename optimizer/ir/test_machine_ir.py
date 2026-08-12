@@ -50,6 +50,23 @@ class TestDct8Import(unittest.TestCase):
                    and n["type"].startswith("<"))
         self.assertEqual(shl["amt"], 6)
 
+    def test_imports_dotprod_extractvalue_trunc_xor(self):
+        ir = import_llvm_ir_text("""
+  %7 = tail call { <16 x i8>, <16 x i8>, <16 x i8> } @llvm.aarch64.neon.ld1x3.v16i8.p0(ptr %0)
+  %8 = extractvalue { <16 x i8>, <16 x i8>, <16 x i8> } %7, 1
+  %9 = trunc <8 x i16> %5 to <8 x i8>
+  %10 = xor <16 x i8> %8, splat (i8 -128)
+""")
+        byop = [n for n in ir.nodes if n["op"] in
+                ("extractvalue", "trunc", "xor", "intrinsic")]
+        self.assertEqual(len(byop), 4)
+        ev = next(n for n in ir.nodes if n["op"] == "extractvalue")
+        self.assertEqual(ev["index"], 1)
+        tr = next(n for n in ir.nodes if n["op"] == "trunc")
+        self.assertEqual(tr["type"], "<8 x i8>")
+        xr = next(n for n in ir.nodes if n["op"] == "xor")
+        self.assertEqual(xr["imm"], -128)
+
 
 if __name__ == "__main__":
     unittest.main()
