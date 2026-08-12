@@ -92,3 +92,12 @@ phase 0；上游基座垂直 NEON 对 coeffIdx==0 无 case、什么都不写，�
 的 C-exact 结构（hpp 持平 1.01–1.04×，vpp 落后 0.92–0.97×）。垂直的追赶
 需要 i8mm 式转置 4x4 块 + `vusdotq`；二维 hvpp 是唯一仍有结构性复用空间
 的方向。
+
+## 9. hvpp 合同 + 上游分歧发现
+
+`kernels/interp8/hvpp_verify.cpp`：自备 C oracle（hps：`sum - 8192` 移位 0
++ vsp：`(sum + 526336) >> 12` 后钳位）与 x265 C/NEON `luma_hvpp` 三方差分
+（idxX,idxY ∈ 1..3）。结果：**oracle==C 原语精确（0 mismatch），上游基座
+NEON hvpp 与 C 参考在 idx=(3,3) 等组合有 18/180000（0.01%）分歧**——与
+DCT8 同类的潜在上游分歧，ipfilterharness 打不到。hvpp 候选合同仍定 C
+参考 bit-exact。
