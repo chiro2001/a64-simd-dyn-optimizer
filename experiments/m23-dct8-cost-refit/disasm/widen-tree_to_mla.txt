@@ -1,0 +1,352 @@
+
+experiments/m22-dct8-structural-search/widen-tree_to_mla.o:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 <dynopt_search_candidate>:
+   0:	d37ff845 	lsl	x5, x2, #1
+   4:	6dba27e8 	stp	d8, d9, [sp, #-96]!
+   8:	8b050003 	add	x3, x0, x5
+   c:	6d012fea 	stp	d10, d11, [sp, #16]
+  10:	8b0200a6 	add	x6, x5, x2
+  14:	6d0237ec 	stp	d12, d13, [sp, #32]
+  18:	6d033fee 	stp	d14, d15, [sp, #48]
+  1c:	fd400477 	ldr	d23, [x3, #8]
+  20:	d37ef443 	lsl	x3, x2, #2
+  24:	fc656806 	ldr	d6, [x0, x5]
+  28:	8b030004 	add	x4, x0, x3
+  2c:	6d40101c 	ldp	d28, d4, [x0]
+  30:	0e600af7 	rev64	v23.4h, v23.4h
+  34:	fd400485 	ldr	d5, [x4, #8]
+  38:	d37ff8c4 	lsl	x4, x6, #1
+  3c:	fc636803 	ldr	d3, [x0, x3]
+  40:	8b020063 	add	x3, x3, x2
+  44:	0e600884 	rev64	v4.4h, v4.4h
+  48:	8b060806 	add	x6, x0, x6, lsl #2
+  4c:	0e7700c2 	saddl	v2.4s, v6.4h, v23.4h
+  50:	fc646809 	ldr	d9, [x0, x4]
+  54:	8b040004 	add	x4, x0, x4
+  58:	2e7784c6 	sub	v6.4h, v6.4h, v23.4h
+  5c:	fd4004d0 	ldr	d16, [x6, #8]
+  60:	0e640380 	saddl	v0.4s, v28.4h, v4.4h
+  64:	fd400488 	ldr	d8, [x4, #8]
+  68:	d37df044 	lsl	x4, x2, #3
+  6c:	8b040007 	add	x7, x0, x4
+  70:	2e64879c 	sub	v28.4h, v28.4h, v4.4h
+  74:	4ea21c55 	mov	v21.16b, v2.16b
+  78:	fc64681e 	ldr	d30, [x0, x4]
+  7c:	cb020084 	sub	x4, x4, x2
+  80:	90000002 	adrp	x2, 0 <dynopt_search_candidate>
+  84:	0e600908 	rev64	v8.4h, v8.4h
+  88:	4ea01c14 	mov	v20.16b, v0.16b
+  8c:	fd4004fd 	ldr	d29, [x7, #8]
+  90:	3dc00044 	ldr	q4, [x2]
+  94:	d37ff867 	lsl	x7, x3, #1
+  98:	4ec23817 	zip1	v23.2d, v0.2d, v2.2d
+  9c:	8b030403 	add	x3, x0, x3, lsl #1
+  a0:	0e600bbd 	rev64	v29.4h, v29.4h
+  a4:	8b040404 	add	x4, x0, x4, lsl #1
+  a8:	4e042295 	tbl	v21.16b, {v20.16b-v21.16b}, v4.16b
+  ac:	fc676807 	ldr	d7, [x0, x7]
+  b0:	fd40047f 	ldr	d31, [x3, #8]
+  b4:	8b050067 	add	x7, x3, x5
+  b8:	fd400491 	ldr	d17, [x4, #8]
+  bc:	0e600a10 	rev64	v16.4h, v16.4h
+  c0:	fc656876 	ldr	d22, [x3, x5]
+  c4:	91000040 	add	x0, x2, #0x0
+  c8:	4eb586f4 	add	v20.4s, v23.4s, v21.4s
+  cc:	fc6568e1 	ldr	d1, [x7, x5]
+  d0:	6eb586f7 	sub	v23.4s, v23.4s, v21.4s
+  d4:	0e6008b5 	rev64	v21.4h, v5.4h
+  d8:	0e600bff 	rev64	v31.4h, v31.4h
+  dc:	0e680125 	saddl	v5.4s, v9.4h, v8.4h
+  e0:	2e688529 	sub	v9.4h, v9.4h, v8.4h
+  e4:	0e600a31 	rev64	v17.4h, v17.4h
+  e8:	0e750062 	saddl	v2.4s, v3.4h, v21.4h
+  ec:	4ea51cb9 	mov	v25.16b, v5.16b
+  f0:	2e758475 	sub	v21.4h, v3.4h, v21.4h
+  f4:	4ea21c58 	mov	v24.16b, v2.16b
+  f8:	4ec53843 	zip1	v3.2d, v2.2d, v5.2d
+  fc:	0e7d03c5 	saddl	v5.4s, v30.4h, v29.4h
+ 100:	2e7d87de 	sub	v30.4h, v30.4h, v29.4h
+ 104:	4e042318 	tbl	v24.16b, {v24.16b-v25.16b}, v4.16b
+ 108:	4ea51cb2 	mov	v18.16b, v5.16b
+ 10c:	4eb88468 	add	v8.4s, v3.4s, v24.4s
+ 110:	6eb88479 	sub	v25.4s, v3.4s, v24.4s
+ 114:	0e7f00f8 	saddl	v24.4s, v7.4h, v31.4h
+ 118:	2e7f84e7 	sub	v7.4h, v7.4h, v31.4h
+ 11c:	4eb81f13 	mov	v19.16b, v24.16b
+ 120:	4ed838bd 	zip1	v29.2d, v5.2d, v24.2d
+ 124:	0e710038 	saddl	v24.4s, v1.4h, v17.4h
+ 128:	2e718421 	sub	v1.4h, v1.4h, v17.4h
+ 12c:	4e042252 	tbl	v18.16b, {v18.16b-v19.16b}, v4.16b
+ 130:	0e7002d3 	saddl	v19.4s, v22.4h, v16.4h
+ 134:	4eb81f1b 	mov	v27.16b, v24.16b
+ 138:	2e7086d6 	sub	v22.4h, v22.4h, v16.4h
+ 13c:	4eb287bf 	add	v31.4s, v29.4s, v18.4s
+ 140:	4eb31e7a 	mov	v26.16b, v19.16b
+ 144:	4ed83a63 	zip1	v3.2d, v19.2d, v24.2d
+ 148:	6eb287bd 	sub	v29.4s, v29.4s, v18.4s
+ 14c:	4e04235a 	tbl	v26.16b, {v26.16b-v27.16b}, v4.16b
+ 150:	4eba8460 	add	v0.4s, v3.4s, v26.4s
+ 154:	6eba8463 	sub	v3.4s, v3.4s, v26.4s
+ 158:	6d416c1a 	ldp	d26, d27, [x0, #16]
+ 15c:	0e66c358 	smull	v24.4s, v26.4h, v6.4h
+ 160:	0e7cc350 	smull	v16.4s, v26.4h, v28.4h
+ 164:	0e69c353 	smull	v19.4s, v26.4h, v9.4h
+ 168:	0e7cc371 	smull	v17.4s, v27.4h, v28.4h
+ 16c:	4eb8be10 	addp	v16.4s, v16.4s, v24.4s
+ 170:	0e75c358 	smull	v24.4s, v26.4h, v21.4h
+ 174:	4eb3bf18 	addp	v24.4s, v24.4s, v19.4s
+ 178:	0e69c373 	smull	v19.4s, v27.4h, v9.4h
+ 17c:	4eb8be10 	addp	v16.4s, v16.4s, v24.4s
+ 180:	0e66c378 	smull	v24.4s, v27.4h, v6.4h
+ 184:	0f1e8e10 	rshrn	v16.4h, v16.4s, #2
+ 188:	4eb8be31 	addp	v17.4s, v17.4s, v24.4s
+ 18c:	0e75c378 	smull	v24.4s, v27.4h, v21.4h
+ 190:	4eb3bf18 	addp	v24.4s, v24.4s, v19.4s
+ 194:	4eb8be31 	addp	v17.4s, v17.4s, v24.4s
+ 198:	6d424c18 	ldp	d24, d19, [x0, #32]
+ 19c:	0f1e8e31 	rshrn	v17.4h, v17.4s, #2
+ 1a0:	0e66c305 	smull	v5.4s, v24.4h, v6.4h
+ 1a4:	0e7cc312 	smull	v18.4s, v24.4h, v28.4h
+ 1a8:	0e75c302 	smull	v2.4s, v24.4h, v21.4h
+ 1ac:	0e66c266 	smull	v6.4s, v19.4h, v6.4h
+ 1b0:	0e7cc27c 	smull	v28.4s, v19.4h, v28.4h
+ 1b4:	4ea5be52 	addp	v18.4s, v18.4s, v5.4s
+ 1b8:	0e75c275 	smull	v21.4s, v19.4h, v21.4h
+ 1bc:	0e69c305 	smull	v5.4s, v24.4h, v9.4h
+ 1c0:	0e69c269 	smull	v9.4s, v19.4h, v9.4h
+ 1c4:	4ea6bf9c 	addp	v28.4s, v28.4s, v6.4s
+ 1c8:	4ea5bc45 	addp	v5.4s, v2.4s, v5.4s
+ 1cc:	4ea9beb5 	addp	v21.4s, v21.4s, v9.4s
+ 1d0:	4ea8be89 	addp	v9.4s, v20.4s, v8.4s
+ 1d4:	4ea5be52 	addp	v18.4s, v18.4s, v5.4s
+ 1d8:	4eb5bf9c 	addp	v28.4s, v28.4s, v21.4s
+ 1dc:	ad419415 	ldp	q21, q5, [x0, #48]
+ 1e0:	4f265529 	shl	v9.4s, v9.4s, #6
+ 1e4:	0f1e8e52 	rshrn	v18.4h, v18.4s, #2
+ 1e8:	4eb59ee6 	mul	v6.4s, v23.4s, v21.4s
+ 1ec:	4eb59f22 	mul	v2.4s, v25.4s, v21.4s
+ 1f0:	4ea59d08 	mul	v8.4s, v8.4s, v5.4s
+ 1f4:	4ea59e94 	mul	v20.4s, v20.4s, v5.4s
+ 1f8:	0f1e8d29 	rshrn	v9.4h, v9.4s, #2
+ 1fc:	4ea2bcc2 	addp	v2.4s, v6.4s, v2.4s
+ 200:	3dc01406 	ldr	q6, [x0, #80]
+ 204:	4ea8be94 	addp	v20.4s, v20.4s, v8.4s
+ 208:	0e67c348 	smull	v8.4s, v26.4h, v7.4h
+ 20c:	4ea69f39 	mul	v25.4s, v25.4s, v6.4s
+ 210:	4ea69ef7 	mul	v23.4s, v23.4s, v6.4s
+ 214:	0f1e8c42 	rshrn	v2.4h, v2.4s, #2
+ 218:	0f1e8e94 	rshrn	v20.4h, v20.4s, #2
+ 21c:	0f1e8f9c 	rshrn	v28.4h, v28.4s, #2
+ 220:	4eb9bef7 	addp	v23.4s, v23.4s, v25.4s
+ 224:	0e7ec359 	smull	v25.4s, v26.4h, v30.4h
+ 228:	0f1e8ef7 	rshrn	v23.4h, v23.4s, #2
+ 22c:	4ea8bf39 	addp	v25.4s, v25.4s, v8.4s
+ 230:	0e76c348 	smull	v8.4s, v26.4h, v22.4h
+ 234:	0e61c35a 	smull	v26.4s, v26.4h, v1.4h
+ 238:	4ebabd1a 	addp	v26.4s, v8.4s, v26.4s
+ 23c:	0e67c368 	smull	v8.4s, v27.4h, v7.4h
+ 240:	4ebabf39 	addp	v25.4s, v25.4s, v26.4s
+ 244:	0e7ec37a 	smull	v26.4s, v27.4h, v30.4h
+ 248:	0f1e8f39 	rshrn	v25.4h, v25.4s, #2
+ 24c:	4ea8bf5a 	addp	v26.4s, v26.4s, v8.4s
+ 250:	0e76c368 	smull	v8.4s, v27.4h, v22.4h
+ 254:	0e61c37b 	smull	v27.4s, v27.4h, v1.4h
+ 258:	0e600b39 	rev64	v25.4h, v25.4h
+ 25c:	4ebbbd1b 	addp	v27.4s, v8.4s, v27.4s
+ 260:	0e67c308 	smull	v8.4s, v24.4h, v7.4h
+ 264:	0e67c267 	smull	v7.4s, v19.4h, v7.4h
+ 268:	4ebbbf5a 	addp	v26.4s, v26.4s, v27.4s
+ 26c:	0e7ec31b 	smull	v27.4s, v24.4h, v30.4h
+ 270:	0e7ec27e 	smull	v30.4s, v19.4h, v30.4h
+ 274:	0f1e8f5a 	rshrn	v26.4h, v26.4s, #2
+ 278:	4ea8bf7b 	addp	v27.4s, v27.4s, v8.4s
+ 27c:	0e76c308 	smull	v8.4s, v24.4h, v22.4h
+ 280:	0e61c318 	smull	v24.4s, v24.4h, v1.4h
+ 284:	0e76c276 	smull	v22.4s, v19.4h, v22.4h
+ 288:	0e600b5a 	rev64	v26.4h, v26.4h
+ 28c:	0e61c273 	smull	v19.4s, v19.4h, v1.4h
+ 290:	4ea7bfde 	addp	v30.4s, v30.4s, v7.4s
+ 294:	4eb8bd18 	addp	v24.4s, v8.4s, v24.4s
+ 298:	0e790208 	saddl	v8.4s, v16.4h, v25.4h
+ 29c:	4eb3bed6 	addp	v22.4s, v22.4s, v19.4s
+ 2a0:	4eb59fb3 	mul	v19.4s, v29.4s, v21.4s
+ 2a4:	2f000627 	mvni	v7.2s, #0x11
+ 2a8:	4eb8bf7b 	addp	v27.4s, v27.4s, v24.4s
+ 2ac:	4ea0bff8 	addp	v24.4s, v31.4s, v0.4s
+ 2b0:	4ea59c00 	mul	v0.4s, v0.4s, v5.4s
+ 2b4:	4ea59fff 	mul	v31.4s, v31.4s, v5.4s
+ 2b8:	4eb6bfde 	addp	v30.4s, v30.4s, v22.4s
+ 2bc:	4f265718 	shl	v24.4s, v24.4s, #6
+ 2c0:	4eb59c76 	mul	v22.4s, v3.4s, v21.4s
+ 2c4:	4ea0bfff 	addp	v31.4s, v31.4s, v0.4s
+ 2c8:	4ea81d0b 	mov	v11.16b, v8.16b
+ 2cc:	0f1e8f18 	rshrn	v24.4h, v24.4s, #2
+ 2d0:	4eb6be73 	addp	v19.4s, v19.4s, v22.4s
+ 2d4:	0f1e8ff6 	rshrn	v22.4h, v31.4s, #2
+ 2d8:	0e792219 	ssubl	v25.4s, v16.4h, v25.4h
+ 2dc:	4ea69c63 	mul	v3.4s, v3.4s, v6.4s
+ 2e0:	0e600b18 	rev64	v24.4h, v24.4h
+ 2e4:	0f1e8e73 	rshrn	v19.4h, v19.4s, #2
+ 2e8:	0f1e8f7b 	rshrn	v27.4h, v27.4s, #2
+ 2ec:	4ea69fbd 	mul	v29.4s, v29.4s, v6.4s
+ 2f0:	0e600ad6 	rev64	v22.4h, v22.4h
+ 2f4:	0e78013f 	saddl	v31.4s, v9.4h, v24.4h
+ 2f8:	0e600a73 	rev64	v19.4h, v19.4h
+ 2fc:	0e782138 	ssubl	v24.4s, v9.4h, v24.4h
+ 300:	0e600b7b 	rev64	v27.4h, v27.4h
+ 304:	4ebf1fea 	mov	v10.16b, v31.16b
+ 308:	4ec83be9 	zip1	v9.2d, v31.2d, v8.2d
+ 30c:	4ea3bfbd 	addp	v29.4s, v29.4s, v3.4s
+ 310:	0f1e8fde 	rshrn	v30.4h, v30.4s, #2
+ 314:	4e04215f 	tbl	v31.16b, {v10.16b-v11.16b}, v4.16b
+ 318:	0f000648 	movi	v8.2s, #0x12
+ 31c:	0e73004b 	saddl	v11.4s, v2.4h, v19.4h
+ 320:	0f1e8fbd 	rshrn	v29.4h, v29.4s, #2
+ 324:	0e600bde 	rev64	v30.4h, v30.4h
+ 328:	4ebf8530 	add	v16.4s, v9.4s, v31.4s
+ 32c:	6ebf852a 	sub	v10.4s, v9.4s, v31.4s
+ 330:	0e7a023f 	saddl	v31.4s, v17.4h, v26.4h
+ 334:	4eab1d6c 	mov	v12.16b, v11.16b
+ 338:	0e7a223a 	ssubl	v26.4s, v17.4h, v26.4h
+ 33c:	0e600bbd 	rev64	v29.4h, v29.4h
+ 340:	4ebf1fed 	mov	v13.16b, v31.16b
+ 344:	4edf3971 	zip1	v17.2d, v11.2d, v31.2d
+ 348:	0e732053 	ssubl	v19.4s, v2.4h, v19.4h
+ 34c:	4e992b00 	trn1	v0.4s, v24.4s, v25.4s
+ 350:	4e04219f 	tbl	v31.16b, {v12.16b-v13.16b}, v4.16b
+ 354:	2f01062b 	mvni	v11.2s, #0x31
+ 358:	4e996b18 	trn2	v24.4s, v24.4s, v25.4s
+ 35c:	4f000649 	movi	v9.4s, #0x12
+ 360:	2f020719 	mvni	v25.2s, #0x58
+ 364:	4ebf862d 	add	v13.4s, v17.4s, v31.4s
+ 368:	6ebf862c 	sub	v12.4s, v17.4s, v31.4s
+ 36c:	0e760291 	saddl	v17.4s, v20.4h, v22.4h
+ 370:	0e7b025f 	saddl	v31.4s, v18.4h, v27.4h
+ 374:	0e7b225b 	ssubl	v27.4s, v18.4h, v27.4h
+ 378:	0e762296 	ssubl	v22.4s, v20.4h, v22.4h
+ 37c:	4eb11e2e 	mov	v14.16b, v17.16b
+ 380:	4ebf1fef 	mov	v15.16b, v31.16b
+ 384:	4edf3a32 	zip1	v18.2d, v17.2d, v31.2d
+ 388:	0e7d02f1 	saddl	v17.4s, v23.4h, v29.4h
+ 38c:	0e7d22f7 	ssubl	v23.4s, v23.4h, v29.4h
+ 390:	4e0421df 	tbl	v31.16b, {v14.16b-v15.16b}, v4.16b
+ 394:	0f02056f 	movi	v15.2s, #0x4b
+ 398:	4ebf8654 	add	v20.4s, v18.4s, v31.4s
+ 39c:	6ebf864e 	sub	v14.4s, v18.4s, v31.4s
+ 3a0:	0e7e039f 	saddl	v31.4s, v28.4h, v30.4h
+ 3a4:	0e7e239e 	ssubl	v30.4s, v28.4h, v30.4h
+ 3a8:	4edf3a32 	zip1	v18.2d, v17.2d, v31.2d
+ 3ac:	ad027ff1 	stp	q17, q31, [sp, #64]
+ 3b0:	ad4277fc 	ldp	q28, q29, [sp, #64]
+ 3b4:	4e04239f 	tbl	v31.16b, {v28.16b-v29.16b}, v4.16b
+ 3b8:	0f010644 	movi	v4.2s, #0x32
+ 3bc:	4e9a2a7c 	trn1	v28.4s, v19.4s, v26.4s
+ 3c0:	4e9a6a7d 	trn2	v29.4s, v19.4s, v26.4s
+ 3c4:	4f02073a 	movi	v26.4s, #0x59
+ 3c8:	4ebf8651 	add	v17.4s, v18.4s, v31.4s
+ 3cc:	6ebf8652 	sub	v18.4s, v18.4s, v31.4s
+ 3d0:	4edd3b13 	zip1	v19.2d, v24.2d, v29.2d
+ 3d4:	4edc381f 	zip1	v31.2d, v0.2d, v28.2d
+ 3d8:	4edd7b18 	zip2	v24.2d, v24.2d, v29.2d
+ 3dc:	4edc7800 	zip2	v0.2d, v0.2d, v28.2d
+ 3e0:	4f01065d 	movi	v29.4s, #0x32
+ 3e4:	4f02057c 	movi	v28.4s, #0x4b
+ 3e8:	4eba9fe1 	mul	v1.4s, v31.4s, v26.4s
+ 3ec:	4ebd9fe3 	mul	v3.4s, v31.4s, v29.4s
+ 3f0:	4ebc9fe2 	mul	v2.4s, v31.4s, v28.4s
+ 3f4:	4ea99fff 	mul	v31.4s, v31.4s, v9.4s
+ 3f8:	6f8f0261 	mla	v1.4s, v19.4s, v15.s[0]
+ 3fc:	6f990263 	mla	v3.4s, v19.4s, v25.s[0]
+ 400:	6f870262 	mla	v2.4s, v19.4s, v7.s[0]
+ 404:	6f8b027f 	mla	v31.4s, v19.4s, v11.s[0]
+ 408:	6f840001 	mla	v1.4s, v0.4s, v4.s[0]
+ 40c:	6f880003 	mla	v3.4s, v0.4s, v8.s[0]
+ 410:	6f990002 	mla	v2.4s, v0.4s, v25.s[0]
+ 414:	6f8f001f 	mla	v31.4s, v0.4s, v15.s[0]
+ 418:	6f880301 	mla	v1.4s, v24.4s, v8.s[0]
+ 41c:	6f8f0303 	mla	v3.4s, v24.4s, v15.s[0]
+ 420:	6f8b0302 	mla	v2.4s, v24.4s, v11.s[0]
+ 424:	6f99031f 	mla	v31.4s, v24.4s, v25.s[0]
+ 428:	4eadbe18 	addp	v24.4s, v16.4s, v13.4s
+ 42c:	4eb59d53 	mul	v19.4s, v10.4s, v21.4s
+ 430:	4ea59dad 	mul	v13.4s, v13.4s, v5.4s
+ 434:	4ea59e10 	mul	v16.4s, v16.4s, v5.4s
+ 438:	4f265718 	shl	v24.4s, v24.4s, #6
+ 43c:	0f178fff 	rshrn	v31.4h, v31.4s, #9
+ 440:	4ea69d4a 	mul	v10.4s, v10.4s, v6.4s
+ 444:	4eadbe10 	addp	v16.4s, v16.4s, v13.4s
+ 448:	0f178f18 	rshrn	v24.4h, v24.4s, #9
+ 44c:	0f178c21 	rshrn	v1.4h, v1.4s, #9
+ 450:	0f178c42 	rshrn	v2.4h, v2.4s, #9
+ 454:	0f178c63 	rshrn	v3.4h, v3.4s, #9
+ 458:	0f178e10 	rshrn	v16.4h, v16.4s, #9
+ 45c:	fd000038 	str	d24, [x1]
+ 460:	4eb59d98 	mul	v24.4s, v12.4s, v21.4s
+ 464:	fd000821 	str	d1, [x1, #16]
+ 468:	4ea69d8c 	mul	v12.4s, v12.4s, v6.4s
+ 46c:	fd001822 	str	d2, [x1, #48]
+ 470:	fd002823 	str	d3, [x1, #80]
+ 474:	4eb8be73 	addp	v19.4s, v19.4s, v24.4s
+ 478:	4e9b2ad8 	trn1	v24.4s, v22.4s, v27.4s
+ 47c:	4e9b6adb 	trn2	v27.4s, v22.4s, v27.4s
+ 480:	4e9e2af6 	trn1	v22.4s, v23.4s, v30.4s
+ 484:	4e9e6af7 	trn2	v23.4s, v23.4s, v30.4s
+ 488:	4eacbd4a 	addp	v10.4s, v10.4s, v12.4s
+ 48c:	0f178e73 	rshrn	v19.4h, v19.4s, #9
+ 490:	4ed63b1e 	zip1	v30.2d, v24.2d, v22.2d
+ 494:	4ed73b6d 	zip1	v13.2d, v27.2d, v23.2d
+ 498:	4ed67b18 	zip2	v24.2d, v24.2d, v22.2d
+ 49c:	4ed77b7b 	zip2	v27.2d, v27.2d, v23.2d
+ 4a0:	4eba9fda 	mul	v26.4s, v30.4s, v26.4s
+ 4a4:	4ebc9fdc 	mul	v28.4s, v30.4s, v28.4s
+ 4a8:	4ebd9fdd 	mul	v29.4s, v30.4s, v29.4s
+ 4ac:	4ea99fde 	mul	v30.4s, v30.4s, v9.4s
+ 4b0:	6f8f01ba 	mla	v26.4s, v13.4s, v15.s[0]
+ 4b4:	6f8701bc 	mla	v28.4s, v13.4s, v7.s[0]
+ 4b8:	6f9901bd 	mla	v29.4s, v13.4s, v25.s[0]
+ 4bc:	6f8b01be 	mla	v30.4s, v13.4s, v11.s[0]
+ 4c0:	6f84031a 	mla	v26.4s, v24.4s, v4.s[0]
+ 4c4:	6f99031c 	mla	v28.4s, v24.4s, v25.s[0]
+ 4c8:	6f88031d 	mla	v29.4s, v24.4s, v8.s[0]
+ 4cc:	6f8f031e 	mla	v30.4s, v24.4s, v15.s[0]
+ 4d0:	6f88037a 	mla	v26.4s, v27.4s, v8.s[0]
+ 4d4:	6f8b037c 	mla	v28.4s, v27.4s, v11.s[0]
+ 4d8:	6f8f037d 	mla	v29.4s, v27.4s, v15.s[0]
+ 4dc:	6f99037e 	mla	v30.4s, v27.4s, v25.s[0]
+ 4e0:	0f178d4a 	rshrn	v10.4h, v10.4s, #9
+ 4e4:	0f178f5a 	rshrn	v26.4h, v26.4s, #9
+ 4e8:	0f178f9c 	rshrn	v28.4h, v28.4s, #9
+ 4ec:	0f178fde 	rshrn	v30.4h, v30.4s, #9
+ 4f0:	0f178fbd 	rshrn	v29.4h, v29.4s, #9
+ 4f4:	6d01cc3a 	stp	d26, d19, [x1, #24]
+ 4f8:	6d07783f 	stp	d31, d30, [x1, #112]
+ 4fc:	4eb1be9f 	addp	v31.4s, v20.4s, v17.4s
+ 500:	6d03c03c 	stp	d28, d16, [x1, #56]
+ 504:	4ea59e94 	mul	v20.4s, v20.4s, v5.4s
+ 508:	6d05a83d 	stp	d29, d10, [x1, #88]
+ 50c:	4f2657ff 	shl	v31.4s, v31.4s, #6
+ 510:	4ea59e31 	mul	v17.4s, v17.4s, v5.4s
+ 514:	6d412fea 	ldp	d10, d11, [sp, #16]
+ 518:	0f178fff 	rshrn	v31.4h, v31.4s, #9
+ 51c:	4eb1be94 	addp	v20.4s, v20.4s, v17.4s
+ 520:	6d4237ec 	ldp	d12, d13, [sp, #32]
+ 524:	fd00043f 	str	d31, [x1, #8]
+ 528:	4eb59ddf 	mul	v31.4s, v14.4s, v21.4s
+ 52c:	4eb59e55 	mul	v21.4s, v18.4s, v21.4s
+ 530:	4ea69dce 	mul	v14.4s, v14.4s, v6.4s
+ 534:	4ea69e52 	mul	v18.4s, v18.4s, v6.4s
+ 538:	0f178e94 	rshrn	v20.4h, v20.4s, #9
+ 53c:	4eb5bfff 	addp	v31.4s, v31.4s, v21.4s
+ 540:	4eb2bdce 	addp	v14.4s, v14.4s, v18.4s
+ 544:	fd002434 	str	d20, [x1, #72]
+ 548:	0f178fff 	rshrn	v31.4h, v31.4s, #9
+ 54c:	0f178dce 	rshrn	v14.4h, v14.4s, #9
+ 550:	fd00143f 	str	d31, [x1, #40]
+ 554:	fd00342e 	str	d14, [x1, #104]
+ 558:	6d433fee 	ldp	d14, d15, [sp, #48]
+ 55c:	6cc627e8 	ldp	d8, d9, [sp], #96
+ 560:	d65f03c0 	ret

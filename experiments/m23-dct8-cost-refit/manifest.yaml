@@ -1,0 +1,16 @@
+schema_version: 1
+run_id: m23-dct8-cost-refit
+state: rejected
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross, n1-neon128, kunpeng-920b-cloud]
+deliverables:
+  - tools/validate_cost_model.py::loocv
+  - tools/search_driver.py::--fit
+  - measurements.json
+  - fitted-n1.json
+  - fitted-920b.json
+gates:
+  - {name: consistent_9_point_measurement, result: pass}
+  - {name: full_fit_920b_spearman, result: "0.633"}
+  - {name: full_fit_n1_spearman, result: "0.550"}
+  - {name: loocv_generalization, result: fail, detail: "920B -0.517 / N1 -0.833"}

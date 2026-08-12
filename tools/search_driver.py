@@ -57,17 +57,24 @@ def path_cost(text, weights):
 
 
 def main():
-    if len(sys.argv) < 4:
+    fit_path = None
+    args = sys.argv[1:]
+    for a in list(args):
+        if a.startswith("--fit="):
+            fit_path = a.split("=", 1)[1]
+            args.remove(a)
+    if len(args) < 4:
         print(__doc__)
         return 2
-    ir_path, machine, outdir = sys.argv[1], sys.argv[2], sys.argv[3]
-    rewrites = [a.split("=", 1)[1] for a in sys.argv[4:]
+    ir_path, machine, outdir = args[0], args[1], args[2]
+    rewrites = [a.split("=", 1)[1] for a in args[3:]
                 if a.startswith("--rewrite=")]
     if machine not in ("n1", "920b"):
         print("machine must be n1 or 920b", file=sys.stderr)
         return 2
-    fit = json.load(open(
-        "experiments/m16-dct8-protoc/fitted-%s.json" % machine))
+    fit = json.load(open(fit_path or
+                         "experiments/m16-dct8-protoc/fitted-%s.json"
+                         % machine))
     weights = dict(zip(fit["mnemonics"], fit["weights"]))
     doc = json.load(open(ir_path))
     os.makedirs(outdir, exist_ok=True)

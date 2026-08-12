@@ -1,0 +1,61 @@
+{
+  "method": "median of 31 runs, batch=4096, CNTVCT_EL0, pinned cpu0; kernel ticks = candidate/neon total minus same-binary empty total",
+  "hosts": ["920b", "n1"],
+  "candidates": [
+    {
+      "name": "upstream",
+      "920b": 18058,
+      "n1": 7934,
+      "total_insns": 342
+    },
+    {
+      "name": "widen",
+      "920b": 19044,
+      "n1": 9671,
+      "total_insns": 347
+    },
+    {
+      "name": "proto_b",
+      "920b": 26502,
+      "n1": 12358,
+      "total_insns": 229
+    },
+    {
+      "name": "proto_c",
+      "920b": 30705,
+      "n1": 13949,
+      "total_insns": 254
+    },
+    {
+      "name": "widen-shift64",
+      "920b": 19012,
+      "n1": 9476,
+      "total_insns": 347
+    },
+    {
+      "name": "widen-wide_load",
+      "920b": 19676,
+      "n1": 9924,
+      "total_insns": 339
+    },
+    {
+      "name": "widen-tree_to_mla",
+      "920b": 19282,
+      "n1": 9620,
+      "total_insns": 345
+    },
+    {
+      "name": "widen-wide_load-tree_to_mla",
+      "920b": 19600,
+      "n1": 9609,
+      "total_insns": 337
+    },
+    {
+      "name": "widen-shift64-wide_load-tree_to_mla",
+      "920b": 19659,
+      "n1": 9692,
+      "total_insns": 337
+    }
+  ],
+  "notes": "all nine measured with the same cross-built binaries (candidate .o at -O2 -march=armv8-a); upstream is the libx265 neon impl from any of these binaries"
+}
