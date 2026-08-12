@@ -38,7 +38,7 @@ def make_sa8d_spec(shape, bit_depth=8, interpreter="python:x265_c_stages"):
             "t": "W8 @ D @ W8^T with x265 HADAMARD4 stage order",
             "abs_sum": "sum(abs(T))",
             "rounding": "sa8d8x8=(R8+2)>>2; 16x16 rounds once after four raw R8; "
-                        "32x32 sums rounded 8x8; 64x64 sums rounded 16x16",
+                        "32x32 sums rounded 16x16; 64x64 sums rounded 16x16",
         },
         "interpreter": interpreter,
     }

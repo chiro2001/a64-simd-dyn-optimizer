@@ -22,16 +22,21 @@ def main():
             fails.append(("abs_identity", a, b, lhs, rhs))
             break
 
-    # trn1/trn2 and zip1/zip2 are permutations; composing trn1+trn2 restores.
-    for _ in range(100):
-        a = list(range(8))
-        b = list(range(100, 108))
-        if sorted(S.trn1(a, b) + S.trn2(a, b)) != sorted(a + b):
-            fails.append(("trn_partition", a, b))
-            break
-        if sorted(S.zip1(a, b) + S.zip2(a, b)) != sorted(a + b):
-            fails.append(("zip_partition", a, b))
-            break
+    # trn1/trn2 and zip1/zip2 are permutations for 2/4/8-lane vectors;
+    # composing trn1+trn2 restores the multiset.
+    for n in (2, 4, 8):
+        for _ in range(100):
+            a = list(range(n))
+            b = list(range(100, 100 + n))
+            if sorted(S.trn1(a, b) + S.trn2(a, b)) != sorted(a + b):
+                fails.append(("trn_partition", n, a, b))
+                break
+            if sorted(S.zip1(a, b) + S.zip2(a, b)) != sorted(a + b):
+                fails.append(("zip_partition", n, a, b))
+                break
+            if len(S.trn1(a, b)) != n or len(S.trn2(a, b)) != n:
+                fails.append(("trn_lane_count", n))
+                break
 
     # uaddlv == sum of u16 lanes
     for _ in range(100):

@@ -110,7 +110,8 @@ def run_machine_ir(ir, plane_a, plane_b, stride_a, stride_b):
             elif name == "sabd":
                 env[dst] = _mask16([abs(x - y) for x, y in zip(srcs[0], srcs[1])])
             elif name == "umax":
-                env[dst] = [max(x, y) for x, y in zip(srcs[0], srcs[1])]
+                env[dst] = [max(x & 0xFFFF, y & 0xFFFF)
+                            for x, y in zip(srcs[0], srcs[1])]
             elif name == "uaddlv":
                 env[dst] = sum(srcs[0])
             else:

@@ -29,26 +29,37 @@ def _shuffle(a, b, mask):
     return [a[m] if m < n else b[m - n] for m in mask]
 
 
-TRN1_8 = [0, 8, 2, 10, 4, 12, 6, 14]
-TRN2_8 = [1, 9, 3, 11, 5, 13, 7, 15]
-ZIP1_8 = [0, 8, 1, 9, 2, 10, 3, 11]
-ZIP2_8 = [4, 12, 5, 13, 6, 14, 7, 15]
+def _trn1_mask(n):
+    return [i if i % 2 == 0 else n + i - 1 for i in range(n)]
+
+
+def _trn2_mask(n):
+    return [i + 1 if i % 2 == 0 else n + i for i in range(n)]
+
+
+def _zip1_mask(n):
+    return [i // 2 if i % 2 == 0 else n + i // 2 for i in range(n)]
+
+
+def _zip2_mask(n):
+    return [n // 2 + i // 2 if i % 2 == 0
+            else n + n // 2 + i // 2 for i in range(n)]
 
 
 def trn1(a, b):
-    return _shuffle(a, b, TRN1_8[:len(a)] if len(a) < 8 else TRN1_8)
+    return _shuffle(a, b, _trn1_mask(len(a)))
 
 
 def trn2(a, b):
-    return _shuffle(a, b, TRN2_8[:len(a)] if len(a) < 8 else TRN2_8)
+    return _shuffle(a, b, _trn2_mask(len(a)))
 
 
 def zip1(a, b):
-    return _shuffle(a, b, ZIP1_8[:len(a)] if len(a) < 8 else ZIP1_8)
+    return _shuffle(a, b, _zip1_mask(len(a)))
 
 
 def zip2(a, b):
-    return _shuffle(a, b, ZIP2_8[:len(a)] if len(a) < 8 else ZIP2_8)
+    return _shuffle(a, b, _zip2_mask(len(a)))
 
 
 def sabd(a, b):
