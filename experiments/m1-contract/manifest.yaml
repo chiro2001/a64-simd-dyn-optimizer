@@ -1,0 +1,29 @@
+schema_version: 1
+run_id: m1-contract
+state: foundation-only
+captured_at: 2026-08-12T19:20:00+08:00
+host_id: n1-neon128
+project_commit: <filled-by-git>
+x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
+artifacts:
+  spec_ir: optimizer/ir/spec_ir.py
+  python_interpreter: kernels/sa8d/spec.py
+  cpp_interpreter: kernels/sa8d/oracle.cpp (canonical_sa8d)
+  tests: kernels/sa8d/tests.py
+  range_proof: kernels/sa8d/range_proof.py
+  oracle_binary: build/sa8d_oracle
+corpus:
+  seed: 0x5A8D0000 + shape
+  cases:
+    8x8: 1000153
+    16x16: 1000537
+    32x32: 202073
+    64x64: 108217
+  python_cross_check_per_shape: 1000
+guard: passed_for_all_shapes
+range_proof:
+  row_bound: 2040
+  two_d_bound: 16320
+  row_proof_ok: true
+  two_d_proof_ok: true
+expert_advice: none

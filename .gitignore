@@ -26,3 +26,7 @@ compile_commands.json
 # large local experiment noise (raw samples are committed under experiments/)
 *.perf.data
 *.perf.data.old
+
+# large regenerable corpus/intermediate oracle outputs (summaries are committed)
+experiments/**/corpus-*.bin
+experiments/**/oracle-*.txt

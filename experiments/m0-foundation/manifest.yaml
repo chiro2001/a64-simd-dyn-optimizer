@@ -4,7 +4,7 @@ state: foundation-only
 captured_at: 2026-08-12T18:20:00+08:00
 host_id: n1-neon128
 host_connect: chiro@129.146.162.16
-project_commit: e65c745c97e4df9c3079d904615740bbe64b1929
+project_commit: <filled-by-git>
 x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
 x265_management: submodule
 target:
