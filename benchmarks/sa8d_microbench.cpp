@@ -247,7 +247,7 @@ int main(int argc, char** argv)
             return 1;
         }
         fprintf(stderr, "differential verification OK (c == neon on 20k random cases per shape)\n");
-        if (verifyOnly)
+        if (verifyOnly && implS != "rt" && implS != "cand")
             return 0;
     }
 
