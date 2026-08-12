@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 
     int mism = 0;
     int mism_c = 0;
+    int mism_by_stride[4] = { 0, 0, 0, 0 };
     for (int i = 0; i < cases; i++)
     {
         const int stride = strides[rng() % 4];
@@ -105,6 +106,11 @@ int main(int argc, char** argv)
             mism_c++;
         if (memcmp(want, got, sizeof(want)) != 0)
         {
+            int si = 0;
+            for (; si < 4; si++)
+                if (strides[si] == stride)
+                    break;
+            mism_by_stride[si]++;
             if (mism < 5)
             {
                 fprintf(stderr, "mismatch %d stride=%d: first-diff ",
@@ -124,5 +130,8 @@ int main(int argc, char** argv)
     }
     printf("cases=%d mismatches_oracle_vs_neon=%d "
            "mismatches_oracle_vs_c=%d\n", cases, mism, mism_c);
+    printf("mismatches_by_stride 8/16/17/32 = %d/%d/%d/%d\n",
+           mism_by_stride[0], mism_by_stride[1],
+           mism_by_stride[2], mism_by_stride[3]);
     return (mism || mism_c) ? 1 : 0;
 }
