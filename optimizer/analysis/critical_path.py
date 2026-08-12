@@ -38,32 +38,73 @@ MNEMONIC_LATENCY = {
     "sbfiz": 1, "ubfiz": 1, "sbfx": 1, "ubfx": 1, "asrv": 1, "lslv": 1,
 }
 
-REG = re.compile(r"(?<![\w.])([vqzxwsd]\d+)(?:\.\S+)?(?:\[\d+\])?")
+REG = re.compile(r"(?<![\w.])([vqzxwsdhb]\d+|sp)(?:\.\S+)?(?:\[\d+\])?")
 STORE_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur"}
 LOAD_MN = {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r"}
 NO_DST_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur", "cmp", "tst",
              "cbz", "cbnz", "b", "b.ne", "b.eq", "b.hi", "b.lo", "b.gt",
              "b.le", "b.ge", "b.lt", "ret", "nop"}
+# Instructions whose destination register is also an input (read-modify-write
+# accumulator / fold forms). The old parser missed this edge, which severed
+# the 4-deep vmlaq accumulator chain.
+RMW_MN = {"mla", "mls", "madd", "msub", "smlal", "smlal2", "umlal",
+          "umlal2", "smlsl", "smlsl2", "umlsl", "umlsl2", "saba", "uaba",
+          "sabal", "sabal2", "uabal", "uabal2", "sadalp", "uadalp",
+          "fmla", "fmls", "fmlal", "fmlal2", "fmlsl", "fmlsl2",
+          "smaddl", "umaddl", "smsubl", "umsubl", "sbc", "adc", "ngc",
+          "sqrdmlah", "sqrdmlsh"}
+# Two-register pair loads have two destinations.
+PAIR_LOAD_MN = {"ldp"}
+
+
+def normalize_reg(reg):
+    """Map architectural views of one register to a single pseudo-register.
+
+    qN/vN/dN/sN/hN/bN are views of vector register vN; wN/xN are views of
+    scalar register xN. Without this, `mov v0, v1` and `mov q0, q1` create
+    disjoint live ranges and the chain breaks.
+    """
+    if reg is None:
+        return None
+    if reg[0] in ("q", "v", "d", "s", "h", "b") and len(reg) > 1 \
+            and reg[1].isdigit():
+        return "v" + reg[1:]
+    if reg[0] == "w" and len(reg) > 1 and reg[1].isdigit():
+        return "x" + reg[1:]
+    return reg
 
 
 def parse_inst(line):
-    """Return (mnemonic, dst, reads) or None."""
+    """Return (mnemonic, dsts, reads, mems) or None.
+
+    dsts is a list (empty for stores); reads includes the accumulator
+    operand for read-modify-write mnemonics and aliases d/q/v/s/h/b onto vN
+    and w/x onto xN. mems lists memory references as (base, disp, is_store)
+    so the caller can resolve stack-array aliasing through base registers
+    derived from sp.
+    """
     m = re.match(r"\s*[0-9a-f]+:\s+[0-9a-f]{8}\s+([a-z0-9]+)\s*(.*)", line)
     if not m:
         return None
     mn, rest = m.group(1), m.group(2)
     reads = []
-    dst = None
+    dsts = []
+    mems = []
 
-    # memory brackets: stack slots become pseudo-registers (sp#offset)
+    # memory brackets: stack slots become pseudo-registers (sp#offset).
+    # Handles [sp, #N], [sp, #N]! and [sp, #-N].
     for bm in re.finditer(r"\[([^\]]+)\]", rest):
-        spm = re.match(r"sp\s*,\s*#(-?\d+)", bm.group(1).strip())
+        inner = bm.group(1).strip()
+        spm = re.match(r"sp\s*,\s*#(-?\d+)", inner)
+        genm = re.match(r"([xw]\d+)\s*,\s*#(-?\d+)", inner)
+        genm0 = re.match(r"([xw]\d+)", inner)
         if spm:
-            slot = "sp#%d" % int(spm.group(1))
-            if mn in LOAD_MN:
-                reads.append(slot)
-            elif mn in STORE_MN:
-                dst = slot
+            mems.append(("sp", int(spm.group(1)), mn in STORE_MN))
+        elif genm:
+            mems.append((normalize_reg(genm.group(1)),
+                         int(genm.group(2)), mn in STORE_MN))
+        elif genm0:
+            mems.append((normalize_reg(genm0.group(1)), 0, mn in STORE_MN))
 
     regs = []
     cleaned = re.sub(r"\[[^\]]*\]", "", rest)
@@ -72,22 +113,31 @@ def parse_inst(line):
         for r in REG.findall(p):
             regs.append(r)
     if not regs:
-        return mn, dst, reads
+        return mn, dsts, reads, mems
 
     first = regs[0]
     if mn in NO_DST_MN:
         reads.extend(regs)
     elif mn in LOAD_MN:
-        if dst is None:
-            dst = first
-        reads.extend(regs[1:])
+        if mn in PAIR_LOAD_MN:
+            # ldp x0, x1, [sp, #N]: both registers are destinations.
+            dsts.extend(regs[:2])
+            reads.extend(regs[2:])
+        else:
+            dsts.append(first)
+            reads.extend(regs[1:])
     else:
-        dst = first
+        dsts.append(first)
         reads.extend(regs[1:])
 
     # remove zero registers
     reads = [r for r in reads if r not in ("xzr", "wzr")]
-    return mn, dst, reads
+    dsts = [normalize_reg(r) for r in dsts]
+    reads = [normalize_reg(r) for r in reads]
+    # RMW mnemonics read their destination's previous value.
+    if mn in RMW_MN and dsts:
+        reads.append(dsts[0])
+    return mn, dsts, reads, mems
 
 
 def estimate_critical_path(text, latency_table=None):
@@ -98,22 +148,40 @@ def estimate_critical_path(text, latency_table=None):
     for line in text.splitlines():
         p = parse_inst(line)
         if p:
-            mn, dst, reads = p
-            insts.append((mn, dst, reads, lat.get(mn, 1)))
+            mn, dsts, reads, mems = p
+            insts.append((mn, dsts, reads, mems, lat.get(mn, 1)))
             lines.append(line)
 
     last_writer = {}
     preds = [[] for _ in insts]
-    for i, (mn, dst, reads, _) in enumerate(insts):
+    stack_bases = set()
+    for i, (mn, dsts, reads, mems, _) in enumerate(insts):
+        # Track registers derived from sp (add/sub/mov/addvl), then treat
+        # their indexed accesses as stack slots so a pass-1 store to the
+        # coef array chains into the pass-2 load.
+        if mn in ("add", "sub", "mov", "addvl") and "sp" in reads and dsts:
+            for d in dsts:
+                if d != "sp":
+                    stack_bases.add(d)
+        for base, disp, is_store in mems:
+            # the address base register is an input to every memory access
+            if base != "sp":
+                reads = reads + [base]
+            if base == "sp" or base in stack_bases:
+                slot = "%s#%d" % (base, disp)
+                if is_store:
+                    dsts = dsts + [slot]
+                else:
+                    reads = reads + [slot]
         for r in reads:
             if r in last_writer:
                 preds[i].append(last_writer[r])
-        if dst is not None:
-            last_writer[dst] = i
+        for d in dsts:
+            last_writer[d] = i
 
     dist = []
     best = 0.0
-    for i, (mn, dst, reads, l) in enumerate(insts):
+    for i, (mn, dsts, reads, mems, l) in enumerate(insts):
         d = l + max((dist[p] for p in preds[i]), default=0)
         dist.append(d)
         best = max(best, d)

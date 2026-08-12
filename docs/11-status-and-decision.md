@@ -11,7 +11,7 @@
 | LLVM IR → MachineIR 导入 | `optimizer/ir/machine_ir.py` | DCT8/SA8D/interp8 三族 opcode 全覆盖 |
 | 值域分析（静态位宽溢出检测） | `optimizer/analysis/range.py` | 一步复现 DCT8 s16 回绕 bug |
 | 范围驱动自动宽度修复 | `optimizer/ir/rewrites.py::widen_overflows` | 与手写 rewrite 逐节点一致 |
-| 关键路径成本模型 + 双机校准 | `optimizer/analysis/critical_path.py` | 家族内 920B R²=0.98 |
+| 关键路径成本模型 | `optimizer/analysis/critical_path.py` | 依赖图已修复（MLA 链/别名/双目的/栈数组穿越）；P0 门禁失败 → 自动精排永久取消，只做静态粗筛 |
 | 融合静态 inventory | `optimizer/analysis/fusion.py` | docs/09 v0.1 全验收项 |
 | 搜索主循环 | `tools/search_driver.py` | rewrite 组合枚举 + C-exact 验证 |
 | 差分/门禁/paired 微基准 | kernels/benchmarks/scripts | 三算子、双机、CNTVCT/PMU |
@@ -28,6 +28,17 @@ dct16 0.0045%。
 M26 更新：原生 `-mcpu=native` 重编只把 N1 widen 从 0.878 提到 0.960、
 920B 提到 0.986，仍全部 <1。编译调度敏感性约 2–9%，不改变“上游 NEON
 接近局部下界”的结论。
+
+M27/M28 更新：DCT8 SVE256 后端（单 tile）与双 tile pack（x2）均 C-exact
+（qemu 20 万例 mismatches=0）；x2 每 tile 静态 299 条 vs 上游 NEON 341
+（约 1.14x）。结论：DCT8 的 pairwise-add/narrow 结构对 SVE 宽度倍增
+不友好，+130% 需要新分解或 DCT→quant 融合，不能靠机械宽度迁移。
+
+M29/P0 更新（round-0007 门禁判定）：修复依赖图后重做一次性复验，两机
+留一法/结构留出 Spearman 全部为负（N1 -0.80、920B -0.60），top-3 命中
+0–1——**自动精排永久取消**。`search_driver` 只输出静态 Pareto 粗序并对
+.text 去重，所有不同 .text 必须实机实测；详见
+`experiments/m29-cost-model-p0/iteration.md`。
 
 上游 bug 发现与修复：DCT8 pass2 `vsub_s16` 回绕（M14 修复，range 分析可
 静态复现）；harness 两次假阳性（hpp stride、hvpp 行推进）已闭环并记录
