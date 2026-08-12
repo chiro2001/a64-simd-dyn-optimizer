@@ -51,3 +51,22 @@
 `calibration-data.json`。结论：latency 由依赖链关键路径主导（N1 上 mla
 四深链），v0 只有资源/前端项，下一增量必须加 `critical_path_latency`
 依赖图估计器；在此之前不得用线性模型排序候选。
+
+## 6. 关键路径估计器 v0（本里程碑内完成）
+
+`optimizer/analysis/critical_path.py` + `tools/critical_path.py`：从反汇编
+建寄存器+栈槽（`sp#offset`）def-use 图，按逐指令延迟表算最长前向链。
+4 候选（本地 GCC16 反汇编）：
+
+| 候选 | 关键路径 | N1 实测 ticks | 920B 实测 ticks |
+| --- | ---: | ---: | ---: |
+| upstream | 40 | 2.30 | 6.92 |
+| widened | 44 | 2.59 | 7.06 |
+| proto_b | 34 | 2.94 | **6.05** |
+| proto_c | 50 | **3.17** | 6.48 |
+
+种子延迟表下：920B 排名（proto_b 最快、proto_c 次快）基本吻合；N1 上把
+proto_b 排成最快（实测第二慢），说明 N1 的 s32 标量 mul/mla 延迟高于
+920B——**按机器拟合逐指令延迟**是下一增量（4 点对 30 个 mnemonic 欠定，
+优先拟合 mul/mla/addp/rshrn/trn/zip 六个家族）。单测覆盖解析/栈槽链/最长
+路径（`optimizer/analysis/test_critical_path.py`）。
