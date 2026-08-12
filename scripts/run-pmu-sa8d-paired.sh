@@ -32,7 +32,7 @@ RAW="$OUT/paired-pmu-raw.csv"
 : > "$RAW"
 
 METRIC="perf"
-if ! perf stat -e cycles:u true >/dev/null 2>&1; then
+if perf stat -e cycles:u true 2>&1 | grep -q "not supported"; then
   echo "[run-pmu-sa8d-paired] hardware PMU unavailable; metric=cntvct (microbench ticks)"
   METRIC="cntvct"
 fi
