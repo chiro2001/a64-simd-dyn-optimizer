@@ -1,0 +1,14 @@
+{
+  "method": "M25 fixed harness: true uniform [-255,255], C==NEON prefiltered shared latency sequence, batch=4096, CNTVCT, median of 31, kernel ticks = impl total minus same-binary empty total",
+  "candidates": {
+    "upstream": {"920b": 19227, "n1": 8756},
+    "widen": {"920b": 20474, "n1": 10425},
+    "proto_b": {"920b": 29822, "n1": 13703},
+    "proto_c": {"920b": 34580, "n1": 14874},
+    "widen-shift64": {"920b": 20301, "n1": 10384},
+    "widen-wide_load": {"920b": 20540, "n1": 10719},
+    "widen-tree_to_mla": {"920b": 20655, "n1": 10654},
+    "widen-wide_load-tree_to_mla": {"920b": 20667, "n1": 10787},
+    "widen-shift64-wide_load-tree_to_mla": {"920b": 20682, "n1": 10789}
+  }
+}

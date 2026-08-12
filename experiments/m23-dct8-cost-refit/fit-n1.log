@@ -1,0 +1,27 @@
+fitted latencies:
+   rshrn    1909.56 (seed 4.0)
+   trn1     1399.01 (seed 2.0)
+   trn2     1399.01 (seed 2.0)
+   mla      1399.01 (seed 4.0)
+   saddl    1350.12 (seed 2.0)
+   zip2     1075.74 (seed 2.0)
+   addp     1064.65 (seed 3.0)
+   smull    274.38 (seed 3.0)
+   mul      235.08 (seed 3.0)
+   ssubl    139.86 (seed 2.0)
+   tbl      137.19 (seed 4.0)
+   add      0.01 (seed 2.0)
+   mov      0.01 (seed 1.0)
+   rev64    0.01 (seed 2.0)
+   sub      0.01 (seed 2.0)
+pred/meas:
+   upstream       pred=11270.36 meas=8756.00
+   widen          pred=11699.01 meas=10425.00
+   proto_b        pred=14167.62 meas=13703.00
+   proto_c        pred=15106.31 meas=14874.00
+   widen-shift64  pred=11699.01 meas=10384.00
+   widen-wide_load pred=11699.01 meas=10719.00
+   widen-tree_to_mla pred=11934.11 meas=10654.00
+   widen-wide_load-tree_to_mla pred=11934.11 meas=10787.00
+   widen-shift64-wide_load-tree_to_mla pred=11934.11 meas=10789.00
+R2=0.456

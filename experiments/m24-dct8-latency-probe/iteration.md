@@ -49,6 +49,10 @@ mul/mla/addp/trn/zip/rshrn/saddl/ssubl/smull 的真实延迟，替换
 留一法已证伪其推广）。模型甚至把实测最慢的 proto_b 排到预测最快
 （920B pred=19.7 vs meas=26502）。
 
+M25 修复 harness 后复跑（`measurements-fixed-harness.json` 口径）：920B
+seed=-0.117 / scaled=+0.133，N1 seed=-0.150 / scaled=-0.167。仍无可信
+排序（N1 为负、920B 接近零），结论不变。
+
 ## 4. 结论
 
 1. **最长依赖路径单项不足以排序这组候选**，无论延迟来自种子表、直接
