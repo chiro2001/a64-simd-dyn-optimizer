@@ -101,3 +101,24 @@ phase 0；上游基座垂直 NEON 对 coeffIdx==0 无 case、什么都不写，�
 `src += srcStride`（15 行都算了第一行），误报“上游 NEON 0.01% 分歧”。
 修复后 **20000 例 × 9 idx 全 0 mismatch**——oracle==C==NEON 精确，无上游
 分歧。hvpp 候选合同定 C 参考 bit-exact。
+
+## 10. proto_hvdot（8x8 二维）与 interp8 家族终态
+
+`kernels/interp8/candidates/proto_hvdot.cpp`：水平 sdot（hps 的 `sum-8192`
+恰由 int8 域 sdot 天然给出）+ 垂直滑窗 `vmlal_s16` + 526336 偏移 +
+`vqrshrun_n_s32`/`vqmovn_u16` 钳位，121 条静态，**C-exact（20000×9 idx
+全 0）**。paired ticks（neon/cand）：**N1 0.674、920B 0.683**——候选慢
+上游 ~48%：上游 hvpp 的二维复用（水平结果跨垂直复用/转置 sdot）远强于
+滑窗 vmlal。
+
+**interp8 家族终态**：
+
+| 方向 | 候选 vs 上游 NEON（N1 / 920B） |
+| --- | --- |
+| hpp 8x8 / 16x16 | 1.014–1.024× / 1.024–1.044×（持平略胜） |
+| vpp 8x8 | 0.965 / 0.918（落后） |
+| hvpp 8x8 | 0.674 / 0.683（显著落后） |
+
+上游在 hpp 用 dotprod/i8mm、在 vpp/hvpp 用更强的复用结构；C-exact 追赶
+vpp/hvpp 需 i8mm 式转置 4×4 `vusdotq` 双向结构。tier-a 在 interp8 的
+现实空间集中在 hpp 的 2–4%。
