@@ -67,6 +67,24 @@ class TestDct8Import(unittest.TestCase):
         xr = next(n for n in ir.nodes if n["op"] == "xor")
         self.assertEqual(xr["imm"], -128)
 
+    def test_shuffle_zeroinitializer_mask_and_result_type(self):
+        ir = import_llvm_ir_text("""
+  %17 = bitcast <8 x i8> %16 to <2 x i32>
+  %18 = shufflevector <2 x i32> %17, <2 x i32> poison, <4 x i32> zeroinitializer
+  %19 = bitcast <4 x i32> %18 to <16 x i8>
+""")
+        sh = next(n for n in ir.nodes if n["op"] == "shuffle")
+        self.assertEqual(sh["type"], "<4 x i32>")
+        self.assertEqual(sh["mask"], [0, 0, 0, 0])
+
+    def test_shuffle_result_type_is_mask_type(self):
+        ir = import_llvm_ir_text("""
+  %37 = shufflevector <4 x i32> %a, <4 x i32> %b, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
+""")
+        sh = next(n for n in ir.nodes if n["op"] == "shuffle")
+        self.assertEqual(sh["type"], "<8 x i32>")
+        self.assertEqual(sh["mask"], [0, 1, 2, 3, 4, 5, 6, 7])
+
 
 if __name__ == "__main__":
     unittest.main()

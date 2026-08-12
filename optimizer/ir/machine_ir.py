@@ -52,11 +52,19 @@ def _type_width(t):
 
 
 def _parse_shuffle_mask(args):
-    m = re.search(r"<(\d+) x i32> <(.+)>", args)
+    m = re.search(r"<(\d+) x i32>\s+(zeroinitializer|<(.+)>)", args)
     if not m:
         return None
-    parts = [int(x.strip()) for x in m.group(2).replace("i32", "").split(",")]
+    if m.group(2) == "zeroinitializer":
+        return [0] * int(m.group(1))
+    parts = [int(x.strip()) for x in m.group(3).replace("i32", "").split(",")]
     return parts
+
+
+def _shuffle_result_type(args):
+    """Result vector type of a shufflevector = the mask vector's type."""
+    types = re.findall(r"<(\d+) x i\d+>", args)
+    return "<%s x i32>" % types[-1] if types else None
 
 
 def _parse_operands(args):
@@ -203,7 +211,7 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("shufflevector"):
             ops = _parse_operands(rhs)
             mask = _parse_shuffle_mask(rhs)
-            ir.add({"op": "shuffle", "type": _op_type(rhs),
+            ir.add({"op": "shuffle", "type": _shuffle_result_type(rhs),
                     "src": ops, "mask": mask, "dst": dst})
         elif rhs.startswith("bitcast"):
             ops = _parse_operands(rhs)

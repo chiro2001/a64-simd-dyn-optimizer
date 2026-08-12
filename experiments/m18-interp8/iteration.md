@@ -68,6 +68,29 @@ importer 已知 gap（下一轮按序扩展）：
 ## 7. proto_dot 候选（8x8 与 16x16）
 
 `kernels/interp8/candidates/proto_dot.cpp`（8x8）与 `proto_dot16.cpp`
+
+## 8. roundtrip codegen 闭环（2026-08-13 补）
+
+- 修复 importer 两个 shufflevector 缺陷：`zeroinitializer` mask 此前丢失
+  （现解析为全 0）、shuffle 节点此前记录源类型而非结果类型（现取 mask
+  向量类型）；`optimizer/ir/test_machine_ir.py` 新增两条回归单测；
+- 新增 `optimizer/ir/codegen.py::emit_interp8_intrinsics()`，覆盖 dotprod
+  家族：`vld1q_u8_x3`+`extractvalue`、`vqtbl1q_u8`、`vdotq_s32`（splat 或
+  寄存器累加器）、`vqrshrun_n_s16`、i16/i32 窄化 trunc、u8 符号偏移
+  xor（`veorq + vdup 128`）、`<2 x i32>` lane 广播与 `<4 x i32>` 拼接
+  shuffle；
+- 差分：`kernels/interp8/roundtrip_verify.cpp` 对标
+  `interp_horiz_pp_c<8,8,8>`，qemu 20 万例、4 相位、stride/dstStride
+  {8,16,32}：
+
+```text
+cases=200000 mismatches=0
+```
+
+至此 interp8 的"LLVM IR → MachineIR → codegen → C-exact roundtrip"主链
+闭环，importer/codegen 覆盖从 DCT 的 MAC/narrow 家族扩展到 dotprod
+家族；roundtrip 是后续 interp8 结构搜索（参照 i8mm 16 宽 vusdotq 方向）
+的可信起点。
 （16x16）：C-exact dotprod 候选（uint8→int8 变换 + dotprod_permute_tbl +
 `vdotq_lane_s32` + 64·128 校正 + `vqrshrun_n_s16`），4 行批量全展开。
 
