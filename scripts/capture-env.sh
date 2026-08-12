@@ -25,20 +25,14 @@ mkdir -p "$OUT"
   cat /proc/sys/kernel/perf_event_paranoid
   echo
   echo "=== tool versions ==="
-  git --version
-  cmake --version | head -1
-  ninja --version
-  gcc --version | head -1
-  clang --version | head -1
-  llvm-mc --version | head -1
-  llvm-objdump --version | head -1
-  llvm-mca --version | head -1
-  qemu-aarch64 --version | head -1
-  z3 --version
-  jq --version
-  rg --version | head -1
-  perf --version
-  python3 --version
+  for t in git cmake ninja gcc clang llvm-mc llvm-objdump llvm-mca \
+           qemu-aarch64 z3 jq rg perf python3 objdump; do
+    if command -v "$t" >/dev/null 2>&1; then
+      echo "$t: $($t --version 2>/dev/null | head -1)"
+    else
+      echo "$t: MISSING"
+    fi
+  done
   echo
   echo "=== SVE probe ==="
   grep -m1 -o "sve" /proc/cpuinfo || echo "sve: absent"
@@ -52,5 +46,10 @@ mkdir -p "$OUT"
   git -C "$ROOT/third_party/x265" rev-parse HEAD 2>/dev/null || true
 } > "$OUT/environment.txt"
 
-scripts/doctor.sh --json > "$OUT/environment.json"
+if command -v jq >/dev/null 2>&1; then
+  scripts/doctor.sh --json > "$OUT/environment.json"
+else
+  echo '{"note":"doctor.sh skipped: jq not installed on this host"}' \
+    > "$OUT/environment.json"
+fi
 echo "[capture-env] wrote $OUT/environment.txt and $OUT/environment.json"
