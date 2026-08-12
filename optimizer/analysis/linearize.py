@@ -1,0 +1,310 @@
+"""Lane-tracking linearization analysis for the constant-rearrangement rewrite.
+
+Every vector value gets a symbolic form: for each lane, a dict mapping a
+LEAF lane (a boundary value the codegen can multiply directly, e.g. the
+s32 result of `sext(load)` or a constant load) to a coefficient. Elementwise
+add/sub/mul-by-constant and pure-permutation shuffles propagate exactly;
+nonlinear ops (mul of two non-constant values) stop propagation and mark the
+node opaque (a new leaf).
+
+This is the analysis half of `fold_shuffles_into_constants`: once a narrow
+output's form is a sparse linear combination of leaf lanes, the rewrite can
+emit `mul(pre-permuted constant, leaf)` terms and delete the runtime
+shuffles. The DCT16/DCT32 internal kernels (user input 2026-08-13) achieve
+30-60% this way on SVE256, where tbl/splice permutes are relatively more
+expensive than on NEON128.
+"""
+
+import re
+from collections import defaultdict
+
+
+def _add_terms(a, b, sign=1.0):
+    out = dict(a)
+    for k, v in b.items():
+        out[k] = out.get(k, 0.0) + sign * v
+    return {k: v for k, v in out.items() if v != 0.0}
+
+
+def lane_forms(ir):
+    """Return {dst: [[(leaf, coeff), ...] per lane]} and the leaf set."""
+    nodes = ir.nodes
+    bydst = {str(n.get("dst")): n for n in nodes}
+    forms = {}
+    opaque = set()
+    symbolic = set()   # forms whose coefficients went through a constant
+                       # smull (numeric value not tracked yet)
+
+    def lanes_of(node):
+        t = node.get("type") or ""
+        m = re.match(r"<(\d+) x i(\d+)>", t)
+        if not m:
+            if node.get("op") == "intrinsic":
+                if node.get("intrinsic") in ("smull", "addp"):
+                    return 4, 32
+                if node.get("intrinsic") == "rshrn":
+                    return 4, 16
+            return None, None
+        return int(m.group(1)), int(m.group(2))
+
+    def get(dst):
+        if dst in forms:
+            return forms[dst]
+        if dst in opaque:
+            return "opaque"
+        return None
+
+    # first pass: identify leaves and opaque nodes
+    users = defaultdict(list)
+    for n in nodes:
+        for s in (n.get("src") or []):
+            for r in (s if isinstance(s, list) else [s]):
+                users[str(r)].append(n)
+
+    # A node is opaque if it is a mul of two non-constant values (product of
+    # two data-dependent forms). Everything else propagates.
+    for n in nodes:
+        if n["op"] == "mul" and len(n.get("src") or []) == 2 \
+                and "const_vec" not in n:
+            opaque.add(str(n["dst"]))
+
+    def leaf_key(dst, lane):
+        return (dst, lane)
+
+    # second pass: propagate in order
+    for n in nodes:
+        dst = str(n["dst"]) if n.get("dst") is not None else None
+        op = n["op"]
+        nl, width = lanes_of(n)
+        if dst is None or nl is None:
+            continue
+        if dst in opaque:
+            continue
+        srcs = n.get("src") or []
+        if op == "load":
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op == "sext":
+            a = get(srcs[0])
+            if a is None or a == "opaque":
+                forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+                continue
+            forms[dst] = a
+            continue
+        if op == "shuffle":
+            mask = n.get("mask")
+            a = get(srcs[0])
+            if len(srcs) == 1 and mask is not None and a not in (None,
+                                                                 "opaque"):
+                # result lane i <- source lane mask[i]
+                forms[dst] = [a[m] for m in mask]
+                continue
+            if len(srcs) == 2 and mask is not None:
+                a = get(srcs[0])
+                b = get(srcs[1])
+                if a not in (None, "opaque") and b not in (None, "opaque"):
+                    n_a = len(a)
+                    out = []
+                    for m in mask:
+                        out.append(a[m] if m < n_a else b[m - n_a])
+                    forms[dst] = out
+                    continue
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op in ("add", "sub"):
+            if len(srcs) == 2:
+                a, b = get(srcs[0]), get(srcs[1])
+                if a not in (None, "opaque") and b not in (None, "opaque"):
+                    sign = 1.0 if op == "add" else -1.0
+                    forms[dst] = [_add_terms(x, y, sign)
+                                  for x, y in zip(a, b)]
+                    continue
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op == "mul" and "const_vec" in n:
+            a = get(srcs[0])
+            cv = n["const_vec"]
+            if a not in (None, "opaque") and len(cv) == len(a):
+                forms[dst] = [{k: v * cv[i] for k, v in a[i].items()}
+                              for i in range(len(a))]
+                continue
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op == "intrinsic" and n.get("intrinsic") == "smull":
+            a = get(n["args"][0]["ref"])
+            b = get(n["args"][1]["ref"])
+            # widening is 1:1 on lanes. If one side is an identity leaf
+            # (a constant table load), the other side's leaf terms survive
+            # unchanged (the constant scaling folds into the precomputed
+            # coefficients). Both data-dependent: nonlinear -> new leaf.
+            def is_const_leaf(f):
+                return f is not None and f != "opaque" and all(
+                    len(t) == 1 and list(t.values())[0] == 1.0 for t in f)
+
+            if is_const_leaf(a) and b not in (None, "opaque"):
+                forms[dst] = b
+                symbolic.add(dst)
+            elif is_const_leaf(b) and a not in (None, "opaque"):
+                forms[dst] = a
+                symbolic.add(dst)
+            else:
+                forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op == "intrinsic" and n.get("intrinsic") == "addp":
+            a = get(n["args"][0]["ref"])
+            b = get(n["args"][1]["ref"])
+            if a not in (None, "opaque") and b not in (None, "opaque"):
+                n_a = len(a)
+                out = []
+                for i in range(0, n_a, 2):
+                    out.append(_add_terms(a[i], a[i + 1]))
+                for i in range(0, len(b), 2):
+                    out.append(_add_terms(b[i], b[i + 1]))
+                forms[dst] = out
+                continue
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        if op == "intrinsic" and n.get("intrinsic") == "rshrn":
+            a = get(n["args"][0]["ref"])
+            if a not in (None, "opaque"):
+                forms[dst] = a
+                continue
+            forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+            continue
+        # unknown / anything else: new leaf
+        forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
+    return forms, symbolic
+
+
+def term_count_report(ir):
+    """Per-rshrn term counts, for choosing the rewrite budget."""
+    forms, _ = lane_forms(ir)
+    out = []
+    for n in ir.nodes:
+        if n["op"] == "intrinsic" and n.get("intrinsic") == "rshrn":
+            f = forms.get(str(n["dst"]), [])
+            if f:
+                out.append(max(len(x) for x in f))
+    return out
+
+
+def fold_shuffles_into_constants(ir, max_terms=16):
+    """Rewrite sparse narrow outputs as dots of raw leaf lanes with
+    pre-permuted constants (the constant-rearrangement rule).
+
+    For every rshrn whose symbolic form has <= max_terms terms per lane and
+    purely numeric (integer) coefficients, emit the dense equivalent:
+    one `mul(const_vec, leaf)` per contributing leaf vector, elementwise
+    adds, then the same rshrn. Consumers of the old rshrn are retargeted to
+    the new value; the old shuffle/addp chain is left in place and removed
+    by the C++ compiler's dead-code elimination.
+    """
+    forms, symbolic = lane_forms(ir)
+    bydst = {str(n.get("dst")): n for n in ir.nodes}
+    nodes = list(ir.nodes)
+    retarget = {}
+    added = []
+    idc = [max((n.get("id") or 0) for n in nodes) + 1]
+
+    def next_id():
+        v = idc[0]
+        idc[0] += 1
+        return v
+
+    def numeric_int(d):
+        return all(float(v).is_integer() for v in d.values())
+
+    for n in nodes:
+        if not (n["op"] == "intrinsic" and n.get("intrinsic") == "rshrn"):
+            continue
+        src = n["args"][0]["ref"]
+        form = forms.get(str(src))
+        if not form or len(form) != 4:
+            continue
+        if str(src) in symbolic:
+            continue    # coefficients are unresolved constant-smull values
+        if any(not numeric_int(t) for t in form):
+            continue
+        if max(len(t) for t in form) > max_terms:
+            continue
+        # group coefficients by leaf vector
+        by_leaf = {}
+        aligned = True
+        for lane, terms in enumerate(form):
+            for (leaf, leaf_lane), coeff in terms.items():
+                if leaf_lane != lane:
+                    aligned = False
+                    break
+                by_leaf.setdefault(leaf, [0.0, 0.0, 0.0, 0.0])
+                by_leaf[leaf][lane] += float(coeff)
+            if not aligned:
+                break
+        if not aligned:
+            # lane-permuted or matrix-vector shapes need the shared-constant
+            # matrix rewrite (DCT16 even path), not this elementwise fold.
+            continue
+        # skip the identity case (single leaf, coefficient 1 per lane)
+        if len(by_leaf) == 1:
+            only = next(iter(by_leaf.values()))
+            if all(abs(only[i] - 1.0) < 1e-9 for i in range(4)):
+                continue
+        if len(by_leaf) > max_terms:
+            continue
+        acc = None
+        for leaf, coeffs in by_leaf.items():
+            ivec = [int(round(c)) for c in coeffs]
+            if not any(ivec):
+                continue
+            mid = "lin_%d" % next_id()
+            added.append({"op": "mul", "type": "<4 x i32>",
+                          "src": [leaf], "const_vec": ivec,
+                          "dst": mid, "id": next_id()})
+            if acc is None:
+                acc = mid
+            else:
+                aid = "lin_%d" % next_id()
+                added.append({"op": "add", "type": "<4 x i32>",
+                              "src": [acc, mid], "dst": aid,
+                              "id": next_id()})
+                acc = aid
+        if acc is None:
+            continue
+        new_dst = "lin_out_%d" % next_id()
+        imm = next(a["imm"] for a in n["args"] if "imm" in a)
+        added.append({"op": "intrinsic", "intrinsic": "rshrn",
+                      "src": [acc], "dst": new_dst,
+                      "args": [{"ref": acc}, {"imm": imm}],
+                      "id": next_id()})
+        retarget[str(n["dst"])] = new_dst
+
+    if not added:
+        return ir
+    # retarget consumers of the replaced rshrn values
+    out = []
+    for n in nodes:
+        if n["op"] == "intrinsic" and n.get("intrinsic") in ("smull", "addp",
+                                                             "rshrn"):
+            args = []
+            for a in n["args"]:
+                if "ref" in a and a["ref"] in retarget:
+                    args.append({"ref": retarget[a["ref"]]})
+                else:
+                    args.append(a)
+            n = dict(n)
+            n["args"] = args
+            out.append(n)
+            continue
+        if "src" in n:
+            srcs = n["src"]
+            if isinstance(srcs, list):
+                srcs = [retarget.get(s, s) for s in srcs]
+            elif srcs in retarget:
+                srcs = retarget[srcs]
+            n = dict(n)
+            n["src"] = srcs
+        out.append(n)
+    out.extend(added)
+    for i, n in enumerate(out):
+        n["id"] = i
+    ir.nodes = out
+    return ir

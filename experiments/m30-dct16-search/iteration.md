@@ -41,9 +41,19 @@ load/sext(load) 的 lane。逐 op 传播：
 | addp(a,b) | lane i ← a[2i]+a[2i+1]（b 同），项两两合并 |
 | rshrn | 1:1 窄化 |
 
-对每个窄化输出：若符号形式的非零项数 ≤ 预算（例如 ≤8），就把该输出改写为
-**对 raw 叶子 lane 的 `mul(预置换常量)` + 归约**——运行时 shuffle 消失，
-置换进编译期常量。这就是"常量重排"的搜索形式：
+实测项数分布（128 个窄化输出）：1 项 ×8、2 项 ×32、**16 项 ×56**、
+256 项 ×32。16 项的是偶数路径输出。
+
+关键形状发现：DCT16 偶数输出是 **共享常量矩阵 × 逐行叶子**
+（`out[i] = dot(C, leaf_i)`，C 对 4 个输出 lane 共享），不是"叶子 lane 与
+输出 lane 对齐"的 elementwise 组合。因此：
+
+- 已实现的 `fold_shuffles_into_constants` 只处理**对齐**形状（否则语义
+  错误），单测覆盖对齐/置换两种 case；在 DCT16 seed 上按设计命中 0 次；
+- 下一增量 = "共享常量矩阵"规则：检测 `out[i] = Σ_j C[j]·leaf_i[j]`，
+  改写为 `mul(C_lo, leaf_i_lo) + mul(C_hi, leaf_i_hi) + addp`（C 预置换、
+  跨输出共享），运行时 rev32/zip/rev64 全部消失。预算 =
+  `linearize_max_terms` 控制触发范围：
 
 1. 项数少 → 直接 mul+addp（SVE256 上 tbl/splice permute 更贵，收益反转）；
 2. 项数多 → 不触发（避免 NEON128 的稠密亏损）；
