@@ -94,6 +94,33 @@ static bool verify_shape(const EncoderPrimitives& cprim,
             if (memcmp(want, got, (size_t)shape * shape) != 0)
             {
                 fprintf(stderr, "MISMATCH shape=%d phase=%d\n", shape, phase);
+                if (mismatches == 0)
+                {
+                    for (int r = 0; r < shape; r++)
+                    {
+                        for (int c = 0; c < shape; c++)
+                        {
+                            if (want[r * shape + c] != got[r * shape + c])
+                            {
+                                fprintf(stderr,
+                                        "  first diff r=%d c=%d want=%d got=%d"
+                                        " src=%d,%d,%d,%d,%d,%d,%d,%d\n",
+                                        r, c, want[r * shape + c],
+                                        got[r * shape + c],
+                                        a[off + r * STRIDE + c - 3],
+                                        a[off + r * STRIDE + c - 2],
+                                        a[off + r * STRIDE + c - 1],
+                                        a[off + r * STRIDE + c],
+                                        a[off + r * STRIDE + c + 1],
+                                        a[off + r * STRIDE + c + 2],
+                                        a[off + r * STRIDE + c + 3],
+                                        a[off + r * STRIDE + c + 4]);
+                                goto next_phase;
+                            }
+                        }
+                    }
+                }
+next_phase:
                 mismatches++;
                 break;
             }
