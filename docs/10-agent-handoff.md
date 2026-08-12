@@ -192,6 +192,11 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
      差分；首版 oracle 漏逐行推进，误报“上游 0.01% 分歧”，修复后
      **20000 例×9 idx 全 0 mismatch（oracle==C==NEON）**，无上游分歧。
      hvpp 候选合同定 C 参考 bit-exact，下一步做 hvpp C-exact 候选。
+   - **M18 终态**：`proto_hvdot`（121 条）C-exact，但 vs 上游 N1 0.674/
+     920B 0.683（滑窗 vmlal 远弱于上游二维复用）。interp8 家族：hpp
+     1.014–1.044×（唯一接近）、vpp 0.92–0.97、hvpp 0.67–0.68——上游用
+     dotprod/i8mm + 转置 sdot 双向结构；tier-a 在 interp8 的现实空间
+     仅 hpp 的 2–4%。
 6. **P3''/M18 起：interp8_hpp（tier-a 新目标）**：DCT→quant 融合经分析
    收益小（中间缓冲必须保留给 RDO、quant 参数矩阵大、bit-exact 风险
    不对称，见 `experiments/m17-fusion-feasibility/`）。转向
