@@ -1,0 +1,122 @@
+
+pixel-prim.cpp.o:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+000000000000b8a0 <_ZN12_GLOBAL__N_110sa8d8_neonILi8ELi8EEEiPKhlS2_l>:
+    b8a0: 8b010005     	add	x5, x0, x1
+    b8a4: 8b030044     	add	x4, x2, x3
+    b8a8: 8b010427     	add	x7, x1, x1, lsl #1
+    b8ac: 8b030466     	add	x6, x3, x3, lsl #1
+    b8b0: 8b0700a9     	add	x9, x5, x7
+    b8b4: 8b060088     	add	x8, x4, x6
+    b8b8: 8b01012b     	add	x11, x9, x1
+    b8bc: 8b03010a     	add	x10, x8, x3
+    b8c0: 8b01016f     	add	x15, x11, x1
+    b8c4: 8b03014e     	add	x14, x10, x3
+    b8c8: 8b0100ad     	add	x13, x5, x1
+    b8cc: 8b03008c     	add	x12, x4, x3
+    b8d0: fc666894     	ldr	d20, [x4, x6]
+    b8d4: fc636893     	ldr	d19, [x4, x3]
+    b8d8: fc636992     	ldr	d18, [x12, x3]
+    b8dc: fc616805     	ldr	d5, [x0, x1]
+    b8e0: fc636850     	ldr	d16, [x2, x3]
+    b8e4: fd400001     	ldr	d1, [x0]
+    b8e8: fd400051     	ldr	d17, [x2]
+    b8ec: fc616964     	ldr	d4, [x11, x1]
+    b8f0: fc6169e7     	ldr	d7, [x15, x1]
+    b8f4: fc6369d7     	ldr	d23, [x14, x3]
+    b8f8: fc636956     	ldr	d22, [x10, x3]
+    b8fc: fc616926     	ldr	d6, [x9, x1]
+    b900: fc636915     	ldr	d21, [x8, x3]
+    b904: fc6768a0     	ldr	d0, [x5, x7]
+    b908: fc6168a2     	ldr	d2, [x5, x1]
+    b90c: 2e3720e7     	usubl	v7.8h, v7.8b, v23.8b
+    b910: fc6169a3     	ldr	d3, [x13, x1]
+    b914: 2e3520c6     	usubl	v6.8h, v6.8b, v21.8b
+    b918: 2e3020a5     	usubl	v5.8h, v5.8b, v16.8b
+    b91c: 2e322063     	usubl	v3.8h, v3.8b, v18.8b
+    b920: 2e362084     	usubl	v4.8h, v4.8b, v22.8b
+    b924: 2e342000     	usubl	v0.8h, v0.8b, v20.8b
+    b928: 2e332042     	usubl	v2.8h, v2.8b, v19.8b
+    b92c: 2e312021     	usubl	v1.8h, v1.8b, v17.8b
+    b930: 4e678490     	add	v16.8h, v4.8h, v7.8h
+    b934: 6e678484     	sub	v4.8h, v4.8h, v7.8h
+    b938: 4e668407     	add	v7.8h, v0.8h, v6.8h
+    b93c: 6e668400     	sub	v0.8h, v0.8h, v6.8h
+    b940: 4e638446     	add	v6.8h, v2.8h, v3.8h
+    b944: 6e638442     	sub	v2.8h, v2.8h, v3.8h
+    b948: 4e658423     	add	v3.8h, v1.8h, v5.8h
+    b94c: 6e658421     	sub	v1.8h, v1.8h, v5.8h
+    b950: 4e648412     	add	v18.8h, v0.8h, v4.8h
+    b954: 4e7084f1     	add	v17.8h, v7.8h, v16.8h
+    b958: 6e648400     	sub	v0.8h, v0.8h, v4.8h
+    b95c: 6e7084e7     	sub	v7.8h, v7.8h, v16.8h
+    b960: 4e668465     	add	v5.8h, v3.8h, v6.8h
+    b964: 6e668463     	sub	v3.8h, v3.8h, v6.8h
+    b968: 4e628426     	add	v6.8h, v1.8h, v2.8h
+    b96c: 6e628421     	sub	v1.8h, v1.8h, v2.8h
+    b970: 4e7184b0     	add	v16.8h, v5.8h, v17.8h
+    b974: 4e678464     	add	v4.8h, v3.8h, v7.8h
+    b978: 6e7184a5     	sub	v5.8h, v5.8h, v17.8h
+    b97c: 4e608422     	add	v2.8h, v1.8h, v0.8h
+    b980: 4e7284d1     	add	v17.8h, v6.8h, v18.8h
+    b984: 6e608421     	sub	v1.8h, v1.8h, v0.8h
+    b988: 6e7284c6     	sub	v6.8h, v6.8h, v18.8h
+    b98c: 6e678463     	sub	v3.8h, v3.8h, v7.8h
+    b990: 4e512a00     	trn1	v0.8h, v16.8h, v17.8h
+    b994: 4e422887     	trn1	v7.8h, v4.8h, v2.8h
+    b998: 4e516a10     	trn2	v16.8h, v16.8h, v17.8h
+    b99c: 4e426884     	trn2	v4.8h, v4.8h, v2.8h
+    b9a0: 4e4628a2     	trn1	v2.8h, v5.8h, v6.8h
+    b9a4: 4e4668a5     	trn2	v5.8h, v5.8h, v6.8h
+    b9a8: 4e412866     	trn1	v6.8h, v3.8h, v1.8h
+    b9ac: 4e416863     	trn2	v3.8h, v3.8h, v1.8h
+    b9b0: 4e708401     	add	v1.8h, v0.8h, v16.8h
+    b9b4: 6e708400     	sub	v0.8h, v0.8h, v16.8h
+    b9b8: 4e6484f0     	add	v16.8h, v7.8h, v4.8h
+    b9bc: 6e6484e7     	sub	v7.8h, v7.8h, v4.8h
+    b9c0: 4e658444     	add	v4.8h, v2.8h, v5.8h
+    b9c4: 6e658442     	sub	v2.8h, v2.8h, v5.8h
+    b9c8: 4e6384c5     	add	v5.8h, v6.8h, v3.8h
+    b9cc: 6e6384c3     	sub	v3.8h, v6.8h, v3.8h
+    b9d0: 4e902834     	trn1	v20.4s, v1.4s, v16.4s
+    b9d4: 4e872812     	trn1	v18.4s, v0.4s, v7.4s
+    b9d8: 4e852893     	trn1	v19.4s, v4.4s, v5.4s
+    b9dc: 4e832851     	trn1	v17.4s, v2.4s, v3.4s
+    b9e0: 4e906821     	trn2	v1.4s, v1.4s, v16.4s
+    b9e4: 4e856884     	trn2	v4.4s, v4.4s, v5.4s
+    b9e8: 4e876800     	trn2	v0.4s, v0.4s, v7.4s
+    b9ec: 4e836842     	trn2	v2.4s, v2.4s, v3.4s
+    b9f0: 4e748426     	add	v6.8h, v1.8h, v20.8h
+    b9f4: 4e738490     	add	v16.8h, v4.8h, v19.8h
+    b9f8: 4e728405     	add	v5.8h, v0.8h, v18.8h
+    b9fc: 4e718447     	add	v7.8h, v2.8h, v17.8h
+    ba00: 4e60b8c6     	abs	v6.8h, v6.8h
+    ba04: 4e60ba10     	abs	v16.8h, v16.8h
+    ba08: 4e60b8a5     	abs	v5.8h, v5.8h
+    ba0c: 4e60b8e7     	abs	v7.8h, v7.8h
+    ba10: 4e747423     	sabd	v3.8h, v1.8h, v20.8h
+    ba14: 4e737484     	sabd	v4.8h, v4.8h, v19.8h
+    ba18: 4ed038c1     	zip1	v1.2d, v6.2d, v16.2d
+    ba1c: 4ed078c6     	zip2	v6.2d, v6.2d, v16.2d
+    ba20: 4ec738b0     	zip1	v16.2d, v5.2d, v7.2d
+    ba24: 4ec778a5     	zip2	v5.2d, v5.2d, v7.2d
+    ba28: 4e717442     	sabd	v2.8h, v2.8h, v17.8h
+    ba2c: 4e727400     	sabd	v0.8h, v0.8h, v18.8h
+    ba30: 6e666421     	umax	v1.8h, v1.8h, v6.8h
+    ba34: 6e656606     	umax	v6.8h, v16.8h, v5.8h
+    ba38: 4ec43865     	zip1	v5.2d, v3.2d, v4.2d
+    ba3c: 4ec47863     	zip2	v3.2d, v3.2d, v4.2d
+    ba40: 4ec23804     	zip1	v4.2d, v0.2d, v2.2d
+    ba44: 4e668421     	add	v1.8h, v1.8h, v6.8h
+    ba48: 4ec27800     	zip2	v0.2d, v0.2d, v2.2d
+    ba4c: 6e6364a3     	umax	v3.8h, v5.8h, v3.8h
+    ba50: 6e606482     	umax	v2.8h, v4.8h, v0.8h
+    ba54: 4e638420     	add	v0.8h, v1.8h, v3.8h
+    ba58: 4e628400     	add	v0.8h, v0.8h, v2.8h
+    ba5c: 6e703800     	uaddlv	s0, v0.8h
+    ba60: 1e260000     	fmov	w0, s0
+    ba64: 11000400     	add	w0, w0, #0x1
+    ba68: 53017c00     	lsr	w0, w0, #1
+    ba6c: d65f03c0     	ret

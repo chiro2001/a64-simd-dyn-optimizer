@@ -14,7 +14,17 @@ acceptance:
   min_weighted_speedup: 1.30
   ci_lower_bound_min: 1.00
   max_unweighted_regression_per_shape: 0.97
-benchmark_protocol_version: 1
+benchmark_protocol_version: 2
+noise_gate:
+  process_runs: 5
+  cv_threshold: 0.10
+  min_valid_processes: 3
+  pin_cpu: 0
+  drop_policy: whole_process_run
+timing:
+  clock: steady_clock_ns
+  counter: cntvct_el0
+  batch_calls: 4096
 cases:
   - {bit_depth: 8, shape: 8x8,   weight: 0.20, placeholder: true}
   - {bit_depth: 8, shape: 16x16, weight: 0.35, placeholder: true}

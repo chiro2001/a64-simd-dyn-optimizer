@@ -1,0 +1,9 @@
+
+pixel-prim.cpp.o:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+000000000000e474 <_ZN12_GLOBAL__N_111sa8d16_neonILi16ELi16EEEiPKhlS2_l>:
+    e474: 17fffe1f     	b	0xdcf0 <_ZN12_GLOBAL__N_1L21pixel_sa8d_16x16_neonEPKhlS1_l>
+    e478: d503201f     	nop
+    e47c: d503201f     	nop
