@@ -124,6 +124,24 @@ int main(int argc, char** argv)
                         break;
                     }
                 }
+                if (mism == 0)
+                {
+                    fprintf(stderr, "input:");
+                    for (int r = 0; r < 8; r++)
+                    {
+                        fprintf(stderr, "\n row%d:", r);
+                        for (int c = 0; c < 8; c++)
+                            fprintf(stderr, " %d",
+                                    (int)buf[(size_t)r * stride + c]);
+                    }
+                    fprintf(stderr, "\nwant:");
+                    for (int k = 0; k < 64; k++)
+                        fprintf(stderr, " %d", (int)want[k]);
+                    fprintf(stderr, "\ngot :");
+                    for (int k = 0; k < 64; k++)
+                        fprintf(stderr, " %d", (int)got[k]);
+                    fprintf(stderr, "\n");
+                }
             }
             mism++;
         }
