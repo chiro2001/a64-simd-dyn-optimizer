@@ -1,0 +1,18 @@
+[
+ {
+  "tag": "baseline",
+  "rewrites": [],
+  "insns": 343,
+  "simd_load": 336,
+  "text_sha12": "a49a7bc373eb"
+ },
+ {
+  "tag": "widen",
+  "rewrites": [
+   "widen"
+  ],
+  "insns": 347,
+  "simd_load": 340,
+  "text_sha12": "490eeb533765"
+ }
+]
