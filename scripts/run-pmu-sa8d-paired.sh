@@ -11,7 +11,7 @@
 # NEON->SVE256).
 #
 # Usage: scripts/run-pmu-sa8d-paired.sh <bench-binary> <shape>
-#          [pairs_per_proc=10] [procs=3] [batch=4096] [outdir]
+#          [pairs_per_proc=10] [procs=3] [batch=4096] [outdir] [mode=latency]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -23,6 +23,7 @@ PAIRS="${3:-10}"
 PROCS="${4:-3}"
 BATCH="${5:-4096}"
 OUT="${6:-experiments/m11-sve-920b/benchmark/pmu}"
+MODE="${7:-latency}"
 MIN_VALID="${MIN_VALID:-30}"
 KEEP_LO="${KEEP_LO:-1.10}"
 CPU="${CPU:-0}"
@@ -42,12 +43,12 @@ run_perf() {
   local tmp
   tmp="$(mktemp)"
   if [ "$METRIC" = "cntvct" ]; then
-    taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" latency 1 "$BATCH" --noverify \
+    taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" "$MODE" 1 "$BATCH" --noverify \
       2>/dev/null | tail -n 1 | awk -F, '{printf "%.0f", $7}'
     return 0
   fi
   if ! perf stat -x, -e cycles:u,instructions:u \
-    taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" latency 1 "$BATCH" --noverify \
+    taskset -c "$CPU" "$BIN" "$SHAPE" "$impl" "$MODE" 1 "$BATCH" --noverify \
       >/dev/null 2>"$tmp"; then
     cat "$tmp" >&2
     rm -f "$tmp"
@@ -70,9 +71,9 @@ for p in $(seq 1 "$PROCS"); do
   done
 done
 
-python3 - "$RAW" "$OUT" "$MIN_VALID" "$KEEP_LO" "$BATCH" "$METRIC" <<'PY'
+python3 - "$RAW" "$OUT" "$MIN_VALID" "$KEEP_LO" "$BATCH" "$METRIC" "$MODE" <<'PY'
 import csv, json, random, statistics, sys
-raw, out, min_valid, keep_lo, batch, metric = sys.argv[1:7]
+raw, out, min_valid, keep_lo, batch, metric, mode = sys.argv[1:8]
 min_valid, keep_lo, batch = int(min_valid), float(keep_lo), int(batch)
 
 valid = []
@@ -108,6 +109,7 @@ ok = (len(valid) >= min_valid and lo > keep_lo and nprocs >= 3)
 with open(f"{out}/paired-pmu-summary.txt", "w") as f:
     f.write("valid_pairs=%d procs=%d\n" % (len(valid), nprocs))
     f.write("metric_source=%s\n" % metric)
+    f.write("mode=%s\n" % mode)
     f.write("speedup_median=%.4f geomean=%.4f bootstrap95=[%.4f, %.4f]\n"
             % (med, geo, lo, hi))
     f.write("keep_lo=%.3f min_valid=%d verdict=%s\n"
@@ -123,6 +125,7 @@ print(json.dumps({
     "speedup_median": med, "speedup_geomean": geo,
     "bootstrap95": [lo, hi], "keep_lo": keep_lo,
     "metric_source": metric,
+    "mode": mode,
     "verdict": "KEEP" if ok else "REJECT",
 }))
 sys.exit(0 if ok else 1)

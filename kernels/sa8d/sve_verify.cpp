@@ -98,6 +98,11 @@ int main(int argc, char** argv)
     int vl_override = 0;
     for (int i = 1; i < argc; i++)
     {
+        // PR_SVE_SET_VL argument semantics diverge between the Linux kernel
+        // (bits) and qemu-user (bytes). The rejection gate only needs
+        // VL=128 bits: passing 16 yields 16 bytes on qemu-user, and on a
+        // native kernel 16 is clamped up to the 128-bit minimum (16 bytes),
+        // so `--vl-bytes=16` selects VL=128 bits on both runtimes.
         if (strncmp(argv[i], "--vl-bytes=", 11) == 0)
             vl_override = atoi(argv[i] + 11);
         else
