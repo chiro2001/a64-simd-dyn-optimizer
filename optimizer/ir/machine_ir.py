@@ -69,6 +69,29 @@ def _op_type(args):
     return m.group(1) if m else None
 
 
+def _parse_imm(text):
+    """Parse an LLVM immediate: plain integer or `splat (i32 N)`."""
+    text = text.strip()
+    m = re.match(r"splat \(i\d+\s+(\d+)\)", text)
+    if m:
+        return int(m.group(1))
+    return int(text)
+
+
+def _parse_vector_const(rhs):
+    """Parse a trailing `<i32 a, i32 b, ...>` vector constant operand."""
+    m = re.search(r",\s*<\s*i\d+\s+(.+?)>\s*$", rhs)
+    if not m:
+        return None
+    out = []
+    for part in m.group(1).split(","):
+        part = part.strip()
+        if part.startswith("i"):
+            part = part.split(None, 1)[1]
+        out.append(int(part))
+    return out
+
+
 def import_llvm_ir_text(ir_text, function=None):
     """Import the restricted LLVM IR shape emitted for x265 AArch64 kernels.
 
@@ -86,8 +109,18 @@ def import_llvm_ir_text(ir_text, function=None):
            or line.startswith("module") or line.startswith("define") \
            or line.endswith(":") or line == "}":
             continue
+        if line.startswith("@") and "=" in line:
+            continue    # global constant/alias declaration
         m = _INSN_RE.match(line)
         if not m:
+            if line.startswith("store"):
+                t = line.split("store", 1)[1].split(",", 1)[0].strip()
+                val = re.search(r"%([A-Za-z0-9._]+)\s*,\s*ptr", line)
+                ptr = re.search(r"ptr\s+%([A-Za-z0-9._]+)", line)
+                ir.add({"op": "store", "type": t,
+                        "src": val.group(1) if val else None,
+                        "ptr": ptr.group(1) if ptr else None})
+                continue
             if line.startswith("ret"):
                 m2 = re.match(r"ret\s+(\S+)\s+%([A-Za-z0-9._]+)", line)
                 if m2:
@@ -99,14 +132,30 @@ def import_llvm_ir_text(ir_text, function=None):
         if rhs.startswith("load"):
             t = rhs.split("load", 1)[1].split(",")[0].strip()
             ptr = re.search(r"ptr %([A-Za-z0-9._]+)", rhs)
-            ir.add({"op": "load", "type": t, "ptr": ptr.group(1) if ptr else None,
-                    "dst": dst})
+            node = {"op": "load", "type": t, "dst": dst}
+            if ptr:
+                node["ptr"] = ptr.group(1)
+            else:
+                gp = re.search(
+                    r"ptr getelementptr inbounds nuw \(i8, ptr "
+                    r"@([A-Za-z0-9._]+), i64 (\d+)\)", rhs)
+                if gp:
+                    node["const_name"] = gp.group(1)
+                    node["const_off"] = int(gp.group(2))
+                else:
+                    raise ValueError("unsupported load ptr: %r" % rhs)
+            ir.add(node)
         elif rhs.startswith("getelementptr"):
             ir.add({"op": "addr", "type": "ptr", "rhs": rhs, "dst": dst})
         elif rhs.startswith("zext"):
             ops = _parse_operands(rhs)
             t = rhs.split("to", 1)[1].strip()
             ir.add({"op": "zext", "type": t, "src": ops[0] if ops else None,
+                    "dst": dst})
+        elif rhs.startswith("sext"):
+            ops = _parse_operands(rhs)
+            t = rhs.split("to", 1)[1].strip()
+            ir.add({"op": "sext", "type": t, "src": ops[0] if ops else None,
                     "dst": dst})
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
@@ -119,6 +168,16 @@ def import_llvm_ir_text(ir_text, function=None):
             ops = _parse_operands(rhs)
             node = {"op": "add", "type": _op_type(rhs), "src": ops, "dst": dst}
             if len(ops) == 1:
+                cm = re.search(r",\s*(\d+)\s*$", rhs)
+                node["const"] = int(cm.group(1)) if cm else None
+            ir.add(node)
+        elif rhs.startswith("mul"):
+            ops = _parse_operands(rhs)
+            node = {"op": "mul", "type": _op_type(rhs), "src": ops, "dst": dst}
+            cv = _parse_vector_const(rhs)
+            if cv is not None:
+                node["const_vec"] = cv
+            elif len(ops) == 1:
                 cm = re.search(r",\s*(\d+)\s*$", rhs)
                 node["const"] = int(cm.group(1)) if cm else None
             ir.add(node)
@@ -137,17 +196,30 @@ def import_llvm_ir_text(ir_text, function=None):
         elif "llvm.aarch64.neon." in rhs:
             name = re.search(r"@llvm\.aarch64\.neon\.([a-z0-9_]+)", rhs).group(1)
             ops = _parse_operands(rhs)
+            args = []
+            call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
+            for a in call_args.split(","):
+                a = a.strip()
+                ref = re.search(r"%([A-Za-z0-9._]+)", a)
+                if ref:
+                    args.append({"ref": ref.group(1)})
+                    continue
+                imm = re.search(r"i\d+\s+(-?\d+)", a)
+                if imm:
+                    args.append({"imm": int(imm.group(1))})
+                    continue
+                args.append({"raw": a})
             ir.add({"op": "intrinsic", "intrinsic": name,
-                    "src": ops, "dst": dst})
+                    "src": ops, "args": args, "dst": dst})
         elif rhs.startswith("lshr"):
             ops = _parse_operands(rhs)
             ir.add({"op": "lshr", "type": _op_type(rhs),
-                    "src": ops, "amt": int(rhs.rsplit(",", 1)[1].strip()),
+                    "src": ops, "amt": _parse_imm(rhs.rsplit(",", 1)[1]),
                     "dst": dst})
         elif rhs.startswith("shl"):
             ops = _parse_operands(rhs)
             ir.add({"op": "shl", "type": _op_type(rhs),
-                    "src": ops, "amt": int(rhs.rsplit(",", 1)[1].strip()),
+                    "src": ops, "amt": _parse_imm(rhs.rsplit(",", 1)[1]),
                     "dst": dst})
         else:
             raise ValueError("unhandled RHS: %r" % rhs)

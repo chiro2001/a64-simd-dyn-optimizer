@@ -1,0 +1,24 @@
+schema_version: 1
+run_id: m13-dct8-roundtrip
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu]
+project_commit: c80f203
+x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
+target:
+  tier: a
+  migration: neon-to-neon
+seed:
+  llvm_ir: experiments/m12-dct8/llvm-ir/dct8-neon-seed.ll
+  machine_ir: experiments/m12-dct8/imported/machine-ir.json
+  nodes: 380
+candidate:
+  source: generated/dct8/roundtrip_dct8.cpp
+  symbol: dynopt_dct8_neon_candidate
+gates:
+  - {name: candidate_eq_neon_bit_exact, result: pass, detail: "200000 cases, 0 mismatch"}
+  - {name: candidate_eq_c_oracle, result: fail-expected, detail: "1733/200000 = upstream s16 wrap bug faithfully reproduced"}
+upstream_bug:
+  root_cause: pass2 vsub_s16 wraps when |coef[k]-coef[7-k]| > 32767; C uses int32
+  rate: 0.87%
+  fix_direction: widen pass2 O to s32 via vsubl_s16 before odd-column dot products

@@ -25,6 +25,11 @@ void dct8_neon(const int16_t* src, int16_t* dst, intptr_t srcStride);
 void dct8_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
 }
 
+#ifdef DYNOPT_CANDIDATE
+extern "C" void DYNOPT_CANDIDATE(
+    const int16_t*, int16_t*, intptr_t) __attribute__((weak));
+#endif
+
 static const int16_t g_t8[8][8] =
 {
     { 64, 64, 64, 64, 64, 64, 64, 64 },
@@ -99,6 +104,8 @@ int main(int argc, char** argv)
 
     int mism = 0;
     int mism_c = 0;
+    int mism_cand = 0;
+    int mism_cand_neon = 0;
     int mism_by_stride[4] = { 0, 0, 0, 0 };
     for (int i = 0; i < cases; i++)
     {
@@ -111,9 +118,41 @@ int main(int argc, char** argv)
 
         int16_t want[64], got[64];
         int16_t cref[64];
+        int16_t cand[64];
         dct8_oracle(buf, want, stride);
         x265::dct8_neon(buf, got, stride);
         x265::dct8_c(buf, cref, stride);
+#ifdef DYNOPT_CANDIDATE
+        if (DYNOPT_CANDIDATE)
+        {
+            DYNOPT_CANDIDATE(buf, cand, stride);
+            if (memcmp(got, cand, sizeof(got)) != 0)
+                mism_cand_neon++;
+            if (memcmp(want, cand, sizeof(want)) != 0)
+            {
+                mism_cand++;
+                if (mism_cand == 1)
+                {
+                    fprintf(stderr, "cand mismatch stride=%d: input",
+                            stride);
+                    for (int r = 0; r < 8; r++)
+                    {
+                        fprintf(stderr, "\n row%d:", r);
+                        for (int c = 0; c < 8; c++)
+                            fprintf(stderr, " %d",
+                                    (int)buf[(size_t)r * stride + c]);
+                    }
+                    fprintf(stderr, "\nwant:");
+                    for (int k = 0; k < 64; k++)
+                        fprintf(stderr, " %d", (int)want[k]);
+                    fprintf(stderr, "\ncand:");
+                    for (int k = 0; k < 64; k++)
+                        fprintf(stderr, " %d", (int)cand[k]);
+                    fprintf(stderr, "\n");
+                }
+            }
+        }
+#endif
         if (memcmp(want, cref, sizeof(want)) != 0)
             mism_c++;
         if (memcmp(want, got, sizeof(want)) != 0)
@@ -163,6 +202,7 @@ int main(int argc, char** argv)
     printf("mismatches_by_stride 8/16/17/32 = %d/%d/%d/%d\n",
            mism_by_stride[0], mism_by_stride[1],
            mism_by_stride[2], mism_by_stride[3]);
-    return mism_c ? 1 : 0;   // oracle-vs-C must be exact; NEON divergence is
-                             // an upstream diagnostic, not a project failure
+    printf("candidate_mismatches=%d\n", mism_cand);
+    printf("candidate_vs_neon_mismatches=%d\n", mism_cand_neon);
+    return (mism_c || mism_cand) ? 1 : 0;
 }
