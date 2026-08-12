@@ -1,0 +1,31 @@
+schema_version: 1
+run_id: m11-sve-920b
+state: in-progress
+captured_at: 2026-08-13T00:00:00+08:00
+host_id: kunpeng-920b-cloud
+host_connect: chiro@124.70.206.229
+project_commit: 17e7af9
+x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
+target:
+  arch: aarch64
+  cpu: kunpeng-920b
+  features: [neon, dotprod, i8mm, bf16, sve]
+  sve2: false
+  sve_vl_bits: 256
+compiler:
+  id: gcc
+  version: 12.3.1
+candidates:
+  - dynopt_sa8d_8x8_neon_sve2
+  - dynopt_sa8d_8x8x2_neon_sve2
+  - dynopt_sa8d_8x8x2raw_neon_sve2
+  - dynopt_sa8d_16x16_neon_sve2
+gates:
+  - isa_level_sve1
+  - native_differential_vl256
+  - dispatch_reject_vl128
+  - guard_page
+  - asan_ubsan
+  - paired_pmu_8x8_keep_1.10
+  - paired_pmu_16x16_keep_1.10
+baseline: upstream-neon (no upstream SVE1 sa8d at pinned x265 commit)
