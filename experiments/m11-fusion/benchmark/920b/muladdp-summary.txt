@@ -1,0 +1,1 @@
+pair=muladdp samples=60 ratio_median=1.5279 bootstrap95=[1.5225, 1.5353]

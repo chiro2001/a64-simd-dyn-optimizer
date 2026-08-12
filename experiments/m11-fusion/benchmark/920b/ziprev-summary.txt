@@ -1,0 +1,1 @@
+pair=ziprev samples=60 ratio_median=0.9232 bootstrap95=[0.9231, 0.9234]

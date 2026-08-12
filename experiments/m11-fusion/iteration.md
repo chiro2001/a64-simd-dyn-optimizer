@@ -31,8 +31,18 @@ cycles_lb 以 critical_path 项给出，资源项由 cost.py 另行提供）。
 
 ## 3. 下一步（P5'~P6'）
 
-融合对验证：写 instruction-pair 微基准，实测 sve-x2raw 的两条相邻
-`add z28,z28,zN` 链与 dct8 的代表性 pair，确认目标 CPU 是否有融合行为
-（QEMU 不模拟融合，需 920B 实机 `instructions:u`/cycles 对比）；拿到
-`hw_supported` 证据后才允许进入排序与搜索主循环。在此之前融合结果不驱动
-布局搜索（round-0005/0006 决策）。
+融合对验证：已写 instruction-pair 微基准（`kernels/fusion/
+pair_microbench.cpp` + `scripts/bench-pair-fusion.sh`，chained vs control
+随机配对 + bootstrap）。920B/N1 各 60 样本：
+
+| pair | 920B chained/control | N1 chained/control |
+| --- | ---: | ---: |
+| ziprev（zip2→rev64） | 0.923 | 1.000 |
+| muladdp（mul→addp） | 1.528 | 1.000（CI 宽） |
+| sve_addchain（add→add） | 1.244 | n/a（无 SVE） |
+
+结论（P5' 弱证据，按预期）：**无跨机一致的融合信号**——ziprev 在 920B 的
+0.92 与 N1 的 1.00 不一致，muladdp/sve_addchain 的 chained 因依赖链串行
+反而更慢（latency-bound，本就不是好融合对象）。按协议：未获得
+`hw_supported` 证据，融合不得进入排序/搜索主循环；空融合表语义保持
+（round-0005/0006 决策）。
