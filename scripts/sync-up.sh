@@ -8,7 +8,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 SRC="${1:?usage: sync-up.sh <relative-path> [commit message]}"
-REMOTE="chiro@129.146.162.16:projects/a64-simd-dyn-optimizer"
+REMOTE="${SYNC_REMOTE:-chiro@129.146.162.16:projects/a64-simd-dyn-optimizer}"
 
 if [ ! -e "$SRC" ]; then
   echo "[sync-up] missing local path: $SRC" >&2

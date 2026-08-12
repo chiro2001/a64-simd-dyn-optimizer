@@ -4,8 +4,8 @@
 //   c     - x265 scalar C reference (setupCPrimitives)
 //   neon  - x265 upstream NEON dispatch baseline (setupIntrinsic+Assembly)
 //   empty - loop-only harness with identical call shape, returns 0
-//   rt    - generated seed-roundtrip candidate (8x8 only, link required)
-//   cand  - DYNOPT_CANDIDATE macro symbol (8x8 only, link required)
+//   rt    - generated seed-roundtrip candidate (8x8/16x16, link required)
+//   cand  - DYNOPT_CANDIDATE macro symbol (8x8), DYNOPT_CANDIDATE16 (16x16)
 //
 // Usage:
 //   sa8d_microbench <8x8|16x16|32x32|64x64> <c|neon|empty> <latency|throughput>
@@ -30,6 +30,12 @@ using namespace X265_NS;
 #define DYNOPT_CANDIDATE dynopt_sa8d_8x8_neon_roundtrip
 #endif
 extern "C" int DYNOPT_CANDIDATE(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+
+#ifndef DYNOPT_CANDIDATE16
+#define DYNOPT_CANDIDATE16 dynopt_sa8d_16x16_neon_sve2
+#endif
+extern "C" int DYNOPT_CANDIDATE16(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
 static const int BUFSZ = 64;          // 64x64 pixel buffer per image
@@ -165,7 +171,8 @@ int main(int argc, char** argv)
     if (argc < 6)
     {
         fprintf(stderr,
-                "usage: %s <8x8|16x16|32x32|64x64> <c|neon|empty> <latency|throughput> "
+                "usage: %s <8x8|16x16|32x32|64x64> <c|neon|empty|rt|cand> "
+                "<latency|throughput> "
                 "<samples> <batch> [--verify-only]\n",
                 argv[0]);
         return 2;
@@ -217,8 +224,13 @@ int main(int argc, char** argv)
     else if (implS == "empty") fn = empty_sa8d;
     else if (implS == "rt" || implS == "cand")
     {
-        if (shape != 8) { fprintf(stderr, "rt impl only supports 8x8\n"); return 2; }
-        fn = DYNOPT_CANDIDATE;
+        if (shape == 8) fn = DYNOPT_CANDIDATE;
+        else if (shape == 16) fn = DYNOPT_CANDIDATE16;
+        else
+        {
+            fprintf(stderr, "rt/cand impl only supports 8x8 or 16x16\n");
+            return 2;
+        }
     }
     else { fprintf(stderr, "bad impl\n"); return 2; }
     if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }

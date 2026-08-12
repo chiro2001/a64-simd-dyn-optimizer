@@ -47,6 +47,15 @@ OBJDUMP="$OBJDUMP" python3 tools/count_asm_insns.py build/sve1.o > build/sve1-in
 OBJDUMP="$OBJDUMP" python3 tools/count_asm_insns.py build/sve2.o > build/sve2-insns.txt
 OBJDUMP="$OBJDUMP" python3 tools/count_asm_insns.py build/sve3.o > build/sve3-insns.txt
 OBJDUMP="$OBJDUMP" python3 tools/count_asm_insns.py build/sve4.o > build/sve4-insns.txt
+echo "[sve-sa8d] ISA-level gate (no SVE2+ opcode may reach an SVE1 target)"
+python3 tools/check_isa_level.py --object build/sve1.o --objdump "$OBJDUMP" \
+  --level sve1
+python3 tools/check_isa_level.py --object build/sve2.o --objdump "$OBJDUMP" \
+  --level sve1
+python3 tools/check_isa_level.py --object build/sve3.o --objdump "$OBJDUMP" \
+  --level sve1
+python3 tools/check_isa_level.py --object build/sve4.o --objdump "$OBJDUMP" \
+  --level sve1
 echo "--- single-tile ---"; cat build/sve1-insns.txt
 echo "--- two-tile pack ---"; cat build/sve2-insns.txt
 echo "--- two-tile raw ---"; cat build/sve3-insns.txt
