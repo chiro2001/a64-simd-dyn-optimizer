@@ -34,24 +34,37 @@ extern "C" void dynopt_interp8_hpp_candidate(const uint8_t* src,
     const int8x8_t filter = vmovn_s16(vld1q_s16(g_lumaFilter[coeffIdx]));
     const int32x4_t constant = vdupq_n_s32(64 * 128);
 
-    for (int row = 0; row < 8; row++)
+    for (int row = 0; row < 8; row += 4)
     {
-        uint8x16_t samples = vld1q_u8(src);
-        int8x16_t samples_s8 = vreinterpretq_s8_u8(
-            vsubq_u8(samples, vdupq_n_u8(128)));
-        int8x16_t p0 = vqtbl1q_s8(samples_s8, tbl.val[0]);
-        int8x16_t p1 = vqtbl1q_s8(samples_s8, tbl.val[1]);
-        int8x16_t p2 = vqtbl1q_s8(samples_s8, tbl.val[2]);
+        uint8x16_t s[4];
+        s[0] = vld1q_u8(src + 0 * srcStride);
+        s[1] = vld1q_u8(src + 1 * srcStride);
+        s[2] = vld1q_u8(src + 2 * srcStride);
+        s[3] = vld1q_u8(src + 3 * srcStride);
 
-        int32x4_t lo = vdotq_lane_s32(constant, p0, filter, 0);
-        int32x4_t hi = vdotq_lane_s32(constant, p1, filter, 0);
-        lo = vdotq_lane_s32(lo, p1, filter, 1);
-        hi = vdotq_lane_s32(hi, p2, filter, 1);
+        uint8x8_t d[4];
+#pragma GCC unroll 4
+        for (int r = 0; r < 4; r++)
+        {
+            int8x16_t samples_s8 = vreinterpretq_s8_u8(
+                vsubq_u8(s[r], vdupq_n_u8(128)));
+            int8x16_t p0 = vqtbl1q_s8(samples_s8, tbl.val[0]);
+            int8x16_t p1 = vqtbl1q_s8(samples_s8, tbl.val[1]);
+            int8x16_t p2 = vqtbl1q_s8(samples_s8, tbl.val[2]);
 
-        int16x8_t dot = vcombine_s16(vmovn_s32(lo), vmovn_s32(hi));
-        uint8x8_t out = vqrshrun_n_s16(dot, 6);
-        vst1_u8(dst, out);
-        src += srcStride;
-        dst += dstStride;
+            int32x4_t lo = vdotq_lane_s32(constant, p0, filter, 0);
+            int32x4_t hi = vdotq_lane_s32(constant, p1, filter, 0);
+            lo = vdotq_lane_s32(lo, p1, filter, 1);
+            hi = vdotq_lane_s32(hi, p2, filter, 1);
+
+            int16x8_t dot = vcombine_s16(vmovn_s32(lo), vmovn_s32(hi));
+            d[r] = vqrshrun_n_s16(dot, 6);
+        }
+        vst1_u8(dst + 0 * dstStride, d[0]);
+        vst1_u8(dst + 1 * dstStride, d[1]);
+        vst1_u8(dst + 2 * dstStride, d[2]);
+        vst1_u8(dst + 3 * dstStride, d[3]);
+        src += 4 * srcStride;
+        dst += 4 * dstStride;
     }
 }
