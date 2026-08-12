@@ -51,12 +51,13 @@ sdot/udot/ld1x3（模板常量完全展开，无循环）。seed：
 
 importer 已知 gap（下一轮按序扩展）：
 
-- `extractvalue`（ld1x3 多寄存器 load 拆解）；
-- `trunc <8 x i16> → <8 x i8>`（滤波器系数收窄）；
-- `llvm.aarch64.neon.ld1x3.*` 多寄存器 load；
-- `llvm.aarch64.neon.sdot/udot.*` 点积家族（语义 + codegen
-  `vdotq_s32`/`vudotq_s32` + 样本 `tbl` permute）；
-- `icmp/br`（8x8 已展开无循环；宽块/垂直插值需要）。
+- ✅ `extractvalue` / `trunc` / `xor(splat imm)` 已加（importer 单测覆盖）；
+- seed 已完整导入：**136 节点**（`imported/machine-ir.json`），opcode 分布
+  `ld1x3×1, tbl1×24, sdot×32, sqrshrun×8, extractvalue×3, load×9,
+  trunc×9, shuffle×10, xor×8, store×8, bitcast×3, shl×3, addr×16, ...`；
+- **待 codegen**（下一轮）：`vld1q_u8_x3 / vtbl1q / vdotq_s32 /
+  vqrshrun_n_s16` 及样本 permute 的 shuffle 模式 → roundtrip 候选；
+- `icmp/br`（宽块/垂直插值需要，8x8 已展开无循环）。
 
 ## 6. 下一轮
 
