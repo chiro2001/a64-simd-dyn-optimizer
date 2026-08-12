@@ -118,3 +118,63 @@ unpk+unpk+mul、shuffle→create+tbl、rshrn→rshrnb+rshrnt+tbl 都有膨胀。
 重排/tree_to_mla/宽加载目录上枚举，才是 b/c 档"指令数减半起步"的路径；
 实测性能待 N+2（960，SVE2.3 4×256）环境接入，920B 无 SVE2 只能跑 SVE1
 子集。
+
+## 8. M28：DCT8 双 tile SVE256 pack（x2）——C-exact + 静态口径
+（2026-08-13）
+
+新增 `kernels/dct8/dct8x2_sve2.cpp`：把两个**水平相邻** 8×8 tile 打进
+一个固定 VL=256 的 SVE 寄存器（tile A 低半、tile B 高半），每个 elementwise
+op 同时算两块，无跨 tile shuffle。接口合同：
+
+- `srcStride >= 16` s16，tile A = 每行第 0–7 列、tile B = 第 8–15 列；
+- 最终输出 `dst` 连续 128 个 s16：`dstA = dst[0..63]`、
+  `dstB = dst[64..127]`；
+- pass1 中间 buffer 用 16 宽交错行 `[A 行, B 行]`（模板参数
+  `ROW_STRIDE/B_OFF`），pass2 以 stride 16 消费；
+- 入口前 `prctl(PR_SVE_SET_VL, 32)`（字节）。
+
+正确性：`kernels/dct8/dct8x2_verify.cpp` 对自备 C oracle 逐 tile 差分，
+输入统一 [-255,255]、stride {16,17,32}：
+
+```text
+qemu-aarch64 -cpu max build/dct8x2_verify 200000
+cases=200000 mismatches=0
+```
+
+结构：stage-1 用 `svaddlb/svsublb`（widening，消除 pass2 的 s16 wrap，即
+上游 0.87% 分歧根因）；odd 列按 proto_b（M15）做 4×4 转置 + 4 深
+`svmla_s32_x` 链；even 列保持上游 mul+addp 结构。乘法用无谓词 3 寄存器
+`MUL`（inline asm）避免 ACLE 破坏式 `svmul` 的 60 个 `movprfx`。
+
+静态指令（`-O2 -march=armv8.2-a+sve2`，objdump 全函数）：
+
+| 形态 | 指令数（2 tile / 两次 pass） | 每 tile |
+| --- | ---: | ---: |
+| 上游 `dct8_neon`（非 C-exact，341 条） | — | 341 |
+| x2 SVE256（本候选，C-exact） | 598 | 299 |
+
+每 tile 299 vs 上游 341 ≈ **1.14x**，远低于"宽度倍增→指令减半"的直觉。
+原因已逐项定位：SVE2 的 `svaddp` 交错语义需要 `svtbl` 修复、窄化
+`svrshrnb/svrshrnt` 结果交叠需要第三次 `svtbl`（每输出 3 条 vs NEON
+`vrshrn` 1 条）、以及 GCC 对 `pg4hi`（非前缀谓词）store 的寻址开销。
+结论：**DCT8 的 pairwise-add/narrow 结构对 SVE256 宽度倍增不友好，单靠
+双 tile pack 只能到 ~1.1–1.3x**；b/c 档 +130% 需要新整数分解、pass 间
+布局消除或 DCT→quant 融合，这是给搜索器和 N+2 阶段的明确结构边界。
+
+调试中修正/确认的 SVE 语义（对后续所有 codegen 有效）：
+
+1. `svwhilelt_b16(a, b)` 是 `(a + lane) < b`，`whilelt(4,8)` 选 lane 0–3，
+   不是 4–7；lane 4–7 要用 `svbic(svptrue, whilelt(0,8), whilelt(0,4))`。
+2. `svst1` 按活动 lane 编号偏移基址：`pg4hi`（lane 4–7）写
+   `base+4..7` 个元素，B 半 store 的基址要减 4。
+3. `svtbl2` 索引空间是整寄存器宽：VL=256 时 tuple 为 16 个 s32 lane，
+   B 寄存器从 8 开始（qemu 默认 VL=64 字节时是 32，探针必须先定 VL）。
+4. `svrshrnb` 把 bottom 4 个 s32 放偶数 s16 lane、top 4 个放偶数 lane
+   8–15；`svrshrnt` 把全部 8 个 s32 放奇数 lane，最终交叠布局
+   `[n0,n0,n1,n1,...]` 用 `svtbl {0,2,4,6,9,11,13,15}` 压回 8 个连续值。
+5. GCC/clang 均未暴露 SVE2 的 16-bit-offset s16 gather（`LD1H`），stage-1
+   的 lo/hi 拆分仍用 `ld1h + svtbl`。
+
+依据 round-0007 专家建议（`expert-advice/round-0007/decision.md`）：
+本候选属于"双块 pack 静态准备"交付，不做进一步 SVE2 性能调优；拿到
+N+2（960）实机或确认合法连续多块调用点后再进入完整 codegen/搜索。
