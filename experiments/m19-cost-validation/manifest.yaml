@@ -1,0 +1,16 @@
+schema_version: 1
+run_id: m19-cost-validation
+state: rejected-generalization
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86, n1-neon128, kunpeng-920b-cloud]
+gates:
+  - {name: in_family_n1_r2, result: 0.814}
+  - {name: in_family_920b_r2, result: 0.982}
+  - {name: cross_family_extrapolation_n1_spearman, result: 0.500}
+  - {name: cross_family_extrapolation_920b_spearman, result: 0.143}
+  - {name: leave_one_out_n1_spearman, result: -0.214}
+  - {name: leave_one_out_920b_spearman, result: 0.607}
+verdict: >-
+  P6' correlation gate NOT passed: the longest-path linear model generalizes
+  only within the fitted family. Search main-loop ranking stays gated until
+  lane-group latencies + throughput terms + more per-machine data.
