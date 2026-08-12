@@ -97,7 +97,7 @@ phase 0；上游基座垂直 NEON 对 coeffIdx==0 无 case、什么都不写，�
 
 `kernels/interp8/hvpp_verify.cpp`：自备 C oracle（hps：`sum - 8192` 移位 0
 + vsp：`(sum + 526336) >> 12` 后钳位）与 x265 C/NEON `luma_hvpp` 三方差分
-（idxX,idxY ∈ 1..3）。结果：**oracle==C 原语精确（0 mismatch），上游基座
-NEON hvpp 与 C 参考在 idx=(3,3) 等组合有 18/180000（0.01%）分歧**——与
-DCT8 同类的潜在上游分歧，ipfilterharness 打不到。hvpp 候选合同仍定 C
-参考 bit-exact。
+（idxX,idxY ∈ 1..3）。**校正**：首版 oracle 的 hps 循环漏了逐行推进
+`src += srcStride`（15 行都算了第一行），误报“上游 NEON 0.01% 分歧”。
+修复后 **20000 例 × 9 idx 全 0 mismatch**——oracle==C==NEON 精确，无上游
+分歧。hvpp 候选合同定 C 参考 bit-exact。

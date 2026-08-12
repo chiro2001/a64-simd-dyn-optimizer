@@ -22,7 +22,8 @@ static void hvpp_c(const pixel* src, intptr_t srcStride, pixel* dst,
         {
             int sum = 0;
             for (int k = 0; k < 8; k++)
-                sum += src[col + k] * g_lumaFilter[idxX][k];
+                sum += src[(size_t)row * srcStride + col + k]
+                    * g_lumaFilter[idxX][k];
             immed[row * 8 + col] = (int16_t)(sum - (1 << 13));
         }
     // vertical short->pixel: (sum + offset) >> 12, then clamp
@@ -68,13 +69,42 @@ int main(int argc, char** argv)
                 cprim.pu[LUMA_8x8].luma_hvpp(a + off, 64, got, 8, idxX, idxY);
                 if (memcmp(want, got, 64) != 0)
                 {
-                    fprintf(stderr, "c-oracle mismatch t=%d idx=(%d,%d)\n",
-                            t, idxX, idxY);
+                    for (int r = 0; r < 8; r++)
+                        for (int c = 0; c < 8; c++)
+                            if (want[r * 8 + c] != got[r * 8 + c])
+                            {
+                                fprintf(stderr,
+                                        "c-oracle diff t=%d idx=(%d,%d)"
+                                        " r=%d c=%d want=%d got=%d off=%d\n",
+                                        t, idxX, idxY, r, c,
+                                        want[r * 8 + c], got[r * 8 + c],
+                                        want[r * 8 + c] - got[r * 8 + c]);
+                                goto cnext;
+                            }
+cnext:
                     mism++;
+                    continue;
                 }
                 neon.pu[LUMA_8x8].luma_hvpp(a + off, 64, got, 8, idxX, idxY);
                 if (memcmp(want, got, 64) != 0)
                 {
+                    if (mism == 0)
+                    {
+                        for (int r = 0; r < 8; r++)
+                            for (int c = 0; c < 8; c++)
+                                if (want[r * 8 + c] != got[r * 8 + c])
+                                {
+                                    fprintf(stderr,
+                                            "neon first diff t=%d idx=(%d,%d)"
+                                            " r=%d c=%d want=%d got=%d"
+                                            " (off=%d)\n",
+                                            t, idxX, idxY, r, c,
+                                            want[r * 8 + c], got[r * 8 + c],
+                                            want[r * 8 + c] - got[r * 8 + c]);
+                                    goto next_idx;
+                                }
+                    }
+next_idx:
                     fprintf(stderr, "neon mismatch t=%d idx=(%d,%d)\n",
                             t, idxX, idxY);
                     mism++;
