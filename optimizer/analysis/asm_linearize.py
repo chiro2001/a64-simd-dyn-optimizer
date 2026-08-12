@@ -329,6 +329,52 @@ def expand_to_raw(output_form, nodes, forms):
     return [expand(t) for t in output_form]
 
 
+def dead_code_after_rewrite(nodes, hits, forms):
+    """Estimate dead instructions if the discovered outputs are rewritten.
+
+    The rewritten form reads the raw loads directly, so the old computation
+    chains (widening mul/accumulate + pairwise reductions + the permuted O
+    construction) become dead wherever they are not needed by any kept
+    output. Returns (dead_vector_count, dead_total, live_after).
+    """
+    live = set()
+    for n in nodes:
+        if n["mn"] in ("str", "st1", "stp", "stur"):
+            live.add(n["id"])
+            for r in n["reads"]:
+                if isinstance(r, int):
+                    live.add(r)
+
+    rewritten = {h["node_id"] for h in hits}
+    raw = set()
+    for h in hits:
+        f = forms.get(h["node_id"])
+        if f:
+            for lane in f:
+                for (leaf, _), _c in lane.items():
+                    raw.add(leaf)
+    live |= raw
+
+    # full chains of the NON-rewritten narrow outputs stay live
+    for n in nodes:
+        if n["mn"] not in ("rshrn", "rshrn2") or n["id"] in rewritten:
+            continue
+        stack = [n["id"]]
+        while stack:
+            nid = stack.pop()
+            if nid in live:
+                continue
+            live.add(nid)
+            for r in nodes[nid]["reads"]:
+                if isinstance(r, int):
+                    stack.append(r)
+
+    dead_vec = sum(1 for n in nodes
+                   if n["id"] not in live and n.get("is_vector"))
+    dead_total = sum(1 for n in nodes if n["id"] not in live)
+    return dead_vec, dead_total, len(live)
+
+
 def _widen_narrow_form(n, forms, consts):
     nid = n["id"]
     mn = n["mn"]

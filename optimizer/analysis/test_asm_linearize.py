@@ -3,7 +3,7 @@
 import unittest
 
 from optimizer.analysis.asm_linearize import lane_forms_asm, \
-    shared_constant_matrix_outputs
+    dead_code_after_rewrite, shared_constant_matrix_outputs
 from optimizer.ir.asm_ir import import_asm_trace, resolve_tbl_masks
 
 
@@ -60,6 +60,28 @@ class TestAsmLinearize(unittest.TestCase):
         self.assertEqual(hits[0]["consts"], [C])
         self.assertEqual(sorted(l for lane in hits[0]["leaves"]
                                 for l, _ in lane), sorted(leaves))
+
+    def test_dead_code_after_rewrite(self):
+        nodes = [
+            {"id": 0, "mn": "ldr", "ops": "q0, [x0]", "dst": ["v0"],
+             "reads": [], "read_regs": [], "read_ids": [], "prev": {},
+             "is_vector": True},
+            {"id": 1, "mn": "smull2", "ops": "v1.4s, v0.8h, v0.8h",
+             "dst": ["v1"], "reads": [0], "read_regs": ["v0"],
+             "read_ids": [0], "prev": {}, "is_vector": True},
+            {"id": 2, "mn": "rshrn", "ops": "v2.4h, v1.4s, #3",
+             "dst": ["v2"], "reads": [1], "read_regs": ["v1"],
+             "read_ids": [1], "prev": {}, "is_vector": True},
+            {"id": 3, "mn": "str", "ops": "q2, [x1]", "dst": [],
+             "reads": [2], "read_regs": ["v2"], "read_ids": [2],
+             "prev": {}, "is_vector": True},
+        ]
+        hits = [{"node_id": 2, "leaves": [[(0, 0)]]}]
+        forms = {2: [{(0, 0): 1.0}]}
+        dead_vec, dead_total, live = dead_code_after_rewrite(
+            nodes, hits, forms)
+        # the smull2 chain dies; the load and store survive
+        self.assertEqual(dead_vec, 1)
 
 
 if __name__ == "__main__":
