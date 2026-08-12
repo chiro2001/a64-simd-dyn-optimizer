@@ -19,6 +19,10 @@
 #include <cstring>
 #include <random>
 
+#ifdef DYNOPT_SVE_VL
+#include <sys/prctl.h>
+#endif
+
 // Upstream symbol (namespace x265, defined in common/aarch64/dct-prim.cpp):
 namespace x265 {
 void dct8_neon(const int16_t* src, int16_t* dst, intptr_t srcStride);
@@ -98,6 +102,15 @@ static void dct8_oracle(const int16_t* src, int16_t* dst, intptr_t srcStride)
 
 int main(int argc, char** argv)
 {
+#ifdef DYNOPT_SVE_VL
+    // SVE candidates assume VL=256 bit (svcntb()==32); PR_SVE_SET_VL takes
+    // bytes on Linux and qemu-user.
+    if (prctl(PR_SVE_SET_VL, (unsigned long)DYNOPT_SVE_VL) < 0)
+    {
+        fprintf(stderr, "PR_SVE_SET_VL(%d) failed\n", DYNOPT_SVE_VL);
+        return 2;
+    }
+#endif
     const int cases = argc > 1 ? atoi(argv[1]) : 100000;
     std::mt19937 rng(0xD8C82026u);
     const int strides[4] = { 8, 16, 17, 32 };
