@@ -150,7 +150,7 @@ uint64_t run_uniform(int iters, unsigned seed, int& sizes_failed)
         {
             const int stride = strides[next() % 4];
             for (size_t k = 0; k < buf.size(); k++)
-                buf[k] = (int16_t)((int)(next() & 0x1FFu) - 255);
+                buf[k] = (int16_t)((int)(next() % 511u) - 255);
             e.ref(buf.data(), out_ref.data(), stride);
             e.opt(buf.data(), out_opt.data(), stride);
             if (memcmp(out_ref.data(), out_opt.data(),

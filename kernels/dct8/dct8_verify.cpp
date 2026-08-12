@@ -116,7 +116,7 @@ int main(int argc, char** argv)
         // safe in-range, while pass2's O=sub<s16> wraps - that is the
         // upstream divergence this probe quantifies.
         for (int j = 0; j < (int)sizeof(buf) / (int)sizeof(buf[0]); j++)
-            buf[j] = (int16_t)((int)(rng() & 0x1FF) - 255);
+            buf[j] = (int16_t)((int)(rng() % 511) - 255);
 
         int16_t want[64], got[64];
         int16_t cref[64];

@@ -15,6 +15,6 @@ gates:
   - {name: contract_200_seed_sweep, result: pass, detail: "0/200 failing runs", hosts: [qemu]}
 uniform_diagnostic_200k:
   dct4_mismatches: 0
-  dct8_mismatches: 1821
-  dct16_mismatches: 7
+  dct8_mismatches: 1736
+  dct16_mismatches: 9
   dct32_mismatches: 0

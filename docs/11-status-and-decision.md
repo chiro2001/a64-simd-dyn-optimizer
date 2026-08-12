@@ -20,6 +20,11 @@ M22 更新：rewrite 目录现为 `{widen, shift64, wide_load, tree_to_mla}`，
 可组合枚举 16 个候选；5 个 C-exact 候选 N1/920B paired latency 全部
 0.86–1.00（无突破，与 M15/M16 一致）。
 
+M25 更新：微基准测量缺陷（[-255,256] off-by-one、latency 序列未共享、
+单 dst WAW、2D origin、empty UB）已全部修复并用修复后 harness 复测
+M22：五候选两机仍全部 <1，结论不变。上游分歧率修订为 dct8 0.868%、
+dct16 0.0045%。
+
 上游 bug 发现与修复：DCT8 pass2 `vsub_s16` 回绕（M14 修复，range 分析可
 静态复现）；harness 两次假阳性（hpp stride、hvpp 行推进）已闭环并记录
 教训。
@@ -32,7 +37,7 @@ M22 更新：rewrite 目录现为 `{widen, shift64, wide_load, tree_to_mla}`，
 （`kernels/dct8/upstream_contract.cpp` 复刻 x265 `MBDstHarness` 语义）：
 - x265 内部 test 语义（128 次契约、200 个 seed 扫描、200k 压力）在
   qemu/N1/920B 三处全部通过，零分歧；
-- 全范围 uniform 诊断下 dct8 与 C 参考分歧 0.91%、dct16 0.0035%
+- 全范围 uniform 诊断下 dct8 与 C 参考分歧 0.868%、dct16 0.0045%
   （dct16 为新发现），即分歧只在内部 test 不采样的极端输入上；
 - 结论：C-exact 门禁是 x265 内部 test 的严格超集，继续作为候选硬门禁，
   除非用户明确放宽。

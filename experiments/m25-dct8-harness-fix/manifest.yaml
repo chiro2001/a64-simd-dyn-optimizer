@@ -1,0 +1,15 @@
+schema_version: 1
+run_id: m25-dct8-harness-fix
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+deliverables:
+  - benchmarks/dct8_microbench.cpp
+  - kernels/dct8/dct8_verify.cpp
+  - kernels/dct8/upstream_contract.cpp
+gates:
+  - {name: true_uniform_distribution, result: pass}
+  - {name: shared_latency_sequence_prefilter, result: pass, detail: "C==NEON (and cand==C) per corpus entry"}
+  - {name: four_way_throughput_dst, result: pass}
+  - {name: candidate_cexact_with_fixed_harness, result: pass, detail: "m25_mb_widen --verify-only OK"}
+  - {name: m22_rerun_all_reject, result: pass, detail: "all medians < 1 on both machines"}
