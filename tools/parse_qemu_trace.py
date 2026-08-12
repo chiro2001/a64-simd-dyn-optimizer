@@ -12,8 +12,11 @@ unrolled by EXECUTION, not by a compiler flag.
 """
 
 import json
+import os
 import re
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 INS = re.compile(r"^\s*0x([0-9a-f]+):\s+[0-9a-f]+\s+([a-z][a-z0-9.]*)\s*(.*)$")
@@ -51,11 +54,18 @@ def main():
     args = sys.argv[4:]
     out_json = None
     vector_only = "--vector-only" in args
+    counts_only = "--counts" in args
     if "--json" in args:
         out_json = args[args.index("--json") + 1]
 
     insns = parse(path, start, end)
     vec = [i for i in insns if is_vector(i)]
+    if counts_only:
+        from optimizer.ir.asm_ir import dynamic_counts, import_asm_trace
+
+        nodes, _ = import_asm_trace(insns)
+        print(json.dumps(dynamic_counts(nodes)))
+        return 0
     print("dynamic instructions: %d (vector %d)"
           % (len(insns), len(vec)))
     if out_json:
