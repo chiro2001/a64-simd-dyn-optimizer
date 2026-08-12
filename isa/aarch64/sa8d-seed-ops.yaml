@@ -71,6 +71,6 @@ instructions:
     n1_throughput: null
 
 measurement_plan:
-  - "Use llvm-mca for static N1-ish estimates (raw, not authoritative)."
+  - "llvm-mca does not support AArch64 targets in LLVM 18.1.3 (verified); use PMU + custom op microbench."
   - "Microbench each op in isolation on N1 with dependency chains for latency."
   - "Calibrate against M0 PMU: 8x8 seed = 80.4 cycles / 115.9 insns per call."

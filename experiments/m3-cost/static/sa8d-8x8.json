@@ -1,0 +1,29 @@
+{
+  "categories": {
+    "branch_return": 1,
+    "scalar_address_control": 3,
+    "simd_compute": 72,
+    "simd_permute": 24,
+    "vector_load_store": 16
+  },
+  "code_bytes": 464,
+  "file": "experiments/m0-foundation/disassembly/sa8d_8x8_neon.txt",
+  "mnemonics": {
+    "abs": 4,
+    "add": 36,
+    "fmov": 1,
+    "ldr": 16,
+    "lsr": 1,
+    "ret": 1,
+    "sabd": 4,
+    "sub": 16,
+    "trn1": 8,
+    "trn2": 8,
+    "uaddlv": 1,
+    "umax": 4,
+    "usubl": 8,
+    "zip1": 4,
+    "zip2": 4
+  },
+  "total_instructions": 116
+}

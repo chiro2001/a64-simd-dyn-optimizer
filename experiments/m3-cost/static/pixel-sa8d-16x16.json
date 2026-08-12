@@ -1,0 +1,36 @@
+{
+  "categories": {
+    "branch_return": 1,
+    "scalar_address_control": 6,
+    "simd_compute": 291,
+    "simd_permute": 97,
+    "vector_load_store": 86
+  },
+  "code_bytes": 1924,
+  "file": "experiments/m0-foundation/disassembly/pixel_sa8d_16x16_neon.txt",
+  "mnemonics": {
+    "abs": 16,
+    "add": 138,
+    "addv": 1,
+    "fmov": 1,
+    "ldp": 7,
+    "ldr": 69,
+    "lsl": 4,
+    "lsr": 1,
+    "mov": 1,
+    "ret": 1,
+    "sabd": 16,
+    "stp": 8,
+    "str": 2,
+    "sub": 64,
+    "trn1": 32,
+    "trn2": 32,
+    "uadalp": 6,
+    "uaddlp": 2,
+    "umax": 16,
+    "usubl": 32,
+    "zip1": 16,
+    "zip2": 16
+  },
+  "total_instructions": 481
+}
