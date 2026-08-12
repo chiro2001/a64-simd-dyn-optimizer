@@ -1,0 +1,10 @@
+schema_version: 1
+run_id: m26-dct8-native-build
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [n1-neon128, kunpeng-920b-cloud]
+gates:
+  - {name: native_build_on_both_machines, result: pass}
+  - {name: n1_best_vs_neon, result: "0.9597 median (widen), all < 1"}
+  - {name: 920b_best_vs_neon, result: "0.9942 median (widen-shift64), all < 1"}
+  - {name: native_scheduling_flips_verdict, result: false}
