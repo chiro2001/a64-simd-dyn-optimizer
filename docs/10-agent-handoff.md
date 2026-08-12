@@ -161,11 +161,13 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
    输入链、归档 impl_a/impl_b + CNTFRQ（微基准 checksum 已移出依赖链；
    CNTFRQ 双机不同，只做机内比较）。
 3. **P4'（已完成）**：融合静态 inventory 入库并出报告（见上）。
-4. **P5'~P6'（下一增量）**：目标融合对验证——instruction-pair 微基准在
-   920B 实测 sve-x2raw 的相邻 `add z28,z28,zN` 链与 DCT8 代表 pair；注意
-   920B 无 PMU，只能用 CNTVCT 时间差做弱证据（`instructions:u` 仍退两条
-   架构指令，不能单独证明融合）；有 `hw_supported` 证据后才排序，相关性
-   验证后进搜索主循环。
+4. **P5'（已完成）**：instruction-pair 微基准（`kernels/fusion/
+   pair_microbench.cpp` + `scripts/bench-pair-fusion.sh`）在 920B/N1 各 60
+   样本验证三对代表 pair：**无跨机一致融合信号**（ziprev 920B 0.92 vs N1
+   1.00；muladdp/sve_addchain 的 chained 因依赖链串行反而慢）。未获得
+   `hw_supported` 证据 → 融合不进入排序/搜索（空融合表语义保持）。
+5. **P6'**：无 hw_supported 融合对，排序/相关性验证阶段暂无输入（等目标
+   融合表或更强的实机证据后再启）。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
