@@ -110,8 +110,14 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   `optimizer/analysis/fusion.py`（互斥分类、C3 端口预算、C4 dest-chaining/
   窗口可观察性/谓词一致/重排位置）、`tools/fusion_analysis.py`（docs/09
   §4.2 报告）、7 个单测。报告：sve-x2raw 2 对、dct8-upstream 99 对、
-  dct8-protob 34 对 structurally_eligible；融合表为空 → hw_supported=0、
+   dct8-protob 34 对 structurally_eligible；融合表为空 → hw_supported=0、
   节省 unknown、不驱动搜索（`experiments/m11-fusion/`）。
+- **range-aware 值域分析（本轮）**：`optimizer/analysis/range.py` +
+  `tools/range_analysis.py` 对 MachineIR 前向整数区间传播，静态标记超出
+  存储位宽的运算；对 dct8 seed 精确命中 8 个 pass2-O s16 回绕 sub（含
+  4 个精确上界 [-65280,65280]）+ 6 个 rev64 shuffle，pass1 无假阳性——
+  此前该定位需 20 万例差分。这是 round-0006 建议的 range-aware IR 核心；
+  限制：区间乘上近似，下一增量做 dot-product 紧界（Σ|g_i|·max|O_i|）。
 - **round-0006 已归档**：response.md + decision.md（独立印证 s16 回绕；
   三原型 (a/b/c) 与止损点；纠错 vrshrn 非饱和、PR_SVE_SET_VL 单位为字节、
   m12 合同改 C 参考、微基准 checksum 移出依赖链）。
