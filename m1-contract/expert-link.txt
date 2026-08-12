@@ -1,5 +1,0 @@
-none
-
-M1 is contract/verification foundation; the agent iteration protocol triggers
-expert advice only after a real optimization iteration (M4+) has completed
-verification and benchmark.

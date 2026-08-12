@@ -1,5 +1,0 @@
-none
-
-M0 is foundation-only; the agent iteration protocol triggers expert advice
-only after a real optimization iteration has completed verification and
-benchmark.
