@@ -99,7 +99,9 @@ static int c_vs_neon_divergence(const EncoderPrimitives& cprim,
         neon.cu[idx].dct(pa, got, STRIDE);
         if (memcmp(want, got, (size_t)shape * shape * sizeof(int16_t)) != 0)
         {
-            fprintf(stderr, "MISMATCH shape=%d off=(%d,%d)\n", shape, ox, oy);
+            if (mismatches < 5)
+                fprintf(stderr, "MISMATCH shape=%d off=(%d,%d)\n",
+                        shape, ox, oy);
             mismatches++;
         }
     }
