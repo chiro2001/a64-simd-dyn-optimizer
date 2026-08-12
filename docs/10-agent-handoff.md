@@ -205,6 +205,11 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
      920B 1.044×；水平 PP 双机均近下限。下一候选：垂直 vpp / 二维 hvpp
      （更多数据复用）或 residual→subpel 融合。坑：rsync 拉取远端
      experiments 目录会覆盖本地 doc，只拉 benchmark 子目录。
+   - **M18 垂直**：微基准加 8x8v/16x16v + vc/vneon/vcand；上游基座垂直
+     NEON 对 coeffIdx==0 无 case（不写输出，已记录）；`proto_vdot`
+     （滑窗 8 行 + vmlal_s8，70 条）C-exact 全 4 相位，实测对上游垂直
+     N1 0.965×/920B 0.918×——上游垂直（基座/i8mm）更强。追赶需 i8mm 式
+     转置 4x4 + vusdotq；hvpp 是唯一仍有结构性复用空间的方向。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
