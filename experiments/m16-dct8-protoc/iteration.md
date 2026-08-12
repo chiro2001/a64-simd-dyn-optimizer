@@ -70,6 +70,16 @@ sext/add/sub/mul/shl/shuffle、smull/addp/rshrn 语义），任何计算区间�
 区间对乘/加链上近似（保守），下一增量可对 dot-product 归约做
 `Σ|g_i|·max|O_i|` 紧界跟踪。
 
+## 8. 闭环：范围驱动的自动宽度修复
+
+`optimizer/ir/rewrites.py::widen_overflows()` 以值域分析结果为输入，自动
+把每个溢出的 s16 `sub` 提升到 s32（操作数 sext + 消费者 smull→mul），不再
+依赖 M14 手写的 rshrn 模式。对 dct8 seed 二者输出**逐节点一致**（428
+节点，`test_range_driven_matches_pattern_on_seed` 回归）。`gen_roundtrip.py
+--widen-overflow` 可生成同样 C-exact 的候选。这完成
+“值域分析 → 自动宽度修复 → C-exact 候选”的通用工具链闭环：位宽 bug 从
+“差分偶然发现”变成“静态检测 + 自动修复”，对任意 kernel 适用。
+
 ## 6. 关键路径估计器 v0（本里程碑内完成）
 
 `optimizer/analysis/critical_path.py` + `tools/critical_path.py`：从反汇编

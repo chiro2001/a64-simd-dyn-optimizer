@@ -1,9 +1,12 @@
 """Unit tests for typed semantic rewrites."""
 
 import unittest
+import json
+import os
 
 from optimizer.ir.machine_ir import MachineIR
 from optimizer.ir.rewrites import widen_dct8_pass2_odd
+from optimizer.ir.rewrites import widen_overflows
 
 
 def make_ir():
@@ -54,6 +57,21 @@ class TestWidenDct8Pass2Odd(unittest.TestCase):
         self.assertEqual(len(out.nodes), 3)
         self.assertEqual(out.nodes[2]["op"], "sub")
         self.assertEqual(out.nodes[2]["type"], "<4 x i16>")
+
+    def test_range_driven_matches_pattern_on_seed(self):
+        seed = os.path.join(
+            os.path.dirname(__file__), "..", "..", "experiments",
+            "m12-dct8", "imported", "machine-ir.json")
+        if not os.path.exists(seed):
+            self.skipTest("dct8 seed not present")
+        doc = json.load(open(seed))
+        a = MachineIR(function=doc.get("function"),
+                      nodes=[dict(n) for n in doc["nodes"]])
+        b = MachineIR(function=doc.get("function"),
+                      nodes=[dict(n) for n in doc["nodes"]])
+        widen_dct8_pass2_odd(a)
+        widen_overflows(b)
+        self.assertEqual(a.to_dict()["nodes"], b.to_dict()["nodes"])
 
 
 if __name__ == "__main__":
