@@ -40,6 +40,13 @@ M29/P0 更新（round-0007 门禁判定）：修复依赖图后重做一次性�
 .text 去重，所有不同 .text 必须实机实测；详见
 `experiments/m29-cost-model-p0/iteration.md`。
 
+M29/P1 更新：两 pass 融合 DCT8（q 寄存器直通）C-exact，但 N1 0.815、
+920B 0.906 双双负于上游；batching 审计确认 x265 无 dct8 连续多块调用
+点。DCT8 tier-a 家族按止损线停止。
+
+DCT→quant 融合分析（docs/12）：可行且可位级等价，静态约 -8% 指令 +
+latency 正项，但不足以单独立项；作为 N+2 接入后的宽 kernel 融合项备选。
+
 上游 bug 发现与修复：DCT8 pass2 `vsub_s16` 回绕（M14 修复，range 分析可
 静态复现）；harness 两次假阳性（hpp stride、hvpp 行推进）已闭环并记录
 教训。
