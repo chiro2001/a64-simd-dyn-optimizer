@@ -28,7 +28,8 @@ def verify_pack_ir(doc):
             violations.append("value %s has no lane list" % val.get("id"))
         for lane in lanes:
             if not isinstance(lane, dict) or \
-               not ("element" in lane or "kind" in lane):
+               not ("element" in lane or "kind" in lane or "from" in lane
+                    or "arith" in lane):
                 violations.append("value %s lane is not provenance-annotated"
                                   % val.get("id"))
     if not violations:
@@ -83,6 +84,8 @@ def project_full(machine_ir, shape=8):
     prov = {}
     env = {"pix1": ("pix1", 0), "pix2": ("pix2", 0),
            "i_pix1": 1, "i_pix2": 1}
+    def ref(vid, lane):
+        return {"from": vid, "lane": lane}
     for node in machine_ir.nodes:
         op = node["op"]
         dst = node.get("dst")
@@ -101,45 +104,53 @@ def project_full(machine_ir, shape=8):
                               "row": coef, "col": i})
             prov[dst] = lanes
         elif op == "zext":
-            prov[dst] = list(prov[node["src"]])
+            prov[dst] = [ref(node["src"], i)
+                         for i in range(len(prov[node["src"]]))]
         elif op in ("add", "sub"):
             a = prov[node["src"][0]]
-            b = prov[node["src"][1]] if len(node["src"]) == 2 else None
             lanes = []
             for i in range(len(a)):
-                if b is None:
-                    lanes.append({"kind": "arith", "arith": op,
-                                  "a": a[i], "const": node.get("const")})
+                if len(node["src"]) == 1:
+                    lanes.append({"arith": op,
+                                  "a": ref(node["src"][0], i),
+                                  "const": node.get("const")})
                 else:
-                    lanes.append({"kind": "arith", "arith": op,
-                                  "a": a[i], "b": b[i]})
+                    lanes.append({"arith": op,
+                                  "a": ref(node["src"][0], i),
+                                  "b": ref(node["src"][1], i)})
             prov[dst] = lanes
         elif op == "shuffle":
-            a = prov[node["src"][0]]
-            b = prov[node["src"][1]]
             lanes = int(re.search(r"<(\d+) x", node["type"]).group(1))
-            factor = len(a) // lanes
+            factor = len(prov[node["src"][0]]) // lanes
             out = []
             for m in node["mask"]:
                 if m < lanes:
-                    out.extend(a[m * factor:(m + 1) * factor])
+                    out.extend(ref(node["src"][0], m * factor + j)
+                               for j in range(factor))
                 else:
-                    out.extend(b[(m - lanes) * factor:(m - lanes + 1) * factor])
+                    out.extend(ref(node["src"][1], (m - lanes) * factor + j)
+                               for j in range(factor))
             prov[dst] = out
         elif op == "bitcast":
-            prov[dst] = list(prov[node["src"]])
+            prov[dst] = [ref(node["src"], i)
+                         for i in range(len(prov[node["src"]]))]
         elif op == "intrinsic":
             name = node["intrinsic"]
-            srcs = [prov[s] for s in node["src"]]
             if name in ("abs",):
-                prov[dst] = [{"kind": "arith", "arith": name, "a": p}
-                             for p in srcs[0]]
+                n = len(prov[node["src"][0]])
+                prov[dst] = [{"arith": name, "a": ref(node["src"][0], i)}
+                             for i in range(n)]
             elif name in ("sabd", "umax"):
-                prov[dst] = [{"kind": "arith", "arith": name, "a": x, "b": y}
-                             for x, y in zip(srcs[0], srcs[1])]
+                n = len(prov[node["src"][0]])
+                prov[dst] = [{"arith": name,
+                              "a": ref(node["src"][0], i),
+                              "b": ref(node["src"][1], i)}
+                             for i in range(n)]
             elif name == "uaddlv":
+                n = len(prov[node["src"][0]])
                 prov[dst] = [{"kind": "reduce", "reduce": "uaddlv",
-                              "src": srcs[0]}]
+                              "from": node["src"][0],
+                              "lanes": list(range(n))}]
             else:
                 raise ValueError("unknown intrinsic %r" % name)
     values = [{"id": vid, "lanes": lanes}
