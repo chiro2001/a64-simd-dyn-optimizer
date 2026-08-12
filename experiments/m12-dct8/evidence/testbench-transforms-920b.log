@@ -1,0 +1,4 @@
+Testing only harnesses that match name <transforms>
+Disabling performance benchmarking
+Using random seed 6A7CAC71 8bit
+Testing primitives: NEON

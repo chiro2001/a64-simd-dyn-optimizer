@@ -1,172 +1,141 @@
-# Agent 交接上下文（2026-08-13）
+# Agent 交接上下文（2026-08-13，M11/M12 后）
 
 本文件供上下文压缩后接手的执行 Agent 使用。开始前按“必读清单”读取下列
 文件，并以仓库当前状态为准；不要凭对话记忆下结论。
 
-## 1. 仓库与同步
+## 1. 仓库与同步（必须遵守）
 
-- 本地工作目录：`/home/chiro/projects/a64-simd-dyn-optimizer`
+- 本地（主工作机，代码优先本地改）：`/home/chiro/projects/a64-simd-dyn-optimizer`
 - GitHub（`github` remote）：`https://github.com/chiro2001/a64-simd-dyn-optimizer.git`
-- ARM N1（`origin` remote，非裸仓库）：
-  `chiro@129.146.162.16:projects/a64-simd-dyn-optimizer`
-- 鲲鹏 920B（云实例，可能被用户启停/销毁）：`chiro@124.70.206.229`
+- ARM N1（`origin` remote，非裸仓库）：`chiro@129.146.162.16:projects/a64-simd-dyn-optimizer`
+- 鲲鹏 920B 云实例（可能被用户启停/销毁，接手先探活）：`chiro@124.70.206.229`
+- 用户工作流：1) 代码优先本地修改，本地验证后再同步；2) 重计算优先本地
+  x86（`aarch64-linux-gnu-g++ 16.1.0` + `qemu-aarch64 11.0.3` +
+  `QEMU_LD_PREFIX=/usr/aarch64-linux-gnu`）；3) 服务器同步 N1 用
+  `git fetch github main && git merge --ff-only FETCH_HEAD`（有未提交变更
+  先 stash，完成后 drop）；920B 无 GitHub 直连且禁 TCP 转发，用 rsync
+  （工作树排除 `.git/build/.venv/third_party/x265/.git`，再 rsync `.git/`，
+  远端 `git reset -q --hard HEAD`）；未提交小改动 `scripts/sync-up.sh`
+  （`SYNC_REMOTE` 可覆盖目标）。
+- **本地交叉 x265 已建好**：`build/x265-8-cross-make/libx265.a`（cmake
+  Makefiles，`-DAARCH64_RUNTIME_CPU_DETECT=OFF -DHAVE_STRTOK_R=1`，
+  `-DENABLE_CLI/TESTS=OFF`）；本地无 ninja、无 apt，链接用 `SKIP_NUMA=1`。
 
-工作流（用户 2026-08-13 明确）：
-
-1. **代码优先本地修改**，本地验证通过后再 git/rsync 同步；
-2. **重计算优先本地 x86**：`aarch64-linux-gnu-g++` 交叉编译 +
-   `qemu-aarch64` + `QEMU_LD_PREFIX=/usr/aarch64-linux-gnu`；远程 ARM
-   只做必要的实机验证；
-3. 服务器同步：`git fetch github main && git merge --ff-only FETCH_HEAD`
-   （服务器工作树有未提交变更时先 `git stash push -u`，验证后 drop）；
-   未提交小改动用 `scripts/sync-up.sh`（单源 rsync，多源会复制到仓库根）。
-
-## 2. 性能目标与验收（docs/09 v0.4）
-
-三档目标（实机口径）：
+## 2. 三档目标与验收（docs/09 v0.4，已冻结）
 
 | 档位 | 迁移 | 机器 | 目标 |
 | --- | --- | --- | --- |
-| a | NEON → NEON | ARM N1 | +30%（1.30×） |
-| b | NEON（或 SVE128）→ SVE256 | 鲲鹏 N+2 | +130%（2.30×） |
+| a | NEON → NEON | **N1 与 920B 都要测**（用户 2026-08-13 明确） | +30%（1.30×） |
+| b | NEON/SVE128 → SVE256 | 鲲鹏 N+2 | +130%（2.30×） |
 | c | SVE256 → SVE256 | 鲲鹏 N+2 | +130%（2.30×） |
 
-保留门槛（paired speedup 中心估计与 bootstrap 95% CI 下界都要超过阈值）：
+保留门槛（paired 中心估计与 bootstrap 95% CI 下界都须超过）：920B 对同机
+NEON >1.10；N+2 b 档对同机冻结 NEON/SVE128 >2.10；N+2 c 档对最佳上游
+SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展示。
 
-| 环境/档位 | baseline | 保留 | 优秀 |
-| --- | --- | ---: | ---: |
-| 920B 中间验证 | 同机上游 NEON | >1.10 | 不作 N+2 优秀判定 |
-| N+2 b 档 | 同机冻结 NEON / SVE128（单列 b-neon/b-sve128） | >2.10 | >=2.30 |
-| N+2 c 档 | 同机最佳现有 SVE256 | >1.10 | >=2.30 |
-
-估算模型：`instruction_score = (simd_insns + load_insns) / issue_est`
-（仅搜索代理，不叫 cycles 估算）；另维护资源下界 `cycles_lb`；
-`load > SIMD` 是软信号（`load_pressure / compute_bound_prediction /
-optimization_route`），不是硬淘汰。
-
-## 3. 环境
+## 3. 环境关键事实
 
 | 环境 | 关键事实 |
 | --- | --- |
-| 本地 x86 | `aarch64-linux-gnu-g++` 16.1.0、`aarch64-linux-gnu-objdump`、`qemu-aarch64` 11.0.3、交叉 sysroot `/usr/aarch64-linux-gnu`（`QEMU_LD_PREFIX`） |
-| ARM N1（129.146.162.16） | Ubuntu 24.04、2 vCPU Neoverse-N1、GCC 13.3.0、NEON+DotProd（无 SVE）、`build/x265-8-gcc`、perf 可用 |
-| 鲲鹏 920B（124.70.206.229） | openEuler 24.03、2 vCPU HiSilicon、**SVE v1（无 sve2 flag）**、默认 VL=256（`sve_default_vector_length=32`）、NEON 4×128 / SVE 2×256；工具链仅 python3，sudo 免密；详见 `experiments/m10-sve-16x16/kunpeng920b-environment.txt` |
-| 鲲鹏 N+2（960，目标） | SVE2.3、SVE 4×256、NEON 4×128，尚未定型 |
+| 本地 x86 | 交叉 g++ 16.1.0、qemu 11.0.3、sysroot `/usr/aarch64-linux-gnu`；无 ninja/apt/libnuma-cross；cmake 4.4.2 |
+| ARM N1（129.146.162.16） | Ubuntu 24.04、2 vCPU Neoverse-N1、GCC 13.3、NEON+DotProd（无 SVE）、`build/x265-8-gcc`、perf 有但小 kernel 用 CNTVCT |
+| 鲲鹏 920B（124.70.206.229） | openEuler 24.03、2 vCPU、SVE1（无 sve2）、VL=256（svcntb=32）、NEON 4×128 / SVE 2×256、**无硬件 PMU（root 也没有）**；GCC 12.3.1、cmake/ninja/git/perf/libasan/libubsan/rsync 已装；`build/x265-8-gcc` 已建 |
+| 鲲鹏 N+2（960） | SVE2.3、SVE 4×256、NEON 4×128，尚未定型 |
 
-## 4. 已完成里程碑与证据
+## 4. 已完成里程碑（截至最新）
 
-| 里程碑 | 结果 | 证据位置 |
-| --- | --- | --- |
-| M0 | N1 NEON 基线：8x8 26.3 ns / 80.4 cyc / 115.9 insn；16x16 275.0 / 487.8；TestBench 通过；静态 116 / 481 条 | `experiments/m0-foundation/` |
-| M1 | SpecIR canonical + C oracle + range proof | `experiments/m1-contract/` |
-| M2 | LLVM IR → MachineIR(167) → PackIR(149)；NEON roundtrip 116 条与上游一致，100k diff 0 | `experiments/m2-seed/` |
-| M3 | AArch64 语义/成本/静态分类器 | `experiments/m3-cost/` |
-| M4 | NEON 搜索三轮负结果（cand-0001/2/3、UMAXP 布局不可行）→ 转向 16x16/SVE | `experiments/m4-search/` |
-| M6 | SVE2 功能基线（tbl2 后端，QEMU 100k） | `experiments/m6-sve/` |
-| M7 | 官方 ARM ISA XML 覆盖检查；dotprod/i8mm 补齐；`requires` 组合门控 | `experiments/m7-isa-coverage/` |
-| M8 | 16-lane 双 tile 打包 + VL=512 索引越界修复；`blocked-environment` | `experiments/m8-sve-pack/` |
-| M9 | typed TRN lowering（24 tbl2+48 ld1h+24 mad → 24 trn）+ raw half-R8 x2 helper；静态 single 117 / x2 125 / x2raw 116 | `experiments/m9-sve-trn/` |
-| M10 | 16x16 两次 wave wrapper（+23 条）；guard 8/8；VL 日志；identity；长门禁本地全过（VL=256 1M、VL=512 200k、vq=1 预期失败、guard 8/8）；ASan 待补 | `experiments/m10-sve-16x16/` |
-
-提交基线：GitHub `main` 最新为 `ea2ec47`（交接文档提交后更新）。
+- M0：N1 NEON 基线（8x8 26.3ns/80.4cyc/115.9insn；16x16 275/487.8）
+- M1/M2：SpecIR/MachineIR(167)/PackIR(149) + NEON roundtrip 0 diff
+- M4：NEON 搜索三轮负结果
+- M7：官方 ARM ISA XML 覆盖 + dotprod/i8mm 补齐
+- M8/M9：SVE 双 tile 打包 + typed TRN lowering（24 tbl2+48 ld1h+24 mad → 24 trn）
+- M10：16x16 两次 wave wrapper，长门禁本地全过
+- **P1'（本轮）**：真实 VL<256 dispatch 拒绝（`kernels/sa8d/sve_dispatch.h`
+  + `sve_verify.cpp`：VL=128 时打包候选 registered=0/calls=0，
+  `rejection_audit=pass`）；ASan/UBSan 在 920B 原生过
+- **M11（本轮）**：920B SVE256 闭环，功能门禁全过、**性能负结果**：
+  SA8D 8x8 latency 0.897/tp 0.932、16x16 latency 0.886/tp 0.681（对 NEON，
+  CNTVCT）均 REJECT。原因：920B SVE 2×256 与 NEON 4×128 位宽容量相等，
+  指令减半（16x16 动态 481→257，-47%）不换算成周期。归档见
+  `experiments/m11-sve-920b/`；候选身份冻结见 `candidates/identity.yaml`
+- **M12（本轮，foundation-only）**：DCT8 首轮闭环（tier a）：
+  - 独立差分器 `kernels/dct8/dct8_verify.cpp`（oracle==dct8_c 精确）；
+  - **发现**：上游 `dct8_neon` 与 C 参考在 [-255,255] 内有 ~0.86% 分歧
+    （172/20000 微基准口径、1733/200000 差分器口径，N1/920B/本地 qemu
+    一致、stride 无关；差异为 64 的倍数，集中在奇数列 k=1/3/5/7 的
+    j=5/6/7 行），而 x265 自身 TestBench transforms（128 迭代）通过 →
+    潜在上游 bug，**候选合同定为 C 参考 bit-exact**；
+  - 基线：上游 NEON 比 C 慢 **N1 19%（0.807×）/ 920B 4%（0.961×）**；
+  - 微基准 `benchmarks/dct8_microbench.cpp` + `scripts/build-dct8-*.sh`；
+  - 本地交叉+qemu 迭代路径已通。
 
 ## 5. 代码/工具入口
 
-- 生成：`kernels/sa8d/gen_roundtrip.py <machine-ir.json> <out.cpp>
+- SA8D 生成：`kernels/sa8d/gen_roundtrip.py <machine-ir.json> <out.cpp>
   --backend sve2 [--pack x2] [--raw] [--shape 8x8|16x16]`
-- codegen：`optimizer/ir/codegen.py`（`emit_sve_intrinsics`、
-  `_sve_trn_spec` 六种 TRN mask、`emit_sve_16x16_wrapper`、raw 尾部形状
-  断言、索引装载用活跃谓词防 VL=512 越界）
-- 验证：`kernels/sa8d/sve_verify.cpp`（打印 `svcntb()`；single/x2/x2raw/
-  16x16 差分；R8 偶数 parity lemma）、`kernels/sa8d/sve_guard.cpp`
-- 构建：`scripts/build-sve-sa8d.sh`（支持 `CXX`/`OBJDUMP`/`SVE_MARCH`/
-  `QEMU_LD_PREFIX` 环境覆盖；本地交叉示例见 `experiments/m10-sve-16x16/
-  manifest.yaml` commands）
-- 计数：`tools/count_asm_insns.py`（`OBJDUMP` 可配；注意 SIMD 分类是
-  `z/p/v` 正则，向量 load 会双计——融合分析器必须互斥分类）
-- TargetFeatures：`optimizer/targets/aarch64/features.py`（含新增
-  `sve_vl256()`；依赖自动生效）
-- 指令库/目录：`isa/aarch64/instructions.yaml`、
-  `experiments/m7-isa-coverage/isa-catalog.json`
-- 其他工具：`tools/plan_report.py`、`tools/isa_catalog.py`、
-  `tools/isa_coverage_report.py`、`kernels/sa8d/fold_synth.py`、
-  `optimizer/ir/provenance.py`
+- SA8D 构建门禁：`scripts/build-sve-sa8d.sh`（`NATIVE=1` 裸机、
+  `CXXFLAGS` 覆盖、`SVE_MARCH=armv8-a+sve`、ISA 等级门禁已并入）
+- DCT8：`kernels/dct8/dct8_verify.cpp`（三方诊断）、
+  `benchmarks/dct8_microbench.cpp`（c/neon/empty/cand，CSV ticks 列 7）、
+  `scripts/build-dct8-verify.sh`、`scripts/build-dct8-microbench.sh`
+- paired cycles：`scripts/run-pmu-sa8d-paired.sh <bench> <shape> [pairs]
+  [procs] [batch] [out] [mode]`（`IMPL_A/IMPL_B`、`METRIC=cntvct|perf|auto`
+  可覆盖；auto 默认 **cntvct**，小 kernel 不用 whole-process perf）
+- ISA 等级门禁：`tools/check_isa_level.py --object f.o --level sve1`
+  （官方 catalog + TBL2 双寄存器表操作数规则；GNU/LLVM objdump 均可）
+- 微基准 64x64 校验的 `maxOff=0` div-by-zero UB 已修（dct8/sa8d 两处）
+- `optimizer/targets/aarch64/features.py`：`sve_vl256()` 等 profile
 
 ## 6. 专家建议归档与频率
 
-- `expert-advice/round-0001`：aborted（用户中断，无 response）
-- `round-0002`：NEON 重排方向（语义/umax/rounding 修正、UMAXP 实验）
-- `round-0003`：SVE 双 tile 打包审阅 → M8/M9
-- `round-0004`：16x16 门禁建议 → M10
-- `round-0005`：**需求 v0.3→v0.4 修订 + 执行顺序 P0'~P7'**（必读
-  `response.md` 与 `decision.md`）
+- round-0001~0005 已按旧频率归档（`expert-advice/`）。
+- 新频率：**每完成三个实际优化迭代请求一次**，只读后台异步；主流程继续。
+- **round-0006 已异步发起（本轮，后台 session 可能仍在跑）**：
+  `expert-advice/round-0006/prompt.md`+`context.md`，命令见 context.md；
+  response 落盘到 `response.md` 后，下一个自然检查点写 `decision.md`；
+  失败只记 `blocked.md`，不伪造。
+- 命令：`codex -p sss -c 'model="gpt-5.6-sol"' -c
+  'model_reasoning_effort="max"' -s read-only -C "$PWD" exec -o
+  expert-advice/round-NNNN/response.md - < prompt.md`。
 
-新频率（用户 2026-08-13 修订，已写入 docs/06 与两个 README）：
+## 7. 下一步任务（P 顺序）
 
-- **每完成三个实际优化迭代请求一次**（round-0006 起按批次，一个 round
-  对应 3 个阶段）；
-- 请求用 `codex -p sss -c 'model="gpt-5.6-sol"' -c
-  'model_reasoning_effort="max"' -s read-only ... exec -o
-  expert-advice/round-NNNN/response.md`；
-- **只读后台异步**：主模型不阻塞等待，响应落盘后在下一次自然检查点写
-  `decision.md`；不可用/失败只记 `blocked.md`，不得伪造。
-
-## 7. 下一步任务（按 P0'~P7'）
-
-1. **P1' 剩余门禁**：
-   - ASan/UBSan（本地补 aarch64 libasan 或 920B 上跑）；
-   - 真实 vq=1 dispatch 拒绝：实现运行时 feature/VL dispatch，验证
-     VL<256 时候选注册数为 0、调用次数为 0（不能把“直接调用候选产生
-     mismatch”当通过）。
-2. **P2' 920B 实机闭环（最高优先级）**：
-   - 安装最小工具链（openEuler dnf：gcc/g++/cmake/ninja/git/perf/
-     libnuma 等）；新增 openEuler bootstrap 入口；
-   - 同步仓库；**用 `-march=armv8-a+sve` 重建 4 个候选**（920B 是
-     SVE1，不能用 `+sve2`）；扫描禁止 SVE2 opcode；保存新 compiler/
-     flags/disassembly/hash；
-   - native differential（确认 `svcntb()==32`；`PR_SVE_SET_VL` 请求与
-     worker 线程 VL 继承验证）；
-   - 扩展 `benchmarks/sa8d_microbench.cpp` 支持 16x16 candidate（当前
-     只允许 8x8）；
-   - paired PMU：candidate SVE256 vs 同机 NEON；保留门槛 >1.10 且
-     CI 下界 >1.10；固定 vCPU、随机交替 A/B、≥30 个有效 pair、3 进程；
-   - 确认 920B 是否有上游 SA8D SVE1 baseline（上游扩展在
-     `pixel-prim-sve2.cpp`，大概率没有；以 configure/dispatch 为准）。
-3. **P3'**：冻结 SA8D 源候选身份，启动 N1 可测 DCT8（默认 DCT8；若
-   profile 显示 interp8 占比更高则服从 profile）。
-4. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
-   融合表为空时预测节省为 `unknown`，不得驱动排序/搜索）。
-5. **P5'~P6'**：目标融合对验证（专用 instruction-pair 微基准）→ 有
+1. **P3' 继续：DCT8 首轮优化（tier a，当前最高价值）**：C 参考 bit-exact
+   合同；从 `vmull+vpaddq` 配对链与 `rev64/zip` 重排入手做指令选择/布局
+   搜索；目标 NEON 8x8 动态指令显著下降，N1/920B paired latency 从
+   0.807×/0.961× 向 1.30× 推进。前置：扩展 LLVM importer 的
+   vmull/vmulq/vpaddq/vrshrn/st1（gap 见 m12 §6）。
+2. round-0006 response 落盘后写 decision.md，按建议优先级排下一轮实验。
+3. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
+   空融合表时节省为 unknown，不驱动排序/搜索）。
+4. **P5'~P6'**：目标融合对验证（instruction-pair 微基准）→ 有
    `hw_supported` 证据后才排序 → 相关性验证后进搜索主循环。
-6. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
+5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
+6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
-## 8. 关键风险/坑
+## 8. 关键坑（本轮新增）
 
-- **VL<256 静默错误**：`svwhilelt_b16(0,16)` 在 VL=128 只激活 8 lane，
-  x2/x2raw/16x16 高半为 0；dispatch 必须拒绝 VL<256；
-- **TBL2 fallback 是 SVE2**：未识别 shuffle 会生成 `svtbl2_u16`，
-  920B（SVE1）不能跑；当前 SA8D 六种 mask 全部被 `_sve_trn_spec` 覆盖，
-  但未来候选要按档位门控；
-- **计数器双计**：`ld1b` 按 z 寄存器计入 SIMD，若再加 load_insns 会双计；
-- **wrapper 23 条不含 raw helper**：16x16 动态成本须按最终 linked
-  symbol/调用图统计；
-- **raw 数学**：raw helper 返回 `(R8_A+R8_B)/2`（R8 恒为偶数）；
-  16x16 = `(top+bottom+1)>>1`；
-- **VL=512 索引越界**已修复（索引装载/运算用活跃谓词），勿回归；
-- **920B 2 vCPU**：PMU 噪声大，固定 CPU、随机交替、多进程；
-- **服务器同步**：origin 非 bare，用服务器 fetch+ff；rsync 多源会复制
-  到仓库根，用 `scripts/sync-up.sh` 单源；
-- **不伪造专家 response**；顶级模型只读后台运行，主流程继续；
-- 云实例生命周期：920B 可能随时被用户停止/销毁，结果必须带实例存活期
-  环境快照，销毁后不复用旧结果做验收。
+- **PR_SVE_SET_VL 单位**：920B 内核与 qemu-user 都按**字节**解释参数
+  （16→16B、≥48 钳到 32B；手册写 bit）。拒绝门禁只测 VL=128，用值 16 在
+  两处都得到 16B；新线程**继承**调用者 VL（920B 实测），生产 dispatch
+  仍建议每 worker 显式设置/断言 svcntb()==32。
+- **920B 无硬件 PMU**（root 也没有）：cycles 用 CNTVCT_EL0 ticks；
+  N1 有 perf 但小 kernel 的 whole-process cycles 分辨率不足（30 对全
+  1.0），一律 `METRIC=cntvct`。
+- **上游 dct8 分歧**：0.86% 输入 NEON≠C；cand 必须对 C 参考 bit-exact，
+  不要对 NEON 逐位对齐（否则继承上游 bug 且跨平台不一致）。
+- x265 16/32/64 的 dct 槽被 `setupAliasPrimitives` 换成 lowpass_dct，
+  DCT8 harness 只测 8x8；N1 上 shape 16 的 lowpass 路径会崩，勿混入。
+- 云实例生命周期：920B 结论绑定 M11/M12 环境快照，销毁后不复用。
+- 服务器同步：920B 禁 TCP 转发且 GitHub 直连超时，用 rsync（见 §1）。
 
 ## 9. 必读清单（压缩后先读）
 
 1. `docs/README.md`（必读顺序与三档目标）
-2. `docs/09-instruction-fusion-analysis.md`（需求 v0.4：估算、验收、融合
-   条件、P0'~P7'）
-3. `docs/06-agent-iteration-protocol.md`（迭代协议 + 专家咨询新频率）
-4. `experiments/m10-sve-16x16/iteration.md` 与 `manifest.yaml`
-5. `experiments/m10-sve-16x16/kunpeng920b-environment.txt`
-6. `expert-advice/round-0005/response.md` 与 `decision.md`
-7. `git status` 确认工作树干净；`git log --oneline -5` 确认基线
+2. `docs/09-instruction-fusion-analysis.md`（需求 v0.4、P0'~P7'）
+3. `docs/06-agent-iteration-protocol.md`（迭代协议 + 咨询新频率）
+4. `experiments/m11-sve-920b/iteration.md` 与 `manifest.yaml`
+5. `experiments/m12-dct8/iteration.md` 与 `manifest.yaml`
+6. `candidates/identity.yaml`
+7. `expert-advice/round-0006/context.md`（response 若已落盘也读）
+8. `git status` / `git log --oneline -5` 确认基线与工作树状态
