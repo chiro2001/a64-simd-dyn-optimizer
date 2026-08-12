@@ -1,4 +1,4 @@
-# Agent 交接上下文（2026-08-13，M11/M12 后）
+# Agent 交接上下文（2026-08-13，M11/M12/M13 后）
 
 本文件供上下文压缩后接手的执行 Agent 使用。开始前按“必读清单”读取下列
 文件，并以仓库当前状态为准；不要凭对话记忆下结论。
@@ -68,6 +68,21 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   - 基线：上游 NEON 比 C 慢 **N1 19%（0.807×）/ 920B 4%（0.961×）**；
   - 微基准 `benchmarks/dct8_microbench.cpp` + `scripts/build-dct8-*.sh`；
   - 本地交叉+qemu 迭代路径已通。
+- **M13（本轮，accepted）**：LLVM importer 扩展 + DCT8 NEON roundtrip：
+  - importer 新增 store/sext/mul（含逐 lane 常量向量）/splat 立即数/i16
+    gep/内联常量 gep/intrinsic 有序 args（`optimizer/ir/machine_ir.py`，
+    单测 `optimizer/ir/test_machine_ir.py`）；
+  - codegen 新增 `emit_dct8_c_intrinsics()`（符号化 stride 寻址、常量池、
+    `vcombine_s32(vget_low/high)` 修正 zip1q_s64 语义）；
+  - `kernels/dct8/gen_roundtrip.py` + seed
+    `experiments/m12-dct8/llvm-ir/dct8-neon-seed.ll`（clang 22 -O2）+
+    `imported/machine-ir.json`（380 节点）；
+  - **roundtrip 与上游 dct8_neon bit-exact（20 万例 0 差异）**，并精确
+    复现上游 0.87% 分歧；
+  - **上游 bug 根因已定位**（round-0006 独立印证）：pass2 用 `vsub_s16`
+    在 s16 域算 O，`|coef[k]-coef[7-k]|>32767` 时回绕（实测
+    -33288→+32248），C 在 int32 域；pass1 输入范围小不触发。修复方向：
+    pass2 O 用 `vsubl_s16` 提 s32 后做奇数列点积。
 
 ## 5. 代码/工具入口
 
@@ -77,7 +92,8 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   `CXXFLAGS` 覆盖、`SVE_MARCH=armv8-a+sve`、ISA 等级门禁已并入）
 - DCT8：`kernels/dct8/dct8_verify.cpp`（三方诊断）、
   `benchmarks/dct8_microbench.cpp`（c/neon/empty/cand，CSV ticks 列 7）、
-  `scripts/build-dct8-verify.sh`、`scripts/build-dct8-microbench.sh`
+  `scripts/build-dct8-verify.sh`、`scripts/build-dct8-microbench.sh`、
+  `kernels/dct8/gen_roundtrip.py`（seed 生成）
 - paired cycles：`scripts/run-pmu-sa8d-paired.sh <bench> <shape> [pairs]
   [procs] [batch] [out] [mode]`（`IMPL_A/IMPL_B`、`METRIC=cntvct|perf|auto`
   可覆盖；auto 默认 **cntvct**，小 kernel 不用 whole-process perf）
@@ -100,11 +116,13 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
 
 ## 7. 下一步任务（P 顺序）
 
-1. **P3' 继续：DCT8 首轮优化（tier a，当前最高价值）**：C 参考 bit-exact
-   合同；从 `vmull+vpaddq` 配对链与 `rev64/zip` 重排入手做指令选择/布局
-   搜索；目标 NEON 8x8 动态指令显著下降，N1/920B paired latency 从
-   0.807×/0.961× 向 1.30× 推进。前置：扩展 LLVM importer 的
-   vmull/vmulq/vpaddq/vrshrn/st1（gap 见 m12 §6）。
+1. **P3' 继续：DCT8 首轮优化（tier a，当前最高价值）**：
+   - 先做 C-exact 修复：pass2 奇数列 O 用 `vsubl_s16` 提升 s32（消除
+     上游 s16 回绕 bug），回归 oracle==cand（候选门禁从“复现 NEON”升级
+     为“==C 参考”）；修完才有资格上 N1/920B paired；
+   - 再做指令选择/布局搜索：`vmull+vpaddq` 配对链、`rev64/zip` 重排、
+     常量复用；目标 N1/920B paired latency 从 0.807×/0.961× 向 1.30×
+     推进。
 2. round-0006 response 落盘后写 decision.md，按建议优先级排下一轮实验。
 3. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
    空融合表时节省为 unknown，不驱动排序/搜索）。
@@ -123,7 +141,7 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   N1 有 perf 但小 kernel 的 whole-process cycles 分辨率不足（30 对全
   1.0），一律 `METRIC=cntvct`。
 - **上游 dct8 分歧**：0.86% 输入 NEON≠C；cand 必须对 C 参考 bit-exact，
-  不要对 NEON 逐位对齐（否则继承上游 bug 且跨平台不一致）。
+  不要对 NEON 逐位对齐（否则继承上游 bug 且跨平台不一致）。根因见 M13。
 - x265 16/32/64 的 dct 槽被 `setupAliasPrimitives` 换成 lowpass_dct，
   DCT8 harness 只测 8x8；N1 上 shape 16 的 lowpass 路径会崩，勿混入。
 - 云实例生命周期：920B 结论绑定 M11/M12 环境快照，销毁后不复用。
