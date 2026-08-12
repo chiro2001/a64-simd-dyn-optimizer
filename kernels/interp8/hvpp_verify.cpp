@@ -11,6 +11,19 @@
 
 using namespace X265_NS;
 
+#ifdef DYNOPT_CANDIDATE
+extern "C" void DYNOPT_CANDIDATE(
+    const pixel*, intptr_t, pixel*, intptr_t, int, int)
+    __attribute__((weak));
+#endif
+
+static inline uint64_t read_cntvct()
+{
+    uint64_t t;
+    __asm__ __volatile__("mrs %0, cntvct_el0" : "=r"(t));
+    return t;
+}
+
 static void hvpp_c(const pixel* src, intptr_t srcStride, pixel* dst,
                    intptr_t dstStride, int idxX, int idxY)
 {
@@ -43,6 +56,9 @@ static void hvpp_c(const pixel* src, intptr_t srcStride, pixel* dst,
 
 int main(int argc, char** argv)
 {
+    const bool bench = argc > 1 && strcmp(argv[1], "--bench") == 0;
+    const char* benchImpl = bench && argc > 2 ? argv[2] : "neon";
+    const int benchIters = bench && argc > 3 ? atoi(argv[3]) : 100000;
     const int cases = argc > 1 ? atoi(argv[1]) : 20000;
     EncoderPrimitives cprim, neon;
     std::memset(&cprim, 0, sizeof(cprim));
@@ -56,6 +72,29 @@ int main(int argc, char** argv)
 
     std::mt19937 rng(0x1A8A8u);
     int mism = 0;
+    if (bench)
+    {
+        pixel a[64 * 64], out[64 * 64];
+        for (int i = 0; i < 64 * 64; i++)
+            a[i] = (pixel)(rng() & 0xFF);
+        const int off = 3 + 3 * 64;
+        const uint64_t t0 = read_cntvct();
+        for (int i = 0; i < benchIters; i++)
+        {
+            if (strcmp(benchImpl, "neon") == 0)
+                neon.pu[LUMA_8x8].luma_hvpp(a + off, 64, out, 8, 2, 2);
+#ifdef DYNOPT_CANDIDATE
+            else if (strcmp(benchImpl, "cand") == 0 && DYNOPT_CANDIDATE)
+                DYNOPT_CANDIDATE(a + off, 64, out, 8, 2, 2);
+#endif
+            else if (strcmp(benchImpl, "c") == 0)
+                cprim.pu[LUMA_8x8].luma_hvpp(a + off, 64, out, 8, 2, 2);
+        }
+        const uint64_t ticks = read_cntvct() - t0;
+        printf("hvpp,%s,%d,%llu\n", benchImpl, benchIters,
+               (unsigned long long)ticks);
+        return 0;
+    }
     for (int t = 0; t < cases && mism < 5; t++)
     {
         pixel a[64 * 64], want[64 * 64], got[64 * 64];
@@ -109,6 +148,18 @@ next_idx:
                             t, idxX, idxY);
                     mism++;
                 }
+#ifdef DYNOPT_CANDIDATE
+                if (DYNOPT_CANDIDATE)
+                {
+                    DYNOPT_CANDIDATE(a + off, 64, got, 8, idxX, idxY);
+                    if (memcmp(want, got, 64) != 0)
+                    {
+                        fprintf(stderr, "cand mismatch t=%d idx=(%d,%d)\n",
+                                t, idxX, idxY);
+                        mism++;
+                    }
+                }
+#endif
             }
     }
     printf("cases=%d mismatches=%d\n", cases, mism);
