@@ -47,6 +47,24 @@ def _is_const_form(f):
         isinstance(k, tuple) and k[0] == "const" for t in f for k in t)
 
 
+def _const_values(n):
+    """Decode a resolved .rodata load into little-endian s16 values."""
+    b = n.get("const_bytes")
+    if not b:
+        return None
+    return [int.from_bytes(b[i:i + 2], "little", signed=True)
+            for i in range(0, min(len(b), 16), 2)]
+
+
+def _scale(form, values):
+    return [{k: v * values[i] if i < len(values) else v
+             for k, v in form[i].items()} for i in range(len(form))]
+
+
+def _const_of(nid, consts):
+    return consts.get(nid) if nid in consts else None
+
+
 def lane_forms_asm(nodes):
     """Return {node_id: [[(leaf, coeff), ...] per lane]}."""
     forms = {}
@@ -61,7 +79,7 @@ def lane_forms_asm(nodes):
         if mn in ("ldr", "ldp", "ldur", "ld1", "ld1r"):
             if "const_bytes" in n:
                 lanes = _arr(n) or 4
-                consts[nid] = n["const_bytes"]
+                consts[nid] = _const_values(n) or n["const_bytes"]
                 forms[nid] = [{(nid, i): 1.0} for i in range(lanes)]
             else:
                 lanes = _arr(n) or 8   # 16-byte q loads default to 8 x s16
@@ -135,25 +153,22 @@ def lane_forms_asm(nodes):
             a = form_of(n["read_ids"][0])
             b = form_of(n["read_ids"][1]) if len(n["read_ids"]) > 1 else None
             if a is not None and b is not None and len(a) == len(b):
-                if _is_const_form(b) and n["read_ids"][1] in consts:
-                    vals = consts[n["read_ids"][1]]
-                    scale = [v for v in vals[:len(a)]]
-                    if len(scale) == len(a):
-                        forms[nid] = [{k: v * scale[i]
-                                       for k, v in a[i].items()}
-                                      for i in range(len(a))]
+                vals = _const_of(n["read_ids"][1], consts) \
+                    if n["read_ids"][1] is not None else None
+                if vals and len(vals) >= len(a) \
+                        and not _is_const_form(a):
+                        forms[nid] = _scale(a, vals)
                         continue
-                if _is_const_form(a) and n["read_ids"][0] in consts:
-                    vals = consts[n["read_ids"][0]]
-                    scale = [v for v in vals[:len(b)]]
-                    if len(scale) == len(b):
-                        forms[nid] = [{k: v * scale[i]
-                                       for k, v in b[i].items()}
-                                      for i in range(len(b))]
+                vals = _const_of(n["read_ids"][0], consts) \
+                    if n["read_ids"][0] is not None else None
+                if vals and len(vals) >= len(b) \
+                        and not _is_const_form(b):
+                        forms[nid] = _scale(b, vals)
                         continue
             forms[nid] = [{(nid, i): 1.0} for i in range(_arr(n) or 4)]
             continue
         if mn in ("sshll", "sshll2", "saddw", "saddw2", "smull2", "smlal",
+                  "smlal2",
                   "rshrn", "rshrn2", "saddl"):
             forms[nid] = _widen_narrow_form(n, forms, consts)
             continue
@@ -172,6 +187,50 @@ def lane_forms_asm(nodes):
             continue
         forms[nid] = [{(nid, i): 1.0} for i in range(_arr(n) or 4)]
     return forms
+
+
+def shared_constant_matrix_outputs(nodes, forms):
+    """Detect narrow outputs with the shared-constant-matrix shape.
+
+    out[i] = sum_j C[j] * leaf_i[j], where the coefficient pattern C is the
+    same for every output lane and each lane uses its own leaf vector. This
+    is the shape the internal DCT16/DCT32 kernels optimize by pre-permuting
+    C and deleting the runtime data permutes.
+
+    Returns [{node_id, const, leaf_ids}] for every matching narrow output.
+    """
+    out = []
+    for n in nodes:
+        if n["mn"] not in ("rshrn", "rshrn2"):
+            continue
+        f = forms.get(n["id"])
+        if not f or len(f) != 4:
+            continue
+        # coefficients per output lane: {leaf: [coeff by leaf lane]}
+        pats = []
+        ok = True
+        for lane in f:
+            by_leaf = defaultdict(list)
+            for (leaf, j), coeff in lane.items():
+                by_leaf[leaf].append((j, coeff))
+            if len(by_leaf) != 1:
+                ok = False
+                break
+            leaf, terms = next(iter(by_leaf.items()))
+            terms.sort()
+            pats.append((leaf, [c for _, c in terms],
+                          [j for j, _ in terms]))
+        if not ok:
+            continue
+        leaves = {p[0] for p in pats}
+        consts = {tuple(p[1]) for p in pats}
+        lanes = {tuple(p[2]) for p in pats}
+        if len(consts) == 1 and len(lanes) == 1 \
+                and len(leaves) == len(pats):
+            out.append({"node_id": n["id"], "mn": n["mn"],
+                        "const": list(next(iter(consts))),
+                        "leaf_ids": sorted(leaves)})
+    return out
 
 
 def _widen_narrow_form(n, forms, consts):
@@ -195,23 +254,54 @@ def _widen_narrow_form(n, forms, consts):
         src = forms.get(n["read_ids"][0])
         return src[:4] if src is not None else [{(nid, i): 1.0}
                                                 for i in range(4)]
-    if mn in ("saddw", "saddw2", "smlal", "smull2"):
-        a = forms.get(n["read_ids"][0])
+    if mn in ("saddw", "saddw2", "smlal", "smlal2", "smull2"):
         if mn == "saddw":
-            b = forms.get(n["read_ids"][1])
-            if a is not None and b is not None:
-                return [_add(x, y) for x, y in zip(a[:4], b[:4])]
+            acc = forms.get(n["read_ids"][0])
+            b = forms.get(n["read_ids"][1]) if len(n["read_ids"]) > 1 \
+                else None
+            if acc is not None and b is not None:
+                return [_add(x, y) for x, y in zip(acc[:4], b[:4])]
         if mn == "saddw2":
-            b = forms.get(n["read_ids"][1])
-            if a is not None and b is not None:
-                return [_add(x, y) for x, y in zip(a[:4], b[:4])]
+            acc = forms.get(n["read_ids"][0])
+            b = forms.get(n["read_ids"][1]) if len(n["read_ids"]) > 1 \
+                else None
+            if acc is not None and b is not None:
+                return [_add(x, y) for x, y in zip(acc[:4], b[4:])]
         if mn == "smull2":
-            b = forms.get(n["read_ids"][1])
-            if a is not None and b is not None:
-                return [{(nid, i): 1.0} for i in range(4)]
-        if mn == "smlal":
             a = forms.get(n["read_ids"][0])
             b = forms.get(n["read_ids"][1])
             if a is not None and b is not None:
-                return [_add(x, y) for x, y in zip(a[:4], b[:4])]
+                for cidx, didx in ((0, 1), (1, 0)):
+                    vals = _const_of(n["read_ids"][cidx], consts) \
+                        if n["read_ids"][cidx] is not None else None
+                    data = forms.get(n["read_ids"][didx])
+                    if vals and data is not None \
+                            and not _is_const_form(data):
+                        # smull2 uses the TOP 4 s16 lanes of both operands
+                        return _scale(data[4:8], vals[4:8])
+                return [{(nid, i): 1.0} for i in range(4)]
+        if mn == "smlal":
+            # read order after RMW modeling: acc, constant, data
+            if len(n["read_ids"]) >= 3:
+                acc = forms.get(n["read_ids"][0])
+                vals = _const_of(n["read_ids"][1], consts) \
+                    if n["read_ids"][1] is not None else None
+                data = forms.get(n["read_ids"][2])
+                if vals and data is not None and acc is not None \
+                        and not _is_const_form(data):
+                    scaled = _scale(data[:4], vals)
+                    return [_add(x, y) for x, y in zip(acc[:4], scaled)]
+            return [{(nid, i): 1.0} for i in range(4)]
+        if mn == "smlal2":
+            # acc + c_top . x_top
+            if len(n["read_ids"]) >= 3:
+                acc = forms.get(n["read_ids"][0])
+                vals = _const_of(n["read_ids"][1], consts) \
+                    if n["read_ids"][1] is not None else None
+                data = forms.get(n["read_ids"][2])
+                if vals and data is not None and acc is not None \
+                        and not _is_const_form(data):
+                    scaled = _scale(data[4:8], vals[4:8])
+                    return [_add(x, y) for x, y in zip(acc[:4], scaled)]
+            return [{(nid, i): 1.0} for i in range(4)]
     return [{(nid, i): 1.0} for i in range(4)]

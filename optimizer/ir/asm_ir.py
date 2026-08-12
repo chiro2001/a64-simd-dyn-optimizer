@@ -63,6 +63,8 @@ def import_asm_trace(lines, start=None, end=None):
         # arithmetic instructions; loads have one dst, stores have none.
         STORE_MN = {"str", "st1", "stp", "stur"}
         LOAD_MN = {"ldr", "ld1", "ldp", "ldur"}
+        RMW_MN = {"smlal", "smlal2", "saddw", "saddw2", "ssubw", "ssubw2",
+                  "saba", "uaba", "sabal", "uabal", "mla", "mls"}
         dst, reads = [], []
         if mn in STORE_MN:
             reads = regs
@@ -76,6 +78,10 @@ def import_asm_trace(lines, start=None, end=None):
         elif regs:
             dst = regs[:1]
             reads = regs[1:]
+            if mn in RMW_MN:
+                # read-modify-write accumulator: the destination register's
+                # previous value is an implicit first read.
+                reads = [dst[0]] + reads
         node = {"id": len(nodes), "addr": addr, "mn": mn, "ops": ops,
                 "dst": dst, "reads": [], "read_regs": reads,
                 "read_ids": [], "prev": {}}

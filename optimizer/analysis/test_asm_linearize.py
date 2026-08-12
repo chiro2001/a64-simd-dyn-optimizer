@@ -2,7 +2,8 @@
 
 import unittest
 
-from optimizer.analysis.asm_linearize import lane_forms_asm
+from optimizer.analysis.asm_linearize import lane_forms_asm, \
+    shared_constant_matrix_outputs
 from optimizer.ir.asm_ir import import_asm_trace, resolve_tbl_masks
 
 
@@ -46,6 +47,18 @@ class TestAsmLinearize(unittest.TestCase):
         tbl = vec[-1]
         # rev16: lane 0 <- lane 7
         self.assertEqual(forms[tbl["id"]][0], forms[nodes[2]["id"]][7])
+
+    def test_detects_shared_constant_matrix(self):
+        C = [90.0, 87.0, 80.0, 70.0, 57.0, 43.0, 25.0, 9.0]
+        leaves = ["a", "b", "c", "d"]
+        forms = {7: [
+            {(leaf, j): C[j] for j in range(8)} for leaf in leaves
+        ]}
+        nodes = [{"id": 7, "mn": "rshrn", "ops": "v7.4h, v6.4s, #3"}]
+        hits = shared_constant_matrix_outputs(nodes, forms)
+        self.assertEqual(len(hits), 1)
+        self.assertEqual(hits[0]["const"], C)
+        self.assertEqual(hits[0]["leaf_ids"], sorted(leaves))
 
 
 if __name__ == "__main__":
