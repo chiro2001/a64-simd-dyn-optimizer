@@ -58,3 +58,35 @@
 
 - `tools/p0_cost_reeval.py`：四项特征 + 两机 Spearman/top-3 + .text 去重
   报告（本轮使用的门禁复验器）。
+
+## 5. P1 第一轮：两 pass 融合（proto_fused）——负结果
+
+按 round-0007 P1 的第一个方向做了宏结构候选：
+`kernels/dct8/candidates/proto_fused.cpp`——基于 proto_b（C-exact），
+pass1 输出留在 8 个 q 寄存器直接喂 pass2（去掉 coef store/reload 往返），
+odd 列仍 4 深 vmlaq、even 列上游 mul+addp。
+
+- 正确性：qemu 20 万例 `candidate_mismatches=0`（C-exact）；
+- 静态：269 条（proto_b 229、上游 341）；因 24 个 q 寄存器同时存活，
+  GCC 产生 23 str + 15 ldr 的 spill，把 coef 往返换成了栈 spill 往返；
+- 实测 paired latency（30×5=150 pairs，median neon/cand）：
+  **N1 0.815**（bootstrap95 [0.807, 0.821]）、
+  **920B 0.906**（bootstrap95 [0.903, 0.911]）——两机均显著慢于上游，
+  比 M22 widen 族（N1 0.85–0.90）更差。
+
+结论：q 寄存器融合在 32 寄存器预算下必然 spill，依赖链反而变长；与
+proto_c 的测量教训一致。**P1 已用一轮、结果为负**，按 stop-loss 不再
+继续同族结构猜测。
+
+## 6. batching 调用点可行性审计（SVE256 双块 pack 的前提）
+
+x265 pinned b81f650 的 dct 热调用点只有 `common/quant.cpp` 的
+`primitives.cu[sizeIdx].dct(residual, m_resiDctCoeff, resiStride)`
+（每个 TU 一次）+ psy-rdoq 分支对 fencShortBuf 的第二次调用。两者都是
+**单 TU、单缓冲**，残差布局里不存在两个水平相邻的 8×8 tile；16 宽 TU
+走 dct16 而不是两个 dct8。
+
+结论：**当前 x265 管线没有 dct8 的合法连续多块调用点**；SVE256 双块
+pack 若要真用，必须先改编码管线的 TU 批量处理方式（超出 kernel 级
+注入范围）。在拿到内部参考实现或 N+2 实机之前，DCT8 family 的性能
+搜索按 round-0007 止损线停止，转向其他 hotspot 或 DCT→quant 融合。
