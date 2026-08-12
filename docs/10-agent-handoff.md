@@ -1,4 +1,4 @@
-# Agent 交接上下文（2026-08-13，M11/M12/M13 后）
+# Agent 交接上下文（2026-08-13，M11~M16 后）
 
 本文件供上下文压缩后接手的执行 Agent 使用。开始前按“必读清单”读取下列
 文件，并以仓库当前状态为准；不要凭对话记忆下结论。
@@ -87,6 +87,20 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   widen_dct8_pass2_odd`（s32 奇数列 + `vmulq_s32`），cand==C oracle 本地
   20 万例 / N1·920B 各 2 万例全 0；静态 347/282（上游 341）；paired vs
   上游 NEON：N1 0.891×、920B 0.981×（修复的账，搜索要赚回来）。
+- **M15（rejected-performance）**：proto_b 四列并行标量广播 mul/mla 奇数
+  列：C-exact、静态 229/128（-34%），但 latency N1 0.858×、920B 1.019×；
+  mla 把树形归约线性化（深度 4），N1 s32 标量乘法代价大——计数不换算收益。
+- **M16（rejected-performance，止损触发）**：proto_c 全宽 stride 加载 +
+  coef 往返转置 + 树形奇数列：C-exact、静态 254/118，latency N1 0.829×、
+  920B 0.953×，tp 920B 1.036×。三原型总账（N1/920B latency vs 上游
+  NEON）：widened 0.891/0.981、proto_b 0.858/1.019、proto_c 0.829/0.953
+  ——**无一达到 round-0006 止损线（中心>1.05 且 CI 下界>1.00）**，
+  “上游 NEON 局部 peephole”family 停止。
+- **成本模型 v0**：`optimizer/analysis/cost.py`（资源分类 + cycles_lb 骨架
+  + N1/920B seed profiles）、`tools/calibrate_cost.py`（线性拟合）。用
+  M14-M16 的 4 候选×2 机 latency 校准：**线性吞吐模型 R²<0**——latency 由
+  依赖链关键路径主导，下一步必须加 `critical_path_latency` 依赖图估计器；
+  在此之前禁止用线性模型排序候选。
 - **round-0006 已归档**：response.md + decision.md（独立印证 s16 回绕；
   三原型 (a/b/c) 与止损点；纠错 vrshrn 非饱和、PR_SVE_SET_VL 单位为字节、
   m12 合同改 C 参考、微基准 checksum 移出依赖链）。
@@ -123,20 +137,18 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
 
 ## 7. 下一步任务（P 顺序）
 
-1. **P3'/M15-M16：DCT8 三原型（round-0006 建议，C-exact 为硬门禁）**：
-   - (a) pass2 仅 O widening —— 已做（M14）；
-   - (b) 四列并行 s32 `mul/mla` 替代 `smull+addp` 归约链：每 4 行块
-     奇数列从 16 vmull+12 addp+4 rshrn 降到 4×4 mul/mla+4 rshrn+4×4
-     transpose（预估 -4~-8 条/块，先验证 bit-exact 与实测）；
-   - (c) pass1 系数寄存器常驻 + 显式 8×8 transpose，消除 stack 往返
-     （16 st1+16 ld1）并支持 128-bit 全宽行处理；
-   - 目标：N1 对 C 从 1.24× 推到 >=1.30×；920B 对 C 从 ~0.94× 推到
-     >=1.30×；允许两台机器不同候选；
-   - 止损点（round-0006）：三原型后若仍无候选中心 >1.05 且 CI 下界
-     >1.00，停止“上游 NEON 局部 peephole”family，转 range-aware
-     fixed-point transform IR（资源下界模型 docs/09）。
+1. **P3'/M17+：止损后的 pivot（round-0006 执行中）**：
+   - (a)(b)(c) 三原型已完成并归档（M14-M16），均未达保留门槛；
+   - 下一步按优先级：①给成本模型加 `critical_path_latency` 依赖图估计器
+     （当前线性模型 R²<0，不能用）；②寄存器常驻分解 / 双块 DCT8 批处理 /
+     residual→DCT·DCT→quant 跨 primitive 融合；③range-aware fixed-point
+     transform IR（替代逐 opcode LLVM/NEON IR）；
+   - 若能拿到内部 30-60% 实现的反汇编/指令直方图，优先校准搜索空间；
+   - 保留候选全量记录：920B tp 上 proto_c 已达 1.036×、proto_b latency
+     1.019×（未达 1.10 保留线，但可作未来组合的素材）。
 2. 基准重建（round-0006）：throughput 四路独立 dst、latency 预筛 C==NEON
-   输入链、归档 impl_a/impl_b + CNTFRQ（微基准 checksum 已移出依赖链）。
+   输入链、归档 impl_a/impl_b + CNTFRQ（微基准 checksum 已移出依赖链；
+   CNTFRQ 双机不同，只做机内比较）。
 3. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
    空融合表时节省为 unknown，不驱动排序/搜索）。
 4. **P5'~P6'**：目标融合对验证（instruction-pair 微基准）→ 有
