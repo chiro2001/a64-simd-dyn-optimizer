@@ -89,8 +89,8 @@ static bool verify_shape(const EncoderPrimitives& cprim,
         const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
         for (int phase = 0; phase < 4; phase++)
         {
-            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, STRIDE, phase);
-            neon.pu[idx].luma_hpp(a + off, STRIDE, got, STRIDE, phase);
+            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
+            neon.pu[idx].luma_hpp(a + off, STRIDE, got, shape, phase);
             if (memcmp(want, got, (size_t)shape * shape) != 0)
             {
                 fprintf(stderr, "MISMATCH shape=%d phase=%d\n", shape, phase);
@@ -146,8 +146,8 @@ static bool verify_candidate(filter_pp_fn fn,
         const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
         for (int phase = 0; phase < 4; phase++)
         {
-            fn(a + off, STRIDE, got, STRIDE, phase);
-            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, STRIDE, phase);
+            fn(a + off, STRIDE, got, shape, phase);
+            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
             if (memcmp(want, got, (size_t)shape * shape) != 0)
             {
                 fprintf(stderr, "CAND MISMATCH shape=%d phase=%d\n",
@@ -174,7 +174,7 @@ static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
         {
             const size_t idx = (sel + (uint64_t)i) & mask;
             fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
-               out, STRIDE, COEFF_IDX);
+               out, shape, COEFF_IDX);
             sel = (uint64_t)((uint32_t)out[0] * 0x9E3779B9u
                              + (uint32_t)out[shape * shape - 1]);
             checksum += out[0] + out[shape * shape - 1];
@@ -186,7 +186,7 @@ static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
         {
             const size_t idx = (uint64_t)i & mask;
             fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
-               out, STRIDE, COEFF_IDX);
+               out, shape, COEFF_IDX);
             checksum += out[0] + out[shape * shape - 1];
         }
     }
