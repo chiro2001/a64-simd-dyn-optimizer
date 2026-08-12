@@ -38,28 +38,13 @@ g++ -O3 -DNDEBUG -std=c++11 -Wall -Wextra \
   "$BUILD/libx265.a" -lnuma -lpthread -ldl \
   -o "${OUT}_bench"
 
-for mode in latency throughput; do
-  for impl in neon cand; do
-    for p in 1 2 3 4 5; do
-      taskset -c 0 "${OUT}_bench" 8x8 "$impl" "$mode" 30 4096 --noverify 2>/dev/null \
-        | tail -n +2 | awk -v impl="$impl" -v p="$p" -v mode="$mode" \
-          '{print impl "," p "," mode "," $0}'
-    done
-  done
-done > "${OUT}_ab.csv"
+scripts/bench-paired.sh "${OUT}_bench" 30 5 "$OUT"
 
-python3 - "${OUT}_ab.csv" <<'PY'
-import csv, statistics, sys
-rows = {}
-for r in csv.reader(open(sys.argv[1])):
-    key = (r[0], r[2])
-    rows.setdefault(key, []).append(float(r[8]))
-for key in sorted(rows):
-    impl, mode = key
-    v = rows[key]
-    print("%s %s median_ns=%.1f n=%d" % (impl, mode, statistics.median(v), len(v)))
-for mode in ("latency", "throughput"):
-    n = statistics.median(rows[("neon", mode)])
-    c = statistics.median(rows[("cand", mode)])
-    print("speedup cand/neon %s=%.4f" % (mode, n / c))
-PY
+for impl in neon cand; do
+  perf stat -e cycles:u,instructions:u \
+    taskset -c 0 "${OUT}_bench" 8x8 "$impl" latency 500 4096 --noverify \
+    > "$OUT/${impl}-stdout.txt" 2> "$OUT/${impl}-perfstat.txt" || true
+done
+llvm-objdump -d --disassemble-symbols=dynopt_sa8d_8x8_neon_candidate \
+  "${OUT}_bench" > "$OUT/disasm-candidate.txt" 2>/dev/null || true
+echo "[candidate] artifacts in $OUT/"

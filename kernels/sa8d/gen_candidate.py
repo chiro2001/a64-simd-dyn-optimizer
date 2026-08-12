@@ -61,9 +61,38 @@ def abs_add_reduction(src):
     return src[:si] + replacement + src[ei:]
 
 
+def ext_umax_reduction(src):
+    """Replace s64 trn1+trn2+umax half-folds with vext+umax.
+
+    Current per group: trn1/trn2 on 2x s64 then umax pairs lane i with i+4.
+    Equivalent: ext(a,b,4) then max(a, ext) — one fewer instruction per group.
+    """
+    start = "    int64x2_t v116 = vreinterpretq_s64_s16(v99);"
+    end = "    int16x8_t v143 = vreinterpretq_s16_u16(vmaxq_u16("
+    si = src.index(start)
+    ei = src.index(end)
+    ei = src.index(");", ei) + 2
+    replacement = (
+        "    int16x8_t v132 = vextq_s16(v99, v109, 4);\n"
+        "    int16x8_t v134 = vreinterpretq_s16_u16(vmaxq_u16("
+        "vreinterpretq_u16_s16(v99), vreinterpretq_u16_s16(v132)));\n"
+        "    int16x8_t v135 = vextq_s16(v104, v114, 4);\n"
+        "    int16x8_t v137 = vreinterpretq_s16_u16(vmaxq_u16("
+        "vreinterpretq_u16_s16(v104), vreinterpretq_u16_s16(v135)));\n"
+        "    int16x8_t v138 = vextq_s16(v100, v110, 4);\n"
+        "    int16x8_t v140 = vreinterpretq_s16_u16(vmaxq_u16("
+        "vreinterpretq_u16_s16(v100), vreinterpretq_u16_s16(v138)));\n"
+        "    int16x8_t v141 = vextq_s16(v105, v115, 4);\n"
+        "    int16x8_t v143 = vreinterpretq_s16_u16(vmaxq_u16("
+        "vreinterpretq_u16_s16(v105), vreinterpretq_u16_s16(v141)));\n"
+    )
+    return src[:si] + replacement + src[ei:]
+
+
 VARIANTS = {
     "cand-0001-balanced-reduction": balanced_reduction,
     "cand-0002-abs-add-reduction": abs_add_reduction,
+    "cand-0003-ext-umax": ext_umax_reduction,
 }
 
 
