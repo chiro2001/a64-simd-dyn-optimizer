@@ -1,0 +1,122 @@
+
+/home/chiro/projects/a64-simd-dyn-optimizer/build/candidate-cand-0001-balanced-reduction_bench:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000010430 <dynopt_sa8d_8x8_neon_candidate>:
+   10430: 8b010005     	add	x5, x0, x1
+   10434: 8b030044     	add	x4, x2, x3
+   10438: 8b0100a7     	add	x7, x5, x1
+   1043c: 8b030086     	add	x6, x4, x3
+   10440: 8b0100e9     	add	x9, x7, x1
+   10444: 8b0300c8     	add	x8, x6, x3
+   10448: 8b01012d     	add	x13, x9, x1
+   1044c: 8b03010a     	add	x10, x8, x3
+   10450: 8b0101ac     	add	x12, x13, x1
+   10454: 8b03014b     	add	x11, x10, x3
+   10458: 8b01018f     	add	x15, x12, x1
+   1045c: 8b03016e     	add	x14, x11, x3
+   10460: fc636914     	ldr	d20, [x8, x3]
+   10464: fc6368d3     	ldr	d19, [x6, x3]
+   10468: fc636892     	ldr	d18, [x4, x3]
+   1046c: fc616805     	ldr	d5, [x0, x1]
+   10470: fc636850     	ldr	d16, [x2, x3]
+   10474: fd400001     	ldr	d1, [x0]
+   10478: fd400051     	ldr	d17, [x2]
+   1047c: fc6169a6     	ldr	d6, [x13, x1]
+   10480: fc616983     	ldr	d3, [x12, x1]
+   10484: fc6169e7     	ldr	d7, [x15, x1]
+   10488: fc6369d7     	ldr	d23, [x14, x3]
+   1048c: fc636976     	ldr	d22, [x11, x3]
+   10490: fc636955     	ldr	d21, [x10, x3]
+   10494: fc616920     	ldr	d0, [x9, x1]
+   10498: fc6168e4     	ldr	d4, [x7, x1]
+   1049c: 2e3720e7     	usubl	v7.8h, v7.8b, v23.8b
+   104a0: fc6168a2     	ldr	d2, [x5, x1]
+   104a4: 2e3520c6     	usubl	v6.8h, v6.8b, v21.8b
+   104a8: 2e332084     	usubl	v4.8h, v4.8b, v19.8b
+   104ac: 2e3020a5     	usubl	v5.8h, v5.8b, v16.8b
+   104b0: 2e362063     	usubl	v3.8h, v3.8b, v22.8b
+   104b4: 2e342000     	usubl	v0.8h, v0.8b, v20.8b
+   104b8: 2e322042     	usubl	v2.8h, v2.8b, v18.8b
+   104bc: 2e312021     	usubl	v1.8h, v1.8b, v17.8b
+   104c0: 4e678472     	add	v18.8h, v3.8h, v7.8h
+   104c4: 6e678463     	sub	v3.8h, v3.8h, v7.8h
+   104c8: 4e648451     	add	v17.8h, v2.8h, v4.8h
+   104cc: 4e668407     	add	v7.8h, v0.8h, v6.8h
+   104d0: 6e648442     	sub	v2.8h, v2.8h, v4.8h
+   104d4: 6e668400     	sub	v0.8h, v0.8h, v6.8h
+   104d8: 4e6184a4     	add	v4.8h, v5.8h, v1.8h
+   104dc: 6e658421     	sub	v1.8h, v1.8h, v5.8h
+   104e0: 4e7284f0     	add	v16.8h, v7.8h, v18.8h
+   104e4: 4e638405     	add	v5.8h, v0.8h, v3.8h
+   104e8: 6e7284e7     	sub	v7.8h, v7.8h, v18.8h
+   104ec: 6e638400     	sub	v0.8h, v0.8h, v3.8h
+   104f0: 4e718486     	add	v6.8h, v4.8h, v17.8h
+   104f4: 4e628423     	add	v3.8h, v1.8h, v2.8h
+   104f8: 6e718484     	sub	v4.8h, v4.8h, v17.8h
+   104fc: 6e628421     	sub	v1.8h, v1.8h, v2.8h
+   10500: 4e7084d1     	add	v17.8h, v6.8h, v16.8h
+   10504: 6e7084c6     	sub	v6.8h, v6.8h, v16.8h
+   10508: 4e658470     	add	v16.8h, v3.8h, v5.8h
+   1050c: 4e608422     	add	v2.8h, v1.8h, v0.8h
+   10510: 6e658463     	sub	v3.8h, v3.8h, v5.8h
+   10514: 6e608421     	sub	v1.8h, v1.8h, v0.8h
+   10518: 4e678485     	add	v5.8h, v4.8h, v7.8h
+   1051c: 6e678484     	sub	v4.8h, v4.8h, v7.8h
+   10520: 4e502a20     	trn1	v0.8h, v17.8h, v16.8h
+   10524: 4e506a31     	trn2	v17.8h, v17.8h, v16.8h
+   10528: 4e4228b0     	trn1	v16.8h, v5.8h, v2.8h
+   1052c: 4e412887     	trn1	v7.8h, v4.8h, v1.8h
+   10530: 4e4268a5     	trn2	v5.8h, v5.8h, v2.8h
+   10534: 4e416884     	trn2	v4.8h, v4.8h, v1.8h
+   10538: 4e4328c2     	trn1	v2.8h, v6.8h, v3.8h
+   1053c: 4e4368c6     	trn2	v6.8h, v6.8h, v3.8h
+   10540: 4e658612     	add	v18.8h, v16.8h, v5.8h
+   10544: 4e718403     	add	v3.8h, v0.8h, v17.8h
+   10548: 6e658610     	sub	v16.8h, v16.8h, v5.8h
+   1054c: 6e668441     	sub	v1.8h, v2.8h, v6.8h
+   10550: 4e668445     	add	v5.8h, v2.8h, v6.8h
+   10554: 6e718400     	sub	v0.8h, v0.8h, v17.8h
+   10558: 6e6484e6     	sub	v6.8h, v7.8h, v4.8h
+   1055c: 4e6484f1     	add	v17.8h, v7.8h, v4.8h
+   10560: 4e922874     	trn1	v20.4s, v3.4s, v18.4s
+   10564: 4e926862     	trn2	v2.4s, v3.4s, v18.4s
+   10568: 4e902812     	trn1	v18.4s, v0.4s, v16.4s
+   1056c: 4e9128b3     	trn1	v19.4s, v5.4s, v17.4s
+   10570: 4e9168a4     	trn2	v4.4s, v5.4s, v17.4s
+   10574: 4e906800     	trn2	v0.4s, v0.4s, v16.4s
+   10578: 4e862831     	trn1	v17.4s, v1.4s, v6.4s
+   1057c: 4e866821     	trn2	v1.4s, v1.4s, v6.4s
+   10580: 4e738490     	add	v16.8h, v4.8h, v19.8h
+   10584: 4e748446     	add	v6.8h, v2.8h, v20.8h
+   10588: 4e728405     	add	v5.8h, v0.8h, v18.8h
+   1058c: 4e718427     	add	v7.8h, v1.8h, v17.8h
+   10590: 4e747443     	sabd	v3.8h, v2.8h, v20.8h
+   10594: 4e737484     	sabd	v4.8h, v4.8h, v19.8h
+   10598: 4e717421     	sabd	v1.8h, v1.8h, v17.8h
+   1059c: 4e60ba10     	abs	v16.8h, v16.8h
+   105a0: 4e727400     	sabd	v0.8h, v0.8h, v18.8h
+   105a4: 4e60b8e7     	abs	v7.8h, v7.8h
+   105a8: 4e60b8c6     	abs	v6.8h, v6.8h
+   105ac: 4e60b8a5     	abs	v5.8h, v5.8h
+   105b0: 4ed038c2     	zip1	v2.2d, v6.2d, v16.2d
+   105b4: 4ed078c6     	zip2	v6.2d, v6.2d, v16.2d
+   105b8: 4ec738b0     	zip1	v16.2d, v5.2d, v7.2d
+   105bc: 4ec778a5     	zip2	v5.2d, v5.2d, v7.2d
+   105c0: 4ec43867     	zip1	v7.2d, v3.2d, v4.2d
+   105c4: 4ec47863     	zip2	v3.2d, v3.2d, v4.2d
+   105c8: 4ec13804     	zip1	v4.2d, v0.2d, v1.2d
+   105cc: 4ec17800     	zip2	v0.2d, v0.2d, v1.2d
+   105d0: 6e656605     	umax	v5.8h, v16.8h, v5.8h
+   105d4: 6e666441     	umax	v1.8h, v2.8h, v6.8h
+   105d8: 6e6364e2     	umax	v2.8h, v7.8h, v3.8h
+   105dc: 6e606483     	umax	v3.8h, v4.8h, v0.8h
+   105e0: 4e658420     	add	v0.8h, v1.8h, v5.8h
+   105e4: 4e638441     	add	v1.8h, v2.8h, v3.8h
+   105e8: 4e618400     	add	v0.8h, v0.8h, v1.8h
+   105ec: 6e703800     	uaddlv	s0, v0.8h
+   105f0: 1e260000     	fmov	w0, s0
+   105f4: 11000400     	add	w0, w0, #0x1
+   105f8: 53017c00     	lsr	w0, w0, #1
+   105fc: d65f03c0     	ret

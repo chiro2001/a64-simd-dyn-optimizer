@@ -1,0 +1,12 @@
+
+ Performance counter stats for 'taskset -c 0 /home/chiro/projects/a64-simd-dyn-optimizer/build/candidate-cand-0001-balanced-reduction_bench 8x8 cand latency 500 4096 --noverify':
+
+         238118911      cycles:u                                                              
+         466638921      instructions:u                   #    1.96  insn per cycle            
+
+       0.085414212 seconds time elapsed
+
+       0.078297000 seconds user
+       0.006879000 seconds sys
+
+
