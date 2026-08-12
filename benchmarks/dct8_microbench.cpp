@@ -30,7 +30,7 @@ using namespace X265_NS;
 #define DYNOPT_CANDIDATE dynopt_dct8_neon_candidate
 #endif
 extern "C" void DYNOPT_CANDIDATE(
-    const int16_t*, int16_t*, intptr_t);
+    const int16_t*, int16_t*, intptr_t) __attribute__((weak));
 
 static const int BUFSZ = 64;
 static const int STRIDE = BUFSZ;
