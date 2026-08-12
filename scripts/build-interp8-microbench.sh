@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the interp8 8-tap luma hpp A/B microbench against an x265 build.
-# Usage: scripts/build-interp8-microbench.sh <build-dir> [out] [candidate.cpp]
+# Usage: scripts/build-interp8-microbench.sh <build-dir> [out] [cand8.cpp] [cand16.cpp]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -9,6 +9,7 @@ cd "$ROOT"
 BUILD="${1:?usage: build-interp8-microbench.sh <build-dir> [out] [candidate.cpp]}"
 OUT="${2:-build/interp8_microbench}"
 CAND="${3:-}"
+CAND16="${4:-}"
 SRC="$ROOT/third_party/x265/source"
 NUMA_LIBS="${NUMA_LIBS:--lnuma}"
 [ "${SKIP_NUMA:-0}" = "1" ] && NUMA_LIBS=""
@@ -23,8 +24,9 @@ mkdir -p "$(dirname "$OUT")"
 "${CXX:-g++}" -O3 -DNDEBUG -std=c++11 -Wall -Wextra ${MARCH:+$MARCH} \
   -DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 -DX265_NS=x265 \
   -DDYNOPT_CANDIDATE=dynopt_interp8_hpp_candidate \
+  -DDYNOPT_CANDIDATE16=dynopt_interp8_hpp16_candidate \
   -I"$SRC" -I"$SRC/common" -I"$BUILD" \
-  "$ROOT/benchmarks/interp8_microbench.cpp" ${CAND:+"$CAND"} \
+  "$ROOT/benchmarks/interp8_microbench.cpp" ${CAND:+"$CAND"} ${CAND16:+"$CAND16"} \
   "$BUILD/libx265.a" $NUMA_LIBS -lpthread -ldl \
   -o "$OUT"
 echo "[build-interp8-microbench] OK: $OUT"

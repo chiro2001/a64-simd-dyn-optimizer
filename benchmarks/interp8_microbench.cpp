@@ -28,6 +28,11 @@ using namespace X265_NS;
 #endif
 extern "C" void DYNOPT_CANDIDATE(
     const pixel*, intptr_t, pixel*, intptr_t, int) __attribute__((weak));
+#ifndef DYNOPT_CANDIDATE16
+#define DYNOPT_CANDIDATE16 dynopt_interp8_hpp16_candidate
+#endif
+extern "C" void DYNOPT_CANDIDATE16(
+    const pixel*, intptr_t, pixel*, intptr_t, int) __attribute__((weak));
 
 static const int BUFSZ = 64;
 static const int STRIDE = BUFSZ;
@@ -254,7 +259,7 @@ int main(int argc, char** argv)
     else if (implS == "empty")
         fn = empty_filter;
     else if (implS == "cand")
-        fn = DYNOPT_CANDIDATE;
+        fn = shape == 16 ? DYNOPT_CANDIDATE16 : DYNOPT_CANDIDATE;
     else { fprintf(stderr, "bad impl\n"); return 2; }
     if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
 
