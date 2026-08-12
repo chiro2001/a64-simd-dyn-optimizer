@@ -1,0 +1,25 @@
+schema_version: 1
+run_id: m12-dct8
+state: in-progress
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [n1-neon128, kunpeng-920b-cloud]
+project_commit: 05ece59
+x265_commit: b81f650e21e8aacbe6a9ad04ce14aefc05b932c0
+target:
+  tier: a
+  migration: neon-to-neon
+  keep_speedup: 1.30
+  excellent_speedup: 1.30
+  internal_reference_headroom: 1.30-1.60
+kernels:
+  - {shape: 8x8, baseline: dct8_neon, oracle: dct8_c, upstream_line: common/aarch64/dct-prim.cpp:2066}
+gates:
+  - standalone_differential
+  - c_eq_neon_same_binary
+  - cand_eq_neon_same_binary
+  - paired_cycles_n1
+  - paired_cycles_920b
+notes: >-
+  User input: internal Kunpeng DCT beats upstream x265 by 30-60%, so DCT8 is
+  the highest-value kernel now; tier a must be measured on both N1 and 920B
+  (920B cycles via CNTVCT, no hardware PMU).

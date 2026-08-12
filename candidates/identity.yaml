@@ -1,0 +1,65 @@
+# Frozen candidate identity (SA8D, frozen 2026-08-13).
+#
+# A candidate is frozen when its generated source, target feature/VL gate and
+# object identity are recorded together with the verification/perf evidence.
+# Later stages (DCT8, fusion, search) must not silently regenerate these
+# symbols; any change bumps the identity hash and needs a new evidence entry.
+schema_version: 1
+family: sa8d
+frozen_at: 2026-08-13
+project_commit: 05ece59
+notes: >-
+  Kunpeng 920B closed loop is negative on cycles: SVE256 candidates beat the
+  upstream NEON baseline on instruction count (16x16 dynamic: NEON 481 ->
+  SVE 257, -47%) but are 7-32% slower in cycles (920B SVE is 2x256, equal
+  bit/cycle capacity to NEON 4x128). N1 has no SVE; N+2 (SVE 4x256) is the
+  throughput acceptance machine for tiers b/c.
+candidates:
+  - id: sa8d-8x8-neon-roundtrip
+    symbol: dynopt_sa8d_8x8_neon_roundtrip
+    source: generated/sa8d/roundtrip_sa8d_8x8.cpp
+    source_sha256: 39189285cbbdea5044765153402efbb6e466c000ad2eb60d35c0cc0193c55c72
+    target: neon128
+    min_vl_bytes: 0
+    role: NEON import/roundtrip seed (tier a reference path)
+    perf: "N1 8x8 latency speedup 1.0078x vs upstream NEON (M2)"
+  - id: sa8d-8x8-sve-single
+    symbol: dynopt_sa8d_8x8_neon_sve2
+    source: generated/sa8d/sve_roundtrip_sa8d_8x8.cpp
+    source_sha256: be011ebdad9894d92d8d9af33d56b52b515663805cd897f90001d1bff7064a7f
+    target: sve-vl256 (SVE1-legal; ISA gate PASS)
+    min_vl_bytes: 16
+    static_insns_920b: 117
+    object_sha256_920b_gcc12: 4cd90f42fd3132caf8c9026681121a409075941c4bcfe213df118eebc2913350
+    perf: "920B cntvct latency 0.897 / tp 0.932 vs NEON (REJECT >1.10)"
+  - id: sa8d-8x8-sve-x2
+    symbol: dynopt_sa8d_8x8x2_neon_sve2
+    source: generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp
+    source_sha256: a81ff04bea11041cb5e038c81ddc373d0e4a699cb9d33c7b8bac3ff7e9175360
+    target: sve-vl256 (SVE1-legal; ISA gate PASS)
+    min_vl_bytes: 32
+    static_insns_920b: 125
+    object_sha256_920b_gcc12: 054d8d3820f1256366da8993355f3f1ef8f4020e69c941180a44f2136da057ab
+    perf: "two-tile pack helper; no direct NEON single-call counterpart"
+  - id: sa8d-8x8-sve-x2raw
+    symbol: dynopt_sa8d_8x8x2raw_neon_sve2
+    source: generated/sa8d/sve_roundtrip_sa8d_8x8x2raw.cpp
+    source_sha256: 8792634224a752c411018951a4efd5499b88431125f059f66a4291e4586dd97d
+    target: sve-vl256 (SVE1-legal; ISA gate PASS)
+    min_vl_bytes: 32
+    static_insns_920b: 116
+    object_sha256_920b_gcc12: 2ea6a42018097b286ae97eb9c334f53b1ff6a2533b049a18808e8bd3c8c17efd
+    perf: "half-R8 helper; two waves form the 16x16 candidate"
+  - id: sa8d-16x16-sve-wrapper
+    symbol: dynopt_sa8d_16x16_neon_sve2
+    source: generated/sa8d/sve_roundtrip_sa8d_16x16.cpp
+    source_sha256: 0cc1b3836c3f84f4f8d8973ce84dea95654e0b0a30062f160fb7fbb12b57b911
+    target: sve-vl256 (SVE1-legal; ISA gate PASS)
+    min_vl_bytes: 32
+    static_insns_920b: 25 (wrapper; dynamic = 2 x x2raw + wrapper)
+    object_sha256_920b_gcc12: 2dd5929541bb134aececda8e592af8df4b2ae1bf2c69b716b2882d23b093e5e1
+    perf: "920B cntvct latency 0.886 / tp 0.681 vs NEON (REJECT >1.10)"
+evidence:
+  gates: experiments/m11-sve-920b/correctness/
+  static: experiments/m11-sve-920b/static/
+  perf: experiments/m11-sve-920b/benchmark/pmu/
