@@ -104,9 +104,11 @@ static bool verify_shape(const EncoderPrimitives& cprim,
                             {
                                 fprintf(stderr,
                                         "  first diff r=%d c=%d want=%d got=%d"
+                                        " src_c=%d"
                                         " src=%d,%d,%d,%d,%d,%d,%d,%d\n",
                                         r, c, want[r * shape + c],
                                         got[r * shape + c],
+                                        a[off + r * STRIDE + c],
                                         a[off + r * STRIDE + c - 3],
                                         a[off + r * STRIDE + c - 2],
                                         a[off + r * STRIDE + c - 1],
