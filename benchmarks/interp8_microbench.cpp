@@ -5,7 +5,8 @@
 //   empty - loop-only harness, identical call shape
 //   cand  - DYNOPT_CANDIDATE macro symbol (link required)
 //
-// Usage: interp8_microbench <8x8|16x16|32x32> <c|neon|empty|cand>
+// Usage: interp8_microbench <8x8|8x8v|16x16|16x16v|32x32>
+//                           <c|neon|empty|cand|vc|vneon|vcand>
 //                           <latency|throughput> <samples> <batch>
 //                           [--verify-only|--noverify]
 // The filter phase is fixed to coeffIdx=2 (the symmetric 8-tap luma phase)
@@ -32,6 +33,11 @@ extern "C" void DYNOPT_CANDIDATE(
 #define DYNOPT_CANDIDATE16 dynopt_interp8_hpp16_candidate
 #endif
 extern "C" void DYNOPT_CANDIDATE16(
+    const pixel*, intptr_t, pixel*, intptr_t, int) __attribute__((weak));
+#ifndef DYNOPT_CANDIDATE_VPP
+#define DYNOPT_CANDIDATE_VPP dynopt_interp8_vpp_candidate
+#endif
+extern "C" void DYNOPT_CANDIDATE_VPP(
     const pixel*, intptr_t, pixel*, intptr_t, int) __attribute__((weak));
 
 static const int BUFSZ = 64;
@@ -80,7 +86,8 @@ struct Corpus
 };
 
 static bool verify_shape(const EncoderPrimitives& cprim,
-                         const EncoderPrimitives& neon, int shape)
+                         const EncoderPrimitives& neon, int shape,
+                         bool vertical)
 {
     const LumaPU idx = shape == 8 ? LUMA_8x8
                      : shape == 16 ? LUMA_16x16 : LUMA_32x32;
@@ -92,10 +99,22 @@ static bool verify_shape(const EncoderPrimitives& cprim,
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
             a[i] = (pixel)(rng() & 0xFF);
         const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
-        for (int phase = 0; phase < 4; phase++)
+        const int voff = vertical ? 3 * STRIDE : 0;
+        // upstream base NEON vertical has no coeffIdx==0 case (writes
+        // nothing); x265 never calls the integer phase, but the C reference
+        // contract includes it - compare phases 1..3 for the baseline only
+        for (int phase = vertical ? 1 : 0; phase < 4; phase++)
         {
-            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
-            neon.pu[idx].luma_hpp(a + off, STRIDE, got, shape, phase);
+            if (vertical)
+            {
+                cprim.pu[idx].luma_vpp(a + off + voff, STRIDE, want, shape, phase);
+                neon.pu[idx].luma_vpp(a + off + voff, STRIDE, got, shape, phase);
+            }
+            else
+            {
+                cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
+                neon.pu[idx].luma_hpp(a + off, STRIDE, got, shape, phase);
+            }
             if (memcmp(want, got, (size_t)shape * shape) != 0)
             {
                 fprintf(stderr, "MISMATCH shape=%d phase=%d\n", shape, phase);
@@ -137,7 +156,8 @@ next_phase:
 }
 
 static bool verify_candidate(filter_pp_fn fn,
-                             const EncoderPrimitives& cprim, int shape)
+                             const EncoderPrimitives& cprim, int shape,
+                             bool vertical)
 {
     const LumaPU idx = shape == 8 ? LUMA_8x8
                      : shape == 16 ? LUMA_16x16 : LUMA_32x32;
@@ -149,10 +169,14 @@ static bool verify_candidate(filter_pp_fn fn,
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
             a[i] = (pixel)(rng() & 0xFF);
         const int off = 3 + (int)(rng() % (BUFSZ - shape - 6 + 1));
+        const int voff = vertical ? 3 * STRIDE : 0;
         for (int phase = 0; phase < 4; phase++)
         {
-            fn(a + off, STRIDE, got, shape, phase);
-            cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
+            fn(a + off + voff, STRIDE, got, shape, phase);
+            if (vertical)
+                cprim.pu[idx].luma_vpp(a + off + voff, STRIDE, want, shape, phase);
+            else
+                cprim.pu[idx].luma_hpp(a + off, STRIDE, want, shape, phase);
             if (memcmp(want, got, (size_t)shape * shape) != 0)
             {
                 fprintf(stderr, "CAND MISMATCH shape=%d phase=%d\n",
@@ -166,10 +190,12 @@ static bool verify_candidate(filter_pp_fn fn,
 }
 
 static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
-                         int batch, bool latency, uint64_t* ticksOut)
+                         int batch, bool latency, bool vertical,
+                         uint64_t* ticksOut)
 {
     const uint64_t mask = CORPUS - 1;
     const uint64_t t0 = read_cntvct();
+    const int voff = vertical ? 3 * STRIDE : 0;
     pixel out[64 * 64];
     int64_t checksum = 0;
     if (latency)
@@ -178,7 +204,7 @@ static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
         for (int i = 0; i < batch; i++)
         {
             const size_t idx = (sel + (uint64_t)i) & mask;
-            fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
+            fn(corpus.a((int)idx) + corpus.off((int)idx) + voff, STRIDE,
                out, shape, COEFF_IDX);
             sel = (uint64_t)((uint32_t)out[0] * 0x9E3779B9u
                              + (uint32_t)out[shape * shape - 1]);
@@ -190,7 +216,7 @@ static int64_t run_batch(filter_pp_fn fn, const Corpus& corpus, int shape,
         for (int i = 0; i < batch; i++)
         {
             const size_t idx = (uint64_t)i & mask;
-            fn(corpus.a((int)idx) + corpus.off((int)idx), STRIDE,
+            fn(corpus.a((int)idx) + corpus.off((int)idx) + voff, STRIDE,
                out, shape, COEFF_IDX);
             checksum += out[0] + out[shape * shape - 1];
         }
@@ -204,7 +230,8 @@ int main(int argc, char** argv)
     if (argc < 6)
     {
         fprintf(stderr,
-                "usage: %s <8x8|16x16|32x32> <c|neon|empty|cand> "
+                "usage: %s <8x8|8x8v|16x16|16x16v|32x32>"
+                " <c|neon|empty|cand|vc|vneon|vcand> "
                 "<latency|throughput> <samples> <batch> [--verify-only]\n",
                 argv[0]);
         return 2;
@@ -218,8 +245,11 @@ int main(int argc, char** argv)
     const bool skipVerify = argc > 6 && std::string(argv[6]) == "--noverify";
 
     int shape = 0;
-    if (shapeS == "8x8") shape = 8;
-    else if (shapeS == "16x16") shape = 16;
+    bool vertical = false;
+    if (shapeS == "8x8" || shapeS == "8x8v")
+        { shape = 8; vertical = shapeS == "8x8v"; }
+    else if (shapeS == "16x16" || shapeS == "16x16v")
+        { shape = 16; vertical = shapeS == "16x16v"; }
     else if (shapeS == "32x32") shape = 32;
     else { fprintf(stderr, "bad shape\n"); return 2; }
 
@@ -237,35 +267,41 @@ int main(int argc, char** argv)
     {
         const int shapes[] = { 8, 16, 32 };
         for (size_t i = 0; i < 3; i++)
-            if (!verify_shape(cprim, neon, shapes[i]))
+            if (!verify_shape(cprim, neon, shapes[i], vertical))
             {
                 fprintf(stderr, "differential verification FAILED\n");
                 return 1;
             }
         fprintf(stderr, "differential verification OK (c == neon, 4 phases)\n");
-        if (verifyOnly && implS != "cand")
+        if (verifyOnly && implS != "cand" && implS != "vcand")
             return 0;
     }
 
     filter_pp_fn fn = 0;
+    const LumaPU luma_idx = shape == 8 ? LUMA_8x8
+                          : shape == 16 ? LUMA_16x16 : LUMA_32x32;
     if (implS == "c")
-        fn = cprim.pu[shape == 8 ? LUMA_8x8
-                      : shape == 16 ? LUMA_16x16
-                      : LUMA_32x32].luma_hpp;
+        fn = vertical ? cprim.pu[luma_idx].luma_vpp
+                      : cprim.pu[luma_idx].luma_hpp;
     else if (implS == "neon")
-        fn = neon.pu[shape == 8 ? LUMA_8x8
-                     : shape == 16 ? LUMA_16x16
-                     : LUMA_32x32].luma_hpp;
+        fn = vertical ? neon.pu[luma_idx].luma_vpp
+                      : neon.pu[luma_idx].luma_hpp;
+    else if (implS == "vc")
+        fn = cprim.pu[luma_idx].luma_vpp;
+    else if (implS == "vneon")
+        fn = neon.pu[luma_idx].luma_vpp;
     else if (implS == "empty")
         fn = empty_filter;
     else if (implS == "cand")
         fn = shape == 16 ? DYNOPT_CANDIDATE16 : DYNOPT_CANDIDATE;
+    else if (implS == "vcand")
+        fn = DYNOPT_CANDIDATE_VPP;
     else { fprintf(stderr, "bad impl\n"); return 2; }
     if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
 
-    if (!skipVerify && implS == "cand")
+    if (!skipVerify && (implS == "cand" || implS == "vcand"))
     {
-        if (!verify_candidate(fn, cprim, shape))
+        if (!verify_candidate(fn, cprim, shape, vertical))
         {
             fprintf(stderr, "candidate differential verification FAILED\n");
             return 1;
@@ -282,14 +318,15 @@ int main(int argc, char** argv)
     const Corpus corpus(shape);
     uint64_t dummyTicks = 0;
     for (int i = 0; i < 64; i++)
-        run_batch(fn, corpus, shape, 512, latency, &dummyTicks);
+        run_batch(fn, corpus, shape, 512, latency, vertical, &dummyTicks);
 
     printf("shape,impl,mode,sample,batch,ns,ticks,checksum\n");
     for (int s = 0; s < samples; s++)
     {
         const auto t0 = std::chrono::steady_clock::now();
         uint64_t ticks = 0;
-        const int64_t sum = run_batch(fn, corpus, shape, batch, latency, &ticks);
+        const int64_t sum = run_batch(fn, corpus, shape, batch, latency,
+                                      vertical, &ticks);
         const auto t1 = std::chrono::steady_clock::now();
         const double ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
         printf("%s,%s,%s,%d,%d,%.0f,%llu,%lld\n",
