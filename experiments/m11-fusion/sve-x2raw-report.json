@@ -1,0 +1,60 @@
+{
+ "kernel": "sve-x2raw",
+ "profile": "kunpeng-n2-sve2p3-vl256",
+ "compute_bound_prediction": "true",
+ "load_pressure": "low",
+ "counts": {
+  "scalar_insns": 31,
+  "simd_insns": 84
+ },
+ "simd_insns": 84,
+ "load_insns": 0,
+ "n_est": 84,
+ "estimation": {
+  "issue_est": 4,
+  "instruction_score": 21.0,
+  "cycles_lb": {
+   "critical_path": 31
+  }
+ },
+ "pairs": [
+  {
+   "index1": 110,
+   "index2": 111,
+   "insn1": "add",
+   "insn2": "add",
+   "read_ports": 3,
+   "write_ports": 1,
+   "dependency_ok": true,
+   "predicate_ok": true,
+   "type_ok": true,
+   "suggested_adjacent": true,
+   "confidence": "structurally_eligible",
+   "needs_hw_verify": true
+  },
+  {
+   "index1": 111,
+   "index2": 112,
+   "insn1": "add",
+   "insn2": "add",
+   "read_ports": 3,
+   "write_ports": 1,
+   "dependency_ok": true,
+   "predicate_ok": true,
+   "type_ok": true,
+   "suggested_adjacent": true,
+   "confidence": "structurally_eligible",
+   "needs_hw_verify": true
+  }
+ ],
+ "summary": {
+  "total_pairs": 2,
+  "structurally_eligible": 2,
+  "hw_supported": 0,
+  "predicted_dynamic_insns_saved": "unknown",
+  "predicted_issue_slots_saved": "unknown",
+  "instruction_score_after": "unknown",
+  "speedup_est_by_score": "unknown",
+  "critical_path_impact": "worse-or-neutral"
+ }
+}

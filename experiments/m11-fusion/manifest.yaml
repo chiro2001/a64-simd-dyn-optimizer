@@ -1,0 +1,17 @@
+schema_version: 1
+run_id: m11-fusion
+state: accepted
+captured_at: 2026-08-13T00:00:00+08:00
+host_id: local-x86-cross
+deliverables:
+  - optimizer/analysis/fusion.py
+  - optimizer/analysis/test_fusion.py
+  - tools/fusion_analysis.py
+gates:
+  - {name: unit_tests, result: pass, detail: "7 fusion tests + 12 analysis/ir tests"}
+  - {name: report_on_sve_candidates, result: pass, detail: "x2raw + 16x16 reports"}
+  - {name: empty_fusion_table_semantics, result: pass, detail: "hw_supported=0, savings=unknown, no sorting"}
+notes: >-
+  Fusion table is empty by assumption; every pair is structurally_eligible
+  with needs_hw_verify. P5' instruction-pair microbenchmarks and real-machine
+  fusion confirmation must precede any sorting/search integration.

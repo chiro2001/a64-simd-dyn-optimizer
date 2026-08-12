@@ -1,0 +1,32 @@
+{
+ "kernel": "sve-16x16",
+ "profile": "kunpeng-n2-sve2p3-vl256",
+ "compute_bound_prediction": "unknown",
+ "load_pressure": "high",
+ "counts": {
+  "store_insns": 4,
+  "scalar_insns": 12,
+  "load_insns": 4
+ },
+ "simd_insns": 0,
+ "load_insns": 4,
+ "n_est": 4,
+ "estimation": {
+  "issue_est": 4,
+  "instruction_score": 1.0,
+  "cycles_lb": {
+   "critical_path": 7
+  }
+ },
+ "pairs": [],
+ "summary": {
+  "total_pairs": 0,
+  "structurally_eligible": 0,
+  "hw_supported": 0,
+  "predicted_dynamic_insns_saved": "unknown",
+  "predicted_issue_slots_saved": "unknown",
+  "instruction_score_after": "unknown",
+  "speedup_est_by_score": "unknown",
+  "critical_path_impact": "worse-or-neutral"
+ }
+}
