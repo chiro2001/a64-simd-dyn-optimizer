@@ -1,0 +1,22 @@
+# Pre-registered SA8D workload and 30% aggregation definition.
+# WARNING: weights below are PLACEHOLDERS. Real weights must come from a
+# fixed x265 clip-corpus call-count / profile sample and be frozen before
+# any candidate benchmark. Changing this file after seeing candidate results
+# invalidates the comparison.
+
+family: sa8d
+metric: latency_ns
+aggregation: weighted_geometric_mean_speedup
+baseline_rule: >
+  same x265 commit, same compiler/flags, same host, same ISA/VL,
+  x265 dispatch best available implementation (per shape/bit-depth).
+acceptance:
+  min_weighted_speedup: 1.30
+  ci_lower_bound_min: 1.00
+  max_unweighted_regression_per_shape: 0.97
+benchmark_protocol_version: 1
+cases:
+  - {bit_depth: 8, shape: 8x8,   weight: 0.20, placeholder: true}
+  - {bit_depth: 8, shape: 16x16, weight: 0.35, placeholder: true}
+  - {bit_depth: 8, shape: 32x32, weight: 0.30, placeholder: true}
+  - {bit_depth: 8, shape: 64x64, weight: 0.15, placeholder: true}

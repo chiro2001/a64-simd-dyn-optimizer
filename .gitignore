@@ -1,0 +1,28 @@
+# build artifacts
+/build/
+/third_party/x265/build*/
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# tooling
+.cache/
+.clangd/
+compile_commands.json
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# large local experiment noise (raw samples are committed under experiments/)
+*.perf.data
+*.perf.data.old
