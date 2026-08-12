@@ -1,0 +1,14 @@
+nop_total=2261 iters=65536 samples=41
+mul     ticks=0.07
+mla     ticks=0.07
+addp    ticks=0.03
+trn1    ticks=0.03
+trn2    ticks=0.03
+zip1    ticks=0.03
+zip2    ticks=0.03
+shl     ticks=0.03
+rev64   ticks=0.03
+rshrn   ticks=0.07
+saddl   ticks=0.05
+ssubl   ticks=0.05
+smull   ticks=0.14

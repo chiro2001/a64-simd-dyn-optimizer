@@ -1,0 +1,12 @@
+schema_version: 1
+run_id: m24-dct8-latency-probe
+state: rejected
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [n1-neon128, kunpeng-920b-cloud]
+deliverables:
+  - benchmarks/insn_latency.cpp
+gates:
+  - {name: probe_runs_on_both_machines, result: pass}
+  - {name: scaled_latency_path_920b_spearman, result: "-0.083"}
+  - {name: scaled_latency_path_n1_spearman, result: "-0.250"}
+  - {name: static_ranking_generalizes, result: fail}
