@@ -66,7 +66,7 @@ struct Corpus
         {
             int16_t* a = &data[(size_t)i * BUFSZ * BUFSZ];
             for (int j = 0; j < BUFSZ * BUFSZ; j++)
-                a[j] = (int16_t)((int)(rng() & 0x3FF) - 512);
+                a[j] = (int16_t)((int)(rng() & 0x1FF) - 255);   // [-255,255]
             offs[i] = (int)(rng() % (maxOff * maxOff + 1));
             p[i] = a;
         }
@@ -90,7 +90,7 @@ static bool verify_shape(const EncoderPrimitives& cprim,
     {
         int16_t a[64 * 64], want[64 * 64], got[64 * 64];
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
-            a[i] = (int16_t)((int)(rng() & 0x3FF) - 512);
+            a[i] = (int16_t)((int)(rng() & 0x1FF) - 255);
         const int off = (int)(rng() % (maxOff * maxOff + 1));
         const int ox = off % maxOff;
         const int oy = off / maxOff;
@@ -117,7 +117,7 @@ static bool verify_candidate(dct_fn fn, const EncoderPrimitives& neon,
     {
         int16_t a[64 * 64], want[64 * 64], got[64 * 64];
         for (int i = 0; i < BUFSZ * BUFSZ; i++)
-            a[i] = (int16_t)((int)(rng() & 0x3FF) - 512);
+            a[i] = (int16_t)((int)(rng() & 0x1FF) - 255);
         const int off = (int)(rng() % (maxOff * maxOff + 1));
         const int ox = off % maxOff;
         const int oy = off / maxOff;

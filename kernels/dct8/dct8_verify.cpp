@@ -91,8 +91,10 @@ int main(int argc, char** argv)
     {
         const int stride = strides[rng() % 4];
         int16_t buf[8 * 32 + 8];
+        // x265 8-bit residual contract: [-255, 255]. The NEON pass1 narrows
+        // with saturating vrshrn and is bit-exact only inside this range.
         for (int j = 0; j < (int)sizeof(buf) / (int)sizeof(buf[0]); j++)
-            buf[j] = (int16_t)((int)(rng() & 0x3FF) - 512);   // [-512,511]
+            buf[j] = (int16_t)((int)(rng() & 0x1FF) - 255);
 
         int16_t want[64], got[64];
         int16_t cref[64];
