@@ -106,6 +106,12 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   `--chain` 打印最长路径、`--fit=name:tick,... --out f.json` 逐机拟合逐
   指令延迟）。校准：**920B R²=0.982、N1 R²=0.814**（fitted-n1/920b.json）。
   种子表对 920B 排名基本正确；N1 需要拟合（mla/mul 延迟高于种子假设）。
+- **P4' 融合静态 inventory（本轮，accepted）**：
+  `optimizer/analysis/fusion.py`（互斥分类、C3 端口预算、C4 dest-chaining/
+  窗口可观察性/谓词一致/重排位置）、`tools/fusion_analysis.py`（docs/09
+  §4.2 报告）、7 个单测。报告：sve-x2raw 2 对、dct8-upstream 99 对、
+  dct8-protob 34 对 structurally_eligible；融合表为空 → hw_supported=0、
+  节省 unknown、不驱动搜索（`experiments/m11-fusion/`）。
 - **round-0006 已归档**：response.md + decision.md（独立印证 s16 回绕；
   三原型 (a/b/c) 与止损点；纠错 vrshrn 非饱和、PR_SVE_SET_VL 单位为字节、
   m12 合同改 C 参考、微基准 checksum 移出依赖链）。
@@ -154,10 +160,12 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
 2. 基准重建（round-0006）：throughput 四路独立 dst、latency 预筛 C==NEON
    输入链、归档 impl_a/impl_b + CNTFRQ（微基准 checksum 已移出依赖链；
    CNTFRQ 双机不同，只做机内比较）。
-3. **P4'**：融合静态 inventory（互斥分类 + `structurally_eligible`；
-   空融合表时节省为 unknown，不驱动排序/搜索）。
-4. **P5'~P6'**：目标融合对验证（instruction-pair 微基准）→ 有
-   `hw_supported` 证据后才排序 → 相关性验证后进搜索主循环。
+3. **P4'（已完成）**：融合静态 inventory 入库并出报告（见上）。
+4. **P5'~P6'（下一增量）**：目标融合对验证——instruction-pair 微基准在
+   920B 实测 sve-x2raw 的相邻 `add z28,z28,zN` 链与 DCT8 代表 pair；注意
+   920B 无 PMU，只能用 CNTVCT 时间差做弱证据（`instructions:u` 仍退两条
+   架构指令，不能单独证明融合）；有 `hw_supported` 证据后才排序，相关性
+   验证后进搜索主循环。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
