@@ -1,0 +1,22 @@
+schema_version: 1
+run_id: m16-dct8-protoc
+state: rejected-performance
+captured_at: 2026-08-13T00:00:00+08:00
+host_ids: [local-x86-cross-qemu, n1-neon128, kunpeng-920b-cloud]
+project_commit: 57dc4f0
+candidate:
+  source: kernels/dct8/candidates/proto_c.cpp
+  symbol: dynopt_dct8_neon_candidate
+  static_total: 254
+  static_simd: 118
+gates:
+  - {name: cand_eq_c_oracle, result: pass, detail: "200k local + 20k N1 + 20k 920B"}
+  - {name: paired_latency_vs_neon_n1, result: "0.829x CI[0.800,0.843] REJECT"}
+  - {name: paired_latency_vs_neon_920b, result: "0.953x CI[0.944,0.964] REJECT"}
+  - {name: paired_tp_vs_neon_n1, result: "0.837x REJECT"}
+  - {name: paired_tp_vs_neon_920b, result: "1.036x CI[1.020,1.050] REJECT(keep=1.10)"}
+verdict: >-
+  stop-loss triggered (no candidate >1.05 center with CI>1.00): end the
+  upstream-NEON local peephole family; pivot to range-aware fixed-point cost
+  model (docs/09 resource lower bound), calibrate with the 12 measurements
+  from M14-M16.

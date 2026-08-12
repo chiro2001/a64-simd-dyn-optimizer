@@ -1,0 +1,93 @@
+{
+ "candidates": [
+  {
+   "name": "upstream-neon",
+   "hist": {
+    "lsl": 1,
+    "add": 16,
+    "stp": 14,
+    "adrp": 2,
+    "ldr": 24,
+    "rev64": 24,
+    "sub": 24,
+    "saddl": 16,
+    "ldp": 10,
+    "zip2": 8,
+    "zip1": 8,
+    "str": 5,
+    "smull": 64,
+    "mul": 24,
+    "addp": 64,
+    "shl": 4,
+    "rshrn": 32,
+    "ret": 1
+   },
+   "n1": 2.3,
+   "920b": 6.92
+  },
+  {
+   "name": "widened",
+   "hist": {
+    "addp": 64,
+    "mul": 56,
+    "smull": 32,
+    "rshrn": 32,
+    "add": 19,
+    "sub": 17,
+    "rev64": 16,
+    "saddl": 16,
+    "mov": 10,
+    "zip1": 8,
+    "tbl": 8,
+    "ssubl": 8,
+    "shl": 4,
+    "sxtl": 4
+   },
+   "n1": 2.59,
+   "920b": 7.06
+  },
+  {
+   "name": "proto_b",
+   "hist": {
+    "mla": 24,
+    "add": 21,
+    "mul": 20,
+    "rshrn": 16,
+    "movi": 14,
+    "addp": 8,
+    "rev64": 6,
+    "zip1": 6,
+    "zip2": 6,
+    "mvni": 6,
+    "saddl": 4,
+    "ssubl": 4,
+    "trn1": 4,
+    "trn2": 4,
+    "sub": 3,
+    "shl": 2
+   },
+   "n1": 2.94,
+   "920b": 6.05
+  },
+  {
+   "name": "proto_c",
+   "hist": {
+    "mul": 44,
+    "addp": 32,
+    "add": 28,
+    "rshrn": 16,
+    "rev64": 6,
+    "saddl": 4,
+    "ssubl": 4,
+    "sub": 3,
+    "zip1": 2,
+    "zip2": 2,
+    "shl": 2,
+    "ld1": 2
+   },
+   "n1": 3.17,
+   "920b": 6.48
+  }
+ ],
+ "note": "ticks/call means from paired-pmu-per-call.csv; CNTFRQ differs across machines, intra-machine only"
+}
