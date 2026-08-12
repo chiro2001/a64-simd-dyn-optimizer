@@ -17,6 +17,10 @@ __pycache__/
 .clangd/
 compile_commands.json
 
+# crash dumps
+*.core
+qemu_*.core
+
 # editor
 .vscode/
 .idea/
