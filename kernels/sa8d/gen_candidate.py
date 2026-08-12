@@ -31,8 +31,39 @@ def balanced_reduction(src):
     return src.replace(second, new_second).replace(third, new_third)
 
 
+def abs_add_reduction(src):
+    """Replace add+abs+sabd+s64trn+umax stage with direct abs+add.
+
+    This is a hypothesis, not a proven rewrite: the funnel verifies whether
+    sum(abs(x)+abs(y)) over the four post-s32trn pairs is bit-exact.
+    """
+    start = "    int16x8_t v98 = vaddq_s16(v97, v96);"
+    end = "    int16x8_t v143 = vreinterpretq_s16_u16(vmaxq_u16("
+    si = src.index(start)
+    ei = src.index(end)
+    # end marker line continues; find its newline.
+    ei = src.index("\n", ei) + 1
+    span = src[si:ei]
+    keep_ids = {"96", "97", "101", "102", "106", "107", "111", "112"}
+    kept = []
+    for line in span.splitlines(True):
+        m = re.match(r"    int16x8_t v(\d+) = vreinterpretq_s16_s32\(v\d+\);",
+                     line)
+        if m and m.group(1) in keep_ids:
+            kept.append(line)
+    replacement = (
+        "".join(kept) +
+        "    int16x8_t v134 = vaddq_s16(vabsq_s16(v96), vabsq_s16(v97));\n"
+        "    int16x8_t v137 = vaddq_s16(vabsq_s16(v101), vabsq_s16(v102));\n"
+        "    int16x8_t v140 = vaddq_s16(vabsq_s16(v106), vabsq_s16(v107));\n"
+        "    int16x8_t v143 = vaddq_s16(vabsq_s16(v111), vabsq_s16(v112));\n"
+    )
+    return src[:si] + replacement + src[ei:]
+
+
 VARIANTS = {
     "cand-0001-balanced-reduction": balanced_reduction,
+    "cand-0002-abs-add-reduction": abs_add_reduction,
 }
 
 
