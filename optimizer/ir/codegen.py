@@ -186,3 +186,142 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
             raise ValueError("codegen unsupported op %r" % op)
     lines.append("}")
     return "\n".join(lines) + "\n"
+
+
+def _sve_flat_indices(node):
+    """Convert a NEON shuffle mask to flat s16-lane tbl2 indices."""
+    m = re.match(r"<(\d+) x i(\d+)>", node["type"])
+    lanes = int(m.group(1))
+    factor = 8 // lanes
+    out = []
+    for mask_entry in node["mask"]:
+        for j in range(factor):
+            if mask_entry < lanes:
+                out.append(mask_entry * factor + j)
+            else:
+                out.append(8 + (mask_entry - lanes) * factor + j)
+    return out
+
+
+def emit_sve_intrinsics(machine_ir,
+                        func_name="dynopt_sa8d_8x8_neon_sve2",
+                        active_lanes=8):
+    """SVE2 backend: same seed MachineIR, 8 active s16 lanes of a VL=256
+    vector, permutes via svtbl2 with constant index vectors, reduction via
+    svuaddv. Correct for any VL >= 128; the fixed VL=256 contract is enforced
+    at build/dispatch time.
+    """
+    lines = [
+        "#include <arm_sve.h>",
+        "#include <cstddef>",
+        "#include <stdint.h>",
+        "",
+        "extern \"C\" int %s(const uint8_t* pix1, intptr_t stride_pix1,"
+        " const uint8_t* pix2, intptr_t stride_pix2)" % func_name,
+        "{",
+        "    svbool_t pg = svwhilelt_b16(0, %d);" % active_lanes,
+    ]
+    env = {"pix1": ("pix1", 0), "pix2": ("pix2", 0),
+           "i_pix1": 1, "i_pix2": 1}
+    cname = {}
+    idx_counter = [0]
+
+    def cid(name):
+        if name not in cname:
+            cname[name] = "v%d" % len(cname)
+        return cname[name]
+
+    for node in machine_ir.nodes:
+        op = node["op"]
+        dst = node.get("dst")
+        if op == "shl":
+            env[dst] = env[node["src"][0]] << node["amt"]
+        elif op == "addr":
+            env[dst] = _resolve_addr(env, node)
+        elif op == "load":
+            base, coef = env[node["ptr"]]
+            stride = "stride_pix1" if base == "pix1" else "stride_pix2"
+            lines.append("    svuint16_t %s = svld1ub_u16(pg,"
+                         " (const uint8_t*)%s + (size_t)(%d) * %s);"
+                         % (cid(dst), base, coef, stride))
+        elif op == "zext":
+            lines.append("    svuint16_t %s = %s;"
+                         % (cid(dst), cid(node["src"])))
+        elif op in ("add", "sub"):
+            if "<" not in node["type"]:
+                opc = "+" if op == "add" else "-"
+                lines.append("    uint64_t %s = %s %s %d;"
+                             % (cid(dst), cid(node["src"][0]), opc,
+                                node.get("const", 0)))
+            else:
+                fn = "svadd_u16_x" if op == "add" else "svsub_u16_x"
+                if len(node["src"]) == 2:
+                    lines.append("    svuint16_t %s = %s(pg, %s, %s);"
+                                 % (cid(dst), fn, cid(node["src"][0]),
+                                    cid(node["src"][1])))
+                else:
+                    lines.append("    svuint16_t %s = %s(pg, %s,"
+                                 " svdup_u16(%d));"
+                                 % (cid(dst), fn, cid(node["src"][0]),
+                                    node.get("const", 0)))
+        elif op == "shuffle":
+            flat = _sve_flat_indices(node)
+            n = idx_counter[0]
+            idx_counter[0] += 1
+            lo = []
+            bmask = []
+            for x in flat:
+                if x < 8:
+                    lo.append(x)
+                    bmask.append(0)
+                else:
+                    lo.append(x - 8)
+                    bmask.append(1)
+            arr_lo = ", ".join(str(x) for x in lo)
+            arr_b = ", ".join(str(x) for x in bmask)
+            lines.append("    static const uint16_t idx%d_lo[16] = { %s };"
+                         % (n, arr_lo))
+            lines.append("    static const uint16_t idx%d_b[16] = { %s };"
+                         % (n, arr_b))
+            lines.append("    svuint16_t %s = svtbl2_u16("
+                         "svcreate2_u16(%s, %s),"
+                         " svadd_u16_x(svptrue_b16(),"
+                         " svld1_u16(svptrue_b16(), idx%d_lo),"
+                         " svmul_u16_x(svptrue_b16(),"
+                         " svld1_u16(svptrue_b16(), idx%d_b),"
+                         " svdup_u16((uint16_t)(svcntw() * 2)))));"
+                         % (cid(dst), cid(node["src"][0]),
+                            cid(node["src"][1]), n, n))
+        elif op == "bitcast":
+            lines.append("    svuint16_t %s = %s;"
+                         % (cid(dst), cid(node["src"])))
+        elif op == "intrinsic":
+            name = node["intrinsic"]
+            if name == "abs":
+                lines.append("    svuint16_t %s = svreinterpret_u16_s16("
+                             "svabs_s16_x(pg, svreinterpret_s16_u16(%s)));"
+                             % (cid(dst), cid(node["src"][0])))
+            elif name == "sabd":
+                lines.append("    svuint16_t %s = svreinterpret_u16_s16("
+                             "svabd_s16_x(pg, svreinterpret_s16_u16(%s),"
+                             " svreinterpret_s16_u16(%s)));"
+                             % (cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1])))
+            elif name == "umax":
+                lines.append("    svuint16_t %s = svmax_u16_x(pg, %s, %s);"
+                             % (cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1])))
+            elif name == "uaddlv":
+                lines.append("    uint64_t %s = svaddv_u16(pg, %s);"
+                             % (cid(dst), cid(node["src"][0])))
+            else:
+                raise ValueError("SVE codegen unknown intrinsic %r" % name)
+        elif op == "lshr":
+            lines.append("    uint64_t %s = %s >> %d;"
+                         % (cid(dst), cid(node["src"][0]), node["amt"]))
+        elif op == "ret":
+            lines.append("    return (int)%s;" % cid(node["operand"]))
+        else:
+            raise ValueError("SVE codegen unsupported op %r" % op)
+    lines.append("}")
+    return "\n".join(lines) + "\n"
