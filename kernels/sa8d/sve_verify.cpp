@@ -15,8 +15,12 @@ extern "C" int dynopt_sa8d_8x8x2_neon_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
     const uint8_t* pix2, intptr_t stride_pix2);
 
-static int scalar_sa8d_8x8(const uint8_t* a, intptr_t sa,
-                           const uint8_t* b, intptr_t sb)
+extern "C" int dynopt_sa8d_8x8x2raw_neon_sve2(
+    const uint8_t* pix1, intptr_t stride_pix1,
+    const uint8_t* pix2, intptr_t stride_pix2);
+
+static int sa8d8_raw(const uint8_t* a, intptr_t sa,
+                     const uint8_t* b, intptr_t sb)
 {
     int d[8][8];
     for (int r = 0; r < 8; r++)
@@ -44,7 +48,13 @@ static int scalar_sa8d_8x8(const uint8_t* a, intptr_t sa,
                 s += h[ky][c] * w[kx][c];
             r8 += std::abs(s);
         }
-    return (r8 + 2) >> 2;
+    return r8;
+}
+
+static int scalar_sa8d_8x8(const uint8_t* a, intptr_t sa,
+                           const uint8_t* b, intptr_t sb)
+{
+    return (sa8d8_raw(a, sa, b, sb) + 2) >> 2;
 }
 
 static std::vector<uint8_t> make_plane(int stride, int off,
@@ -132,5 +142,46 @@ int main(int argc, char** argv)
         }
     }
     printf("x2_cases=%d mismatches=%d\n", cases, mism2);
-    return mism2 ? 1 : 0;
+    if (mism2)
+        return 1;
+
+    int mism3 = 0;
+    for (int i = 0; i < cases; i++)
+    {
+        uint8_t va[128], vb[128];
+        for (int j = 0; j < 128; j++)
+        {
+            va[j] = (uint8_t)(rng() & 0xFF);
+            vb[j] = (uint8_t)(rng() & 0xFF);
+        }
+        int sa = strides16[rng() % 4];
+        int sb = strides16[rng() % 4];
+        int oa = offs[rng() % 4];
+        int ob = offs[rng() % 4];
+        std::vector<uint8_t> pa = make_plane16(sa, oa, va);
+        std::vector<uint8_t> pb = make_plane16(sb, ob, vb);
+        const uint8_t* a = pa.data() + oa;
+        const uint8_t* b = pb.data() + ob;
+        int raw_sum = sa8d8_raw(a, sa, b, sb)
+                    + sa8d8_raw(a + 8, sa, b + 8, sb);
+        if (raw_sum & 1)
+        {
+            if (mism3 < 5)
+                fprintf(stderr, "x2raw odd raw_sum=%d (unexpected)\n",
+                        raw_sum);
+            mism3++;
+            continue;
+        }
+        int want = raw_sum / 2;
+        int got = dynopt_sa8d_8x8x2raw_neon_sve2(a, sa, b, sb);
+        if (want != got)
+        {
+            if (mism3 < 5)
+                fprintf(stderr, "x2raw mismatch %d: want=%d got=%d "
+                        "strides=%d/%d\n", i, want, got, sa, sb);
+            mism3++;
+        }
+    }
+    printf("x2raw_cases=%d mismatches=%d\n", cases, mism3);
+    return mism3 ? 1 : 0;
 }

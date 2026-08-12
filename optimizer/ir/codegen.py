@@ -203,10 +203,33 @@ def _sve_flat_indices(node):
     return out
 
 
+def _sve_trn_spec(node):
+    """Return (intrinsic, element-type) if the shuffle is exactly an SVE
+    TRN1/TRN2 at the native element width, else None.
+
+    The SA8D seed uses exactly six masks (TRN1/TRN2 at i16/i32/i64), each
+    repeated four times. SVE TRN applies the same interleave across the
+    whole vector, so at VL=256 the low 8-lane halves (two packed tiles) are
+    transformed independently with a single instruction and no index vectors.
+    """
+    vtype = node["type"]
+    mask = tuple(node["mask"])
+    patterns = {
+        ("<8 x i16>", (0, 8, 2, 10, 4, 12, 6, 14)): ("svtrn1_u16", "u16"),
+        ("<8 x i16>", (1, 9, 3, 11, 5, 13, 7, 15)): ("svtrn2_u16", "u16"),
+        ("<4 x i32>", (0, 4, 2, 6)): ("svtrn1_u32", "u32"),
+        ("<4 x i32>", (1, 5, 3, 7)): ("svtrn2_u32", "u32"),
+        ("<2 x i64>", (0, 2)): ("svtrn1_u64", "u64"),
+        ("<2 x i64>", (1, 3)): ("svtrn2_u64", "u64"),
+    }
+    return patterns.get((vtype, mask))
+
+
 def emit_sve_intrinsics(machine_ir,
                         func_name="dynopt_sa8d_8x8_neon_sve2",
                         active_lanes=8,
-                        pack=1):
+                        pack=1,
+                        raw=False):
     """SVE2 backend over the same seed MachineIR.
 
     pack=1: `active_lanes` active s16 lanes (default 8), single 8x8 tile.
@@ -275,6 +298,11 @@ def emit_sve_intrinsics(machine_ir,
                 srcv = env.get(node["src"][0])
                 if pack == 2 and isinstance(srcv, tuple) and \
                         srcv[0] == "pair":
+                    if raw:
+                        # Raw helper: skip per-tile rounding entirely; the
+                        # reduction tail (add-const, lshr) is a no-op.
+                        env[dst] = srcv
+                        continue
                     _, a, b = srcv
                     na, nb = pair_cid(dst)
                     lines.append("    uint64_t %s = %s %s %d;"
@@ -298,6 +326,20 @@ def emit_sve_intrinsics(machine_ir,
                                  % (cid(dst), fn, cid(node["src"][0]),
                                     node.get("const", 0)))
         elif op == "shuffle":
+            trn = _sve_trn_spec(node)
+            if trn is not None:
+                intrinsic, elem = trn
+                a, b = cid(node["src"][0]), cid(node["src"][1])
+                if elem == "u16":
+                    lines.append("    svuint16_t %s = %s(%s, %s);"
+                                 % (cid(dst), intrinsic, a, b))
+                else:
+                    lines.append("    svuint16_t %s = svreinterpret_u16_%s("
+                                 "%s(svreinterpret_%s_u16(%s),"
+                                 " svreinterpret_%s_u16(%s)));"
+                                 % (cid(dst), elem, intrinsic, elem, a,
+                                    elem, b))
+                continue
             flat = _sve_flat_indices(node)
             n = idx_counter[0]
             idx_counter[0] += 1
@@ -360,6 +402,8 @@ def emit_sve_intrinsics(machine_ir,
                     # half-sum is the full sum minus the lower half-sum.
                     lines.append("    %s -= %s;" % (b, a))
                     env[dst] = ("pair", a, b)
+                    if raw:
+                        pass
                 else:
                     lines.append("    uint64_t %s = svaddv_u16(pg, %s);"
                                  % (cid(dst), cid(node["src"][0])))
@@ -368,6 +412,9 @@ def emit_sve_intrinsics(machine_ir,
         elif op == "lshr":
             if pack == 2 and isinstance(env.get(node["src"][0]), tuple) \
                     and env[node["src"][0]][0] == "pair":
+                if raw:
+                    env[dst] = env[node["src"][0]]
+                    continue
                 _, a, b = env[node["src"][0]]
                 na, nb = pair_cid(dst)
                 lines.append("    uint64_t %s = %s >> %d;" % (na, a, node["amt"]))

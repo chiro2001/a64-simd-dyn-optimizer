@@ -2,7 +2,7 @@
 """Generate C++ NEON or SVE2 intrinsics from imported MachineIR.
 
 Usage: python3 kernels/sa8d/gen_roundtrip.py <machine-ir.json> <out.cpp>
-       [--backend neon|sve2] [--pack x2]
+       [--backend neon|sve2] [--pack x2] [--raw]
 """
 
 import json
@@ -20,14 +20,21 @@ def main():
         sys.argv[sys.argv.index("--backend") + 1] == "sve2" else "neon"
     pack = 2 if "--pack" in sys.argv and \
         sys.argv[sys.argv.index("--pack") + 1] == "x2" else 1
+    raw = "--raw" in sys.argv
+    if raw and pack != 2:
+        print("--raw requires --pack x2", file=sys.stderr)
+        return 2
     with open(sys.argv[1]) as f:
         doc = json.load(f)
     from optimizer.ir.machine_ir import MachineIR
     ir = MachineIR(function=doc["function"], nodes=doc["nodes"])
     if backend == "sve2":
-        func = ("dynopt_sa8d_8x8x2_neon_sve2" if pack == 2
-                else "dynopt_sa8d_8x8_neon_sve2")
-        src = emit_sve_intrinsics(ir, func, pack=pack)
+        if pack == 2:
+            func = ("dynopt_sa8d_8x8x2raw_neon_sve2" if raw
+                    else "dynopt_sa8d_8x8x2_neon_sve2")
+        else:
+            func = "dynopt_sa8d_8x8_neon_sve2"
+        src = emit_sve_intrinsics(ir, func, pack=pack, raw=raw)
     else:
         src = emit_c_intrinsics(ir)
     with open(sys.argv[2], "w") as f:

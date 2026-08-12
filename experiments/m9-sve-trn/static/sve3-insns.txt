@@ -1,0 +1,14 @@
+total=116 simd=101
+  add          35  [SIMD]
+  sub          24  [SIMD]
+  ld1b         16  [SIMD]
+  trn1         12  [SIMD]
+  trn2         12  [SIMD]
+  sabd          4  [SIMD]
+  abs           4  [SIMD]
+  umax          4  [SIMD]
+  mov           1
+  whilelt       1  [SIMD]
+  uaddv         1  [SIMD]
+  fmov          1
+  ret           1

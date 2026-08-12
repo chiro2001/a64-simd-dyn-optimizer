@@ -1,0 +1,35 @@
+run-id: m9-sve-trn
+milestone: M6
+state: blocked-environment
+hypothesis: >-
+  MachineIR 的 24 个 shuffle 恰为 i16/i32/i64 的 TRN1/TRN2，typed SVE
+  TRN lowering 可删除全部 tbl2 索引机制且保持打包语义；raw x2 helper
+  返回两块 half-R8 之和，供 16x16 统一舍入。
+target: sve2-vl256 (qemu, vq=2/4)
+baseline_candidate: generated/sa8d/sve_roundtrip_sa8d_8x8.cpp
+candidates:
+  - generated/sa8d/sve_roundtrip_sa8d_8x8x2.cpp
+  - generated/sa8d/sve_roundtrip_sa8d_8x8x2raw.cpp
+correctness:
+  tool: qemu-aarch64 -cpu max,sve-max-vq=2 / =4 build/sve_verify
+  cases: 100000
+  result: "0 mismatches (single + x2 + x2raw, both VLs)"
+static:
+  single_total: 117
+  single_simd: 101
+  x2_total: 125
+  x2_simd: 103
+  x2raw_total: 116
+  x2raw_simd: 101
+  per_tile_x2raw_total: 58
+  per_tile_x2raw_simd: 50.5
+  vs_m8_per_tile_total: "-61%"
+  vs_m8_per_tile_simd: "-55%"
+perf: blocked-environment (real SVE2 VL=256 hardware required)
+notes: >-
+  typed TRN verified at VL=256/512 for all three candidates; raw helper
+  returns (R8_A+R8_B)/2 with R8 sums verified even on the corpus.
+commands:
+  - bash scripts/build-sve-sa8d.sh
+  - qemu-aarch64 -cpu max,sve-max-vq=2 build/sve_verify 100000
+  - qemu-aarch64 -cpu max,sve-max-vq=4 build/sve_verify 100000

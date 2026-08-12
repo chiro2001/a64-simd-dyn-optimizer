@@ -3,9 +3,9 @@
 #include <cstddef>
 #include <stdint.h>
 
-extern "C" int dynopt_sa8d_8x8_neon_sve2(const uint8_t* pix1, intptr_t stride_pix1, const uint8_t* pix2, intptr_t stride_pix2)
+extern "C" int dynopt_sa8d_8x8x2raw_neon_sve2(const uint8_t* pix1, intptr_t stride_pix1, const uint8_t* pix2, intptr_t stride_pix2)
 {
-    svbool_t pg = svwhilelt_b16(0, 8);
+    svbool_t pg = svwhilelt_b16(0, 16);
     svuint16_t v0 = svld1ub_u16(pg, (const uint8_t*)pix1 + (size_t)(0) * stride_pix1);
     svuint16_t v1 = svld1ub_u16(pg, (const uint8_t*)pix1 + (size_t)(1) * stride_pix1);
     svuint16_t v2 = svld1ub_u16(pg, (const uint8_t*)pix1 + (size_t)(2) * stride_pix1);
@@ -153,8 +153,8 @@ extern "C" int dynopt_sa8d_8x8_neon_sve2(const uint8_t* pix1, intptr_t stride_pi
     svuint16_t v144 = svadd_u16_x(pg, v137, v134);
     svuint16_t v145 = svadd_u16_x(pg, v144, v140);
     svuint16_t v146 = svadd_u16_x(pg, v145, v143);
-    uint64_t v147 = svaddv_u16(pg, v146);
-    uint64_t v148 = v147 + 1;
-    uint64_t v149 = v148 >> 1;
-    return (int)v149;
+    uint64_t p147_a = svaddv_u16(svwhilelt_b16(0, 8), v146);
+    uint64_t p147_b = svaddv_u16(pg, v146);
+    p147_b -= p147_a;
+    return (int)(p147_a + p147_b);
 }
