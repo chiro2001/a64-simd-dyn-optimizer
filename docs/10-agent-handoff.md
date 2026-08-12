@@ -195,6 +195,12 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
      **phase=0**（单位滤波器）与 C 参考不一致（want=0 vs got=65），920B
      的 i8mm 变体通过；与 DCT8 同类潜在 bug，下一轮最小化反例 + importer
      扩 udot/sdot/usdot dot 家族 + roundtrip→C-exact 候选。
+   - **纠错**：上述“phase=0 分歧”是 harness 的 strided-write/dense-read
+     bug 假阳性；改 `dstStride=shape` 后三处 c==neon 全过。
+   - **M18 进展**：dotprod seed IR 提取 + importer 扩（extractvalue/trunc/
+     xor）→ 136 节点导入；`proto_dot` C-exact 8x8 候选（4 行批量 76 条）
+     对上游 NEON N1 1.014×/920B 1.024×。**8x8 上游 dotprod 已近下限**，
+     +30% 转向 16x16+ 或垂直/hvpp 路径。
 5. **P7'**：N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收。
 6. 920B 存活期内补做 DCT8 候选的 a 档实机验证（工具链/微基准已就绪）。
 
