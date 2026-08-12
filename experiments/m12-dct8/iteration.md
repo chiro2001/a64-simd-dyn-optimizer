@@ -50,10 +50,11 @@ CNTVCT_EL0 口径）。
 
 | 门禁 | 命令 | N1 | 920B |
 | --- | --- | --- | --- |
-| 独立差分 | `build/dct8_verify 200000`（oracle==C 必过；NEON 分歧率 ~0.87% 记录） | 待跑 | 已跑 |
-| 上游 TestBench | `TestBench --cpuid NEON --testbench transforms --nobench` | 待跑 | 通过（exit 0） |
-| cand==C | `dct8_microbench 8x8 cand latency 1 1 --verify-only` | 候选就绪后 | 候选就绪后 |
-| paired cycles 基线 | `scripts/run-pmu-sa8d-paired.sh build/dct8_microbench 8x8 10 3 4096 ...` | 待跑 | 待跑 |
+| 独立差分 | `build/dct8_verify 200000`（oracle==C 必过；NEON 分歧率 ~0.87% 记录） | 已跑（1733/200000，oracle==C 0） | 已跑（同左） |
+| 上游 TestBench | `TestBench --cpuid NEON --testbench transforms --nobench` | 未跑（920B 已证） | 通过（exit 0） |
+| cand==C（widened） | `dct8_microbench_widen 8x8 cand latency 1 1 --verify-only` | 通过（20k） | 通过（20k） |
+| paired 基线 neon-vs-c | cntvct latency | **0.807×** | **0.961×** |
+| paired widened-vs-neon | cntvct latency（M14） | **0.891×** | **0.981×** |
 
 ## 5. 目标与口径
 

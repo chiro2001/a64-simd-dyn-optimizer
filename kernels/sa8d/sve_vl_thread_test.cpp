@@ -2,13 +2,10 @@
 // whether a freshly created worker thread inherits the caller's VL or falls
 // back to the system default, and whether the worker can set its own VL.
 // Production dispatch (x265 thread pool) must set VL in every worker thread
-// if inheritance is absent. NOTE: PR_SVE_SET_VL argument units are observed
-// empirically instead of assumed from the man page: on this Kunpeng 920B
-// openEuler 6.6 kernel and on qemu-user the value behaves as BYTES
-// (prctl(16) -> 16B, larger values clamp to the implementation maximum),
-// while the man page documents bits. The probe prints prctl return codes so
-// the behavior is recorded, and uses 16 (VL=128 bits = 16 bytes) for the
-// inheritance check.
+// if inheritance is absent. PR_SVE_SET_VL's length argument is in BYTES:
+// prctl(16) -> 16 bytes (VL=128 bits), larger values clamp to the
+// implementation maximum. The probe prints prctl return codes and uses 16
+// for the inheritance check.
 #include <arm_sve.h>
 
 #include <cstdio>

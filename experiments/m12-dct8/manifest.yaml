@@ -15,10 +15,11 @@ kernels:
   - {shape: 8x8, baseline: dct8_neon, oracle: dct8_c, upstream_line: common/aarch64/dct-prim.cpp:2066}
 gates:
   - standalone_differential
-  - c_eq_neon_same_binary
-  - cand_eq_neon_same_binary
+  - oracle_eq_dct8_c
+  - cand_eq_c_oracle
   - paired_cycles_n1
   - paired_cycles_920b
+contract: candidate must be bit-exact with the C reference (not upstream NEON)
 notes: >-
   User input: internal Kunpeng DCT beats upstream x265 by 30-60%, so DCT8 is
   the highest-value kernel now; tier a must be measured on both N1 and 920B

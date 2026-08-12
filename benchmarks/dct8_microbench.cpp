@@ -154,9 +154,11 @@ static int64_t run_batch(dct_fn fn, const Corpus& corpus, int shape,
         {
             const size_t idx = (sel + (uint64_t)i) & mask;
             fn(corpus.a((int)idx) + corpus.off((int)idx), out, STRIDE);
-            for (int k = 0; k < shape * shape; k++)
-                checksum += out[k];
-            sel = (uint64_t)checksum;
+            // dependent chain for latency mode, without a 64-element sum
+            // polluting the per-call cost
+            sel = (uint64_t)((uint32_t)out[0] * 0x9E3779B9u
+                             + (uint32_t)out[shape * shape - 1]);
+            checksum += out[0] + out[shape * shape - 1];
         }
     }
     else
@@ -165,8 +167,7 @@ static int64_t run_batch(dct_fn fn, const Corpus& corpus, int shape,
         {
             const size_t idx = (uint64_t)i & mask;
             fn(corpus.a((int)idx) + corpus.off((int)idx), out, STRIDE);
-            for (int k = 0; k < shape * shape; k++)
-                checksum += out[k];
+            checksum += out[0] + out[shape * shape - 1];
         }
     }
     *ticksOut = read_cntvct() - t0;
