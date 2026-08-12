@@ -86,6 +86,10 @@ class TargetFeatures:
         return cls(neon=True, sve=True)
 
     @classmethod
+    def sve_vl256(cls):
+        return cls(neon=True, sve=True, fixed_vl=256)
+
+    @classmethod
     def sve2_vl256(cls):
         return cls(neon=True, sve=True, sve2=True, fixed_vl=256)
 

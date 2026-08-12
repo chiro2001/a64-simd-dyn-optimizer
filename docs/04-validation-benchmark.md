@@ -185,9 +185,17 @@ warmup -> empty -> candidate -> baseline
 
 - 主 shape：CI 下界 > 1.00，median speedup 至少 1.03；
 - 非目标但同 family shape：任一预注册关键 shape 不得回退超过 3%；
-- 按三档目标验收：预注册聚合 speedup 至少达到对应档位阈值（同算力
-  NEON→NEON 为 1.30；跨 ISA NEON/SVE128→SVE256 及 SVE256→SVE256 为
-  2.30）；920B 中间验收保留门槛为提升 >10%（NEON→SVE 4×256 为 >110%）；
+- 按分档验收（round-0005 核实后冻结）：
+
+  | 环境/档位 | 精确 baseline | 保留 | 优秀 |
+  | --- | --- | ---: | ---: |
+  | 920B 中间验证 | 同机上游 NEON | speedup > 1.10 | 不作 N+2 优秀判定 |
+  | N+2 b 档 | 同机冻结 NEON（或预注册 SVE128，单列 b-neon/b-sve128） | speedup > 2.10 | speedup >= 2.30 |
+  | N+2 c 档 | 同机最佳现有 SVE256 | speedup > 1.10 | speedup >= 2.30 |
+  | 同算力 NEON→NEON（N1） | 同机最佳现有 NEON | speedup > 1.10 | speedup >= 1.30 |
+
+  保留门槛要求预注册 paired speedup 中心估计满足阈值，且 bootstrap 95%
+  CI 下界也超过阈值；若只要求下界 >1.00，必须标注为较弱的探索性保留。
 - 门限可在 M0 根据噪声调整，但必须在看到候选结果前修改规范。
 
 ## 5. 指令计数规范

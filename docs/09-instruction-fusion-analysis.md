@@ -1,6 +1,15 @@
-# 指令融合分析（Instruction Fusion Analysis）需求梳理 v0.3
+# 指令融合分析（Instruction Fusion Analysis）需求梳理 v0.4
 
-状态：**待审核**。v0.3 已按用户对 v0.2 的答复更新：
+状态：**待冻结**。v0.4 已按 round-0005 顶级模型核实结果修订（“修订后有
+条件通过”），四项必改：
+
+- `cycles_est` 降级为 `instruction_score`（搜索代理），另给资源下界模型；
+- `load > SIMD` 从硬淘汰门改为软信号；
+- 跨 ISA（b 档）与同 ISA（c 档）baseline 拆分为独立验收项；
+- 融合表为空时不得产生预测收益并驱动搜索（先静态 inventory，目标融合对
+  验证后才排序/进主循环）。
+
+v0.3 已按用户对 v0.2 的答复更新：
 
 - 估算只统计 **SIMD 指令 + load 指令**（load 标量/向量一起算）；当
   `load > SIMD` 时判定为**非计算 bound，无优化价值**；
@@ -47,15 +56,21 @@
 | 保留 | 达到保留门槛 | 额外展示，可进入后续实机/注入路径 |
 | 优秀 | 达到对应档位目标比例 | 视为“工具已优秀”的标志 |
 
-保留门槛（用户给定）：
+保留门槛（round-0005 修订后，baseline 与阈值分档明确）：
 
-- 920B：NEON→SVE 2×256 实测 cycles 提升 **>10%**；
-- N+2：NEON→SVE 4×256 实测 cycles 提升 **>110%**；
-- 同 ISA 内（NEON→NEON、SVE256→SVE256）默认 >10%（可配置）；
+| 环境/档位 | 精确 baseline | 保留 | 优秀 |
+| --- | --- | ---: | ---: |
+| 920B 中间验证 | 同机上游 NEON | speedup > 1.10 | 不作 N+2 优秀判定 |
+| N+2 b 档 | 同机冻结 NEON（或预注册 SVE128，单列 b-neon/b-sve128） | speedup > 2.10 | speedup >= 2.30 |
+| N+2 c 档 | 同机最佳现有 SVE256 | speedup > 1.10 | speedup >= 2.30 |
 
 优秀门槛 = §1.2 三档目标（+30% / +130% / +130%）。
 
-### 1.4 SIMD 指令数估算模型（主口径）
+统计条件（round-0005）：保留门槛要求预注册 paired speedup 中心估计满足
+上表，且 bootstrap 95% CI 下界也超过对应阈值；若只要求 CI 下界 >1.00，
+必须明确标注为较弱的探索性保留。
+
+### 1.4 SIMD 指令数估算模型（搜索代理）
 
 统计范围（已确定）：
 
@@ -63,27 +78,42 @@
 - `load_insns`：load 指令数（**标量 load + 向量 load 一起算**；store 不计）；
 - 估算有效指令数 `n_est = simd_insns + load_insns`。
 
-计算 bound 判定（已确定）：
+计算 bound 判定（round-0005 修订：软信号，不硬淘汰）：
 
 ```text
-load_insns > simd_insns  ⇒  kernel 不是计算 bound，不具备优化价值
+load_pressure: low | medium | high
+compute_bound_prediction: true | false | unknown
+optimization_route: compute | load-reuse | latency | mixed
 ```
 
-此类 kernel 仍记录，但标记 `compute_bound: false`，不进入优化/验收路径。
+`load > SIMD` 只能提高 load_pressure 并降低“纯 SIMD 融合”优先级，不得把
+kernel 移出优化漏斗（interp8 是典型 load-heavy 但可优化 kernel）。
 
-cycles 估算（参数化，默认按用户示例口径）：
+指令数估算（round-0005 修订：降级为搜索代理）：
 
 ```text
-cycles_est = n_est / issue_est
-speedup    = cycles_est_old / cycles_est_new - 1
+n_est = simd_insns + load_insns        # 注意：分类必须互斥，向量 load 不得双计
+instruction_score = n_est / issue_est  # 仅作搜索排序，不称为 cycles 估算
 ```
 
-- `issue_est` 默认取 SIMD pipe 数（N+2 为 4）；若 920B/N+2 实测显示 load
-  走独立端口，可把 load 按 load 端口带宽另行折算（P3 校准）；
-- 同时报告 `cycles_simd_only = simd_insns / pipe` 作为对照。
+另给资源下界模型（P1 起逐步实现，P3 用实机校准）：
+
+```text
+cycles_lb = max(
+  vec_alu_uops / vec_alu_rate,
+  permute_uops / permute_rate,
+  reduction_uops / reduction_rate,
+  load_uops / load_rate,
+  load_bytes / l1_bandwidth,
+  store_uops / store_rate,
+  frontend_uops / frontend_rate,
+  critical_path_latency)
+```
+
+共享端口按端口占用求和而非简单取 max。最终验收只认实机 paired cycles。
 
 用户给定示例（N+2，4 pipe）：原动态流 100 条 NEON 指令 → 50 条 SVE256
-指令：
+指令（instruction_score 口径）：
 
 ```text
 cycles_old = 100 / 4 = 25
@@ -96,7 +126,8 @@ speedup    = 25 / 12.5 - 1 = +100%（未达 +130%）
 推论（推断，待 workload 与实机确认）：
 
 - 纯宽度迁移 NEON 4×128 → SVE 4×256 的理论上限是 +100%（2×），
-  +130% 需要叠加约 15% 的指令/周期削减；
+  +130%（2.3×）相对纯宽度还需**额外 15% 吞吐**，等价于约 **13% cycles/
+  工作量削减**；
 - 因此融合分析只是支撑之一，必须与 load 合并、重排消除、归约融合、
   调度优化共同作用；
 - 估算模型以吞吐上界为主口径；latency、依赖链、发射端口竞争与 spill
@@ -204,15 +235,16 @@ speedup    = 25 / 12.5 - 1 = +100%（未达 +130%）
 ```yaml
 kernel: dynopt_sa8d_16x16_neon_sve2
 profile: kunpeng-n2-sve2p3-vl256
-compute_bound: true            # load_insns > simd_insns 时为 false
+compute_bound_prediction: true # 软信号，不硬淘汰
+load_pressure: medium
 counts:
   simd_insns: 50
   load_insns: 8
   n_est: 58
 estimation:
   issue_est: 4
-  cycles_est: 14.5
-  cycles_simd_only: 12.5
+  instruction_score: 14.5
+  cycles_lb: {vec_alu: 10, permute: 4, load: 3, critical_path: 12}
 pairs:
   - index: 42
     insn1: {mnemonic: add, operands: "z0.h, z1.h, z2.h"}
@@ -223,14 +255,15 @@ pairs:
     predicate_ok: true
     type_ok: true
     suggested_adjacent: true
-    savings: {issue_slots: 1, pipe_slots: 1, dynamic_insns: 1}
+    confidence: structurally_eligible   # 融合表为空时仅此层
+    savings: {issue_slots: unknown, pipe_slots: unknown, dynamic_insns: unknown}
     needs_hw_verify: true
 summary:
   total_pairs: N
   predicted_dynamic_insns_saved: N
   predicted_issue_slots_saved: N
-  cycles_est_after: X
-  speedup_est_by_insns: "+Y%"
+  instruction_score_after: X
+  speedup_est_by_score: "+Y%"
   critical_path_impact: neutral|worse|unknown
 ```
 
@@ -240,7 +273,10 @@ summary:
 - 标注“建议调度位置”（`suggested_adjacent`）与重排前提；
 - 提示融合不自动缩短关键路径：`add;fcvt` 仍是串行依赖，融合主要收益在
   发射/pipe 占用，不在 latency；
-- 所有预测带 `needs_hw_verify`，预留实机 PMU 对比字段。
+- 所有预测带 `needs_hw_verify`，预留实机 PMU 对比字段；
+- 融合置信分层：`structurally_eligible`（仅句法/依赖/端口条件）→
+  `hw_supported`（目标融合表或微基准确认）→ `measured_correlated`（静态
+  预测与多组实测候选相关）。
 
 ### 4.3 与现有工具链集成（含融合感知搜索）
 
@@ -248,9 +284,12 @@ summary:
   TargetFeatures/TargetProfile；
 - 新增 `optimizer/analysis/fusion.py` 与 `tools/fusion_analysis.py`；
 - 输出进入实验目录（`experiments/m11-fusion/`），与候选漏斗并列；
-- **融合分析必须驱动布局搜索**：搜索器在枚举候选序列时调用融合分析，
-  把“融合后发射数/pipe 节省”计入候选代价，优先保留可融合序列；
-  融合感知搜索在 v0.1 阶段先接入“后处理排序”，P4 进入搜索主循环；
+- **融合分析驱动布局搜索（有条件）**：融合表为空时，
+  `structurally_eligible=N, hw_supported=0, predicted_cycles_saved=unknown`，
+  不得按 2→1 扣 issue slot；执行顺序为：静态 inventory → 目标融合对
+  验证（专用相邻/插空 instruction-pair 微基准）→ 后处理排序 → 相关性
+  验证后进入搜索主循环；
+- `instructions:u` 仍会退休两条架构指令，不能单独证明融合发生；
 - 融合不改变 ISA 语义，正确性仍由现有差分门禁覆盖；
 - 融合候选是静态筛选信号，不自动进入 benchmark 接受路径（保留门槛仍
   由实机 cycles 决定）。
@@ -269,39 +308,46 @@ summary:
    均有单元测试；
 3. 报告区分“按条件可融合”与“目标 CPU 支持（待验证）”，所有预测项带
    `needs_hw_verify`；
-4. 报告输出 `compute_bound`、`simd_insns`、`load_insns`、`n_est`、
-   `cycles_est` 与 `speedup_est_by_insns`，可合并进估算/验收流程；
-5. 无融合表时可正常运行（降级为按 C1–C4 枚举）；
+4. 报告输出 `compute_bound_prediction`、`load_pressure`、`simd_insns`、
+   `load_insns`、`n_est`、`instruction_score`、`cycles_lb` 与
+   `speedup_est_by_score`，可合并进估算/验收流程；
+5. 无融合表时可正常运行：只产生 `structurally_eligible` 层，预测节省为
+   `unknown`，不进入排序/搜索；
 6. 920B 实例可用时，对同一候选输出：QEMU 差分正确性（VL=256）、实机
-   PMU instructions/cycles、预测 `n_est/issue_est` 与实测 cycles 的偏差
-   记录；实测 cycles 提升 >10%（NEON→SVE 2×256）即可作为保留验收。
+   PMU instructions/cycles、预测 `instruction_score` 与实测 cycles 的偏差
+   记录；保留验收按 §1.3 表格（920B 对同机 NEON，speedup > 1.10 且
+   CI 下界 >1.10）。
 
 ## 6. 里程碑建议
 
 | 阶段 | 内容 | 退出条件 |
 | --- | --- | --- |
-| P0 | 需求冻结（本文档审核通过） | 本文档定稿 |
-| P1 | 融合分析器 v0.1（静态滑窗 + 端口/依赖/可重排检查 + 估算报告） | 满足 §5.1–5.5 |
-| P2 | 接入候选漏斗与实验目录（m11-fusion），对 SA8D 系列输出基线报告 | 报告入库并可复现 |
-| P3 | 920B 环境接入：SVE256 实机差分 + PMU + 估算校准 + 保留门槛验收 | §5.6 可复现；实例生命周期记录完整 |
-| P4 | 融合感知搜索（后处理排序 → 搜索主循环） | 搜索候选按融合收益排序，融合候选可进实机 |
-| P5 | N+2 profile（pipe=4、SVE2.3、融合表）与实机验收 | 鲲鹏 N+2 可用后完成三档目标验收 |
+| P0' | 口径修订并冻结（本文档 + docs/04 同步） | 本文档定稿；基线/门槛表无歧义 |
+| P1' | 完成 M10 长门禁与真实 vq=1 dispatch 拒绝（运行时 dispatch 实现） | 长门禁全过；VL<256 时候选调用次数为 0 |
+| P2' | 920B 最小工具链 + SVE1 严格重建 + native correctness + paired PMU | 同机 NEON 保留门 >1.10（CI 下界 >1.10）；身份/hash 归档 |
+| P3' | 冻结 SA8D 源候选身份，启动 N1 可测 DCT8 | DCT8 首轮闭环 |
+| P4' | 融合静态 inventory（互斥分类 + `structurally_eligible`） | m11-fusion 报告入库 |
+| P5' | 目标融合对验证（专用 instruction-pair 微基准）→ 后处理排序 | 仅在有 `hw_supported` 证据后排序 |
+| P6' | 相关性验证后进入搜索主循环 | 静态预测与多组实测相关 |
+| P7' | N+2 profile（4×256、SVE2.3、融合表）与 b/c 分档验收 | b-neon/b-sve128/c 各自完成 |
 
-## 7. 开放问题（v0.3 已关闭项）
+## 7. 开放问题（v0.4）
 
-v0.2 的 6 个问题已按用户答复关闭：
+v0.2 的 6 个问题已关闭（见下），v0.4 新增/修订的关闭项：
 
-1. 估算口径：只统计 SIMD 指令 + load 指令；`load > SIMD` 判定非计算
-   bound（已确定）；
+1. 估算口径：只统计 SIMD 指令 + load 指令（分类互斥，向量 load 不双计）；
+   `load > SIMD` 只提高 load_pressure，不硬淘汰（round-0005 修订）；
 2. ISA 档位：920B=SVE v1，N+2=SVE2.3，固定 VL=256（已确定）；
 3. load/store 不参与融合（已确定）；
-4. 融合分析驱动布局搜索（已确定）；
+4. 融合分析驱动布局搜索（已确定，但有条件：融合表为空时无预测收益，
+   先 inventory 后验证再排序，round-0005 修订）；
 5. 旧文档性能口径按三档修订（已确定，随本文档一并修订）；
-6. 920B 实机 cycles 可作为验收标准（保留门槛 >10%，NEON→SVE 4×256 为
-   >110%）（已确定）。
+6. 920B 实机 cycles 可作为验收标准；保留门槛按 §1.3 分档（920B >1.10；
+   N+2 b 档 >2.10；c 档 >1.10；优秀 2.30），CI 下界同步要求（round-0005
+   修订）。
 
-实现阶段仍需在 P3 用实机校准的模型参数：`issue_est`（load 是否计入
-SIMD pipe）、融合表（若鲲鹏后续提供）、保留门槛的具体 family 权重。
+实现阶段仍需校准：`cycles_lb` 各资源速率、融合表（若鲲鹏后续提供）、
+保留门槛的具体 family 权重（来自 x265 clip 调用统计）。
 
 ## 8. 风险
 
