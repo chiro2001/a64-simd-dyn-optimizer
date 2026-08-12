@@ -1,0 +1,13 @@
+schema_version: 1
+run_id: m20-search-loop
+state: foundation-only
+captured_at: 2026-08-13T00:00:00+08:00
+host_id: local-x86-cross
+deliverables: [tools/search_driver.py]
+gates:
+  - {name: end_to_end_loop, result: pass, detail: "IR->rewrite->codegen->compile->disasm->cost->rank"}
+  - {name: family_scoped_ranking, result: pass, detail: "baseline<widen consistent with M14"}
+notes: >-
+  Search is family-scoped per m19 (cross-family ranking gated). The rewrite
+  catalog ({widen,nop}) is the growth area; encode M15/M16 structure choices
+  as IR rewrites next.
