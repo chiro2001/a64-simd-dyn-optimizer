@@ -337,11 +337,15 @@ def emit_dct8_c_intrinsics(machine_ir,
                     lines.append("    %s %s = vshlq_n_s32(%s, %d);"
                                  % (types[dst], cid(dst), cid(src[0]),
                                     node["amt"]))
-                else:
+                elif node.get("const_vec"):
                     cidn = const_vec_id(node["const_vec"])
                     lines.append("    %s %s = vmulq_s32(%s,"
                                  " vld1q_s32((const int32_t*)%s));"
                                  % (types[dst], cid(dst), cid(src[0]), cidn))
+                else:
+                    lines.append("    %s %s = vmulq_s32(%s, %s);"
+                                 % (types[dst], cid(dst), cid(src[0]),
+                                    cid(src[1])))
             else:
                 a = env[src[0]]
                 if op == "shl":
