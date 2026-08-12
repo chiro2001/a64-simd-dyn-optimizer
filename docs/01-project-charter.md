@@ -45,7 +45,7 @@ v1 是一个面向小型、纯整数、边界明确的 x265 AArch64 kernel 的**
 
 SVE 与 SVE2 不能混称。当前上游审计中，SA8D 的扩展实现位于 `pixel-prim-sve2.cpp`，并非普通 SVE 实现；优化器必须按实际指令特性标注目标。
 
-### G3：在重点 kernel 上达到可审计的 30% 性能提升目标
+### G3：在重点 kernel 上达到可审计的性能提升目标（三档口径）
 
 重点范围为：
 
@@ -53,20 +53,34 @@ SVE 与 SVE2 不能混称。当前上游审计中，SA8D 的扩展实现位于 `
 - DCT/IDCT：优先从 dct8/dct16 中热点且可独立验证的 pass 开始；
 - `interp8_hpp`：覆盖常见 width/height、系数索引和边界契约。
 
-30% 的正式定义为：
+性能目标为三档（与 `docs/09-instruction-fusion-analysis.md` 一致）：
+
+```text
+a) NEON → NEON（同算力），ARM N1 实机：       speedup >= 1.30
+b) NEON（或 SVE128）→ SVE256，鲲鹏 N+2 实机： speedup >= 2.30
+c) SVE256 → SVE256，鲲鹏 N+2 实机：           speedup >= 2.30
+```
+
+正式定义为：
 
 ```text
 speedup = baseline_median_time / candidate_median_time
-通过条件：speedup >= 1.30
+通过条件：speedup >= 对应档位阈值（1.30 / 2.30 / 2.30）
 ```
 
-其中 baseline 必须是同一 x265 commit、同一编译器与 flags、同一硬件、同一 ISA/VL、同一 bit depth/块尺寸/输入分布下，x265 dispatch 得到的最佳现有实现。报告同时给出 bootstrap 95% 置信区间，区间下界应大于 1.00；是否达到 1.30 以预先声明的聚合方式判断，不能事后只挑最快样本。
+其中 baseline 必须是同一 x265 commit、同一编译器与 flags、同一硬件、同一 ISA/VL、同一 bit depth/块尺寸/输入分布下，x265 dispatch 得到的最佳现有实现；跨 ISA 迁移（b 档）的 baseline 为迁移前的 NEON（或 SVE128）实现。报告同时给出 bootstrap 95% 置信区间，区间下界应大于 1.00；是否达到对应阈值以预先声明的聚合方式判断，不能事后只挑最快样本。
+
+鲲鹏 N+2 未到位时，可用 SIMD 指令数估算（`cycles_est = n_est / pipe`，
+`n_est = SIMD 指令数 + load 指令数`）作主口径；920B 实机 cycles 可作保留
+验收（提升 >10%；NEON→SVE 4×256 时 >110%），最终目标验收仍在 N+2 实机。
 
 项目方向目标允许分层验收：
 
-- 单 kernel/shape 达到 30%；
-- kernel family 的 workload-weighted geometric mean 达到 30%；
-- x265 端到端编码速度记录为单独指标，不暗示会同步提升 30%。
+- 单 kernel/shape 达到对应档位阈值；
+- kernel family 的 workload-weighted geometric mean 达到对应档位阈值；
+- x265 端到端编码速度记录为单独指标，不暗示会同步提升；
+- 所有搜索候选全量记录；达到保留门槛（>10% / >110%）者额外展示；
+  达到目标阈值者视为“工具已优秀”。
 
 M0 时必须选定哪一层作为季度/版本承诺。默认推荐以“每个重点 family 的预注册 workload-weighted geometric mean”为主指标。
 
@@ -120,7 +134,6 @@ v1 明确不做以下事情：
 - SA8D 的提取、搜索、生成、验证、注入、dispatch 和 benchmark 全部由版本化命令复现；
 - 至少 NEON128 和一个真实 SVE/SVE2 VL=256 目标通过；
 - SA8D、DCT、`interp8_hpp` 均至少有一个自动生成候选进入 x265 并通过完整门禁；
-- 重点 family 的 30% 指标已有预注册结果：达到则给出证据，未达到则给出负结果和瓶颈归因，不能用相对 C 的数字替代；
+- 重点 family 的对应档位性能指标已有预注册结果：达到则给出证据，未达到则给出负结果和瓶颈归因，不能用相对 C 的数字替代；
 - 任一候选可从 manifest 重建，且禁用项目开关时恢复原始 x265 行为；
 - 每轮实验和外部专家建议均独立归档，可追踪建议是否被采纳。
-

@@ -87,7 +87,7 @@ x265 commit/submodule status
 | `hw-sve256` | SVE/SVE2 正式性能 | 真实硬件；记录 MIDR、features、VL=256 | 可以 |
 | `hw-sve-vla-alt` | 验证 VLA 可移植性 | 至少另一种 VL（如 128/512） | 只用于正确性/稳健性，性能单独报告 |
 
-若暂时拿不到 `hw-sve256`，可以继续完成 SVE codegen 和功能验证，但相关 milestone 状态必须标记为“功能完成、性能待验证”，不能宣称已达 30%。
+若暂时拿不到 `hw-sve256`，可以继续完成 SVE codegen 和功能验证，但相关 milestone 状态必须标记为“功能完成、性能待验证”，不能宣称已达对应档位目标。
 
 ## 5. 基线冻结记录模板
 
@@ -116,4 +116,3 @@ binary_sha256: <sha256>
 benchmark_protocol: <versioned protocol id>
 raw_results: <relative path>
 ```
-

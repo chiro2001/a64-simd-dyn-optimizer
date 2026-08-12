@@ -14,7 +14,7 @@ M0 环境/基线
            │         └─> M6 SVE2 VL=256 功能/实机闭环
            │              ├─> M7 DCT family
            │              └─> M8 interp8_hpp family
-           └────────────────────> M9 泛化、回归、30% 收敛
+           └────────────────────> M9 泛化、回归、性能目标收敛
 ```
 
 M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真实 SVE 硬件未到位时，M7 的 NEON 工作可以继续，M6 性能状态保持未完成。
@@ -32,7 +32,7 @@ M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真
 - 构建 x265 8-bit Release/Tests；随后准备 10/12-bit build，但不阻塞第一条 8-bit SA8D。
 - 建立 N1 NEON baseline 和噪声画像。
 - 申请真实 SVE/SVE2 VL=256 节点；记录 owner/ETA。
-- 预注册 benchmark workload 与 30% 聚合定义。
+- 预注册 benchmark workload 与三档性能目标聚合定义。
 
 ### 交付/退出条件
 
@@ -146,6 +146,9 @@ M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真
 
 ### 任务
 
+- 目标硬件更新：鲲鹏 N+2（960，SVE2.3、SVE 4×256）为最终验收机；鲲鹏
+  920B（第 N 代，SVE v1、SVE 2×256）为中间验证机；运行均固定 VL=256。
+  中间机实测 cycles 保留门槛为提升 >10%，N+2 按三档目标验收。
 - 明确部署目标，优先实现 `sve2-vl256` SA8D backend；
 - 增加 predicate、inactive lane、scalable/fixed pack 与 SVE ABI；
 - 构建 QEMU 多 VL correctness matrix；
@@ -187,7 +190,7 @@ M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真
 - 搜索 1D factorization、layout、常量 materialization 与 2D fusion；
 - 注入 x265 `p.cu[BLOCK_*].dct`/对应 idct slot；
 - 全 bit-depth、all-zero/max/impulse/random/codec regression 通过；
-- 输出 family 主指标，达到或诚实评估 30% 方向目标。
+- 输出 family 主指标，达到或诚实评估对应档位目标。
 
 ## Milestone M8：`interp8_hpp`
 
@@ -213,7 +216,7 @@ M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真
 - x265 `luma_hpp` slot 注入、TestBench/encode/实机通过；
 - family weighted speedup 与代码体积一起评估，不为冷门 shape 生成巨大特化。
 
-## Milestone M9：泛化、自动回归与 30% 收敛
+## Milestone M9：泛化、自动回归与性能目标收敛
 
 预计：持续 4–8 周。
 
@@ -228,7 +231,7 @@ M7/M8 可在 M4 稳定后并行探索，但不能绕过 M3 的验证基础。真
 
 ### 最终退出条件
 
-见 [项目章程的完成定义](01-project-charter.md#7-完成定义)。达到 30% 必须按冻结 workload 报告；未达到也必须给出无选择偏差的完整结果和瓶颈证据。
+见 [项目章程的完成定义](01-project-charter.md#7-完成定义)。达到对应档位目标必须按冻结 workload 报告；未达到也必须给出无选择偏差的完整结果和瓶颈证据。
 
 ## 2. 建议工作包与所有权
 

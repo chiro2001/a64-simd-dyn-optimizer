@@ -219,7 +219,7 @@ p.cu[BLOCK_8x8].sa8d = dynopt_sa8d_8x8_neon_<id>;
 | spill | disassembly + stack memory classifier |
 | x265 TestBench | 作为兼容的辅助速度指标 |
 
-第一条链路验收要求 candidate 在 N1 上 bit-exact，且性能无回退；是否已经达到 30% 不作为 SA8D MVP 跑通的必要条件。若变快，必须重复完整规范；若只减少静态指令但实机更慢，候选不替换 baseline，不过该负结果进入 cost-model 数据集。
+第一条链路验收要求 candidate 在 N1 上 bit-exact，且性能无回退；是否达到对应档位性能目标不作为 SA8D MVP 跑通的必要条件。若变快，必须重复完整规范；若只减少静态指令但实机更慢，候选不替换 baseline，不过该负结果进入 cost-model 数据集。
 
 ## S7：扩展到 `16x16` 和 shape family
 

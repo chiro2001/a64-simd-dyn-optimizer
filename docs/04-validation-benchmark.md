@@ -27,7 +27,7 @@
 - 生成源、object 和最终 binary SHA-256；
 - corpus id、PRNG algorithm 与 seeds。
 
-未记录身份的结果只能用于本地调试，不能用于候选接受或 30% 报告。
+未记录身份的结果只能用于本地调试，不能用于候选接受或性能目标报告。
 
 ### V1：静态 IR verifier
 
@@ -137,7 +137,7 @@ x265 C oracle == canonical SpecIR interpreter
 
 ### B3：完整 x265 encode（最终影响）
 
-在固定 clip corpus、参数、线程数下测 fps/elapsed time，并采样 kernel 调用次数或 profile 占比。用 Amdahl 定律检查结果是否合理：若目标 kernel 只占总时间的 5%，单 kernel 快 30% 不应宣称编码器快 30%。端到端性能是单独 KPI。
+在固定 clip corpus、参数、线程数下测 fps/elapsed time，并采样 kernel 调用次数或 profile 占比。用 Amdahl 定律检查结果是否合理：若目标 kernel 只占总时间的 5%，单 kernel 快 2× 不应宣称编码器快 2×。端到端性能是单独 KPI。
 
 ## 4. 公平 A/B 设计
 
@@ -185,7 +185,9 @@ warmup -> empty -> candidate -> baseline
 
 - 主 shape：CI 下界 > 1.00，median speedup 至少 1.03；
 - 非目标但同 family shape：任一预注册关键 shape 不得回退超过 3%；
-- 若用 30% 目标验收：预注册聚合 speedup 至少 1.30；
+- 按三档目标验收：预注册聚合 speedup 至少达到对应档位阈值（同算力
+  NEON→NEON 为 1.30；跨 ISA NEON/SVE128→SVE256 及 SVE256→SVE256 为
+  2.30）；920B 中间验收保留门槛为提升 >10%（NEON→SVE 4×256 为 >110%）；
 - 门限可在 M0 根据噪声调整，但必须在看到候选结果前修改规范。
 
 ## 5. 指令计数规范
@@ -222,7 +224,7 @@ static:
 
 显式扫描 stack load/store 和异常 prologue 增长；对候选 expected opcode 建立非脆弱检查（必须/禁止 opcode 类和最大 spill），不要把完整汇编文本 hash 当唯一门禁。编译器升级后所有候选重新验证和 benchmark。
 
-## 6. Workload 与 30% 聚合
+## 6. Workload 与性能目标聚合
 
 每个 family 建立 `workload.yaml`，在优化前冻结：
 

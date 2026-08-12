@@ -2,7 +2,13 @@
 
 本文档集是本项目的执行依据。项目目标不是做一个“把 NEON 文本翻译成 SVE 文本”的脚本，而是建立一条可验证、可测量、可持续扩展的 SIMD kernel 优化流水线：把 x265 kernel 的标量语义、内存来源、元素关系和现有 SIMD 调度分离建模，再针对具体 AArch64 ISA 与微架构搜索更好的数据布局和指令序列，最终生成、注入并验证 x265 kernel。
 
-首条纵向链路选择 8-bit SA8D，从 `sa8d 8x8` 开始，随后覆盖 `16x16` 和其他块尺寸。纵向链路跑通后，再依次扩展到 DCT 与 `interp8_hpp`。项目级方向目标是重点 kernel 相对“同一机器、同一 ISA 档位、当前 x265 最佳可用实现”的中位延迟提升 30%；它不是相对 C 标量实现的提升，也不等价于 x265 整体编码速度提升 30%。
+首条纵向链路选择 8-bit SA8D，从 `sa8d 8x8` 开始，随后覆盖 `16x16` 和其他块尺寸。纵向链路跑通后，再依次扩展到 DCT 与 `interp8_hpp`。项目级性能目标为三档（详见 [09-instruction-fusion-analysis.md](09-instruction-fusion-analysis.md)）：
+
+- a) NEON → NEON（同算力），ARM N1 实机 **+30%**；
+- b) NEON（或 SVE128）→ SVE256，鲲鹏 N+2 实机 **+130%**；
+- c) SVE256 → SVE256，鲲鹏 N+2 实机 **+130%**。
+
+它不是相对 C 标量实现的提升，也不等价于 x265 整体编码速度同步提升。鲲鹏 920B（SVE 2×256）作为中间验证环境，保留门槛为提升 >10%。
 
 ## 必读顺序
 
@@ -10,10 +16,11 @@
 2. [系统架构与 IR](02-system-architecture.md)：三层 IR、提取、搜索、验证、代码生成与 x265 接入架构。
 3. [SA8D 端到端纵向切片](03-sa8d-end-to-end.md)：第一条 kernel 从提取到实机 benchmark 的逐步执行方案。
 4. [正确性与性能评测规范](04-validation-benchmark.md)：任何性能结论必须通过的门禁。
-5. [里程碑与重点算子路线](05-roadmap.md)：从环境基线到 SA8D、DCT、`interp8_hpp` 和 30% 目标的依赖图。
+5. [里程碑与重点算子路线](05-roadmap.md)：从环境基线到 SA8D、DCT、`interp8_hpp` 和性能目标的依赖图。
 6. [Agent 单轮迭代协议](06-agent-iteration-protocol.md)：未来执行 Agent 的工作闭环、产物格式与专家建议归档。
 7. [环境与上游审计快照](07-environment-audit.md)：2026-08-12 实测事实、缺口和复现要求。
 8. [风险、决策门和停止条件](08-risks-and-decisions.md)：最容易让项目失控的技术风险与应对策略。
+9. [指令融合分析需求](09-instruction-fusion-analysis.md)：三档性能目标、SIMD 指令数估算模型与融合分析需求。
 
 本初始规划完成后直接进入执行，不安排规划审核轮次。`expert-advice/round-NNNN/` 只保留给后续已经完成验证和 benchmark 的实际优化迭代，并且每个 iteration 最多请求一次建议。
 

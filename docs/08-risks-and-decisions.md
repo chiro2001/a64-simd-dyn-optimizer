@@ -15,7 +15,7 @@
 | 在 N1 上误判 SVE 性能 | 只能交叉编译/QEMU | M6 必需真实 SVE/SVE2 VL=256 节点，否则状态保持 blocked-environment |
 | 固定 SVE VL 的线程语义错误 | 主线程测试通过、worker 非 256 | runtime VL guard；线程继承测试；优先 VLA 或显式固定合同 |
 | benchmark 噪声/挑样本 | 2-vCPU 云主机结果漂移、只报最快值 | paired randomized protocol、原始样本、CI、多时段重复 |
-| 相对错误 baseline 报“30%” | 与 C 比或跨机器比 | baseline 定义写入 manifest；同 binary/ISA/VL/commit A/B |
+| 相对错误 baseline 报“30%/130%” | 与 C 比或跨机器比 | baseline 定义写入 manifest；同 binary/ISA/VL/commit A/B |
 | x265 上游漂移 | API/文件/编译器变化使 candidate 失效 | 固定 commit；定期 rebase milestone；每次升级重跑全部门禁 |
 | 生成代码维护/许可不清 | 无 provenance、难以上游 | candidate manifest、可读代码、x265 GPL/商业许可边界由项目 owner 审核 |
 | AI 建议驱动未经证实的改动 | 建议直接合入、没有假设与实验 | 顶级模型只给建议；Agent 写 `decision.md`，一项项用证据验证 |
@@ -77,7 +77,7 @@
 | D3 | 搜索是否产生正确 candidate？ | proof/diff/RA/codegen 门禁可自动跑 | 只做规则库/验证基础，不接 x265 |
 | D4 | candidate 是否值得注入？ | 相对最佳 baseline 达接受阈值、无关键回退 | 保留负结果，校准模型或换 bottleneck |
 | D5 | SVE 性能是否有证据？ | 真实 CPU + VL=256 A/B | 只声称功能完成 |
-| D6 | 是否继续追 30%？ | profile 表明理论余量且 Amdahl/上界支持 | 停止该 family，记录可证明瓶颈，转下一个 kernel |
+| D6 | 是否继续追对应档位目标？ | profile 表明理论余量且 Amdahl/上界支持 | 停止该 family，记录可证明瓶颈，转下一个 kernel |
 
 ## 5. 单 family 的停止条件
 
@@ -85,12 +85,12 @@
 
 - 连续 3 轮、每轮一个明确且不同的高价值假设，最佳正确候选提升均小于 benchmark 最小可检测效果；
 - 静态关键路径/资源模型和实机 PMU 共同显示已接近硬件 load/compute 下界，新增指令选择空间很小；
-- 达到 30% 预注册目标且无回退；
+- 达到对应档位预注册目标且无回退；
 - 达成收益所需 precondition 不被 x265 调用方保证；
 - solver/验证无法覆盖必要语义，继续会牺牲正确性证据；
 - 缺少目标硬件，所有不依赖该硬件的功能工作已完成。
 
-复盘输出可以是“当前架构下合理上界低于 30%”。负结果是合法交付，但必须给出证据、尝试边界和下一候选 family；不能把相对 C 的更大数字替代目标。
+复盘输出可以是“当前架构下合理上界低于对应档位目标”。负结果是合法交付，但必须给出证据、尝试边界和下一候选 family；不能把相对 C 的更大数字替代目标。
 
 ## 6. 回退与故障隔离
 
@@ -100,4 +100,3 @@
 - x265 crash/regression 先用 dispatch 开关二分，再用 candidate id 精确定位；
 - 生成器升级不自动删除旧 candidate，先在新 pipeline 重建和比较；
 - performance regression CI 只告警，候选是否回退按预注册统计门限决定，避免单次噪声造成 churn。
-
