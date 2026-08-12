@@ -101,6 +101,11 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
   M14-M16 的 4 候选×2 机 latency 校准：**线性吞吐模型 R²<0**——latency 由
   依赖链关键路径主导，下一步必须加 `critical_path_latency` 依赖图估计器；
   在此之前禁止用线性模型排序候选。
+- **关键路径估计器 v0（本轮）**：`optimizer/analysis/critical_path.py` +
+  `tools/critical_path.py`（寄存器+栈槽 `sp#offset` def-use 最长前向链；
+  `--chain` 打印最长路径、`--fit=name:tick,... --out f.json` 逐机拟合逐
+  指令延迟）。校准：**920B R²=0.982、N1 R²=0.814**（fitted-n1/920b.json）。
+  种子表对 920B 排名基本正确；N1 需要拟合（mla/mul 延迟高于种子假设）。
 - **round-0006 已归档**：response.md + decision.md（独立印证 s16 回绕；
   三原型 (a/b/c) 与止损点；纠错 vrshrn 非饱和、PR_SVE_SET_VL 单位为字节、
   m12 合同改 C 参考、微基准 checksum 移出依赖链）。
@@ -139,10 +144,10 @@ SVE256 >1.10；优秀一律 2.30。所有候选全量记录，达标者额外展
 
 1. **P3'/M17+：止损后的 pivot（round-0006 执行中）**：
    - (a)(b)(c) 三原型已完成并归档（M14-M16），均未达保留门槛；
-   - 下一步按优先级：①给成本模型加 `critical_path_latency` 依赖图估计器
-     （当前线性模型 R²<0，不能用）；②寄存器常驻分解 / 双块 DCT8 批处理 /
-     residual→DCT·DCT→quant 跨 primitive 融合；③range-aware fixed-point
-     transform IR（替代逐 opcode LLVM/NEON IR）；
+   - 下一步按优先级：①已给成本模型加 `critical_path_latency`（920B
+     R²=0.98、N1 0.81，可用于 920B 排序；N1 用拟合权重）；②用校准模型
+     引导下一候选：寄存器常驻分解 / 双块 DCT8 批处理 / residual→DCT、
+     DCT→quant 跨 primitive 融合；③range-aware fixed-point transform IR；
    - 若能拿到内部 30-60% 实现的反汇编/指令直方图，优先校准搜索空间；
    - 保留候选全量记录：920B tp 上 proto_c 已达 1.036×、proto_b latency
      1.019×（未达 1.10 保留线，但可作未来组合的素材）。
