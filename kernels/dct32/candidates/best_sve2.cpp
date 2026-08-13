@@ -9,6 +9,16 @@ static const uint16_t IDX_REV4[16] =
     { 3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12 };
 static const uint32_t IDX_REV4S[8] =
     { 3, 2, 1, 0, 7, 6, 5, 4 };
+static const uint16_t IDX_04[16] =
+    { 0, 1, 2, 3, 16, 17, 18, 19, 0, 1, 2, 3, 16, 17, 18, 19 };
+static const uint16_t IDX_47[16] =
+    { 4, 5, 6, 7, 20, 21, 22, 23, 4, 5, 6, 7, 20, 21, 22, 23 };
+static const uint16_t IDX_8B[16] =
+    { 8, 9, 10, 11, 24, 25, 26, 27, 8, 9, 10, 11, 24, 25, 26, 27 };
+static const uint16_t IDX_CF[16] =
+    { 12, 13, 14, 15, 28, 29, 30, 31, 12, 13, 14, 15, 28, 29, 30, 31 };
+static const uint16_t IDX_LO8[16] =
+    { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
 
 static const int16_t C32[32][16] = {
     { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 },
@@ -66,6 +76,104 @@ static const int32_t K2[8][8] = {
     { 25, -70, 90, -80, 43, 9, -57, 87 },  // k=26
     { 9, -25, 43, -57, 70, -80, 87, -90 },  // k=30
 };
+static const int16_t CODD[16][4][16] = {
+    {
+        { 90, 90, 88, 85, 90, 90, 88, 85, 90, 90, 88, 85, 90, 90, 88, 85 },  // m=0
+        { 82, 78, 73, 67, 82, 78, 73, 67, 82, 78, 73, 67, 82, 78, 73, 67 },  // m=1
+        { 61, 54, 46, 38, 61, 54, 46, 38, 61, 54, 46, 38, 61, 54, 46, 38 },  // m=2
+        { 31, 22, 13, 4, 31, 22, 13, 4, 31, 22, 13, 4, 31, 22, 13, 4 },  // m=3
+    },  // k=1
+    {
+        { 90, 82, 67, 46, 90, 82, 67, 46, 90, 82, 67, 46, 90, 82, 67, 46 },  // m=0
+        { 22, -4, -31, -54, 22, -4, -31, -54, 22, -4, -31, -54, 22, -4, -31, -54 },  // m=1
+        { -73, -85, -90, -88, -73, -85, -90, -88, -73, -85, -90, -88, -73, -85, -90, -88 },  // m=2
+        { -78, -61, -38, -13, -78, -61, -38, -13, -78, -61, -38, -13, -78, -61, -38, -13 },  // m=3
+    },  // k=3
+    {
+        { 88, 67, 31, -13, 88, 67, 31, -13, 88, 67, 31, -13, 88, 67, 31, -13 },  // m=0
+        { -54, -82, -90, -78, -54, -82, -90, -78, -54, -82, -90, -78, -54, -82, -90, -78 },  // m=1
+        { -46, -4, 38, 73, -46, -4, 38, 73, -46, -4, 38, 73, -46, -4, 38, 73 },  // m=2
+        { 90, 85, 61, 22, 90, 85, 61, 22, 90, 85, 61, 22, 90, 85, 61, 22 },  // m=3
+    },  // k=5
+    {
+        { 85, 46, -13, -67, 85, 46, -13, -67, 85, 46, -13, -67, 85, 46, -13, -67 },  // m=0
+        { -90, -73, -22, 38, -90, -73, -22, 38, -90, -73, -22, 38, -90, -73, -22, 38 },  // m=1
+        { 82, 88, 54, -4, 82, 88, 54, -4, 82, 88, 54, -4, 82, 88, 54, -4 },  // m=2
+        { -61, -90, -78, -31, -61, -90, -78, -31, -61, -90, -78, -31, -61, -90, -78, -31 },  // m=3
+    },  // k=7
+    {
+        { 82, 22, -54, -90, 82, 22, -54, -90, 82, 22, -54, -90, 82, 22, -54, -90 },  // m=0
+        { -61, 13, 78, 85, -61, 13, 78, 85, -61, 13, 78, 85, -61, 13, 78, 85 },  // m=1
+        { 31, -46, -90, -67, 31, -46, -90, -67, 31, -46, -90, -67, 31, -46, -90, -67 },  // m=2
+        { 4, 73, 88, 38, 4, 73, 88, 38, 4, 73, 88, 38, 4, 73, 88, 38 },  // m=3
+    },  // k=9
+    {
+        { 78, -4, -82, -73, 78, -4, -82, -73, 78, -4, -82, -73, 78, -4, -82, -73 },  // m=0
+        { 13, 85, 67, -22, 13, 85, 67, -22, 13, 85, 67, -22, 13, 85, 67, -22 },  // m=1
+        { -88, -61, 31, 90, -88, -61, 31, 90, -88, -61, 31, 90, -88, -61, 31, 90 },  // m=2
+        { 54, -38, -90, -46, 54, -38, -90, -46, 54, -38, -90, -46, 54, -38, -90, -46 },  // m=3
+    },  // k=11
+    {
+        { 73, -31, -90, -22, 73, -31, -90, -22, 73, -31, -90, -22, 73, -31, -90, -22 },  // m=0
+        { 78, 67, -38, -90, 78, 67, -38, -90, 78, 67, -38, -90, 78, 67, -38, -90 },  // m=1
+        { -13, 82, 61, -46, -13, 82, 61, -46, -13, 82, 61, -46, -13, 82, 61, -46 },  // m=2
+        { -88, -4, 85, 54, -88, -4, 85, 54, -88, -4, 85, 54, -88, -4, 85, 54 },  // m=3
+    },  // k=13
+    {
+        { 67, -54, -78, 38, 67, -54, -78, 38, 67, -54, -78, 38, 67, -54, -78, 38 },  // m=0
+        { 85, -22, -90, 4, 85, -22, -90, 4, 85, -22, -90, 4, 85, -22, -90, 4 },  // m=1
+        { 90, 13, -88, -31, 90, 13, -88, -31, 90, 13, -88, -31, 90, 13, -88, -31 },  // m=2
+        { 82, 46, -73, -61, 82, 46, -73, -61, 82, 46, -73, -61, 82, 46, -73, -61 },  // m=3
+    },  // k=15
+    {
+        { 61, -73, -46, 82, 61, -73, -46, 82, 61, -73, -46, 82, 61, -73, -46, 82 },  // m=0
+        { 31, -88, -13, 90, 31, -88, -13, 90, 31, -88, -13, 90, 31, -88, -13, 90 },  // m=1
+        { -4, -90, 22, 85, -4, -90, 22, 85, -4, -90, 22, 85, -4, -90, 22, 85 },  // m=2
+        { -38, -78, 54, 67, -38, -78, 54, 67, -38, -78, 54, 67, -38, -78, 54, 67 },  // m=3
+    },  // k=17
+    {
+        { 54, -85, -4, 88, 54, -85, -4, 88, 54, -85, -4, 88, 54, -85, -4, 88 },  // m=0
+        { -46, -61, 82, 13, -46, -61, 82, 13, -46, -61, 82, 13, -46, -61, 82, 13 },  // m=1
+        { -90, 38, 67, -78, -90, 38, 67, -78, -90, 38, 67, -78, -90, 38, 67, -78 },  // m=2
+        { -22, 90, -31, -73, -22, 90, -31, -73, -22, 90, -31, -73, -22, 90, -31, -73 },  // m=3
+    },  // k=19
+    {
+        { 46, -90, 38, 54, 46, -90, 38, 54, 46, -90, 38, 54, 46, -90, 38, 54 },  // m=0
+        { -90, 31, 61, -88, -90, 31, 61, -88, -90, 31, 61, -88, -90, 31, 61, -88 },  // m=1
+        { 22, 67, -85, 13, 22, 67, -85, 13, 22, 67, -85, 13, 22, 67, -85, 13 },  // m=2
+        { 73, -82, 4, 78, 73, -82, 4, 78, 73, -82, 4, 78, 73, -82, 4, 78 },  // m=3
+    },  // k=21
+    {
+        { 38, -88, 73, -4, 38, -88, 73, -4, 38, -88, 73, -4, 38, -88, 73, -4 },  // m=0
+        { -67, 90, -46, -31, -67, 90, -46, -31, -67, 90, -46, -31, -67, 90, -46, -31 },  // m=1
+        { 85, -78, 13, 61, 85, -78, 13, 61, 85, -78, 13, 61, 85, -78, 13, 61 },  // m=2
+        { -90, 54, 22, -82, -90, 54, 22, -82, -90, 54, 22, -82, -90, 54, 22, -82 },  // m=3
+    },  // k=23
+    {
+        { 31, -78, 90, -61, 31, -78, 90, -61, 31, -78, 90, -61, 31, -78, 90, -61 },  // m=0
+        { 4, 54, -88, 82, 4, 54, -88, 82, 4, 54, -88, 82, 4, 54, -88, 82 },  // m=1
+        { -38, -22, 73, -90, -38, -22, 73, -90, -38, -22, 73, -90, -38, -22, 73, -90 },  // m=2
+        { 67, -13, -46, 85, 67, -13, -46, 85, 67, -13, -46, 85, 67, -13, -46, 85 },  // m=3
+    },  // k=25
+    {
+        { 22, -61, 85, -90, 22, -61, 85, -90, 22, -61, 85, -90, 22, -61, 85, -90 },  // m=0
+        { 73, -38, -4, 46, 73, -38, -4, 46, 73, -38, -4, 46, 73, -38, -4, 46 },  // m=1
+        { -78, 90, -82, 54, -78, 90, -82, 54, -78, 90, -82, 54, -78, 90, -82, 54 },  // m=2
+        { -13, -31, 67, -88, -13, -31, 67, -88, -13, -31, 67, -88, -13, -31, 67, -88 },  // m=3
+    },  // k=27
+    {
+        { 13, -38, 61, -78, 13, -38, 61, -78, 13, -38, 61, -78, 13, -38, 61, -78 },  // m=0
+        { 88, -90, 85, -73, 88, -90, 85, -73, 88, -90, 85, -73, 88, -90, 85, -73 },  // m=1
+        { 54, -31, 4, 22, 54, -31, 4, 22, 54, -31, 4, 22, 54, -31, 4, 22 },  // m=2
+        { -46, 67, -82, 90, -46, 67, -82, 90, -46, 67, -82, 90, -46, 67, -82, 90 },  // m=3
+    },  // k=29
+    {
+        { 4, -13, 22, -31, 4, -13, 22, -31, 4, -13, 22, -31, 4, -13, 22, -31 },  // m=0
+        { 38, -46, 54, -61, 38, -46, 54, -61, 38, -46, 54, -61, 38, -46, 54, -61 },  // m=1
+        { 67, -73, 78, -82, 67, -73, 78, -82, 67, -73, 78, -82, 67, -73, 78, -82 },  // m=2
+        { 85, -88, 90, -90, 85, -88, 90, -90, 85, -88, 90, -90, 85, -88, 90, -90 },  // m=3
+    },  // k=31
+};
 static void leaf32(const int16_t* src, intptr_t stride, int shift,
                    int16_t* dst)
 {
@@ -122,217 +230,600 @@ static void leaf32(const int16_t* src, intptr_t stride, int shift,
     (void)shift;
 }
 
-static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
-                        int shift)
+template<int shift>
+__attribute__((noinline))
+static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 {
     const svbool_t p16 = svptrue_b16();
     const svbool_t p8s = svptrue_b32();
-    const svbool_t p64 = svptrue_b64();
     const svbool_t pg4s = svwhilelt_b32(0, 4);
+    const svbool_t pg4h = svwhilelt_b16(0, 4);
     const svbool_t pg2s = svwhilelt_b32(0, 2);
     const svint64_t zero64 = svdup_n_s64(0);
     const int add = 1 << (shift - 1);
     const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
+    const svuint16_t i0 = svld1_u16(p16, IDX_04);
+    const svuint16_t i1 = svld1_u16(p16, IDX_47);
+    const svuint16_t i2 = svld1_u16(p16, IDX_8B);
+    const svuint16_t i3 = svld1_u16(p16, IDX_CF);
+    const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
 
-    svint16_t CO0 = svld1_s16(p16, C32[1]);
-    svint16_t CO1 = svld1_s16(p16, C32[3]);
-    svint16_t CO2 = svld1_s16(p16, C32[5]);
-    svint16_t CO3 = svld1_s16(p16, C32[7]);
-    svint16_t CO4 = svld1_s16(p16, C32[9]);
-    svint16_t CO5 = svld1_s16(p16, C32[11]);
-    svint16_t CO6 = svld1_s16(p16, C32[13]);
-    svint16_t CO7 = svld1_s16(p16, C32[15]);
-    svint16_t CO8 = svld1_s16(p16, C32[17]);
-    svint16_t CO9 = svld1_s16(p16, C32[19]);
-    svint16_t CO10 = svld1_s16(p16, C32[21]);
-    svint16_t CO11 = svld1_s16(p16, C32[23]);
-    svint16_t CO12 = svld1_s16(p16, C32[25]);
-    svint16_t CO13 = svld1_s16(p16, C32[27]);
-    svint16_t CO14 = svld1_s16(p16, C32[29]);
-    svint16_t CO15 = svld1_s16(p16, C32[31]);
-    svint32_t C20 = svld1_s32(p8s, K2[0]);
-    svint32_t C21 = svld1_s32(p8s, K2[1]);
-    svint32_t C22 = svld1_s32(p8s, K2[2]);
-    svint32_t C23 = svld1_s32(p8s, K2[3]);
-    svint32_t C24 = svld1_s32(p8s, K2[4]);
-    svint32_t C25 = svld1_s32(p8s, K2[5]);
-    svint32_t C26 = svld1_s32(p8s, K2[6]);
-    svint32_t C27 = svld1_s32(p8s, K2[7]);
-    svint32_t C40 = svld1_s32(pg4s, K4[0]);
-    svint32_t C41 = svld1_s32(pg4s, K4[1]);
-    svint32_t C42 = svld1_s32(pg4s, K4[2]);
-    svint32_t C43 = svld1_s32(pg4s, K4[3]);
-
-    for (int i = 0; i < 32; i++)
+    for (int g = 0; g < 8; g++)
     {
-        const int16_t* s = src + i * stride;
-        svint16_t lo = svld1_s16(p16, s);
-        svint16_t hi = svld1_s16(p16, s + 16);
-        svint16_t rv = svrev_s16(hi);
-        svint16_t O = svsub_s16_x(p16, lo, rv);
-        svint32_t loa = svunpklo_s32(lo), lob = svunpkhi_s32(lo);
-        svint32_t rva = svunpklo_s32(rv), rvb = svunpkhi_s32(rv);
-        svint32_t Ea = svadd_s32_x(p8s, loa, rva);
-        svint32_t Eb = svadd_s32_x(p8s, lob, rvb);
-        svint32_t Erb = svrev_s32(Eb);
-        svint32_t EE = svadd_s32_x(p8s, Ea, Erb);
-        svint32_t EO = svsub_s32_x(p8s, Ea, Erb);
-        svint32_t EEr = svrev_s32(EE);
-        svint32_t EEE = svadd_s32_x(p8s, EE, EEr);
-        svint32_t EEO = svsub_s32_x(p8s, EE, EEr);
-        svint32_t EEEr = svtbl_s32(EEE, rev4s);
-        svint32_t EEEE = svadd_s32_x(p8s, EEE, EEEr);
-        svint32_t EEEO = svsub_s32_x(p8s, EEE, EEEr);
+        const int base = g * 4;
+        svint16_t O0, O1, O2, O3;
+        svint32_t EO0, EO1, EO2, EO3;
+        svint32_t EEO0, EEO1, EEO2, EEO3;
+        svint32_t EEEE0, EEEE1, EEEE2, EEEE3;
+        svint32_t EEEO0, EEEO1, EEEO2, EEEO3;
 
         {
-            svint64_t t = svdot_s64(zero64, O, CO0);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(1) * 32 + i] = (int16_t)((sum + add) >> shift);
+            const int16_t* s = src + (base + 0) * stride;
+            svint16_t lo0 = svld1_s16(p16, s);
+            svint16_t hi0 = svld1_s16(p16, s + 16);
+            svint16_t rv0 = svrev_s16(hi0);
+            O0 = svsub_s16_x(p16, lo0, rv0);
+            svint32_t loa0 = svunpklo_s32(lo0);
+            svint32_t lob0 = svunpkhi_s32(lo0);
+            svint32_t rva0 = svunpklo_s32(rv0);
+            svint32_t rvb0 = svunpkhi_s32(rv0);
+            svint32_t Ea0 = svadd_s32_x(p8s, loa0, rva0);
+            svint32_t Eb0 = svadd_s32_x(p8s, lob0, rvb0);
+            svint32_t Erb0 = svrev_s32(Eb0);
+            svint32_t EE0 = svadd_s32_x(p8s, Ea0, Erb0);
+            EO0 = svsub_s32_x(p8s, Ea0, Erb0);
+            svint32_t EEr0 = svrev_s32(EE0);
+            svint32_t EEE0 = svadd_s32_x(p8s, EE0, EEr0);
+            EEO0 = svsub_s32_x(p8s, EE0, EEr0);
+            svint32_t EEEr0 = svtbl_s32(EEE0, rev4s);
+            EEEE0 = svadd_s32_x(p8s, EEE0, EEEr0);
+            EEEO0 = svsub_s32_x(p8s, EEE0, EEEr0);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO1);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(3) * 32 + i] = (int16_t)((sum + add) >> shift);
+            const int16_t* s = src + (base + 1) * stride;
+            svint16_t lo1 = svld1_s16(p16, s);
+            svint16_t hi1 = svld1_s16(p16, s + 16);
+            svint16_t rv1 = svrev_s16(hi1);
+            O1 = svsub_s16_x(p16, lo1, rv1);
+            svint32_t loa1 = svunpklo_s32(lo1);
+            svint32_t lob1 = svunpkhi_s32(lo1);
+            svint32_t rva1 = svunpklo_s32(rv1);
+            svint32_t rvb1 = svunpkhi_s32(rv1);
+            svint32_t Ea1 = svadd_s32_x(p8s, loa1, rva1);
+            svint32_t Eb1 = svadd_s32_x(p8s, lob1, rvb1);
+            svint32_t Erb1 = svrev_s32(Eb1);
+            svint32_t EE1 = svadd_s32_x(p8s, Ea1, Erb1);
+            EO1 = svsub_s32_x(p8s, Ea1, Erb1);
+            svint32_t EEr1 = svrev_s32(EE1);
+            svint32_t EEE1 = svadd_s32_x(p8s, EE1, EEr1);
+            EEO1 = svsub_s32_x(p8s, EE1, EEr1);
+            svint32_t EEEr1 = svtbl_s32(EEE1, rev4s);
+            EEEE1 = svadd_s32_x(p8s, EEE1, EEEr1);
+            EEEO1 = svsub_s32_x(p8s, EEE1, EEEr1);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO2);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(5) * 32 + i] = (int16_t)((sum + add) >> shift);
+            const int16_t* s = src + (base + 2) * stride;
+            svint16_t lo2 = svld1_s16(p16, s);
+            svint16_t hi2 = svld1_s16(p16, s + 16);
+            svint16_t rv2 = svrev_s16(hi2);
+            O2 = svsub_s16_x(p16, lo2, rv2);
+            svint32_t loa2 = svunpklo_s32(lo2);
+            svint32_t lob2 = svunpkhi_s32(lo2);
+            svint32_t rva2 = svunpklo_s32(rv2);
+            svint32_t rvb2 = svunpkhi_s32(rv2);
+            svint32_t Ea2 = svadd_s32_x(p8s, loa2, rva2);
+            svint32_t Eb2 = svadd_s32_x(p8s, lob2, rvb2);
+            svint32_t Erb2 = svrev_s32(Eb2);
+            svint32_t EE2 = svadd_s32_x(p8s, Ea2, Erb2);
+            EO2 = svsub_s32_x(p8s, Ea2, Erb2);
+            svint32_t EEr2 = svrev_s32(EE2);
+            svint32_t EEE2 = svadd_s32_x(p8s, EE2, EEr2);
+            EEO2 = svsub_s32_x(p8s, EE2, EEr2);
+            svint32_t EEEr2 = svtbl_s32(EEE2, rev4s);
+            EEEE2 = svadd_s32_x(p8s, EEE2, EEEr2);
+            EEEO2 = svsub_s32_x(p8s, EEE2, EEEr2);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO3);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(7) * 32 + i] = (int16_t)((sum + add) >> shift);
+            const int16_t* s = src + (base + 3) * stride;
+            svint16_t lo3 = svld1_s16(p16, s);
+            svint16_t hi3 = svld1_s16(p16, s + 16);
+            svint16_t rv3 = svrev_s16(hi3);
+            O3 = svsub_s16_x(p16, lo3, rv3);
+            svint32_t loa3 = svunpklo_s32(lo3);
+            svint32_t lob3 = svunpkhi_s32(lo3);
+            svint32_t rva3 = svunpklo_s32(rv3);
+            svint32_t rvb3 = svunpkhi_s32(rv3);
+            svint32_t Ea3 = svadd_s32_x(p8s, loa3, rva3);
+            svint32_t Eb3 = svadd_s32_x(p8s, lob3, rvb3);
+            svint32_t Erb3 = svrev_s32(Eb3);
+            svint32_t EE3 = svadd_s32_x(p8s, Ea3, Erb3);
+            EO3 = svsub_s32_x(p8s, Ea3, Erb3);
+            svint32_t EEr3 = svrev_s32(EE3);
+            svint32_t EEE3 = svadd_s32_x(p8s, EE3, EEr3);
+            EEO3 = svsub_s32_x(p8s, EE3, EEr3);
+            svint32_t EEEr3 = svtbl_s32(EEE3, rev4s);
+            EEEE3 = svadd_s32_x(p8s, EEE3, EEEr3);
+            EEEO3 = svsub_s32_x(p8s, EEE3, EEEr3);
+        }
+        svint16_t p0 = svtbl2_s16(svcreate2_s16(O0, O1), i0);
+        svint16_t q0 = svtbl2_s16(svcreate2_s16(O2, O3), i0);
+        svint16_t X0 = svtbl2_s16(svcreate2_s16(p0, q0), ilo);
+        svint16_t p1 = svtbl2_s16(svcreate2_s16(O0, O1), i1);
+        svint16_t q1 = svtbl2_s16(svcreate2_s16(O2, O3), i1);
+        svint16_t X1 = svtbl2_s16(svcreate2_s16(p1, q1), ilo);
+        svint16_t p2 = svtbl2_s16(svcreate2_s16(O0, O1), i2);
+        svint16_t q2 = svtbl2_s16(svcreate2_s16(O2, O3), i2);
+        svint16_t X2 = svtbl2_s16(svcreate2_s16(p2, q2), ilo);
+        svint16_t p3 = svtbl2_s16(svcreate2_s16(O0, O1), i3);
+        svint16_t q3 = svtbl2_s16(svcreate2_s16(O2, O3), i3);
+        svint16_t X3 = svtbl2_s16(svcreate2_s16(p3, q3), ilo);
+
+
+        {
+            svint16_t c0 = svld1_s16(p16, CODD[0][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[0][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[0][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[0][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (1) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO4);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(9) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[1][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[1][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[1][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[1][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (3) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO5);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(11) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[2][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[2][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[2][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[2][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (5) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO6);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(13) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[3][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[3][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[3][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[3][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (7) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO7);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(15) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[4][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[4][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[4][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[4][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (9) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO8);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(17) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[5][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[5][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[5][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[5][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (11) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO9);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(19) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[6][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[6][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[6][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[6][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (13) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO10);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(21) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[7][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[7][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[7][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[7][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (15) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO11);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(23) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[8][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[8][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[8][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[8][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (17) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO12);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(25) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[9][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[9][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[9][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[9][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (19) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO13);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(27) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[10][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[10][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[10][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[10][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (21) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO14);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(29) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[11][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[11][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[11][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[11][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (23) * 32 + base, rz);
         }
         {
-            svint64_t t = svdot_s64(zero64, O, CO15);
-            int64_t sum = svaddv_s64(p64, t);
-            dst[(31) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[12][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[12][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[12][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[12][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (25) * 32 + base, rz);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C20);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(2) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[13][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[13][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[13][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[13][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (27) * 32 + base, rz);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C21);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(6) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[14][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[14][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[14][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[14][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (29) * 32 + base, rz);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C22);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(10) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint16_t c0 = svld1_s16(p16, CODD[15][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[15][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[15][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[15][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + (31) * 32 + base, rz);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C23);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(14) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[0]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(2) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(2) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(2) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(2) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C24);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(18) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[1]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(6) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(6) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(6) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(6) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C25);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(22) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[2]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(10) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(10) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(10) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(10) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C26);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(26) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[3]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(14) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(14) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(14) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(14) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EO, C27);
-            int64_t sum = (int64_t)svaddv_s32(p8s, t);
-            dst[(30) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[4]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(18) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(18) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(18) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(18) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EEO, C40);
-            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
-            dst[(4) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[5]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(22) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(22) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(22) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(22) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EEO, C41);
-            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
-            dst[(12) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[6]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(26) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(26) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(26) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(26) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EEO, C42);
-            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
-            dst[(20) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(p8s, K2[7]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[(30) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(30) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(30) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(30) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
         {
-            svint32_t t = svmul_s32_x(p8s, EEO, C43);
-            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
-            dst[(28) * 32 + i] = (int16_t)((sum + add) >> shift);
+            svint32_t c = svld1_s32(pg4s, K4[0]);
+            svint32_t t0 = svmul_s32_x(p8s, EEO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EEO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EEO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EEO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(pg4s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(pg4s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(pg4s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(pg4s, t3);
+            dst[(4) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(4) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(4) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(4) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+        }
+        {
+            svint32_t c = svld1_s32(pg4s, K4[1]);
+            svint32_t t0 = svmul_s32_x(p8s, EEO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EEO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EEO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EEO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(pg4s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(pg4s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(pg4s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(pg4s, t3);
+            dst[(12) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(12) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(12) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(12) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+        }
+        {
+            svint32_t c = svld1_s32(pg4s, K4[2]);
+            svint32_t t0 = svmul_s32_x(p8s, EEO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EEO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EEO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EEO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(pg4s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(pg4s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(pg4s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(pg4s, t3);
+            dst[(20) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(20) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(20) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(20) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+        }
+        {
+            svint32_t c = svld1_s32(pg4s, K4[3]);
+            svint32_t t0 = svmul_s32_x(p8s, EEO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EEO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EEO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EEO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(pg4s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(pg4s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(pg4s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(pg4s, t3);
+            dst[(28) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[(28) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[(28) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[(28) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }
 
-        int32_t ee[2], oo[2];
-        svst1_s32(pg2s, ee, EEEE);
-        svst1_s32(pg2s, oo, EEEO);
-        int64_t e0 = ee[0], e1 = ee[1], o0 = oo[0], o1 = oo[1];
-        dst[0 * 32 + i] = (int16_t)((K0[0][0] * e0 + K0[0][1] * e1 + add) >> shift);
-        dst[16 * 32 + i] = (int16_t)((K0[2][0] * e0 + K0[2][1] * e1 + add) >> shift);
-        dst[8 * 32 + i] = (int16_t)((K0[1][0] * o0 + K0[1][1] * o1 + add) >> shift);
-        dst[24 * 32 + i] = (int16_t)((K0[3][0] * o0 + K0[3][1] * o1 + add) >> shift);
+        {
+        int32_t e0[2], o0[2];
+        svst1_s32(pg2s, e0, EEEE0);
+        svst1_s32(pg2s, o0, EEEO0);
+        int64_t e00 = e0[0], e01 = e0[1], o00 = o0[0], o01 = o0[1];
+        dst[0 * 32 + base + 0] = (int16_t)((K0[0][0] * e00 + K0[0][1] * e01 + add) >> shift);
+        dst[16 * 32 + base + 0] = (int16_t)((K0[2][0] * e00 + K0[2][1] * e01 + add) >> shift);
+        dst[8 * 32 + base + 0] = (int16_t)((K0[1][0] * o00 + K0[1][1] * o01 + add) >> shift);
+        dst[24 * 32 + base + 0] = (int16_t)((K0[3][0] * o00 + K0[3][1] * o01 + add) >> shift);
+        }
+
+        {
+        int32_t e0[2], o0[2];
+        svst1_s32(pg2s, e0, EEEE1);
+        svst1_s32(pg2s, o0, EEEO1);
+        int64_t e00 = e0[0], e01 = e0[1], o00 = o0[0], o01 = o0[1];
+        dst[0 * 32 + base + 1] = (int16_t)((K0[0][0] * e00 + K0[0][1] * e01 + add) >> shift);
+        dst[16 * 32 + base + 1] = (int16_t)((K0[2][0] * e00 + K0[2][1] * e01 + add) >> shift);
+        dst[8 * 32 + base + 1] = (int16_t)((K0[1][0] * o00 + K0[1][1] * o01 + add) >> shift);
+        dst[24 * 32 + base + 1] = (int16_t)((K0[3][0] * o00 + K0[3][1] * o01 + add) >> shift);
+        }
+
+        {
+        int32_t e0[2], o0[2];
+        svst1_s32(pg2s, e0, EEEE2);
+        svst1_s32(pg2s, o0, EEEO2);
+        int64_t e00 = e0[0], e01 = e0[1], o00 = o0[0], o01 = o0[1];
+        dst[0 * 32 + base + 2] = (int16_t)((K0[0][0] * e00 + K0[0][1] * e01 + add) >> shift);
+        dst[16 * 32 + base + 2] = (int16_t)((K0[2][0] * e00 + K0[2][1] * e01 + add) >> shift);
+        dst[8 * 32 + base + 2] = (int16_t)((K0[1][0] * o00 + K0[1][1] * o01 + add) >> shift);
+        dst[24 * 32 + base + 2] = (int16_t)((K0[3][0] * o00 + K0[3][1] * o01 + add) >> shift);
+        }
+
+        {
+        int32_t e0[2], o0[2];
+        svst1_s32(pg2s, e0, EEEE3);
+        svst1_s32(pg2s, o0, EEEO3);
+        int64_t e00 = e0[0], e01 = e0[1], o00 = o0[0], o01 = o0[1];
+        dst[0 * 32 + base + 3] = (int16_t)((K0[0][0] * e00 + K0[0][1] * e01 + add) >> shift);
+        dst[16 * 32 + base + 3] = (int16_t)((K0[2][0] * e00 + K0[2][1] * e01 + add) >> shift);
+        dst[8 * 32 + base + 3] = (int16_t)((K0[1][0] * o00 + K0[1][1] * o01 + add) >> shift);
+        dst[24 * 32 + base + 3] = (int16_t)((K0[3][0] * o00 + K0[3][1] * o01 + add) >> shift);
+        }
+
     }
 }
 
@@ -342,6 +833,6 @@ extern "C" void dynopt_dct32_sve2_shared(const int16_t* src, int16_t* dst, intpt
     const int shift1 = 4;   // 8-bit depth
     const int shift2 = 11;
     int16_t coef[32 * 32];
-    pass32_impl(src, coef, srcStride, shift1);
-    pass32_impl(coef, dst, 32, shift2);
+    pass32_impl<4>(src, coef, srcStride);
+    pass32_impl<11>(coef, dst, 32);
 }

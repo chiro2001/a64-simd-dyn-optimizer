@@ -329,9 +329,15 @@ def main():
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
             continue
-        start_sym = manifest["candidate"].get(
+        start_syms = manifest["candidate"].get(
             "range_start", manifest["candidate"]["symbol"])
-        rng = symbol_range(driver, start_sym)
+        if isinstance(start_syms, str):
+            start_syms = [start_syms]
+        rng = None
+        for start_sym in start_syms:
+            rng = symbol_range(driver, start_sym)
+            if rng:
+                break
         if rng is None:
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
