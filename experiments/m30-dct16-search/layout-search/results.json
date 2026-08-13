@@ -1,0 +1,38 @@
+[
+ {
+  "tag": "p1-quarter_p2-upstream",
+  "pass1": "quarter",
+  "pass2": "upstream",
+  "upstream_exact": true,
+  "counts": {
+   "total": 1856,
+   "vector": 1246,
+   "movprfx": 192,
+   "vector_fused": 1054
+  }
+ },
+ {
+  "tag": "p1-quarter_p2-odd-quarter",
+  "pass1": "quarter",
+  "pass2": "odd-quarter",
+  "upstream_exact": true,
+  "counts": {
+   "total": 1785,
+   "vector": 1183,
+   "movprfx": 96,
+   "vector_fused": 1087
+  }
+ },
+ {
+  "tag": "p1-per-row_p2-upstream",
+  "pass1": "per-row",
+  "pass2": "upstream",
+  "upstream_exact": true,
+  "counts": {
+   "total": 2353,
+   "vector": 1636,
+   "movprfx": 384,
+   "vector_fused": 1252
+  }
+ }
+]

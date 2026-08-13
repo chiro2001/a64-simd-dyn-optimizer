@@ -32,6 +32,12 @@ SIMD_MN = {
     "cmhs", "cmlt", "cmle", "cmeq", "cnt", "cls", "clz", "bit", "bif",
     "bsl", "saba", "uaba", "aba",
 }
+
+# Hardware-fused pseudo-instructions (docs/09 §1.5): compiler-inserted
+# movprfx executes fused with the immediately following instruction and
+# must not occupy a separate issue slot nor be re-proposed as a user
+# fusion pair.
+HW_FUSED_PSEUDO = {"movprfx"}
 LOAD_MN = {"ld1", "ld2", "ld3", "ld4", "ld1r", "ld2r", "ld3r", "ld4r"}
 STORE_MN = {"st1", "st2", "st3", "st4"}
 SCALAR_LOAD_MN = {"ldr", "ldp", "ldur", "ldrb", "ldrh", "ldrsb", "ldrsh"}
@@ -73,7 +79,9 @@ def classify_counts(hist):
     """Mutually exclusive counts: vector loads are loads, never SIMD."""
     out = collections.Counter()
     for mn, n in hist.items():
-        if mn in LOAD_MN:
+        if mn in HW_FUSED_PSEUDO:
+            out["fused_pseudo"] += n
+        elif mn in LOAD_MN:
             out["load_insns"] += n
         elif mn in SCALAR_LOAD_MN:
             out["load_insns"] += n
@@ -94,7 +102,9 @@ def classify_insts(insts):
     for mn, dst, srcs, preds in insts:
         is_vec = dst is not None or any(s["cls"] in ("v", "z")
                                        for s in srcs)
-        if mn in LOAD_MN or mn in SCALAR_LOAD_MN:
+        if mn in HW_FUSED_PSEUDO:
+            out["fused_pseudo"] += 1
+        elif mn in LOAD_MN or mn in SCALAR_LOAD_MN:
             out["load_insns"] += 1
         elif mn in STORE_MN or mn in SCALAR_STORE_MN:
             out["store_insns"] += 1

@@ -72,7 +72,11 @@ def true_dynamic(binary, start, end, log):
     if p.returncode != 0:
         return None
     d = json.load(open(log + ".json"))
-    return {"total": len(d["instructions"]), "vector": len(d["vector"])}
+    c = d.get("counts", {})
+    return {"total": len(d["instructions"]),
+            "vector": len(d["vector"]),
+            "movprfx": c.get("movprfx", 0),
+            "vector_fused": c.get("vector_fused", len(d["vector"]))}
 
 
 def main():
@@ -134,16 +138,19 @@ def main():
         results.append({"tag": tag, "pass1": p1, "pass2": p2,
                         "upstream_exact": True, "counts": counts})
         if counts:
-            print("  dynamic total=%d vector=%d" % (counts["total"],
-                                                    counts["vector"]))
+            print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d"
+                  % (counts["total"], counts["vector"],
+                     counts["movprfx"], counts["vector_fused"]))
 
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)
     ok = [r for r in results if r.get("upstream_exact") and r.get("counts")]
-    ok.sort(key=lambda r: r["counts"]["vector"])
-    print("rank by vector count:")
+    ok.sort(key=lambda r: r["counts"]["vector_fused"])
+    print("rank by fused-adjusted vector count (docs/09 §1.5):")
     for r in ok:
-        print("  %-24s vector=%d" % (r["tag"], r["counts"]["vector"]))
+        print("  %-24s vector=%d fused_adj=%d"
+              % (r["tag"], r["counts"]["vector"],
+                 r["counts"]["vector_fused"]))
     return 0 if ok else 1
 
 

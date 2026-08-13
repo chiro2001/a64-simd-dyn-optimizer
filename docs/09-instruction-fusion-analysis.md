@@ -112,6 +112,38 @@ cycles_lb = max(
 
 共享端口按端口占用求和而非简单取 max。最终验收只认实机 paired cycles。
 
+### 1.5 movprfx 硬件融合（2026-08-13 用户确认）
+
+**`movprfx`（Move Prefix）是编译器为满足 SVE 目的寄存器约束而插入的
+伪指令**（如 GCC 在 `sdot zN.d, zM.h, zK.h` 前生成 `movprfx zN, z_acc`），
+在实机（Neoverse/Kunpeng SVE 流水线）上**默认与紧随其后的那条指令融合
+执行**：不占用独立的发射槽/周期，等效于“movprfx + 下一条 = 一条指令”。
+
+计数与评估规则：
+
+- `simd_insns` / `n_est` / `instruction_score` / 动态指令统计中，
+  **movprfx 不计为独立指令**，按融合对 `(movprfx, next)` 折算为 1；
+- 融合成立的前提是严格相邻；编译器通常满足，若调度器把两者分开则
+  该对不再视为融合（当前计数按“默认相邻”处理，反例出现时再细化）；
+- movprfx **不参与用户定义的融合对枚举**（C1-C4 只针对未融合的
+  SIMD 指令对），避免重复计算；
+- 报告必须同时给出 `raw` 与 `fused_adj`（= raw − movprfx 数），
+  排名以 fused_adj 为准。
+
+实测影响（DCT16 候选，VL=256 true-dynamic）：
+
+```text
+版本            raw   movprfx   fused_adj
+NEON           1553     0       1553
+上游 SVE       1577     0       1577
+v3 quarter     1246   192       1054   ← 实机口径最优
+v4 odd-quarter 1183    96       1087
+```
+
+结论：v4 用 quarter 替换上游 odd 路径省了 sdot/movprfx，但新增的
+打包/搬运动作（tbl2、mov z）在 fused_adj 口径下反而比 v3 多 33 条；
+因此实机优先 v3，raw 口径优先 v4。两档都要记录，验收用实机 cycles。
+
 用户给定示例（N+2，4 pipe）：原动态流 100 条 NEON 指令 → 50 条 SVE256
 指令（instruction_score 口径）：
 

@@ -39,6 +39,7 @@ CLASSES = {
     "load": {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r"},
     "store": {"st1", "st2", "st3", "st4", "str", "stp", "stur"},
     "shift": {"shl", "sshr", "ushr", "sli", "sri"},
+    "fused": {"movprfx"},   # hardware-fused with the next instruction
     "scalar": set(),   # anything not matched above
 }
 
@@ -71,8 +72,12 @@ def classify(hist):
 def cycles_lb(hist, profile):
     """Resource lower bound (max over classes, plus the frontend bound)."""
     cls = classify(hist)
-    per_class = {c: cls[c] * profile.weight(c) for c in cls}
-    frontend = sum(cls.values()) / max(profile.issue_rate, 1e-9)
+    per_class = {c: cls[c] * profile.weight(c)
+                 for c in cls if c != "fused"}
+    # movprfx is fused with the next instruction (docs/09 §1.5): it neither
+    # occupies a resource slot nor a frontend slot.
+    frontend = sum(cls[c] for c in cls if c != "fused") \
+        / max(profile.issue_rate, 1e-9)
     bounds = dict(per_class)
     bounds["frontend"] = frontend
     return max(bounds.values(), default=0.0), bounds

@@ -44,10 +44,13 @@ def main():
             simd += 1
             simd_by_mnemonic[mnem] += 1
 
-    print("total=%d simd=%d" % (total, simd))
+    fused = simd_by_mnemonic.get("movprfx", 0)
+    print("total=%d simd=%d movprfx_fused=%d simd_fused_adj=%d"
+          % (total, simd, fused, simd - fused))
     for mnem, cnt in by_mnemonic.most_common():
         print("  %-10s %4d%s" % (mnem, cnt,
-                                 "  [SIMD]" if simd_by_mnemonic[mnem] else ""))
+                                 "  [SIMD]" if simd_by_mnemonic[mnem] else
+                                 "  [fused]" if mnem == "movprfx" else ""))
 
 
 if __name__ == "__main__":

@@ -349,16 +349,15 @@ def quarter_pass_cpp():
         dots.append(
             "            const svint16_t x0_%d = (k & 1) ? QO0_%d : QE0_%d;\n"
             "            const svint16_t x1_%d = (k & 1) ? QO1_%d : QE1_%d;\n"
-            "            const svint64_t d0_%d = svdot_s64(zacc, x0_%d, cq_lo);\n"
-            "            const svint64_t d1_%d = svdot_s64(zacc, x1_%d, cq_hi);\n"
-            "            const svint64_t f_%d = svadd_s64_x(p64, d0_%d, d1_%d);\n"
+            "            svint64_t d_%d = svdot_s64(zacc, x0_%d, cq_lo);\n"
+            "            d_%d = svdot_s64(d_%d, x1_%d, cq_hi);\n"
             "            const svint32_t w_%d = svuzp1_s32(\n"
-            "                svreinterpret_s32_s64(f_%d), svreinterpret_s32_s64(f_%d));\n"
+            "                svreinterpret_s32_s64(d_%d), svreinterpret_s32_s64(d_%d));\n"
             "            svint16_t n_%d = svrshrnb_n_s32(w_%d, shift);\n"
             "            n_%d = svuzp1_s16(n_%d, n_%d);\n"
             "            svst1_s16(p4h, dst + 16 * k + %d, n_%d);"
-            % (g, g, g, g, g, g, g, g, g, g, g, g, g, g, g, g,
-               g, g, g, g, g, 4 * g, g))
+            % (g, g, g, g, g, g, g, g, g, g, g, g, g, g, g,
+               g, g, g, g, 4 * g, g))
     dot_src = "\n".join(dots)
     return """\
 template <int shift>
