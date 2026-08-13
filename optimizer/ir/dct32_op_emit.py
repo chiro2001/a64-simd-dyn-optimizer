@@ -118,7 +118,16 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
                         % (_ctype(elem), out, fn, pg, ins[0], ins[1]))
             ctype[out] = _ctype(elem)
         elif kind == "permute":
-            if attrs["kind"] == "rev16":
+            if attrs["kind"] in ("zip1d", "zip2d", "trn1d", "trn2d"):
+                fn = {"zip1d": "svzip1_s64", "zip2d": "svzip2_s64",
+                      "trn1d": "svtrn1_s64", "trn2d": "svtrn2_s64"}[
+                          attrs["kind"]]
+                body.append("    svint16_t %s = svreinterpret_s16_s64("
+                            "%s(svreinterpret_s64_s16(%s), "
+                            "svreinterpret_s64_s16(%s)));"
+                            % (out, fn, ins[0], ins[1]))
+                ctype[out] = "svint16_t"
+            elif attrs["kind"] == "rev16":
                 body.append("    svint16_t %s = svrev_s16(%s);"
                             % (out, ins[0]))
                 ctype[out] = "svint16_t"

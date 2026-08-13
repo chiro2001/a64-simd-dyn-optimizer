@@ -54,6 +54,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     k2_slice = bool(lo.get("pass1_k2_slice", 0))
     legacy_ex = bool(lo.get("legacy_ex", 0))
     legacy_k4 = bool(lo.get("legacy_k4", 0))
+    slice_kind = lo.get("slice_kind", "tbl2")
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
@@ -156,19 +157,51 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             if odd_sdot:
                 tid = "p%d.odd.slice" % pass_id
                 xs = []
-                for m in range(4):
-                    p = new("permute", tid, "p%d" % m,
-                            (o[rows[0]], o[rows[1]]),
-                            attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                   "lane_owner": "output"})
-                    q = new("permute", tid, "q%d" % m,
-                            (o[rows[2]], o[rows[3]]),
-                            attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                   "lane_owner": "output"})
-                    x = new("permute", tid, "X%d" % m, (p.out, q.out),
-                            attrs={"kind": "tbl2", "idx": "ilo",
-                                   "lane_owner": "output"})
-                    xs.append(x.out)
+                if slice_kind == "zip":
+                    # 4-row d-lane transpose (verified on QEMU):
+                    #   X0 = zip1(zip1(O0,O2), zip1(O1,O3))
+                    #   X1 = zip1(trn2(O0,O2), trn2(O1,O3))
+                    #   X2 = zip2(trn1(O0,O2), trn1(O1,O3))
+                    #   X3 = zip2(trn2(O0,O2), trn2(O1,O3))
+                    p01 = new("permute", tid, "z01", (o[rows[0]], o[rows[2]]),
+                              attrs={"kind": "zip1d",
+                                     "lane_owner": "output"})
+                    p02 = new("permute", tid, "z02", (o[rows[1]], o[rows[3]]),
+                              attrs={"kind": "zip1d",
+                                     "lane_owner": "output"})
+                    t11 = new("permute", tid, "t11", (o[rows[0]], o[rows[2]]),
+                              attrs={"kind": "trn1d",
+                                     "lane_owner": "output"})
+                    t12 = new("permute", tid, "t12", (o[rows[1]], o[rows[3]]),
+                              attrs={"kind": "trn1d",
+                                     "lane_owner": "output"})
+                    t21 = new("permute", tid, "t21", (o[rows[0]], o[rows[2]]),
+                              attrs={"kind": "trn2d",
+                                     "lane_owner": "output"})
+                    t22 = new("permute", tid, "t22", (o[rows[1]], o[rows[3]]),
+                              attrs={"kind": "trn2d",
+                                     "lane_owner": "output"})
+                    combos = ((p01, p02, "zip1d"), (t21, t22, "zip1d"),
+                              (t11, t12, "zip2d"), (t21, t22, "zip2d"))
+                    for m, (sa, sb, kd) in enumerate(combos):
+                        x = new("permute", tid, "X%d" % m, (sa.out, sb.out),
+                                attrs={"kind": kd,
+                                       "lane_owner": "output"})
+                        xs.append(x.out)
+                else:
+                    for m in range(4):
+                        p = new("permute", tid, "p%d" % m,
+                                (o[rows[0]], o[rows[1]]),
+                                attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                       "lane_owner": "output"})
+                        q = new("permute", tid, "q%d" % m,
+                                (o[rows[2]], o[rows[3]]),
+                                attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                       "lane_owner": "output"})
+                        x = new("permute", tid, "X%d" % m, (p.out, q.out),
+                                attrs={"kind": "tbl2", "idx": "ilo",
+                                       "lane_owner": "output"})
+                        xs.append(x.out)
                 for k in ODD_K:
                     tid = "p%d.odd.k%d" % (pass_id, k)
                     terms = []
