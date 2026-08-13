@@ -134,15 +134,16 @@ cycles_lb = max(
 
 ```text
 版本            raw   movprfx   fused_adj
-NEON           1553     0       1553
-上游 SVE       1577     0       1577
-v3 quarter     1246   192       1054   ← 实机口径最优
-v4 odd-quarter 1183    96       1087
+NEON           1980     0       1980
+上游 SVE       1911     0       1911
+v3 quarter     1524   192       1332
+v4 odd-quarter 1422    96       1326   ← 修正口径后实机最优
 ```
 
-结论：v4 用 quarter 替换上游 odd 路径省了 sdot/movprfx，但新增的
-打包/搬运动作（tbl2、mov z）在 fused_adj 口径下反而比 v3 多 33 条；
-因此实机优先 v3，raw 口径优先 v4。两档都要记录，验收用实机 cycles。
+> 2026-08-13 二次口径修正：`is_vector` 补上 `ldr/str/ldp/stp qN|dN`
+> 向量访存（此前只认 v/z 操作数，漏计 NEON 访存与 SVE `str d`）。
+> 修正后 v4 在 fused_adj 口径反超 v3（1326 < 1332）；两档都要记录，
+> 验收以实机 cycles 为准。
 
 用户给定示例（N+2，4 pipe）：原动态流 100 条 NEON 指令 → 50 条 SVE256
 指令（instruction_score 口径）：

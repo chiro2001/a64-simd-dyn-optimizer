@@ -6,9 +6,9 @@
   "upstream_exact": true,
   "counts": {
    "total": 1856,
-   "vector": 1246,
+   "vector": 1524,
    "movprfx": 192,
-   "vector_fused": 1054
+   "vector_fused": 1332
   }
  },
  {
@@ -18,9 +18,9 @@
   "upstream_exact": true,
   "counts": {
    "total": 1785,
-   "vector": 1183,
+   "vector": 1422,
    "movprfx": 96,
-   "vector_fused": 1087
+   "vector_fused": 1326
   }
  },
  {
@@ -30,9 +30,9 @@
   "upstream_exact": true,
   "counts": {
    "total": 2353,
-   "vector": 1636,
+   "vector": 1895,
    "movprfx": 384,
-   "vector_fused": 1252
+   "vector_fused": 1511
   }
  }
 ]

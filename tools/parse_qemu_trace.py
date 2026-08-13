@@ -65,9 +65,11 @@ def parse_exec(path, start, end):
 
 def is_vector(insn):
     ops = insn["ops"]
-    if re.search(r"\bv\d+", ops) or re.search(r"\bz\d+", ops):
+    if re.search(r"\b[zv]\d+", ops):
         return True
-    if insn["mn"].startswith("ld") and re.search(r"\{.*v\d", ops):
+    # GNU/NEON disassembly uses qN/dN notation for vector loads/stores
+    # (ldr q24, str d23, ldp q28,q23, stp d8,d9, ...) that v/z misses.
+    if re.search(r"\b[qd]\d+", ops):
         return True
     return False
 
