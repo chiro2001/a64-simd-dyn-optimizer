@@ -165,5 +165,38 @@ instructions:
      pattern: {op: histcnt, pred: true}, status: verify}
 
   # ---- SVE2p3 (placeholder; confirm ACLE names on toolchain) ----
-  - {id: sve2p3-placeholder, feature: sve2p3, asm: null, intrinsic: null,
-     pattern: {op: placeholder}, status: verify}
+  # ---- SVE2.3 (FEAT_SVE2p3, Armv9.5) ----
+  # 2026-06 官方 ISA 共 16 条；GCC 16.1 的 arm_sve.h 尚无对应 ACLE 内置，
+  # 只能走直接汇编（asm backend），故 intrinsic 为 null、status 为 verify。
+  - {id: sve2p3-addqp, feature: sve2p3, asm: ADDQP, intrinsic: null,
+     pattern: {op: addp}, status: verify}
+  - {id: sve2p3-addsubp, feature: sve2p3, asm: ADDSUBP, intrinsic: null,
+     pattern: {op: addsubp}, status: verify}
+  - {id: sve2p3-fcvtzsn, feature: sve2p3, asm: FCVTZSN, intrinsic: null,
+     pattern: {op: fcvtzs}, status: verify}
+  - {id: sve2p3-fcvtzun, feature: sve2p3, asm: FCVTZUN, intrinsic: null,
+     pattern: {op: fcvtz, lanes: 2, bits: 16}, status: verify}
+  - {id: sve2p3-luti6-16b, feature: sve2p3, asm: LUTI6, intrinsic: null,
+     pattern: {op: luti6, bits: 16}, status: verify}
+  - {id: sve2p3-luti6-8b, feature: sve2p3, asm: LUTI6, intrinsic: null,
+     pattern: {op: luti6, bits: 8}, status: verify}
+  - {id: sve2p3-sabal, feature: sve2p3, asm: SABAL, intrinsic: null,
+     pattern: {op: sabal}, status: verify}
+  - {id: sve2p3-scvtf-b, feature: sve2p3, asm: SCVTF, intrinsic: null,
+     pattern: {op: scvtf, part: bottom}, status: verify}
+  - {id: sve2p3-scvtflt, feature: sve2p3, asm: SCVTFLT, intrinsic: null,
+     pattern: {op: scvtflt}, status: verify}
+  - {id: sve2p3-sqshrn-2, feature: sve2p3, asm: SQSHRN, intrinsic: null,
+     pattern: {op: sqshrn, sources: 2}, status: verify}
+  - {id: sve2p3-sqshrun-2, feature: sve2p3, asm: SQSHRUN, intrinsic: null,
+     pattern: {op: sqshrun, sources: 2}, status: verify}
+  - {id: sve2p3-subp, feature: sve2p3, asm: SUBP, intrinsic: null,
+     pattern: {op: subp}, status: verify}
+  - {id: sve2p3-uabal, feature: sve2p3, asm: UABAL, intrinsic: null,
+     pattern: {op: uabal}, status: verify}
+  - {id: sve2p3-ucvtf-b, feature: sve2p3, asm: UCVTF, intrinsic: null,
+     pattern: {op: ucvtf, part: bottom}, status: verify}
+  - {id: sve2p3-ucvtflt, feature: sve2p3, asm: UCVTFLT, intrinsic: null,
+     pattern: {op: ucvtflt}, status: verify}
+  - {id: sve2p3-uqshrn-2, feature: sve2p3, asm: UQSHRN, intrinsic: null,
+     pattern: {op: uqshrn, sources: 2}, status: verify}

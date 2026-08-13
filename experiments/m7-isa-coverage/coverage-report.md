@@ -15,7 +15,7 @@
 | sve2 | 229 | 197 | 5 | 5 | 224 |
 | sve2p1 | 110 | 73 | 0 | 0 | 110 |
 | sve2p2 | 9 | 9 | 0 | 0 | 9 |
-| sve2p3 | 16 | 15 | 0 | 0 | 16 |
+| sve2p3 | 16 | 15 | 15 | 16 | 0 |
 | sve2_bitperm | 3 | 3 | 0 | 0 | 3 |
 
 > “语义库覆盖指令”目前按助记符（asm）匹配；同一助记符（如 ADD、TRN1）
@@ -833,26 +833,9 @@
 | `frint64z_z_p_z` | FRINT64Z | `FRINT64Z  <Zd>.<T>, <Pg>/M, <Zn>.<T>` |
 | `lastp_r_p_p` | LASTP | `LASTP  <Xd>, <Pg>, <Pn>.<T>` |
 
-### sve2p3（缺口 16 条）
+### sve2p3（缺口 0 条）
 
-| 官方 id | 助记符 | 汇编形式 |
-|---|---|---|
-| `addqp_z_zz` | ADDQP | `ADDQP  <Zd>.<T>, <Zn>.<T>, <Zm>.<T>` |
-| `addsubp_z_zz` | ADDSUBP | `ADDSUBP  <Zd>.<T>, <Zn>.<T>, <Zm>.<T>` |
-| `fcvtzsn_z_mz2` | FCVTZSN | `FCVTZSN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }` |
-| `fcvtzun_z_mz2` | FCVTZUN | `FCVTZUN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }` |
-| `luti6_z_z2zz` | LUTI6 | `LUTI6  <Zd>.H, { <Zn1>.H, <Zn2>.H }, <Zm>[<index>]` |
-| `luti6_z_zzz` | LUTI6 | `LUTI6  <Zd>.B, { <Zn1>.B, <Zn2>.B }, <Zm>` |
-| `sabal_z_zzz` | SABAL | `SABAL  <Zda>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
-| `scvtf_z_z` | SCVTF | `SCVTF  <Zd>.<T>, <Zn>.<Tb>` |
-| `scvtflt_z_z` | SCVTFLT | `SCVTFLT  <Zd>.<T>, <Zn>.<Tb>` |
-| `sqshrn_z_mz2` | SQSHRN | `SQSHRN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>` |
-| `sqshrun_z_mz2` | SQSHRUN | `SQSHRUN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>` |
-| `subp_z_p_zz` | SUBP | `SUBP  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
-| `uabal_z_zzz` | UABAL | `UABAL  <Zda>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
-| `ucvtf_z_z` | UCVTF | `UCVTF  <Zd>.<T>, <Zn>.<Tb>` |
-| `ucvtflt_z_z` | UCVTFLT | `UCVTFLT  <Zd>.<T>, <Zn>.<Tb>` |
-| `uqshrn_z_mz2` | UQSHRN | `UQSHRN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>` |
+无缺口。
 
 ### sve2_bitperm（缺口 3 条）
 

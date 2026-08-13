@@ -71,9 +71,9 @@
    "level": "sve2p3",
    "official_instructions": 16,
    "official_mnemonics": 15,
-   "db_mnemonics_covered": 0,
-   "ids_covered": 0,
-   "ids_missing": 16
+   "db_mnemonics_covered": 15,
+   "ids_covered": 16,
+   "ids_missing": 0
   },
   {
    "level": "sve2_bitperm",
@@ -5684,88 +5684,7 @@
     "asm": "LASTP  <Xd>, <Pg>, <Pn>.<T>"
    }
   ],
-  "sve2p3": [
-   {
-    "id": "addqp_z_zz",
-    "mnemonic": "ADDQP",
-    "asm": "ADDQP  <Zd>.<T>, <Zn>.<T>, <Zm>.<T>"
-   },
-   {
-    "id": "addsubp_z_zz",
-    "mnemonic": "ADDSUBP",
-    "asm": "ADDSUBP  <Zd>.<T>, <Zn>.<T>, <Zm>.<T>"
-   },
-   {
-    "id": "fcvtzsn_z_mz2",
-    "mnemonic": "FCVTZSN",
-    "asm": "FCVTZSN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }"
-   },
-   {
-    "id": "fcvtzun_z_mz2",
-    "mnemonic": "FCVTZUN",
-    "asm": "FCVTZUN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }"
-   },
-   {
-    "id": "luti6_z_z2zz",
-    "mnemonic": "LUTI6",
-    "asm": "LUTI6  <Zd>.H, { <Zn1>.H, <Zn2>.H }, <Zm>[<index>]"
-   },
-   {
-    "id": "luti6_z_zzz",
-    "mnemonic": "LUTI6",
-    "asm": "LUTI6  <Zd>.B, { <Zn1>.B, <Zn2>.B }, <Zm>"
-   },
-   {
-    "id": "sabal_z_zzz",
-    "mnemonic": "SABAL",
-    "asm": "SABAL  <Zda>.<T>, <Zn>.<Tb>, <Zm>.<Tb>"
-   },
-   {
-    "id": "scvtf_z_z",
-    "mnemonic": "SCVTF",
-    "asm": "SCVTF  <Zd>.<T>, <Zn>.<Tb>"
-   },
-   {
-    "id": "scvtflt_z_z",
-    "mnemonic": "SCVTFLT",
-    "asm": "SCVTFLT  <Zd>.<T>, <Zn>.<Tb>"
-   },
-   {
-    "id": "sqshrn_z_mz2",
-    "mnemonic": "SQSHRN",
-    "asm": "SQSHRN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>"
-   },
-   {
-    "id": "sqshrun_z_mz2",
-    "mnemonic": "SQSHRUN",
-    "asm": "SQSHRUN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>"
-   },
-   {
-    "id": "subp_z_p_zz",
-    "mnemonic": "SUBP",
-    "asm": "SUBP  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>"
-   },
-   {
-    "id": "uabal_z_zzz",
-    "mnemonic": "UABAL",
-    "asm": "UABAL  <Zda>.<T>, <Zn>.<Tb>, <Zm>.<Tb>"
-   },
-   {
-    "id": "ucvtf_z_z",
-    "mnemonic": "UCVTF",
-    "asm": "UCVTF  <Zd>.<T>, <Zn>.<Tb>"
-   },
-   {
-    "id": "ucvtflt_z_z",
-    "mnemonic": "UCVTFLT",
-    "asm": "UCVTFLT  <Zd>.<T>, <Zn>.<Tb>"
-   },
-   {
-    "id": "uqshrn_z_mz2",
-    "mnemonic": "UQSHRN",
-    "asm": "UQSHRN  <Zd>.<T>, { <Zn1>.<Tb>-<Zn2>.<Tb> }, #<const>"
-   }
-  ],
+  "sve2p3": [],
   "sve2_bitperm": [
    {
     "id": "bdep_z_zz",
