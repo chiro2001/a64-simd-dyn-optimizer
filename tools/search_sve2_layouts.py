@@ -121,6 +121,7 @@ def main():
     manifest = load_manifest(args.kernel)
     if args.contract:
         manifest["contract"] = args.contract
+    contract = manifest.get("contract", "upstream-exact")
     if args.outdir is None:
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
@@ -199,6 +200,7 @@ def main():
             ent = cache[ckey]
             results.append({
                 "tag": tag, **combo,
+                "contract": contract,
                 "upstream_exact": (not combo.get("legacy_semantics")
                                    if ent.get("passed") else False),
                 "passed": ent["passed"],
@@ -263,6 +265,7 @@ def main():
                            "verify": r.stdout,
                            "counts": None}
             results.append({"tag": tag, **combo,
+                            "contract": contract,
                             "upstream_exact": False,
                             "passed": False,
                             "verify_mismatches": mism,
@@ -294,6 +297,7 @@ def main():
                        "verify": r.stdout,
                        "counts": counts}
         results.append({"tag": tag, **combo,
+                        "contract": contract,
                         "upstream_exact": not combo.get("legacy_semantics"),
                         "passed": True,
                         "verify_mismatches": mism,

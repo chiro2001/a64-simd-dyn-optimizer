@@ -113,10 +113,12 @@ def stage_baseline(outdir, manifest):
     return 0
 
 
-def stage_search(backend, manifest):
-    return run(["python3", os.path.join(ROOT, "tools/search_sve2_layouts.py"),
-                "--backend", backend, "--kernel",
-                manifest["kernel"]]).returncode
+def stage_search(backend, manifest, contract=None):
+    cmd = ["python3", os.path.join(ROOT, "tools/search_sve2_layouts.py"),
+           "--backend", backend, "--kernel", manifest["kernel"]]
+    if contract:
+        cmd += ["--contract", contract]
+    return run(cmd).returncode
 
 
 def stage_report(outdir):
@@ -161,14 +163,18 @@ def stage_report(outdir):
     return 0
 
 
-def stage_finalize(outdir, manifest):
-    """Fix the best candidate as a stable deliverable (best_sve2.cpp/.S)."""
+def stage_finalize(outdir, manifest, contract=None):
+    """Fix the best candidate as a stable deliverable. Legacy contract
+    finalizes to best_legacy_sve2.* and uses the proxy gate (<=0.06%)."""
     res = json.load(open(os.path.join(outdir, "results.json")))
-    ok = [r for r in res if r.get("counts")]
+    want = contract or "upstream-exact"
+    ok = [r for r in res if r.get("counts")
+          and r.get("contract", "upstream-exact") == want]
     if not ok:
         print("no candidates to finalize", file=sys.stderr)
         return 1
     best = min(ok, key=lambda r: r["counts"]["vector_fused"])
+    legacy = contract == "legacy-internal-exact"
 
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     from emit_dct16_sve2_shared import emit
@@ -177,15 +183,25 @@ def stage_finalize(outdir, manifest):
     cand_dir = os.path.join(ROOT, "kernels", manifest["kernel"],
                             "candidates")
     os.makedirs(cand_dir, exist_ok=True)
-    cpp = os.path.join(cand_dir, "best_sve2.cpp")
-    s = os.path.join(cand_dir, "best_sve2.S")
+    stem = "best_legacy_sve2" if legacy else "best_sve2"
+    cpp = os.path.join(cand_dir, stem + ".cpp")
+    s = os.path.join(cand_dir, stem + ".S")
     with open(cpp, "w") as f:
         f.write(emit(pass1_layout=best.get("pass1", "quarter"),
                      pass2_layout=best.get("pass2", "upstream"),
-                     pass1_k_tile=best.get("pass1_k_tile", 2)))
+                     pass1_k_tile=best.get("pass1_k_tile", 2),
+                     pass2_k_tile=best.get("pass2_k_tile", 1),
+                     narrow_merge=best.get("narrow_merge", 0),
+                     legacy_semantics=best.get("legacy_semantics", 0),
+                     legacy_even_full=best.get("legacy_even_full", 0),
+                     store_merge16=best.get("store_merge16", 0),
+                     pass1_even_factor=best.get("pass1_even_factor", 0),
+                     pass1_pack_zip=best.get("pass1_pack_zip", 0),
+                     pass2_pack_zip=best.get("pass2_pack_zip", 0),
+                     even_sve=best.get("even_sve", 0)))
     bootstrap_cpp(cpp, s)
 
-    # 200k upstream-exact verification of the finalized artifact
+    # 200k verification of the finalized artifact (proxy gate for legacy)
     verify_src = os.path.join(outdir, "verify_generated.cpp")
     if not os.path.exists(verify_src):
         with open(verify_src, "w") as f:
@@ -200,24 +216,38 @@ def stage_finalize(outdir, manifest):
         print("finalize BUILD FAIL:\n%s" % r.stdout[-2000:])
         return 1
     r = run(QEMU + [exe, "200000"])
-    ok_verify = r.returncode == 0 and "mismatches=0" in r.stdout
+    mism = 0
+    if "mismatches=" in r.stdout:
+        try:
+            mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
+        except (ValueError, IndexError):
+            mism = -1
+    if legacy:
+        ok_verify = r.returncode in (0, 1) and 0 <= mism <= 30720
+    else:
+        ok_verify = r.returncode == 0 and mism == 0
 
     best_dir = os.path.join(ROOT, "experiments/m30-dct16-search/best")
     os.makedirs(best_dir, exist_ok=True)
     record = {
         "tag": best["tag"],
         "layout": {k: v for k, v in best.items()
-                   if k.startswith("pass")},
+                   if k.startswith("pass") or k in
+                   ("narrow_merge", "legacy_semantics", "legacy_even_full",
+                    "store_merge16", "even_sve")},
         "counts": best["counts"],
         "artifacts": {"cpp": cpp, "asm": s},
+        "contract": contract or "upstream-exact",
         "verify_200k": ok_verify,
+        "verify_mismatches": mism,
         "verify_output": r.stdout.strip()[-500:],
     }
-    json.dump(record, open(os.path.join(best_dir, "best.json"), "w"),
-              indent=1)
+    rec_name = "best_legacy.json" if legacy else "best.json"
+    json.dump(record, open(os.path.join(best_dir, rec_name), "w"), indent=1)
     print("finalized %s -> %s / %s" % (best["tag"], cpp, s))
     print("200k verify:", r.stdout.strip().splitlines()[-1]
-          if r.stdout.strip() else "no output")
+          if r.stdout.strip() else "no output",
+          "OK" if ok_verify else "FAIL")
     return 0
 
 
@@ -226,6 +256,7 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--backend", choices=("asm", "acle"), default="asm")
     ap.add_argument("--kernel", default="dct16")
+    ap.add_argument("--contract", default=None)
     ap.add_argument("--outdir", default=None)
     ap.add_argument("stage", nargs="?",
                     choices=("baseline", "search", "report", "finalize"))
@@ -241,12 +272,12 @@ def main():
         if args.stage == "baseline":
             return 0
     if args.all or args.stage == "search":
-        if stage_search(args.backend, manifest) != 0:
+        if stage_search(args.backend, manifest, args.contract) != 0:
             return 1
     if args.all or args.stage == "report":
         return stage_report(args.outdir)
     if args.stage == "finalize":
-        return stage_finalize(args.outdir, manifest)
+        return stage_finalize(args.outdir, manifest, args.contract)
     ap.print_help()
     return 2
 

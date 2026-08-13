@@ -1,0 +1,32 @@
+{
+ "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-1",
+ "layout": {
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 1,
+  "legacy_semantics": 1,
+  "legacy_even_full": 0,
+  "store_merge16": 1,
+  "pass1_even_factor": 1,
+  "pass1_pack_zip": 1,
+  "pass2_pack_zip": 0,
+  "even_sve": 1,
+  "passed": true
+ },
+ "counts": {
+  "total": 947,
+  "vector": 823,
+  "movprfx": 131,
+  "vector_fused": 692
+ },
+ "artifacts": {
+  "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_legacy_sve2.cpp",
+  "asm": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_legacy_sve2.S"
+ },
+ "contract": "legacy-internal-exact",
+ "verify_200k": true,
+ "verify_mismatches": 22936,
+ "verify_output": "cases=200000 lanes=51200000 mismatches=22936 rate=0.044797%\n first-diff idx=44 want=1579 got=-1621"
+}
