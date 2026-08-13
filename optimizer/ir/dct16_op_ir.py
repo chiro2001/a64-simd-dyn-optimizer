@@ -635,6 +635,197 @@ def lower_pass2_odd_quarter(pack_zip: bool = True,
     return b.ops
 
 
+def lower_pass1_quarter(k_tile: int = 4, pack_zip: bool = True,
+                        even_factor: bool = True,
+                        narrow_merge: bool = True,
+                        shift: int = 3) -> List[Op]:
+    """pass1 quarter-interleaved (v3, `quarter_pass_cpp`): 4-row groups
+    packed into QE0/QE1/QO0/QO1 (zip variant), optional EEF/EOF even
+    factoring, even k dots on EEF/EOF (CQ_LO only), odd k chained SDOT on
+    QO/QE (CQ_LO+CQ_HI), merged 8-lane narrow/store.
+    """
+    b = _Builder("d16")
+
+    def _g(k, j):
+        return "G[%d][%d]" % (k, j)
+
+    qe0: Dict[int, str] = {}
+    qe1: Dict[int, str] = {}
+    qo0: Dict[int, str] = {}
+    qo1: Dict[int, str] = {}
+    eef: Dict[int, str] = {}
+    eof: Dict[int, str] = {}
+    for g in range(4):
+        tid = "p1.pack.g%d" % g
+        base = 4 * g
+        z = {}
+        for m in range(4):
+            z[m] = b.new("load", tid, "z_%d" % (base + m),
+                         attrs={"arch": "sve", "elem": "s16",
+                                "row": base + m, "half": "full",
+                                "base": "src", "index": "r*stride"}).out
+        a = {}
+        for m in range(4):
+            a[m] = b.new("permute", tid, "pa%d_%d" % (m, g), (z[m],),
+                         attrs={"kind": "view_s64", "arch": "sve"}).out
+        t = []
+        t.append(b.new("permute", tid, "pt0_%d" % g, (a[0], a[2]),
+                       attrs={"kind": "zip1d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt1_%d" % g, (a[0], a[2]),
+                       attrs={"kind": "zip2d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt2_%d" % g, (a[1], a[3]),
+                       attrs={"kind": "zip1d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt3_%d" % g, (a[1], a[3]),
+                       attrs={"kind": "zip2d", "arch": "sve"}).out)
+        p0 = b.new("permute", tid, "pp0_%d" % g, (t[0], t[2]),
+                   attrs={"kind": "zip1d", "arch": "sve"}).out
+        p1 = b.new("permute", tid, "pp1_%d" % g, (t[0], t[2]),
+                   attrs={"kind": "zip2d", "arch": "sve"}).out
+        p2 = b.new("permute", tid, "pp2_%d" % g, (t[1], t[3]),
+                   attrs={"kind": "zip1d", "arch": "sve"}).out
+        p3 = b.new("permute", tid, "pp3_%d" % g, (t[1], t[3]),
+                   attrs={"kind": "zip2d", "arch": "sve"}).out
+        q0 = b.new("permute", tid, "q0_%d" % g, (p0,),
+                   attrs={"kind": "view_s16", "arch": "sve"}).out
+        q1 = b.new("permute", tid, "q1_%d" % g, (p1,),
+                   attrs={"kind": "view_s16", "arch": "sve"}).out
+        q2 = b.new("permute", tid, "q2_%d" % g,
+                   (b.new("permute", tid, "v2_%d" % g, (p2,),
+                          attrs={"kind": "view_s16", "arch": "sve"}).out,),
+                   attrs={"kind": "revh_d", "arch": "sve"}).out
+        q3 = b.new("permute", tid, "q3_%d" % g,
+                   (b.new("permute", tid, "v3_%d" % g, (p3,),
+                          attrs={"kind": "view_s16", "arch": "sve"}).out,),
+                   attrs={"kind": "revh_d", "arch": "sve"}).out
+        qo0[g] = b.new("sub", tid, "QO0_%d" % g, (q0, q3),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        qo1[g] = b.new("sub", tid, "QO1_%d" % g, (q1, q2),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        qe0[g] = b.new("add", tid, "QE0_%d" % g, (q0, q3),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        qe1[g] = b.new("add", tid, "QE1_%d" % g, (q1, q2),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        if even_factor:
+            qr1 = b.new("permute", tid, "QR1_%d" % g, (qe1[g],),
+                        attrs={"kind": "revh_d", "arch": "sve"})
+            eef[g] = b.new("add", tid, "EEF_%d" % g, (qe0[g], qr1.out),
+                           attrs={"elem": "s16", "arch": "sve"}).out
+            eof[g] = b.new("sub", tid, "EOF_%d" % g, (qe0[g], qr1.out),
+                           attrs={"elem": "s16", "arch": "sve"}).out
+
+    def merged_stores(k: int, dots: List[str], tid: str) -> None:
+        if narrow_merge:
+            for g0 in (0, 2):
+                nn = b.new("narrow8", tid, "nn_%d_%d" % (k, g0),
+                           (dots[g0], dots[g0 + 1]),
+                           attrs={"shift": shift, "mode": "rshrn"})
+                b.new("store", tid, "", (nn.out,),
+                      attrs={"arch": "sve", "base": "dst",
+                             "index": "16*k + %d" % (4 * g0),
+                             "lanes": tuple((1, k, r)
+                                            for r in range(4 * g0,
+                                                           4 * g0 + 8)),
+                             "topology": "contiguous", "n_lanes": 8})
+        else:
+            for g in range(4):
+                nn = b.new("narrow4", tid, "nn_%d_%d" % (k, g), (dots[g],),
+                           attrs={"shift": shift, "mode": "rshrn"})
+                b.new("store", tid, "", (nn.out,),
+                      attrs={"arch": "sve", "base": "dst",
+                             "index": "16*k + %d" % (4 * g),
+                             "lanes": tuple((1, k, r)
+                                            for r in range(4 * g, 4 * g + 4)),
+                             "topology": "contiguous", "n_lanes": 4})
+
+    def even_pair_loop(kb, fam):
+        for k in range(kb, 16, 4):
+            tid = "p1.even.k%d" % k
+            clo = "CQ_LO[%d]" % k
+            b.new("load", tid, "clo_%d" % k,
+                  attrs={"arch": "sve-const", "elem": "s16", "const": clo})
+            dots = []
+            for g in range(4):
+                dots.append(b.new(
+                    "dot_segment", "p1.even.k%d.g%d" % (k, g),
+                    "d_%d_%d" % (k, g), (fam[g],),
+                    attrs={"arch": "sve", "acc_bits": 64,
+                           "lane_owner": "output",
+                           "terms": tuple(_g(k, j) for j in range(4)),
+                           "const_src": clo}).out)
+            merged_stores(k, dots, tid)
+
+    def all_k_loop():
+        for kb in range(0, 16, k_tile):
+            for t in range(k_tile):
+                k = kb + t
+                tid = "p1.odd.k%d" % k
+                clo = "CQ_LO[%d]" % k
+                chi = "CQ_HI[%d]" % k
+                b.new("load", tid, "clo_%d" % k,
+                      attrs={"arch": "sve-const", "elem": "s16",
+                             "const": clo})
+                b.new("load", tid, "chi_%d" % k,
+                      attrs={"arch": "sve-const", "elem": "s16",
+                             "const": chi})
+                dots = []
+                for g in range(4):
+                    x0 = qo0[g] if k % 2 else qe0[g]
+                    x1 = qo1[g] if k % 2 else qe1[g]
+                    d0 = b.new("dot_segment", "p1.odd.k%d.g%d" % (k, g),
+                               "d0_%d_%d" % (k, g), (x0,),
+                               attrs={"arch": "sve", "acc_bits": 64,
+                                      "lane_owner": "output",
+                                      "terms": tuple(_g(k, j)
+                                                     for j in range(4)),
+                                      "const_src": clo})
+                    d1 = b.new("dot_accum", "p1.odd.k%d.g%d" % (k, g),
+                               "d1_%d_%d" % (k, g), (d0.out, x1),
+                               attrs={"acc_bits": 64,
+                                      "terms": tuple(_g(k, 4 + j)
+                                                     for j in range(4)),
+                                      "const_src": chi})
+                    dots.append(d1.out)
+                merged_stores(k, dots, tid)
+
+    if even_factor:
+        even_pair_loop(0, eef)
+        even_pair_loop(2, eof)
+        odd_kb = range(1, 16, 2 * k_tile)
+        odd_t = range(k_tile)
+        for kb in odd_kb:
+            for t in odd_t:
+                k = kb + 2 * t
+                tid = "p1.odd.k%d" % k
+                clo = "CQ_LO[%d]" % k
+                chi = "CQ_HI[%d]" % k
+                b.new("load", tid, "clo_%d" % k,
+                      attrs={"arch": "sve-const", "elem": "s16",
+                             "const": clo})
+                b.new("load", tid, "chi_%d" % k,
+                      attrs={"arch": "sve-const", "elem": "s16",
+                             "const": chi})
+                dots = []
+                for g in range(4):
+                    d0 = b.new("dot_segment", "p1.odd.k%d.g%d" % (k, g),
+                               "d0_%d_%d" % (k, g), (qo0[g],),
+                               attrs={"arch": "sve", "acc_bits": 64,
+                                      "lane_owner": "output",
+                                      "terms": tuple(_g(k, j)
+                                                     for j in range(4)),
+                                      "const_src": clo})
+                    d1 = b.new("dot_accum", "p1.odd.k%d.g%d" % (k, g),
+                               "d1_%d_%d" % (k, g), (d0.out, qo1[g]),
+                               attrs={"acc_bits": 64,
+                                      "terms": tuple(_g(k, 4 + j)
+                                                     for j in range(4)),
+                                      "const_src": chi})
+                    dots.append(d1.out)
+                merged_stores(k, dots, tid)
+    else:
+        all_k_loop()
+    return b.ops
+
+
 def dct16_upstream_provenance(ops: List[Op]) -> Dict:
     """Full upstream pass1+pass2 output-lane coverage + dot-term and
     round-epoch checks (analogous to dct32 provenance_report)."""
@@ -678,8 +869,10 @@ def dct16_upstream_provenance(ops: List[Op]) -> Dict:
                       % (len(missing), sorted(missing)[:3]))
     for k in ALL_K:
         terms = dot_terms.get((1, k), ())
-        if len(terms) != 8:
-            issues.append("pass1 k=%d covers %d/8 terms" % (k, len(terms)))
+        want = 8 if k % 2 == 1 else 4   # even k may use EEF/EOF (CQ_LO)
+        if len(terms) < want:
+            issues.append("pass1 k=%d covers %d/%d terms"
+                          % (k, len(terms), want))
         terms = dot_terms.get((2, k), ())
         if k in ODD_K and len(terms) != 8:
             issues.append("pass2 odd k=%d covers %d/8 terms"

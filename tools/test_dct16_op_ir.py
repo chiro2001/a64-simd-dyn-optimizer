@@ -9,7 +9,8 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 from dct16_op_ir import (  # noqa: E402
     dct16_leaf_provenance, dct16_pass1_provenance,
     dct16_upstream_provenance, lower_pass1_leaf, lower_pass1_odd,
-    lower_pass1_perrow, lower_pass2_odd_quarter, lower_pass2_upstream)
+    lower_pass1_perrow, lower_pass1_quarter, lower_pass2_odd_quarter,
+    lower_pass2_upstream)
 
 
 def main():
@@ -44,6 +45,15 @@ def main():
     n2o = len([o for o in oq if o.tile_id.startswith("p2.")])
     print("DCT16 odd-quarter DAG OK: pass2_ops=%d stores=%d"
           % (n2o, r4["store_count"]))
+    # Quarter pass1 (zip packs + even factor) + odd-quarter pass2.
+    qq = lower_pass1_quarter(k_tile=4, pack_zip=True, even_factor=True) \
+        + lower_pass2_odd_quarter(pack_zip=True, store_merge16=True,
+                                  k_tile=2)
+    r5 = dct16_upstream_provenance(qq)
+    assert r5["ok"], r5["issues"]
+    n1q = len([o for o in qq if o.tile_id.startswith("p1.")])
+    print("DCT16 quarter+odd-quarter DAG OK: pass1_ops=%d stores=%d"
+          % (n1q, r5["store_count"]))
     return 0
 
 

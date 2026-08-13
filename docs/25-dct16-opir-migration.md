@@ -138,3 +138,38 @@ vector +2、movprfx -3）。op 后端在 ≤5 条误差内复现 odd-quarter
 结构——下一步可直接在其上移植 rewrite（`tbl2_to_zip` 的 DCT16 适配
 对象就是这里的 zip pack / 未来 tbl2 pack；`merge_narrow8` 对应
 narrow8/16 合并，32//n_groups 参数化已在 DCT32 版本确认）。
+
+## 9. pass1 quarter + pass2 odd-quarter op 后端（2026-08-13 晚，已交付）
+
+- `lower_pass1_quarter(k_tile, pack_zip, even_factor, narrow_merge)`：
+  zip pack（view_s64/zip1d/zip2d/revh_d）→ QE0/QE1/QO0/QO1，
+  EEF/EOF even factoring（CQ_LO 单常量 dot），odd k 链式 SDOT
+  （CQ_LO+CQ_HI），merged narrow8/4 + 8/4-lane store；
+  even_factor=0 时偶数 k 退化为 QE 双常量路径。
+- `revh_d` helper（inline asm）加入发射器；`_emit_pass1` 扩展 SVE
+  view/zip/revh/dot_accum/narrow4/narrow8/store-sve；`emit_acle` 按
+  manifest 轴选择 pass1/pass2 形态。
+
+### op 搜索驱动全量结果（upstream-exact，0 mismatch，无 scatter）
+
+| 结构 | fused_uop |
+| --- | --- |
+| quarter + odd-quarter + even_factor=1（best） | **895**（per_out 3.50） |
+| quarter + odd-quarter + even_factor=1（无 store_merge16） | 903 |
+| quarter + odd-quarter + even_factor=0 | 923 / 931 |
+| quarter + pass2-upstream | 1097 / 1125 |
+| per-row + odd-quarter | 1275 / 1283 |
+| per-row + upstream | 1471 |
+
+对比 grouped 非 legacy 最优 887（pk1=1/pk2=1/sm16=1/ef=1），op 后端
+895 只差 8 条（差异在访存调度与 pk2 发射细节）；相对 grouped 同参数
+920 反超 25 条。计算指令语义逐 pass bit-exact。
+
+### 下一步（遗留最后一块）
+
+1. pass2 legacy：EO16/EE16 s16 链 + QEOW/QEEW pack + s16 sdot 路径
+   （`svqrshrnb` 饱和窄化，legacy 合同）；
+2. even_sve=1 纯 SVE even 路径（revh/revw/addp + st1d scatter，
+   704 需要，注意 scatter 实机多 uop 的取舍）；
+3. `search_rewrite_sequences.py` 参数化 kernel，验收自动重发现
+   ≤ 704。

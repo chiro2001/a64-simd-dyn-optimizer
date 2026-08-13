@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 from dct16_op_ir import G16, GT16_S32, T8E, lower_pass1_perrow, \
-    lower_pass2_odd_quarter, lower_pass2_upstream
+    lower_pass1_quarter, lower_pass2_odd_quarter, lower_pass2_upstream
 from op_ir import Op
 
 
@@ -47,6 +47,15 @@ static inline int64x2_t sdotq_s16(int64x2_t acc, int16x8_t x, int16x8_t y)
         svset_neonq_s64(svundef_s64(), acc),
         svset_neonq_s16(svundef_s16(), x),
         svset_neonq_s16(svundef_s16(), y)));
+}
+
+static inline svint16_t revh_d(svint16_t x)
+{
+    svint16_t r;
+    asm volatile("revh %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
 }
 """
 
@@ -84,21 +93,8 @@ def _emit_pass1(ops: List[Op]) -> List[str]:
     ctype: Dict[str, str] = {}
     const_cache: Dict[str, str] = {}
     by_out = {o.out: o for o in ops}
-
-    def emit_load_const(op: Op, expr: str) -> str:
-        if expr in const_cache:
-            return const_cache[expr]
-        nm = "ck_" + _v(op.out)
-        if op.attrs["elem"] == "s32":
-            body.append("    const int32x4_t %s = vld1q_s32(%s);"
-                        % (nm, expr))
-            ctype[nm] = "int32x4_t"
-        else:
-            body.append("    const int16x8_t %s = vld1q_s16(%s);"
-                        % (nm, expr))
-            ctype[nm] = "int16x8_t"
-        const_cache[expr] = nm
-        return nm
+    used_p8 = False
+    used_p4 = False
 
     for op in ops:
         kind = op.kind
@@ -106,6 +102,15 @@ def _emit_pass1(ops: List[Op]) -> List[str]:
         out = _v(op.out)
         ins = [_v(x) for x in op.inputs]
         if kind == "load":
+            if attrs["arch"] == "sve-const":
+                expr = attrs["const"]
+                if expr not in const_cache:
+                    nm = "ck_" + out
+                    body.append("    const svint16_t %s = "
+                                "svld1_s16(p16, %s);" % (nm, expr))
+                    ctype[nm] = "svint16_t"
+                    const_cache[expr] = nm
+                continue
             row = attrs["row"]
             body.append("    svint16_t %s = svld1_s16(p16, src + %d * stride);"
                         % (out, row))
@@ -113,6 +118,23 @@ def _emit_pass1(ops: List[Op]) -> List[str]:
         elif kind == "permute" and attrs["kind"] == "tbl":
             body.append("    svint16_t %s = svtbl_s16(%s, irv);"
                         % (out, ins[0]))
+            ctype[out] = "svint16_t"
+        elif kind == "permute" and attrs["kind"] in ("view_s64", "view_s16"):
+            body.append("    %s %s = svreinterpret_%s_%s(%s);"
+                        % ("svint64_t" if attrs["kind"] == "view_s64"
+                           else "svint16_t", out,
+                           "s64" if attrs["kind"] == "view_s64" else "s16",
+                           "s16" if attrs["kind"] == "view_s64" else "s64",
+                           ins[0]))
+            ctype[out] = ("svint64_t" if attrs["kind"] == "view_s64"
+                          else "svint16_t")
+        elif kind == "permute" and attrs["kind"] in ("zip1d", "zip2d"):
+            fn = "svzip1_s64" if attrs["kind"] == "zip1d" else "svzip2_s64"
+            body.append("    svint64_t %s = %s(%s, %s);"
+                        % (out, fn, ins[0], ins[1]))
+            ctype[out] = "svint64_t"
+        elif kind == "permute" and attrs["kind"] == "revh_d":
+            body.append("    svint16_t %s = revh_d(%s);" % (out, ins[0]))
             ctype[out] = "svint16_t"
         elif kind in ("add", "sub"):
             fn = ("svadd_s16_x" if kind == "add" else "svsub_s16_x")
@@ -129,6 +151,11 @@ def _emit_pass1(ops: List[Op]) -> List[str]:
                 const_cache[cexpr] = nm
             body.append("    svint64_t %s = svdot_s64(zero64, %s, %s);"
                         % (out, ins[0], const_cache[cexpr]))
+            ctype[out] = "svint64_t"
+        elif kind == "dot_accum":
+            body.append("    svint64_t %s = svdot_s64(%s, %s, %s);"
+                        % (out, ins[0], ins[1],
+                           const_cache[attrs["const_src"]]))
             ctype[out] = "svint64_t"
         elif kind == "neon_pack":
             body.append("    int64x2_t %s = svget_neonq_s64(%s);"
@@ -147,14 +174,40 @@ def _emit_pass1(ops: List[Op]) -> List[str]:
             body.append("    int16x4_t %s = vrshrn_n_s32(w%s, %d);"
                         % (out, nm, attrs["shift"]))
             ctype[out] = "int16x4_t"
+        elif kind == "narrow4":
+            body.append("    const svint32_t w_%s = svuzp1_s32("
+                        "svreinterpret_s32_s64(%s), "
+                        "svreinterpret_s32_s64(%s));"
+                        % (out, ins[0], ins[0]))
+            body.append("    svint16_t %s = svrshrnb_n_s32(w_%s, %d);"
+                        % (out, out, attrs["shift"]))
+            body.append("    %s = svuzp1_s16(%s, %s);" % (out, out, out))
+            ctype[out] = "svint16_t"
+            used_p4 = True
+        elif kind == "narrow8":
+            body.append("    const svint32_t w_%s = svuzp1_s32("
+                        "svreinterpret_s32_s64(%s), "
+                        "svreinterpret_s32_s64(%s));"
+                        % (out, ins[0], ins[1]))
+            body.append("    svint16_t %s = svrshrnb_n_s32(w_%s, %d);"
+                        % (out, out, attrs["shift"]))
+            body.append("    %s = svuzp1_s16(%s, %s);" % (out, out, out))
+            ctype[out] = "svint16_t"
+            used_p8 = True
         elif kind == "store":
             lanes = attrs["lanes"]
             k, base = lanes[0][1], lanes[0][2]
-            body.append("    vst1_s16(dst + 16 * %d + %d, %s);"
-                        % (k, base, ins[0]))
+            if attrs["arch"] == "sve":
+                nl = attrs.get("n_lanes", 8)
+                pg = "p16" if nl == 16 else ("p8" if nl == 8 else "p4")
+                body.append("    svst1_s16(%s, dst + 16 * %d + %d, %s);"
+                            % (pg, k, base, ins[0]))
+            else:
+                body.append("    vst1_s16(dst + 16 * %d + %d, %s);"
+                            % (k, base, ins[0]))
         else:
             raise ValueError("pass1: unsupported op %s (%s)" % (kind, out))
-    return body
+    return body, used_p8, used_p4
 
 
 def _emit_pass2(ops: List[Op]) -> List[str]:
@@ -376,24 +429,40 @@ def _emit_pass2(ops: List[Op]) -> List[str]:
 
 
 def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
+              pass1: str = "per-row", pass1_k_tile: int = 4,
+              pass1_pack_zip: bool = True, pass1_even_factor: bool = True,
               pass2: str = "upstream", pass2_k_tile: int = 1,
               pass2_pack_zip: bool = True,
               store_merge16: bool = True) -> str:
-    ops = lower_pass1_perrow()
+    if pass1 == "quarter":
+        ops = lower_pass1_quarter(k_tile=pass1_k_tile,
+                                  pack_zip=pass1_pack_zip,
+                                  even_factor=pass1_even_factor,
+                                  narrow_merge=True)
+    else:
+        ops = lower_pass1_perrow()
     if pass2 == "odd-quarter":
         ops += lower_pass2_odd_quarter(pack_zip=pass2_pack_zip,
                                        store_merge16=store_merge16,
                                        k_tile=pass2_k_tile)
     else:
         ops += lower_pass2_upstream()
-    b1 = _emit_pass1([o for o in ops if o.tile_id.startswith("p1.")])
+    b1, p1_p8, p1_p4 = _emit_pass1(
+        [o for o in ops if o.tile_id.startswith("p1.")])
     b2, used_p8 = _emit_pass2([o for o in ops if o.tile_id.startswith("p2.")])
+    need_irv = any(o.kind == "permute" and o.attrs.get("idx") == "rev16"
+                   for o in ops if o.tile_id.startswith("p1."))
+    prologue1 = "    const svbool_t p16 = svptrue_b16();\n" \
+                "    const svint64_t zero64 = svdup_n_s64(0);\n"
+    if need_irv:
+        prologue1 += "    const svuint16_t irv = svld1_u16(p16, idx_rev);\n"
+    if p1_p8:
+        prologue1 += "    const svbool_t p8 = svwhilelt_b16(0, 8);\n"
+    if p1_p4:
+        prologue1 += "    const svbool_t p4 = svwhilelt_b16(0, 4);\n"
     pass1 = "static __attribute__((noinline)) void op_pass_4(" \
             "const int16_t* src, int16_t* dst, intptr_t stride)\n{\n" \
-            "    const svbool_t p16 = svptrue_b16();\n" \
-            "    const svuint16_t irv = svld1_u16(p16, idx_rev);\n" \
-            "    const svint64_t zero64 = svdup_n_s64(0);\n" \
-            "%s\n}" % "\n".join(b1)
+            "%s%s\n}" % (prologue1, "\n".join(b1))
     prologue2 = "    const int line = 16;\n" \
                 "    const svbool_t p16 = svptrue_b16();\n" \
                 "    const svint64_t zero64 = svdup_n_s64(0);\n"
@@ -449,11 +518,18 @@ def emit_from_combo(combo=None,
     odd-quarter axes are the next slice); identical sources dedupe in the
     search driver."""
     combo = combo or {}
+    pass1 = combo.get("pass1", "per-row")
+    if pass1 not in ("per-row", "quarter"):
+        pass1 = "per-row"
     pass2 = combo.get("pass2", "upstream")
     if pass2 not in ("upstream", "odd-quarter"):
         pass2 = "upstream"
     return emit_acle(
         func_name,
+        pass1=pass1,
+        pass1_k_tile=int(combo.get("pass1_k_tile", 4)),
+        pass1_pack_zip=bool(combo.get("pass1_pack_zip", 1)),
+        pass1_even_factor=bool(combo.get("pass1_even_factor", 1)),
         pass2=pass2,
         pass2_k_tile=int(combo.get("pass2_k_tile", 1)),
         pass2_pack_zip=bool(combo.get("pass2_pack_zip", 1)),
