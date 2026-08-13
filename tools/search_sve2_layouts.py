@@ -89,6 +89,7 @@ def true_dynamic(binary, start, end, log):
             "movprfx": c.get("movprfx", 0),
             "vector_fused": c.get("vector_fused", len(d["vector"])),
             "scatter_gather": c.get("scatter_gather", 0),
+            "stack_vector": c.get("stack_vector", 0),
             "vector_fused_uop": c.get("vector_fused_uop",
                                       len(d["vector"]))}
 
@@ -337,6 +338,10 @@ def main():
             continue
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(args.outdir, tag + "-trace.log"))
+        if counts is None:
+            results.append({"tag": tag, **combo,
+                            "passed": False, "counts": None})
+            continue
         cache[ckey] = {"passed": True,
                        "verify_mismatches": mism,
                        "verify": r.stdout,
@@ -376,10 +381,11 @@ def main():
             gate_mark = (" HALVED" if ratio <= gate else
                          " near-gate" if ratio <= gate * 1.25 else " NO")
         per_out = (" per_out=%.2f" % (fu / n_out)) if n_out else ""
-        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d%s%s"
+        print("  %-24s vector=%d fused_adj=%d sg=%d stk=%d fused_uop=%d%s%s"
               % (r["tag"], r["counts"]["vector"],
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
+                 r["counts"].get("stack_vector", 0),
                  fu, per_out, gate_mark))
         if ratio is not None:
             r["baseline_ratio"] = ratio

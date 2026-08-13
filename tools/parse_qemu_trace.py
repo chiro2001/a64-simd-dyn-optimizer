@@ -96,6 +96,21 @@ def scatter_gather_count(vector):
     return n
 
 
+def stack_vector_count(insns):
+    """Vector ldr/str traffic (spilled z/q registers). GCC usually computes
+    sp+offset into a base register first, so direct `[sp]` matching would
+    miss spills; ldr/str with z/q operands is the reliable proxy (vector
+    loads of constants use ld1h/ld1w instead).
+    Round-0011: partial slices must report stack vector accesses, not only
+    removed uaddv/saddv/fmov counts."""
+    n = 0
+    for i in insns:
+        if i["mn"] in ("ldr", "str", "ldp", "stp") and re.search(
+                r"\b[zq]\d+", i["ops"]):
+            n += 1
+    return n
+
+
 def main():
     if len(sys.argv) < 4:
         print(__doc__)
@@ -115,6 +130,7 @@ def main():
     vec = [i for i in insns if is_vector(i)]
     movprfx, fused_adj = fused_adjust(vec)
     sg = scatter_gather_count(vec)
+    stack_v = stack_vector_count(insns)
     # uop-honest metric: scatter/gather count as 4 ldst uops (penalty +3).
     fused_uop = fused_adj + 3 * sg
     if counts_only:
@@ -124,13 +140,15 @@ def main():
         print(json.dumps(dynamic_counts(nodes)))
         return 0
     print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj %d, "
-          "scatter_gather %d, fused_uop %d)"
-          % (len(insns), len(vec), movprfx, fused_adj, sg, fused_uop))
+          "scatter_gather %d, stack_vector %d, fused_uop %d)"
+          % (len(insns), len(vec), movprfx, fused_adj, sg, stack_v,
+             fused_uop))
     if out_json:
         json.dump({"instructions": insns, "vector": vec,
                    "counts": {"vector_raw": len(vec), "movprfx": movprfx,
                               "vector_fused": fused_adj,
                               "scatter_gather": sg,
+                              "stack_vector": stack_v,
                               "vector_fused_uop": fused_uop}},
                   open(out_json, "w"), indent=1)
     if vector_only:
