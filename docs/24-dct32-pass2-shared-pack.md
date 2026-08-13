@@ -87,3 +87,25 @@ pass2 一次性打包原始行数据（4 行 × lo/hi 或 O/E），2 级 zip/trn
 - docs/20 §6.8/§6.9（E-pack 经验与阴性实验）
 - 探针：experiments/m31-dct32-k0-sdot/probe_odd_slice.cpp、
   probe_k4_slice.cpp、probe_k0_epack.cpp
+
+## 2026-08-14 补充分析（当前数据流下 k0 链接近最优）
+
+对 pass2 k0 链（当前 63 ops/pack = pack 36 + e 链 12 + 置换 15）的
+逐段分析：
+
+1. **e 链（8 saddl + 4 add）是回绕约束的底线**：EE[j] = E[j]+E[15-j]
+   的 s32 精确计算要求 lo/hi 先加宽再加对；E-pack 的“单 saddl”依赖
+   先形成 s16 E（pass2 回绕，lite FAIL，§6.8）。
+2. **置换段（15 ops）已最优**：EEp/EOp 共享 v0/v1r 两个中间量
+   （uzp1d+uzp2d+revw_d64+add+sub = 5 ops 同时出两族）；尝试
+   `revw+add/sub+uzp1s` 路线（EEp 7 ops、EOp 需奇 lane 取反）只会
+   更贵。
+3. **s0/s1（w0±w2 的差）不被消费**：GCC 已 DCE，IR 里删除不改变
+   动态计数（无需改动）。
+4. **interleaved-W 思路（lo/rv 按行 zip 交错后 pack）**：可把
+   E[j]=lo[j]+rv[j] 变成相邻 lane 对，但 s16 相加仍回绕；s32 版需要
+   移位+saddl+跨行配对，操作数反超当前链。已否决。
+
+结论：**不换数据流就无法低于 ~83 ops/pack（pass2）**；共享打包
+（选项 B）必须同时服务 odd/k2/k4/k0 才能摊薄。实现前先做
+“s32 E 链共享派生”探针（用当前 e0..e3→EEp/EOp 作 oracle）。
