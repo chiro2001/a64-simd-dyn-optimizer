@@ -168,3 +168,25 @@ s16 sdot，k=0/4/8/12 保留 s32 路径。该轴保留在搜索空间但被代�
 
 剩余 197 差距的最新归因：pass2 奇数路径 2 行打包（-32 sdot）、mov/tbl
 结构性消除（-50~-80，需配合换位）、存储合并（-20）、窄化收敛（-24）。
+
+## 8. 内部 pass2 偶数路径结构解析（2026-08-14，剩余 60 差距的定位）
+
+内部 dct16 反汇编（仅本机分析，不入库）显示 pass2 偶数路径与我们的
+NEON T8E 路径结构不同：
+
+- **构建**：`zip1/zip2.d` 两级 8 zip + `revh`×2 后，用
+  `saddlb/saddlt`（s16→s32 宽化）×4、`.s` 级 `zip1/zip2`×4、
+  `revw`×2、`add/sub.s`×4、`uzp1/uzp2`×3、`revw`+`add/sub.s`×2，
+  一次性得到：O 行切片 s16（z24/z25）、EO s16 打包（z26，1 条 uzp1）、
+  EE'/EO' s32（z21/z22）；
+- **点积**：k=0/4/8/12 用 `mul.s`×4（EE'/EO' × 4 组常量）+ `addp`×2 +
+  `sqrshrnb`×2 + `uzp1` + `st1d`，每 16 输出约 **12 条**；我们的 NEON
+  T8E 路径（vaddl/rev32/EEE/EEO 构建 + vmul/vpadd/vqrshrn/vst1）每
+  16 输出约 **100 条**；
+- **顺带收益**：EO s16 打包（k=2/6/10/14 的 QEOW 等价物）只需 1 条
+  `uzp1`，我们当前是 vmovn + vcombine + 3 zip ≈ 11 条。
+
+实现方案（下一迭代轴 `pass2_even_sve`）：用内部同款 SVE 构建替换
+rowpair 的 NEON E00/E01/EEE/EEO 与 T8E 段，预计 **-40~-50**，使
+legacy 791 → ~745-755（逼近内部 731）。正确性以 200k 差分 + TestBench
+为准；注意 EE'/EO' 在 s32 域无回绕风险（与已否决的 s16 全 sdot 不同）。

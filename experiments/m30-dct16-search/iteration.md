@@ -616,3 +616,11 @@ pass1 打包换成内部同款 zip 构建：`zip1/zip2.d` 两级 8 zip + `revh z
 剩余差距 60：偶数路径 s32 NEON 段（~104 vs 内部 ~24）、movprfx
 （125 vs 112）、rev32 的 tbx 16。`best_sve2.*`/best.json 已按
 upstream+zip2（887）重新固化。
+
+### 内部 pass2 偶数路径解析（2026-08-14，剩余 60 的定位）
+
+内部用 `saddlb/saddlt` + `.s` 级 zip/revw 构建 s32 EE'/EO'，k=0/4/8/12
+用 4×`mul.s` + 2×`addp` + 窄化（每 16 输出 ~12 条）；我们 NEON T8E 段
+每 16 输出 ~100 条。且内部 EO s16 打包（QEOW 等价物）只需 1 条 uzp1。
+下一迭代实现 `pass2_even_sve` 轴（SVE s32 偶数路径，无回绕风险），
+预计 -40~-50。
