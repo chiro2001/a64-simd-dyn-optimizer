@@ -4,7 +4,7 @@
 
 | 风险 | 早期信号 | 缓解与硬门禁 |
 | --- | --- | --- |
-| 把现有 SIMD 实现误当完整规格 | roundtrip 自洽但与 C reference 边界 case 不一致 | scalar oracle + canonical contract；seed 只提供 layout/schedule |
+| 把现有 SIMD 实现误当完整规格 | roundtrip 自洽但与 C reference 边界 case 不一致 | canonical C oracle 仍是规格审计层；但候选接受门是替换目标上游 kernel 位级一致（A009），两者分离，不隐含等价 |
 | 位宽、signedness、饱和或舍入丢失 | 随机大值/高 bit-depth 才失败 | bit-vector IR、range proof、rounding boundary 节点、反例回灌 |
 | 允许了 x265 调用方不保证的 over-read/alignment | standalone 快、guard page 或真实 encode 崩溃 | 默认精确 footprint；precondition 必须审计所有调用点 |
 | 动态 trace 覆盖不全 | QEMU trace 没看到的分支在 fuzz 中失败 | trace 只调试；规格来自 contract/静态 lifting/oracle |
@@ -34,6 +34,7 @@
 | A006 | SMT + differential 双验证 | 形式证明与真实 object/oracle 互补 | solver 无法扩展时可 region 化，不能直接删除差分门禁 |
 | A007 | 256-bit SA8D target 分两档：920B=SVE1、N+2=SVE2.3 | 上游 SA8D 扩展实现位于 SVE2 路径；920B 实测无 sve2 flag | 当前候选只用 SVE1 基础指令，920B 可重建验证；N+2 按 SVE2.3 生成/门控；生成路径必须接入 TargetFeatures ISA 门控，不能靠文件名/旧 hash 断言 |
 | A008 | 实机 latency/throughput 是最终成本 | 指令数与静态模型不足 | 无；可换实机 workload，但不以 QEMU 替换 |
+| A009 | 正确性合同 = `upstream-exact`：候选与被替换的开源 kernel（同档位 NEON/SVE）位级一致 | 用户 2026-08-13 决定：候选注入 x265 后编码行为不得改变；上游与 C 的已知分歧（如 DCT16 SVE 0.000188%）是行为合同而非缺陷；C oracle 只作算法/规格审计 | 产品要求复现旧 bitstream 时另立 legacy 合同族；目标档位无上游实现时退回 c-exact |
 
 ## 3. 必做技术 spike 与判定
 

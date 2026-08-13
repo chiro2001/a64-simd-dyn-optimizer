@@ -59,8 +59,9 @@ load/sext(load) 的 lane。逐 op 传播：
 2. 项数多 → 不触发（避免 NEON128 的稠密亏损）；
 3. 项数 = 预算边界由搜索枚举（`--rewrite linearize_max_terms=N`）。
 
-正确性门：rewrite 输出必须过 C-exact 差分（上游 dct16 0.0045% 分歧是
-已知潜在缺陷，候选以 C 为准）；指令数门：shuffle 计数下降且总 SIMD+load
+正确性门：rewrite 输出必须过**上游位级一致**差分（2026-08-13 用户决定：
+候选与被替换的开源 kernel 一致即可，不需要完全对应 C ref；C oracle
+只作算法/规格审计）；指令数门：shuffle 计数下降且总 SIMD+load
 不显著上升；实机门：N1/920B 双口径 paired（NEON 后端），N+2 接入后
 SVE256 后端复用同一 rewrite。
 
@@ -86,7 +87,7 @@ lane 追踪 → 共享矩阵检测）得到：
 待完成（发射）：把检测到的 C 与叶子自身 tbl 置换组合成全量 C'，对每个
 输出发射 `mul(C'_lo, raw_lo) + mul(C'_hi, raw_hi) + addp`；8 个奇数输出
 共享同一组 O，全部改写后 O 链成为死代码，64 个常量 tbl 整体消失；再走
-C-exact 差分 + 两机双口径实测。
+上游位级一致差分 + 两机双口径实测。
 
 ## 视图归一化 + 全量组合验证（2026-08-13）
 
@@ -176,8 +177,9 @@ kernels/dct16/sve_roundtrip_verify: cases=100000 lanes=25600000
   mismatches=48 rate=0.000188%   first-diff idx=18 want=2773 got=-2987
 ```
 
-上游 SVE kernel **接近但未达 C-exact**（0.000188% 分歧），我们的候选
-必须 0 分歧。动态指令流（固定 VL=256，同一输入，与 NEON trace 同口径）：
+上游 SVE kernel 与 C 参考存在约 0.000188% 分歧——2026-08-13 用户决定这
+属于行为合同（候选必须复现，而不是修正）。动态指令流（固定 VL=256，
+同一输入，与 NEON trace 同口径）：
 
 ```text
 dct16_neon: total=2075 vector=1553
@@ -187,9 +189,24 @@ dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
 即开源的 SVE 版仅靠 s16→s64 SDOT 替换就砍掉约 55% 向量指令，每输出约
 1.35 条。工具生成候选的目标基线从 NEON 1553 改为 **SVE 689**：纯 SVE256
 宽度（每 SDOT 处理 4 个输出而非 2 个）叠加常量预置换后，静态预算应低于
-689 且 C-exact，才值得进入 960 实机。
+689 且与上游 dct16_sve 位级一致，才值得进入 960 实机。
 
 ## 工具发射器 v1/v2 + 正确性反例（2026-08-13）
+
+### 合同修订（用户决定，2026-08-13）
+
+> 我认为只要和开源算子一致，就可以，不需要完全对应 c ref
+
+正确性合同从 `c-exact`（candidate == C 参考）改为 **`upstream-exact`**
+（candidate == 被替换的开源 kernel，位级一致）。影响：
+
+- C oracle 仍是算法/规格审计层，不再是默认接受门；
+- 上游 SVE 与 C 的 ~0.000188% 分歧成为行为合同的一部分，候选必须
+  复现而不是修正；
+- 因此 v2 的 pass2 叶子位宽要求以**上游实现**为准（E=s32、O=s16），
+  而不是以 C 的 int32 E/O 为准；
+- 文档落盘：docs/04-validation-benchmark.md V0.5、docs/08 ADR A009、
+  round-0007 decision 第 7 条标注取代。
 
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
@@ -204,21 +221,57 @@ dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
 - v2 通过 20 万例差分后仅 11 处与 C 分歧（5.5e-5/例）：
 
 ```text
-build/dct16_shared_verify 200000
+build/dct16_shared_verify 200000        # C 参考审计（合同修订前口径）
 dct16 sve2 shared mismatch stride=32 first-diff idx=9 want=-2270 got=1826
+
+build/dct16_sve_shared_verify 100000    # 接受门：上游 dct16_sve 位级一致
+cases=100000 lanes=25600000 mismatches=24 rate=0.000094%
 ```
 
-反例归因：**pass2 的 E/O 在 s16 域溢出**。pass2 输入是 pass1 系数
-（±32767），E=c[j]+c[15-j] 可达 ±65534；s16 叶子与 C 参考的 int32
-叶子分歧。上游 SVE kernel 同样在此处产生 0.000188% 分歧（其 pass2 O
-也是 s16）；我们的 C-exact 合同要求 0，因此该候选标记
-`rejected-correctness`（pass2 溢出反例已保存）。
+反例归因：**pass2 的 E 在 s16 域溢出**。pass2 输入是 pass1 系数
+（±32767），E=c[j]+c[15-j] 可达 ±65534；上游 pass2 的 E 是 s32
+（vaddl）、只有 O 是 s16。按 2026-08-13 修订后的合同（候选与替换目标
+上游 kernel 位级一致），该候选对 dct16_sve 差分 10 万例有 24 处分歧
+（0.000094%，首例 idx=9 want=-2270 got=1826），因此标记
+`rejected-correctness`（未与上游位级一致；反例已保存）。修复点很窄：
+**pass2 仅 E 拓宽到 s32，O 保持 s16（与上游一致）**。
 
-下一步（v3）：pass2 改为 s32 E/O 叶子（`svaddl/svsubl` 拓宽）+
-`smullb/smullt .s→.d` + 两次 `addp .d` 还原全点积，保持 C-exact；
-pass1 维持 s16 SDOT。指令预算：pass1 ≈ 640，pass2 ≈ 420（s32 点积
-约 6 条/输出），合计约 1060+，仍高于上游 689——该差距是下一轮搜索
-（k-blocking、pass 融合、常量常驻、NEON bridge 窄化变体）要消化的空间。
+下一步（v3）：pass2 仅 E 改为 s32 叶子（`svaddl/svsubl` 拓宽）+ s32
+点积，O 维持 s16 SDOT，保持与上游位级一致；pass1 维持 s16 E/O SDOT。
+指令预算：pass1 ≈ 640，pass2 ≈ 420+，合计约 1060+，仍高于上游 689——
+该差距是下一轮搜索（k-blocking、pass 融合、常量常驻、NEON bridge
+窄化变体）要消化的空间。
+
+### v3 结构发现：四分之一交错打包 + 常量四重复制（解释上游 689）
+
+上游 689 条向量指令的机制不是"每行一个 SDOT"，而是**跨行四分之一交错**：
+
+```text
+x = [O_i[0:4] | O_j[0:4] | O_k[0:4] | O_l[0:4]]   # 4 行各 4 元素
+y = [C[0:4] | C[0:4] | C[0:4] | C[0:4]]           # 常量四重复制
+SDOT .d -> [dot4_i, dot4_j, dot4_k, dot4_l]        # 4 行的同一部分积
+```
+
+8 元素叶子点积 = 2 个 sdot（低/高 4 元素）+ 1 个 addp = **3 条指令 /
+4 输出（0.75 条/输出）**；窄化+存储约 1.25 条/输出 → 全 kernel 静态
+预算约 2 条/输出（两遍约 1000 条），仍高于上游 689 中
+"dot+narrow ≈ 0.36 条/输出"的实测——说明上游还有跨 k 复用/常量常驻等
+额外收益（其 trace：sdot 72、addp 36、uzp1 44、rshrn 32、movi 72）。
+
+这条结构的工具化要点（v3 发射器参数）：
+
+1. 数据打包：4 行的 O/E 低/高 4 元素交错成 16-lane 寄存器（每 4 行
+   2 个包，跨 8 个 k 复用；打包成本约 12 条/4 行，摊销后 ~0.2/输出）；
+2. 常量：`C_lo` 与 `C_hi` 各四重复制（16-lane），运行期零 shuffle；
+3. 上游位级一致：pass1 用 s16 E/O；pass2 仅 E 需 s32（与上游 vaddl
+   一致，smull 变体约 2 条/输出），O 保持 s16（上游即 s16）；不同
+   位宽组合都要进搜索枚举；
+4. 窄化必须走 NEON bridge（SVE2 RSHRNB/RSHRNT 无法连续排布）。
+
+结论：v2 的"每行一个 sdot"结构被否决（dot+narrow ≈ 2.25 条/输出，
+两遍约 1300）；v3 改为四分之一交错打包 + 常量四重复制，静态预算
+约 2 条/输出（两遍约 1000 条），若加上跨 k 常量常驻与 pass 融合有望
+逼近或低于 689。下一轮以此为唯一主假设。
 
 ### 下一步（发射器设计要点，2026-08-13 交接）
 
@@ -236,6 +289,7 @@ tbl/rev 链可整体删除。发射器要解决的关键问题：
 3. **偶数路径**：24 个 splat-1 求和输出（EE/EO/EEE/EEO 共享）尚未进入
    当前 39 命中报告，发射器需补检测（`[1,1,1,1]` 常量向量当前被
    `shared_constant_matrix_outputs` 之外的路径覆盖）；
-4. 正确性门不变：QEMU C-exact；指令数门：以**上游 butterfly 动态流
+4. 正确性门（2026-08-13 修订）：QEMU 与替换目标（上游 NEON/SVE）位级
+   一致；指令数门：以**上游 butterfly 动态流
    1553 条向量指令**为基线，目标 2-3 条/输出（两遍约 1000-1300 条）；
    实机门：N1/920B paired。

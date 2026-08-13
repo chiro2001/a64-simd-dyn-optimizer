@@ -21,6 +21,8 @@
 验证前记录：
 
 - x265/optimizer commit 与 dirty status；
+- **correctness contract 字段**（`upstream-exact` / `c-exact` / `legacy-*`，
+  见 V0.5）；
 - candidate id、SpecIR/PackIR/MachineIR hash；
 - compiler/linker 版本与完整 flags；
 - target CPU、ISA features、SVE VL、bit depth；
@@ -28,6 +30,24 @@
 - corpus id、PRNG algorithm 与 seeds。
 
 未记录身份的结果只能用于本地调试，不能用于候选接受或性能目标报告。
+
+### V0.5：正确性合同选择（2026-08-13 修订）
+
+**默认合同是 `upstream-exact`：候选必须与它在 x265 dispatch 中替换的
+开源 kernel（同档位 NEON/SVE）位级一致。** 这是用户 2026-08-13 的明确
+决定：候选替换进 x265 后编码器行为不得改变，因此上游 kernel 与 C 参考
+之间已知的分歧（例如 DCT16 SVE 约 0.000188%）属于行为合同的一部分，
+候选必须复现，而不是修正。
+
+- C oracle 继续作为 canonical 规格来源和算法结构参考（SpecIR、
+  interpreter、range/rounding 审计），但**不是默认接受门**；
+- 只有当目标档位没有上游实现、或替换对象本身就是 C 参考时，才使用
+  `c-exact` 合同；
+- 产品若要求复现旧 ARM encoder bitstream，另立 `legacy-*` 合同族，
+  不与 `upstream-exact` / `c-exact` 混用；
+- 每轮 manifest 必须写明 contract 字段，禁止用“C-exact 更严格所以
+  upstream-exact 自动成立”之类的隐含推断替代实测——两个合同的
+  通过/失败集合不同，必须分别跑差分。
 
 ### V1：静态 IR verifier
 
@@ -55,10 +75,10 @@
 比较四个层次（存在时）：
 
 ```text
-x265 C oracle == canonical SpecIR interpreter
-               == imported seed MachineIR interpreter
-               == projected PackIR semantic/layout checks
-               == generated candidate execution
+canonical SpecIR interpreter == imported seed MachineIR interpreter
+                             == projected PackIR semantic/layout checks
+目标上游 kernel（NEON/SVE） == generated candidate execution   ← 接受门
+C oracle 仅作算法/规格审计与 c-exact 合同的 fallback 参考
 ```
 
 测试集合分为：

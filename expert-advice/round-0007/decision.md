@@ -28,6 +28,10 @@
    分歧作为已知记录，不据此放宽；如产品需要 legacy-neon-exact，另建合同
    族，不与 C-exact 混用。
 
+> **2026-08-13 被用户决定取代**：正确性合同改为 `upstream-exact`——
+> 候选必须与它在 x265 dispatch 中替换的开源 kernel 位级一致；C oracle
+> 降级为算法/规格审计层。详见 docs/08-risks-and-decisions.md ADR A009。
+
 下一动作排序：
 1. 把 M15 proto_b 的 C-exact 结构（2 深 MLA 归约）移植到 DCT8 双块 SVE256
    pack，作为 P1/P2 交界的最优先静态候选（当前 x2 按上游结构移植，
