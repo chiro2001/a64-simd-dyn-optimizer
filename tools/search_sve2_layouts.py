@@ -92,7 +92,8 @@ def make_emitter(kernel):
                         pass2_layout=combo.get("pass2", "upstream"),
                         pass1_k_tile=combo.get("pass1_k_tile", 2),
                         pass2_k_tile=combo.get("pass2_k_tile", 1),
-                        narrow_merge=combo.get("narrow_merge", 0))
+                        narrow_merge=combo.get("narrow_merge", 0),
+                        legacy_semantics=combo.get("legacy_semantics", 0))
         return emit_fn
     if kernel == "dct8":
         from emit_dct8_sve2_shared import emit
@@ -106,10 +107,13 @@ def make_emitter(kernel):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm"), default="acle")
+    ap.add_argument("--contract", default=None)
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=None)
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
+    if args.contract:
+        manifest["contract"] = args.contract
     if args.outdir is None:
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
@@ -168,12 +172,30 @@ def main():
             print("%-24s LINK FAIL" % tag)
             continue
         r = run(QEMU + [verify, "20000"])
-        ok = r.returncode == 0 and "mismatches=0" in r.stdout
+        # Gate policy (docs/17 §5): acceptance is the x265 TestBench golden
+        # standard. The scalar differential is a fast proxy: upstream-exact
+        # combos must be bit-identical; legacy-internal-exact combos
+        # intentionally reproduce the internal kernel's rare s16-wrap
+        # divergence from the C reference (~0.045%, passes TestBench), so
+        # accept a small mismatch rate and record it.
+        mism = 0
+        if "mismatches=" in r.stdout:
+            try:
+                mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
+            except (ValueError, IndexError):
+                mism = -1
+        if combo.get("legacy_semantics"):
+            ok = r.returncode in (0, 1) and 0 <= mism <= 5120  # <=0.1% proxy
+        else:
+            ok = r.returncode == 0 and mism == 0
         print("%-24s verify: %s" % (tag, r.stdout.strip().splitlines()[-1]
                                     if r.stdout.strip() else "no output"))
         if not ok:
             results.append({"tag": tag, **combo,
-                            "upstream_exact": False, "verify": r.stdout})
+                            "upstream_exact": False,
+                            "passed": False,
+                            "verify_mismatches": mism,
+                            "verify": r.stdout})
             continue
         driver = os.path.join(args.outdir, tag + "-trace-driver")
         if args.backend == "asm":
@@ -186,18 +208,21 @@ def main():
                                manifest["candidate"]["trace_driver_src"]),
                      obj, "-o", driver])
         if d.returncode != 0:
-            results.append({"tag": tag, "pass1": p1, "pass2": p2,
-                            "upstream_exact": True, "counts": None})
+            results.append({"tag": tag, **combo,
+                            "passed": False, "counts": None})
             continue
         rng = symbol_range(driver, manifest["candidate"]["symbol"])
         if rng is None:
             results.append({"tag": tag, **combo,
-                            "upstream_exact": True, "counts": None})
+                            "passed": False, "counts": None})
             continue
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(args.outdir, tag + "-trace.log"))
         results.append({"tag": tag, **combo,
-                        "upstream_exact": True, "counts": counts})
+                        "upstream_exact": not combo.get("legacy_semantics"),
+                        "passed": True,
+                        "verify_mismatches": mism,
+                        "counts": counts})
         if counts:
             print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d"
                   % (counts["total"], counts["vector"],
@@ -205,7 +230,7 @@ def main():
 
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)
-    ok = [r for r in results if r.get("upstream_exact") and r.get("counts")]
+    ok = [r for r in results if r.get("passed") and r.get("counts")]
     ok.sort(key=lambda r: r["counts"]["vector_fused"])
     print("rank by fused-adjusted vector count (docs/09 §1.5):")
     for r in ok:

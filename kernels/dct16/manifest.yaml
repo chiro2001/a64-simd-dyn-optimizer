@@ -39,3 +39,4 @@ layouts:
   pass2: [upstream, odd-quarter]
   pass2_k_tile: [1, 2]
   narrow_merge: [0, 1]
+  legacy_semantics: [0, 1]

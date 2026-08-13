@@ -84,6 +84,10 @@
 - x265 本构建因缺 `arm_neon_sve_bridge.h` 禁用 SVE/SVE2 编译，`--cpuid
   SVE2` 无效，门禁用 `NEON,Neon_DotProd,Neon_I8MM` 标签；注入的函数仍为
   SVE2 候选，QEMU `-cpu max,sve-max-vq=2` 下以 VL=256 真实执行。
+- `search_sve2_layouts.py --contract legacy-internal-exact`：legacy 组合
+  按 TestBench 口径接受 `mismatches <= 5120`（<=0.1% 代理容差）并记录
+  实际分歧率；upstream-exact 组合仍要求 0 分歧。指标 `fused_adj` 只含
+  movprfx 融合，其他融合对尚未实现。
 
 ## 3. 现状判定
 

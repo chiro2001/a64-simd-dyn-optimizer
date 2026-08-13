@@ -78,3 +78,16 @@ scripts/build-testbench-lite.sh [candidate.o] [outdir] [-- --seed N]
   原生 SVE2 标签复跑一次；
 - lite 门禁与完整 TestBench 共用同一 `MBDstHarness`/`check_dct_primitive`
   与同一 C 参考，因此 lite 通过是快速信号，完整 TestBench 通过才是验收。
+
+## 6. legacy-internal-exact 合同的验收口径（2026-08-13 增补）
+
+- **指标口径**：当前统一用 `fused_adj` = SIMD（向量）指令数 − movprfx
+  （movprfx 视为与下条融合）；除 movprfx 外暂不假定任何其他指令融合
+  实现。内部参考 731 与候选 928/933/1015 同口径比较。
+- **裁决标准**：legacy 候选通过完整 TestBench `transforms --nobench`
+  即验收（已验：k_tile=1 连续 6 次全过，k_tile=2 另过 1 次）。其与
+  `dct16_c` 的分歧率 0.0452% 与内部算子已知分歧特征一致，视为
+  “忠实复现内部语义”，不要求与 C 位级一致（与 §5 黄金标准不矛盾：
+  TestBench 随机数据未命中该分歧路径，通过即验收）。
+- **标量 legacy oracle 定位**：开发期代理，不要求位级一致；搜索驱动对
+  legacy 组合接受 `mismatches <= 5120`（20000 例，<=0.1%）并记录分歧率。

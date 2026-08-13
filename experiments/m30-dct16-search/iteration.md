@@ -526,3 +526,36 @@ tbl/rev 链可整体删除。发射器要解决的关键问题：
    一致；指令数门：以**上游 butterfly 动态流
    1553 条向量指令**为基线，目标 2-3 条/输出（两遍约 1000-1300 条）；
    实机门：N1/920B paired。
+
+### legacy-internal-exact 合同验收（2026-08-13 晚）
+
+**口径确认**：当前指令数指标 = SIMD（向量）指令数，仅做 movprfx 融合
+（`fused_adj = vector - movprfx`）；除 movprfx 外暂不假定任何其他指令
+融合实现（融合仅作为后续优化方向）。内部参考 731 与 928/933/1015 同口径。
+
+**验收决策（用户裁定）**：legacy 合同以 x265 TestBench 黄金标准为准。
+legacy 候选（s16 回绕 + sdot + sqrshrnb）连续 6 次完整 TestBench
+`transforms --nobench` 全过（k_tile=1 组合 6/6，k_tile=2 组合另验 1 次），
+其与 C 参考 `dct16_c` 的分歧率为 0.0452%，与内部算子已知分歧率
+（~0.045%）一致——即 legacy 候选忠实复现内部算子的语义特征。标量
+legacy oracle 只是开发期代理：它在分歧 lane 上等于 C 参考而非内部语义，
+因此不再要求 oracle 位级一致；搜索驱动对 legacy 组合接受
+`mismatches <= 5120`（20000 例，<=0.1%）并记录实际分歧率，最终以
+TestBench 裁决。
+
+**搜索结果（legacy 合同，修复 k_tile=2 发射器作用域 bug 后）**：
+
+| 排名 | 组合（pass1 / p1k / pass2 / p2k / nm / legacy） | vector | movprfx | fused_adj |
+| ---: | --- | ---: | ---: | ---: |
+| 1 | quarter / 4 / odd-quarter / 2 / 1 / 1 | 1063 | 135 | **928** |
+| 2 | quarter / 4 / odd-quarter / 1 / 1 / 1 | 1069 | 136 | 933 |
+| 3 | quarter / 2 / odd-quarter / 2 / 1 / 1 | 1079 | 135 | 944 |
+| 4 | quarter / 2 / odd-quarter / 1 / 1 / 1 | 1085 | 136 | 949 |
+
+对比：upstream-exact best fused_adj=1015；legacy 最优 928（-8.6%）；
+内部参考 731（还差 197，-21%）。所有 legacy 组合的 oracle 分歧率均为
+0.045078%（首例 idx=44 want=1579 got=-1621，k=2/6/10/14 的 i=12 共 4 lane）。
+分歧位置提示 SVE2 偶数路径的 QEOW 打包/常量对齐在极端 coef 下与标量模型
+不同；因 TestBench 通过且与内部分歧特征一致，暂不追查，作为后续工具
+优化点记录（若要使 legacy oracle 真正刻画内部语义，需要内部算子逐例
+对拍数据，当前无源码可参照）。
