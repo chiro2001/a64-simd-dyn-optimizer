@@ -442,6 +442,10 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   TestBenchLite dct32 PASS——**不调用任何 grouped C++ 块的 op DAG
   codegen 已盲重发现 v3.1 计数**。`-fno-tree-pre` 计入 backend 编译
   契约（其余 flag 8307）。
+- **op 后端 + legacy_ex（2026-08-13）**：pass2 k2 也走 op DAG 的
+  EX sdot 路径（16/20.48M 分歧，同 grouped legacy 签名）→ full
+  **7979**（比 grouped legacy 7989 少 10），TestBenchLite PASS；
+  当前新 best（仍低于 v2 7190，但超过所有 v3 族）。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 

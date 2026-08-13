@@ -52,6 +52,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     odd_sdot = lo.get("odd_lowering", "sdot.d") == "sdot.d"
     narrow4 = lo.get("narrow_batch", 4) == 4
     k2_slice = bool(lo.get("pass1_k2_slice", 0))
+    legacy_ex = bool(lo.get("legacy_ex", 0))
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
@@ -110,7 +111,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                          attrs={"elem": "s32"})
                 eo[r] = new("sub", tid, "EO_%d" % r, (Ea.out, Erb.out),
                             attrs={"elem": "s32", "lane_owner": "partial"}).out
-                if k2_slice and pass_id == 1:
+                if (k2_slice and pass_id == 1) or (legacy_ex and pass_id == 2):
                     E16 = new("add", tid, "E16_%d" % r, (lo_v.out, rv.out),
                               attrs={"elem": "s16"})
                     E16r = new("rev", tid, "E16r_%d" % r, (E16.out,),
@@ -181,7 +182,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                "lanes": tuple((pass_id, k, r) for r in rows),
                                "topology": "contiguous"})
             # ---- k2 ----
-            if pass_id == 1 and k2_slice:
+            if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
                 tid = "p%d.k2.slice" % pass_id
                 ex = []
                 for m in range(2):
