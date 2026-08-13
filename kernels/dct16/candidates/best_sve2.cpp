@@ -454,38 +454,38 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             const svint16_t x1_0 = (kb + 0 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo0);
             d_0 = svdot_s64(d_0, x1_0, cq_hi0);
-            const svint32_t w_0 = svuzp1_s32(
-                svreinterpret_s32_s64(d_0), svreinterpret_s32_s64(d_0));
-            svint16_t n_0 = svrshrnb_n_s32(w_0, shift);
-            n_0 = svuzp1_s16(n_0, n_0);
-            svst1_s16(p4h, dst + 16 * (kb + 0) + 0, n_0);
+
             const svint16_t x0_1 = (kb + 0 & 1) ? QO0_1 : QE0_1;
             const svint16_t x1_1 = (kb + 0 & 1) ? QO1_1 : QE1_1;
             svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo0);
             d_1 = svdot_s64(d_1, x1_1, cq_hi0);
-            const svint32_t w_1 = svuzp1_s32(
-                svreinterpret_s32_s64(d_1), svreinterpret_s32_s64(d_1));
-            svint16_t n_1 = svrshrnb_n_s32(w_1, shift);
-            n_1 = svuzp1_s16(n_1, n_1);
-            svst1_s16(p4h, dst + 16 * (kb + 0) + 4, n_1);
+
             const svint16_t x0_2 = (kb + 0 & 1) ? QO0_2 : QE0_2;
             const svint16_t x1_2 = (kb + 0 & 1) ? QO1_2 : QE1_2;
             svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo0);
             d_2 = svdot_s64(d_2, x1_2, cq_hi0);
-            const svint32_t w_2 = svuzp1_s32(
-                svreinterpret_s32_s64(d_2), svreinterpret_s32_s64(d_2));
-            svint16_t n_2 = svrshrnb_n_s32(w_2, shift);
-            n_2 = svuzp1_s16(n_2, n_2);
-            svst1_s16(p4h, dst + 16 * (kb + 0) + 8, n_2);
+
             const svint16_t x0_3 = (kb + 0 & 1) ? QO0_3 : QE0_3;
             const svint16_t x1_3 = (kb + 0 & 1) ? QO1_3 : QE1_3;
             svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo0);
             d_3 = svdot_s64(d_3, x1_3, cq_hi0);
-            const svint32_t w_3 = svuzp1_s32(
-                svreinterpret_s32_s64(d_3), svreinterpret_s32_s64(d_3));
-            svint16_t n_3 = svrshrnb_n_s32(w_3, shift);
-            n_3 = svuzp1_s16(n_3, n_3);
-            svst1_s16(p4h, dst + 16 * (kb + 0) + 12, n_3);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 0) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 0) + 8, n);
+            }
         }
 {
         const svint16_t cq_lo1 = svld1_s16(p16, CQ_LO[kb + 1]);
@@ -495,38 +495,38 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             const svint16_t x1_0 = (kb + 1 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo1);
             d_0 = svdot_s64(d_0, x1_0, cq_hi1);
-            const svint32_t w_0 = svuzp1_s32(
-                svreinterpret_s32_s64(d_0), svreinterpret_s32_s64(d_0));
-            svint16_t n_0 = svrshrnb_n_s32(w_0, shift);
-            n_0 = svuzp1_s16(n_0, n_0);
-            svst1_s16(p4h, dst + 16 * (kb + 1) + 0, n_0);
+
             const svint16_t x0_1 = (kb + 1 & 1) ? QO0_1 : QE0_1;
             const svint16_t x1_1 = (kb + 1 & 1) ? QO1_1 : QE1_1;
             svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo1);
             d_1 = svdot_s64(d_1, x1_1, cq_hi1);
-            const svint32_t w_1 = svuzp1_s32(
-                svreinterpret_s32_s64(d_1), svreinterpret_s32_s64(d_1));
-            svint16_t n_1 = svrshrnb_n_s32(w_1, shift);
-            n_1 = svuzp1_s16(n_1, n_1);
-            svst1_s16(p4h, dst + 16 * (kb + 1) + 4, n_1);
+
             const svint16_t x0_2 = (kb + 1 & 1) ? QO0_2 : QE0_2;
             const svint16_t x1_2 = (kb + 1 & 1) ? QO1_2 : QE1_2;
             svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo1);
             d_2 = svdot_s64(d_2, x1_2, cq_hi1);
-            const svint32_t w_2 = svuzp1_s32(
-                svreinterpret_s32_s64(d_2), svreinterpret_s32_s64(d_2));
-            svint16_t n_2 = svrshrnb_n_s32(w_2, shift);
-            n_2 = svuzp1_s16(n_2, n_2);
-            svst1_s16(p4h, dst + 16 * (kb + 1) + 8, n_2);
+
             const svint16_t x0_3 = (kb + 1 & 1) ? QO0_3 : QE0_3;
             const svint16_t x1_3 = (kb + 1 & 1) ? QO1_3 : QE1_3;
             svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo1);
             d_3 = svdot_s64(d_3, x1_3, cq_hi1);
-            const svint32_t w_3 = svuzp1_s32(
-                svreinterpret_s32_s64(d_3), svreinterpret_s32_s64(d_3));
-            svint16_t n_3 = svrshrnb_n_s32(w_3, shift);
-            n_3 = svuzp1_s16(n_3, n_3);
-            svst1_s16(p4h, dst + 16 * (kb + 1) + 12, n_3);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 1) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 1) + 8, n);
+            }
         }
 {
         const svint16_t cq_lo2 = svld1_s16(p16, CQ_LO[kb + 2]);
@@ -536,38 +536,38 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             const svint16_t x1_0 = (kb + 2 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo2);
             d_0 = svdot_s64(d_0, x1_0, cq_hi2);
-            const svint32_t w_0 = svuzp1_s32(
-                svreinterpret_s32_s64(d_0), svreinterpret_s32_s64(d_0));
-            svint16_t n_0 = svrshrnb_n_s32(w_0, shift);
-            n_0 = svuzp1_s16(n_0, n_0);
-            svst1_s16(p4h, dst + 16 * (kb + 2) + 0, n_0);
+
             const svint16_t x0_1 = (kb + 2 & 1) ? QO0_1 : QE0_1;
             const svint16_t x1_1 = (kb + 2 & 1) ? QO1_1 : QE1_1;
             svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo2);
             d_1 = svdot_s64(d_1, x1_1, cq_hi2);
-            const svint32_t w_1 = svuzp1_s32(
-                svreinterpret_s32_s64(d_1), svreinterpret_s32_s64(d_1));
-            svint16_t n_1 = svrshrnb_n_s32(w_1, shift);
-            n_1 = svuzp1_s16(n_1, n_1);
-            svst1_s16(p4h, dst + 16 * (kb + 2) + 4, n_1);
+
             const svint16_t x0_2 = (kb + 2 & 1) ? QO0_2 : QE0_2;
             const svint16_t x1_2 = (kb + 2 & 1) ? QO1_2 : QE1_2;
             svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo2);
             d_2 = svdot_s64(d_2, x1_2, cq_hi2);
-            const svint32_t w_2 = svuzp1_s32(
-                svreinterpret_s32_s64(d_2), svreinterpret_s32_s64(d_2));
-            svint16_t n_2 = svrshrnb_n_s32(w_2, shift);
-            n_2 = svuzp1_s16(n_2, n_2);
-            svst1_s16(p4h, dst + 16 * (kb + 2) + 8, n_2);
+
             const svint16_t x0_3 = (kb + 2 & 1) ? QO0_3 : QE0_3;
             const svint16_t x1_3 = (kb + 2 & 1) ? QO1_3 : QE1_3;
             svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo2);
             d_3 = svdot_s64(d_3, x1_3, cq_hi2);
-            const svint32_t w_3 = svuzp1_s32(
-                svreinterpret_s32_s64(d_3), svreinterpret_s32_s64(d_3));
-            svint16_t n_3 = svrshrnb_n_s32(w_3, shift);
-            n_3 = svuzp1_s16(n_3, n_3);
-            svst1_s16(p4h, dst + 16 * (kb + 2) + 12, n_3);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 2) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 2) + 8, n);
+            }
         }
 {
         const svint16_t cq_lo3 = svld1_s16(p16, CQ_LO[kb + 3]);
@@ -577,38 +577,38 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             const svint16_t x1_0 = (kb + 3 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo3);
             d_0 = svdot_s64(d_0, x1_0, cq_hi3);
-            const svint32_t w_0 = svuzp1_s32(
-                svreinterpret_s32_s64(d_0), svreinterpret_s32_s64(d_0));
-            svint16_t n_0 = svrshrnb_n_s32(w_0, shift);
-            n_0 = svuzp1_s16(n_0, n_0);
-            svst1_s16(p4h, dst + 16 * (kb + 3) + 0, n_0);
+
             const svint16_t x0_1 = (kb + 3 & 1) ? QO0_1 : QE0_1;
             const svint16_t x1_1 = (kb + 3 & 1) ? QO1_1 : QE1_1;
             svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo3);
             d_1 = svdot_s64(d_1, x1_1, cq_hi3);
-            const svint32_t w_1 = svuzp1_s32(
-                svreinterpret_s32_s64(d_1), svreinterpret_s32_s64(d_1));
-            svint16_t n_1 = svrshrnb_n_s32(w_1, shift);
-            n_1 = svuzp1_s16(n_1, n_1);
-            svst1_s16(p4h, dst + 16 * (kb + 3) + 4, n_1);
+
             const svint16_t x0_2 = (kb + 3 & 1) ? QO0_2 : QE0_2;
             const svint16_t x1_2 = (kb + 3 & 1) ? QO1_2 : QE1_2;
             svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo3);
             d_2 = svdot_s64(d_2, x1_2, cq_hi3);
-            const svint32_t w_2 = svuzp1_s32(
-                svreinterpret_s32_s64(d_2), svreinterpret_s32_s64(d_2));
-            svint16_t n_2 = svrshrnb_n_s32(w_2, shift);
-            n_2 = svuzp1_s16(n_2, n_2);
-            svst1_s16(p4h, dst + 16 * (kb + 3) + 8, n_2);
+
             const svint16_t x0_3 = (kb + 3 & 1) ? QO0_3 : QE0_3;
             const svint16_t x1_3 = (kb + 3 & 1) ? QO1_3 : QE1_3;
             svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo3);
             d_3 = svdot_s64(d_3, x1_3, cq_hi3);
-            const svint32_t w_3 = svuzp1_s32(
-                svreinterpret_s32_s64(d_3), svreinterpret_s32_s64(d_3));
-            svint16_t n_3 = svrshrnb_n_s32(w_3, shift);
-            n_3 = svuzp1_s16(n_3, n_3);
-            svst1_s16(p4h, dst + 16 * (kb + 3) + 12, n_3);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 3) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 3) + 8, n);
+            }
         }
     }
 
@@ -618,34 +618,40 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 {
     const int shift = 10;
     const int line = 16;
-
     const svbool_t p16q = svptrue_b16();
-    int32x4_t EO[16];
-    int32x4_t EEE[8];
-    int32x4_t EEO[8];
+    // odd k: quarter-interleaved O packs; even path interleaved per group.
+    const svbool_t p64q = svptrue_b64();
+    const svbool_t p4q = svwhilelt_b16(0, 4);
+    const svbool_t p8q = svwhilelt_b16(0, 8);
+    const svuint16_t iloq = svld1_u16(p16q, idx_lo);
+    const svuint16_t q0q = svld1_u16(p16q, idx_q0);
+    const svuint16_t q1q = svld1_u16(p16q, idx_q1);
+    const svuint16_t qsel = svld1_u16(p16q, idx_q0);
+    const svint64_t zaccq = svdup_n_s64(0);
 
-    svint16_t zO0;
-    svint16_t zO1;
-    svint16_t zO2;
-    svint16_t zO3;
-    svint16_t zO4;
-    svint16_t zO5;
-    svint16_t zO6;
-    svint16_t zO7;
-    svint16_t zO8;
-    svint16_t zO9;
-    svint16_t zO10;
-    svint16_t zO11;
-    svint16_t zO12;
-    svint16_t zO13;
-    svint16_t zO14;
-    svint16_t zO15;
+    svint16_t zO0, zO1, zO2, zO3, zO4, zO5, zO6, zO7;
+    svint16_t zO8, zO9, zO10, zO11, zO12, zO13, zO14, zO15;
+    svint16_t QO0_0, QO1_0, QO0_1, QO1_1, QO0_2, QO1_2, QO0_3, QO1_3;
+    svint16_t QEOW0, QEOW1, QEOW2, QEOW3;
+    int32x4_t EO_g0_0, EO_g0_1, EO_g0_2, EO_g0_3;
+    int32x4_t EEE_g0, EEE_g0_1, EEO_g0, EEO_g0_1;
+    int16x4_t EO16_g0_0, EO16_g0_1, EO16_g0_2, EO16_g0_3;
+    int32x4_t EO_g1_0, EO_g1_1, EO_g1_2, EO_g1_3;
+    int32x4_t EEE_g1, EEE_g1_1, EEO_g1, EEO_g1_1;
+    int16x4_t EO16_g1_0, EO16_g1_1, EO16_g1_2, EO16_g1_3;
+    int32x4_t EO_g2_0, EO_g2_1, EO_g2_2, EO_g2_3;
+    int32x4_t EEE_g2, EEE_g2_1, EEO_g2, EEO_g2_1;
+    int16x4_t EO16_g2_0, EO16_g2_1, EO16_g2_2, EO16_g2_3;
+    int32x4_t EO_g3_0, EO_g3_1, EO_g3_2, EO_g3_3;
+    int32x4_t EEE_g3, EEE_g3_1, EEO_g3, EEO_g3_1;
+    int16x4_t EO16_g3_0, EO16_g3_1, EO16_g3_2, EO16_g3_3;
+
+
         {
             const int16x8_t s0_lo = vld1q_s16(src + 0 * line);
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 0 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 1 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 1 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -660,9 +666,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO1 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[0 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[0 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g0_0 = vsubq_s32(E00, rev32(E01));
+            EO_g0_1 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -671,9 +676,11 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g0 = vaddq_s32(t0, t1);
+            EEO_g0 = vsubq_s32(t0, t1);
+            EO16_g0_0 = vmovn_s32(EO_g0_0);
+            EO16_g0_1 = vmovn_s32(EO_g0_1);
 
-            EEE[0] = vaddq_s32(t0, t1);
-            EEO[0] = vsubq_s32(t0, t1);
         }
 
         {
@@ -681,7 +688,6 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 2 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 3 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 3 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -696,9 +702,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO3 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[2 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[2 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g0_2 = vsubq_s32(E00, rev32(E01));
+            EO_g0_3 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -707,17 +712,60 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g0_1 = vaddq_s32(t0, t1);
+            EEO_g0_1 = vsubq_s32(t0, t1);
+            EO16_g0_2 = vmovn_s32(EO_g0_2);
+            EO16_g0_3 = vmovn_s32(EO_g0_3);
 
-            EEE[1] = vaddq_s32(t0, t1);
-            EEO[1] = vsubq_s32(t0, t1);
         }
 
+        for (int k = 2; k < 16; k += 4)
+        {
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO_g0_0);
+            const int32x4_t t1 = vmulq_s32(c0, EO_g0_1);
+            const int32x4_t t2 = vmulq_s32(c0, EO_g0_2);
+            const int32x4_t t3 = vmulq_s32(c0, EO_g0_3);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + 0, res);
+        }
+        {
+            const int32x4_t c0 = vld1q_s32(T8E[0]);
+            const int32x4_t c4 = vld1q_s32(T8E[1]);
+            const int32x4_t c8 = vld1q_s32(T8E[2]);
+            const int32x4_t c12 = vld1q_s32(T8E[3]);
+            const int32x4_t t0 = vpaddq_s32(EEE_g0, EEE_g0_1);
+            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+            vst1_s16(dst + 0 * line + 0, res0);
+            const int32x4_t t2 = vmulq_s32(c4, EEO_g0);
+            const int32x4_t t3 = vmulq_s32(c4, EEO_g0_1);
+            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+            vst1_s16(dst + 4 * line + 0, res4);
+            const int32x4_t t4 = vmulq_s32(c8, EEE_g0);
+            const int32x4_t t5 = vmulq_s32(c8, EEE_g0_1);
+            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+            vst1_s16(dst + 8 * line + 0, res8);
+            const int32x4_t t6 = vmulq_s32(c12, EEO_g0);
+            const int32x4_t t7 = vmulq_s32(c12, EEO_g0_1);
+            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+            vst1_s16(dst + 12 * line + 0, res12);
+        }
+
+        {
+            const svint16_t PO01 = svtbl2_s16(
+                svcreate2_s16(zO0, zO1), iloq);
+            const svint16_t PO23 = svtbl2_s16(
+                svcreate2_s16(zO2, zO3), iloq);
+            QO0_0 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0q);
+            QO1_0 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1q);
+        }
         {
             const int16x8_t s0_lo = vld1q_s16(src + 4 * line);
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 4 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 5 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 5 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -732,9 +780,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO5 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[4 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[4 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g1_0 = vsubq_s32(E00, rev32(E01));
+            EO_g1_1 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -743,9 +790,11 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g1 = vaddq_s32(t0, t1);
+            EEO_g1 = vsubq_s32(t0, t1);
+            EO16_g1_0 = vmovn_s32(EO_g1_0);
+            EO16_g1_1 = vmovn_s32(EO_g1_1);
 
-            EEE[2] = vaddq_s32(t0, t1);
-            EEO[2] = vsubq_s32(t0, t1);
         }
 
         {
@@ -753,7 +802,6 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 6 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 7 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 7 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -768,9 +816,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO7 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[6 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[6 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g1_2 = vsubq_s32(E00, rev32(E01));
+            EO_g1_3 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -779,17 +826,60 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g1_1 = vaddq_s32(t0, t1);
+            EEO_g1_1 = vsubq_s32(t0, t1);
+            EO16_g1_2 = vmovn_s32(EO_g1_2);
+            EO16_g1_3 = vmovn_s32(EO_g1_3);
 
-            EEE[3] = vaddq_s32(t0, t1);
-            EEO[3] = vsubq_s32(t0, t1);
         }
 
+        for (int k = 2; k < 16; k += 4)
+        {
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO_g1_0);
+            const int32x4_t t1 = vmulq_s32(c0, EO_g1_1);
+            const int32x4_t t2 = vmulq_s32(c0, EO_g1_2);
+            const int32x4_t t3 = vmulq_s32(c0, EO_g1_3);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + 4, res);
+        }
+        {
+            const int32x4_t c0 = vld1q_s32(T8E[0]);
+            const int32x4_t c4 = vld1q_s32(T8E[1]);
+            const int32x4_t c8 = vld1q_s32(T8E[2]);
+            const int32x4_t c12 = vld1q_s32(T8E[3]);
+            const int32x4_t t0 = vpaddq_s32(EEE_g1, EEE_g1_1);
+            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+            vst1_s16(dst + 0 * line + 4, res0);
+            const int32x4_t t2 = vmulq_s32(c4, EEO_g1);
+            const int32x4_t t3 = vmulq_s32(c4, EEO_g1_1);
+            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+            vst1_s16(dst + 4 * line + 4, res4);
+            const int32x4_t t4 = vmulq_s32(c8, EEE_g1);
+            const int32x4_t t5 = vmulq_s32(c8, EEE_g1_1);
+            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+            vst1_s16(dst + 8 * line + 4, res8);
+            const int32x4_t t6 = vmulq_s32(c12, EEO_g1);
+            const int32x4_t t7 = vmulq_s32(c12, EEO_g1_1);
+            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+            vst1_s16(dst + 12 * line + 4, res12);
+        }
+
+        {
+            const svint16_t PO01 = svtbl2_s16(
+                svcreate2_s16(zO4, zO5), iloq);
+            const svint16_t PO23 = svtbl2_s16(
+                svcreate2_s16(zO6, zO7), iloq);
+            QO0_1 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0q);
+            QO1_1 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1q);
+        }
         {
             const int16x8_t s0_lo = vld1q_s16(src + 8 * line);
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 8 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 9 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 9 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -804,9 +894,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO9 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[8 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[8 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g2_0 = vsubq_s32(E00, rev32(E01));
+            EO_g2_1 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -815,9 +904,11 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g2 = vaddq_s32(t0, t1);
+            EEO_g2 = vsubq_s32(t0, t1);
+            EO16_g2_0 = vmovn_s32(EO_g2_0);
+            EO16_g2_1 = vmovn_s32(EO_g2_1);
 
-            EEE[4] = vaddq_s32(t0, t1);
-            EEO[4] = vsubq_s32(t0, t1);
         }
 
         {
@@ -825,7 +916,6 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 10 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 11 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 11 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -840,9 +930,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO11 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[10 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[10 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g2_2 = vsubq_s32(E00, rev32(E01));
+            EO_g2_3 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -851,17 +940,60 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g2_1 = vaddq_s32(t0, t1);
+            EEO_g2_1 = vsubq_s32(t0, t1);
+            EO16_g2_2 = vmovn_s32(EO_g2_2);
+            EO16_g2_3 = vmovn_s32(EO_g2_3);
 
-            EEE[5] = vaddq_s32(t0, t1);
-            EEO[5] = vsubq_s32(t0, t1);
         }
 
+        for (int k = 2; k < 16; k += 4)
+        {
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO_g2_0);
+            const int32x4_t t1 = vmulq_s32(c0, EO_g2_1);
+            const int32x4_t t2 = vmulq_s32(c0, EO_g2_2);
+            const int32x4_t t3 = vmulq_s32(c0, EO_g2_3);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + 8, res);
+        }
+        {
+            const int32x4_t c0 = vld1q_s32(T8E[0]);
+            const int32x4_t c4 = vld1q_s32(T8E[1]);
+            const int32x4_t c8 = vld1q_s32(T8E[2]);
+            const int32x4_t c12 = vld1q_s32(T8E[3]);
+            const int32x4_t t0 = vpaddq_s32(EEE_g2, EEE_g2_1);
+            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+            vst1_s16(dst + 0 * line + 8, res0);
+            const int32x4_t t2 = vmulq_s32(c4, EEO_g2);
+            const int32x4_t t3 = vmulq_s32(c4, EEO_g2_1);
+            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+            vst1_s16(dst + 4 * line + 8, res4);
+            const int32x4_t t4 = vmulq_s32(c8, EEE_g2);
+            const int32x4_t t5 = vmulq_s32(c8, EEE_g2_1);
+            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+            vst1_s16(dst + 8 * line + 8, res8);
+            const int32x4_t t6 = vmulq_s32(c12, EEO_g2);
+            const int32x4_t t7 = vmulq_s32(c12, EEO_g2_1);
+            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+            vst1_s16(dst + 12 * line + 8, res12);
+        }
+
+        {
+            const svint16_t PO01 = svtbl2_s16(
+                svcreate2_s16(zO8, zO9), iloq);
+            const svint16_t PO23 = svtbl2_s16(
+                svcreate2_s16(zO10, zO11), iloq);
+            QO0_2 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0q);
+            QO1_2 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1q);
+        }
         {
             const int16x8_t s0_lo = vld1q_s16(src + 12 * line);
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 12 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 13 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 13 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -876,9 +1008,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO13 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[12 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[12 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g3_0 = vsubq_s32(E00, rev32(E01));
+            EO_g3_1 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -887,9 +1018,11 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g3 = vaddq_s32(t0, t1);
+            EEO_g3 = vsubq_s32(t0, t1);
+            EO16_g3_0 = vmovn_s32(EO_g3_0);
+            EO16_g3_1 = vmovn_s32(EO_g3_1);
 
-            EEE[6] = vaddq_s32(t0, t1);
-            EEO[6] = vsubq_s32(t0, t1);
         }
 
         {
@@ -897,7 +1030,6 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 14 * line + 8));
             const int16x8_t s1_lo = vld1q_s16(src + 15 * line);
             const int16x8_t s1_hi = rev16(vld1q_s16(src + 15 * line + 8));
-
             const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
                                             vget_low_s16(s0_hi));
             const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
@@ -912,9 +1044,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             zO15 = svsub_s16_x(p16q,
                 svset_neonq_s16(svundef_s16(), s1_lo),
                 svset_neonq_s16(svundef_s16(), s1_hi));
-            EO[14 + 0] = vsubq_s32(E00, rev32(E01));
-            EO[14 + 1] = vsubq_s32(E10, rev32(E11));
-
+            EO_g3_2 = vsubq_s32(E00, rev32(E01));
+            EO_g3_3 = vsubq_s32(E10, rev32(E11));
             const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
             const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
             const int32x4_t t0 = vreinterpretq_s32_s64(
@@ -923,264 +1054,91 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
             const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
                 vzip2q_s64(vreinterpretq_s64_s32(EE0),
                            vreinterpretq_s64_s32(EE1))));
+            EEE_g3_1 = vaddq_s32(t0, t1);
+            EEO_g3_1 = vsubq_s32(t0, t1);
+            EO16_g3_2 = vmovn_s32(EO_g3_2);
+            EO16_g3_3 = vmovn_s32(EO_g3_3);
 
-            EEE[7] = vaddq_s32(t0, t1);
-            EEO[7] = vsubq_s32(t0, t1);
         }
 
-    // odd k: quarter-interleaved O packs, 2 SDOT + 1 aligned add per k.
-    const svbool_t p64q = svptrue_b64();
-    const svbool_t p4q = svwhilelt_b16(0, 4);
-    const svbool_t p8q = svwhilelt_b16(0, 8);
-    const svuint16_t iloq = svld1_u16(p16q, idx_lo);
-    const svuint16_t q0q = svld1_u16(p16q, idx_q0);
-    const svuint16_t q1q = svld1_u16(p16q, idx_q1);
-    const svint64_t zaccq = svdup_n_s64(0);
-
-
+        for (int k = 2; k < 16; k += 4)
         {
-            const svint16_t PO01 = svtbl2_s16(
-                svcreate2_s16(zO0, zO1), iloq);
-            const svint16_t PO23 = svtbl2_s16(
-                svcreate2_s16(zO2, zO3), iloq);
-            const svint16_t QO0_0 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q0q);
-            const svint16_t QO1_0 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q1q);
-        for (int kb = 1; kb < 16; kb += 2)
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO_g3_0);
+            const int32x4_t t1 = vmulq_s32(c0, EO_g3_1);
+            const int32x4_t t2 = vmulq_s32(c0, EO_g3_2);
+            const int32x4_t t3 = vmulq_s32(c0, EO_g3_3);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + 12, res);
+        }
         {
-            {
-                const svint16_t cq_loq0 = svld1_s16(p16q, CQ_LO[kb + 0]);
-                const svint16_t cq_hiq0 = svld1_s16(p16q, CQ_HI[kb + 0]);
-                svint64_t d_0_0 = svdot_s64(zaccq, QO0_0, cq_loq0);
-                d_0_0 = svdot_s64(d_0_0, QO1_0, cq_hiq0);
-                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(d_0_0),
-                                           svreinterpret_s32_s64(d_0_0));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p4q, dst + (kb + 0) * line + 0, n);
-            }
+            const int32x4_t c0 = vld1q_s32(T8E[0]);
+            const int32x4_t c4 = vld1q_s32(T8E[1]);
+            const int32x4_t c8 = vld1q_s32(T8E[2]);
+            const int32x4_t c12 = vld1q_s32(T8E[3]);
+            const int32x4_t t0 = vpaddq_s32(EEE_g3, EEE_g3_1);
+            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+            vst1_s16(dst + 0 * line + 12, res0);
+            const int32x4_t t2 = vmulq_s32(c4, EEO_g3);
+            const int32x4_t t3 = vmulq_s32(c4, EEO_g3_1);
+            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+            vst1_s16(dst + 4 * line + 12, res4);
+            const int32x4_t t4 = vmulq_s32(c8, EEE_g3);
+            const int32x4_t t5 = vmulq_s32(c8, EEE_g3_1);
+            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+            vst1_s16(dst + 8 * line + 12, res8);
+            const int32x4_t t6 = vmulq_s32(c12, EEO_g3);
+            const int32x4_t t7 = vmulq_s32(c12, EEO_g3_1);
+            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+            vst1_s16(dst + 12 * line + 12, res12);
         }
-        }
-
-
-        {
-            const svint16_t PO01 = svtbl2_s16(
-                svcreate2_s16(zO4, zO5), iloq);
-            const svint16_t PO23 = svtbl2_s16(
-                svcreate2_s16(zO6, zO7), iloq);
-            const svint16_t QO0_1 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q0q);
-            const svint16_t QO1_1 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q1q);
-        for (int kb = 1; kb < 16; kb += 2)
-        {
-            {
-                const svint16_t cq_loq0 = svld1_s16(p16q, CQ_LO[kb + 0]);
-                const svint16_t cq_hiq0 = svld1_s16(p16q, CQ_HI[kb + 0]);
-                svint64_t d_1_0 = svdot_s64(zaccq, QO0_1, cq_loq0);
-                d_1_0 = svdot_s64(d_1_0, QO1_1, cq_hiq0);
-                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(d_1_0),
-                                           svreinterpret_s32_s64(d_1_0));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p4q, dst + (kb + 0) * line + 4, n);
-            }
-        }
-        }
-
-
-        {
-            const svint16_t PO01 = svtbl2_s16(
-                svcreate2_s16(zO8, zO9), iloq);
-            const svint16_t PO23 = svtbl2_s16(
-                svcreate2_s16(zO10, zO11), iloq);
-            const svint16_t QO0_2 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q0q);
-            const svint16_t QO1_2 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q1q);
-        for (int kb = 1; kb < 16; kb += 2)
-        {
-            {
-                const svint16_t cq_loq0 = svld1_s16(p16q, CQ_LO[kb + 0]);
-                const svint16_t cq_hiq0 = svld1_s16(p16q, CQ_HI[kb + 0]);
-                svint64_t d_2_0 = svdot_s64(zaccq, QO0_2, cq_loq0);
-                d_2_0 = svdot_s64(d_2_0, QO1_2, cq_hiq0);
-                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(d_2_0),
-                                           svreinterpret_s32_s64(d_2_0));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p4q, dst + (kb + 0) * line + 8, n);
-            }
-        }
-        }
-
 
         {
             const svint16_t PO01 = svtbl2_s16(
                 svcreate2_s16(zO12, zO13), iloq);
             const svint16_t PO23 = svtbl2_s16(
                 svcreate2_s16(zO14, zO15), iloq);
-            const svint16_t QO0_3 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q0q);
-            const svint16_t QO1_3 = svtbl2_s16(
-                svcreate2_s16(PO01, PO23), q1q);
-        for (int kb = 1; kb < 16; kb += 2)
-        {
-            {
-                const svint16_t cq_loq0 = svld1_s16(p16q, CQ_LO[kb + 0]);
-                const svint16_t cq_hiq0 = svld1_s16(p16q, CQ_HI[kb + 0]);
+            QO0_3 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0q);
+            QO1_3 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1q);
+        }
+    for (int kb = 1; kb < 16; kb += 2)
+    {
+            const svint16_t cq_loq0 = svld1_s16(p16q, CQ_LO[kb + 0]);
+            const svint16_t cq_hiq0 = svld1_s16(p16q, CQ_HI[kb + 0]);
+
+            // k=kb + 0, groups 0..3
+                svint64_t d_0_0 = svdot_s64(zaccq, QO0_0, cq_loq0);
+                d_0_0 = svdot_s64(d_0_0, QO1_0, cq_hiq0);
+
+                svint64_t d_1_0 = svdot_s64(zaccq, QO0_1, cq_loq0);
+                d_1_0 = svdot_s64(d_1_0, QO1_1, cq_hiq0);
+
+                svint64_t d_2_0 = svdot_s64(zaccq, QO0_2, cq_loq0);
+                d_2_0 = svdot_s64(d_2_0, QO1_2, cq_hiq0);
+
                 svint64_t d_3_0 = svdot_s64(zaccq, QO0_3, cq_loq0);
                 d_3_0 = svdot_s64(d_3_0, QO1_3, cq_hiq0);
-                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(d_3_0),
-                                           svreinterpret_s32_s64(d_3_0));
-                svint16_t n = svrshrnb_n_s32(w, shift);
+
+
+            {
+                const svint32_t w01 = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0_0),
+                    svreinterpret_s32_s64(d_1_0));
+                svint16_t n = svrshrnb_n_s32(w01, shift);
                 n = svuzp1_s16(n, n);
-                svst1_s16(p4q, dst + (kb + 0) * line + 12, n);
+                svst1_s16(p8q, dst + (kb + 0) * line + 0, n);
             }
-        }
-        }
-
-
-        for (int k = 2; k < 16; k += 4)
-        {
-            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
-            const int32x4_t t0 = vmulq_s32(c0, EO[0 + 0]);
-            const int32x4_t t1 = vmulq_s32(c0, EO[0 + 1]);
-            const int32x4_t t2 = vmulq_s32(c0, EO[0 + 2]);
-            const int32x4_t t3 = vmulq_s32(c0, EO[0 + 3]);
-            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
-                                           vpaddq_s32(t2, t3));
-            const int16x4_t res = vrshrn_n_s32(t, shift);
-            vst1_s16(dst + k * line + 0, res);
-        }
-
-        {
-            const int32x4_t c0 = vld1q_s32(T8E[0]);
-            const int32x4_t c4 = vld1q_s32(T8E[1]);
-            const int32x4_t c8 = vld1q_s32(T8E[2]);
-            const int32x4_t c12 = vld1q_s32(T8E[3]);
-            const int32x4_t t0 = vpaddq_s32(EEE[0 + 0], EEE[0 + 1]);
-            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
-            vst1_s16(dst + 0 * line + 0, res0);
-            const int32x4_t t2 = vmulq_s32(c4, EEO[0 + 0]);
-            const int32x4_t t3 = vmulq_s32(c4, EEO[0 + 1]);
-            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
-            vst1_s16(dst + 4 * line + 0, res4);
-            const int32x4_t t4 = vmulq_s32(c8, EEE[0 + 0]);
-            const int32x4_t t5 = vmulq_s32(c8, EEE[0 + 1]);
-            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
-            vst1_s16(dst + 8 * line + 0, res8);
-            const int32x4_t t6 = vmulq_s32(c12, EEO[0 + 0]);
-            const int32x4_t t7 = vmulq_s32(c12, EEO[0 + 1]);
-            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
-            vst1_s16(dst + 12 * line + 0, res12);
-        }
-
-        for (int k = 2; k < 16; k += 4)
-        {
-            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
-            const int32x4_t t0 = vmulq_s32(c0, EO[4 + 0]);
-            const int32x4_t t1 = vmulq_s32(c0, EO[4 + 1]);
-            const int32x4_t t2 = vmulq_s32(c0, EO[4 + 2]);
-            const int32x4_t t3 = vmulq_s32(c0, EO[4 + 3]);
-            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
-                                           vpaddq_s32(t2, t3));
-            const int16x4_t res = vrshrn_n_s32(t, shift);
-            vst1_s16(dst + k * line + 4, res);
-        }
-
-        {
-            const int32x4_t c0 = vld1q_s32(T8E[0]);
-            const int32x4_t c4 = vld1q_s32(T8E[1]);
-            const int32x4_t c8 = vld1q_s32(T8E[2]);
-            const int32x4_t c12 = vld1q_s32(T8E[3]);
-            const int32x4_t t0 = vpaddq_s32(EEE[2 + 0], EEE[2 + 1]);
-            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
-            vst1_s16(dst + 0 * line + 4, res0);
-            const int32x4_t t2 = vmulq_s32(c4, EEO[2 + 0]);
-            const int32x4_t t3 = vmulq_s32(c4, EEO[2 + 1]);
-            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
-            vst1_s16(dst + 4 * line + 4, res4);
-            const int32x4_t t4 = vmulq_s32(c8, EEE[2 + 0]);
-            const int32x4_t t5 = vmulq_s32(c8, EEE[2 + 1]);
-            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
-            vst1_s16(dst + 8 * line + 4, res8);
-            const int32x4_t t6 = vmulq_s32(c12, EEO[2 + 0]);
-            const int32x4_t t7 = vmulq_s32(c12, EEO[2 + 1]);
-            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
-            vst1_s16(dst + 12 * line + 4, res12);
-        }
-
-        for (int k = 2; k < 16; k += 4)
-        {
-            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
-            const int32x4_t t0 = vmulq_s32(c0, EO[8 + 0]);
-            const int32x4_t t1 = vmulq_s32(c0, EO[8 + 1]);
-            const int32x4_t t2 = vmulq_s32(c0, EO[8 + 2]);
-            const int32x4_t t3 = vmulq_s32(c0, EO[8 + 3]);
-            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
-                                           vpaddq_s32(t2, t3));
-            const int16x4_t res = vrshrn_n_s32(t, shift);
-            vst1_s16(dst + k * line + 8, res);
-        }
-
-        {
-            const int32x4_t c0 = vld1q_s32(T8E[0]);
-            const int32x4_t c4 = vld1q_s32(T8E[1]);
-            const int32x4_t c8 = vld1q_s32(T8E[2]);
-            const int32x4_t c12 = vld1q_s32(T8E[3]);
-            const int32x4_t t0 = vpaddq_s32(EEE[4 + 0], EEE[4 + 1]);
-            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
-            vst1_s16(dst + 0 * line + 8, res0);
-            const int32x4_t t2 = vmulq_s32(c4, EEO[4 + 0]);
-            const int32x4_t t3 = vmulq_s32(c4, EEO[4 + 1]);
-            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
-            vst1_s16(dst + 4 * line + 8, res4);
-            const int32x4_t t4 = vmulq_s32(c8, EEE[4 + 0]);
-            const int32x4_t t5 = vmulq_s32(c8, EEE[4 + 1]);
-            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
-            vst1_s16(dst + 8 * line + 8, res8);
-            const int32x4_t t6 = vmulq_s32(c12, EEO[4 + 0]);
-            const int32x4_t t7 = vmulq_s32(c12, EEO[4 + 1]);
-            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
-            vst1_s16(dst + 12 * line + 8, res12);
-        }
-
-        for (int k = 2; k < 16; k += 4)
-        {
-            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
-            const int32x4_t t0 = vmulq_s32(c0, EO[12 + 0]);
-            const int32x4_t t1 = vmulq_s32(c0, EO[12 + 1]);
-            const int32x4_t t2 = vmulq_s32(c0, EO[12 + 2]);
-            const int32x4_t t3 = vmulq_s32(c0, EO[12 + 3]);
-            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
-                                           vpaddq_s32(t2, t3));
-            const int16x4_t res = vrshrn_n_s32(t, shift);
-            vst1_s16(dst + k * line + 12, res);
-        }
-
-        {
-            const int32x4_t c0 = vld1q_s32(T8E[0]);
-            const int32x4_t c4 = vld1q_s32(T8E[1]);
-            const int32x4_t c8 = vld1q_s32(T8E[2]);
-            const int32x4_t c12 = vld1q_s32(T8E[3]);
-            const int32x4_t t0 = vpaddq_s32(EEE[6 + 0], EEE[6 + 1]);
-            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
-            vst1_s16(dst + 0 * line + 12, res0);
-            const int32x4_t t2 = vmulq_s32(c4, EEO[6 + 0]);
-            const int32x4_t t3 = vmulq_s32(c4, EEO[6 + 1]);
-            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
-            vst1_s16(dst + 4 * line + 12, res4);
-            const int32x4_t t4 = vmulq_s32(c8, EEE[6 + 0]);
-            const int32x4_t t5 = vmulq_s32(c8, EEE[6 + 1]);
-            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
-            vst1_s16(dst + 8 * line + 12, res8);
-            const int32x4_t t6 = vmulq_s32(c12, EEO[6 + 0]);
-            const int32x4_t t7 = vmulq_s32(c12, EEO[6 + 1]);
-            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
-            vst1_s16(dst + 12 * line + 12, res12);
-        }
+            {
+                const svint32_t w23 = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2_0),
+                    svreinterpret_s32_s64(d_3_0));
+                svint16_t n2 = svrshrnb_n_s32(w23, shift);
+                n2 = svuzp1_s16(n2, n2);
+                svst1_s16(p8q, dst + (kb + 0) * line + 8, n2);
+            }
+    }
 }
 
 } // namespace
