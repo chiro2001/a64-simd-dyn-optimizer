@@ -865,6 +865,21 @@ def quarter_dot_group(g, kexpr, lo, hi):
            kexpr, 4 * g, g))
 
 
+def narrow_group(g, kexpr, dname):
+    """Narrow one 4-row group (pass1, 4-lane store)."""
+    return (
+        "            const svint32_t w_%d = svuzp1_s32(\n"
+        "                svreinterpret_s32_s64(%s),"
+        " svreinterpret_s32_s64(%s));\n"
+        "            svint16_t n_%d = svrshrnb_n_s32(w_%d, shift);\n"
+        "            n_%d = svuzp1_s16(n_%d, n_%d);\n"
+        "            svst1_s16(p4h, dst + 16 * (%s) + %d, n_%d);"
+        % (g, dname, dname,
+           g, g,
+           g, g, g,
+           kexpr, 4 * g, g))
+
+
 def quarter_dot_compute(g, kexpr, lo, hi):
     """4-row quarter dot without narrow/store (for merged narrow)."""
     return (
@@ -873,6 +888,13 @@ def quarter_dot_compute(g, kexpr, lo, hi):
         "            svint64_t d_%d = svdot_s64(zacc, x0_%d, %s);\n"
         "            d_%d = svdot_s64(d_%d, x1_%d, %s);\n"
         % (g, kexpr, g, g, g, kexpr, g, g, g, g, lo, g, g, g, hi))
+
+
+def quarter_dot_compute_factor(g, kexpr, lo, xname):
+    """4-row quarter dot using a pre-factored EE/EO pack and only CQ_LO."""
+    return (
+        "            svint64_t d_%d = svdot_s64(zacc, %s, %s);\n"
+        % (g, xname % g, lo))
 
 
 def merged_narrow(g0, g1, kexpr, row_base):
@@ -888,11 +910,22 @@ def merged_narrow(g0, g1, kexpr, row_base):
         "            }" % (g0, g1, kexpr, row_base))
 
 
-def quarter_pass_cpp(k_tile=2, narrow_merge=0):
+def quarter_pass_cpp(k_tile=2, narrow_merge=0, even_factor=0):
     """pass1 in quarter-interleaved layout (v3), k-loop tiled by k_tile."""
     blocks = []
+    extra_decls = ""
+    if even_factor:
+        extra_decls = "\n".join(
+            "    svint16_t EEF_%d, EOF_%d;" % (g, g) for g in range(4)) + "\n"
     for g in range(4):
         base = 4 * g
+        tail = ""
+        if even_factor:
+            tail = """\
+            const svint16_t QR1_%d = revh_d(QE1_%d);
+            EEF_%d = svadd_s16_x(p16, QE0_%d, QR1_%d);
+            EOF_%d = svsub_s16_x(p16, QE0_%d, QR1_%d);
+""" % (g, g, g, g, g, g, g, g)
         blocks.append("""\
         {
             const svint16_t z0 = svld1_s16(p16, src + %d * stride);
@@ -917,28 +950,89 @@ def quarter_pass_cpp(k_tile=2, narrow_merge=0):
             QE1_%d = svadd_s16_x(p16, P1, R1);
             QO0_%d = svsub_s16_x(p16, P0, R0);
             QO1_%d = svsub_s16_x(p16, P1, R1);
-        }""" % (base, base + 1, base + 2, base + 3, g, g, g, g))
+%s
+        }""" % (base, base + 1, base + 2, base + 3, g, g, g, g, tail))
     build_src = "\n".join(blocks)
     tiles = []
-    for t in range(k_tile):
-        kexpr = "kb + %d" % t
-        lo = "cq_lo%d" % t
-        hi = "cq_hi%d" % t
-        header = "        const svint16_t %s = svld1_s16(p16, CQ_LO[kb + %d]);\n" \
-                 "        const svint16_t %s = svld1_s16(p16, CQ_HI[kb + %d]);\n" \
-                 % (lo, t, hi, t)
+    if even_factor:
+        # symmetric even k (EE): k = 0, 4, 8, 12
+        header = ("        const svint16_t cq_lo = "
+                  "svld1_s16(p16, CQ_LO[kb]);\n")
+        body = "\n".join(
+            quarter_dot_compute_factor(g, "kb", "cq_lo", "EEF_%d")
+            for g in range(4))
         if narrow_merge:
+            body += "\n" + merged_narrow(0, 1, "kb", 0)
+            body += "\n" + merged_narrow(2, 3, "kb", 8)
+        else:
+            body += "\n" + "\n".join(
+                narrow_group(g, "kb", "d_%d" % g) for g in range(4))
+        dot_src = ("    for (int kb = 0; kb < 16; kb += 4)\n"
+                   "    {\n%s\n%s\n    }\n" % (header, body))
+        # antisymmetric even k (EO): k = 2, 6, 10, 14
+        body = "\n".join(
+            quarter_dot_compute_factor(g, "kb", "cq_lo", "EOF_%d")
+            for g in range(4))
+        if narrow_merge:
+            body += "\n" + merged_narrow(0, 1, "kb", 0)
+            body += "\n" + merged_narrow(2, 3, "kb", 8)
+        else:
+            body += "\n" + "\n".join(
+                narrow_group(g, "kb", "d_%d" % g) for g in range(4))
+        dot_src += ("    for (int kb = 2; kb < 16; kb += 4)\n"
+                    "    {\n%s\n%s\n    }\n" % (header, body))
+        # odd k loop: keep the k_tile tiling
+        tiles = []
+        for t in range(k_tile):
+            kexpr = "kb + %d" % (2 * t)
+            lo = "cq_lo%d" % t
+            hi = "cq_hi%d" % t
+            header = ("        const svint16_t %s = "
+                      "svld1_s16(p16, CQ_LO[%s]);\n"
+                      "        const svint16_t %s = "
+                      "svld1_s16(p16, CQ_HI[%s]);\n" % (lo, kexpr, hi, kexpr))
             body = "\n".join(quarter_dot_compute(g, kexpr, lo, hi)
                              for g in range(4))
-            body += "\n" + merged_narrow(0, 1, kexpr, 0)
-            body += "\n" + merged_narrow(2, 3, kexpr, 8)
-        else:
-            body = "\n".join(quarter_dot_group(g, kexpr, lo, hi)
-                             for g in range(4))
-        tiles.append("{\n%s\n%s\n        }" % (header, body))
-    dot_src = ("    for (int kb = 0; kb < 16; kb += %d)\n    {\n%s\n    }\n"
-               % (k_tile, "\n".join(tiles)))
+            if narrow_merge:
+                body += "\n" + merged_narrow(0, 1, kexpr, 0)
+                body += "\n" + merged_narrow(2, 3, kexpr, 8)
+            else:
+                body = "\n".join(quarter_dot_group(g, kexpr, lo, hi)
+                                 for g in range(4))
+            tiles.append("{\n%s\n%s\n        }" % (header, body))
+        dot_src += ("    for (int kb = 1; kb < 16; kb += %d)\n    {\n%s\n    }\n"
+                    % (2 * k_tile, "\n".join(tiles)))
+    else:
+        for t in range(k_tile):
+            kexpr = "kb + %d" % t
+            lo = "cq_lo%d" % t
+            hi = "cq_hi%d" % t
+            header = "        const svint16_t %s = svld1_s16(p16, CQ_LO[kb + %d]);\n" \
+                     "        const svint16_t %s = svld1_s16(p16, CQ_HI[kb + %d]);\n" \
+                     % (lo, t, hi, t)
+            if narrow_merge:
+                body = "\n".join(quarter_dot_compute(g, kexpr, lo, hi)
+                                 for g in range(4))
+                body += "\n" + merged_narrow(0, 1, kexpr, 0)
+                body += "\n" + merged_narrow(2, 3, kexpr, 8)
+            else:
+                body = "\n".join(quarter_dot_group(g, kexpr, lo, hi)
+                                 for g in range(4))
+            tiles.append("{\n%s\n%s\n        }" % (header, body))
+        dot_src = ("    for (int kb = 0; kb < 16; kb += %d)\n    {\n%s\n    }\n"
+                   % (k_tile, "\n".join(tiles)))
     return """\
+static inline svint16_t revh_d(svint16_t x)
+{
+    // SVE REVH with .d register view: reverse 16-bit lanes within each
+    // 64-bit element (per-row 4-lane reversal for EE/EO quarter packs).
+    svint16_t r;
+    asm volatile("revh %%[r].d, %%[p]/m, %%[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
 template <int shift>
 static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
@@ -956,10 +1050,11 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     svint16_t QE0_2, QE1_2, QO0_2, QO1_2;
     svint16_t QE0_3, QE1_3, QO0_3, QO1_3;
 %s
+%s
 
 %s
 }
-""" % (build_src, dot_src)
+""" % (extra_decls, build_src, dot_src)
 
 
 def build_block(i):
@@ -999,7 +1094,7 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          export_pass2=False, pass1_layout="quarter",
          pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1,
          narrow_merge=0, legacy_semantics=0, legacy_even_full=0,
-         store_merge16=0):
+         store_merge16=0, pass1_even_factor=0):
     if not legacy_semantics:
         legacy_even_full = 0
     rows = const_rows_cpp()
@@ -1009,7 +1104,8 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
     quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile,
-                                   narrow_merge=narrow_merge)
+                                   narrow_merge=narrow_merge,
+                                   even_factor=pass1_even_factor)
     pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile,
                           narrow_merge=narrow_merge, legacy=legacy_semantics,
                           legacy_even_full=legacy_even_full,

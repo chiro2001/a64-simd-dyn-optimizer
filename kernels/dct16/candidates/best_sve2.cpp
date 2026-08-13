@@ -331,6 +331,17 @@ static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
     }
 }
 
+static inline svint16_t revh_d(svint16_t x)
+{
+    // SVE REVH with .d register view: reverse 16-bit lanes within each
+    // 64-bit element (per-row 4-lane reversal for EE/EO quarter packs).
+    svint16_t r;
+    asm volatile("revh %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
 template <int shift>
 static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
@@ -347,6 +358,11 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     svint16_t QE0_1, QE1_1, QO0_1, QO1_1;
     svint16_t QE0_2, QE1_2, QO0_2, QO1_2;
     svint16_t QE0_3, QE1_3, QO0_3, QO1_3;
+    svint16_t EEF_0, EOF_0;
+    svint16_t EEF_1, EOF_1;
+    svint16_t EEF_2, EOF_2;
+    svint16_t EEF_3, EOF_3;
+
         {
             const svint16_t z0 = svld1_s16(p16, src + 0 * stride);
             const svint16_t z1 = svld1_s16(p16, src + 1 * stride);
@@ -370,6 +386,10 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             QE1_0 = svadd_s16_x(p16, P1, R1);
             QO0_0 = svsub_s16_x(p16, P0, R0);
             QO1_0 = svsub_s16_x(p16, P1, R1);
+            const svint16_t QR1_0 = revh_d(QE1_0);
+            EEF_0 = svadd_s16_x(p16, QE0_0, QR1_0);
+            EOF_0 = svsub_s16_x(p16, QE0_0, QR1_0);
+
         }
         {
             const svint16_t z0 = svld1_s16(p16, src + 4 * stride);
@@ -394,6 +414,10 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             QE1_1 = svadd_s16_x(p16, P1, R1);
             QO0_1 = svsub_s16_x(p16, P0, R0);
             QO1_1 = svsub_s16_x(p16, P1, R1);
+            const svint16_t QR1_1 = revh_d(QE1_1);
+            EEF_1 = svadd_s16_x(p16, QE0_1, QR1_1);
+            EOF_1 = svsub_s16_x(p16, QE0_1, QR1_1);
+
         }
         {
             const svint16_t z0 = svld1_s16(p16, src + 8 * stride);
@@ -418,6 +442,10 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             QE1_2 = svadd_s16_x(p16, P1, R1);
             QO0_2 = svsub_s16_x(p16, P0, R0);
             QO1_2 = svsub_s16_x(p16, P1, R1);
+            const svint16_t QR1_2 = revh_d(QE1_2);
+            EEF_2 = svadd_s16_x(p16, QE0_2, QR1_2);
+            EOF_2 = svsub_s16_x(p16, QE0_2, QR1_2);
+
         }
         {
             const svint16_t z0 = svld1_s16(p16, src + 12 * stride);
@@ -442,9 +470,71 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             QE1_3 = svadd_s16_x(p16, P1, R1);
             QO0_3 = svsub_s16_x(p16, P0, R0);
             QO1_3 = svsub_s16_x(p16, P1, R1);
+            const svint16_t QR1_3 = revh_d(QE1_3);
+            EEF_3 = svadd_s16_x(p16, QE0_3, QR1_3);
+            EOF_3 = svsub_s16_x(p16, QE0_3, QR1_3);
+
         }
 
     for (int kb = 0; kb < 16; kb += 4)
+    {
+        const svint16_t cq_lo = svld1_s16(p16, CQ_LO[kb]);
+
+            svint64_t d_0 = svdot_s64(zacc, EEF_0, cq_lo);
+
+            svint64_t d_1 = svdot_s64(zacc, EEF_1, cq_lo);
+
+            svint64_t d_2 = svdot_s64(zacc, EEF_2, cq_lo);
+
+            svint64_t d_3 = svdot_s64(zacc, EEF_3, cq_lo);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb) + 8, n);
+            }
+    }
+    for (int kb = 2; kb < 16; kb += 4)
+    {
+        const svint16_t cq_lo = svld1_s16(p16, CQ_LO[kb]);
+
+            svint64_t d_0 = svdot_s64(zacc, EOF_0, cq_lo);
+
+            svint64_t d_1 = svdot_s64(zacc, EOF_1, cq_lo);
+
+            svint64_t d_2 = svdot_s64(zacc, EOF_2, cq_lo);
+
+            svint64_t d_3 = svdot_s64(zacc, EOF_3, cq_lo);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb) + 8, n);
+            }
+    }
+    for (int kb = 1; kb < 16; kb += 8)
     {
 {
         const svint16_t cq_lo0 = svld1_s16(p16, CQ_LO[kb + 0]);
@@ -488,69 +578,28 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             }
         }
 {
-        const svint16_t cq_lo1 = svld1_s16(p16, CQ_LO[kb + 1]);
-        const svint16_t cq_hi1 = svld1_s16(p16, CQ_HI[kb + 1]);
-
-            const svint16_t x0_0 = (kb + 1 & 1) ? QO0_0 : QE0_0;
-            const svint16_t x1_0 = (kb + 1 & 1) ? QO1_0 : QE1_0;
-            svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo1);
-            d_0 = svdot_s64(d_0, x1_0, cq_hi1);
-
-            const svint16_t x0_1 = (kb + 1 & 1) ? QO0_1 : QE0_1;
-            const svint16_t x1_1 = (kb + 1 & 1) ? QO1_1 : QE1_1;
-            svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo1);
-            d_1 = svdot_s64(d_1, x1_1, cq_hi1);
-
-            const svint16_t x0_2 = (kb + 1 & 1) ? QO0_2 : QE0_2;
-            const svint16_t x1_2 = (kb + 1 & 1) ? QO1_2 : QE1_2;
-            svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo1);
-            d_2 = svdot_s64(d_2, x1_2, cq_hi1);
-
-            const svint16_t x0_3 = (kb + 1 & 1) ? QO0_3 : QE0_3;
-            const svint16_t x1_3 = (kb + 1 & 1) ? QO1_3 : QE1_3;
-            svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo1);
-            d_3 = svdot_s64(d_3, x1_3, cq_hi1);
-
-            {
-                const svint32_t w = svuzp1_s32(
-                    svreinterpret_s32_s64(d_0),
-                    svreinterpret_s32_s64(d_1));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p8h, dst + 16 * (kb + 1) + 0, n);
-            }
-            {
-                const svint32_t w = svuzp1_s32(
-                    svreinterpret_s32_s64(d_2),
-                    svreinterpret_s32_s64(d_3));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p8h, dst + 16 * (kb + 1) + 8, n);
-            }
-        }
-{
-        const svint16_t cq_lo2 = svld1_s16(p16, CQ_LO[kb + 2]);
-        const svint16_t cq_hi2 = svld1_s16(p16, CQ_HI[kb + 2]);
+        const svint16_t cq_lo1 = svld1_s16(p16, CQ_LO[kb + 2]);
+        const svint16_t cq_hi1 = svld1_s16(p16, CQ_HI[kb + 2]);
 
             const svint16_t x0_0 = (kb + 2 & 1) ? QO0_0 : QE0_0;
             const svint16_t x1_0 = (kb + 2 & 1) ? QO1_0 : QE1_0;
-            svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo2);
-            d_0 = svdot_s64(d_0, x1_0, cq_hi2);
+            svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo1);
+            d_0 = svdot_s64(d_0, x1_0, cq_hi1);
 
             const svint16_t x0_1 = (kb + 2 & 1) ? QO0_1 : QE0_1;
             const svint16_t x1_1 = (kb + 2 & 1) ? QO1_1 : QE1_1;
-            svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo2);
-            d_1 = svdot_s64(d_1, x1_1, cq_hi2);
+            svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo1);
+            d_1 = svdot_s64(d_1, x1_1, cq_hi1);
 
             const svint16_t x0_2 = (kb + 2 & 1) ? QO0_2 : QE0_2;
             const svint16_t x1_2 = (kb + 2 & 1) ? QO1_2 : QE1_2;
-            svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo2);
-            d_2 = svdot_s64(d_2, x1_2, cq_hi2);
+            svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo1);
+            d_2 = svdot_s64(d_2, x1_2, cq_hi1);
 
             const svint16_t x0_3 = (kb + 2 & 1) ? QO0_3 : QE0_3;
             const svint16_t x1_3 = (kb + 2 & 1) ? QO1_3 : QE1_3;
-            svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo2);
-            d_3 = svdot_s64(d_3, x1_3, cq_hi2);
+            svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo1);
+            d_3 = svdot_s64(d_3, x1_3, cq_hi1);
 
             {
                 const svint32_t w = svuzp1_s32(
@@ -570,26 +619,67 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
             }
         }
 {
-        const svint16_t cq_lo3 = svld1_s16(p16, CQ_LO[kb + 3]);
-        const svint16_t cq_hi3 = svld1_s16(p16, CQ_HI[kb + 3]);
+        const svint16_t cq_lo2 = svld1_s16(p16, CQ_LO[kb + 4]);
+        const svint16_t cq_hi2 = svld1_s16(p16, CQ_HI[kb + 4]);
 
-            const svint16_t x0_0 = (kb + 3 & 1) ? QO0_0 : QE0_0;
-            const svint16_t x1_0 = (kb + 3 & 1) ? QO1_0 : QE1_0;
+            const svint16_t x0_0 = (kb + 4 & 1) ? QO0_0 : QE0_0;
+            const svint16_t x1_0 = (kb + 4 & 1) ? QO1_0 : QE1_0;
+            svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo2);
+            d_0 = svdot_s64(d_0, x1_0, cq_hi2);
+
+            const svint16_t x0_1 = (kb + 4 & 1) ? QO0_1 : QE0_1;
+            const svint16_t x1_1 = (kb + 4 & 1) ? QO1_1 : QE1_1;
+            svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo2);
+            d_1 = svdot_s64(d_1, x1_1, cq_hi2);
+
+            const svint16_t x0_2 = (kb + 4 & 1) ? QO0_2 : QE0_2;
+            const svint16_t x1_2 = (kb + 4 & 1) ? QO1_2 : QE1_2;
+            svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo2);
+            d_2 = svdot_s64(d_2, x1_2, cq_hi2);
+
+            const svint16_t x0_3 = (kb + 4 & 1) ? QO0_3 : QE0_3;
+            const svint16_t x1_3 = (kb + 4 & 1) ? QO1_3 : QE1_3;
+            svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo2);
+            d_3 = svdot_s64(d_3, x1_3, cq_hi2);
+
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_0),
+                    svreinterpret_s32_s64(d_1));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 4) + 0, n);
+            }
+            {
+                const svint32_t w = svuzp1_s32(
+                    svreinterpret_s32_s64(d_2),
+                    svreinterpret_s32_s64(d_3));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p8h, dst + 16 * (kb + 4) + 8, n);
+            }
+        }
+{
+        const svint16_t cq_lo3 = svld1_s16(p16, CQ_LO[kb + 6]);
+        const svint16_t cq_hi3 = svld1_s16(p16, CQ_HI[kb + 6]);
+
+            const svint16_t x0_0 = (kb + 6 & 1) ? QO0_0 : QE0_0;
+            const svint16_t x1_0 = (kb + 6 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo3);
             d_0 = svdot_s64(d_0, x1_0, cq_hi3);
 
-            const svint16_t x0_1 = (kb + 3 & 1) ? QO0_1 : QE0_1;
-            const svint16_t x1_1 = (kb + 3 & 1) ? QO1_1 : QE1_1;
+            const svint16_t x0_1 = (kb + 6 & 1) ? QO0_1 : QE0_1;
+            const svint16_t x1_1 = (kb + 6 & 1) ? QO1_1 : QE1_1;
             svint64_t d_1 = svdot_s64(zacc, x0_1, cq_lo3);
             d_1 = svdot_s64(d_1, x1_1, cq_hi3);
 
-            const svint16_t x0_2 = (kb + 3 & 1) ? QO0_2 : QE0_2;
-            const svint16_t x1_2 = (kb + 3 & 1) ? QO1_2 : QE1_2;
+            const svint16_t x0_2 = (kb + 6 & 1) ? QO0_2 : QE0_2;
+            const svint16_t x1_2 = (kb + 6 & 1) ? QO1_2 : QE1_2;
             svint64_t d_2 = svdot_s64(zacc, x0_2, cq_lo3);
             d_2 = svdot_s64(d_2, x1_2, cq_hi3);
 
-            const svint16_t x0_3 = (kb + 3 & 1) ? QO0_3 : QE0_3;
-            const svint16_t x1_3 = (kb + 3 & 1) ? QO1_3 : QE1_3;
+            const svint16_t x0_3 = (kb + 6 & 1) ? QO0_3 : QE0_3;
+            const svint16_t x1_3 = (kb + 6 & 1) ? QO1_3 : QE1_3;
             svint64_t d_3 = svdot_s64(zacc, x0_3, cq_lo3);
             d_3 = svdot_s64(d_3, x1_3, cq_hi3);
 
@@ -599,7 +689,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
                     svreinterpret_s32_s64(d_1));
                 svint16_t n = svrshrnb_n_s32(w, shift);
                 n = svuzp1_s16(n, n);
-                svst1_s16(p8h, dst + 16 * (kb + 3) + 0, n);
+                svst1_s16(p8h, dst + 16 * (kb + 6) + 0, n);
             }
             {
                 const svint32_t w = svuzp1_s32(
@@ -607,7 +697,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
                     svreinterpret_s32_s64(d_3));
                 svint16_t n = svrshrnb_n_s32(w, shift);
                 n = svuzp1_s16(n, n);
-                svst1_s16(p8h, dst + 16 * (kb + 3) + 8, n);
+                svst1_s16(p8h, dst + 16 * (kb + 6) + 8, n);
             }
         }
     }

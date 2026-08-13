@@ -42,3 +42,4 @@ layouts:
   legacy_semantics: [0, 1]
   legacy_even_full: [0, 1]
   store_merge16: [0, 1]
+  pass1_even_factor: [0, 1]

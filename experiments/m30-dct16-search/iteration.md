@@ -583,3 +583,20 @@ TestBench 裁决。
 
 存储指令从 legacy 58 → 38、uzp1 112 → 100。`best_sve2.cpp/.S/.o` 与
 best.json 已按 upstream+sm16（999）重新固化。
+
+### pass1_even_factor 轴（2026-08-13 深夜，sdot 密度收敛）
+
+内部动态 sdot 站点统计显示差距全部在 pass1 偶数 k（内部 8 个偶数 k 用
+4 项点积）。实现：pass1 偶数 k 拆成对称行（k%4==0，EE）与反称行
+（k%4==2，EO），`revh z.d`（内联 asm，探针确认每 64-bit 反转 4×h）
+生成 `E[j]±E[7-j]`，只消耗 CQ_LO 做 4 项 sdot。pass1 输入为像素，
+EE/EO 无溢出 → 位级等价。
+
+| 合同 | 之前 fused_adj | 之后 | sdot | 验证 |
+| --- | ---: | ---: | ---: | --- |
+| upstream-exact | 999 | **971** | 192→160 | 200k 差分 0 分歧 |
+| legacy-internal-exact | 908 | **878** | 208→176 | 分歧率 0.045078% 不变，TestBench 4/4 |
+
+搜索驱动新增依赖剪枝（factor 仅 quarter、lef 仅 legacy+oddq+nm1、sm16
+仅 oddq+nm1），组合从 512 收敛到 ~144。`best_sve2.*`/best.json 已按
+upstream+sm16+factor（971）重新固化。
