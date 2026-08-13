@@ -689,3 +689,22 @@ pass2，列为后续任务；搜索门禁如实报 FAIL，不伪报。
 > **0 分歧**（与 C 分歧 0.051% = 上游签名），fused_adj=323（上游基线
 > 等价）。manifest 的 trace_driver_src 修正为候选驱动
 > `kernels/dct8/shared_trace_driver.cpp`；搜索 k_tile-2 被源码去重。
+
+### dct8 基线分析与 SVE2 化方案（2026-08-14）
+
+dct8 upstream-exact 基线（fused_adj=323，vector=355）指令构成：
+访存 102（str 52 + ldr 26 + ldp 20 + stur 4，约占 29%）、sdot 32 +
+movprfx 32（奇 k NEON bridge）、rshrn 32 + addp 16 + mul 24（偶 k
+vaddl/vmul/vpadd）、saddl 16 + rev64 24（E/EE/EO 构建）、sub 16。
+
+SVE2 化方案（下一步实施）：
+1. **跨 k 行散布存储**：每 4 列迭代把 4 个 k 行的 4-lane 输出合并成
+   一次 `st1d`（偏移 = k×16 字节，如 dct16 even_sve），4 个 k 行 →
+   4 条存储 → 1 条；预计 -24；
+2. **奇 k 4 行打包**：`zip1_s64` 把两对 `[r0|r1]`、`[r2|r3]` 打成
+   `[r0,r2,r1,r3]` 四行 16-lane 操作数，一条 sdot_s64 出 4 输出；
+   行序错位由**置换的散布偏移**（[row0,row2,row1,row3]）直接纠正，
+   无需额外重排；窄化用 `rshrnb_s64(shift) + rshrnb_s32(0) + uzp1`；
+3. **偶 k**：EE/EO s32 已因子化，维持 vmul/vpadd，只做存储合并。
+
+预计 fused 323 → ~280-300；正确性以 2 万例上游 0 分歧为门禁。
