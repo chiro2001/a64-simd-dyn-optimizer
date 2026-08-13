@@ -47,6 +47,11 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     legacy_k4 = bool(lo.get("legacy_k4", 0))
     slice_kind = lo.get("slice_kind", "tbl2")
     row_group = int(lo.get("row_group", 4))
+    # row16 store merging requires contiguous-bank-compatible slices; the
+    # k4 tbl2 slice is tied to even/odd banks (docs/20 §5.13), so normalize
+    # row16 to zip (the search's source dedup then collapses the combo).
+    if row_group == 16 and slice_kind == "tbl2":
+        slice_kind = "zip"
     acc_split = int(lo.get("acc_split", 1))
     const_layout = lo.get("constant_layout", "derived-replicated")
     # k0 even_sve: compute the k0 family (0/8/16/24) per 4-row group via
@@ -57,6 +62,15 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # both k4 paths need legacy_k4.
     k0_even_sve = bool(lo.get("k0_even_sve", 0)) and k2_slice \
         and legacy_ex and legacy_k4
+    # k0_shared_mul: k0/k16 share one mul by 64 (EEp) via uzp1/uzp2 + add/sub;
+    # matches the internal reference's 32-mul / 0-addp k0 signature.
+    # Only the (0,16) pair is shareable: (8,24) needs (83,36) vs (36,-83)
+    # which are not a common factor, so those keep the per-k mul path.
+    k0_shared_mul = bool(lo.get("k0_shared_mul", 0)) and k0_even_sve
+    # k0_merge8: with row_group=8, merge the two 4-row packs' per-k
+    # 4-lane row vectors (svtbl2_s32) before one rshrnb+uzp1+store8.
+    k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
+        and row_group == 8
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -73,7 +87,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
 
     for pass_id in (1, 2):
         shift = 4 if pass_id == 1 else 11
-        for g in range(8 if row_group == 4 else 4):
+        for g in range(32 // row_group):
             cur["g"] = g
             rows = tuple(g * row_group + r for r in range(row_group))
             banks = [rows[b * 4:(b + 1) * 4]
@@ -220,8 +234,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                            "lane_owner": "output"})
                             xs.append(x.out)
                     return xs
-                odd_banks = banks if row_group == 4 \
-                    else [rows[:4], rows[4:]]
+                odd_banks = banks
                 all_xs = [build_slices(rb, "_b%d" % b)
                           for b, rb in enumerate(odd_banks)]
                 for k in ODD_K:
@@ -273,7 +286,18 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                           (acc, terms[m]),
                                           attrs={"acc_bits": 64}).out
                         accs.append(acc)
-                    if row_group == 8:
+                    if row_group == 16:
+                        n16 = new("narrow16_merged", tid, "n16_%d" % k,
+                                  tuple(accs),
+                                  attrs={"shift": shift,
+                                         "mode": "rshrn"})
+                        new("store", tid, "", (n16.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rows),
+                                   "topology": "contiguous",
+                                   "row_group": 16})
+                    elif row_group == 8:
                         n8 = new("narrow8_merged", tid, "n8_%d" % k,
                                  (accs[0], accs[1]),
                                  attrs={"shift": shift,
@@ -303,8 +327,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
                 # k2 slices are zip/trn based -> contiguous-bank
                 # compatible with the merged narrow.
-                k2k4_banks = banks if row_group == 4 \
-                    else [rows[:4], rows[4:]]
+                k2k4_banks = banks
                 exs = []
                 for b, rb in enumerate(k2k4_banks):
                     suffix = "_b%d" % b
@@ -352,11 +375,11 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     exs.append(ex)
                 # k2 uses zip/trn slices (contiguous-bank compatible);
                 # keep the merged narrow.
-                if row_group == 8:
+                if row_group in (8, 16):
                     for k in K2_K:
                         tid = "p%d.k2.k%d" % (pass_id, k)
                         accs = []
-                        for b in range(2):
+                        for b in range(len(k2k4_banks)):
                             ex = exs[b]
                             t0 = new("dot_segment", tid,
                                      "k2t0_%d_b%d" % (k, b), (ex[0],),
@@ -381,15 +404,29 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                       (t0.out, t1.out),
                                       attrs={"acc_bits": 64})
                             accs.append(acc.out)
-                        n8 = new("narrow8_merged", tid, "k2n8_%d" % k,
-                                 (accs[0], accs[1]),
-                                 attrs={"shift": shift, "mode": "rshrn"})
-                        new("store", tid, "", (n8.out,),
-                            attrs={"base": "dst", "index": "k*32+i",
-                                   "lanes": tuple((pass_id, k, r)
-                                                  for r in rows),
-                                   "topology": "contiguous",
-                                   "row_group": 8})
+                        if row_group == 16:
+                            n16 = new("narrow16_merged", tid,
+                                      "k2n16_%d" % k, tuple(accs),
+                                      attrs={"shift": shift,
+                                             "mode": "rshrn"})
+                            new("store", tid, "", (n16.out,),
+                                attrs={"base": "dst", "index": "k*32+i",
+                                       "lanes": tuple((pass_id, k, r)
+                                                      for r in rows),
+                                       "topology": "contiguous",
+                                       "row_group": 16})
+                        else:
+                            n8 = new("narrow8_merged", tid,
+                                     "k2n8_%d" % k,
+                                     (accs[0], accs[1]),
+                                     attrs={"shift": shift,
+                                            "mode": "rshrn"})
+                            new("store", tid, "", (n8.out,),
+                                attrs={"base": "dst", "index": "k*32+i",
+                                       "lanes": tuple((pass_id, k, r)
+                                                      for r in rows),
+                                       "topology": "contiguous",
+                                       "row_group": 8})
                 else:
                     for k in K2_K:
                         tid = "p%d.k2.k%d" % (pass_id, k)
@@ -443,7 +480,8 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             # with slice_kind=zip the k4 slice is contiguous-bank
             # compatible; with tbl2 it is tied to even/odd (kept legacy).
             k4_banks = banks if row_group == 4 \
-                else ([rows[:4], rows[4:]]
+                else ([rows[b * 4:(b + 1) * 4]
+                       for b in range(row_group // 4)]
                       if slice_kind == "zip"
                       else [rows[0::2], rows[1::2]])
             if legacy_k4:
@@ -481,12 +519,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 # k4 uses a tbl2 slice whose lane mapping is tied to the
                 # even/odd bank arrangement; keep the per-bank round +
                 # trn1 narrow (no merged narrow here).
-                if row_group == 8:
+                if row_group in (8, 16):
                     for k in K4_K:
                         tid = "p%d.k4.k%d" % (pass_id, k)
                         if slice_kind == "zip":
                             accs = []
-                            for b in range(2):
+                            for b in range(len(k4_banks)):
                                 t = new("dot_segment", tid,
                                         "k4t_%d_b%d" % (k, b),
                                         (xk4s[b].out,),
@@ -496,16 +534,23 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                                "terms": tuple(
                                                    _g(k, j)
                                                    for j in range(4)),
-                                               "const_src": "K4S[%d]"
-                                               % (k // 8)})
+                                            "const_src": "K4S[%d]"
+                                            % (k // 8)})
                                 accs.append(t.out)
-                            n8 = new("narrow8_merged", tid,
-                                     "k4n8_%d" % k, (accs[0], accs[1]),
-                                     attrs={"shift": shift,
-                                            "mode": "rshrn"})
+                            if row_group == 16:
+                                n8 = new("narrow16_merged", tid,
+                                         "k4n16_%d" % k, tuple(accs),
+                                         attrs={"shift": shift,
+                                                "mode": "rshrn"})
+                            else:
+                                n8 = new("narrow8_merged", tid,
+                                         "k4n8_%d" % k,
+                                         (accs[0], accs[1]),
+                                         attrs={"shift": shift,
+                                                "mode": "rshrn"})
                         else:
                             rs = []
-                            for b in range(2):
+                            for b in range(len(k4_banks)):
                                 t = new("dot_segment", tid,
                                         "k4t_%d_b%d" % (k, b),
                                         (xk4s[b].out,),
@@ -583,6 +628,9 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 # mul(K0EVEN) + addp + uzp1 + narrow + store4.
                 packs = [rows[b * 4:(b + 1) * 4]
                          for b in range(row_group // 4)]
+                kvec = {}
+                for k in K0_K:
+                    kvec[k] = []
                 for b, pr in enumerate(packs):
                     tid = "p%d.k0es.pack%d" % (pass_id, b)
                     def pack(src_rows, tag):
@@ -692,38 +740,112 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     eop = new("sub", tid, "EOp_%d_%d" % (b, pass_id),
                               (v0.out, v1r.out),
                               attrs={"elem": "s32", "view": "s64"})
-                    for k in K0_K:
-                        ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
-                        src = eep if k in (0, 16) else eop
-                        cexpr = "K0EVEN[%d]" % (0 if k == 0 else
-                                                1 if k == 8 else
-                                                2 if k == 16 else 3)
-                        m = new("mul", ktid, "k0m_%d_%d_%d" % (k, b,
-                                                                pass_id),
-                                (src.out,),
-                                attrs={"elem": "s32",
-                                       "const_src": cexpr})
-                        pa = new("addp32", ktid,
-                                 "k0p_%d_%d_%d" % (k, b, pass_id),
-                                 (m.out, m.out), attrs={})
-                        xa = new("permute", ktid,
-                                 "k0x_%d_%d_%d" % (k, b, pass_id),
-                                 (pa.out, pa.out),
+                    if k0_shared_mul:
+                        # shared EEp x 64 for k=0 and k=16
+                        me = new("mul", "p%d.k0es.shared.p%d" % (pass_id, b),
+                                 "k0me_%d_%d" % (b, pass_id),
+                                 (eep.out,),
+                                 attrs={"elem": "s32",
+                                        "const_src": "K0EVEN[0]"})
+                        ue = new("permute", "p%d.k0es.shared.p%d"
+                                 % (pass_id, b),
+                                 "k0ue_%d_%d" % (b, pass_id),
+                                 (me.out, me.out),
                                  attrs={"kind": "uzp1s"})
+                        ve = new("permute", "p%d.k0es.shared.p%d"
+                                 % (pass_id, b),
+                                 "k0ve_%d_%d" % (b, pass_id),
+                                 (me.out, me.out),
+                                 attrs={"kind": "uzp2s"})
+                        se = new("add", "p%d.k0es.shared.p%d"
+                                 % (pass_id, b),
+                                 "k0se_%d_%d" % (b, pass_id),
+                                 (ue.out, ve.out),
+                                 attrs={"elem": "s32"})
+                        de = new("sub", "p%d.k0es.shared.p%d"
+                                 % (pass_id, b),
+                                 "k0de_%d_%d" % (b, pass_id),
+                                 (ue.out, ve.out),
+                                 attrs={"elem": "s32"})
+                        kvec[0].append(se.out)
+                        kvec[16].append(de.out)
+                        for k in (8, 24):
+                            ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
+                            cexpr = "K0EVEN[%d]" % (1 if k == 8 else 3)
+                            m = new("mul", ktid,
+                                    "k0m_%d_%d_%d" % (k, b, pass_id),
+                                    (eop.out,),
+                                    attrs={"elem": "s32",
+                                           "const_src": cexpr})
+                            pa = new("addp32", ktid,
+                                     "k0p_%d_%d_%d" % (k, b, pass_id),
+                                     (m.out, m.out), attrs={})
+                            xa = new("permute", ktid,
+                                     "k0x_%d_%d_%d" % (k, b, pass_id),
+                                     (pa.out, pa.out),
+                                     attrs={"kind": "uzp1s"})
+                            kvec[k].append(xa.out)
+                    else:
+                        for k in K0_K:
+                            ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
+                            src = eep if k in (0, 16) else eop
+                            cexpr = "K0EVEN[%d]" % (0 if k == 0 else
+                                                    1 if k == 8 else
+                                                    2 if k == 16 else 3)
+                            m = new("mul", ktid,
+                                    "k0m_%d_%d_%d" % (k, b, pass_id),
+                                    (src.out,),
+                                    attrs={"elem": "s32",
+                                           "const_src": cexpr})
+                            pa = new("addp32", ktid,
+                                     "k0p_%d_%d_%d" % (k, b, pass_id),
+                                     (m.out, m.out), attrs={})
+                            xa = new("permute", ktid,
+                                     "k0x_%d_%d_%d" % (k, b, pass_id),
+                                     (pa.out, pa.out),
+                                     attrs={"kind": "uzp1s"})
+                            kvec[k].append(xa.out)
+                # narrow/store: per k, merge the packs (row8) or store each
+                for k in K0_K:
+                    vecs = kvec[k]
+                    if k0_merge8 and len(vecs) == 2:
+                        ktid = "p%d.k0es.k%d" % (pass_id, k)
+                        mg = new("permute", ktid,
+                                 "k0mg_%d_%d" % (k, pass_id),
+                                 (vecs[0], vecs[1]),
+                                 attrs={"kind": "tbl2s"})
                         na = new("narrow4_sve", ktid,
-                                 "k0n_%d_%d_%d" % (k, b, pass_id),
-                                 (xa.out,),
+                                 "k0n_%d_%d" % (k, pass_id),
+                                 (mg.out,),
                                  attrs={"shift": shift, "mode": "rshrn"})
                         nc = new("narrow", ktid,
-                                 "k0c_%d_%d_%d" % (k, b, pass_id),
+                                 "k0c_%d_%d" % (k, pass_id),
                                  (na.out, na.out),
                                  attrs={"from": "s16", "to": "s16"})
                         new("store", ktid, "", (nc.out,),
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": tuple((pass_id, k, r)
-                                                  for r in pr),
-                                   "topology": "contiguous",
-                                   "base_off": 4 * b})
+                                                  for r in rows),
+                                   "topology": "contiguous"})
+                    else:
+                        for b, s in enumerate(vecs):
+                            ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
+                            na = new("narrow4_sve", ktid,
+                                     "k0n_%d_%d_%d" % (k, b, pass_id),
+                                     (s,),
+                                     attrs={"shift": shift,
+                                            "mode": "rshrn"})
+                            nc = new("narrow", ktid,
+                                     "k0c_%d_%d_%d" % (k, b, pass_id),
+                                     (na.out, na.out),
+                                     attrs={"from": "s16", "to": "s16"})
+                            new("store", ktid, "", (nc.out,),
+                                attrs={"base": "dst", "index": "k*32+i",
+                                       "lanes": tuple((pass_id, k, r)
+                                                      for r in
+                                                      packs[b]),
+                                       "topology": "contiguous",
+                                       "base_off": 4 * b})
             else:
                 k0e = {}
                 k0o = {}

@@ -37,6 +37,10 @@ static const uint16_t IDX_CF[16] =
     { 12, 13, 14, 15, 28, 29, 30, 31, 12, 13, 14, 15, 28, 29, 30, 31 };
 static const uint16_t IDX_LO8[16] =
     { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
+static const uint32_t IDX_S8[8] = { 0, 1, 2, 3, 8, 9, 10, 11 };
+static const uint16_t IDX_EVEN16[16] =
+    { 0, 2, 4, 6, 8, 10, 12, 14,
+      16, 18, 20, 22, 24, 26, 28, 30 };
 """
 
 HELPERS32 = """\
@@ -203,9 +207,10 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                 body.append("    svint32_t %s = %s(%s, %s);"
                             % (out, fn, ins[0], ins[1]))
                 ctype[out] = "svint32_t"
-            elif pk == "uzp1s":
-                body.append("    svint32_t %s = svuzp1_s32(%s, %s);"
-                            % (out, ins[0], ins[1]))
+            elif pk in ("uzp1s", "uzp2s"):
+                fn = "svuzp1_s32" if pk == "uzp1s" else "svuzp2_s32"
+                body.append("    svint32_t %s = %s(%s, %s);"
+                            % (out, fn, ins[0], ins[1]))
                 ctype[out] = "svint32_t"
             elif pk in ("uzp1d", "uzp2d"):
                 fn = "svuzp1_s64" if pk == "uzp1d" else "svuzp2_s64"
@@ -214,6 +219,11 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                             "svreinterpret_s64_s32(%s));"
                             % (out, fn, ins[0], ins[1]))
                 ctype[out] = "svint64_t"
+            elif pk == "tbl2s":
+                body.append("    svint32_t %s = svtbl2_s32("
+                            "svcreate2_s32(%s, %s), idx8);"
+                            % (out, ins[0], ins[1]))
+                ctype[out] = "svint32_t"
             elif pk == "revh_d":
                 body.append("    svint16_t %s = revh_d(%s);"
                             % (out, ins[0]))
@@ -361,6 +371,30 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             body.append("    svint16_t %s = svuzp1_s16(nr_%s, nr_%s);"
                         % (out, out, out))
             ctype[out] = "svint16_t"
+        elif kind == "narrow16_merged":
+            # 4 contiguous 4-row banks: uzp1_s32 each pair -> 8 rows each;
+            # one rshrnb per pair (results in even h16 lanes) -> tbl2_s16
+            # concatenates the even lanes of both halves -> 16 contiguous.
+            w0 = "w_%s" % out
+            w1 = "w2_%s" % out
+            n0 = "nr_%s" % out
+            n1 = "nr2_%s" % out
+            body.append("    const svint32_t %s = svuzp1_s32("
+                        "svreinterpret_s32_s64(%s), "
+                        "svreinterpret_s32_s64(%s));"
+                        % (w0, ins[0], ins[1]))
+            body.append("    const svint32_t %s = svuzp1_s32("
+                        "svreinterpret_s32_s64(%s), "
+                        "svreinterpret_s32_s64(%s));"
+                        % (w1, ins[2], ins[3]))
+            body.append("    const svint16_t %s = svrshrnb_n_s32(%s, %d);"
+                        % (n0, w0, attrs["shift"]))
+            body.append("    const svint16_t %s = svrshrnb_n_s32(%s, %d);"
+                        % (n1, w1, attrs["shift"]))
+            body.append("    svint16_t %s = svtbl2_s16("
+                        "svcreate2_s16(%s, %s), idx_even16);"
+                        % (out, n0, n1))
+            ctype[out] = "svint16_t"
         elif kind == "store":
             lanes = attrs["lanes"]
             pass_id, k, row = lanes[0]
@@ -390,7 +424,8 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                             % (k, row_group, rloc, expr, rnd.attrs["shift"]))
                 continue
             if ctype.get(ins[0]) == "svint16_t" and len(lanes) > 1:
-                pg = "pg8h" if len(lanes) == 8 else "pg4h"
+                pg = {"16": "pg16h", "8": "pg8h", "4": "pg4h"}[
+                    str(len(lanes))]
                 body.append("    svst1_s16(%s, dst + %d * 32 + g * %d + %d,"
                             " %s);"
                             % (pg, k, row_group, attrs.get("base_off", 0),
@@ -401,7 +436,7 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                             % (k, row_group, rloc, ins[0]))
     body.insert(0, "    add = %d;" % add_value)
     body.insert(1, "    for (int g = 0; g < %d; g++)"
-                % (8 if row_group == 4 else 4))
+                % (32 // row_group))
     body.insert(2, "    {")
     body.append("    }")
     return body
@@ -438,6 +473,14 @@ def emit_acle(plan: Plan, ops: List[Op],
 """
     if row_group == 8:
         prologue += "    const svbool_t pg8h = svwhilelt_b16(0, 8);\n"
+    if row_group == 16:
+        prologue += "    const svbool_t pg16h = svptrue_b16();\n"
+    if any(o.kind == "narrow16_merged" for o in ops):
+        prologue += ("    const svuint16_t idx_even16 = "
+                     "svld1_u16(p16, IDX_EVEN16);\n")
+    if any(o.kind == "permute" and o.attrs.get("kind") == "tbl2s"
+           for o in ops):
+        prologue += "    const svuint32_t idx8 = svld1_u32(p8s, IDX_S8);\n"
     if any(o.kind == "permute" and o.attrs.get("idx") == "rev8"
            for o in ops):
         prologue += "    const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);\n"

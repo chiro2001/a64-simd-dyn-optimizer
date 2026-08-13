@@ -10,15 +10,16 @@
   dct16 布局搜索 6:21→1:44）、rewrite 依赖剪枝（dct32 781→219 计划键/
   31 唯一源）、两级差分（2k→20k，fail→pass=0 构造保证）、流式 trace
   （`--stream`，348 日志与旧 parser 零差异）、LLVM-MCA 第二代理。
-- **DCT32 op 后端 best = 5390 fused_uop**（vector 5854 / 零 scatter，
-  相对上游 12710 = 0.424×，距内部 4827 = 1.117×），
-  **TestBenchLite 5 seed 全 PASS（黄金标准闭合）**；已固化
-  `kernels/dct32/candidates/best_op_r8.{cpp,S}`。
+- **DCT32 op 后端 best = 4960 fused_uop**（vector 5416 / 零 scatter，
+  相对上游 12710 = 0.390×，距内部 4827 = 1.028×），
+  **TestBenchLite 5 seed 全 PASS（黄金标准闭合）**；由
+  row_group=16 合并存储 + k0_shared_mul 新轴达成（5390→4960，
+  -8.0%），k0_even_sdot 全 s16 方案被数值探针否决（1.34% 回绕，
+  超 legacy 门禁，见 docs/20 §6.4）。
 - DCT16 legacy best 705（零 scatter 895，超内部 731）；sa8d16 189
   （结构地板）；interp8 127。
-- 下一主项：k0_even_sdot 搜索轴（设计见
-  [docs/20](docs/20-dct32-optimization-assessment.md) §6，交接与完整
-  状态见 [docs/10](docs/10-agent-handoff.md)）。
+- 下一主项：全布局搜索收尾确认（含 row16/k0 新轴）后固化新 best，
+  再按 docs/20 §6 剩余差距（str/ldr/置换折叠）继续。
 - 门禁覆盖 dct16/dct32/sa8d/sa8d16/interp8；interp8 门禁还实证发现并
   修复了一个整宽存储越界写；
 - 关键路径回归在 9 点留一法上为负（M23），逐指令直接延迟也不能排序

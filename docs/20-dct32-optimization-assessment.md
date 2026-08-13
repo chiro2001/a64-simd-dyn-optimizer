@@ -840,6 +840,46 @@ k0 与 k16 共享 `mE = EEp×64`，k8 与 k24 共享 `mO = EOp×[83,36]`：
 需新增 `k0_shared_mul ∈ {0,1}` 轴（仅 op 后端、要求 k0_even_sve=1），
 搜索验证后跑 TestBenchLite。
 
+### 6.6 2026-08-14 晚：k0 重构 + row16 合并存储落地（best 5390→4960）
+
+已实现并验证三个新轴（全部 op 后端）：
+
+1. **k0_shared_mul**（§6.5）：k0/k16 共享 `EEp×64` 一次 mul，用
+   uzp1s/uzp2s+add/sub 同时得两族（k8/k24 的 (83,36)/(36,-83) 无公
+   因子，保留逐 k mul+addp+uzp1s）。单独 fused 5390→5366（-24）。
+2. **k0_merge8**：row_group=8 时把两个 4 行 pack 的逐 k 4-lane 向量
+   用 `svtbl2_s32` 合并（索引 `[0,1,2,3,8,9,10,11]`——tbl2 的 512-bit
+   表里 pack1 行在 lane 8-11，`[0..7]` 会选到 pack0 的重复行，曾致
+   18.8% 失配）后一次 rshrnb+uzp1+store8。与 shared 组合
+   5390→5352（-38；spill 630→674 吃掉部分收益）。
+3. **row_group=16**（store_wide）：odd/k2/k4 每 k 合并 4 个 bank：
+   `narrow16_merged` = 2×(uzp1_s32+rshrnb) + `tbl2_s16`（偶 lane 索引
+   `[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]` 直接拼接，跳过
+   uzp1_s16）+ store16。修复两处硬编码 g 循环（`8 if row_group==4
+   else 4` → `32//row_group`，IR 与发射器各一处，row16 曾越界
+   segfault）；k4 tbl2 切片与连续行不兼容，row16 在 lowering 内
+   归一化为 zip（docs/20 §5.13 已知坑）。
+
+**结果（row16 + k0_shared_mul，k0_merge8=0）**：
+
+| 指标 | best 5390 | 新 4960 | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 5390 | **4960** | -430（-8.0%） |
+| vector raw | 5854 | 5416 | -438 |
+| movprfx | 464 | 456 | -8 |
+| stack | 630 | 562 | -68（spill 反降） |
+| 20k legacy 签名 | 7268 | 7268 | 0（逐位一致） |
+| TestBenchLite dct32 | 5 seed PASS | **5 seed PASS** | — |
+
+相对上游 12710 = **0.390×**；相对内部 fused_uop 4827 = **1.028×**；
+已低于 docs/20 §6 的 5150 目标。全布局搜索（含 row16/新轴）运行中，
+最终 best 以 results.json 为准。
+
+已知坑（本轮实测，勿再踩）：
+- `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
+  不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；
+- row16 若不修 g 循环会越界写（segfault），IR 与发射器两处都要改。
+
 ### 6.3 阴性实验：narrow_store_pred（2026-08-14，重要语义教训）
 
 思路：`rshrnb` 把 8 个 s32 结果放到 16 个 s16 lane 的**偶 lane**
