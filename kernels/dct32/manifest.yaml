@@ -74,7 +74,15 @@ layouts:
   # 2026-08-13: 切片实现（tbl2 = 原 12 TBL/组；zip = 10 固定
   # zip/trn d-lane 转置，7724→7222）。仅 op backend 消费，grouped 忽略。
   slice_kind: [tbl2, zip]
+  # 2026-08-13: 行分组（4 = 单 bank；8 = 偶/奇双 bank + trn1 合并窄化，
+  # 6691→6520）。仅 op backend 消费，grouped 忽略。
+  row_group: [4, 8]
 
 # 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，
 # 920B SVE1/VL=256 可跑，20k 差分 0，p50=226 vs 上游 222）。
+
+# 2026-08-13: op 后端 row8 legacy 最优候选
+# candidates/best_op_r8.{cpp,S}（-O2 -fno-tree-pre，6520 full，
+# TestBenchLite 5 seed PASS；生成：layout_ir.dct32_v31_plan +
+# lowering legacy_ex/k4=1, slice_kind=zip, row_group=8）。
