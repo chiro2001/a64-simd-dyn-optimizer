@@ -125,6 +125,14 @@ raw 6896**，20k 5300（legacy 签名）、TestBenchLite 5 seed 全 PASS——
 “基础 plan + rewrite 序列搜索”自动重发现当前 best**。结果：
 `experiments/m30-dct32-search/layout-search-rwseq/results.json`。
 
+**P0 搜索吞吐（2026-08-14）**：两个搜索驱动都支持 `--workers N`
+（默认 1 串行）。规划（枚举/去重/缓存读取）在主进程串行，测量
+（编译/链接/20k 差分/trace）在 `ProcessPoolExecutor` 中按源码哈希
+隔离并行，coordinator 按枚举顺序稳定合并，输出 schema 不变。
+W=1 与 W=4 的 dct16 357 行结果逐字段相等；4 worker 墙钟
+6:21→1:44（约 3.7×，QEMU/磁盘未饱和）。长命令加超时防止挂死。
+`search_rewrite_sequences.py` 另加 `--outdir` 便于隔离回放。
+
 **P1 MCA 第二代理（2026-08-13）**：序列搜索 top-10 自动跑
 LLVM-MCA（Neoverse-V2, SVE2, 静态体）并写入 results.json；
 best 序列 fused=6456 / mca_cycles=516 / mca_uops=2838，次优 6856 /

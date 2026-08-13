@@ -101,6 +101,12 @@
   按 `contract|生成源码哈希` 复用已验证的 passed/mismatches/counts，
   仅源码或合同变化才重跑；增量重跑从 ~7.8 分钟降到 ~0.1 秒。另有源码
   哈希规范化去重（相同生成代码只验证一次）。
+- 搜索驱动支持 `--workers N`（默认 1 串行）：`search_sve2_layouts.py`
+  的编译/20k 差分/trace 由进程池并行；`search_rewrite_sequences.py`
+  同样支持（另加 `--outdir`）。coordinator 在主进程完成枚举/去重/
+  缓存读取，worker 只测新源，按枚举顺序稳定合并，`results.json` schema
+  与串行完全一致（2026-08-14 已验：dct16 357 行 W=1/W=4 逐字段相等，
+  4 worker 墙钟 6:21→1:44，约 3.7×）。
 - **uop 口径（2026-08-14 用户裁定）**：gather/scatter 在 ARM 上拆分为
   多个 ldst uops，禁止为表面指令数使用。`parse_qemu_trace.py` 输出
   `scatter_gather` 与 `vector_fused_uop = fused_adj + 3×sg`；搜索按

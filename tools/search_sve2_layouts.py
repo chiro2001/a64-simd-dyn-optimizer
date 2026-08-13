@@ -17,6 +17,7 @@ Exit code 0 only if at least one candidate passes the upstream-exact gate.
 """
 
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import os
@@ -36,9 +37,10 @@ QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
 
 
-def run(cmd, **kw):
+def run(cmd, timeout=None, **kw):
     return subprocess.run(cmd, stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT, text=True, **kw)
+                          stderr=subprocess.STDOUT, text=True,
+                          timeout=timeout, **kw)
 
 
 def symbol_range(binary, sym):
@@ -196,6 +198,145 @@ def make_emitter(kernel, backend="acle"):
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
+def _layout_contract(combo, args_contract, manifest_contract):
+    """Per-candidate contract label (deterministic, independent of the
+    enumeration order; fixes the old serial loop's order-dependent
+    `contract` mutation)."""
+    if combo.get("legacy_ex") or combo.get("legacy_k4"):
+        return "legacy-internal-exact"
+    return args_contract or manifest_contract or "upstream-exact"
+
+
+def measure_layout_candidate(task):
+    """Measure one layout candidate end-to-end. Module-level so it can be
+    pickled by ProcessPoolExecutor.
+
+    task = (tag, combo, src_text, ckey, outdir, backend, manifest,
+            verify_src, driver_o, kernel, contract)
+
+    Returns (row, cache_entry, stage). `row` is None for build/link
+    failures (matching the serial results.json schema); verify failures
+    return a row and a negative cache entry.
+    """
+    (tag, combo, src_text, ckey, outdir, backend, manifest,
+     verify_src, driver_o, kernel, contract) = task
+    src = os.path.join(outdir, tag + ".cpp")
+    with open(src, "w") as f:
+        f.write(src_text)
+    obj = os.path.join(outdir, tag + ".o")
+    try:
+        if backend == "asm":
+            s_path = os.path.join(outdir, tag + ".S")
+            bootstrap_cpp(src, s_path)
+            c = run(["aarch64-linux-gnu-as", "-march=armv8.2-a+sve2",
+                     "-o", obj, s_path], timeout=120)
+        else:
+            cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                  "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
+            if backend == "op":
+                cc.insert(2, "-fno-tree-pre")
+            c = run(cc, timeout=120)
+    except subprocess.TimeoutExpired:
+        return None, None, "BUILD TIMEOUT"
+    if c.returncode != 0:
+        return None, None, "BUILD FAIL"
+    verify = os.path.join(outdir, tag + "-verify")
+    try:
+        v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                 "-march=armv8.2-a+sve2",
+                 verify_src, obj, "-Wl,--start-group",
+                 repo_path(manifest, manifest["reference"]["lib"]),
+                 "-Wl,--end-group",
+                 "-lpthread", "-ldl", "-o", verify], timeout=120)
+    except subprocess.TimeoutExpired:
+        return None, None, "LINK TIMEOUT"
+    if v.returncode != 0:
+        return None, None, "LINK FAIL"
+    try:
+        r = run(QEMU + [verify, "20000"], timeout=180)
+    except subprocess.TimeoutExpired:
+        return None, None, "VERIFY TIMEOUT"
+    mism = 0
+    if "mismatches=" in r.stdout:
+        try:
+            mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
+        except (ValueError, IndexError):
+            mism = -1
+    legacy = bool(combo.get("legacy_semantics") or combo.get("legacy_ex")
+                  or combo.get("legacy_k4"))
+    if legacy:
+        # Proxy bound calibrated against the TestBench golden standard:
+        # 0.045078% (k=2/6/10/14 s16 sdot) passes 6/6 runs; 0.090234%
+        # (k=0/4/8/12 also s16 sdot) fails the first run. Accept only
+        # rates near the internal signature (~0.045%), i.e. <= 0.06%.
+        # dct32 internal signature is ~0.104%: use <= 0.11% proxy.
+        ok = r.returncode in (0, 1) and 0 <= mism <= 22528
+    else:
+        ok = r.returncode == 0 and mism == 0
+    row = {"tag": tag, **combo, "contract": contract,
+           "passed": ok, "verify_mismatches": mism, "verify": r.stdout}
+    if not ok:
+        row["upstream_exact"] = False
+        return row, {"passed": False, "verify_mismatches": mism,
+                     "verify": r.stdout, "counts": None}, "VERIFY FAIL"
+    row["upstream_exact"] = not bool(combo.get("legacy_semantics"))
+    driver = os.path.join(outdir, tag + "-trace-driver")
+    try:
+        if backend == "asm":
+            d = run(["aarch64-linux-gnu-gcc", "-no-pie", "-static",
+                     obj, driver_o, "-o", driver], timeout=120)
+        else:
+            d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+                     "-std=c++11",
+                     repo_path(manifest,
+                               manifest["candidate"]["trace_driver_src"]),
+                     obj, "-o", driver], timeout=120)
+    except subprocess.TimeoutExpired:
+        row.update({"passed": False, "counts": None})
+        return row, None, "DRIVER LINK TIMEOUT"
+    if d.returncode != 0:
+        row.update({"passed": False, "counts": None})
+        return row, None, "DRIVER LINK FAIL"
+    if backend == "op" and kernel in ("dct32", "dct16"):
+        start_syms = ["_ZL9op_pass_4PKsPsl"]
+    else:
+        start_syms = manifest["candidate"].get(
+            "range_start", manifest["candidate"]["symbol"])
+    if isinstance(start_syms, str):
+        start_syms = [start_syms]
+    rng = None
+    for start_sym in start_syms:
+        rng = symbol_range(driver, start_sym)
+        if rng:
+            break
+    if rng is None:
+        row.update({"passed": False, "counts": None})
+        return row, None, "NO RANGE"
+    end_sym = manifest["candidate"].get("range_end")
+    if end_sym is None and backend == "op" and kernel == "dct16":
+        # op backend emits op_pass_4/op_pass_11 + wrapper; trace the
+        # two inner passes and stop at the wrapper (it only calls them).
+        end_sym = manifest["candidate"]["symbol"]
+    if end_sym:
+        rng_end = symbol_range(driver, end_sym)
+        if rng_end is None:
+            row.update({"passed": False, "counts": None})
+            return row, None, "NO RANGE_END"
+        rng = (rng[0], rng_end[1])
+    try:
+        counts = true_dynamic(driver, rng[0], rng[1],
+                              os.path.join(outdir, tag + "-trace.log"))
+    except subprocess.TimeoutExpired:
+        row.update({"passed": False, "counts": None})
+        return row, None, "TRACE TIMEOUT"
+    if counts is None:
+        row.update({"passed": False, "counts": None})
+        return row, None, "TRACE FAIL"
+    row["counts"] = counts
+    return row, {"passed": True, "verify_mismatches": mism,
+                 "verify": r.stdout, "counts": counts}, "OK"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm", "op"),
@@ -206,6 +347,9 @@ def main():
     ap.add_argument("--finalize", action="store_true",
                     help="copy the best candidate to kernels/<name>/candidates/"
                          "best_sve2.{cpp,S,o} and run its TestBenchLite gate")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="parallel worker processes (default 1 = serial, "
+                         "identical results order)")
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
     if args.contract:
@@ -265,6 +409,7 @@ def main():
     seen = set()
     src_seen = {}
     emitted = {}
+    tasks = []
     for combo in combos:
         if combo.get("legacy_k4") and args.backend != "op":
             # grouped emitter has no legacy_k4 lowering yet; only the op
@@ -290,11 +435,13 @@ def main():
         src_seen[src_hash] = tag
         ckey = "%s|%s" % (args.contract or manifest.get("contract", ""),
                           src_hash)
+        c_contract = _layout_contract(
+            combo, args.contract, manifest.get("contract", "upstream-exact"))
         if ckey in cache:
             ent = cache[ckey]
             results.append({
                 "tag": tag, **combo,
-                "contract": contract,
+                "contract": c_contract,
                 "upstream_exact": (not combo.get("legacy_semantics")
                                    if ent.get("passed") else False),
                 "passed": ent["passed"],
@@ -309,135 +456,39 @@ def main():
         with open(src, "w") as f:
             f.write(src_text)
         emitted[tag] = src_text
-        obj = os.path.join(args.outdir, tag + ".o")
-        if args.backend == "asm":
-            s_path = os.path.join(args.outdir, tag + ".S")
-            bootstrap_cpp(src, s_path)
-            c = run(["aarch64-linux-gnu-as", "-march=armv8.2-a+sve2",
-                     "-o", obj, s_path])
-        else:
-            cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                  "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
-            if args.backend == "op":
-                cc.insert(2, "-fno-tree-pre")
-            c = run(cc)
-        if c.returncode != 0:
-            print("%-24s BUILD FAIL" % tag)
+        tasks.append((tag, combo, src_text, ckey, args.outdir, args.backend,
+                      manifest, verify_src, driver_o, args.kernel,
+                      c_contract))
+
+    def _measure_all():
+        if args.workers <= 1:
+            for t in tasks:
+                yield measure_layout_candidate(t)
+            return
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=args.workers) as ex:
+            yield from ex.map(measure_layout_candidate, tasks)
+
+    for task, (row, entry, stage) in zip(tasks, _measure_all()):
+        tag = task[0]
+        if entry is not None:
+            cache[task[3]] = entry
+        if row is None:
+            print("%-24s %s" % (tag, stage))
             continue
-        verify = os.path.join(args.outdir, tag + "-verify")
-        v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                 "-march=armv8.2-a+sve2",
-                 verify_src, obj, "-Wl,--start-group",
-                 repo_path(manifest, manifest["reference"]["lib"]),
-                 "-Wl,--end-group",
-                 "-lpthread", "-ldl", "-o", verify])
-        if v.returncode != 0:
-            print("%-24s LINK FAIL" % tag)
-            continue
-        r = run(QEMU + [verify, "20000"])
-        # Gate policy (docs/17 §5): acceptance is the x265 TestBench golden
-        # standard. The scalar differential is a fast proxy: upstream-exact
-        # combos must be bit-identical; legacy-internal-exact combos
-        # intentionally reproduce the internal kernel's rare s16-wrap
-        # divergence from the C reference (~0.045%, passes TestBench), so
-        # accept a small mismatch rate and record it.
-        mism = 0
-        if "mismatches=" in r.stdout:
-            try:
-                mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
-            except (ValueError, IndexError):
-                mism = -1
-        if combo.get("legacy_semantics") or combo.get("legacy_ex") \
-                or combo.get("legacy_k4"):
-            # Proxy bound calibrated against the TestBench golden standard:
-            # 0.045078% (k=2/6/10/14 s16 sdot) passes 6/6 runs; 0.090234%
-            # (k=0/4/8/12 also s16 sdot) fails the first run. Accept only
-            # rates near the internal signature (~0.045%), i.e. <= 0.06%.
-            # dct32 internal signature is ~0.104%: use <= 0.11% proxy.
-            ok = r.returncode in (0, 1) and 0 <= mism <= 22528
-            if combo.get("legacy_ex") or combo.get("legacy_k4"):
-                contract = "legacy-internal-exact"
-        else:
-            ok = r.returncode == 0 and mism == 0
-        print("%-24s verify: %s" % (tag, r.stdout.strip().splitlines()[-1]
-                                    if r.stdout.strip() else "no output"))
-        if not ok:
-            cache[ckey] = {"passed": False,
-                           "verify_mismatches": mism,
-                           "verify": r.stdout,
-                           "counts": None}
-            results.append({"tag": tag, **combo,
-                            "contract": contract,
-                            "upstream_exact": False,
-                            "passed": False,
-                            "verify_mismatches": mism,
-                            "verify": r.stdout})
-            continue
-        driver = os.path.join(args.outdir, tag + "-trace-driver")
-        if args.backend == "asm":
-            d = run(["aarch64-linux-gnu-gcc", "-no-pie", "-static",
-                     obj, driver_o, "-o", driver])
-        else:
-            d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-                     "-std=c++11",
-                     repo_path(manifest,
-                               manifest["candidate"]["trace_driver_src"]),
-                     obj, "-o", driver])
-        if d.returncode != 0:
-            results.append({"tag": tag, **combo,
-                            "passed": False, "counts": None})
-            continue
-        if args.backend == "op" and args.kernel in ("dct32", "dct16"):
-            start_syms = ["_ZL9op_pass_4PKsPsl"]
-        else:
-            start_syms = manifest["candidate"].get(
-                "range_start", manifest["candidate"]["symbol"])
-        if isinstance(start_syms, str):
-            start_syms = [start_syms]
-        rng = None
-        for start_sym in start_syms:
-            rng = symbol_range(driver, start_sym)
-            if rng:
-                break
-        if rng is None:
-            results.append({"tag": tag, **combo,
-                            "passed": False, "counts": None})
-            continue
-        end_sym = manifest["candidate"].get("range_end")
-        if end_sym is None and args.backend == "op" \
-                and args.kernel == "dct16":
-            # op backend emits op_pass_4/op_pass_11 + wrapper; trace the
-            # two inner passes and stop at the wrapper (it only calls them).
-            end_sym = manifest["candidate"]["symbol"]
-        if end_sym:
-            rng_end = symbol_range(driver, end_sym)
-            if rng_end is None:
-                results.append({"tag": tag, **combo,
-                                "passed": False, "counts": None})
-                continue
-            rng = (rng[0], rng_end[1])
-        counts = true_dynamic(driver, rng[0], rng[1],
-                              os.path.join(args.outdir, tag + "-trace.log"))
-        if counts is None:
-            results.append({"tag": tag, **combo,
-                            "passed": False, "counts": None})
-            continue
-        cache[ckey] = {"passed": True,
-                       "verify_mismatches": mism,
-                       "verify": r.stdout,
-                       "counts": counts}
-        results.append({"tag": tag, **combo,
-                        "contract": contract,
-                        "upstream_exact": not combo.get("legacy_semantics"),
-                        "passed": True,
-                        "verify_mismatches": mism,
-                        "counts": counts})
+        results.append(row)
+        counts = row.get("counts")
         if counts:
-            print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d "
+            print("%-24s %s total=%d vector=%d movprfx=%d fused_adj=%d "
                   "sg=%d fused_uop=%d"
-                  % (counts["total"], counts["vector"],
+                  % (tag, stage, counts["total"], counts["vector"],
                      counts["movprfx"], counts["vector_fused"],
-                     counts["scatter_gather"], counts["vector_fused_uop"]))
+                     counts["scatter_gather"],
+                     counts["vector_fused_uop"]))
+        else:
+            print("%-24s %s passed=%s mism=%s"
+                  % (tag, stage, row.get("passed"),
+                     row.get("verify_mismatches")))
 
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)

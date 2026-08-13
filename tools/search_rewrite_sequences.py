@@ -13,6 +13,7 @@ fused_uop).
 """
 
 import argparse
+import concurrent.futures
 import hashlib
 import itertools
 import json
@@ -113,13 +114,108 @@ def emit_seq(kernel, seq):
     raise ValueError(kernel)
 
 
+def measure_rewrite_candidate(task):
+    """Measure one rewrite sequence end-to-end. Module-level so it can be
+    pickled by ProcessPoolExecutor.
+
+    task = (cfg, verify_src, key, src, kernel, outdir)
+    Returns (row, stage) with the same row schema as the serial loop.
+    """
+    cfg, verify_src, key, src, kernel, OUT = task
+    h = hashlib.sha256(src.encode()).hexdigest()[:12]
+    cpp = os.path.join(OUT, "seq_%s.cpp" % h)
+    if not os.path.exists(cpp):
+        open(cpp, "w").write(src)
+    obj = os.path.join(OUT, "seq_%s.o" % h)
+    if not os.path.exists(obj):
+        try:
+            c = run(["aarch64-linux-gnu-g++", "-O2", "-fno-tree-pre",
+                     "-std=c++11", "-march=armv8.2-a+sve2",
+                     "-c", cpp, "-o", obj], timeout=120)
+        except subprocess.TimeoutExpired:
+            return {"seq": key, "_h": h, "build": "TIMEOUT"}, "BUILD TIMEOUT"
+        if c.returncode != 0:
+            return {"seq": key, "_h": h, "build": "FAIL"}, "BUILD FAIL"
+    verify = os.path.join(OUT, "seq_%s-verify" % h)
+    if not os.path.exists(verify):
+        try:
+            v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                     "-march=armv8.2-a+sve2",
+                     verify_src,
+                     obj, "-Wl,--start-group",
+                     os.path.join(ROOT, cfg["ref_lib"]),
+                     "-Wl,--end-group", "-lpthread", "-ldl",
+                     "-o", verify], timeout=120)
+        except subprocess.TimeoutExpired:
+            return {"seq": key, "_h": h, "build": "LINK_TIMEOUT"}, \
+                "LINK TIMEOUT"
+        if v.returncode != 0:
+            return {"seq": key, "_h": h, "build": "LINK_FAIL"}, "LINK FAIL"
+    try:
+        r = run(QEMU + [verify, "20000"], timeout=180)
+    except subprocess.TimeoutExpired:
+        return {"seq": key, "_h": h, "passed": False, "mism": -1,
+                "timeout": True}, "VERIFY TIMEOUT"
+    mism = 0
+    if "mismatches=" in r.stdout:
+        try:
+            mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
+        except ValueError:
+            mism = -1
+    legacy_seq = "legacy_even_sve" in key.split("|")
+    if kernel == "dct16" and not legacy_seq:
+        ok_mism = r.returncode == 0 and mism == 0
+    else:
+        ok_mism = r.returncode in (0, 1) and 0 <= mism <= 22528
+    if not ok_mism:
+        return {"seq": key, "_h": h, "passed": False, "mism": mism}, \
+            "VERIFY FAIL"
+    driver = os.path.join(OUT, "seq_%s-driver" % h)
+    if not os.path.exists(driver):
+        try:
+            d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+                     "-std=c++11",
+                     os.path.join(ROOT, cfg["driver"]),
+                     obj, "-o", driver], timeout=120)
+        except subprocess.TimeoutExpired:
+            return {"seq": key, "passed": True, "mism": mism, "_h": h,
+                    "trace": "LINK_TIMEOUT"}, "DRIVER LINK TIMEOUT"
+        if d.returncode != 0:
+            return {"seq": key, "passed": True, "mism": mism, "_h": h,
+                    "trace": "LINK_FAIL"}, "DRIVER LINK FAIL"
+    rng = symbol_range(driver, cfg["range_start"])
+    rng_end = symbol_range(driver, cfg["range_end"])
+    if not rng or not rng_end:
+        return {"seq": key, "passed": True, "mism": mism, "_h": h,
+                "trace": "NO_RANGE"}, "NO RANGE"
+    try:
+        counts = true_dynamic(driver, rng[0], rng_end[1],
+                              os.path.join(OUT, "seq_%s-trace.log" % h))
+    except subprocess.TimeoutExpired:
+        return {"seq": key, "passed": True, "mism": mism, "_h": h,
+                "trace": "TRACE_TIMEOUT"}, "TRACE TIMEOUT"
+    if counts is None:
+        return {"seq": key, "passed": True, "mism": mism, "_h": h,
+                "trace": "FAIL"}, "TRACE FAIL"
+    return {"seq": key, "passed": True, "mism": mism,
+            "fused_uop": counts["vector_fused_uop"],
+            "raw": counts["vector"],
+            "movprfx": counts["movprfx"], "_h": h}, "OK"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--kernel", choices=("dct32", "dct16"), default="dct32")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="parallel worker processes (default 1 = serial, "
+                         "identical results order)")
+    ap.add_argument("--outdir", default=None,
+                    help="result/artifact directory (default: the kernel's "
+                         "layout-search-rwseq dir)")
     args = ap.parse_args()
     kernel = args.kernel
     cfg = KERNELS[kernel]
-    OUT = cfg["out"]
+    OUT = args.outdir or cfg["out"]
     os.makedirs(OUT, exist_ok=True)
     manifest = load_manifest(cfg["manifest"])
     verify_src = os.path.join(OUT, "verify_generated.cpp")
@@ -151,76 +247,31 @@ def main():
         seqs.append((key, src))
 
     rows = []
+    tasks = []
     for key, src in seqs:
         if key in cached:
             rows.append(dict(cached[key]))
             continue
-        h = hashlib.sha256(src.encode()).hexdigest()[:12]
-        cpp = os.path.join(OUT, "seq_%s.cpp" % h)
-        if not os.path.exists(cpp):
-            open(cpp, "w").write(src)
-        obj = os.path.join(OUT, "seq_%s.o" % h)
-        if not os.path.exists(obj):
-            c = run(["aarch64-linux-gnu-g++", "-O2", "-fno-tree-pre",
-                     "-std=c++11", "-march=armv8.2-a+sve2",
-                     "-c", cpp, "-o", obj])
-            if c.returncode != 0:
-                rows.append({"seq": key, "_h": h, "build": "FAIL"})
-                continue
-        verify = os.path.join(OUT, "seq_%s-verify" % h)
-        if not os.path.exists(verify):
-            v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                     "-march=armv8.2-a+sve2",
-                     verify_src,
-                     obj, "-Wl,--start-group",
-                     os.path.join(ROOT, cfg["ref_lib"]),
-                     "-Wl,--end-group", "-lpthread", "-ldl",
-                     "-o", verify])
-            if v.returncode != 0:
-                rows.append({"seq": key, "_h": h, "build": "LINK_FAIL"})
-                continue
-        r = run(QEMU + [verify, "20000"])
-        mism = 0
-        if "mismatches=" in r.stdout:
-            try:
-                mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
-            except ValueError:
-                mism = -1
-        if kernel == "dct16":
-            legacy_seq = "legacy_even_sve" in key.split("|")
+        tasks.append((cfg, verify_src, key, src, kernel, OUT))
+
+    def _measure_all():
+        if args.workers <= 1:
+            for t in tasks:
+                yield measure_rewrite_candidate(t)
+            return
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=args.workers) as ex:
+            yield from ex.map(measure_rewrite_candidate, tasks)
+
+    for _task, (row, stage) in zip(tasks, _measure_all()):
+        rows.append(row)
+        if row.get("fused_uop") is not None:
+            print("%-60s fused=%s mism=%s"
+                  % (row["seq"] or "(none)", row["fused_uop"],
+                     row["mism"]), flush=True)
         else:
-            legacy_seq = False
-        if kernel == "dct16" and not legacy_seq:
-            ok_mism = r.returncode == 0 and mism == 0
-        else:
-            ok_mism = r.returncode in (0, 1) and 0 <= mism <= 22528
-        if not ok_mism:
-            rows.append({"seq": key, "_h": h, "passed": False, "mism": mism})
-            continue
-        driver = os.path.join(OUT, "seq_%s-driver" % h)
-        if not os.path.exists(driver):
-            d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-                     "-std=c++11",
-                     os.path.join(ROOT, cfg["driver"]),
-                     obj, "-o", driver])
-            if d.returncode != 0:
-                rows.append({"seq": key, "passed": True, "mism": mism,
-                             "_h": h, "trace": "LINK_FAIL"})
-                continue
-        rng = symbol_range(driver, cfg["range_start"])
-        rng_end = symbol_range(driver, cfg["range_end"])
-        if not rng or not rng_end:
-            rows.append({"seq": key, "passed": True, "mism": mism,
-                         "_h": h, "trace": "NO_RANGE"})
-            continue
-        counts = true_dynamic(driver, rng[0], rng_end[1],
-                              os.path.join(OUT, "seq_%s-trace.log" % h))
-        rows.append({"seq": key, "passed": True, "mism": mism,
-                     "fused_uop": counts["vector_fused_uop"],
-                     "raw": counts["vector"],
-                     "movprfx": counts["movprfx"], "_h": h})
-        print("%-60s fused=%s mism=%s" % (key or "(none)", counts[
-              "vector_fused_uop"], mism), flush=True)
+            print("%-60s %s" % (row.get("seq") or "(none)", stage),
+                  flush=True)
 
     measured = [r for r in rows if r.get("fused_uop") is not None]
     if measured:
