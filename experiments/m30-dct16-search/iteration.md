@@ -657,6 +657,14 @@ legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。
 > 且领先扩大。parse_qemu_trace.py 已输出 sg 与 fused_uop；搜索按
 > fused_uop 排名。
 
+### 实机首轮 cycles（2026-08-14，内部保密机型）
+
+同机 dct16 cycles：NEON 174 / 内部 204 / upstream 213 / legacy 209。
+管道配置 NEON 4×128 / SVE2 2×256（同算力宽度）。结论：fused_uop 代理
+不预测周期（我们 704 < 内部 827，实机 209 > 204）；SVE2 两候选均慢于
+同机 NEON；scatter 非主因。下一步：逐段周期剖析定位 SVE2 周期开销
+来源（依赖链/发射率/访存），再决定优化方向。
+
 > 2026-08-14 尝试把 even_sve 扩展到 upstream（k=2/6/10/14 用 s32
 > mul/addp 路径），20 万例上游差分 25% 分歧（首例 idx=32 want=-333
 > got=-310/2）：上游 k2 的 NEON lane 语义与 SVE s32 猜测不匹配，且

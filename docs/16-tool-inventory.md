@@ -111,6 +111,9 @@
   发射器参数；finalize 输出稳定交付产物（best_sve2.cpp/.S）；
 - **验收门禁**：完整 TestBench 注入已跑通（含负向对照），lite 门禁秒级
   可复跑，两者共用 x265 官方 harness 数据与 C 参考；
+- **SA8D 评估（2026-08-14，见 docs/19）**：开源 SVE2 sa8d8=111 动态
+  指令；项目 M0 候选 116-125 未超越；真 256-bit 化 + zip 重排预计
+  ~75-85（-25%~-30%），是下一个收益明确的工具链扩展目标。
 - **通用化缺口**：manifest 仅 dct16 一份；verify harness、lane 语义、
   发射器仍是 per-kernel；rewrites（MachineIR）未接到 SVE2 流程；
 - **搜索空间**：当前 3 个布局组合穷举，耗时 <60s，暂不需要启发式算法；

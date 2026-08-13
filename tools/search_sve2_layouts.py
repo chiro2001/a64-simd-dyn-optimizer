@@ -145,9 +145,17 @@ def main():
         except (ValueError, OSError):
             cache = {}
     verify_src = os.path.join(args.outdir, "verify_generated.cpp")
-    if not os.path.exists(verify_src):
+    contract_marker = os.path.join(args.outdir, "verify_contract.txt")
+    marker = ""
+    if os.path.exists(contract_marker):
+        marker = open(contract_marker).read().strip()
+    if not os.path.exists(verify_src) or marker != contract:
+        # verify_generated.cpp embeds the contract's reference oracle and
+        # gate; it must be regenerated when the contract changes.
         with open(verify_src, "w") as f:
             f.write(gen_verify(manifest))
+        with open(contract_marker, "w") as f:
+            f.write(contract)
 
     combos = layout_combos(manifest)
     if not combos or not manifest.get("layouts"):
