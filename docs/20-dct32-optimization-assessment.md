@@ -21,6 +21,18 @@ v2 改为逐行：叶子留在寄存器里，一行内完成全部 32 个输出
 彻底取消叶子缓冲与重载。这是 manifest 的新搜索轴
 `layout: [v1, v2]`，工具自动枚举并排名。
 
+### 半数硬门已落进工具（2026-08-13）
+
+搜索在 manifest `targets.baseline_fused_uop / halve_gate` 下自动计算
+`baseline_ratio` 并打标（HALVED / near-gate / NO）：
+- dct32：v2 = 7190 / 12710 = **0.566（near-gate）**，v1 = 0.704（NO）；
+- sa8d16：189 / 373 = **0.507（near-gate）**，与 round-0010 的
+  “189 > ⌊373/2⌋=186”批评一致；
+- sa8d：79 / 97 = 0.814（NO）。
+
+后续每个搜索输出都带该门标；`fused_uop` 仍是排名主指标，实机 cycles
+作为最终验收（960/950 可用后）。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。

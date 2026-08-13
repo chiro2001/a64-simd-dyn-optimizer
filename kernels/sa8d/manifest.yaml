@@ -36,6 +36,10 @@ corpus:
   value_range: [0, 255]
   cases: 20000
 
+targets:
+  baseline_fused_uop: 97
+  halve_gate: 0.5
+
 layouts:
   pack: [pair, evenpair]
   reduce: [neon, sve]

@@ -39,5 +39,9 @@ corpus:
   value_range: [0, 255]
   cases: 20000
 
+targets:
+  baseline_fused_uop: 373
+  halve_gate: 0.5
+
 layouts:
   reduce: [sve]

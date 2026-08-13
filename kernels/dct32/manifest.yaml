@@ -37,5 +37,11 @@ corpus:
   value_range: [-255, 255]
   cases: 20000
 
+targets:
+  # Round-0010/用户口径: 上游是 128-bit 算法，SVE256 候选必须把 fused_uop
+  # 压到基线的半数以下才算“真减半”（硬门）。内部参考 4251/4827 是超越目标。
+  baseline_fused_uop: 12710
+  halve_gate: 0.5
+
 layouts:
   layout: [v1, v2]

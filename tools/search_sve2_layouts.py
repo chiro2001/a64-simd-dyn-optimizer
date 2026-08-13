@@ -359,14 +359,25 @@ def main():
     json.dump(cache, open(cache_path, "w"), indent=1)
     ok = [r for r in results if r.get("passed") and r.get("counts")]
     ok.sort(key=lambda r: r["counts"]["vector_fused_uop"])
+    baseline = manifest.get("targets", {}).get("baseline_fused_uop")
+    gate = manifest.get("targets", {}).get("halve_gate", 0.5)
     print("rank by uop-honest fused count (scatter/gather = 4 uops, "
           "docs/17 §1):")
     for r in ok:
-        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d"
+        fu = r["counts"]["vector_fused_uop"]
+        ratio = fu / baseline if baseline else None
+        gate_mark = ""
+        if ratio is not None:
+            gate_mark = (" HALVED" if ratio <= gate else
+                         " near-gate" if ratio <= gate * 1.25 else " NO")
+        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d%s"
               % (r["tag"], r["counts"]["vector"],
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
-                 r["counts"]["vector_fused_uop"]))
+                 fu, gate_mark))
+        if ratio is not None:
+            r["baseline_ratio"] = ratio
+            r["halve_gate_met"] = ratio <= gate
     if args.finalize and ok:
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")
