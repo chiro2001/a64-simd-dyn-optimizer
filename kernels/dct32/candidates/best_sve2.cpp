@@ -273,6 +273,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     const svbool_t pg4s = svwhilelt_b32(0, 4);
     const svbool_t pg4h = svwhilelt_b16(0, 4);
     const svbool_t pg2s = svwhilelt_b32(0, 2);
+    const svbool_t p64 = svptrue_b64();
     const svint64_t zero64 = svdup_n_s64(0);
     const int add = 1 << (shift - 1);
     const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
@@ -422,7 +423,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (1) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 1 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[1][0]);
@@ -437,7 +438,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (3) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 3 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[2][0]);
@@ -452,7 +453,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (5) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 5 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[3][0]);
@@ -467,7 +468,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (7) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 7 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[4][0]);
@@ -482,7 +483,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (9) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 9 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[5][0]);
@@ -497,7 +498,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (11) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 11 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[6][0]);
@@ -512,7 +513,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (13) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 13 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[7][0]);
@@ -527,7 +528,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (15) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 15 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[8][0]);
@@ -542,7 +543,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (17) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 17 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[9][0]);
@@ -557,7 +558,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (19) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 19 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[10][0]);
@@ -572,7 +573,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (21) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 21 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[11][0]);
@@ -587,7 +588,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (23) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 23 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[12][0]);
@@ -602,7 +603,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (25) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 25 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[13][0]);
@@ -617,7 +618,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (27) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 27 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[14][0]);
@@ -632,7 +633,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (29) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 29 * 32 + base, rz);
         }
         {
             svint16_t c0 = svld1_s16(p16, CODD[15][0]);
@@ -647,7 +648,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
             svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (31) * 32 + base, rz);
+            svst1_s16(pg4h, dst + 31 * 32 + base, rz);
         }
         {
             if (shift == 4)

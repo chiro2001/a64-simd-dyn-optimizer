@@ -49,3 +49,9 @@ layouts:
   # round-0012 P0: v3.1 的 pass1 k≡2 切片拆成独立轴（0=4266, 1=3962）；
   # 对 v1/v2/v2b 无效果（源码哈希去重）。
   pass1_k2_slice: [0, 1]
+  # round-0012 P0: odd-k lowering 轴（sdot.d = lane-per-output 4 行切片；
+  # row-reduce = v2 风格逐行 16-term dot+uaddv）。
+  odd_lowering: [sdot.d, row-reduce]
+  # round-0012 P0: odd 路径窄化批次（4 = uzp1+rshrnb+uzp1 批处理；
+  # 1 = 逐输出标量舍入，消融用）。
+  narrow_batch: [1, 4]

@@ -88,8 +88,24 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 - 回放验证：`layout=v3, pass1_k2_slice=0` = **4266**（历史 v3 计数），
   `=1` = **3962**（v3.1），两者 20k 差分 0、零 scatter；v1/v2/v2b
   不受该轴影响（源码哈希去重）；
-- 这是“复合模板 → 可组合语义轴”的第一步；后续轴（odd_lowering、
-  lane_owner、narrow_batch、constant_layout）随模板重构逐个拆出。
+- 续（同批）：`odd_lowering ∈ {sdot.d, row-reduce}` 与
+  `narrow_batch ∈ {1, 4}` 也拆为独立轴，得到 6 个 v3 消融点
+  （20k 差分全 0、零 scatter）：
+
+  | v3 组合（k2 slice / odd / narrow） | fused_uop | 说明 |
+  | --- | ---: | --- |
+  | 1 / sdot.d / 4 | **3962** | v3.1，保持 best |
+  | 1 / row-reduce / 1 | 4252 | 去掉 odd lane-per-output |
+  | 0 / sdot.d / 4 | 4266 | 历史 v3 |
+  | 0 / row-reduce / 1 | 4488 | 两个机制都去掉 |
+  | 1 / sdot.d / 1 | 5494 | 窄化退化标量（stack 229→787） |
+  | 0 / sdot.d / 1 | 5875 | 同上且无 k2 slice |
+
+  消融结论：k≡2 slice 净省 ~304，odd lane-per-output 净省 ~220-290，
+  批量窄化+向量存储是单项最大收益（~1500）。这验证了 round-0012
+  对 v3.1 的机制拆解，且每个机制都能独立开关做机器计数消融。
+- 这是“复合模板 → 可组合语义轴”的第一步；剩余轴（lane_owner、
+  constant_layout、row_group、interpass_layout）随模板重构继续拆出。
 
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 

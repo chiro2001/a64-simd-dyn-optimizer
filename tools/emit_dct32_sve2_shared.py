@@ -317,7 +317,67 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
 """ % (co, c2, c4, odd, k2, k4)
 
 
-def pass_grouped_cpp(pass1_k2_slice=True):
+def _odd_row_reduce(kk):
+    """Per-row 16-term dot (v2-style): 4 sdot.d + 4 uaddv per k."""
+    k = 2 * kk + 1
+    return """\
+        {
+            svint16_t c = svld1_s16(p16, C32[%d]);
+            svint64_t t0 = svdot_s64(zero64, O0, c);
+            svint64_t t1 = svdot_s64(zero64, O1, c);
+            svint64_t t2 = svdot_s64(zero64, O2, c);
+            svint64_t t3 = svdot_s64(zero64, O3, c);
+            dst[%d * 32 + base + 0] =
+                (int16_t)((svaddv_s64(p64, t0) + add) >> shift);
+            dst[%d * 32 + base + 1] =
+                (int16_t)((svaddv_s64(p64, t1) + add) >> shift);
+            dst[%d * 32 + base + 2] =
+                (int16_t)((svaddv_s64(p64, t2) + add) >> shift);
+            dst[%d * 32 + base + 3] =
+                (int16_t)((svaddv_s64(p64, t3) + add) >> shift);
+        }""" % (k, k, k, k, k)
+
+
+def _odd_sdot_d(kk, narrow_batch=4):
+    """Lane-per-output sdot.d over 4 rows; batch or scalar narrow."""
+    k = 2 * kk + 1
+    body = """\
+        {
+            svint16_t c0 = svld1_s16(p16, CODD[%d][0]);
+            svint16_t c1 = svld1_s16(p16, CODD[%d][1]);
+            svint16_t c2 = svld1_s16(p16, CODD[%d][2]);
+            svint16_t c3 = svld1_s16(p16, CODD[%d][3]);
+            svint64_t t = svdot_s64(zero64, X0, c0);
+            t = svdot_s64(t, X1, c1);
+            t = svdot_s64(t, X2, c2);
+            t = svdot_s64(t, X3, c3);
+""" % (kk, kk, kk, kk)
+    if narrow_batch == 4:
+        body += """\
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + %d * 32 + base, rz);
+        }""" % k
+    else:
+        body += """\
+            int64_t tmp[4];
+            svst1_s64(p64, tmp, t);
+            dst[%d * 32 + base + 0] =
+                (int16_t)((tmp[0] + add) >> shift);
+            dst[%d * 32 + base + 1] =
+                (int16_t)((tmp[1] + add) >> shift);
+            dst[%d * 32 + base + 2] =
+                (int16_t)((tmp[2] + add) >> shift);
+            dst[%d * 32 + base + 3] =
+                (int16_t)((tmp[3] + add) >> shift);
+        }""" % (k, k, k, k)
+    return body
+
+
+def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
+                     narrow_batch=4):
     """v3: 4-row groups; odd-k uses lane-per-output SDOT .s slices +
     RSHRNB batch narrow (no per-output uaddv/fmov), mirroring the internal
     reference's structure. Even-k keeps the v2 per-row mul+saddv path.
@@ -363,23 +423,10 @@ def pass_grouped_cpp(pass1_k2_slice=True):
         svint16_t X%d = svtbl2_s16(svcreate2_s16(p%d, q%d), ilo);
 """ % (m, m, m, m, m, m, m))
     slices = "".join(slices)
-    odd = "\n".join(
-        """\
-        {
-            svint16_t c0 = svld1_s16(p16, CODD[%d][0]);
-            svint16_t c1 = svld1_s16(p16, CODD[%d][1]);
-            svint16_t c2 = svld1_s16(p16, CODD[%d][2]);
-            svint16_t c3 = svld1_s16(p16, CODD[%d][3]);
-            svint64_t t = svdot_s64(zero64, X0, c0);
-            t = svdot_s64(t, X1, c1);
-            t = svdot_s64(t, X2, c2);
-            t = svdot_s64(t, X3, c3);
-            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
-                                      svreinterpret_s32_s64(t));
-            svint16_t r = svrshrnb_n_s32(lo, shift);
-            svint16_t rz = svuzp1_s16(r, r);
-            svst1_s16(pg4h, dst + (%d) * 32 + base, rz);
-        }""" % (kk, kk, kk, kk, 2 * kk + 1) for kk in range(16))
+    if odd_lowering == "row-reduce":
+        odd = "\n".join(_odd_row_reduce(kk) for kk in range(16))
+    else:
+        odd = "\n".join(_odd_sdot_d(kk, narrow_batch) for kk in range(16))
     ex = []
     for m in range(2):
         ex.append("""\
@@ -482,6 +529,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     const svbool_t pg4s = svwhilelt_b32(0, 4);
     const svbool_t pg4h = svwhilelt_b16(0, 4);
     const svbool_t pg2s = svwhilelt_b32(0, 2);
+    const svbool_t p64 = svptrue_b64();
     const svint64_t zero64 = svdup_n_s64(0);
     const int add = 1 << (shift - 1);
     const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
@@ -512,13 +560,16 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 %s
     }
 }
-""" % (leaf, slices, ex, odd, k2, k4, k0)
+""" % (leaf, (slices if odd_lowering == "sdot.d" else ""),
+       ex, odd, k2, k4, k0)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
-         pass1_k2_slice=True):
+         pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4):
     if layout == "v3":
-        pass_body = pass_grouped_cpp(pass1_k2_slice=pass1_k2_slice)
+        pass_body = pass_grouped_cpp(pass1_k2_slice=pass1_k2_slice,
+                                     odd_lowering=odd_lowering,
+                                     narrow_batch=narrow_batch)
     elif layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
     else:
@@ -573,10 +624,14 @@ def main():
     ap.add_argument("out", default="generated/dct32/sve2_shared.cpp")
     ap.add_argument("--layout", default="v1")
     ap.add_argument("--pass1-k2-slice", type=int, default=1)
+    ap.add_argument("--odd-lowering", default="sdot.d")
+    ap.add_argument("--narrow-batch", type=int, default=4)
     args = ap.parse_args()
     with open(args.out, "w") as f:
         f.write(emit(layout=args.layout,
-                     pass1_k2_slice=bool(args.pass1_k2_slice)))
+                     pass1_k2_slice=bool(args.pass1_k2_slice),
+                     odd_lowering=args.odd_lowering,
+                     narrow_batch=args.narrow_batch))
     print("wrote %s" % args.out)
 
 
