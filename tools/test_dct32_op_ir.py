@@ -57,6 +57,15 @@ def main():
                  and o.attrs.get("idx") == "ilo"]
     assert not left_tbl2, "tbl2 ilo chains should be rewritten"
     assert any(o.attrs.get("kind") == "zip1d" for o in ops5)
+
+    # Op-level rewrite: legacy_k2 (pass2 k2 mul -> EX sdot).
+    ops6 = apply_rewrites(ops, ["legacy_k2"])
+    r6 = provenance_report(plan, ops6)
+    assert r6["ok"], r6["issues"]
+    left_mul = [o for o in ops6
+                if o.kind == "mul_reduce"
+                and o.tile_id.startswith("p2.k2.k")]
+    assert not left_mul, "pass2 k2 mul_reduce should be rewritten"
     print("OpIR slice OK: %d ops, coverage %.2f, negatives detected"
           % (r["op_count"], r["coverage"]))
     return 0

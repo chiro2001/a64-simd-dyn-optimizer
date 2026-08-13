@@ -87,6 +87,12 @@ flowchart LR
 rewrite 组合同样可达 6464——结构空间搜索的第一维已闭环。
 下一步 rewrite：`merge_narrow8`、`legacy_k2/k4`、`const_prearrange`。
 
+**进度（2026-08-13）**：P0 inc3 完成——新增 `legacy_k2` 原子 rewrite
+（pass2 k2 mul→EX sdot，自动补 EO16/EX，仅 row4）；rewrite 路径
+20k 16 mismatch（legacy 签名）+ TestBenchLite PASS，fused 8046
+（对照手工 legacy_ex=7966，差 ~1% 为调度微差）。已加入 rewrites
+搜索轴。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。
