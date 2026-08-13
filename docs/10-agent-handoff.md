@@ -3,6 +3,28 @@
 本文件供上下文压缩后接手的执行 Agent 使用。开始前按“必读清单”读取下列
 文件，并以仓库当前状态为准；不要凭对话记忆下结论。
 
+## 0. 2026-08-13 深夜状态速览（M30 之后，最新优先）
+
+- **DCT32 best（full-call fused_uop）**：op 后端 row8+legacy(k2/k4)+zip =
+  **6464**（raw 6904）；纯 rewrite 序列 `[legacy_k2, legacy_k4,
+  merge_narrow8, tbl2_to_zip]` 从基础 plan 自动重发现 **6456**；
+  相对上游 12710 = 0.509×，低于 v2 7190，距内部 4827 = 1.34×。
+- **E1-B 达成**：`optimizer/ir/dct32_op_ir.py` + `dct32_op_emit.py`
+  （-O2 -fno-tree-pre）不调用 grouped 块，8283 ≤ Go 8292，20k=0、lite PASS。
+- **P0 完成**：op 级原子 rewrite 引擎（`dct32_rewrites.py`）：
+  `tbl2_to_zip / legacy_k2 / legacy_k4 / merge_narrow8`；序列搜索
+  `tools/search_rewrite_sequences.py`（625→341 唯一）自动重发现 6456；
+  LLVM-MCA 第二代理（best 516 cycles / 2838 uops，排名与 fused 一致）。
+- **已知关键坑（别再踩）**：full-call 指标（3962 只是 pass1）、WAW
+  吞吐、`svlasta` 语义偏移（用 `svlastb`）、zip/trn lane 语义、
+  EEO16 = rev16/rev8 映射、K4S 行 8k+4、op_id 跨 rewrite 冲突、
+  `_parse_m` 新命名（X1_0_b0/k2EX1_0_b0）、legacy verify rc=1。
+- **实机数据**：920B paired：v2-SVE1 vs 上游 sve +4%（CI 不含 1）、
+  v3.1-SVE1 -14%、NEON 仍快；Yitian(Neoverse-N2, VL=128) 基线
+  c/neon/sve = 402/118/83；960 未流片。
+- **下一步**：DCT16/interp8 的 op-rewrite 迁移（无参考验证）、960/920G
+  paired 第三代理、常量预排列（ld1h 736）与 k0 向量化。
+
 ## 1. 仓库与同步（必须遵守）
 
 - 本地（主工作机，代码优先本地改）：`/home/chiro/projects/a64-simd-dyn-optimizer`
