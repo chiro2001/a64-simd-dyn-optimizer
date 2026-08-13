@@ -189,6 +189,37 @@ dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
 宽度（每 SDOT 处理 4 个输出而非 2 个）叠加常量预置换后，静态预算应低于
 689 且 C-exact，才值得进入 960 实机。
 
+## 工具发射器 v1/v2 + 正确性反例（2026-08-13）
+
+`tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
+生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
+构建命令可完全复现。已实现的搜索参数：
+
+- `pass1`：s16 E/O 叶子（每行 `TBL` 全 16-lane 反转 + add/sub）+ 每行
+  一个 `SDOT .d`（常量 [C|C] 预复制）+ NEON bridge 连续窄化
+  （svget_neonq + vmovn + vcombine + vpaddq + vrshrn + vst1）；
+- v1 纯 SVE 窄化（RSHRNB/RSHRNT）被否决：实证发现 SVE2 窄化把结果放在
+  每个 128-bit 段内的偶数/奇数半宽 lane，无法连续排列 4 个输出
+  （h=[f0,f1,hi0,hi1]），这是 v1 全部 lane 错乱的根因；
+- v2 通过 20 万例差分后仅 11 处与 C 分歧（5.5e-5/例）：
+
+```text
+build/dct16_shared_verify 200000
+dct16 sve2 shared mismatch stride=32 first-diff idx=9 want=-2270 got=1826
+```
+
+反例归因：**pass2 的 E/O 在 s16 域溢出**。pass2 输入是 pass1 系数
+（±32767），E=c[j]+c[15-j] 可达 ±65534；s16 叶子与 C 参考的 int32
+叶子分歧。上游 SVE kernel 同样在此处产生 0.000188% 分歧（其 pass2 O
+也是 s16）；我们的 C-exact 合同要求 0，因此该候选标记
+`rejected-correctness`（pass2 溢出反例已保存）。
+
+下一步（v3）：pass2 改为 s32 E/O 叶子（`svaddl/svsubl` 拓宽）+
+`smullb/smullt .s→.d` + 两次 `addp .d` 还原全点积，保持 C-exact；
+pass1 维持 s16 SDOT。指令预算：pass1 ≈ 640，pass2 ≈ 420（s32 点积
+约 6 条/输出），合计约 1060+，仍高于上游 689——该差距是下一轮搜索
+（k-blocking、pass 融合、常量常驻、NEON bridge 窄化变体）要消化的空间。
+
 ### 下一步（发射器设计要点，2026-08-13 交接）
 
 发现报告已确认：奇数输出 k 的 4 个输出 lane 共享常量 `[C_k, -rev(C_k)]`，
