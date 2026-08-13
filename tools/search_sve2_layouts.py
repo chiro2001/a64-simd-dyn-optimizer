@@ -96,7 +96,9 @@ def make_emitter(kernel):
                         legacy_semantics=combo.get("legacy_semantics", 0),
                         legacy_even_full=combo.get("legacy_even_full", 0),
                         store_merge16=combo.get("store_merge16", 0),
-                        pass1_even_factor=combo.get("pass1_even_factor", 0))
+                        pass1_even_factor=combo.get("pass1_even_factor", 0),
+                        pass1_pack_zip=combo.get("pass1_pack_zip", 0),
+                        pass2_pack_zip=combo.get("pass2_pack_zip", 0))
         return emit_fn
     if kernel == "dct8":
         from emit_dct8_sve2_shared import emit
@@ -148,6 +150,12 @@ def main():
         # Prune axis dependencies: inactive axes must be 0 (the emitter
         # ignores them, so these combos would be duplicates).
         if combo.get("pass1_even_factor") and combo.get("pass1") != "quarter":
+            continue
+        if combo.get("pass1_pack_zip") and combo.get("pass1") != "quarter":
+            continue
+        if combo.get("pass2_pack_zip") and not (
+                combo.get("pass2") == "odd-quarter"
+                and combo.get("narrow_merge")):
             continue
         if combo.get("legacy_even_full") and not (
                 combo.get("legacy_semantics")

@@ -600,3 +600,19 @@ EE/EO 无溢出 → 位级等价。
 搜索驱动新增依赖剪枝（factor 仅 quarter、lef 仅 legacy+oddq+nm1、sm16
 仅 oddq+nm1），组合从 512 收敛到 ~144。`best_sve2.*`/best.json 已按
 upstream+sm16+factor（971）重新固化。
+
+### pass1/pass2 pack_zip 轴（2026-08-14 凌晨，tbl/mov 归零）
+
+pass1 打包换成内部同款 zip 构建：`zip1/zip2.d` 两级 8 zip + `revh z.d`
+直接产出行切片 `O[0..3]/O[4..7]/E[0..3]/E[4..7]`（EE/EO 在 factor 轴下
+复用同一次 revh），不再需要 tbl2。pass2 的 QO 打包用 8 zip（行切片直接
+是 p0/p1），legacy QEOW 打包用 3 zip（`zip1(zip1(e0,e2), zip1(e1,e3))`）。
+
+| 合同 | 之前 fused_adj | 之后 | tbl/mov | 验证 |
+| --- | ---: | ---: | ---: | ---: |
+| upstream-exact | 971 | **887** | 62/54 → **0/0** | 200k 差分 0 分歧 |
+| legacy-internal-exact | 878 | **791** | 62/54 → **0/0** | 分歧率 0.045078% 不变，TestBench 4/4 |
+
+剩余差距 60：偶数路径 s32 NEON 段（~104 vs 内部 ~24）、movprfx
+（125 vs 112）、rev32 的 tbx 16。`best_sve2.*`/best.json 已按
+upstream+zip2（887）重新固化。

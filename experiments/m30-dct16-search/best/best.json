@@ -1,18 +1,20 @@
 {
- "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_store_merge16-1_pass1_even_factor-1",
+ "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1",
  "layout": {
   "pass1": "quarter",
   "pass1_k_tile": 4,
   "pass2": "odd-quarter",
   "pass2_k_tile": 1,
   "store_merge16": 1,
-  "pass1_even_factor": 1
+  "pass1_even_factor": 1,
+  "pass1_pack_zip": 1,
+  "pass2_pack_zip": 1
  },
  "counts": {
-  "total": 1226,
-  "vector": 1082,
-  "movprfx": 111,
-  "vector_fused": 971
+  "total": 1155,
+  "vector": 997,
+  "movprfx": 110,
+  "vector_fused": 887
  },
  "artifacts": {
   "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_sve2.cpp",
