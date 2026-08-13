@@ -733,3 +733,23 @@ short+full 差分，零 scatter，vector 5854 / movprfx 464 / stack 630）。
 
 下一轮执行顺序：实现 `k0_even_sdot` 轴 → 搜索验证（5390 目标 <5150）
 → TestBenchLite → 视结果再开 store_wide / spill 消除。
+
+### 6.1 验收与 k0 语义探针（2026-08-14）
+
+- **黄金标准已闭合**：5390 候选（`best_op_r8`，k0_even_sve=1 /
+  row_group=8 / zip / legacy_ex+k4）在 TestBenchLite dct32 门禁
+  5 个 seed 全 PASS（0x12345678 / 1 / 2 / 0xDEADBEEF / 987654321）；
+  复建 .o 的 true-dynamic 计数不变（fused 5390 / vector 5854 /
+  movprfx 464 / stack 630 / 零 scatter）。
+- **k0 链语义（数值探针实测）**：k0 族每行输出是 2-term 点积
+  `(c0*e0 + c1*e1) >> 4`（K0EVEN 行 {64,64}/{83,36}/{64,-64}/{36,-83}
+  按行交错），EEp/EOp 的 8 个 s32 lane 按行交错排列
+  `[e0_r0, e1_r0, e0_r1, e1_r1, ...]`；当前实现
+  `mul→addp(交错)→uzp1_s32→rshrnb(4)→uzp1_s16→store4` 等价于
+  4 行并行 2-term dot。
+- **sdot 化设计约束**：sdot.d 需要 s16 输入；EEp 是 s32（pass2 E 可超
+  s16，避免回绕）。s16 域重建 E 链（去掉 saddlb/saddlt 加宽）会引入
+  内部算子同款回绕签名（legacy 合同允许 ≤0.11%），lane 打包必须与
+  sdot.d 的 4-lane 组边界对齐（每行 2 term → 4 行 × 2 term 占 8 lane，
+  一个 sdot.d 双 128 段覆盖），或按行 2×[term,0] 浪费半条。实现时先用
+  独立数值探针验证分歧率 ~0.104% 再并入发射器。
