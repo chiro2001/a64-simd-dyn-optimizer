@@ -23,6 +23,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from emit_dct16_sve2_shared import emit  # noqa: E402
+from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
 
 
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
@@ -81,6 +82,7 @@ def true_dynamic(binary, start, end, log):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--backend", choices=("acle", "asm"), default="acle")
     ap.add_argument("--outdir",
                     default=os.path.join(ROOT,
                                          "experiments/m30-dct16-search/"
@@ -93,6 +95,11 @@ def main():
         ("quarter", "odd-quarter"),
         ("per-row", "upstream"),
     ]
+    driver_o = os.path.join(args.outdir, "trace-driver.o")
+    if args.backend == "asm" and not os.path.exists(driver_o):
+        run(["aarch64-linux-gnu-gcc", "-O2", "-c",
+             os.path.join(ROOT, "kernels/dct16/shared_trace_driver.c"),
+             "-o", driver_o])
     results = []
     for p1, p2 in combos:
         tag = "p1-%s_p2-%s" % (p1, p2)
@@ -100,8 +107,14 @@ def main():
         with open(src, "w") as f:
             f.write(emit(pass1_layout=p1, pass2_layout=p2))
         obj = os.path.join(args.outdir, tag + ".o")
-        c = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                 "-march=armv8.2-a+sve2", "-c", src, "-o", obj])
+        if args.backend == "asm":
+            s_path = os.path.join(args.outdir, tag + ".S")
+            bootstrap_cpp(src, s_path)
+            c = run(["aarch64-linux-gnu-as", "-march=armv8.2-a+sve2",
+                     "-o", obj, s_path])
+        else:
+            c = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                     "-march=armv8.2-a+sve2", "-c", src, "-o", obj])
         if c.returncode != 0:
             print("%-24s BUILD FAIL" % tag)
             continue
@@ -122,8 +135,12 @@ def main():
                             "upstream_exact": False, "verify": r.stdout})
             continue
         driver = os.path.join(args.outdir, tag + "-trace-driver")
-        d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-                 "-std=c++11", TRACE_DRIVER, obj, "-o", driver])
+        if args.backend == "asm":
+            d = run(["aarch64-linux-gnu-gcc", "-no-pie", "-static",
+                     obj, driver_o, "-o", driver])
+        else:
+            d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+                     "-std=c++11", TRACE_DRIVER, obj, "-o", driver])
         if d.returncode != 0:
             results.append({"tag": tag, "pass1": p1, "pass2": p2,
                             "upstream_exact": True, "counts": None})
