@@ -510,6 +510,9 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   为 `svlastb_s32(pg1s/pg2s, vec)` 直接取 lane0/lane1（注意 GCC/QEMU
   下 `svlasta` 语义偏移，`svlastb` 正确）→ **6464 full（raw 6904）**，
   TestBenchLite 5 seed PASS；vs v2 **-10.1%**、vs 内部 4827 **1.34×**。
+- op 全搜索最终结果（2026-08-13）：
+  `experiments/m30-dct32-search/layout-search-op-final/results.json`
+  （32 个实测候选，best = row8+legacy+zip+svlastb = 6464）。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
