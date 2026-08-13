@@ -56,6 +56,7 @@
 | `tools/count_asm_insns.py` / `classify_disasm.py` | object/disasm → 静态分类 | 通用 |
 | `tools/fusion_analysis.py` | disasm + profile → 融合清单 | 通用 |
 | `tools/recover_loops.py` | trace JSON → 循环健康度 | 通用 |
+| `tools/search_permute.py` | 输入向量布局 + 目标布局 → SVE zip/uzp/trn/rev 置换序列（BFS，含寄存器压力约束） | 通用；用于打包方案搜索 |
 
 ### 编排与契约
 
