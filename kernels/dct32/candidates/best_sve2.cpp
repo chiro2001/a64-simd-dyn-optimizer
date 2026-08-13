@@ -19,6 +19,14 @@ static const uint16_t IDX_CF[16] =
     { 12, 13, 14, 15, 28, 29, 30, 31, 12, 13, 14, 15, 28, 29, 30, 31 };
 static const uint16_t IDX_LO8[16] =
     { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
+static const uint16_t IDX_C0[16] =
+    { 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3 };
+static const uint16_t IDX_C1[16] =
+    { 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7 };
+static const uint16_t IDX_C2[16] =
+    { 8, 9, 10, 11, 8, 9, 10, 11, 8, 9, 10, 11, 8, 9, 10, 11 };
+static const uint16_t IDX_C3[16] =
+    { 12, 13, 14, 15, 12, 13, 14, 15, 12, 13, 14, 15, 12, 13, 14, 15 };
 
 static const int16_t C32[32][16] = {
     { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 },
@@ -282,6 +290,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     const svuint16_t i2 = svld1_u16(p16, IDX_8B);
     const svuint16_t i3 = svld1_u16(p16, IDX_CF);
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
+
 
     for (int g = 0; g < 8; g++)
     {

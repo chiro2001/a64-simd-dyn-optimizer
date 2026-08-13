@@ -140,7 +140,9 @@ def make_emitter(kernel):
             return emit(layout=combo.get("layout", "v1"),
                         pass1_k2_slice=combo.get("pass1_k2_slice", 1),
                         odd_lowering=combo.get("odd_lowering", "sdot.d"),
-                        narrow_batch=combo.get("narrow_batch", 4))
+                        narrow_batch=combo.get("narrow_batch", 4),
+                        constant_layout=combo.get("constant_layout",
+                                                  "derived-replicated"))
         return emit_fn
     if kernel == "interp8":
         from emit_interp8_sve2_shared import emit

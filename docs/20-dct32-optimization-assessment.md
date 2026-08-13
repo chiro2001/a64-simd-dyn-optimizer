@@ -104,8 +104,16 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   消融结论：k≡2 slice 净省 ~304，odd lane-per-output 净省 ~220-290，
   批量窄化+向量存储是单项最大收益（~1500）。这验证了 round-0012
   对 v3.1 的机制拆解，且每个机制都能独立开关做机器计数消融。
+- 再续（同批）：`constant_layout ∈ {derived-replicated, canonical}`：
+  canonical 用运行时 4 条 TBL 从原始 C32 复制切片，derived-replicated
+  是 CODD 预复制（v3.1）。最佳组合（k2=1/odd=sdot.d/narrow=4）下
+  canonical = 4189 vs derived = **3962（+227）**，证明“常量吸收”净省
+  ~227 fused_uop；全部 20k 差分 0、零 scatter。当前 64 个 manifest
+  组合去重后 14 个唯一候选，全搜索约 37s，仍在 <60s 预算内。
 - 这是“复合模板 → 可组合语义轴”的第一步；剩余轴（lane_owner、
-  constant_layout、row_group、interpass_layout）随模板重构继续拆出。
+  row_group=8、interpass_layout、store_topology）随模板重构继续拆出
+  （lane_owner 与 odd_lowering 强相关：output↔sdot.d、partial↔
+  row-reduce；store_topology 固定 contiguous 且 scatter 硬禁用）。
 
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 

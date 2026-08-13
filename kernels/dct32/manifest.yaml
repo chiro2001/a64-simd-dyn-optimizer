@@ -55,3 +55,6 @@ layouts:
   # round-0012 P0: odd 路径窄化批次（4 = uzp1+rshrnb+uzp1 批处理；
   # 1 = 逐输出标量舍入，消融用）。
   narrow_batch: [1, 4]
+  # round-0012 P0: odd 常量布局（derived-replicated = CODD 预复制切片；
+  # canonical = 运行时 4 条 TBL 复制原始 C32，消融“常量吸收”机制）。
+  constant_layout: [derived-replicated, canonical]
