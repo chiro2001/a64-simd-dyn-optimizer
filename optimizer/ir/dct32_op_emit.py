@@ -25,6 +25,8 @@ from emit_dct32_sve2_shared import cpp_constants  # noqa: E402
 IDX_DEFS = """\
 static const uint32_t IDX_REV4S[8] =
     { 3, 2, 1, 0, 7, 6, 5, 4 };
+static const uint16_t IDX_REV8[16] =
+    { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 };
 static const uint16_t IDX_04[16] =
     { 0, 1, 2, 3, 16, 17, 18, 19, 0, 1, 2, 3, 16, 17, 18, 19 };
 static const uint16_t IDX_47[16] =
@@ -116,8 +118,16 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
                         % (_ctype(elem), out, fn, pg, ins[0], ins[1]))
             ctype[out] = _ctype(elem)
         elif kind == "permute":
-            if attrs["kind"] == "tbl":
-                if attrs.get("idx") == "rev4":
+            if attrs["kind"] == "rev16":
+                body.append("    svint16_t %s = svrev_s16(%s);"
+                            % (out, ins[0]))
+                ctype[out] = "svint16_t"
+            elif attrs["kind"] == "tbl":
+                if attrs.get("idx") == "rev8":
+                    body.append("    svint16_t %s = svtbl_s16(%s, rev8);"
+                                % (out, ins[0]))
+                    ctype[out] = "svint16_t"
+                elif attrs.get("idx") == "rev4":
                     body.append("    svint16_t %s = svtbl_s16(%s, rev4);"
                                 % (out, ins[0]))
                     ctype[out] = "svint16_t"
@@ -267,6 +277,8 @@ def emit_acle(plan: Plan, ops: List[Op],
     const svuint16_t i3 = svld1_u16(p16, IDX_CF);
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
 """
+    if plan.lowering.get("legacy_k4"):
+        prologue += "    const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);\n"
     pass4 = "static __attribute__((noinline)) void op_pass_4("\
             "const int16_t* src, int16_t* dst, intptr_t stride)\n{\n%s\n%s\n}"\
             % (prologue, "\n".join(b1))

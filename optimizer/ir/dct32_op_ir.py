@@ -53,6 +53,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     narrow4 = lo.get("narrow_batch", 4) == 4
     k2_slice = bool(lo.get("pass1_k2_slice", 0))
     legacy_ex = bool(lo.get("legacy_ex", 0))
+    legacy_k4 = bool(lo.get("legacy_k4", 0))
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
@@ -78,6 +79,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             eo16 = {}
             eo = {}
             eeo = {}
+            eeo16 = {}
             eeee = {}
             eeeo = {}
             for r in rows:
@@ -111,14 +113,32 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                          attrs={"elem": "s32"})
                 eo[r] = new("sub", tid, "EO_%d" % r, (Ea.out, Erb.out),
                             attrs={"elem": "s32", "lane_owner": "partial"}).out
-                if (k2_slice and pass_id == 1) or (legacy_ex and pass_id == 2):
+                need_e16 = ((k2_slice and pass_id == 1)
+                            or (legacy_ex and pass_id == 2) or legacy_k4)
+                if need_e16:
                     E16 = new("add", tid, "E16_%d" % r, (lo_v.out, rv.out),
                               attrs={"elem": "s16"})
-                    E16r = new("rev", tid, "E16r_%d" % r, (E16.out,),
-                               attrs={"elem": "s16"})
-                    eo16[r] = new(
-                        "sub", tid, "EO16_%d" % r, (E16.out, E16r.out),
-                        attrs={"elem": "s16", "lane_owner": "partial"}).out
+                    if (k2_slice and pass_id == 1) or \
+                            (legacy_ex and pass_id == 2):
+                        E16r = new("rev", tid, "E16r_%d" % r, (E16.out,),
+                                   attrs={"elem": "s16"})
+                        eo16[r] = new(
+                            "sub", tid, "EO16_%d" % r, (E16.out, E16r.out),
+                            attrs={"elem": "s16", "lane_owner": "partial"}).out
+                    if legacy_k4:
+                        # EE16 = E16 + rev16(E16); EEO16 = EE16 - rev8(EE16)
+                        E16rr = new("permute", tid, "E16rr_%d" % r,
+                                    (E16.out,),
+                                    attrs={"kind": "rev16"})
+                        EE16 = new("add", tid, "EE16_%d" % r,
+                                   (E16.out, E16rr.out),
+                                   attrs={"elem": "s16"})
+                        EEr = new("permute", tid, "EEr16_%d" % r,
+                                  (EE16.out,), attrs={"kind": "tbl",
+                                                      "idx": "rev8"})
+                        eeo16[r] = new(
+                            "sub", tid, "EEO16_%d" % r, (EE16.out, EEr.out),
+                            attrs={"elem": "s16", "lane_owner": "partial"}).out
                 EEr = new("rev", tid, "EEr_%d" % r, (EE.out,),
                           attrs={"elem": "s32"})
                 EEE = new("add", tid, "EEE_%d" % r, (EE.out, EEr.out),
@@ -242,23 +262,55 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "lanes": ((pass_id, k, r),),
                                    "topology": "contiguous"})
             # ---- k4 ----
-            for k in K4_K:
-                for r in rows:
-                    tid = "p%d.k4.k%d.row%d" % (pass_id, k, r)
-                    t = new("mul_reduce", tid, "k4m_%d_%d" % (k, r),
-                            (eeo[r],),
-                            attrs={"elem": "s32",
+            if legacy_k4:
+                tid = "p%d.k4.slice" % pass_id
+                pk4 = new("permute", tid, "pk4",
+                          (eeo16[rows[0]], eeo16[rows[1]]),
+                          attrs={"kind": "tbl2", "idx": "i0",
+                                 "lane_owner": "output"})
+                qk4 = new("permute", tid, "qk4",
+                          (eeo16[rows[2]], eeo16[rows[3]]),
+                          attrs={"kind": "tbl2", "idx": "i0",
+                                 "lane_owner": "output"})
+                xk4 = new("permute", tid, "Xk4", (pk4.out, qk4.out),
+                          attrs={"kind": "tbl2", "idx": "ilo",
+                                 "lane_owner": "output"})
+                for k in K4_K:
+                    tid = "p%d.k4.k%d" % (pass_id, k)
+                    t = new("dot_segment", tid, "k4t_%d" % k, (xk4.out,),
+                            attrs={"acc_bits": 64, "lane_owner": "output",
+                                   "slice": 0, "nconst": 1,
                                    "terms": tuple(_g(k, j) for j in range(4)),
-                                   "reduce": "saddv",
-                                   "lane_owner": "partial"})
-                    rnd = new("round_shift", tid, "k4mr_%d_%d" % (k, r),
+                                   "const_src": "K4S[%d]" % (k // 8)})
+                    rnd = new("round_shift", tid, "k4rnd_%d" % k,
                               (t.out,),
                               attrs={"shift": shift, "epoch": pass_id,
                                      "mode": "half-up"})
-                    new("store", tid, "", (rnd.out,),
+                    nar = new("narrow", tid, "k4nar_%d" % k, (rnd.out,),
+                              attrs={"from": "s64", "to": "s16",
+                                     "kind": "uzp+rshrnb+uzp"})
+                    new("store", tid, "", (nar.out,),
                         attrs={"base": "dst", "index": "k*32+i",
-                               "lanes": ((pass_id, k, r),),
+                               "lanes": tuple((pass_id, k, r) for r in rows),
                                "topology": "contiguous"})
+            else:
+                for k in K4_K:
+                    for r in rows:
+                        tid = "p%d.k4.k%d.row%d" % (pass_id, k, r)
+                        t = new("mul_reduce", tid, "k4m_%d_%d" % (k, r),
+                                (eeo[r],),
+                                attrs={"elem": "s32",
+                                       "terms": tuple(_g(k, j) for j in range(4)),
+                                       "reduce": "saddv",
+                                       "lane_owner": "partial"})
+                        rnd = new("round_shift", tid, "k4mr_%d_%d" % (k, r),
+                                  (t.out,),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
+                        new("store", tid, "", (rnd.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": ((pass_id, k, r),),
+                                   "topology": "contiguous"})
             # ---- k0 ----
             k0e = {}
             k0o = {}

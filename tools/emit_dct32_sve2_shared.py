@@ -69,6 +69,14 @@ def cpp_constants():
                          % (body, body, body, body, m))
         lines.append("    },  // k=%d" % k)
     lines.append("};")
+    # k=4 mod 8 slice constants (legacy s16 EEO): [g[0..3]] x4.
+    lines.append("static const int16_t K4S[4][16] = {")
+    for kk in range(4):
+        k = 8 * kk + 4
+        body = ", ".join(str(GT32[k][j]) for j in range(4))
+        lines.append("    { %s, %s, %s, %s },  // k=%d"
+                     % (body, body, body, body, k))
+    lines.append("};")
     return "\n".join(lines)
 
 
