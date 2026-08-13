@@ -39,6 +39,53 @@ static const uint16_t IDX_LO8[16] =
     { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
 """
 
+HELPERS32 = """\
+static inline svint16_t revh_d(svint16_t x)
+{
+    svint16_t r;
+    asm volatile("revh %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t revw_d32(svint32_t x)
+{
+    svint32_t r;
+    asm volatile("revw %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint64_t revw_d64(svint64_t x)
+{
+    svint64_t r;
+    asm volatile("revw %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t addp_s32(svint32_t a, svint32_t b)
+{
+    svint32_t r = a;
+    asm volatile("addp %[r].s, %[p]/m, %[r].s, %[b].s"
+                 : [r] "+w" (r)
+                 : [b] "w" (b), [p] "Upl" (svptrue_b32()));
+    return r;
+}
+"""
+
+K0EVEN_CPP = """\
+static const int32_t K0EVEN[4][8] = {
+    { 64, 64, 64, 64, 64, 64, 64, 64 },   // k=0
+    { 83, 36, 83, 36, 83, 36, 83, 36 },   // k=8
+    { 64, -64, 64, -64, 64, -64, 64, -64 }, // k=16
+    { 36, -83, 36, -83, 36, -83, 36, -83 }, // k=24
+};
+"""
+
 
 def _ctype(elem: str) -> str:
     return {"s16": "svint16_t", "s32": "svint32_t",
@@ -114,24 +161,76 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             elem = attrs["elem"]
             pg = pg_for(elem)
             fn = ("svadd_%s_x" if kind == "add" else "svsub_%s_x") % elem
+            a0, a1 = ins[0], ins[1]
+            if elem == "s32" and attrs.get("view") == "s64":
+                a0 = "svreinterpret_s32_s64(%s)" % a0
+                a1 = "svreinterpret_s32_s64(%s)" % a1
             body.append("    %s %s = %s(%s, %s, %s);"
-                        % (_ctype(elem), out, fn, pg, ins[0], ins[1]))
+                        % (_ctype(elem), out, fn, pg, a0, a1))
             ctype[out] = _ctype(elem)
+        elif kind == "widen_add_sve":
+            fn = "svaddlb_s32" if attrs["kind"] == "lb" else "svaddlt_s32"
+            body.append("    svint32_t %s = %s(%s, %s);"
+                        % (out, fn, ins[0], ins[1]))
+            ctype[out] = "svint32_t"
         elif kind == "permute":
-            if attrs["kind"] in ("zip1d", "zip2d", "trn1d", "trn2d"):
+            pk = attrs["kind"]
+            if pk in ("zip1d64", "zip2d64"):
+                fn = "svzip1_s64" if pk == "zip1d64" else "svzip2_s64"
+                body.append("    svint64_t %s = %s(%s, %s);"
+                            % (out, fn, ins[0], ins[1]))
+                ctype[out] = "svint64_t"
+            elif pk in ("zip1d", "zip2d", "trn1d", "trn2d"):
                 fn = {"zip1d": "svzip1_s64", "zip2d": "svzip2_s64",
                       "trn1d": "svtrn1_s64", "trn2d": "svtrn2_s64"}[
-                          attrs["kind"]]
+                          pk]
                 body.append("    svint16_t %s = svreinterpret_s16_s64("
                             "%s(svreinterpret_s64_s16(%s), "
                             "svreinterpret_s64_s16(%s)));"
                             % (out, fn, ins[0], ins[1]))
                 ctype[out] = "svint16_t"
-            elif attrs["kind"] == "rev16":
+            elif pk in ("view_s64", "view_s16"):
+                body.append("    %s %s = svreinterpret_%s_%s(%s);"
+                            % ("svint64_t" if pk == "view_s64"
+                               else "svint16_t", out,
+                               "s64" if pk == "view_s64" else "s16",
+                               "s16" if pk == "view_s64" else "s64",
+                               ins[0]))
+                ctype[out] = ("svint64_t" if pk == "view_s64"
+                              else "svint16_t")
+            elif pk in ("zip1s", "zip2s"):
+                fn = "svzip1_s32" if pk == "zip1s" else "svzip2_s32"
+                body.append("    svint32_t %s = %s(%s, %s);"
+                            % (out, fn, ins[0], ins[1]))
+                ctype[out] = "svint32_t"
+            elif pk == "uzp1s":
+                body.append("    svint32_t %s = svuzp1_s32(%s, %s);"
+                            % (out, ins[0], ins[1]))
+                ctype[out] = "svint32_t"
+            elif pk in ("uzp1d", "uzp2d"):
+                fn = "svuzp1_s64" if pk == "uzp1d" else "svuzp2_s64"
+                body.append("    svint64_t %s = %s("
+                            "svreinterpret_s64_s32(%s), "
+                            "svreinterpret_s64_s32(%s));"
+                            % (out, fn, ins[0], ins[1]))
+                ctype[out] = "svint64_t"
+            elif pk == "revh_d":
+                body.append("    svint16_t %s = revh_d(%s);"
+                            % (out, ins[0]))
+                ctype[out] = "svint16_t"
+            elif pk == "revw_d32":
+                body.append("    svint32_t %s = revw_d32(%s);"
+                            % (out, ins[0]))
+                ctype[out] = "svint32_t"
+            elif pk == "revw_d64":
+                body.append("    svint64_t %s = revw_d64(%s);"
+                            % (out, ins[0]))
+                ctype[out] = "svint64_t"
+            elif pk == "rev16":
                 body.append("    svint16_t %s = svrev_s16(%s);"
                             % (out, ins[0]))
                 ctype[out] = "svint16_t"
-            elif attrs["kind"] == "tbl":
+            elif pk == "tbl":
                 if attrs.get("idx") == "rev8":
                     body.append("    svint16_t %s = svtbl_s16(%s, rev8);"
                                 % (out, ins[0]))
@@ -209,6 +308,24 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             body.append("    int32_t %s_1 = svlastb_s32(pg2s, %s);"
                         % (out, ins[0]))
             ctype[out] = "int32"
+        elif kind == "mul":
+            cexpr = attrs["const_src"]
+            if cexpr not in const_cache:
+                nm = "c_%s" % out
+                body.append("    const svint32_t %s = svld1_s32(p8s, %s);"
+                            % (nm, cexpr))
+                const_cache[cexpr] = nm
+            body.append("    svint32_t %s = svmul_s32_x(p8s, %s, %s);"
+                        % (out, ins[0], const_cache[cexpr]))
+            ctype[out] = "svint32_t"
+        elif kind == "addp32":
+            body.append("    svint32_t %s = addp_s32(%s, %s);"
+                        % (out, ins[0], ins[1]))
+            ctype[out] = "svint32_t"
+        elif kind == "narrow4_sve":
+            body.append("    svint16_t %s = svrshrnb_n_s32(%s, %d);"
+                        % (out, ins[0], attrs["shift"]))
+            ctype[out] = "svint16_t"
         elif kind == "round_shift":
             if ctype.get(ins[0]) == "svint64_t":
                 body.append("    svint16_t %s = svrshrnb_n_s32("
@@ -326,6 +443,8 @@ def emit_acle(plan: Plan, ops: List[Op],
 %s
 %s
 %s
+%s
+%s
 
 extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t stride)
 {
@@ -333,7 +452,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t stride)
     op_pass_4(src, coef, stride);
     op_pass_11(coef, dst, 32);
 }
-""" % (IDX_DEFS, cpp_constants(), pass4, pass11, func_name)
+""" % (IDX_DEFS, HELPERS32, cpp_constants(), K0EVEN_CPP,
+       pass4, pass11, func_name)
 
 
 def emit_from_plan(plan: Plan, func_name: str = "dynopt_dct32_opbackend") -> str:

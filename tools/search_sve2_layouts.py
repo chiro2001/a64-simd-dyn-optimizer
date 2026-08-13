@@ -165,6 +165,7 @@ def make_emitter(kernel, backend="acle"):
                     acc_split=combo.get("acc_split", 1),
                     legacy_ex=combo.get("legacy_ex", 0),
                     legacy_k4=combo.get("legacy_k4", 0),
+                    k0_even_sve=combo.get("k0_even_sve", 0),
                     slice_kind=combo.get("slice_kind", "tbl2"),
                     row_group=combo.get("row_group", 4),
                     rewrites=[c for c in (combo.get("rw1", "none"),

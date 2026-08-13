@@ -562,6 +562,54 @@ quarter 结构，省掉 s32 E 链的加/减）与 **rev/tbl +272**（内部常�
    （rshrnb 448→256 方向，需要复刻内部的切片/归约排列）；
 3. leaf rev4s/tbl 预排列进常量表（tbl 128 → 0）。
 
+### 5.12 k0_even_sve：DCT32 k0 族 quarter 结构（2026-08-13 晚，已交付）
+
+**数值发现探针**（/tmp，不入库）：把 DCT16 even_sve 链作用到 4 行
+quarter 上，与参考 E 链对比，发现
+`EEp = [P0,Q0,P1,Q1,P2,Q2,P3,Q3]`、`EOp = [R0,S0,...]`，其中
+P/Q/R/S 为 k0 族所需的四个组合（EEEE0/EEEE1/EEEO0/EEEO1），因此
+`k0(k,r) = addp(EEp/EOp × K0EVEN[k])` 的 2 项点积即可一次算出 4 行。
+
+**关键坑（s16 回绕）**：初始实现直接打包 `E16 = lo + rev(hi)`（s16
+求和），随机差分全过但 TestBenchLite 失败——常量 ±255 输入在 pass2
+触发回绕（参考路径是 s32 无回绕）。修正：lo/hi 分别打包，E 在 s32
+域成形：
+`e0 = saddlb(lo_q0, revh(hi_q3)) + saddlb(lo_q3, hi_q0)` 等四式
+（`revh(E16q3) = revh(lo_q3) + hi_q0` 的线性展开），探针在 ±32000
+随机输入下逐 lane 验证 EEp/EOp 恒等于 P/Q/R/S。
+
+**落地**：`k0_even_sve` manifest 轴（要求 k2_slice+legacy_ex+
+legacy_k4，保证 s32 E 链无其他消费者，pass1/pass2 可整链删除）。
+每 4 行 pack：lo/hi 双 pack（28 ops）+ E 成形（8 saddl + 4 add）+
+zip/revw/uzp1 链（~20）→ EEp/EOp；每 k：`mul + addp + uzp1 +
+rshrnb + uzp1_s16 + st1(pg4h)`（RSHRNB 结果在偶 lane，需 uzp1_s16
+压缩——与奇路径同一教训）。
+
+**结果**（row8+legacy+zip 配置，upstream 口径不变）：
+
+| 指标 | 旧 6464 | 新 5814 | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 6464 | **5814** | -650（-10.1%） |
+| vector raw | 6904 | 6286 | -618 |
+| movprfx | 440 | 472 | +32 |
+| MCA（Neoverse-V2） | 519 cyc / 2839 uops | **411 cyc / 2231 uops** | -21% / -21% |
+| 20k 差分 | 7268（legacy 签名） | 7268 | 0（逐位一致） |
+| 逐位差分 vs 旧路径 | — | 0（200k 随机 + 常量 ±255，stride 16/32） | — |
+| TestBenchLite dct32 | PASS | PASS | — |
+
+指令账：标量开销消失（mov -344、fmov -232、sshr -168、add -208、
+rev -128、tbl -64），quarter 结构新增（zip1/2 +288、uzp1 +144、
+saddl +128、mul/addp/revh/revw +240、rshrnb +64）。
+相对内部 4827 = **1.204×**（此前 1.34×）。
+
+**剩余差距**（vs 内部 4827，方向不变）：
+1. rshrnb 512 vs 256：8 行合并窄化（奇/k2/k4 双 bank 先合一再
+   rshrnb，预计 -192~-256）；
+2. zip/uzp1 528/592 vs 304/480：内部 quarter 打包更紧凑（s16 域
+   dot 直接消费，减少 s32 中转）；
+3. 后续可把 `k0_even_sve` 做成原子 rewrite（DCT16 legacy_even_sve
+   同款），使序列搜索也能自动发现该结构。
+
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
 微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈

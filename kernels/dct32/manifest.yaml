@@ -77,6 +77,10 @@ layouts:
   # 2026-08-13: 行分组（4 = 单 bank；8 = 偶/奇双 bank + trn1 合并窄化，
   # 6691→6520）。仅 op backend 消费，grouped 忽略。
   row_group: [4, 8]
+  # 2026-08-13: k0 even_sve（仅 op backend；要求 legacy_ex+legacy_k4）：
+  # k0 family 走 4 行 quarter + EEp/EOp + mul/addp，替换 s32 E 链 +
+  # 标量 extract2 路径。
+  k0_even_sve: [0, 1]
   # 2026-08-13: op 级原子 rewrite 序列（P0），最多 4 步、按 rw1..rw4
   # 顺序应用。完整序列 [legacy_k2, legacy_k4, merge_narrow8,
   # tbl2_to_zip] 从基础 plan 重发现 6456。

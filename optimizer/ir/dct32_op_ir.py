@@ -49,6 +49,14 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     row_group = int(lo.get("row_group", 4))
     acc_split = int(lo.get("acc_split", 1))
     const_layout = lo.get("constant_layout", "derived-replicated")
+    # k0 even_sve: compute the k0 family (0/8/16/24) per 4-row group via
+    # the DCT16-style quarter structure (EEp/EOp + mul + addp). Requires
+    # the legacy s16 paths so the per-row s32 E-chain has no other users.
+    # pass1/pass2 must both have no other consumers of the per-row s32
+    # E-chain: pass1 k2 needs k2_slice, pass2 k2 needs legacy_ex, and
+    # both k4 paths need legacy_k4.
+    k0_even_sve = bool(lo.get("k0_even_sve", 0)) and k2_slice \
+        and legacy_ex and legacy_k4
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -78,6 +86,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             eeo16 = {}
             eeee = {}
             eeeo = {}
+            e16 = {}
             for r in rows:
                 tid = "p%d.leaf.row%d" % (pass_id, r)
                 lo_v = new("load", tid, "lo_%d" % r,
@@ -91,29 +100,33 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 O = new("sub", tid, "O_%d" % r, (lo_v.out, rv.out),
                         attrs={"elem": "s16", "lane_owner": "output"})
                 o[r] = O.out
-                loa = new("unpk", tid, "loa_%d" % r, (lo_v.out,),
-                          attrs={"which": "lo", "elem": "s32"})
-                lob = new("unpk", tid, "lob_%d" % r, (lo_v.out,),
-                          attrs={"which": "hi", "elem": "s32"})
-                rva = new("unpk", tid, "rva_%d" % r, (rv.out,),
-                          attrs={"which": "lo", "elem": "s32"})
-                rvb = new("unpk", tid, "rvb_%d" % r, (rv.out,),
-                          attrs={"which": "hi", "elem": "s32"})
-                Ea = new("add", tid, "Ea_%d" % r, (loa.out, rva.out),
-                         attrs={"elem": "s32"})
-                Eb = new("add", tid, "Eb_%d" % r, (lob.out, rvb.out),
-                         attrs={"elem": "s32"})
-                Erb = new("rev", tid, "Erb_%d" % r, (Eb.out,),
-                          attrs={"elem": "s32"})
-                EE = new("add", tid, "EE_%d" % r, (Ea.out, Erb.out),
-                         attrs={"elem": "s32"})
-                eo[r] = new("sub", tid, "EO_%d" % r, (Ea.out, Erb.out),
-                            attrs={"elem": "s32", "lane_owner": "partial"}).out
+                if not k0_even_sve:
+                    loa = new("unpk", tid, "loa_%d" % r, (lo_v.out,),
+                              attrs={"which": "lo", "elem": "s32"})
+                    lob = new("unpk", tid, "lob_%d" % r, (lo_v.out,),
+                              attrs={"which": "hi", "elem": "s32"})
+                    rva = new("unpk", tid, "rva_%d" % r, (rv.out,),
+                              attrs={"which": "lo", "elem": "s32"})
+                    rvb = new("unpk", tid, "rvb_%d" % r, (rv.out,),
+                              attrs={"which": "hi", "elem": "s32"})
+                    Ea = new("add", tid, "Ea_%d" % r, (loa.out, rva.out),
+                             attrs={"elem": "s32"})
+                    Eb = new("add", tid, "Eb_%d" % r, (lob.out, rvb.out),
+                             attrs={"elem": "s32"})
+                    Erb = new("rev", tid, "Erb_%d" % r, (Eb.out,),
+                              attrs={"elem": "s32"})
+                    EE = new("add", tid, "EE_%d" % r, (Ea.out, Erb.out),
+                             attrs={"elem": "s32"})
+                    eo[r] = new("sub", tid, "EO_%d" % r,
+                                (Ea.out, Erb.out),
+                                attrs={"elem": "s32",
+                                       "lane_owner": "partial"}).out
                 need_e16 = ((k2_slice and pass_id == 1)
                             or (legacy_ex and pass_id == 2) or legacy_k4)
                 if need_e16:
                     E16 = new("add", tid, "E16_%d" % r, (lo_v.out, rv.out),
                               attrs={"elem": "s16"})
+                    e16[r] = E16.out
                     if (k2_slice and pass_id == 1) or \
                             (legacy_ex and pass_id == 2):
                         E16r = new("rev", tid, "E16r_%d" % r, (E16.out,),
@@ -135,18 +148,23 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                         eeo16[r] = new(
                             "sub", tid, "EEO16_%d" % r, (EE16.out, EEr.out),
                             attrs={"elem": "s16", "lane_owner": "partial"}).out
-                EEr = new("rev", tid, "EEr_%d" % r, (EE.out,),
-                          attrs={"elem": "s32"})
-                EEE = new("add", tid, "EEE_%d" % r, (EE.out, EEr.out),
-                          attrs={"elem": "s32"})
-                eeo[r] = new("sub", tid, "EEO_%d" % r, (EE.out, EEr.out),
-                             attrs={"elem": "s32", "lane_owner": "partial"}).out
-                EEEr = new("permute", tid, "EEEr_%d" % r, (EEE.out,),
-                           attrs={"kind": "tbl", "idx": "rev4s"})
-                eeee[r] = new("add", tid, "EEEE_%d" % r, (EEE.out, EEEr.out),
-                              attrs={"elem": "s32"}).out
-                eeeo[r] = new("sub", tid, "EEEO_%d" % r, (EEE.out, EEEr.out),
-                              attrs={"elem": "s32"}).out
+                if not k0_even_sve:
+                    EEr = new("rev", tid, "EEr_%d" % r, (EE.out,),
+                              attrs={"elem": "s32"})
+                    EEE = new("add", tid, "EEE_%d" % r,
+                              (EE.out, EEr.out), attrs={"elem": "s32"})
+                    eeo[r] = new("sub", tid, "EEO_%d" % r,
+                                 (EE.out, EEr.out),
+                                 attrs={"elem": "s32",
+                                        "lane_owner": "partial"}).out
+                    EEEr = new("permute", tid, "EEEr_%d" % r, (EEE.out,),
+                               attrs={"kind": "tbl", "idx": "rev4s"})
+                    eeee[r] = new("add", tid, "EEEE_%d" % r,
+                                  (EEE.out, EEEr.out),
+                                  attrs={"elem": "s32"}).out
+                    eeeo[r] = new("sub", tid, "EEEO_%d" % r,
+                                  (EEE.out, EEEr.out),
+                                  attrs={"elem": "s32"}).out
 
             # ---- odd k: lane-per-output sdot.d ----
             if odd_sdot:
@@ -531,32 +549,180 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "lanes": ((pass_id, k, r),),
                                    "topology": "contiguous"})
             # ---- k0 ----
-            k0e = {}
-            k0o = {}
-            for r in rows:
-                tid = "p%d.k0.extract.row%d" % (pass_id, r)
-                k0e[r] = new("extract2", tid, "k0e_%d" % r, (eeee[r],),
-                             attrs={"which": "e", "elem": "s32"}).out
-                k0o[r] = new("extract2", tid, "k0o_%d" % r, (eeeo[r],),
-                             attrs={"which": "o", "elem": "s32"}).out
-            for k in K0_K:
+            if k0_even_sve:
+                # per contiguous 4-row pack: lo/hi quarters -> E in s32
+                # (no s16 wrap; E = lo + rev(hi)) -> EEp/EOp ->
+                # mul(K0EVEN) + addp + uzp1 + narrow + store4.
+                packs = [rows[b * 4:(b + 1) * 4]
+                         for b in range(row_group // 4)]
+                for b, pr in enumerate(packs):
+                    tid = "p%d.k0es.pack%d" % (pass_id, b)
+                    def pack(src_rows, tag):
+                        a = [new("permute", tid,
+                                 "%s_a%d_%d_%d" % (tag, m, b, pass_id),
+                                 (src_rows[m],),
+                                 attrs={"kind": "view_s64"})
+                             for m in range(4)]
+                        t = [new("permute", tid,
+                                 "%s_t0_%d_%d" % (tag, b, pass_id),
+                                 (a[0].out, a[2].out),
+                                 attrs={"kind": "zip1d64"}),
+                             new("permute", tid,
+                                 "%s_t1_%d_%d" % (tag, b, pass_id),
+                                 (a[0].out, a[2].out),
+                                 attrs={"kind": "zip2d64"}),
+                             new("permute", tid,
+                                 "%s_t2_%d_%d" % (tag, b, pass_id),
+                                 (a[1].out, a[3].out),
+                                 attrs={"kind": "zip1d64"}),
+                             new("permute", tid,
+                                 "%s_t3_%d_%d" % (tag, b, pass_id),
+                                 (a[1].out, a[3].out),
+                                 attrs={"kind": "zip2d64"})]
+                        p = [new("permute", tid,
+                                 "%s_p%d_%d_%d" % (tag, m, b, pass_id),
+                                 (t[0].out, t[2].out) if m < 2
+                                 else (t[1].out, t[3].out),
+                                 attrs={"kind": "zip1d64"
+                                        if m % 2 == 0 else "zip2d64"})
+                             for m in range(4)]
+                        q = [new("permute", tid,
+                                 "%s_q%d_%d_%d" % (tag, m, b, pass_id),
+                                 (p[m].out,),
+                                 attrs={"kind": "view_s16"})
+                             for m in range(4)]
+                        qr = [new("permute", tid,
+                                  "%s_qr%d_%d_%d" % (tag, m, b, pass_id),
+                                  (q[m].out,),
+                                  attrs={"kind": "revh_d"})
+                              for m in (2, 3)]
+                        return q[0].out, q[1].out, qr[0].out, qr[1].out
+                    l0, l1, l2, l3 = pack(["lo_%d" % r for r in pr], "L")
+                    h0, h1, h2, h3 = pack(["hi_%d" % r for r in pr], "H")
+                    # e0 = saddlb(lo0, revh(hi3)) + saddlb(lo3, hi0)
+                    e0 = new("add", tid, "e0_%d_%d" % (b, pass_id),
+                             (new("widen_add_sve", tid,
+                                  "we0_%d_%d" % (b, pass_id),
+                                  (l0, h3), attrs={"kind": "lb"}).out,
+                              new("widen_add_sve", tid,
+                                  "we1_%d_%d" % (b, pass_id),
+                                  (l3, h0), attrs={"kind": "lb"}).out),
+                             attrs={"elem": "s32"})
+                    e1 = new("add", tid, "e1_%d_%d" % (b, pass_id),
+                             (new("widen_add_sve", tid,
+                                  "we2_%d_%d" % (b, pass_id),
+                                  (l0, h3), attrs={"kind": "lt"}).out,
+                              new("widen_add_sve", tid,
+                                  "we3_%d_%d" % (b, pass_id),
+                                  (l3, h0), attrs={"kind": "lt"}).out),
+                             attrs={"elem": "s32"})
+                    e2 = new("add", tid, "e2_%d_%d" % (b, pass_id),
+                             (new("widen_add_sve", tid,
+                                  "we4_%d_%d" % (b, pass_id),
+                                  (l1, h2), attrs={"kind": "lb"}).out,
+                              new("widen_add_sve", tid,
+                                  "we5_%d_%d" % (b, pass_id),
+                                  (l2, h1), attrs={"kind": "lb"}).out),
+                             attrs={"elem": "s32"})
+                    e3 = new("add", tid, "e3_%d_%d" % (b, pass_id),
+                             (new("widen_add_sve", tid,
+                                  "we6_%d_%d" % (b, pass_id),
+                                  (l1, h2), attrs={"kind": "lt"}).out,
+                              new("widen_add_sve", tid,
+                                  "we7_%d_%d" % (b, pass_id),
+                                  (l2, h1), attrs={"kind": "lt"}).out),
+                             attrs={"elem": "s32"})
+                    w0 = new("permute", tid, "w0_%d_%d" % (b, pass_id),
+                             (e0.out, e1.out), attrs={"kind": "zip1s"})
+                    w1 = new("permute", tid, "w1_%d_%d" % (b, pass_id),
+                             (e0.out, e1.out), attrs={"kind": "zip2s"})
+                    u2 = new("permute", tid, "u2_%d_%d" % (b, pass_id),
+                             (e2.out,), attrs={"kind": "revw_d32"})
+                    u3 = new("permute", tid, "u3_%d_%d" % (b, pass_id),
+                             (e3.out,), attrs={"kind": "revw_d32"})
+                    w2 = new("permute", tid, "w2_%d_%d" % (b, pass_id),
+                             (u3.out, u2.out), attrs={"kind": "zip1s"})
+                    w3 = new("permute", tid, "w3_%d_%d" % (b, pass_id),
+                             (u3.out, u2.out), attrs={"kind": "zip2s"})
+                    s0 = new("sub", tid, "s0_%d_%d" % (b, pass_id),
+                             (w0.out, w2.out), attrs={"elem": "s32"})
+                    s1 = new("sub", tid, "s1_%d_%d" % (b, pass_id),
+                             (w1.out, w3.out), attrs={"elem": "s32"})
+                    s2 = new("add", tid, "s2_%d_%d" % (b, pass_id),
+                             (w0.out, w2.out), attrs={"elem": "s32"})
+                    s3 = new("add", tid, "s3_%d_%d" % (b, pass_id),
+                             (w1.out, w3.out), attrs={"elem": "s32"})
+                    v0 = new("permute", tid, "v0_%d_%d" % (b, pass_id),
+                             (s2.out, s3.out), attrs={"kind": "uzp1d"})
+                    v1 = new("permute", tid, "v1_%d_%d" % (b, pass_id),
+                             (s2.out, s3.out), attrs={"kind": "uzp2d"})
+                    v1r = new("permute", tid, "v1r_%d_%d" % (b, pass_id),
+                              (v1.out,), attrs={"kind": "revw_d64"})
+                    eep = new("add", tid, "EEp_%d_%d" % (b, pass_id),
+                              (v0.out, v1r.out),
+                              attrs={"elem": "s32", "view": "s64"})
+                    eop = new("sub", tid, "EOp_%d_%d" % (b, pass_id),
+                              (v0.out, v1r.out),
+                              attrs={"elem": "s32", "view": "s64"})
+                    for k in K0_K:
+                        ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
+                        src = eep if k in (0, 16) else eop
+                        cexpr = "K0EVEN[%d]" % (0 if k == 0 else
+                                                1 if k == 8 else
+                                                2 if k == 16 else 3)
+                        m = new("mul", ktid, "k0m_%d_%d_%d" % (k, b,
+                                                                pass_id),
+                                (src.out,),
+                                attrs={"elem": "s32",
+                                       "const_src": cexpr})
+                        pa = new("addp32", ktid,
+                                 "k0p_%d_%d_%d" % (k, b, pass_id),
+                                 (m.out, m.out), attrs={})
+                        xa = new("permute", ktid,
+                                 "k0x_%d_%d_%d" % (k, b, pass_id),
+                                 (pa.out, pa.out),
+                                 attrs={"kind": "uzp1s"})
+                        na = new("narrow4_sve", ktid,
+                                 "k0n_%d_%d_%d" % (k, b, pass_id),
+                                 (xa.out,),
+                                 attrs={"shift": shift, "mode": "rshrn"})
+                        nc = new("narrow", ktid,
+                                 "k0c_%d_%d_%d" % (k, b, pass_id),
+                                 (na.out, na.out),
+                                 attrs={"from": "s16", "to": "s16"})
+                        new("store", ktid, "", (nc.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in pr),
+                                   "topology": "contiguous",
+                                   "base_off": 4 * b})
+            else:
+                k0e = {}
+                k0o = {}
                 for r in rows:
-                    tid = "p%d.k0.k%d.row%d" % (pass_id, k, r)
-                    src_val = k0e[r] if k in (0, 16) else k0o[r]
-                    t = new("mul_reduce", tid, "k0m_%d_%d" % (k, r),
-                            (src_val,),
-                            attrs={"elem": "s32",
-                                   "terms": (_g(k, 0), _g(k, 1)),
-                                   "reduce": "scalar2",
-                                   "lane_owner": "partial"})
-                    rnd = new("round_shift", tid, "k0mr_%d_%d" % (k, r),
-                              (t.out,),
-                              attrs={"shift": shift, "epoch": pass_id,
-                                     "mode": "half-up"})
-                    new("store", tid, "", (rnd.out,),
-                        attrs={"base": "dst", "index": "k*32+i",
-                               "lanes": ((pass_id, k, r),),
-                               "topology": "contiguous"})
+                    tid = "p%d.k0.extract.row%d" % (pass_id, r)
+                    k0e[r] = new("extract2", tid, "k0e_%d" % r, (eeee[r],),
+                                 attrs={"which": "e", "elem": "s32"}).out
+                    k0o[r] = new("extract2", tid, "k0o_%d" % r, (eeeo[r],),
+                                 attrs={"which": "o", "elem": "s32"}).out
+                for k in K0_K:
+                    for r in rows:
+                        tid = "p%d.k0.k%d.row%d" % (pass_id, k, r)
+                        src_val = k0e[r] if k in (0, 16) else k0o[r]
+                        t = new("mul_reduce", tid,
+                                "k0m_%d_%d" % (k, r), (src_val,),
+                                attrs={"elem": "s32",
+                                       "terms": (_g(k, 0), _g(k, 1)),
+                                       "reduce": "scalar2",
+                                       "lane_owner": "partial"})
+                        rnd = new("round_shift", tid,
+                                  "k0mr_%d_%d" % (k, r), (t.out,),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
+                        new("store", tid, "", (rnd.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": ((pass_id, k, r),),
+                                   "topology": "contiguous"})
     return ops
 
 
@@ -620,7 +786,10 @@ def provenance_report(plan: Plan, ops: List[Op]) -> Dict:
     op_tiles = set()
     for op in ops:
         parts = op.tile_id.split(".")
-        op_tiles.add(".".join(parts[:2]))
+        fam = parts[1]
+        if fam == "k0es":
+            fam = "k0"
+        op_tiles.add("p%d.%s" % (int(parts[0][1:]), fam))
     plan_tiles = {"p%d.%s" % (t.pass_id, t.k_family)
                   for t in plan.tiles}
     uncovered = plan_tiles - op_tiles
