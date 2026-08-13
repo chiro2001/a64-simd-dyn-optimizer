@@ -145,7 +145,8 @@ def make_emitter(kernel):
                                                   "derived-replicated"),
                         isa=combo.get("isa", "sve2"),
                         acc_split=combo.get("acc_split", 1),
-                        leaf_ex=combo.get("leaf_ex", 1))
+                        leaf_ex=combo.get("leaf_ex", 1),
+                        legacy_ex=combo.get("legacy_ex", 0))
         return emit_fn
     if kernel == "interp8":
         from emit_interp8_sve2_shared import emit

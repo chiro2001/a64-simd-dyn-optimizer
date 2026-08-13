@@ -19,6 +19,11 @@ verification.md）已落盘。本文件记录采纳与修正。
 - **row_group=8 双 accumulator**：保留为静态可行性探针，但见 §2 的
   实证修正，先验收益下调。
 
+> **2026-08-13 用户裁定（追加）**：放开 legacy-internal-exact 合同族
+> （允许 s16 sdot 化 k2/k4 带来的与 C 参照的稀有回绕分歧），DCT32
+> 候选验收黄金标准 = **TestBenchLite PASS**（不再要求 upstream-exact /
+> C-exact 位级一致）。内部参考 4827 成为可合法追逐的目标。
+
 ## 2. 咨询后新增证据（必须并入决策，否则 Go 判据失真）
 
 ### 2.1 fused_uop 口径 bug：3962 是 pass1-only

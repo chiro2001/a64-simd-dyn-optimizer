@@ -41,10 +41,10 @@ if [ -f "$ROOT/kernels/sa8d16/candidates/best_sve2.o" ]; then
 else
     CAND_SA8D16=""
 fi
-if [ -f "$ROOT/kernels/dct32/candidates/best_sve2.o" ]; then
+if [ -z "${CAND_DCT32:-}" ] && [ -f "$ROOT/kernels/dct32/candidates/best_sve2.o" ]; then
     CAND_DCT32="$ROOT/kernels/dct32/candidates/best_sve2.o"
 else
-    CAND_DCT32=""
+    CAND_DCT32="${CAND_DCT32:-}"
 fi
 if [ -f "$ROOT/kernels/interp8/candidates/best_sve2.o" ]; then
     CAND_INTERP8="$ROOT/kernels/interp8/candidates/best_sve2.o"

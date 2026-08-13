@@ -401,6 +401,29 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
 > (a) k2/k4 向量化批量窄化存储（消 fmov/saddv 标量开销，预计
 > 数百条）；(b) 与用户确认 legacy-internal-exact 合同族。
 
+> **2026-08-13 用户裁定（追加）**：legacy-internal-exact 合同族**放开**，
+> 黄金标准 = TestBenchLite。DCT32 可合法使用 s16 sdot 化 pass2 k2/k4
+> （稀有回绕分歧由 TestBenchLite 裁决），目标从 v2 7190 直接压向
+> 内部参考 4827。
+
+### 5.9 legacy k2-ex 首测（2026-08-13，合同放开后）
+
+发射器新增 `--legacy-ex 1`：pass2 的 k≡2 也走 s16 EO16 EX 切片 +
+`sdot.d`（替换 s32 mul+saddv）。结果：
+
+| 指标 | v3.1（upstream-exact） | legacy k2-ex |
+| --- | ---: | ---: |
+| full fused_uop | 8292 | **7989（-303）** |
+| 20k 差分 mismatch | 0 | 16 / 20.48M（0.000078%） |
+| TestBenchLite dct32 | PASS（历史） | **5 seed 全 PASS** |
+| scatter | 0 | 0 |
+
+- 黄金标准（TestBenchLite）通过，合同放开方向有效；
+- 但 7989 **仍高于 v2 7190**：legacy 只省了 pass2 k2 的 768 标量
+  指令中的 ~303，grouped 4 行结构的 permute/spill 开销仍在；
+- 结论：单靠 legacy 合同追不平 v2，**必须把 OpIR 后端 + 调度器
+  （zip 化切片、低 spill）做出来**才能逼近内部 4827。
+
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
 微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈
