@@ -110,6 +110,14 @@ g 标签即可改变循环结构；推导后 row8 legacy 仍为 6464/6904（回�
 20k=0、TestBenchLite PASS。限制：k4 legacy dot 链尚未重建（下一步）；
 与计划级 row8（7686）差 ~1% 为调度微差。
 
+**P0 最终验收（2026-08-13）**：`merge_narrow8` 补齐 k4 legacy 链，
+并修复 `_parse_m` 对新命名（X1_0_b0 / k2EX1_0_b0）的解析。
+完整序列 **`[legacy_k2, legacy_k4, merge_narrow8, tbl2_to_zip]`**
+从基础 v3.1 plan（row4、upstream-exact、tbl2）出发 → **fused 6456 /
+raw 6896**，20k 5300（legacy 签名）、TestBenchLite 5 seed 全 PASS——
+**仅凭 rewrite 序列重发现 ≈6464（best）**，不再依赖任何 plan flag。
+与计划级 6464 差 8 条（调度微差）。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。

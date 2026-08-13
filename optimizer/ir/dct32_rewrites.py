@@ -18,8 +18,12 @@ from dct32_op_ir import Op
 
 def _parse_m(out: str) -> int:
     """Extract slice index m from an X out name."""
-    m = re.match(r"^(?:X|EX)(\d+)(?:_b\d+)?$", out)
-    return int(m.group(1)) if m else 0
+    for pat in (r"^(?:k2EX|EX|X)(\d+)(?:_\d+)?_b\d+$",
+                r"^(?:k2EX|EX|X)(\d+)$"):
+        m = re.match(pat, out)
+        if m:
+            return int(m.group(1))
+    return 0
 
 
 def rewrite_tbl2_to_zip(ops: List[Op]) -> List[Op]:
@@ -704,6 +708,81 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
                     insert_at[anchor.op_id] = ops_new
                     remove.update(o.op_id for o in chains)
                 remove.update(o.op_id for o in k2_slice_old)
+            # ---- k4 legacy (dot chains) rebuild: dual bank + narrow8 ----
+            k4_dots = [o for o in retagged
+                       if o.kind == "dot_segment"
+                       and o.tile_id.startswith("p%d.k4.k" % p)
+                       and o.attrs.get("g", 0) == b]
+            if k4_dots:
+                k4_slice_old = [o for o in retagged
+                                if o.tile_id.startswith("p%d.k4.slice" % p)
+                                and o.attrs.get("g", 0) == b]
+                xk4s = []
+                k4_slice_new = []
+                for bi, bank in enumerate(banks):
+                    q0 = leaf[(p, b, bank[0])]["EEO16_%d" % bank[0]]
+                    q1 = leaf[(p, b, bank[1])]["EEO16_%d" % bank[1]]
+                    q2 = leaf[(p, b, bank[2])]["EEO16_%d" % bank[2]]
+                    q3 = leaf[(p, b, bank[3])]["EEO16_%d" % bank[3]]
+                    pk = fresh("permute", "p%d.k4.slice_b%d" % (p, b),
+                               "k4p_%d_b%d" % (bi, b), (q0.out, q1.out),
+                               {"kind": "tbl2", "idx": "i0",
+                                "lane_owner": "output", "g": b})
+                    qk = fresh("permute", "p%d.k4.slice_b%d" % (p, b),
+                               "k4q_%d_b%d" % (bi, b), (q2.out, q3.out),
+                               {"kind": "tbl2", "idx": "i0",
+                                "lane_owner": "output", "g": b})
+                    xk = fresh("permute", "p%d.k4.slice_b%d" % (p, b),
+                               "k4X_%d_b%d" % (bi, b), (pk.out, qk.out),
+                               {"kind": "tbl2", "idx": "ilo",
+                                "lane_owner": "output", "g": b})
+                    xk4s.append(xk)
+                    k4_slice_new.extend([pk, qk, xk])
+                k4_inserted = False
+                for k in K4_K:
+                    chains = [o for o in retagged
+                              if o.tile_id == "p%d.k4.k%d" % (p, k)
+                              and o.attrs.get("g", 0) == b]
+                    stores = [o for o in chains if o.kind == "store"]
+                    if len(stores) != 2:
+                        continue
+                    stores.sort(key=lambda o: o.attrs["lanes"][0][2])
+                    anchor = stores[0]
+                    ops_new = (list(k4_slice_new)
+                               if not k4_inserted else [])
+                    k4_inserted = True
+                    rs = []
+                    for bi in (0, 1):
+                        t = fresh("dot_segment", "p%d.k4.k%d" % (p, k),
+                                  "k4t_%d_b%d" % (k, bi),
+                                  (xk4s[bi].out,),
+                                  {"acc_bits": 64,
+                                   "lane_owner": "output", "slice": 0,
+                                   "nconst": 1,
+                                   "terms": tuple("G[%d][%d]" % (k, j)
+                                                  for j in range(4)),
+                                   "const_src": "K4S[%d]" % (k // 8),
+                                   "g": b})
+                        rnd = fresh("round_shift", "p%d.k4.k%d" % (p, k),
+                                    "k4rnd_%d_b%d" % (k, bi), (t.out,),
+                                    {"shift": 4 if p == 1 else 11,
+                                     "epoch": p, "mode": "half-up", "g": b})
+                        rs.append(rnd)
+                        ops_new.extend([t, rnd])
+                    n8 = fresh("narrow8", "p%d.k4.k%d" % (p, k),
+                               "k4n8_%d" % k, (rs[0].out, rs[1].out),
+                               {"from": "s64", "to": "s16",
+                                "kind": "trn1+uzp", "g": b})
+                    st = fresh("store", "p%d.k4.k%d" % (p, k), "",
+                               (n8.out,),
+                               {"base": "dst", "index": "k*32+i",
+                                "lanes": tuple((p, k, r) for r in rows),
+                                "topology": "contiguous",
+                                "row_group": 8, "base_off": 0, "g": b})
+                    ops_new.extend([n8, st])
+                    insert_at[anchor.op_id] = ops_new
+                    remove.update(o.op_id for o in chains)
+                remove.update(o.op_id for o in k4_slice_old)
 
     result = []
     emitted = set()
