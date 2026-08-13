@@ -655,3 +655,14 @@ legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。
 > 内部算子对 k2 用的是 legacy s16 sdot（无 upstream-exact 参考），
 > 撤回该扩展。upstream 的 k2 s32 路径需要从我们自己的 NEON 路径
 > 逐 lane 推导，列为后续任务。
+
+### upstream k2 s32 推导结论（2026-08-14，二次尝试后撤回）
+
+用 lane 级探针（固定 4 行输入）确认内部构建的 s0/s1 布局：
+`s0 = [r0.EO[0..3], r1.EO[0..3]]`、`s1 = [r2.EO[0..3], r3.EO[0..3]]`
+（EO[j]=E[j]-E[7-j]，每行只有 4 个独立值）。k=2/6/10/14 的 4 项点积
+带 4 个不同系数，单次 addp 只能合成 2 项（EEp/EOp 的“一次 addp 出
+4 项”依赖 T8E 常量的特殊对称结构，对 GT16 常量不成立），因此
+upstream-exact 的 s32 k2 路径不存在与 k0/4/8/12 同等的捷径；要省只能
+靠存储/窄化合并，收益有限。二次尝试（s0/s1 直乘、EO1 变换、EOp 直乘）
+均 25% 分歧，已全部撤回。该方向降级为低优先。
