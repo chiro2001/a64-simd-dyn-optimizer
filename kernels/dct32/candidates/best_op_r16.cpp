@@ -18,9 +18,6 @@ static const uint16_t IDX_CF[16] =
 static const uint16_t IDX_LO8[16] =
     { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
 static const uint32_t IDX_S8[8] = { 0, 1, 2, 3, 8, 9, 10, 11 };
-static const uint16_t IDX_EVEN16[16] =
-    { 0, 2, 4, 6, 8, 10, 12, 14,
-      16, 18, 20, 22, 24, 26, 28, 30 };
 
 static inline svint16_t revh_d(svint16_t x)
 {
@@ -278,7 +275,6 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
     const svbool_t pg8h = svwhilelt_b16(0, 8);
     const svbool_t pg16h = svptrue_b16();
-    const svuint16_t idx_even16 = svld1_u16(p16, IDX_EVEN16);
     const svuint32_t idx8 = svld1_u32(p8s, IDX_S8);
     const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);
 
@@ -801,7 +797,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_1_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_1_3_b2_p1), svreinterpret_s32_s64(acc_1_3_b3_p1));
     const svint16_t nr_n16_1_p1 = svrshrnb_n_s32(w_n16_1_p1, 4);
     const svint16_t nr2_n16_1_p1 = svrshrnb_n_s32(w2_n16_1_p1, 4);
-    svint16_t n16_1_p1 = svtbl2_s16(svcreate2_s16(nr_n16_1_p1, nr2_n16_1_p1), idx_even16);
+    svint16_t n16_1_p1 = svuzp1_s16(nr_n16_1_p1, nr2_n16_1_p1);
     svst1_s16(pg16h, dst + 1 * 32 + g * 16 + 0, n16_1_p1);
     svint16_t c_p1_odd_k3_0 = svld1_s16(p16, CODD[1][0]);
     svint16_t c_p1_odd_k3_1 = svld1_s16(p16, CODD[1][1]);
@@ -839,7 +835,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_3_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_3_3_b2_p1), svreinterpret_s32_s64(acc_3_3_b3_p1));
     const svint16_t nr_n16_3_p1 = svrshrnb_n_s32(w_n16_3_p1, 4);
     const svint16_t nr2_n16_3_p1 = svrshrnb_n_s32(w2_n16_3_p1, 4);
-    svint16_t n16_3_p1 = svtbl2_s16(svcreate2_s16(nr_n16_3_p1, nr2_n16_3_p1), idx_even16);
+    svint16_t n16_3_p1 = svuzp1_s16(nr_n16_3_p1, nr2_n16_3_p1);
     svst1_s16(pg16h, dst + 3 * 32 + g * 16 + 0, n16_3_p1);
     svint16_t c_p1_odd_k5_0 = svld1_s16(p16, CODD[2][0]);
     svint16_t c_p1_odd_k5_1 = svld1_s16(p16, CODD[2][1]);
@@ -877,7 +873,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_5_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_5_3_b2_p1), svreinterpret_s32_s64(acc_5_3_b3_p1));
     const svint16_t nr_n16_5_p1 = svrshrnb_n_s32(w_n16_5_p1, 4);
     const svint16_t nr2_n16_5_p1 = svrshrnb_n_s32(w2_n16_5_p1, 4);
-    svint16_t n16_5_p1 = svtbl2_s16(svcreate2_s16(nr_n16_5_p1, nr2_n16_5_p1), idx_even16);
+    svint16_t n16_5_p1 = svuzp1_s16(nr_n16_5_p1, nr2_n16_5_p1);
     svst1_s16(pg16h, dst + 5 * 32 + g * 16 + 0, n16_5_p1);
     svint16_t c_p1_odd_k7_0 = svld1_s16(p16, CODD[3][0]);
     svint16_t c_p1_odd_k7_1 = svld1_s16(p16, CODD[3][1]);
@@ -915,7 +911,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_7_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_7_3_b2_p1), svreinterpret_s32_s64(acc_7_3_b3_p1));
     const svint16_t nr_n16_7_p1 = svrshrnb_n_s32(w_n16_7_p1, 4);
     const svint16_t nr2_n16_7_p1 = svrshrnb_n_s32(w2_n16_7_p1, 4);
-    svint16_t n16_7_p1 = svtbl2_s16(svcreate2_s16(nr_n16_7_p1, nr2_n16_7_p1), idx_even16);
+    svint16_t n16_7_p1 = svuzp1_s16(nr_n16_7_p1, nr2_n16_7_p1);
     svst1_s16(pg16h, dst + 7 * 32 + g * 16 + 0, n16_7_p1);
     svint16_t c_p1_odd_k9_0 = svld1_s16(p16, CODD[4][0]);
     svint16_t c_p1_odd_k9_1 = svld1_s16(p16, CODD[4][1]);
@@ -953,7 +949,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_9_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_9_3_b2_p1), svreinterpret_s32_s64(acc_9_3_b3_p1));
     const svint16_t nr_n16_9_p1 = svrshrnb_n_s32(w_n16_9_p1, 4);
     const svint16_t nr2_n16_9_p1 = svrshrnb_n_s32(w2_n16_9_p1, 4);
-    svint16_t n16_9_p1 = svtbl2_s16(svcreate2_s16(nr_n16_9_p1, nr2_n16_9_p1), idx_even16);
+    svint16_t n16_9_p1 = svuzp1_s16(nr_n16_9_p1, nr2_n16_9_p1);
     svst1_s16(pg16h, dst + 9 * 32 + g * 16 + 0, n16_9_p1);
     svint16_t c_p1_odd_k11_0 = svld1_s16(p16, CODD[5][0]);
     svint16_t c_p1_odd_k11_1 = svld1_s16(p16, CODD[5][1]);
@@ -991,7 +987,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_11_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_11_3_b2_p1), svreinterpret_s32_s64(acc_11_3_b3_p1));
     const svint16_t nr_n16_11_p1 = svrshrnb_n_s32(w_n16_11_p1, 4);
     const svint16_t nr2_n16_11_p1 = svrshrnb_n_s32(w2_n16_11_p1, 4);
-    svint16_t n16_11_p1 = svtbl2_s16(svcreate2_s16(nr_n16_11_p1, nr2_n16_11_p1), idx_even16);
+    svint16_t n16_11_p1 = svuzp1_s16(nr_n16_11_p1, nr2_n16_11_p1);
     svst1_s16(pg16h, dst + 11 * 32 + g * 16 + 0, n16_11_p1);
     svint16_t c_p1_odd_k13_0 = svld1_s16(p16, CODD[6][0]);
     svint16_t c_p1_odd_k13_1 = svld1_s16(p16, CODD[6][1]);
@@ -1029,7 +1025,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_13_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_13_3_b2_p1), svreinterpret_s32_s64(acc_13_3_b3_p1));
     const svint16_t nr_n16_13_p1 = svrshrnb_n_s32(w_n16_13_p1, 4);
     const svint16_t nr2_n16_13_p1 = svrshrnb_n_s32(w2_n16_13_p1, 4);
-    svint16_t n16_13_p1 = svtbl2_s16(svcreate2_s16(nr_n16_13_p1, nr2_n16_13_p1), idx_even16);
+    svint16_t n16_13_p1 = svuzp1_s16(nr_n16_13_p1, nr2_n16_13_p1);
     svst1_s16(pg16h, dst + 13 * 32 + g * 16 + 0, n16_13_p1);
     svint16_t c_p1_odd_k15_0 = svld1_s16(p16, CODD[7][0]);
     svint16_t c_p1_odd_k15_1 = svld1_s16(p16, CODD[7][1]);
@@ -1067,7 +1063,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_15_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_15_3_b2_p1), svreinterpret_s32_s64(acc_15_3_b3_p1));
     const svint16_t nr_n16_15_p1 = svrshrnb_n_s32(w_n16_15_p1, 4);
     const svint16_t nr2_n16_15_p1 = svrshrnb_n_s32(w2_n16_15_p1, 4);
-    svint16_t n16_15_p1 = svtbl2_s16(svcreate2_s16(nr_n16_15_p1, nr2_n16_15_p1), idx_even16);
+    svint16_t n16_15_p1 = svuzp1_s16(nr_n16_15_p1, nr2_n16_15_p1);
     svst1_s16(pg16h, dst + 15 * 32 + g * 16 + 0, n16_15_p1);
     svint16_t c_p1_odd_k17_0 = svld1_s16(p16, CODD[8][0]);
     svint16_t c_p1_odd_k17_1 = svld1_s16(p16, CODD[8][1]);
@@ -1105,7 +1101,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_17_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_17_3_b2_p1), svreinterpret_s32_s64(acc_17_3_b3_p1));
     const svint16_t nr_n16_17_p1 = svrshrnb_n_s32(w_n16_17_p1, 4);
     const svint16_t nr2_n16_17_p1 = svrshrnb_n_s32(w2_n16_17_p1, 4);
-    svint16_t n16_17_p1 = svtbl2_s16(svcreate2_s16(nr_n16_17_p1, nr2_n16_17_p1), idx_even16);
+    svint16_t n16_17_p1 = svuzp1_s16(nr_n16_17_p1, nr2_n16_17_p1);
     svst1_s16(pg16h, dst + 17 * 32 + g * 16 + 0, n16_17_p1);
     svint16_t c_p1_odd_k19_0 = svld1_s16(p16, CODD[9][0]);
     svint16_t c_p1_odd_k19_1 = svld1_s16(p16, CODD[9][1]);
@@ -1143,7 +1139,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_19_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_19_3_b2_p1), svreinterpret_s32_s64(acc_19_3_b3_p1));
     const svint16_t nr_n16_19_p1 = svrshrnb_n_s32(w_n16_19_p1, 4);
     const svint16_t nr2_n16_19_p1 = svrshrnb_n_s32(w2_n16_19_p1, 4);
-    svint16_t n16_19_p1 = svtbl2_s16(svcreate2_s16(nr_n16_19_p1, nr2_n16_19_p1), idx_even16);
+    svint16_t n16_19_p1 = svuzp1_s16(nr_n16_19_p1, nr2_n16_19_p1);
     svst1_s16(pg16h, dst + 19 * 32 + g * 16 + 0, n16_19_p1);
     svint16_t c_p1_odd_k21_0 = svld1_s16(p16, CODD[10][0]);
     svint16_t c_p1_odd_k21_1 = svld1_s16(p16, CODD[10][1]);
@@ -1181,7 +1177,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_21_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_21_3_b2_p1), svreinterpret_s32_s64(acc_21_3_b3_p1));
     const svint16_t nr_n16_21_p1 = svrshrnb_n_s32(w_n16_21_p1, 4);
     const svint16_t nr2_n16_21_p1 = svrshrnb_n_s32(w2_n16_21_p1, 4);
-    svint16_t n16_21_p1 = svtbl2_s16(svcreate2_s16(nr_n16_21_p1, nr2_n16_21_p1), idx_even16);
+    svint16_t n16_21_p1 = svuzp1_s16(nr_n16_21_p1, nr2_n16_21_p1);
     svst1_s16(pg16h, dst + 21 * 32 + g * 16 + 0, n16_21_p1);
     svint16_t c_p1_odd_k23_0 = svld1_s16(p16, CODD[11][0]);
     svint16_t c_p1_odd_k23_1 = svld1_s16(p16, CODD[11][1]);
@@ -1219,7 +1215,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_23_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_23_3_b2_p1), svreinterpret_s32_s64(acc_23_3_b3_p1));
     const svint16_t nr_n16_23_p1 = svrshrnb_n_s32(w_n16_23_p1, 4);
     const svint16_t nr2_n16_23_p1 = svrshrnb_n_s32(w2_n16_23_p1, 4);
-    svint16_t n16_23_p1 = svtbl2_s16(svcreate2_s16(nr_n16_23_p1, nr2_n16_23_p1), idx_even16);
+    svint16_t n16_23_p1 = svuzp1_s16(nr_n16_23_p1, nr2_n16_23_p1);
     svst1_s16(pg16h, dst + 23 * 32 + g * 16 + 0, n16_23_p1);
     svint16_t c_p1_odd_k25_0 = svld1_s16(p16, CODD[12][0]);
     svint16_t c_p1_odd_k25_1 = svld1_s16(p16, CODD[12][1]);
@@ -1257,7 +1253,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_25_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_25_3_b2_p1), svreinterpret_s32_s64(acc_25_3_b3_p1));
     const svint16_t nr_n16_25_p1 = svrshrnb_n_s32(w_n16_25_p1, 4);
     const svint16_t nr2_n16_25_p1 = svrshrnb_n_s32(w2_n16_25_p1, 4);
-    svint16_t n16_25_p1 = svtbl2_s16(svcreate2_s16(nr_n16_25_p1, nr2_n16_25_p1), idx_even16);
+    svint16_t n16_25_p1 = svuzp1_s16(nr_n16_25_p1, nr2_n16_25_p1);
     svst1_s16(pg16h, dst + 25 * 32 + g * 16 + 0, n16_25_p1);
     svint16_t c_p1_odd_k27_0 = svld1_s16(p16, CODD[13][0]);
     svint16_t c_p1_odd_k27_1 = svld1_s16(p16, CODD[13][1]);
@@ -1295,7 +1291,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_27_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_27_3_b2_p1), svreinterpret_s32_s64(acc_27_3_b3_p1));
     const svint16_t nr_n16_27_p1 = svrshrnb_n_s32(w_n16_27_p1, 4);
     const svint16_t nr2_n16_27_p1 = svrshrnb_n_s32(w2_n16_27_p1, 4);
-    svint16_t n16_27_p1 = svtbl2_s16(svcreate2_s16(nr_n16_27_p1, nr2_n16_27_p1), idx_even16);
+    svint16_t n16_27_p1 = svuzp1_s16(nr_n16_27_p1, nr2_n16_27_p1);
     svst1_s16(pg16h, dst + 27 * 32 + g * 16 + 0, n16_27_p1);
     svint16_t c_p1_odd_k29_0 = svld1_s16(p16, CODD[14][0]);
     svint16_t c_p1_odd_k29_1 = svld1_s16(p16, CODD[14][1]);
@@ -1333,7 +1329,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_29_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_29_3_b2_p1), svreinterpret_s32_s64(acc_29_3_b3_p1));
     const svint16_t nr_n16_29_p1 = svrshrnb_n_s32(w_n16_29_p1, 4);
     const svint16_t nr2_n16_29_p1 = svrshrnb_n_s32(w2_n16_29_p1, 4);
-    svint16_t n16_29_p1 = svtbl2_s16(svcreate2_s16(nr_n16_29_p1, nr2_n16_29_p1), idx_even16);
+    svint16_t n16_29_p1 = svuzp1_s16(nr_n16_29_p1, nr2_n16_29_p1);
     svst1_s16(pg16h, dst + 29 * 32 + g * 16 + 0, n16_29_p1);
     svint16_t c_p1_odd_k31_0 = svld1_s16(p16, CODD[15][0]);
     svint16_t c_p1_odd_k31_1 = svld1_s16(p16, CODD[15][1]);
@@ -1371,7 +1367,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_n16_31_p1 = svuzp1_s32(svreinterpret_s32_s64(acc_31_3_b2_p1), svreinterpret_s32_s64(acc_31_3_b3_p1));
     const svint16_t nr_n16_31_p1 = svrshrnb_n_s32(w_n16_31_p1, 4);
     const svint16_t nr2_n16_31_p1 = svrshrnb_n_s32(w2_n16_31_p1, 4);
-    svint16_t n16_31_p1 = svtbl2_s16(svcreate2_s16(nr_n16_31_p1, nr2_n16_31_p1), idx_even16);
+    svint16_t n16_31_p1 = svuzp1_s16(nr_n16_31_p1, nr2_n16_31_p1);
     svst1_s16(pg16h, dst + 31 * 32 + g * 16 + 0, n16_31_p1);
     svint16_t k2z1_b0_p1 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EO16_0_p1), svreinterpret_s64_s16(EO16_2_p1)));
     svint16_t k2z2_b0_p1 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EO16_1_p1), svreinterpret_s64_s16(EO16_3_p1)));
@@ -1415,7 +1411,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_2_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_2_b2_p1), svreinterpret_s32_s64(k2acc_2_b3_p1));
     const svint16_t nr_k2n16_2_p1 = svrshrnb_n_s32(w_k2n16_2_p1, 4);
     const svint16_t nr2_k2n16_2_p1 = svrshrnb_n_s32(w2_k2n16_2_p1, 4);
-    svint16_t k2n16_2_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_2_p1, nr2_k2n16_2_p1), idx_even16);
+    svint16_t k2n16_2_p1 = svuzp1_s16(nr_k2n16_2_p1, nr2_k2n16_2_p1);
     svst1_s16(pg16h, dst + 2 * 32 + g * 16 + 0, k2n16_2_p1);
     svint16_t c_p1_k2_k6_0 = svld1_s16(p16, K2S[1][0]);
     svint16_t c_p1_k2_k6_1 = svld1_s16(p16, K2S[1][1]);
@@ -1435,7 +1431,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_6_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_6_b2_p1), svreinterpret_s32_s64(k2acc_6_b3_p1));
     const svint16_t nr_k2n16_6_p1 = svrshrnb_n_s32(w_k2n16_6_p1, 4);
     const svint16_t nr2_k2n16_6_p1 = svrshrnb_n_s32(w2_k2n16_6_p1, 4);
-    svint16_t k2n16_6_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_6_p1, nr2_k2n16_6_p1), idx_even16);
+    svint16_t k2n16_6_p1 = svuzp1_s16(nr_k2n16_6_p1, nr2_k2n16_6_p1);
     svst1_s16(pg16h, dst + 6 * 32 + g * 16 + 0, k2n16_6_p1);
     svint16_t c_p1_k2_k10_0 = svld1_s16(p16, K2S[2][0]);
     svint16_t c_p1_k2_k10_1 = svld1_s16(p16, K2S[2][1]);
@@ -1455,7 +1451,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_10_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_10_b2_p1), svreinterpret_s32_s64(k2acc_10_b3_p1));
     const svint16_t nr_k2n16_10_p1 = svrshrnb_n_s32(w_k2n16_10_p1, 4);
     const svint16_t nr2_k2n16_10_p1 = svrshrnb_n_s32(w2_k2n16_10_p1, 4);
-    svint16_t k2n16_10_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_10_p1, nr2_k2n16_10_p1), idx_even16);
+    svint16_t k2n16_10_p1 = svuzp1_s16(nr_k2n16_10_p1, nr2_k2n16_10_p1);
     svst1_s16(pg16h, dst + 10 * 32 + g * 16 + 0, k2n16_10_p1);
     svint16_t c_p1_k2_k14_0 = svld1_s16(p16, K2S[3][0]);
     svint16_t c_p1_k2_k14_1 = svld1_s16(p16, K2S[3][1]);
@@ -1475,7 +1471,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_14_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_14_b2_p1), svreinterpret_s32_s64(k2acc_14_b3_p1));
     const svint16_t nr_k2n16_14_p1 = svrshrnb_n_s32(w_k2n16_14_p1, 4);
     const svint16_t nr2_k2n16_14_p1 = svrshrnb_n_s32(w2_k2n16_14_p1, 4);
-    svint16_t k2n16_14_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_14_p1, nr2_k2n16_14_p1), idx_even16);
+    svint16_t k2n16_14_p1 = svuzp1_s16(nr_k2n16_14_p1, nr2_k2n16_14_p1);
     svst1_s16(pg16h, dst + 14 * 32 + g * 16 + 0, k2n16_14_p1);
     svint16_t c_p1_k2_k18_0 = svld1_s16(p16, K2S[4][0]);
     svint16_t c_p1_k2_k18_1 = svld1_s16(p16, K2S[4][1]);
@@ -1495,7 +1491,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_18_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_18_b2_p1), svreinterpret_s32_s64(k2acc_18_b3_p1));
     const svint16_t nr_k2n16_18_p1 = svrshrnb_n_s32(w_k2n16_18_p1, 4);
     const svint16_t nr2_k2n16_18_p1 = svrshrnb_n_s32(w2_k2n16_18_p1, 4);
-    svint16_t k2n16_18_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_18_p1, nr2_k2n16_18_p1), idx_even16);
+    svint16_t k2n16_18_p1 = svuzp1_s16(nr_k2n16_18_p1, nr2_k2n16_18_p1);
     svst1_s16(pg16h, dst + 18 * 32 + g * 16 + 0, k2n16_18_p1);
     svint16_t c_p1_k2_k22_0 = svld1_s16(p16, K2S[5][0]);
     svint16_t c_p1_k2_k22_1 = svld1_s16(p16, K2S[5][1]);
@@ -1515,7 +1511,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_22_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_22_b2_p1), svreinterpret_s32_s64(k2acc_22_b3_p1));
     const svint16_t nr_k2n16_22_p1 = svrshrnb_n_s32(w_k2n16_22_p1, 4);
     const svint16_t nr2_k2n16_22_p1 = svrshrnb_n_s32(w2_k2n16_22_p1, 4);
-    svint16_t k2n16_22_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_22_p1, nr2_k2n16_22_p1), idx_even16);
+    svint16_t k2n16_22_p1 = svuzp1_s16(nr_k2n16_22_p1, nr2_k2n16_22_p1);
     svst1_s16(pg16h, dst + 22 * 32 + g * 16 + 0, k2n16_22_p1);
     svint16_t c_p1_k2_k26_0 = svld1_s16(p16, K2S[6][0]);
     svint16_t c_p1_k2_k26_1 = svld1_s16(p16, K2S[6][1]);
@@ -1535,7 +1531,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_26_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_26_b2_p1), svreinterpret_s32_s64(k2acc_26_b3_p1));
     const svint16_t nr_k2n16_26_p1 = svrshrnb_n_s32(w_k2n16_26_p1, 4);
     const svint16_t nr2_k2n16_26_p1 = svrshrnb_n_s32(w2_k2n16_26_p1, 4);
-    svint16_t k2n16_26_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_26_p1, nr2_k2n16_26_p1), idx_even16);
+    svint16_t k2n16_26_p1 = svuzp1_s16(nr_k2n16_26_p1, nr2_k2n16_26_p1);
     svst1_s16(pg16h, dst + 26 * 32 + g * 16 + 0, k2n16_26_p1);
     svint16_t c_p1_k2_k30_0 = svld1_s16(p16, K2S[7][0]);
     svint16_t c_p1_k2_k30_1 = svld1_s16(p16, K2S[7][1]);
@@ -1555,7 +1551,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k2n16_30_p1 = svuzp1_s32(svreinterpret_s32_s64(k2acc_30_b2_p1), svreinterpret_s32_s64(k2acc_30_b3_p1));
     const svint16_t nr_k2n16_30_p1 = svrshrnb_n_s32(w_k2n16_30_p1, 4);
     const svint16_t nr2_k2n16_30_p1 = svrshrnb_n_s32(w2_k2n16_30_p1, 4);
-    svint16_t k2n16_30_p1 = svtbl2_s16(svcreate2_s16(nr_k2n16_30_p1, nr2_k2n16_30_p1), idx_even16);
+    svint16_t k2n16_30_p1 = svuzp1_s16(nr_k2n16_30_p1, nr2_k2n16_30_p1);
     svst1_s16(pg16h, dst + 30 * 32 + g * 16 + 0, k2n16_30_p1);
     svint16_t k4z1_b0_p1 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EEO16_0_p1), svreinterpret_s64_s16(EEO16_2_p1)));
     svint16_t k4z2_b0_p1 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EEO16_1_p1), svreinterpret_s64_s16(EEO16_3_p1)));
@@ -1578,7 +1574,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k4n16_4_p1 = svuzp1_s32(svreinterpret_s32_s64(k4t_4_b2_p1), svreinterpret_s32_s64(k4t_4_b3_p1));
     const svint16_t nr_k4n16_4_p1 = svrshrnb_n_s32(w_k4n16_4_p1, 4);
     const svint16_t nr2_k4n16_4_p1 = svrshrnb_n_s32(w2_k4n16_4_p1, 4);
-    svint16_t k4n16_4_p1 = svtbl2_s16(svcreate2_s16(nr_k4n16_4_p1, nr2_k4n16_4_p1), idx_even16);
+    svint16_t k4n16_4_p1 = svuzp1_s16(nr_k4n16_4_p1, nr2_k4n16_4_p1);
     svst1_s16(pg16h, dst + 4 * 32 + g * 16 + 0, k4n16_4_p1);
     svint16_t c_p1_k4_k12_0 = svld1_s16(p16, K4S[1]);
     svint64_t k4t_12_b0_p1 = svdot_s64(zero64, Xk4_b0_p1, c_p1_k4_k12_0);
@@ -1589,7 +1585,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k4n16_12_p1 = svuzp1_s32(svreinterpret_s32_s64(k4t_12_b2_p1), svreinterpret_s32_s64(k4t_12_b3_p1));
     const svint16_t nr_k4n16_12_p1 = svrshrnb_n_s32(w_k4n16_12_p1, 4);
     const svint16_t nr2_k4n16_12_p1 = svrshrnb_n_s32(w2_k4n16_12_p1, 4);
-    svint16_t k4n16_12_p1 = svtbl2_s16(svcreate2_s16(nr_k4n16_12_p1, nr2_k4n16_12_p1), idx_even16);
+    svint16_t k4n16_12_p1 = svuzp1_s16(nr_k4n16_12_p1, nr2_k4n16_12_p1);
     svst1_s16(pg16h, dst + 12 * 32 + g * 16 + 0, k4n16_12_p1);
     svint16_t c_p1_k4_k20_0 = svld1_s16(p16, K4S[2]);
     svint64_t k4t_20_b0_p1 = svdot_s64(zero64, Xk4_b0_p1, c_p1_k4_k20_0);
@@ -1600,7 +1596,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k4n16_20_p1 = svuzp1_s32(svreinterpret_s32_s64(k4t_20_b2_p1), svreinterpret_s32_s64(k4t_20_b3_p1));
     const svint16_t nr_k4n16_20_p1 = svrshrnb_n_s32(w_k4n16_20_p1, 4);
     const svint16_t nr2_k4n16_20_p1 = svrshrnb_n_s32(w2_k4n16_20_p1, 4);
-    svint16_t k4n16_20_p1 = svtbl2_s16(svcreate2_s16(nr_k4n16_20_p1, nr2_k4n16_20_p1), idx_even16);
+    svint16_t k4n16_20_p1 = svuzp1_s16(nr_k4n16_20_p1, nr2_k4n16_20_p1);
     svst1_s16(pg16h, dst + 20 * 32 + g * 16 + 0, k4n16_20_p1);
     svint16_t c_p1_k4_k28_0 = svld1_s16(p16, K4S[3]);
     svint64_t k4t_28_b0_p1 = svdot_s64(zero64, Xk4_b0_p1, c_p1_k4_k28_0);
@@ -1611,7 +1607,7 @@ static __attribute__((noinline)) void op_pass_4(const int16_t* src, int16_t* dst
     const svint32_t w2_k4n16_28_p1 = svuzp1_s32(svreinterpret_s32_s64(k4t_28_b2_p1), svreinterpret_s32_s64(k4t_28_b3_p1));
     const svint16_t nr_k4n16_28_p1 = svrshrnb_n_s32(w_k4n16_28_p1, 4);
     const svint16_t nr2_k4n16_28_p1 = svrshrnb_n_s32(w2_k4n16_28_p1, 4);
-    svint16_t k4n16_28_p1 = svtbl2_s16(svcreate2_s16(nr_k4n16_28_p1, nr2_k4n16_28_p1), idx_even16);
+    svint16_t k4n16_28_p1 = svuzp1_s16(nr_k4n16_28_p1, nr2_k4n16_28_p1);
     svst1_s16(pg16h, dst + 28 * 32 + g * 16 + 0, k4n16_28_p1);
     }
 }
@@ -1634,7 +1630,6 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
     const svbool_t pg8h = svwhilelt_b16(0, 8);
     const svbool_t pg16h = svptrue_b16();
-    const svuint16_t idx_even16 = svld1_u16(p16, IDX_EVEN16);
     const svuint32_t idx8 = svld1_u32(p8s, IDX_S8);
     const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);
 
@@ -2229,7 +2224,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_1_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_1_3_b2_p2), svreinterpret_s32_s64(acc_1_3_b3_p2));
     const svint16_t nr_n16_1_p2 = svrshrnb_n_s32(w_n16_1_p2, 11);
     const svint16_t nr2_n16_1_p2 = svrshrnb_n_s32(w2_n16_1_p2, 11);
-    svint16_t n16_1_p2 = svtbl2_s16(svcreate2_s16(nr_n16_1_p2, nr2_n16_1_p2), idx_even16);
+    svint16_t n16_1_p2 = svuzp1_s16(nr_n16_1_p2, nr2_n16_1_p2);
     svst1_s16(pg16h, dst + 1 * 32 + g * 16 + 0, n16_1_p2);
     svint16_t c_p2_odd_k3_0 = svld1_s16(p16, CODD[1][0]);
     svint16_t c_p2_odd_k3_1 = svld1_s16(p16, CODD[1][1]);
@@ -2267,7 +2262,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_3_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_3_3_b2_p2), svreinterpret_s32_s64(acc_3_3_b3_p2));
     const svint16_t nr_n16_3_p2 = svrshrnb_n_s32(w_n16_3_p2, 11);
     const svint16_t nr2_n16_3_p2 = svrshrnb_n_s32(w2_n16_3_p2, 11);
-    svint16_t n16_3_p2 = svtbl2_s16(svcreate2_s16(nr_n16_3_p2, nr2_n16_3_p2), idx_even16);
+    svint16_t n16_3_p2 = svuzp1_s16(nr_n16_3_p2, nr2_n16_3_p2);
     svst1_s16(pg16h, dst + 3 * 32 + g * 16 + 0, n16_3_p2);
     svint16_t c_p2_odd_k5_0 = svld1_s16(p16, CODD[2][0]);
     svint16_t c_p2_odd_k5_1 = svld1_s16(p16, CODD[2][1]);
@@ -2305,7 +2300,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_5_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_5_3_b2_p2), svreinterpret_s32_s64(acc_5_3_b3_p2));
     const svint16_t nr_n16_5_p2 = svrshrnb_n_s32(w_n16_5_p2, 11);
     const svint16_t nr2_n16_5_p2 = svrshrnb_n_s32(w2_n16_5_p2, 11);
-    svint16_t n16_5_p2 = svtbl2_s16(svcreate2_s16(nr_n16_5_p2, nr2_n16_5_p2), idx_even16);
+    svint16_t n16_5_p2 = svuzp1_s16(nr_n16_5_p2, nr2_n16_5_p2);
     svst1_s16(pg16h, dst + 5 * 32 + g * 16 + 0, n16_5_p2);
     svint16_t c_p2_odd_k7_0 = svld1_s16(p16, CODD[3][0]);
     svint16_t c_p2_odd_k7_1 = svld1_s16(p16, CODD[3][1]);
@@ -2343,7 +2338,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_7_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_7_3_b2_p2), svreinterpret_s32_s64(acc_7_3_b3_p2));
     const svint16_t nr_n16_7_p2 = svrshrnb_n_s32(w_n16_7_p2, 11);
     const svint16_t nr2_n16_7_p2 = svrshrnb_n_s32(w2_n16_7_p2, 11);
-    svint16_t n16_7_p2 = svtbl2_s16(svcreate2_s16(nr_n16_7_p2, nr2_n16_7_p2), idx_even16);
+    svint16_t n16_7_p2 = svuzp1_s16(nr_n16_7_p2, nr2_n16_7_p2);
     svst1_s16(pg16h, dst + 7 * 32 + g * 16 + 0, n16_7_p2);
     svint16_t c_p2_odd_k9_0 = svld1_s16(p16, CODD[4][0]);
     svint16_t c_p2_odd_k9_1 = svld1_s16(p16, CODD[4][1]);
@@ -2381,7 +2376,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_9_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_9_3_b2_p2), svreinterpret_s32_s64(acc_9_3_b3_p2));
     const svint16_t nr_n16_9_p2 = svrshrnb_n_s32(w_n16_9_p2, 11);
     const svint16_t nr2_n16_9_p2 = svrshrnb_n_s32(w2_n16_9_p2, 11);
-    svint16_t n16_9_p2 = svtbl2_s16(svcreate2_s16(nr_n16_9_p2, nr2_n16_9_p2), idx_even16);
+    svint16_t n16_9_p2 = svuzp1_s16(nr_n16_9_p2, nr2_n16_9_p2);
     svst1_s16(pg16h, dst + 9 * 32 + g * 16 + 0, n16_9_p2);
     svint16_t c_p2_odd_k11_0 = svld1_s16(p16, CODD[5][0]);
     svint16_t c_p2_odd_k11_1 = svld1_s16(p16, CODD[5][1]);
@@ -2419,7 +2414,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_11_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_11_3_b2_p2), svreinterpret_s32_s64(acc_11_3_b3_p2));
     const svint16_t nr_n16_11_p2 = svrshrnb_n_s32(w_n16_11_p2, 11);
     const svint16_t nr2_n16_11_p2 = svrshrnb_n_s32(w2_n16_11_p2, 11);
-    svint16_t n16_11_p2 = svtbl2_s16(svcreate2_s16(nr_n16_11_p2, nr2_n16_11_p2), idx_even16);
+    svint16_t n16_11_p2 = svuzp1_s16(nr_n16_11_p2, nr2_n16_11_p2);
     svst1_s16(pg16h, dst + 11 * 32 + g * 16 + 0, n16_11_p2);
     svint16_t c_p2_odd_k13_0 = svld1_s16(p16, CODD[6][0]);
     svint16_t c_p2_odd_k13_1 = svld1_s16(p16, CODD[6][1]);
@@ -2457,7 +2452,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_13_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_13_3_b2_p2), svreinterpret_s32_s64(acc_13_3_b3_p2));
     const svint16_t nr_n16_13_p2 = svrshrnb_n_s32(w_n16_13_p2, 11);
     const svint16_t nr2_n16_13_p2 = svrshrnb_n_s32(w2_n16_13_p2, 11);
-    svint16_t n16_13_p2 = svtbl2_s16(svcreate2_s16(nr_n16_13_p2, nr2_n16_13_p2), idx_even16);
+    svint16_t n16_13_p2 = svuzp1_s16(nr_n16_13_p2, nr2_n16_13_p2);
     svst1_s16(pg16h, dst + 13 * 32 + g * 16 + 0, n16_13_p2);
     svint16_t c_p2_odd_k15_0 = svld1_s16(p16, CODD[7][0]);
     svint16_t c_p2_odd_k15_1 = svld1_s16(p16, CODD[7][1]);
@@ -2495,7 +2490,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_15_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_15_3_b2_p2), svreinterpret_s32_s64(acc_15_3_b3_p2));
     const svint16_t nr_n16_15_p2 = svrshrnb_n_s32(w_n16_15_p2, 11);
     const svint16_t nr2_n16_15_p2 = svrshrnb_n_s32(w2_n16_15_p2, 11);
-    svint16_t n16_15_p2 = svtbl2_s16(svcreate2_s16(nr_n16_15_p2, nr2_n16_15_p2), idx_even16);
+    svint16_t n16_15_p2 = svuzp1_s16(nr_n16_15_p2, nr2_n16_15_p2);
     svst1_s16(pg16h, dst + 15 * 32 + g * 16 + 0, n16_15_p2);
     svint16_t c_p2_odd_k17_0 = svld1_s16(p16, CODD[8][0]);
     svint16_t c_p2_odd_k17_1 = svld1_s16(p16, CODD[8][1]);
@@ -2533,7 +2528,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_17_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_17_3_b2_p2), svreinterpret_s32_s64(acc_17_3_b3_p2));
     const svint16_t nr_n16_17_p2 = svrshrnb_n_s32(w_n16_17_p2, 11);
     const svint16_t nr2_n16_17_p2 = svrshrnb_n_s32(w2_n16_17_p2, 11);
-    svint16_t n16_17_p2 = svtbl2_s16(svcreate2_s16(nr_n16_17_p2, nr2_n16_17_p2), idx_even16);
+    svint16_t n16_17_p2 = svuzp1_s16(nr_n16_17_p2, nr2_n16_17_p2);
     svst1_s16(pg16h, dst + 17 * 32 + g * 16 + 0, n16_17_p2);
     svint16_t c_p2_odd_k19_0 = svld1_s16(p16, CODD[9][0]);
     svint16_t c_p2_odd_k19_1 = svld1_s16(p16, CODD[9][1]);
@@ -2571,7 +2566,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_19_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_19_3_b2_p2), svreinterpret_s32_s64(acc_19_3_b3_p2));
     const svint16_t nr_n16_19_p2 = svrshrnb_n_s32(w_n16_19_p2, 11);
     const svint16_t nr2_n16_19_p2 = svrshrnb_n_s32(w2_n16_19_p2, 11);
-    svint16_t n16_19_p2 = svtbl2_s16(svcreate2_s16(nr_n16_19_p2, nr2_n16_19_p2), idx_even16);
+    svint16_t n16_19_p2 = svuzp1_s16(nr_n16_19_p2, nr2_n16_19_p2);
     svst1_s16(pg16h, dst + 19 * 32 + g * 16 + 0, n16_19_p2);
     svint16_t c_p2_odd_k21_0 = svld1_s16(p16, CODD[10][0]);
     svint16_t c_p2_odd_k21_1 = svld1_s16(p16, CODD[10][1]);
@@ -2609,7 +2604,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_21_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_21_3_b2_p2), svreinterpret_s32_s64(acc_21_3_b3_p2));
     const svint16_t nr_n16_21_p2 = svrshrnb_n_s32(w_n16_21_p2, 11);
     const svint16_t nr2_n16_21_p2 = svrshrnb_n_s32(w2_n16_21_p2, 11);
-    svint16_t n16_21_p2 = svtbl2_s16(svcreate2_s16(nr_n16_21_p2, nr2_n16_21_p2), idx_even16);
+    svint16_t n16_21_p2 = svuzp1_s16(nr_n16_21_p2, nr2_n16_21_p2);
     svst1_s16(pg16h, dst + 21 * 32 + g * 16 + 0, n16_21_p2);
     svint16_t c_p2_odd_k23_0 = svld1_s16(p16, CODD[11][0]);
     svint16_t c_p2_odd_k23_1 = svld1_s16(p16, CODD[11][1]);
@@ -2647,7 +2642,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_23_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_23_3_b2_p2), svreinterpret_s32_s64(acc_23_3_b3_p2));
     const svint16_t nr_n16_23_p2 = svrshrnb_n_s32(w_n16_23_p2, 11);
     const svint16_t nr2_n16_23_p2 = svrshrnb_n_s32(w2_n16_23_p2, 11);
-    svint16_t n16_23_p2 = svtbl2_s16(svcreate2_s16(nr_n16_23_p2, nr2_n16_23_p2), idx_even16);
+    svint16_t n16_23_p2 = svuzp1_s16(nr_n16_23_p2, nr2_n16_23_p2);
     svst1_s16(pg16h, dst + 23 * 32 + g * 16 + 0, n16_23_p2);
     svint16_t c_p2_odd_k25_0 = svld1_s16(p16, CODD[12][0]);
     svint16_t c_p2_odd_k25_1 = svld1_s16(p16, CODD[12][1]);
@@ -2685,7 +2680,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_25_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_25_3_b2_p2), svreinterpret_s32_s64(acc_25_3_b3_p2));
     const svint16_t nr_n16_25_p2 = svrshrnb_n_s32(w_n16_25_p2, 11);
     const svint16_t nr2_n16_25_p2 = svrshrnb_n_s32(w2_n16_25_p2, 11);
-    svint16_t n16_25_p2 = svtbl2_s16(svcreate2_s16(nr_n16_25_p2, nr2_n16_25_p2), idx_even16);
+    svint16_t n16_25_p2 = svuzp1_s16(nr_n16_25_p2, nr2_n16_25_p2);
     svst1_s16(pg16h, dst + 25 * 32 + g * 16 + 0, n16_25_p2);
     svint16_t c_p2_odd_k27_0 = svld1_s16(p16, CODD[13][0]);
     svint16_t c_p2_odd_k27_1 = svld1_s16(p16, CODD[13][1]);
@@ -2723,7 +2718,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_27_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_27_3_b2_p2), svreinterpret_s32_s64(acc_27_3_b3_p2));
     const svint16_t nr_n16_27_p2 = svrshrnb_n_s32(w_n16_27_p2, 11);
     const svint16_t nr2_n16_27_p2 = svrshrnb_n_s32(w2_n16_27_p2, 11);
-    svint16_t n16_27_p2 = svtbl2_s16(svcreate2_s16(nr_n16_27_p2, nr2_n16_27_p2), idx_even16);
+    svint16_t n16_27_p2 = svuzp1_s16(nr_n16_27_p2, nr2_n16_27_p2);
     svst1_s16(pg16h, dst + 27 * 32 + g * 16 + 0, n16_27_p2);
     svint16_t c_p2_odd_k29_0 = svld1_s16(p16, CODD[14][0]);
     svint16_t c_p2_odd_k29_1 = svld1_s16(p16, CODD[14][1]);
@@ -2761,7 +2756,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_29_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_29_3_b2_p2), svreinterpret_s32_s64(acc_29_3_b3_p2));
     const svint16_t nr_n16_29_p2 = svrshrnb_n_s32(w_n16_29_p2, 11);
     const svint16_t nr2_n16_29_p2 = svrshrnb_n_s32(w2_n16_29_p2, 11);
-    svint16_t n16_29_p2 = svtbl2_s16(svcreate2_s16(nr_n16_29_p2, nr2_n16_29_p2), idx_even16);
+    svint16_t n16_29_p2 = svuzp1_s16(nr_n16_29_p2, nr2_n16_29_p2);
     svst1_s16(pg16h, dst + 29 * 32 + g * 16 + 0, n16_29_p2);
     svint16_t c_p2_odd_k31_0 = svld1_s16(p16, CODD[15][0]);
     svint16_t c_p2_odd_k31_1 = svld1_s16(p16, CODD[15][1]);
@@ -2799,7 +2794,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_n16_31_p2 = svuzp1_s32(svreinterpret_s32_s64(acc_31_3_b2_p2), svreinterpret_s32_s64(acc_31_3_b3_p2));
     const svint16_t nr_n16_31_p2 = svrshrnb_n_s32(w_n16_31_p2, 11);
     const svint16_t nr2_n16_31_p2 = svrshrnb_n_s32(w2_n16_31_p2, 11);
-    svint16_t n16_31_p2 = svtbl2_s16(svcreate2_s16(nr_n16_31_p2, nr2_n16_31_p2), idx_even16);
+    svint16_t n16_31_p2 = svuzp1_s16(nr_n16_31_p2, nr2_n16_31_p2);
     svst1_s16(pg16h, dst + 31 * 32 + g * 16 + 0, n16_31_p2);
     svint16_t k2z1_b0_p2 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EO16_0_p2), svreinterpret_s64_s16(EO16_2_p2)));
     svint16_t k2z2_b0_p2 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EO16_1_p2), svreinterpret_s64_s16(EO16_3_p2)));
@@ -2843,7 +2838,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_2_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_2_b2_p2), svreinterpret_s32_s64(k2acc_2_b3_p2));
     const svint16_t nr_k2n16_2_p2 = svrshrnb_n_s32(w_k2n16_2_p2, 11);
     const svint16_t nr2_k2n16_2_p2 = svrshrnb_n_s32(w2_k2n16_2_p2, 11);
-    svint16_t k2n16_2_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_2_p2, nr2_k2n16_2_p2), idx_even16);
+    svint16_t k2n16_2_p2 = svuzp1_s16(nr_k2n16_2_p2, nr2_k2n16_2_p2);
     svst1_s16(pg16h, dst + 2 * 32 + g * 16 + 0, k2n16_2_p2);
     svint16_t c_p2_k2_k6_0 = svld1_s16(p16, K2S[1][0]);
     svint16_t c_p2_k2_k6_1 = svld1_s16(p16, K2S[1][1]);
@@ -2863,7 +2858,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_6_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_6_b2_p2), svreinterpret_s32_s64(k2acc_6_b3_p2));
     const svint16_t nr_k2n16_6_p2 = svrshrnb_n_s32(w_k2n16_6_p2, 11);
     const svint16_t nr2_k2n16_6_p2 = svrshrnb_n_s32(w2_k2n16_6_p2, 11);
-    svint16_t k2n16_6_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_6_p2, nr2_k2n16_6_p2), idx_even16);
+    svint16_t k2n16_6_p2 = svuzp1_s16(nr_k2n16_6_p2, nr2_k2n16_6_p2);
     svst1_s16(pg16h, dst + 6 * 32 + g * 16 + 0, k2n16_6_p2);
     svint16_t c_p2_k2_k10_0 = svld1_s16(p16, K2S[2][0]);
     svint16_t c_p2_k2_k10_1 = svld1_s16(p16, K2S[2][1]);
@@ -2883,7 +2878,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_10_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_10_b2_p2), svreinterpret_s32_s64(k2acc_10_b3_p2));
     const svint16_t nr_k2n16_10_p2 = svrshrnb_n_s32(w_k2n16_10_p2, 11);
     const svint16_t nr2_k2n16_10_p2 = svrshrnb_n_s32(w2_k2n16_10_p2, 11);
-    svint16_t k2n16_10_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_10_p2, nr2_k2n16_10_p2), idx_even16);
+    svint16_t k2n16_10_p2 = svuzp1_s16(nr_k2n16_10_p2, nr2_k2n16_10_p2);
     svst1_s16(pg16h, dst + 10 * 32 + g * 16 + 0, k2n16_10_p2);
     svint16_t c_p2_k2_k14_0 = svld1_s16(p16, K2S[3][0]);
     svint16_t c_p2_k2_k14_1 = svld1_s16(p16, K2S[3][1]);
@@ -2903,7 +2898,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_14_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_14_b2_p2), svreinterpret_s32_s64(k2acc_14_b3_p2));
     const svint16_t nr_k2n16_14_p2 = svrshrnb_n_s32(w_k2n16_14_p2, 11);
     const svint16_t nr2_k2n16_14_p2 = svrshrnb_n_s32(w2_k2n16_14_p2, 11);
-    svint16_t k2n16_14_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_14_p2, nr2_k2n16_14_p2), idx_even16);
+    svint16_t k2n16_14_p2 = svuzp1_s16(nr_k2n16_14_p2, nr2_k2n16_14_p2);
     svst1_s16(pg16h, dst + 14 * 32 + g * 16 + 0, k2n16_14_p2);
     svint16_t c_p2_k2_k18_0 = svld1_s16(p16, K2S[4][0]);
     svint16_t c_p2_k2_k18_1 = svld1_s16(p16, K2S[4][1]);
@@ -2923,7 +2918,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_18_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_18_b2_p2), svreinterpret_s32_s64(k2acc_18_b3_p2));
     const svint16_t nr_k2n16_18_p2 = svrshrnb_n_s32(w_k2n16_18_p2, 11);
     const svint16_t nr2_k2n16_18_p2 = svrshrnb_n_s32(w2_k2n16_18_p2, 11);
-    svint16_t k2n16_18_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_18_p2, nr2_k2n16_18_p2), idx_even16);
+    svint16_t k2n16_18_p2 = svuzp1_s16(nr_k2n16_18_p2, nr2_k2n16_18_p2);
     svst1_s16(pg16h, dst + 18 * 32 + g * 16 + 0, k2n16_18_p2);
     svint16_t c_p2_k2_k22_0 = svld1_s16(p16, K2S[5][0]);
     svint16_t c_p2_k2_k22_1 = svld1_s16(p16, K2S[5][1]);
@@ -2943,7 +2938,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_22_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_22_b2_p2), svreinterpret_s32_s64(k2acc_22_b3_p2));
     const svint16_t nr_k2n16_22_p2 = svrshrnb_n_s32(w_k2n16_22_p2, 11);
     const svint16_t nr2_k2n16_22_p2 = svrshrnb_n_s32(w2_k2n16_22_p2, 11);
-    svint16_t k2n16_22_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_22_p2, nr2_k2n16_22_p2), idx_even16);
+    svint16_t k2n16_22_p2 = svuzp1_s16(nr_k2n16_22_p2, nr2_k2n16_22_p2);
     svst1_s16(pg16h, dst + 22 * 32 + g * 16 + 0, k2n16_22_p2);
     svint16_t c_p2_k2_k26_0 = svld1_s16(p16, K2S[6][0]);
     svint16_t c_p2_k2_k26_1 = svld1_s16(p16, K2S[6][1]);
@@ -2963,7 +2958,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_26_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_26_b2_p2), svreinterpret_s32_s64(k2acc_26_b3_p2));
     const svint16_t nr_k2n16_26_p2 = svrshrnb_n_s32(w_k2n16_26_p2, 11);
     const svint16_t nr2_k2n16_26_p2 = svrshrnb_n_s32(w2_k2n16_26_p2, 11);
-    svint16_t k2n16_26_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_26_p2, nr2_k2n16_26_p2), idx_even16);
+    svint16_t k2n16_26_p2 = svuzp1_s16(nr_k2n16_26_p2, nr2_k2n16_26_p2);
     svst1_s16(pg16h, dst + 26 * 32 + g * 16 + 0, k2n16_26_p2);
     svint16_t c_p2_k2_k30_0 = svld1_s16(p16, K2S[7][0]);
     svint16_t c_p2_k2_k30_1 = svld1_s16(p16, K2S[7][1]);
@@ -2983,7 +2978,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k2n16_30_p2 = svuzp1_s32(svreinterpret_s32_s64(k2acc_30_b2_p2), svreinterpret_s32_s64(k2acc_30_b3_p2));
     const svint16_t nr_k2n16_30_p2 = svrshrnb_n_s32(w_k2n16_30_p2, 11);
     const svint16_t nr2_k2n16_30_p2 = svrshrnb_n_s32(w2_k2n16_30_p2, 11);
-    svint16_t k2n16_30_p2 = svtbl2_s16(svcreate2_s16(nr_k2n16_30_p2, nr2_k2n16_30_p2), idx_even16);
+    svint16_t k2n16_30_p2 = svuzp1_s16(nr_k2n16_30_p2, nr2_k2n16_30_p2);
     svst1_s16(pg16h, dst + 30 * 32 + g * 16 + 0, k2n16_30_p2);
     svint16_t k4z1_b0_p2 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EEO16_0_p2), svreinterpret_s64_s16(EEO16_2_p2)));
     svint16_t k4z2_b0_p2 = svreinterpret_s16_s64(svzip1_s64(svreinterpret_s64_s16(EEO16_1_p2), svreinterpret_s64_s16(EEO16_3_p2)));
@@ -3006,7 +3001,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k4n16_4_p2 = svuzp1_s32(svreinterpret_s32_s64(k4t_4_b2_p2), svreinterpret_s32_s64(k4t_4_b3_p2));
     const svint16_t nr_k4n16_4_p2 = svrshrnb_n_s32(w_k4n16_4_p2, 11);
     const svint16_t nr2_k4n16_4_p2 = svrshrnb_n_s32(w2_k4n16_4_p2, 11);
-    svint16_t k4n16_4_p2 = svtbl2_s16(svcreate2_s16(nr_k4n16_4_p2, nr2_k4n16_4_p2), idx_even16);
+    svint16_t k4n16_4_p2 = svuzp1_s16(nr_k4n16_4_p2, nr2_k4n16_4_p2);
     svst1_s16(pg16h, dst + 4 * 32 + g * 16 + 0, k4n16_4_p2);
     svint16_t c_p2_k4_k12_0 = svld1_s16(p16, K4S[1]);
     svint64_t k4t_12_b0_p2 = svdot_s64(zero64, Xk4_b0_p2, c_p2_k4_k12_0);
@@ -3017,7 +3012,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k4n16_12_p2 = svuzp1_s32(svreinterpret_s32_s64(k4t_12_b2_p2), svreinterpret_s32_s64(k4t_12_b3_p2));
     const svint16_t nr_k4n16_12_p2 = svrshrnb_n_s32(w_k4n16_12_p2, 11);
     const svint16_t nr2_k4n16_12_p2 = svrshrnb_n_s32(w2_k4n16_12_p2, 11);
-    svint16_t k4n16_12_p2 = svtbl2_s16(svcreate2_s16(nr_k4n16_12_p2, nr2_k4n16_12_p2), idx_even16);
+    svint16_t k4n16_12_p2 = svuzp1_s16(nr_k4n16_12_p2, nr2_k4n16_12_p2);
     svst1_s16(pg16h, dst + 12 * 32 + g * 16 + 0, k4n16_12_p2);
     svint16_t c_p2_k4_k20_0 = svld1_s16(p16, K4S[2]);
     svint64_t k4t_20_b0_p2 = svdot_s64(zero64, Xk4_b0_p2, c_p2_k4_k20_0);
@@ -3028,7 +3023,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k4n16_20_p2 = svuzp1_s32(svreinterpret_s32_s64(k4t_20_b2_p2), svreinterpret_s32_s64(k4t_20_b3_p2));
     const svint16_t nr_k4n16_20_p2 = svrshrnb_n_s32(w_k4n16_20_p2, 11);
     const svint16_t nr2_k4n16_20_p2 = svrshrnb_n_s32(w2_k4n16_20_p2, 11);
-    svint16_t k4n16_20_p2 = svtbl2_s16(svcreate2_s16(nr_k4n16_20_p2, nr2_k4n16_20_p2), idx_even16);
+    svint16_t k4n16_20_p2 = svuzp1_s16(nr_k4n16_20_p2, nr2_k4n16_20_p2);
     svst1_s16(pg16h, dst + 20 * 32 + g * 16 + 0, k4n16_20_p2);
     svint16_t c_p2_k4_k28_0 = svld1_s16(p16, K4S[3]);
     svint64_t k4t_28_b0_p2 = svdot_s64(zero64, Xk4_b0_p2, c_p2_k4_k28_0);
@@ -3039,7 +3034,7 @@ static __attribute__((noinline)) void op_pass_11(const int16_t* src, int16_t* ds
     const svint32_t w2_k4n16_28_p2 = svuzp1_s32(svreinterpret_s32_s64(k4t_28_b2_p2), svreinterpret_s32_s64(k4t_28_b3_p2));
     const svint16_t nr_k4n16_28_p2 = svrshrnb_n_s32(w_k4n16_28_p2, 11);
     const svint16_t nr2_k4n16_28_p2 = svrshrnb_n_s32(w2_k4n16_28_p2, 11);
-    svint16_t k4n16_28_p2 = svtbl2_s16(svcreate2_s16(nr_k4n16_28_p2, nr2_k4n16_28_p2), idx_even16);
+    svint16_t k4n16_28_p2 = svuzp1_s16(nr_k4n16_28_p2, nr2_k4n16_28_p2);
     svst1_s16(pg16h, dst + 28 * 32 + g * 16 + 0, k4n16_28_p2);
     }
 }

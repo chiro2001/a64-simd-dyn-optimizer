@@ -38,9 +38,6 @@ static const uint16_t IDX_CF[16] =
 static const uint16_t IDX_LO8[16] =
     { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
 static const uint32_t IDX_S8[8] = { 0, 1, 2, 3, 8, 9, 10, 11 };
-static const uint16_t IDX_EVEN16[16] =
-    { 0, 2, 4, 6, 8, 10, 12, 14,
-      16, 18, 20, 22, 24, 26, 28, 30 };
 """
 
 HELPERS32 = """\
@@ -373,8 +370,9 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             ctype[out] = "svint16_t"
         elif kind == "narrow16_merged":
             # 4 contiguous 4-row banks: uzp1_s32 each pair -> 8 rows each;
-            # one rshrnb per pair (results in even h16 lanes) -> tbl2_s16
-            # concatenates the even lanes of both halves -> 16 contiguous.
+            # one rshrnb per pair (results in even h16 lanes) ->
+            # uzp1_s16(a, b) concatenates the even lanes of both halves
+            # ([a0,a2,..,a14, b0,b2,..,b14]) -> 16 contiguous rows.
             w0 = "w_%s" % out
             w1 = "w2_%s" % out
             n0 = "nr_%s" % out
@@ -391,8 +389,7 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                         % (n0, w0, attrs["shift"]))
             body.append("    const svint16_t %s = svrshrnb_n_s32(%s, %d);"
                         % (n1, w1, attrs["shift"]))
-            body.append("    svint16_t %s = svtbl2_s16("
-                        "svcreate2_s16(%s, %s), idx_even16);"
+            body.append("    svint16_t %s = svuzp1_s16(%s, %s);"
                         % (out, n0, n1))
             ctype[out] = "svint16_t"
         elif kind == "store":
@@ -502,9 +499,6 @@ def emit_acle(plan: Plan, ops: List[Op],
         prologue += "    const svbool_t pg8h = svwhilelt_b16(0, 8);\n"
     if row_group == 16:
         prologue += "    const svbool_t pg16h = svptrue_b16();\n"
-    if any(o.kind == "narrow16_merged" for o in ops):
-        prologue += ("    const svuint16_t idx_even16 = "
-                     "svld1_u16(p16, IDX_EVEN16);\n")
     if any(o.kind == "permute" and o.attrs.get("kind") == "tbl2s"
            for o in ops):
         prologue += "    const svuint32_t idx8 = svld1_u32(p8s, IDX_S8);\n"
