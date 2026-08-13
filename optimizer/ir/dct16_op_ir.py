@@ -73,6 +73,58 @@ def dct16_leaf_provenance(ops: List[Op], leaves: Dict[int, Tuple[str, str]]
             "issues": issues}
 
 
+def lower_pass1_odd(leaves: Dict[int, Tuple[str, str]]) -> List[Op]:
+    """Odd-k dot segments: one 8-term sdot per (k, row) on O leaves.
+
+    Matches the shared-leaf form: sdot against the duplicated constant
+    [C|C] yields 2 useful s64 partial lanes per row (upstream-exact pass1).
+    """
+    ops: List[Op] = []
+    n = 0
+
+    def fresh(out, k, r):
+        nonlocal n
+        n += 1
+        op = Op("d16%04d" % n, "dot_segment", "p1.odd.k%d.row%d" % (k, r),
+                out, (leaves[r][1],),
+                {"acc_bits": 64, "lane_owner": "partial", "slice": 0,
+                 "terms": tuple("G[%d][%d]" % (k, j) for j in range(8)),
+                 "const_src": "C16[%d]" % k, "g": 0})
+        ops.append(op)
+        return op
+
+    for k in ODD_K:
+        for r in range(16):
+            fresh("odd_%d_%d" % (k, r), k, r)
+    return ops
+
+
+def dct16_pass1_provenance(ops: List[Op]) -> Dict:
+    """Extend leaf provenance with odd-k dot term coverage."""
+    res = dct16_leaf_provenance(
+        ops, {i: ("E_%d" % i, "O_%d" % i) for i in range(16)})
+    dots = {}
+    for op in ops:
+        if op.kind == "dot_segment" and op.tile_id.startswith("p1.odd."):
+            parts = op.tile_id.split(".")
+            k = int(parts[2][1:])
+            r2 = int(parts[3][3:])
+            dots.setdefault((k, r2), set()).update(op.attrs["terms"])
+    bad = []
+    for k in ODD_K:
+        for row in range(16):
+            if len(dots.get((k, row), ())) != 8:
+                bad.append((k, row))
+    res["odd_dots"] = len([o for o in ops
+                           if o.kind == "dot_segment"
+                           and o.tile_id.startswith("p1.odd.")])
+    res["odd_ok"] = not bad
+    res["issues"] = list(res["issues"]) + (
+        ["odd dot term gap"] if bad else [])
+    res["ok"] = res["ok"] and res["odd_ok"]
+    return res
+
+
 def dct16_constants() -> Dict[str, object]:
     """DCT16 butterfly/constant metadata consumed by the lowering."""
     return {
