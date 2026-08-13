@@ -107,6 +107,14 @@
   缓存读取，worker 只测新源，按枚举顺序稳定合并，`results.json` schema
   与串行完全一致（2026-08-14 已验：dct16 357 行 W=1/W=4 逐字段相等，
   4 worker 墙钟 6:21→1:44，约 3.7×）。
+- `search_rewrite_sequences.py` 带 rewrite 依赖剪枝（`--no-prune` 关闭）：
+  dct32 规则 = legacy_k2 必须先于 legacy_k4、merge_narrow8 至多一次、
+  k0_even_sve 需要 k2/k4 前置；dct16 规则 = tbl2_to_zip/merge_narrow8
+  至多一次。规则经全宇宙源码哈希覆盖审计（剪枝后每个唯一 source 仍有
+  代表键，覆盖 100%）：dct32 781→219 计划键、31 唯一源（27 实测，
+  best 6322）；dct16 121→45 计划键、4 唯一源。保留的非连续
+  `tbl2_to_zip|legacy_k2|tbl2_to_zip|legacy_k4` 是有效候选（7282），
+  未纳入“tbl2 至多一次”剪枝。
 - **uop 口径（2026-08-14 用户裁定）**：gather/scatter 在 ARM 上拆分为
   多个 ldst uops，禁止为表面指令数使用。`parse_qemu_trace.py` 输出
   `scatter_gather` 与 `vector_fused_uop = fused_adj + 3×sg`；搜索按

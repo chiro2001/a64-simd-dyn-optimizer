@@ -65,6 +65,34 @@ KERNELS = {
 }
 
 
+def prune_sequence(kernel, seq):
+    """Return a prune reason if the rewrite sequence is provably redundant
+    or invalid, else None.
+
+    Rules are validated against the full up-to-four enumeration universe
+    (source-hash coverage 100%, 2026-08-14):
+      dct32: legacy_k2 must precede legacy_k4 when both present;
+             merge_narrow8 at most once;
+             k0_even_sve requires legacy_k2 and legacy_k4 before it.
+      dct16: tbl2_to_zip and merge_narrow8 at most once (idempotent;
+             repeated application produces identical source).
+    """
+    if seq.count("merge_narrow8") > 1:
+        return "merge>1"
+    i2 = seq.index("legacy_k2") if "legacy_k2" in seq else None
+    i4 = seq.index("legacy_k4") if "legacy_k4" in seq else None
+    if i2 is not None and i4 is not None and i4 < i2:
+        return "k4<k2"
+    if kernel == "dct32" and "k0_even_sve" in seq:
+        i0 = seq.index("k0_even_sve")
+        if not (i2 is not None and i2 < i0
+                and i4 is not None and i4 < i0):
+            return "k0 prereq"
+    if kernel == "dct16" and seq.count("tbl2_to_zip") > 1:
+        return "tbl2>1"
+    return None
+
+
 def run_mca(obj, workdir):
     """LLVM-MCA on the object's static body (Neoverse-V2, SVE2)."""
     s = os.path.join(workdir, os.path.basename(obj) + ".mca.s")
@@ -212,6 +240,9 @@ def main():
     ap.add_argument("--outdir", default=None,
                     help="result/artifact directory (default: the kernel's "
                          "layout-search-rwseq dir)")
+    ap.add_argument("--no-prune", action="store_true",
+                    help="disable rewrite dependency pruning and enumerate "
+                         "the full up-to-four universe")
     args = ap.parse_args()
     kernel = args.kernel
     cfg = KERNELS[kernel]
@@ -232,12 +263,19 @@ def main():
     seen = {}
     seen_src = {}
     seqs = []
+    pruned_by = {}
+    planned_keys = 0
     for combo in itertools.product(cfg["rewrites"], repeat=4):
         seq = [c for c in combo if c != "none"]
         key = "|".join(seq)
         if key in seen:
             continue
         seen[key] = True
+        reason = None if args.no_prune else prune_sequence(kernel, seq)
+        if reason:
+            pruned_by[reason] = pruned_by.get(reason, 0) + 1
+            continue
+        planned_keys += 1
         src = emit_seq(kernel, seq)
         h = hashlib.sha256(src.encode()).hexdigest()[:12]
         if h in seen_src:
@@ -294,7 +332,10 @@ def main():
                   % (r["seq"], r["fused_uop"], cycles, uops))
     with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump({"kernel": kernel, "rows": rows,
-                   "seq_keys": len(seen), "unique_sources": len(seqs),
+                   "seq_keys": len(seen),
+                   "planned_keys": planned_keys,
+                   "pruned_by": pruned_by,
+                   "unique_sources": len(seqs),
                    "source_aliases": {h: ks
                                       for h, ks in seen_src.items()
                                       if len(ks) > 1},

@@ -133,6 +133,15 @@ W=1 与 W=4 的 dct16 357 行结果逐字段相等；4 worker 墙钟
 6:21→1:44（约 3.7×，QEMU/磁盘未饱和）。长命令加超时防止挂死。
 `search_rewrite_sequences.py` 另加 `--outdir` 便于隔离回放。
 
+**P1.1 rewrite 依赖剪枝（2026-08-14）**：对旧全集做源码哈希覆盖审计
+后把规则固化为 `prune_sequence()`：dct32 的 k2<k4 顺序、merge_narrow8
+至多一次、k0_even_sve 需要 k2/k4 前置；dct16 的 tbl2/merge 至多一次。
+剪枝后每个唯一 source 仍有代表键（覆盖 100%，被剪 46 个唯一源中
+旧记录 38/38 均为 BUILD_FAIL）。效果：dct32 781→219 计划键、31 唯一
+源（27 实测，best `[legacy_k2, legacy_k4, merge_narrow8, k0_even_sve]`
+= 6322，W=4 全流程 52 s）；dct16 121→45 计划键、4 唯一源。
+非连续 tbl2 双应用不做剪枝（实测有效 7282）。
+
 **P1 MCA 第二代理（2026-08-13）**：序列搜索 top-10 自动跑
 LLVM-MCA（Neoverse-V2, SVE2, 静态体）并写入 results.json；
 best 序列 fused=6456 / mca_cycles=516 / mca_uops=2838，次优 6856 /
