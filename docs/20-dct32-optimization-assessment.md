@@ -1039,6 +1039,36 @@ k0 非 E-pack 分支改为 pack(lo)+pack(rv)（e 链配对相应替换），odd
 相对上游 12710 = **0.352×**；距内部 fused_uop 4827 = **0.928×**；
 距内部 fused_adj 4251 = **1.054×**。`best_op_r16.{cpp,S}` 已重新固化。
 
+### 6.12 2026-08-14 深夜：k2/k4 切片复用 k0 pack → 4480→4234（超越内部）
+
+探针 `probe_k2k4_from_packs.cpp` 验证（300 例 0 失配）：
+
+- E16-pack 切片 t0=(L0+R0)、t1=(L1+R1)、t2=(L2r+R2r)、t3=(L3r+R3r)
+  可由 k0 的 lo/rv pack 直接相加得到；
+- **k2**：EX0 = t0−t3、EX1 = t1−t2（替代 zip1d/trn2d 构造）；
+- **k4**：Xk4 = (t0+t3) − revh(t1+t2)（rev8 的段内配对在切片级
+  表现为 revh，替代 rev8 tbl+sub 与 zip1d 构造）；
+- pass2 的 leaf E16/EO16/EE16/EEO16 链（含 rev/rev8/sub，
+  每行 ~6 ops）整体成为死代码（GCC DCE）。
+
+新增 `k2k4_from_packs ∈ {0,1}` 轴（要求 k0_even_sve +
+odd_from_k0packs=1；发射顺序强制 k0 最先）。
+
+| 指标 | 4480 | **4234** | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 4480 | **4234** | -246（-5.5%） |
+| vector raw | 4940 | 4694 | -246 |
+| stack | 520 | 442 | -78 |
+| total | 6799 | 6131 | -668 |
+| 20k legacy 签名 | 7268 | 7268 | 0 |
+| TestBenchLite | 5 seed PASS | **5 seed PASS** | — |
+
+全布局搜索（608 候选全过）确认 best = 4234。相对上游 12710 =
+**0.333×**；**fused_uop 口径 0.877× 内部 4827、fused_adj 口径
+0.996× 内部 4251——两个口径均低于内部参考**。`best_op_r16.{cpp,S}`
+已重新固化。本轮从 5390 到 4234 的累计 -21.5% 全部由工具搜索的
+新轴驱动：row16/merge8/epack/order/sdot_indexed/odd 共享/k2k4 共享。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；

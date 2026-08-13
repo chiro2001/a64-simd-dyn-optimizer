@@ -89,7 +89,14 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # the in-order slice) -- 4 sub + 2 revh replace build_slices'
     # 10 zip/trn per bank (probe-verified for X0/X1, X2/X3 = revh).
     odd_from_k0packs = bool(lo.get("odd_from_k0packs", 0)) and k0_even_sve
-    if odd_from_k0packs:
+    # k2k4_from_packs: k2/k4 slices derive from the k0 lo/rv packs
+    # (probe_k2k4_from_packs verified):
+    #   E16-pack slices t0=(L0+R0) t1=(L1+R1) t2=(L2r+R2r) t3=(L3r+R3r);
+    #   k2 EX0=t0-t3, EX1=t1-t2;
+    #   k4 Xk4=(t0+t3) - revh(t1+t2).
+    # The pass2 leaf E16/EO16/EE16/EEO16 chain then becomes dead (DCE).
+    k2k4_from_packs = bool(lo.get("k2k4_from_packs", 0)) and k0_even_sve
+    if odd_from_k0packs or k2k4_from_packs:
         # the odd slices consume the k0 packs; force k0 before odd in
         # the emitted source order.
         lo["emit_order"] = "k0,odd,k2,k4"
@@ -160,7 +167,8 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                 attrs={"elem": "s32",
                                        "lane_owner": "partial"}).out
                 need_e16 = ((k2_slice and pass_id == 1)
-                            or (legacy_ex and pass_id == 2) or legacy_k4)
+                            or (legacy_ex and pass_id == 2) or legacy_k4) \
+                    and not (k2k4_from_packs and pass_id == 2)
                 if need_e16:
                     E16 = new("add", tid, "E16_%d" % r, (lo_v.out, rv.out),
                               attrs={"elem": "s16"})
@@ -386,7 +394,25 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     suffix = "_b%d" % b
                     tid = "p%d.k2.slice%s" % (pass_id, suffix)
                     ex = []
-                    if slice_kind == "zip":
+                    if k2k4_from_packs and pass_id == 2:
+                        # E16-pack slices from the k0 lo/rv packs (shared
+                        # with k4): t0..t3; EX0 = t0-t3, EX1 = t1-t2.
+                        pkt = []
+                        for m, (ln, rn) in enumerate((
+                                ("L_q0", "R_q0"), ("L_q1", "R_q1"),
+                                ("L_qr2", "R_qr2"), ("L_qr3", "R_qr3"))):
+                            pkt.append(new(
+                                "add", tid, "pkt%d%s" % (m, suffix),
+                                ("%s_%d_%d" % (ln, b, pass_id),
+                                 "%s_%d_%d" % (rn, b, pass_id)),
+                                attrs={"elem": "s16"}).out)
+                        ex.append(new("sub", tid, "EX0%s" % suffix,
+                                      (pkt[0], pkt[3]),
+                                      attrs={"elem": "s16"}).out)
+                        ex.append(new("sub", tid, "EX1%s" % suffix,
+                                      (pkt[1], pkt[2]),
+                                      attrs={"elem": "s16"}).out)
+                    elif slice_kind == "zip":
                         z1 = new("permute", tid, "k2z1%s" % suffix,
                                  (eo16[rb[0]], eo16[rb[2]]),
                                  attrs={"kind": "zip1d",
@@ -542,7 +568,21 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 for b, rb in enumerate(k4_banks):
                     suffix = "_b%d" % b
                     tid = "p%d.k4.slice%s" % (pass_id, suffix)
-                    if slice_kind == "zip":
+                    if k2k4_from_packs and pass_id == 2:
+                        # Xk4 = (t0+t3) - revh(t1+t2), t0..t3 from the k2
+                        # pack slices (probe_k2k4_from_packs verified).
+                        s0 = new("add", tid, "k4s0%s" % suffix,
+                                 ("pkt0%s" % suffix, "pkt3%s" % suffix),
+                                 attrs={"elem": "s16"})
+                        s1 = new("add", tid, "k4s1%s" % suffix,
+                                 ("pkt1%s" % suffix, "pkt2%s" % suffix),
+                                 attrs={"elem": "s16"})
+                        rh = new("permute", tid, "k4rh%s" % suffix,
+                                 (s1.out,), attrs={"kind": "revh_d"})
+                        xk4 = new("sub", tid, "Xk4%s" % suffix,
+                                  (s0.out, rh.out),
+                                  attrs={"elem": "s16"})
+                    elif slice_kind == "zip":
                         kz1 = new("permute", tid, "k4z1%s" % suffix,
                                   (eeo16[rb[0]], eeo16[rb[2]]),
                                   attrs={"kind": "zip1d",
