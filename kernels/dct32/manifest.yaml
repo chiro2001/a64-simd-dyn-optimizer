@@ -58,3 +58,7 @@ layouts:
   # round-0012 P0: odd 常量布局（derived-replicated = CODD 预复制切片；
   # canonical = 运行时 4 条 TBL 复制原始 C32，消融“常量吸收”机制）。
   constant_layout: [derived-replicated, canonical]
+
+# 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
+# candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，
+# 920B SVE1/VL=256 可跑，20k 差分 0，p50=226 vs 上游 222）。

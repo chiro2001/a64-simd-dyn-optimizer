@@ -338,7 +338,33 @@ def _odd_row_reduce(kk):
         }""" % (k, k, k, k, k)
 
 
-def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated"):
+def _sve1_tbl2(a, b, idx, idxb, out):
+    """SVE1 lowering of svtbl2(A, B, idx): two single-register TBLs + ORR.
+
+    idx is a compile-time constant with lanes in [0,16) (select A) and
+    [16,32) (select B); idxb is the precomputed B-table index vector:
+    sentinel 16 (out of range -> 0) on A-selected lanes, idx-16 on
+    B-selected lanes. Single-register SVE1 TBL returns 0 for out-of-range
+    indices, so the two tables have disjoint non-zero lanes and ORR merges.
+    """
+    return ("svint16_t %(out)sa = svtbl_s16(%(a)s, %(idx)s);\n"
+            "        svint16_t %(out)sb = svtbl_s16(%(b)s, %(idxb)s);\n"
+            "        svint16_t %(out)s = svorr_s16_x(p16, %(out)sa, %(out)sb);"
+            % {"a": a, "b": b, "idx": idx, "idxb": idxb, "out": out})
+
+
+def _sve1_narrow(lo, shift):
+    """SVE1 lowering of rshrnb inside the uzp1+rshrnb+uzp1 chain."""
+    # SVE1 has no SRShR (that is SVE2), so round via add-half + ASR.
+    return ("svint32_t _ra = svadd_n_s32_x(p8s, %(lo)s, add);\n"
+            "            svint32_t _rs = svasr_n_s32_x(p8s, _ra, %(shift)s);\n"
+            "            svint16_t rz = svuzp1_s16("
+            "svreinterpret_s16_s32(_rs), svreinterpret_s16_s32(_rs));"
+            % {"lo": lo, "shift": shift})
+
+
+def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
+                isa="sve2"):
     """Lane-per-output sdot.d over 4 rows; batch or scalar narrow.
 
     constant_layout:
@@ -375,7 +401,15 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated"):
 """ % (kk, kk, kk, kk)
     body = head
     if narrow_batch == 4:
-        body += """\
+        if isa == "sve1":
+            body += """\
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            %s
+            svst1_s16(pg4h, dst + %d * 32 + base, rz);
+        }""" % (_sve1_narrow("lo", "shift"), k)
+        else:
+            body += """\
             svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
                                       svreinterpret_s32_s64(t));
             svint16_t r = svrshrnb_n_s32(lo, shift);
@@ -430,10 +464,19 @@ def _grouped_leaf_cpp():
     return "\n".join(leaf)
 
 
-def _grouped_slices_cpp():
+def _grouped_slices_cpp(isa="sve2"):
     slices = []
     for m in range(4):
-        slices.append("""\
+        if isa == "sve1":
+            slices.append(
+                "        %s\n" % _sve1_tbl2("O0", "O1", "i%d" % m,
+                                            "i%db" % m, "p%d" % m)
+                + "        %s\n" % _sve1_tbl2("O2", "O3", "i%d" % m,
+                                              "i%db" % m, "q%d" % m)
+                + "        %s\n" % _sve1_tbl2("p%d" % m, "q%d" % m,
+                                              "ilo", "ilob", "X%d" % m))
+        else:
+            slices.append("""\
         svint16_t p%d = svtbl2_s16(svcreate2_s16(O0, O1), i%d);
         svint16_t q%d = svtbl2_s16(svcreate2_s16(O2, O3), i%d);
         svint16_t X%d = svtbl2_s16(svcreate2_s16(p%d, q%d), ilo);
@@ -442,17 +485,26 @@ def _grouped_slices_cpp():
 
 
 def _grouped_odd_cpp(odd_lowering="sdot.d", narrow_batch=4,
-                     constant_layout="derived-replicated"):
+                     constant_layout="derived-replicated", isa="sve2"):
     if odd_lowering == "row-reduce":
         return "\n".join(_odd_row_reduce(kk) for kk in range(16))
-    return "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout)
+    return "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout, isa)
                      for kk in range(16))
 
 
-def _grouped_ex_cpp():
+def _grouped_ex_cpp(isa="sve2"):
     ex = []
     for m in range(2):
-        ex.append("""\
+        if isa == "sve1":
+            ex.append(
+                "        %s\n" % _sve1_tbl2("EO16_0", "EO16_1", "i%d" % m,
+                                            "i%db" % m, "e%d" % m)
+                + "        %s\n" % _sve1_tbl2("EO16_2", "EO16_3", "i%d" % m,
+                                              "i%db" % m, "f%d" % m)
+                + "        %s\n" % _sve1_tbl2("e%d" % m, "f%d" % m,
+                                              "ilo", "ilob", "EX%d" % m))
+        else:
+            ex.append("""\
         svint16_t e%d = svtbl2_s16(svcreate2_s16(EO16_0, EO16_1), i%d);
         svint16_t f%d = svtbl2_s16(svcreate2_s16(EO16_2, EO16_3), i%d);
         svint16_t EX%d = svtbl2_s16(svcreate2_s16(e%d, f%d), ilo);
@@ -460,12 +512,45 @@ def _grouped_ex_cpp():
     return "".join(ex)
 
 
-def _grouped_k2_cpp(pass1_k2_slice=True):
+def _grouped_k2_cpp(pass1_k2_slice=True, isa="sve2"):
     k2 = []
     for kk in range(8):
         d0 = 4 * kk + 2
         if pass1_k2_slice:
-            k2.append("""\
+            if isa == "sve1":
+                k2.append("""\
+        {
+            if (shift == 4)
+            {
+                svint16_t cl = svld1_s16(p16, K2S[%d][0]);
+                svint16_t ch = svld1_s16(p16, K2S[%d][1]);
+                svint64_t t = svdot_s64(zero64, EX0, cl);
+                t = svdot_s64(t, EX1, ch);
+                svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                          svreinterpret_s32_s64(t));
+                %s
+                svst1_s16(pg4h, dst + %d * 32 + base, rz);
+            }
+            else
+            {
+                svint32_t c = svld1_s32(p8s, K2[%d]);
+                svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+                svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+                svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+                svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+                int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+                int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+                int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+                int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+                dst[%d * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[%d * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[%d * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[%d * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+            }
+        }""" % (kk, kk, _sve1_narrow("lo", "shift"), d0, kk,
+                d0, d0, d0, d0))
+            else:
+                k2.append("""\
         {
             if (shift == 4)
             {
@@ -562,18 +647,29 @@ def _grouped_prologue_cpp(constant_layout="derived-replicated"):
             "    const svuint16_t ic3 = svld1_u16(p16, IDX_C3);")
 
 
+def _grouped_idx_low_cpp(isa="sve2"):
+    """SVE1 needs B-table index constants (sentinel 16 on A-selected lanes)."""
+    if isa != "sve1":
+        return ""
+    return ("    const svuint16_t i0b = svld1_u16(p16, IDX_04B);\n"
+            "    const svuint16_t i1b = svld1_u16(p16, IDX_47B);\n"
+            "    const svuint16_t i2b = svld1_u16(p16, IDX_8BB);\n"
+            "    const svuint16_t i3b = svld1_u16(p16, IDX_CFB);\n"
+            "    const svuint16_t ilob = svld1_u16(p16, IDX_LO8B);\n")
+
+
 def _grouped_body_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                       narrow_batch=4,
-                      constant_layout="derived-replicated"):
+                      constant_layout="derived-replicated", isa="sve2"):
     """Assemble the grouped pass32_impl body from per-mechanism blocks
     (leaf / odd slices / k2 EX / odd / k2 / k4 / k0), each selected by an
     independent plan axis. This is the P1 increment-3 structure: no single
     composite function owns all mechanisms."""
     leaf = _grouped_leaf_cpp()
-    slices = _grouped_slices_cpp()
-    odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout)
-    ex = _grouped_ex_cpp()
-    k2 = _grouped_k2_cpp(pass1_k2_slice)
+    slices = _grouped_slices_cpp(isa)
+    odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout, isa)
+    ex = _grouped_ex_cpp(isa)
+    k2 = _grouped_k2_cpp(pass1_k2_slice, isa)
     k4 = _grouped_k4_cpp()
     k0 = _grouped_k0_cpp()
     return """\
@@ -618,19 +714,20 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 %s
     }
 }
-""" % (_grouped_prologue_cpp(constant_layout),
+""" % (_grouped_prologue_cpp(constant_layout) + _grouped_idx_low_cpp(isa),
        leaf, (slices if odd_lowering == "sdot.d" else ""),
        ex, odd, k2, k4, k0)
 
 
 def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
-                     narrow_batch=4, constant_layout="derived-replicated"):
+                     narrow_batch=4, constant_layout="derived-replicated",
+                     isa="sve2"):
     """Backward-compatible wrapper kept for the search driver's v3 preset."""
     return _grouped_body_cpp(pass1_k2_slice, odd_lowering, narrow_batch,
-                             constant_layout)
+                             constant_layout, isa)
 
 
-def _assemble(func_name, pass_body, call):
+def _assemble(func_name, pass_body, call, isa="sve2"):
     idx = """\
 static const uint16_t IDX_REV8[16] =
     { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 };
@@ -657,9 +754,24 @@ static const uint16_t IDX_C2[16] =
 static const uint16_t IDX_C3[16] =
     { 12, 13, 14, 15, 12, 13, 14, 15, 12, 13, 14, 15, 12, 13, 14, 15 };
 """
+    if isa == "sve1":
+        idx += """\
+// B-table indices for TBL2 lowering: sentinel 16 (-> 0) on lanes that
+// select A, (idx - 16) on lanes that select B.
+static const uint16_t IDX_04B[16] =
+    { 16, 16, 16, 16, 0, 1, 2, 3, 16, 16, 16, 16, 0, 1, 2, 3 };
+static const uint16_t IDX_47B[16] =
+    { 16, 16, 16, 16, 4, 5, 6, 7, 16, 16, 16, 16, 4, 5, 6, 7 };
+static const uint16_t IDX_8BB[16] =
+    { 16, 16, 16, 16, 8, 9, 10, 11, 16, 16, 16, 16, 8, 9, 10, 11 };
+static const uint16_t IDX_CFB[16] =
+    { 16, 16, 16, 16, 12, 13, 14, 15, 16, 16, 16, 16, 12, 13, 14, 15 };
+static const uint16_t IDX_LO8B[16] =
+    { 16, 16, 16, 16, 16, 16, 16, 16, 0, 1, 2, 3, 4, 5, 6, 7 };
+"""
     return """\
 // Generated by tools/emit_dct32_sve2_shared.py -- do not edit by hand.
-// DCT32 SVE2 (VL=256), upstream-exact v1.
+// DCT32 %s (VL=256), upstream-exact v1.
 #include <arm_sve.h>
 #include <cstdint>
 
@@ -675,13 +787,14 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
     int16_t coef[32 * 32];
 %s
 }
-""" % (idx, cpp_constants(), leaf_build_cpp(), pass_body, func_name, call)
+""" % ("SVE1" if isa == "sve1" else "SVE2",
+       idx, cpp_constants(), leaf_build_cpp(), pass_body, func_name, call)
 
 
 def emit_grouped(func_name="dynopt_dct32_sve2_shared",
                  pass1_k2_slice=True, odd_lowering="sdot.d",
                  narrow_batch=4,
-                 constant_layout="derived-replicated"):
+                 constant_layout="derived-replicated", isa="sve2"):
     """Plan-driven grouped DCT32 emitter (P1 increment 3).
 
     Used by layout_ir.lower() for plans produced by atomic rewrites; it
@@ -692,16 +805,16 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
             "    pass32_impl<11>(coef, dst, 32);")
     return _assemble(func_name,
                      _grouped_body_cpp(pass1_k2_slice, odd_lowering,
-                                       narrow_batch, constant_layout),
-                     call)
+                                       narrow_batch, constant_layout, isa),
+                     call, isa)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
          pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
-         constant_layout="derived-replicated"):
+         constant_layout="derived-replicated", isa="sve2"):
     if layout == "v3":
         return emit_grouped(func_name, pass1_k2_slice, odd_lowering,
-                            narrow_batch, constant_layout)
+                            narrow_batch, constant_layout, isa)
     if layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
         call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
@@ -710,24 +823,28 @@ def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
         pass_body = pass_cpp()
         call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
                 "    pass32_impl(coef, dst, 32, shift2);")
-    return _assemble(func_name, pass_body, call)
+    return _assemble(func_name, pass_body, call, isa)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out", default="generated/dct32/sve2_shared.cpp")
+    ap.add_argument("--func-name", default="dynopt_dct32_sve2_shared")
     ap.add_argument("--layout", default="v1")
     ap.add_argument("--pass1-k2-slice", type=int, default=1)
     ap.add_argument("--odd-lowering", default="sdot.d")
     ap.add_argument("--narrow-batch", type=int, default=4)
     ap.add_argument("--constant-layout", default="derived-replicated")
+    ap.add_argument("--isa", default="sve2", choices=["sve1", "sve2"])
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(layout=args.layout,
+        f.write(emit(func_name=args.func_name,
+                     layout=args.layout,
                      pass1_k2_slice=bool(args.pass1_k2_slice),
                      odd_lowering=args.odd_lowering,
                      narrow_batch=args.narrow_batch,
-                     constant_layout=args.constant_layout))
+                     constant_layout=args.constant_layout,
+                     isa=args.isa))
     print("wrote %s" % args.out)
 
 

@@ -275,3 +275,55 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   上游**，并先确认 `svcntb==32`（VL=256）后直接跑同一微基准；若
   倚天为 VL=128，则需重新生成 128-bit 变体，仅能验证 SVE2 指令语义，
   不能验证 256-bit 候选周期。
+
+### 5.3 倚天 710（Neoverse-N2, SVE2, VL=128）临时实测（2026-08-13）
+
+用户提供阿里云倚天 710 实例一小时（自动释放）。实测结论：
+
+- CPU 报告为 **Neoverse-N2，SVE2 齐全**（`sve2/sveaes/svepmull/
+  svebitperm/...`），但 **VL=128（svcntb=16）**，`prctl(PR_SVE_SET_VL,32)`
+  被钳制为 16，硬件最大 128-bit → **无法直接跑 VL=256 的 best 候选**；
+- SVE2 能力探针（rshrnb/tbl2/sdot.d）全部 OK；
+- DCT32 上游基线（VL=128，latency 20000 samples，taskset 单核）：
+
+| 实现 | p50 | p99 |
+| --- | ---: | ---: |
+| dct32_c | 402 | 621 |
+| dct32_neon | 118 | 126 |
+| dct32_sve（上游，VL 自适应） | 83 | 88 |
+
+- 固定 256-bit 的 best_sve2 在此机 verify 全错（VL 不匹配），不测周期。
+- LLVM-MCA 的 `neoverse-n2` 型号与该机同构，MCA N2 数据可作为该校准点。
+
+### 5.4 SVE1 降级后端与 920B 同宽度复测（2026-08-13）
+
+为了让 920B（SVE1/VL=256）也能跑 v3.1 结构，发射器新增 `--isa sve1`
+降级（`tools/emit_dct32_sve2_shared.py`）：
+
+- `rshrnb`（SVE2）→ `add 半舍入 + asr`（SVE1，等指令数；SVE1 无
+  SRShR）；
+- 双寄存器 `svtbl2`（SVE2）→ 两条单寄存器 `svtbl` + `orr`（+2 条/处，
+  索引为编译期常量，B 表索引向量预加载）；
+- 静态 simd：best_sve2.o 1019 → best_sve1.o 1125（+106），fused_uop
+  约 3962 → ~4080。
+
+920B 实机（SVE1/VL=256，CNTVCT latency 20000）：
+
+| 实现 | p50 cycles |
+| --- | ---: |
+| dct32_c | 633 |
+| dct32_neon | 151 |
+| 上游 dct32_sve | 222 |
+| **best_sve1（v3.1 降级，20k 差分 0）** | **226** |
+
+**结论：指令数减少 3 倍（fused_uop ~4080 vs 12710）在鲲鹏 920B 上未
+转化为周期收益（226 vs 222，约 -1.8%）**，与 920G 观测一致。结合
+MCA（Neoverse 系预测 ~1.4×）与实机（无收益）的分歧，假设是：
+v3.1 把每个输出串成 4 条依赖的 `sdot.d` 累加链，指令少了但关键路径
+变长、ILP 变差；而 920B/920G 的 sdot 吞吐/延迟与 Neoverse 不同。
+**下一步工具方向：在搜索排序中加入依赖链深度/MCA cycles 或独立
+accumulator 轴（row_group/双链拆分），而不是只看 fused_uop。**
+
+注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
+WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
+或足够深的 unroll（后续修复）。
