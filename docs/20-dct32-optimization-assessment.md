@@ -610,6 +610,49 @@ saddl +128、mul/addp/revh/revw +240、rshrnb +64）。
 3. 后续可把 `k0_even_sve` 做成原子 rewrite（DCT16 legacy_even_sve
    同款），使序列搜索也能自动发现该结构。
 
+### 5.13 8 行合并窄化（odd/k2，2026-08-13 晚，已交付）
+
+**机制**：row8 的 odd/k2 路径把双 bank 的 s64 acc 先合并
+（`uzp1_s32(accA, accB)` 取各 lane 低半，8 行有序），再**单条
+rshrnb**（8 s32 → 8 s16，结果在偶 lane）+ `uzp1_s16` 压缩 + 单条
+8-lane 存储；bank 从偶/奇改为**连续 4 行**（zip/trn 切片对连续行
+同样成立，探针逐 lane 验证；K2S/CODD 常量与行序无关）。
+
+**关键坑**：
+1. **k4 的 tbl2 切片映射绑定偶/奇 bank**——连续行下 lane 顺序错乱
+   （探针确认 zip 系切片可用、tbl2 系不可用）；k4 保留偶/奇 +
+   trn1 旧窄化；
+2. k2 与 k4 曾共用 `k2k4_banks`，回退 k4 时误把 k2 也改回偶/奇，
+   与 merged narrow 不匹配导致 lane 1-6 全错——k2/k4 需独立 bank
+   变量；
+3. s32 低半取数依赖 acc 不溢出（pass1 ≤734k、pass2 ≤47M，均远小于
+   2^31，与旧路径 uzp1 低半口径一致）。
+
+**结果**（row8+legacy+zip+k0_even_sve）：
+
+| 指标 | 上一 best 5814 | 新 best 5454 | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 5814 | **5454** | -360（-6.2%） |
+| vector raw | 6286 | 5918 | -368 |
+| MCA（Neoverse-V2） | 411/2231 | **395/2139** | -4%/-4% |
+| 20k 差分 | 7268 | 7268 | 逐位一致 |
+| TestBenchLite | PASS | PASS | — |
+
+相对内部 4827 = **1.130×**（此前 1.204×）；相对上游 12710 =
+0.429×。全 op 布局搜索（72 候选）best = 5454（k0es=1/row8）；
+k0es=0 的 merged narrow 版本 6080（旧 6464，-384）。
+
+**rewrite 序列搜索自动重发现**：`search_rewrite_sequences.py`（含
+k0_even_sve）跑完 781 序列，best =
+`legacy_k2|legacy_k4|merge_narrow8|k0_even_sve` → **6322**
+（row4 基线，MCA 488/2681）——k0_even_sve 机制可由序列搜索从
+上游基础 plan 盲重发现。
+
+**剩余差距**（vs 内部 4827）：rshrnb 384 vs 256（k4 仍 4 输出/条 +
+k0 4 输出/条）、zip/uzp1 打包、常量预排列。下一步方向：k4 的
+tbl2 切片改为连续行兼容（zip 化）后并入 merged narrow；或常量
+预排列削减 tbl/zip。
+
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
 微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈

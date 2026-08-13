@@ -347,6 +347,20 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             body.append("    svint16_t %s = svtrn1_s16(%s, %s);"
                         % (out, ins[0], ins[1]))
             ctype[out] = "svint16_t"
+        elif kind == "narrow8_merged":
+            # contiguous 4-row banks: uzp1 the two s64 accs' low s32
+            # halves -> 8 rows in order -> one rshrnb (even h16 lanes)
+            # -> uzp1_s16 compression -> 8 contiguous lanes.
+            body.append("    const svint32_t w_%s = svuzp1_s32("
+                        "svreinterpret_s32_s64(%s), "
+                        "svreinterpret_s32_s64(%s));"
+                        % (out, ins[0], ins[1]))
+            body.append("    const svint16_t nr_%s = "
+                        "svrshrnb_n_s32(w_%s, %d);"
+                        % (out, out, attrs["shift"]))
+            body.append("    svint16_t %s = svuzp1_s16(nr_%s, nr_%s);"
+                        % (out, out, out))
+            ctype[out] = "svint16_t"
         elif kind == "store":
             lanes = attrs["lanes"]
             pass_id, k, row = lanes[0]

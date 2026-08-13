@@ -221,12 +221,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                             xs.append(x.out)
                     return xs
                 odd_banks = banks if row_group == 4 \
-                    else [rows[0::2], rows[1::2]]
+                    else [rows[:4], rows[4:]]
                 all_xs = [build_slices(rb, "_b%d" % b)
                           for b, rb in enumerate(odd_banks)]
                 for k in ODD_K:
                     tid = "p%d.odd.k%d" % (pass_id, k)
-                    rs = []
+                    accs = []
                     for b in range(len(banks)):
                         xs = all_xs[b]
                         terms = []
@@ -272,16 +272,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                           "acc_%d_%d_b%d" % (k, m, b),
                                           (acc, terms[m]),
                                           attrs={"acc_bits": 64}).out
-                        rnd = new("round_shift", tid, "rnd_%d_b%d" % (k, b),
-                                  (acc,),
-                                  attrs={"shift": shift, "epoch": pass_id,
-                                         "mode": "half-up"})
-                        rs.append(rnd)
+                        accs.append(acc)
                     if row_group == 8:
-                        n8 = new("narrow8", tid, "n8_%d" % k,
-                                 (rs[0].out, rs[1].out),
-                                 attrs={"from": "s64", "to": "s16",
-                                        "kind": "zip+rshrnb+uzp"})
+                        n8 = new("narrow8_merged", tid, "n8_%d" % k,
+                                 (accs[0], accs[1]),
+                                 attrs={"shift": shift,
+                                        "mode": "rshrn"})
                         new("store", tid, "", (n8.out,),
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": tuple((pass_id, k, r)
@@ -289,8 +285,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "topology": "contiguous",
                                    "row_group": 8})
                     else:
+                        rnd = new("round_shift", tid, "rnd_%d" % k,
+                                  (accs[0],),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
                         nar = new("narrow", tid, "nar_%d" % k,
-                                  (rs[0].out,),
+                                  (rnd.out,),
                                   attrs={"from": "s64", "to": "s16",
                                          "kind": "uzp+rshrnb+uzp"})
                         new("store", tid, "", (nar.out,),
@@ -301,8 +301,10 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "row_group": 4})
             # ---- k2 ----
             if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
+                # k2 slices are zip/trn based -> contiguous-bank
+                # compatible with the merged narrow.
                 k2k4_banks = banks if row_group == 4 \
-                    else [rows[0::2], rows[1::2]]
+                    else [rows[:4], rows[4:]]
                 exs = []
                 for b, rb in enumerate(k2k4_banks):
                     suffix = "_b%d" % b
@@ -348,10 +350,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                           attrs={"kind": "tbl2", "idx": "ilo",
                                                  "lane_owner": "output"}).out)
                     exs.append(ex)
+                # k2 uses zip/trn slices (contiguous-bank compatible);
+                # keep the merged narrow.
                 if row_group == 8:
                     for k in K2_K:
                         tid = "p%d.k2.k%d" % (pass_id, k)
-                        rs = []
+                        accs = []
                         for b in range(2):
                             ex = exs[b]
                             t0 = new("dot_segment", tid,
@@ -376,16 +380,10 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                       "k2acc_%d_b%d" % (k, b),
                                       (t0.out, t1.out),
                                       attrs={"acc_bits": 64})
-                            rnd = new("round_shift", tid,
-                                      "k2rnd_%d_b%d" % (k, b), (acc.out,),
-                                      attrs={"shift": shift,
-                                             "epoch": pass_id,
-                                             "mode": "half-up"})
-                            rs.append(rnd)
-                        n8 = new("narrow8", tid, "k2n8_%d" % k,
-                                 (rs[0].out, rs[1].out),
-                                 attrs={"from": "s64", "to": "s16",
-                                        "kind": "trn1+uzp"})
+                            accs.append(acc.out)
+                        n8 = new("narrow8_merged", tid, "k2n8_%d" % k,
+                                 (accs[0], accs[1]),
+                                 attrs={"shift": shift, "mode": "rshrn"})
                         new("store", tid, "", (n8.out,),
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": tuple((pass_id, k, r)
@@ -442,9 +440,11 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "lanes": ((pass_id, k, r),),
                                    "topology": "contiguous"})
             # ---- k4 ----
+            # k4 uses a tbl2 slice tied to the even/odd bank arrangement;
+            # keep the per-bank round + trn1 narrow (no merged narrow).
+            k4_banks = banks if row_group == 4 \
+                else [rows[0::2], rows[1::2]]
             if legacy_k4:
-                k4_banks = banks if row_group == 4 \
-                    else [rows[0::2], rows[1::2]]
                 xk4s = []
                 for b, rb in enumerate(k4_banks):
                     suffix = "_b%d" % b
@@ -476,6 +476,9 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                   attrs={"kind": "tbl2", "idx": "ilo",
                                          "lane_owner": "output"})
                     xk4s.append(xk4)
+                # k4 uses a tbl2 slice whose lane mapping is tied to the
+                # even/odd bank arrangement; keep the per-bank round +
+                # trn1 narrow (no merged narrow here).
                 if row_group == 8:
                     for k in K4_K:
                         tid = "p%d.k4.k%d" % (pass_id, k)
