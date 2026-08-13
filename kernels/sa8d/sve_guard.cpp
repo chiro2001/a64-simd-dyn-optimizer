@@ -1,16 +1,24 @@
-// Guard-page test for the 16x16 SVE candidate: each plane's exact footprint
-// ends exactly at the end of a readable page, with a PROT_NONE page right
-// after it. Any over-read (e.g. a widened 32-byte row load) faults.
+// Guard-page tests for the CURRENT tool-generated SA8D candidates (8x8 and
+// 16x16, kernels/<name>/candidates/best_sve2.cpp): each plane's exact
+// footprint ends exactly at the end of a readable page, with a PROT_NONE
+// page right after it. Any over-read faults.
+// Fixed-VL contract: only meaningful at VL=256 (svcntb()==32); the guard
+// aborts otherwise so it cannot silently run at the wrong VL.
 #include <arm_sve.h>
 
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 #include <random>
 #include <sys/mman.h>
 #include <unistd.h>
 
-extern "C" int dynopt_sa8d_16x16_neon_sve2(
+extern "C" int dynopt_sa8d_8x8_sve2(
+    const uint8_t* pix1, intptr_t stride_pix1,
+    const uint8_t* pix2, intptr_t stride_pix2);
+
+extern "C" int dynopt_sa8d_16x16_sve2(
     const uint8_t* pix1, intptr_t stride_pix1,
     const uint8_t* pix2, intptr_t stride_pix2);
 
@@ -46,6 +54,12 @@ static int sa8d8_raw(const uint8_t* a, intptr_t sa,
     return r8;
 }
 
+static int scalar8(const uint8_t* a, intptr_t sa,
+                   const uint8_t* b, intptr_t sb)
+{
+    return (sa8d8_raw(a, sa, b, sb) + 2) >> 2;
+}
+
 static int scalar16(const uint8_t* a, intptr_t sa,
                     const uint8_t* b, intptr_t sb)
 {
@@ -58,6 +72,12 @@ static int scalar16(const uint8_t* a, intptr_t sa,
 
 int main()
 {
+    if (svcntb() != 32)
+    {
+        fprintf(stderr, "sve_guard requires VL=256 (svcntb()==32), got %lu\n",
+                (unsigned long)svcntb());
+        return 3;
+    }
     const size_t PAGE = 4096;
     unsigned char* mem = (unsigned char*)mmap(
         NULL, 2 * PAGE, PROT_READ | PROT_WRITE,
@@ -78,10 +98,39 @@ int main()
     int offs[4] = { 0, 1, 3, 7 };
     int fails = 0;
     int total = 0;
+    // 8x8: 8 rows x 8 bytes, stride >= 8.
     for (int si = 0; si < 2; si++)
         for (int oi = 0; oi < 4; oi++)
         {
-            int s = strides[si];
+            int s = (si == 0) ? 8 : 17;
+            int off = offs[oi];
+            intptr_t foot_a = (intptr_t)off + 7 * s + 8;
+            intptr_t foot_b = (intptr_t)off + 7 * s + 8;
+            unsigned char* a = mem + PAGE - foot_a;
+            unsigned char* b = a - foot_b;
+            memset(a, 0xA5, (size_t)foot_a);
+            memset(b, 0x5A, (size_t)foot_b);
+            for (int r = 0; r < 8; r++)
+                for (int c = 0; c < 8; c++)
+                {
+                    a[off + r * s + c] = (unsigned char)(rng() & 0xFF);
+                    b[off + r * s + c] = (unsigned char)(rng() & 0xFF);
+                }
+            int want = scalar8(a + off, s, b + off, s);
+            int got = dynopt_sa8d_8x8_sve2(a + off, s, b + off, s);
+            total++;
+            if (want != got)
+            {
+                fprintf(stderr, "guard8 mismatch s=%d off=%d want=%d got=%d\n",
+                        s, off, want, got);
+                fails++;
+            }
+        }
+    // 16x16: 16 rows x 16 bytes, stride >= 16.
+    for (int si = 0; si < 2; si++)
+        for (int oi = 0; oi < 4; oi++)
+        {
+            int s = (si == 0) ? 16 : 17;
             int off = offs[oi];
             intptr_t foot_a = (intptr_t)off + 15 * s + 16;
             intptr_t foot_b = (intptr_t)off + 15 * s + 16;
@@ -96,11 +145,11 @@ int main()
                     b[off + r * s + c] = (unsigned char)(rng() & 0xFF);
                 }
             int want = scalar16(a + off, s, b + off, s);
-            int got = dynopt_sa8d_16x16_neon_sve2(a + off, s, b + off, s);
+            int got = dynopt_sa8d_16x16_sve2(a + off, s, b + off, s);
             total++;
             if (want != got)
             {
-                fprintf(stderr, "guard mismatch s=%d off=%d want=%d got=%d\n",
+                fprintf(stderr, "guard16 mismatch s=%d off=%d want=%d got=%d\n",
                         s, off, want, got);
                 fails++;
             }
