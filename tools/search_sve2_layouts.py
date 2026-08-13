@@ -424,7 +424,8 @@ def main():
             print("finalized %s (fused_uop=%d)"
                   % (src_path, best["counts"]["vector_fused_uop"]))
             gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
-                    "dct16": "dct16", "dct32": "dct32"}.get(args.kernel)
+                    "dct16": "dct16", "dct32": "dct32",
+                    "interp8": "interp8"}.get(args.kernel)
             if gate:
                 lite = run(["scripts/build-testbench-lite.sh", obj_path,
                             "build/x265-8-testbench", "--", "--gate", gate,
