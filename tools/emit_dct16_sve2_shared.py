@@ -48,6 +48,13 @@ GT16_FIRST8 = [
     [9, -25, 43, -57, 70, -80, 87, -90],
 ]
 
+T8_EVEN = [
+    [64, 64, 64, 64],
+    [83, 36, 83, 36],
+    [64, -64, 64, -64],
+    [36, -83, 36, -83],
+]
+
 
 def const_rows_cpp():
     rows = []
@@ -55,6 +62,134 @@ def const_rows_cpp():
         body = ", ".join(str(x) for x in c)
         rows.append("    { %s }," % body)
     return "\n".join(rows)
+
+
+def t8_even_cpp():
+    rows = []
+    for c in T8_EVEN:
+        body = ", ".join(str(x) for x in c)
+        rows.append("    { %s }," % body)
+    return "\n".join(rows)
+
+
+def gt16_s32_cpp():
+    """First 4 coefficients of g_t16 rows 2,6,10,14, widened to s32."""
+    rows = []
+    for k in (2, 6, 10, 14):
+        body = ", ".join(str(x) for x in GT16_FIRST8[k][:4])
+        rows.append("    { %s }," % body)
+    return "\n".join(rows)
+
+
+def pass2_cpp():
+    """Upstream-structure pass2 (bit-exact by construction with dct16_sve).
+
+    E stays s32 (vaddl), O stays s16 (vsubq_s16 + bridge SDOT), matching
+    x265::pass2Butterfly16_sve exactly; only the constant tables are
+    emitted by the tool.
+    """
+    return """\
+static void pass2_upstream(const int16_t* src, int16_t* dst)
+{
+    const int shift = 10;
+    const int line = 16;
+
+    int16x8_t O[16];
+    int32x4_t EO[16];
+    int32x4_t EEE[8];
+    int32x4_t EEO[8];
+
+    for (int i = 0; i < line; i += 2)
+    {
+        const int16x8_t s0_lo = vld1q_s16(src + i * line);
+        const int16x8_t s0_hi = rev16(vld1q_s16(src + i * line + 8));
+        const int16x8_t s1_lo = vld1q_s16(src + (i + 1) * line);
+        const int16x8_t s1_hi = rev16(vld1q_s16(src + (i + 1) * line + 8));
+
+        const int32x4_t E00 = vaddl_s16(vget_low_s16(s0_lo),
+                                        vget_low_s16(s0_hi));
+        const int32x4_t E01 = vaddl_s16(vget_high_s16(s0_lo),
+                                        vget_high_s16(s0_hi));
+        const int32x4_t E10 = vaddl_s16(vget_low_s16(s1_lo),
+                                        vget_low_s16(s1_hi));
+        const int32x4_t E11 = vaddl_s16(vget_high_s16(s1_lo),
+                                        vget_high_s16(s1_hi));
+
+        O[i + 0] = vsubq_s16(s0_lo, s0_hi);
+        O[i + 1] = vsubq_s16(s1_lo, s1_hi);
+
+        EO[i + 0] = vsubq_s32(E00, rev32(E01));
+        EO[i + 1] = vsubq_s32(E10, rev32(E11));
+
+        const int32x4_t EE0 = vaddq_s32(E00, rev32(E01));
+        const int32x4_t EE1 = vaddq_s32(E10, rev32(E11));
+        const int32x4_t t0 = vreinterpretq_s32_s64(
+            vzip1q_s64(vreinterpretq_s64_s32(EE0),
+                       vreinterpretq_s64_s32(EE1)));
+        const int32x4_t t1 = vrev64q_s32(vreinterpretq_s32_s64(
+            vzip2q_s64(vreinterpretq_s64_s32(EE0),
+                       vreinterpretq_s64_s32(EE1))));
+
+        EEE[i / 2] = vaddq_s32(t0, t1);
+        EEO[i / 2] = vsubq_s32(t0, t1);
+    }
+
+    for (int i = 0; i < line; i += 4)
+    {
+        for (int k = 1; k < 16; k += 2)
+        {
+            const int16x8_t c0_c4 = vld1q_s16(GT16[k]);
+            const int64x2_t t0 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 0]);
+            const int64x2_t t1 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 1]);
+            const int64x2_t t2 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 2]);
+            const int64x2_t t3 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 3]);
+            const int32x4_t t01 = vcombine_s32(vmovn_s64(t0), vmovn_s64(t1));
+            const int32x4_t t23 = vcombine_s32(vmovn_s64(t2), vmovn_s64(t3));
+            const int16x4_t res = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
+            vst1_s16(dst + k * line, res);
+        }
+
+        for (int k = 2; k < 16; k += 4)
+        {
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO[i + 0]);
+            const int32x4_t t1 = vmulq_s32(c0, EO[i + 1]);
+            const int32x4_t t2 = vmulq_s32(c0, EO[i + 2]);
+            const int32x4_t t3 = vmulq_s32(c0, EO[i + 3]);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line, res);
+        }
+
+        const int32x4_t c0 = vld1q_s32(T8E[0]);
+        const int32x4_t c4 = vld1q_s32(T8E[1]);
+        const int32x4_t c8 = vld1q_s32(T8E[2]);
+        const int32x4_t c12 = vld1q_s32(T8E[3]);
+
+        const int32x4_t t0 = vpaddq_s32(EEE[i / 2 + 0], EEE[i / 2 + 1]);
+        const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+        vst1_s16(dst + 0 * line, res0);
+
+        const int32x4_t t2 = vmulq_s32(c4, EEO[i / 2 + 0]);
+        const int32x4_t t3 = vmulq_s32(c4, EEO[i / 2 + 1]);
+        const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+        vst1_s16(dst + 4 * line, res4);
+
+        const int32x4_t t4 = vmulq_s32(c8, EEE[i / 2 + 0]);
+        const int32x4_t t5 = vmulq_s32(c8, EEE[i / 2 + 1]);
+        const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+        vst1_s16(dst + 8 * line, res8);
+
+        const int32x4_t t6 = vmulq_s32(c12, EEO[i / 2 + 0]);
+        const int32x4_t t7 = vmulq_s32(c12, EEO[i / 2 + 1]);
+        const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+        vst1_s16(dst + 12 * line, res12);
+
+        dst += 4;
+    }
+}
+"""
 
 
 def build_block(i):
@@ -90,8 +225,11 @@ def group_block(g):
     return "\n".join(dots) + "\n" + narrow
 
 
-def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False):
+def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
+         export_pass2=False):
     rows = const_rows_cpp()
+    t8e = t8_even_cpp()
+    g32 = gt16_s32_cpp()
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
     pass1_export = ""
@@ -101,6 +239,14 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False):
 extern "C" void %s_pass1(const int16_t* src, int16_t* dst, intptr_t srcStride)
 {
     pass<3>(src, dst, srcStride);
+}
+""" % func_name
+    if export_pass2:
+        pass1_export += """
+
+extern "C" void %s_pass2(const int16_t* src, int16_t* dst)
+{
+    pass2_upstream(src, dst);
 }
 """ % func_name
     return """\
@@ -116,6 +262,45 @@ namespace {
 static const int16_t C8[16][8] = {
 %s
 };
+
+static const int16_t GT16[16][8] = {
+%s
+};
+
+static const int32_t GT16_S32[4][4] = {
+%s
+};
+
+static const int32_t T8E[4][4] = {
+%s
+};
+
+static const uint8_t rev16_tbl[16] =
+    { 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1 };
+static const uint8_t rev32_tbl[16] =
+    { 12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3 };
+
+static inline int16x8_t rev16(const int16x8_t a)
+{
+    return vreinterpretq_s16_s8(vqtbx1q_s8(
+        vreinterpretq_s8_s16(a), vreinterpretq_s8_s16(a),
+        vld1q_u8(rev16_tbl)));
+}
+
+static inline int32x4_t rev32(const int32x4_t a)
+{
+    return vreinterpretq_s32_s8(vqtbx1q_s8(
+        vreinterpretq_s8_s32(a), vreinterpretq_s8_s32(a),
+        vld1q_u8(rev32_tbl)));
+}
+
+static inline int64x2_t sdotq_s16(int64x2_t acc, int16x8_t x, int16x8_t y)
+{
+    return svget_neonq_s64(svdot_s64(
+        svset_neonq_s64(svundef_s64(), acc),
+        svset_neonq_s16(svundef_s16(), x),
+        svset_neonq_s16(svundef_s16(), y)));
+}
 
 // tbl2 index: low 8 lanes of {z_a, z_b} -> [z_a[0..7], z_b[0..7]]
 // hi: [z_a[8..15], z_b[8..15]]
@@ -144,15 +329,17 @@ static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
     }
 }
 
+%s
 } // namespace
 
 extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
 {
     int16_t coef[256];
     pass<3>(src, coef, srcStride);
-    pass<10>(coef, dst, 16);
+    pass2_upstream(coef, dst);
 }
-%s""" % (rows, build_src, dot_src, func_name, pass1_export)
+%s""" % (rows, rows, g32, t8e, build_src, dot_src,
+         pass2_cpp(), func_name, pass1_export)
 
 
 def main():

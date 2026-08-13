@@ -182,18 +182,25 @@ kernels/dct16/sve_roundtrip_verify: cases=100000 lanes=25600000
 同一输入，与 NEON trace 同口径）：
 
 ```text
-dct16_neon: total=2075 vector=1553
-dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
+dct16_neon (fully unrolled): total=2074 vector=1553
+dct16_sve  (looped):         total=2047 vector=1577
 ```
 
-即开源的 SVE 版仅靠 s16→s64 SDOT 替换就砍掉约 55% 向量指令，每输出约
-1.35 条。工具生成候选的目标基线从 NEON 1553 改为 **SVE 689**：纯 SVE256
-宽度（每 SDOT 处理 4 个输出而非 2 个）叠加常量预置换后，静态预算应低于
-689 且与上游 dct16_sve 位级一致，才值得进入 960 实机。
+> **口径修正（2026-08-13）**：此前的 `dct16_sve total=970 vector=689`
+> 是 `-d in_asm` 的翻译一次计数，循环体只算一遍，**不是真实动态流**；
+> 真实动态计数需 `-d exec,in_asm` 合并（tools/parse_qemu_trace.py
+> `--exec`，tools/trace_kernel.sh 已切换）。按真实动态口径，开源 SVE 版
+> 的向量指令数（1577）与 NEON（1553）基本持平——SDOT 替换并没有带来
+> 动态指令削减，689 是方法学假象。
+
+工具生成候选的目标基线因此仍是 **NEON/上游 SVE 的真实动态向量指令数
+（~1550-1580）**：纯 SVE256 宽度（每 SDOT 处理 4 个输出而非 2 个）叠加
+常量预置换后，动态预算应显著低于 1550 且与上游 dct16_sve 位级一致，
+才值得进入 960 实机。
 
 ## 工具发射器 v1/v2 + 正确性反例（2026-08-13）
 
-### 合同修订（用户决定，2026-08-13）
+### 合同修订 + 口径修正（用户决定，2026-08-13）
 
 > 我认为只要和开源算子一致，就可以，不需要完全对应 c ref
 
@@ -207,6 +214,28 @@ dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
   而不是以 C 的 int32 E/O 为准；
 - 文档落盘：docs/04-validation-benchmark.md V0.5、docs/08 ADR A009、
   round-0007 decision 第 7 条标注取代。
+
+### v2.1：pass2 复刻上游结构，达到位级一致（2026-08-13）
+
+发射器新增 `pass2_upstream`（E 走 vaddl s32、O 走 s16 bridge SDOT、
+偶数路径用 t8_even `[a,b,a,b]` 重复常量，与上游 pass2Butterfly16_sve
+逐行一致），修复过程中发现并修正两处常量错误：`t8_even` 是重复排列
+（不是 g_t8 行），`GT16_S32` 索引应为 `(k-2)/4`。结果：
+
+```text
+build/dct16_sve_shared_verify 200000
+cases=200000 lanes=51200000 mismatches=0 rate=0.000000%   # 上游位级一致
+
+true-dynamic (exec+in_asm):
+dct16_neon : vector=1553
+dct16_sve  : vector=1577
+shared v2.1: vector=1636   (total=2353)
+```
+
+v2.1 是第一个**上游位级一致**的工具生成 SVE2 候选；真实动态向量数 1636
+比上游 SVE 1577 高约 4%——结构上 pass1 的"每行一个 sdot + NEON bridge
+窄化"仍有冗余，v3 四分之一交错布局（2 sdot + 1 addp 出 4 输出）是下一
+个主假设，目标动态向量数 < 1200。
 
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），

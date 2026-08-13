@@ -29,6 +29,6 @@ set -- $range
 START=$1
 END=$2
 
-qemu-aarch64 -cpu max -one-insn-per-tb -d in_asm \
+qemu-aarch64 -cpu max,sve-max-vq=2 -one-insn-per-tb -d exec,in_asm \
   -dfilter "0x$START..0x$END" -D "$LOG" "$bin" >/dev/null 2>&1
-echo "traced $SYM at 0x$START..0x$END -> $LOG"
+echo "traced $SYM at 0x$START..0x$END -> $LOG (exec+in_asm; parse with --exec)"
