@@ -114,3 +114,15 @@ fused_uop 仍 127。这是“lite 门禁比窄差分强”的实证：差分应�
 （qemu-arm 邮件列表），GitHub `qemu/qemu` 仓库检索不到任何 SVE2p3
 提交。因此**当前无法通过升级 QEMU 解锁 `sdot .h`**；方案 B 验证继续
 挂起，等 960 实机或 QEMU SVE2p3 落地后恢复。
+
+### 5.2 SVE2p3 执行 canary（2026-08-13）
+
+- 已落地 `tools/sve2p3_canary.S/.c` + `scripts/sve2p3-canary.sh`：
+  纯汇编 `sdot z2.h, z0.b, z1.b`，C 侧按 DDI0602 语义逐 lane 校验
+  （连续正数 + 混合符号两组输入）；
+- 实测：`aarch64-linux-gnu-as -march=armv9.5-a+sve2p3` 接受编码；
+  QEMU 11.0.3 `-cpu max,sve-max-vq=2` 执行 SIGILL，脚本按 exit 3
+  报告“执行器无 FEAT_SVE2p3”；
+- 未来任一支持 SVE2p3 的执行器（新 QEMU/architectural model/960
+  硅片）出现时，先跑 canary 再决定是否接入 interp8 path-B；canary
+  不过则 path-B 只能标 `semantic-only`，不得称 upstream-exact。

@@ -29,6 +29,7 @@
 | `tools/parse_qemu_trace.py` | trace 日志 + 地址区间 → 指令流 JSON（true-dynamic，含 fused_adj） | 通用；`--exec` 为真实动态 |
 | `optimizer/ir/asm_ir.py` | 指令流 → 寄存器 SSA asm-IR | DCT16 覆盖 |
 | `tools/recover_loops.py` | 指令流 JSON → 循环骨架（trip/period/depth） | 原型，通用 |
+| `tools/sve2p3_canary.S/.c` + `scripts/sve2p3-canary.sh` | SVE2p3 `sdot.h` 执行能力探针（汇编器接受 → 执行器逐 lane 校验；SIGILL → exit 3） | 纯汇编，不依赖 ACLE |
 
 ### discover（结构发现）
 
