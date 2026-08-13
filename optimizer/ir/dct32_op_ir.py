@@ -71,6 +71,13 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # 4-lane row vectors (svtbl2_s32) before one rshrnb+uzp1+store8.
     k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
         and row_group in (8, 16)
+    # k0_epack: build E = lo + rev(hi) per row first (s16), then pack E
+    # once (one 18-op pack instead of lo/hi double packs) and widen with
+    # single saddlb/lt terms. PASS1 ONLY: pass1 inputs are [-255,255] so
+    # E stays within s16 (exact); pass2 coef pairs can reach ~+-65k and
+    # wrap (probe_k0_epack two-pass random 0 mismatch, but TestBenchLite
+    # constant/structured vectors FAIL) -- the same trap as k0_even_sdot.
+    k0_epack = bool(lo.get("k0_epack", 0)) and k0_even_sve
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -673,41 +680,69 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                   attrs={"kind": "revh_d"})
                               for m in (2, 3)]
                         return q[0].out, q[1].out, qr[0].out, qr[1].out
-                    l0, l1, l2, l3 = pack(["lo_%d" % r for r in pr], "L")
-                    h0, h1, h2, h3 = pack(["hi_%d" % r for r in pr], "H")
-                    # e0 = saddlb(lo0, revh(hi3)) + saddlb(lo3, hi0)
-                    e0 = new("add", tid, "e0_%d_%d" % (b, pass_id),
-                             (new("widen_add_sve", tid,
-                                  "we0_%d_%d" % (b, pass_id),
-                                  (l0, h3), attrs={"kind": "lb"}).out,
-                              new("widen_add_sve", tid,
-                                  "we1_%d_%d" % (b, pass_id),
-                                  (l3, h0), attrs={"kind": "lb"}).out),
-                             attrs={"elem": "s32"})
-                    e1 = new("add", tid, "e1_%d_%d" % (b, pass_id),
-                             (new("widen_add_sve", tid,
-                                  "we2_%d_%d" % (b, pass_id),
-                                  (l0, h3), attrs={"kind": "lt"}).out,
-                              new("widen_add_sve", tid,
-                                  "we3_%d_%d" % (b, pass_id),
-                                  (l3, h0), attrs={"kind": "lt"}).out),
-                             attrs={"elem": "s32"})
-                    e2 = new("add", tid, "e2_%d_%d" % (b, pass_id),
-                             (new("widen_add_sve", tid,
-                                  "we4_%d_%d" % (b, pass_id),
-                                  (l1, h2), attrs={"kind": "lb"}).out,
-                              new("widen_add_sve", tid,
-                                  "we5_%d_%d" % (b, pass_id),
-                                  (l2, h1), attrs={"kind": "lb"}).out),
-                             attrs={"elem": "s32"})
-                    e3 = new("add", tid, "e3_%d_%d" % (b, pass_id),
-                             (new("widen_add_sve", tid,
-                                  "we6_%d_%d" % (b, pass_id),
-                                  (l1, h2), attrs={"kind": "lt"}).out,
-                              new("widen_add_sve", tid,
-                                  "we7_%d_%d" % (b, pass_id),
-                                  (l2, h1), attrs={"kind": "lt"}).out),
-                             attrs={"elem": "s32"})
+                    if k0_epack and pass_id == 1:
+                        E = {}
+                        for r in pr:
+                            rv = new("rev", tid,
+                                     "k0Erv_%d_%d" % (r, pass_id),
+                                     ("hi_%d" % r,),
+                                     attrs={"elem": "s16"})
+                            E[r] = new("add", tid,
+                                       "k0EE_%d_%d" % (r, pass_id),
+                                       ("lo_%d" % r, rv.out),
+                                       attrs={"elem": "s16"})
+                        eq0, eq1, eq2, eq3 = pack(
+                            [E[r].out for r in pr], "E")
+                        e0 = new("widen_add_sve", tid,
+                                 "we0_%d_%d" % (b, pass_id),
+                                 (eq0, eq3), attrs={"kind": "lb"})
+                        e1 = new("widen_add_sve", tid,
+                                 "we1_%d_%d" % (b, pass_id),
+                                 (eq0, eq3), attrs={"kind": "lt"})
+                        e2 = new("widen_add_sve", tid,
+                                 "we2_%d_%d" % (b, pass_id),
+                                 (eq1, eq2), attrs={"kind": "lb"})
+                        e3 = new("widen_add_sve", tid,
+                                 "we3_%d_%d" % (b, pass_id),
+                                 (eq1, eq2), attrs={"kind": "lt"})
+                    else:
+                        l0, l1, l2, l3 = pack(
+                            ["lo_%d" % r for r in pr], "L")
+                        h0, h1, h2, h3 = pack(
+                            ["hi_%d" % r for r in pr], "H")
+                        # e0 = saddlb(lo0, revh(hi3)) + saddlb(lo3, hi0)
+                        e0 = new("add", tid, "e0_%d_%d" % (b, pass_id),
+                                 (new("widen_add_sve", tid,
+                                      "we0_%d_%d" % (b, pass_id),
+                                      (l0, h3), attrs={"kind": "lb"}).out,
+                                  new("widen_add_sve", tid,
+                                      "we1_%d_%d" % (b, pass_id),
+                                      (l3, h0), attrs={"kind": "lb"}).out),
+                                 attrs={"elem": "s32"})
+                        e1 = new("add", tid, "e1_%d_%d" % (b, pass_id),
+                                 (new("widen_add_sve", tid,
+                                      "we2_%d_%d" % (b, pass_id),
+                                      (l0, h3), attrs={"kind": "lt"}).out,
+                                  new("widen_add_sve", tid,
+                                      "we3_%d_%d" % (b, pass_id),
+                                      (l3, h0), attrs={"kind": "lt"}).out),
+                                 attrs={"elem": "s32"})
+                        e2 = new("add", tid, "e2_%d_%d" % (b, pass_id),
+                                 (new("widen_add_sve", tid,
+                                      "we4_%d_%d" % (b, pass_id),
+                                      (l1, h2), attrs={"kind": "lb"}).out,
+                                  new("widen_add_sve", tid,
+                                      "we5_%d_%d" % (b, pass_id),
+                                      (l2, h1), attrs={"kind": "lb"}).out),
+                                 attrs={"elem": "s32"})
+                        e3 = new("add", tid, "e3_%d_%d" % (b, pass_id),
+                                 (new("widen_add_sve", tid,
+                                      "we6_%d_%d" % (b, pass_id),
+                                      (l1, h2), attrs={"kind": "lt"}).out,
+                                  new("widen_add_sve", tid,
+                                      "we7_%d_%d" % (b, pass_id),
+                                      (l2, h1), attrs={"kind": "lt"}).out),
+                                 attrs={"elem": "s32"})
                     w0 = new("permute", tid, "w0_%d_%d" % (b, pass_id),
                              (e0.out, e1.out), attrs={"kind": "zip1s"})
                     w1 = new("permute", tid, "w1_%d_%d" % (b, pass_id),

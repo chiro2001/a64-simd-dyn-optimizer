@@ -450,20 +450,35 @@ def emit_acle(plan: Plan, ops: List[Op],
     max_g = max((int(o.attrs.get("g", 0)) for o in ops), default=7)
     n_groups = max_g + 1
     row_group = 32 // n_groups
-    def _k0_first(pass_ops):
-        """Emit k0 right after the leaf section so the lo/hi leaf vectors
-        die before the odd/k2/k4 chains (register-pressure experiment:
-        the k0 E-chain's pack reuses lo/hi, whose long live range to the
-        end of the group is a major spill source in the row16 body)."""
+    def _reorder(pass_ops, order):
+        """Emit families in `order` (leaf first, then the listed families,
+        then any leftover) so the op-DAG source order (live-range shape)
+        can be searched as a dimension (register-pressure experiments:
+        k0 first shortened the lo/hi live range and cut spills 614->530)."""
         fam = lambda o: o.tile_id.split(".")[1]
         leaf = [o for o in pass_ops if fam(o) == "leaf"]
-        k0 = [o for o in pass_ops if fam(o).startswith("k0")]
-        rest = [o for o in pass_ops
-                if fam(o) != "leaf" and not fam(o).startswith("k0")]
-        return leaf + k0 + rest
+        grouped = {}
+        for o in pass_ops:
+            f = fam(o)
+            if f == "leaf":
+                continue
+            grouped.setdefault(f, []).append(o)
+        out = list(leaf)
+        seen = set()
+        for f in order:
+            key = next((k for k in grouped if k.startswith(f)), None)
+            if key is None or key in seen:
+                continue
+            seen.add(key)
+            out.extend(grouped[key])
+        for f in grouped:
+            if f not in seen:
+                out.extend(grouped[f])
+        return out
 
-    pass1 = _k0_first([o for o in ops if o.tile_id.startswith("p1.")])
-    pass2 = _k0_first([o for o in ops if o.tile_id.startswith("p2.")])
+    order = plan.lowering.get("emit_order", "k0,odd,k2,k4").split(",")
+    pass1 = _reorder([o for o in ops if o.tile_id.startswith("p1.")], order)
+    pass2 = _reorder([o for o in ops if o.tile_id.startswith("p2.")], order)
     b1 = _emit_pass(pass1, 8, row_group)
     b2 = _emit_pass(pass2, 1024, row_group)
     prologue = """\

@@ -39,7 +39,11 @@
 | **row16+merge8（新 best）** | **4944** | 5416 | 472 | 614 |
 | 内部参考 | 4827 | 4731 | 480 | — |
 
-相对上游 12710 = 0.389×；距内部 fused_uop = 1.024×。
+后续迭代（同日深夜）：k0 先发射 → 4874；pass1 专用 k0 E-pack →
+**4682**（0.368× 上游，fused_uop 口径**低于内部 4827**；lite 5 seed
+PASS；全 pass E-pack 因 pass2 回绕在 lite FAIL，已记录 docs/20 §6.8）。
+
+相对上游 12710 = 0.368×；距内部 fused_uop = 0.970×。
 固化 `kernels/dct32/candidates/best_op_r16.{cpp,S}`。
 
 ## 下一步

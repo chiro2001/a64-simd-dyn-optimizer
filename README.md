@@ -10,11 +10,11 @@
   dct16 布局搜索 6:21→1:44）、rewrite 依赖剪枝（dct32 781→219 计划键/
   31 唯一源）、两级差分（2k→20k，fail→pass=0 构造保证）、流式 trace
   （`--stream`，348 日志与旧 parser 零差异）、LLVM-MCA 第二代理。
-- **DCT32 op 后端 best = 4874 fused_uop**（vector 5350 / 零 scatter，
-  相对上游 12710 = 0.383×，距内部 4827 = 1.010×），
+- **DCT32 op 后端 best = 4682 fused_uop**（vector 5158 / 零 scatter，
+  相对上游 12710 = 0.368×，**低于内部参考 4827 = 0.970×**），
   **TestBenchLite 5 seed 全 PASS（黄金标准闭合）**；由
-  row_group=16 合并存储 + k0_merge8 新轴 + k0 先发射达成
-  （5390→4874，-9.6%），
+  row_group=16 合并存储 + k0_merge8 + k0 先发射 + pass1 专用
+  k0 E-pack 达成（5390→4682，-13.1%），
   k0_even_sdot 全 s16 方案被数值探针否决（1.34% 回绕，超 legacy
   门禁，见 docs/20 §6.4）。
 - DCT16 legacy best 705（零 scatter 895，超内部 731）；sa8d16 189
