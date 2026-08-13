@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""One-command pipeline skeleton: kernel -> optimize -> kernel -> evaluate.
+
+The stages are wired to existing tools so the DCT16 flow runs end to end
+from a clean build; the optimization stage is the only part meant to
+change (emitter layout parameters / rewrites), the skeleton stays fixed.
+
+  python3 tools/pipeline.py baseline [--outdir DIR]
+  python3 tools/pipeline.py search   [--backend asm|acle]
+  python3 tools/pipeline.py report   [--outdir DIR]
+  python3 tools/pipeline.py --all    [--backend asm|acle]
+
+Prerequisites: cross toolchain (aarch64-linux-gnu-*), qemu-aarch64 with
+SVE, build/x265-8-clang-sve/libx265.a (upstream SVE reference), and the
+NEON roundtrip object build/dct16_roundtrip.o for the NEON baseline.
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
+        "-cpu", "max,sve-max-vq=2"]
+
+
+def run(cmd, **kw):
+    return subprocess.run(cmd, stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT, text=True, **kw)
+
+
+def symbol_range(binary, sym):
+    out = run(["nm", binary, "--defined-only"]).stdout
+    start = None
+    for line in out.splitlines():
+        p = line.split()
+        if len(p) >= 3 and p[2] == sym:
+            start = int(p[0], 16)
+    if start is None:
+        return None
+    nxt = None
+    for line in out.splitlines():
+        p = line.split()
+        if len(p) < 3:
+            continue
+        try:
+            a = int(p[0], 16)
+        except ValueError:
+            continue
+        if a > start and (nxt is None or a < nxt) and p[1] in ("T", "t"):
+            nxt = a
+    return start, (nxt if nxt is not None else start + 1)
+
+
+def trace_count(binary, start, end, log):
+    r = run(QEMU + ["-one-insn-per-tb", "-d", "exec,in_asm",
+                    "-dfilter", "0x%x..0x%x" % (start, end),
+                    "-D", log, binary])
+    if r.returncode != 0:
+        return None
+    p = run(["python3", os.path.join(ROOT, "tools/parse_qemu_trace.py"),
+             log, hex(start), hex(end), "--exec", "--json", log + ".json"])
+    if p.returncode != 0:
+        return None
+    d = json.load(open(log + ".json"))
+    c = d.get("counts", {})
+    return {"total": len(d["instructions"]),
+            "vector": len(d["vector"]),
+            "movprfx": c.get("movprfx", 0),
+            "vector_fused": c.get("vector_fused", len(d["vector"]))}
+
+
+def stage_baseline(outdir):
+    os.makedirs(outdir, exist_ok=True)
+    result = {}
+
+    # upstream SVE baseline
+    sve_bin = os.path.join(outdir, "baseline-sve-driver")
+    r = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+             "-std=c++11",
+             os.path.join(ROOT, "kernels/dct16/sve_trace_driver.cpp"),
+             "-Wl,--start-group",
+             os.path.join(ROOT, "build/x265-8-clang-sve/libx265.a"),
+             "-Wl,--end-group", "-lpthread", "-ldl", "-o", sve_bin])
+    if r.returncode != 0:
+        print("baseline SVE BUILD FAIL:\n%s" % r.stdout[-2000:])
+        return 1
+    rng = symbol_range(sve_bin, "_ZN4x2659dct16_sveEPKsPsl")
+    if rng:
+        counts = trace_count(sve_bin, rng[0], rng[1],
+                             os.path.join(outdir, "baseline-sve.log"))
+        result["upstream_sve"] = counts
+
+    # NEON roundtrip baseline (upstream-exact, fully unrolled)
+    neon_bin = os.path.join(outdir, "baseline-neon-driver")
+    r = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+             "-std=c++11",
+             os.path.join(ROOT, "kernels/dct16/trace_driver.cpp"),
+             os.path.join(ROOT, "build/dct16_roundtrip.o"),
+             "-o", neon_bin])
+    if r.returncode != 0:
+        print("baseline NEON BUILD FAIL:\n%s" % r.stdout[-2000:])
+        return 1
+    rng = symbol_range(neon_bin, "dynopt_dct16_neon_candidate")
+    if rng:
+        counts = trace_count(neon_bin, rng[0], rng[1],
+                             os.path.join(outdir, "baseline-neon.log"))
+        result["neon"] = counts
+
+    json.dump(result, open(os.path.join(outdir, "baseline.json"), "w"),
+              indent=1)
+    for k, v in result.items():
+        print("baseline %-12s %s" % (k, v))
+    return 0
+
+
+def stage_search(backend):
+    return run(["python3", os.path.join(ROOT, "tools/search_sve2_layouts.py"),
+                "--backend", backend]).returncode
+
+
+def stage_report(outdir):
+    base = json.load(open(os.path.join(outdir, "baseline.json")))
+    res = json.load(open(os.path.join(outdir, "results.json")))
+    print("baseline (true-dynamic, fused_adj):")
+    for k, v in base.items():
+        if v:
+            print("  %-12s vector=%d fused_adj=%d"
+                  % (k, v["vector"], v["vector_fused"]))
+    print("candidates:")
+    ok = [r for r in res if r.get("counts")]
+    ok.sort(key=lambda r: r["counts"]["vector_fused"])
+    for r in ok:
+        print("  %-24s vector=%d fused_adj=%d upstream_exact=%s"
+              % (r["tag"], r["counts"]["vector"], r["counts"]["vector_fused"],
+                 r.get("upstream_exact")))
+    best = ok[0]["tag"] if ok else None
+    if best:
+        trace = os.path.join(outdir, best + "-trace.log.json")
+        if os.path.exists(trace):
+            sys.path.insert(0, os.path.join(ROOT, "tools"))
+            from recover_loops import detect_loops
+            d = json.load(open(trace))
+            loops = detect_loops(d["instructions"])
+            print("loop report for %s (%d loops):"
+                  % (best, len(loops)))
+            for l in loops[:8]:
+                print("  trip=%d period=%d depth=%d body=[0x%x..0x%x)"
+                      % (l["trip"], l["period"], l["depth"],
+                         d["instructions"][l["start"]]["addr"],
+                         d["instructions"][l["end"] - 1]["addr"]))
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--all", action="store_true")
+    ap.add_argument("--backend", choices=("asm", "acle"), default="asm")
+    ap.add_argument("--outdir", default=os.path.join(
+        ROOT, "experiments/m30-dct16-search/layout-search"))
+    ap.add_argument("stage", nargs="?", choices=("baseline", "search",
+                                                 "report"))
+    args = ap.parse_args()
+
+    if args.all or args.stage == "baseline":
+        if stage_baseline(args.outdir) != 0:
+            return 1
+    if args.all or args.stage == "search":
+        if stage_search(args.backend) != 0:
+            return 1
+    if args.all or args.stage == "report":
+        return stage_report(args.outdir)
+    ap.print_help()
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
