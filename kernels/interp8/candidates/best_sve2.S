@@ -18,45 +18,42 @@ dynopt_interp8_8x8_sve2:
 	add	x4, x4, :lo12:.LANCHOR0
 	ptrue	p7.b, all
 	add	x5, x4, x5
-	ld1h	z31.h, p7/z, [x5]
+	ld1h	z29.h, p7/z, [x5]
 	sub	x0, x0, #3
 	add	x5, x4, x6
-	ld1h	z30.h, p7/z, [x5]
-	add	x6, x2, 4
-	add	x5, x4, 256
-	ld1h	z29.h, p7/z, [x5]
-	movi	d26, #0
-	add	x5, x4, 288
-	add	x4, x4, 320
 	ld1h	z28.h, p7/z, [x5]
-	ld1h	z27.h, p7/z, [x4]
-	mov	w5, 8
-	mov	x4, 0
+	movi	d23, #0
+	add	x5, x4, 256
+	ld1h	z27.h, p7/z, [x5]
+	add	x5, x4, 288
+	ld1h	z26.h, p7/z, [x5]
+	add	x5, x4, 320
+	add	x4, x4, 352
+	ld1w	z24.s, p7/z, [x4]
+	mov	w4, 8
+	ld1h	z25.h, p7/z, [x5]
 	.p2align 5,,15
 .L3:
-	ld1b	z25.h, p7/z, [x0]
-	tbl	z23.h, {z25.h}, z28.h
-	tbl	z24.h, {z25.h}, z29.h
-	movprfx	z0, z26
-	sdot	z0.d, z24.h, z31.h
-	sdot	z0.d, z23.h, z30.h
-	uzp1	z0.s, z0.s, z0.s
-	rshrnb	z0.h, z0.s, #6
-	uzp1	z0.h, z0.h, z0.h
-	sqxtun	v0.8b, v0.8h
-	tbl	z25.h, {z25.h}, z27.h
-	movprfx	z22, z26
-	sdot	z22.d, z23.h, z31.h
-	sdot	z22.d, z25.h, z30.h
-	uzp1	z22.s, z22.s, z22.s
-	rshrnb	z22.h, z22.s, #6
-	uzp1	z22.h, z22.h, z22.h
-	sqxtun	v22.8b, v22.8h
+	ld1b	z22.h, p7/z, [x0]
+	tbl	z21.h, {z22.h}, z26.h
+	tbl	z0.h, {z22.h}, z27.h
+	movprfx	z31, z23
+	sdot	z31.d, z21.h, z29.h
+	tbl	z22.h, {z22.h}, z25.h
+	movprfx	z30, z23
+	sdot	z30.d, z0.h, z29.h
+	sdot	z31.d, z22.h, z28.h
+	sdot	z30.d, z21.h, z28.h
+	uzp1	z31.s, z31.s, z31.s
+	uzp1	z30.s, z30.s, z30.s
+	tbl	z30.s, {z30.s - z31.s}, z24.s
+	rshrnb	z30.h, z30.s, #6
+	uzp1	z30.h, z30.h, z30.h
+	sqxtun	v30.8b, v30.8h
 	add	x0, x0, x1
-	str	s0, [x2, x4]
-	subs	w5, w5, #1
-	str	s22, [x6, x4]
-	add	x4, x4, x3
+	subs	w4, w4, #1
+	st1b	z30.b, p7, [x2]
+	add	x2, x2, x3
 	bne	.L3
 	ret
 	.p2align 2,,3
@@ -227,6 +224,25 @@ _ZL6IDX_X2:
 	.hword	12
 	.hword	13
 	.hword	14
+	.type	_ZL6IDX_08, %object
+	.size	_ZL6IDX_08, 64
+_ZL6IDX_08:
+	.word	0
+	.word	1
+	.word	2
+	.word	3
+	.word	8
+	.word	9
+	.word	10
+	.word	11
+	.word	0
+	.word	1
+	.word	2
+	.word	3
+	.word	8
+	.word	9
+	.word	10
+	.word	11
 	.ident	"GCC: (GNU) 16.1.0"
 	.section	.note.GNU-stack,"",@progbits
 

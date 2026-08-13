@@ -45,6 +45,8 @@ static const uint16_t IDX_X1[16] =
     { 4, 5, 6, 7, 5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10 };
 static const uint16_t IDX_X2[16] =
     { 8, 9, 10, 11, 9, 10, 11, 12, 10, 11, 12, 13, 11, 12, 13, 14 };
+static const uint32_t IDX_08[16] =
+    { 0, 1, 2, 3, 8, 9, 10, 11, 0, 1, 2, 3, 8, 9, 10, 11 };
 """)
     return "\n".join(lines)
 
@@ -63,7 +65,7 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
                    uint8_t* dst, intptr_t dstStride, int coeffIdx)
 {
     const svbool_t p16 = svptrue_b16();
-    const svbool_t pg4b = svwhilelt_b8(0, 4);
+    const svbool_t p8b = svptrue_b8();
     const svint64_t zero64 = svdup_n_s64(0);
     const int ph = (coeffIdx >= 1 && coeffIdx <= 3) ? coeffIdx : 2;
     const svint16_t c0 = svld1_s16(p16, CTBL[ph - 1][0]);
@@ -71,6 +73,7 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
     const svuint16_t ix0 = svld1_u16(p16, IDX_X0);
     const svuint16_t ix1 = svld1_u16(p16, IDX_X1);
     const svuint16_t ix2 = svld1_u16(p16, IDX_X2);
+    const svuint32_t ix08 = svld1_u32(svptrue_b32(), IDX_08);
 
     for (int r = 0; r < 8; r++)
     {
@@ -84,21 +87,16 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
         t0 = svdot_s64(t0, X1, c1);
         svint32_t lo0 = svuzp1_s32(svreinterpret_s32_s64(t0),
                                    svreinterpret_s32_s64(t0));
-        svint16_t r0 = svrshrnb_n_s32(lo0, 6);
-        svint16_t rz0 = svuzp1_s16(r0, r0);
-        uint8x8_t u0 = vqmovun_s16(svget_neonq_s16(rz0));
-        svst1_u8(pg4b, dst + r * dstStride,
-                 svset_neonq_u8(svundef_u8(), vcombine_u8(u0, vdup_n_u8(0))));
-
         svint64_t t1 = svdot_s64(zero64, X1, c0);
         t1 = svdot_s64(t1, X2, c1);
         svint32_t lo1 = svuzp1_s32(svreinterpret_s32_s64(t1),
                                    svreinterpret_s32_s64(t1));
-        svint16_t r1 = svrshrnb_n_s32(lo1, 6);
-        svint16_t rz1 = svuzp1_s16(r1, r1);
-        uint8x8_t u1 = vqmovun_s16(svget_neonq_s16(rz1));
-        svst1_u8(pg4b, dst + r * dstStride + 4,
-                 svset_neonq_u8(svundef_u8(), vcombine_u8(u1, vdup_n_u8(0))));
+        svint32_t all = svtbl2_s32(svcreate2_s32(lo0, lo1), ix08);
+        svint16_t rr = svrshrnb_n_s32(all, 6);
+        svint16_t rz = svuzp1_s16(rr, rr);
+        uint8x8_t u = vqmovun_s16(svget_neonq_s16(rz));
+        svst1_u8(p8b, dst + r * dstStride,
+                 svset_neonq_u8(svundef_u8(), vcombine_u8(u, vdup_n_u8(0))));
     }
 }
 """ % (cpp_constants(), func_name)

@@ -63,11 +63,23 @@ emit_dct16_sve2_asm.py），且目标必须是 SVE2p1（960 可，920G 未知）
 | 实现 | dynamic | vector | movprfx | fused_uop |
 | --- | ---: | ---: | ---: | ---: |
 | 上游 interp_horiz_pp_neon<8,8,8> | 162 | 141 | 0 | 141 |
-| 工具 path-a（sdot.d 切片） | 217 | 150 | 16 | **134** |
+| 工具 path-a（sdot.d 切片，合并归约） | 193 | 143 | 16 | **127** |
 
-- 2 万例 × 3 相位差分 0（upstream-exact）；fused_uop **-5%**；
-- 实际收益低于预估（-16%）：ldur 47→8 的节省被 tbl 切片（每行 3）+ 
-  sdot/归约开销抵消，且 vector raw 150 > 141，fused 靠 movprfx 融合
-  才到 134；
+- 2 万例 × 3 相位差分 0（upstream-exact）；fused_uop **-10%**；
+- 第二次迭代（合并归约）：两个半程的 uzp1 结果经 tbl2_s32（注意 s32
+  tbl2 索引 8-15 选第二个源，不是 16-23）合并成 8-lane 后一次
+  rshrnb+uzp1_s16+vqmovun+整行存储，134 → 127；
+- 实际收益仍低于预估（-16%）：ldur 47→8 的节省被 tbl 切片（每行 3）+
+  sdot/归约开销抵消；
 - 达标路径仍是方案 B（SVE2p1 sdot.h，预估 -35%，GCC 16.1 无 intrinsic，
   需 asm backend）；方案 A 保留为 SVE2 兼容基线。
+
+## 5. 方案 B 工具链实测（2026-08-13）
+
+- `sdot z0.h, z1.b, z2.b`（8-bit→16-bit，8 输出/指令）在
+  `-march=armv9.5-a+sve2p3` 下**汇编器可接受**（该编码实际是 SVE2p3，
+  不是 SVE2p1；ISA 目录已补 `sve2p3-sdot-h`）；
+- **QEMU 11.0.3 执行 SIGILL**（max CPU 未实现 SVE2p3 sdot.h），本环境
+  无法验证；需 960 实机或更新 QEMU；
+- 方案 B 保持待验证状态，ACLE intrinsic 亦缺失（asm backend 就绪后
+  可发射，但正确性门需要能执行它的环境）。

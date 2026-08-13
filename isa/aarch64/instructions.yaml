@@ -170,6 +170,11 @@ instructions:
   # 只能走直接汇编（asm backend），故 intrinsic 为 null、status 为 verify。
   - {id: sve2p3-addqp, feature: sve2p3, asm: ADDQP, intrinsic: null,
      pattern: {op: addp}, status: verify}
+  # SDOT .H, .B, .B: 8-bit x 8-bit -> 16-bit dot (8 outputs/insn at VL=256).
+  # GNU as 16.1 accepts it with -march=armv9.5-a+sve2p3, but QEMU 11.0.3
+  # raises SIGILL (not emulated) - verification requires 960 or newer QEMU.
+  - {id: sve2p3-sdot-h, feature: sve2p3, asm: SDOT, intrinsic: null,
+     pattern: {op: sdot, bits: [8, 16]}, status: verify}
   - {id: sve2p3-addsubp, feature: sve2p3, asm: ADDSUBP, intrinsic: null,
      pattern: {op: addsubp}, status: verify}
   - {id: sve2p3-fcvtzsn, feature: sve2p3, asm: FCVTZSN, intrinsic: null,
