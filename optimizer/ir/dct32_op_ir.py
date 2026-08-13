@@ -69,8 +69,6 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     k0_shared_mul = bool(lo.get("k0_shared_mul", 0)) and k0_even_sve
     # k0_merge8: with row_group=8, merge the two 4-row packs' per-k
     # 4-lane row vectors (svtbl2_s32) before one rshrnb+uzp1+store8.
-    k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
-        and row_group in (8, 16)
     # k0_epack: build E = lo + rev(hi) per row first (s16), then pack E
     # once (one 18-op pack instead of lo/hi double packs) and widen with
     # single saddlb/lt terms. PASS1 ONLY: pass1 inputs are [-255,255] so
@@ -78,6 +76,8 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # wrap (probe_k0_epack two-pass random 0 mismatch, but TestBenchLite
     # constant/structured vectors FAIL) -- the same trap as k0_even_sdot.
     k0_epack = bool(lo.get("k0_epack", 0)) and k0_even_sve
+    k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
+        and row_group in (8, 16)
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -681,18 +681,11 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                               for m in (2, 3)]
                         return q[0].out, q[1].out, qr[0].out, qr[1].out
                     if k0_epack and pass_id == 1:
-                        E = {}
-                        for r in pr:
-                            rv = new("rev", tid,
-                                     "k0Erv_%d_%d" % (r, pass_id),
-                                     ("hi_%d" % r,),
-                                     attrs={"elem": "s16"})
-                            E[r] = new("add", tid,
-                                       "k0EE_%d_%d" % (r, pass_id),
-                                       ("lo_%d" % r, rv.out),
-                                       attrs={"elem": "s16"})
+                        # Reuse the leaf's E16 = lo + rev(hi) (already
+                        # computed for the legacy s16 paths) -- the k0
+                        # E-pack's own rev+add was redundant.
                         eq0, eq1, eq2, eq3 = pack(
-                            [E[r].out for r in pr], "E")
+                            [e16[r] for r in pr], "E")
                         e0 = new("widen_add_sve", tid,
                                  "we0_%d_%d" % (b, pass_id),
                                  (eq0, eq3), attrs={"kind": "lb"})
