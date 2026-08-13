@@ -46,3 +46,40 @@ abs/sabd/umax 各 4、udot 2、misc 8。
   sve_verify 2 万例差分，指标门 = fused_uop（8x8 < 97 即超越开源）。
 - 优先级：在 DCT16 已达成指标、960 未流片的空档，SA8D 是下一个
   收益明确（-25%~-30%）的工具链扩展目标。
+
+## 5. 首轮 pair=2 候选结果（2026-08-13）
+
+`tools/emit_sa8d_sve2_shared.py --pack 2` 生成的 `sve2_pair`：
+两行/寄存器（16-lane）跑行内 Hadamard，cadd/tbl 减半
+（24→12、16→8），之后仍用上游 128-bit 归约（upstream-exact）。
+
+| 版本 | fused_adj | sg | fused_uop | 验证 |
+| --- | ---: | ---: | ---: | --- |
+| 开源 SVE2 sa8d8（基线） | 97 | 0 | 97 | x265 自带 |
+| pair 循环版（diff[] 数组） | 98 | 0 | 98 | 2 万例差分 0 |
+| **pair 手写展开版** | **86** | 0 | **86** | 2 万例差分 0 + 5000 例上游逐位 0 |
+
+- 展开版比开源少 **11 个 fused_uop（-11.3%）**，进入 docs §3 预估的
+  ~75-85 区间上沿。
+- 正确性：`kernels/sa8d/candidates/sve2_pair.o` 通过 2 万例差分
+  （标量 oracle `((sum>>1)+1)>>1`）和 5000 例与开源
+  `hadamard_8x8` 中间/最终值逐位对比；`TestBenchLite --gate sa8d`
+  （复用 x265 PixelHarness + 从 pixel.cpp 原样搬来的 C 参照，ITERS=100）
+  **PASS**。
+- **验收口径（用户决策 2026-08-13）：SA8D 过 lite 即可，不要求全量
+  TestBench 注入**。全量 `--testbench pixel --nobench` 仅 DCT16 保留。
+
+## 6. 本轮工具/流程教训（写进发射器与搜索 pipeline）
+
+1. **QEMU 默认 VL 不是 256**：`qemu-aarch64 -cpu max` 默认 VL=512
+   （svcntb=64），必须显式 `-cpu max,sve-max-vq=2`；本项目所有
+   指标/差分都固定 VL=256。此前若干“奇数行全错”是 512 下的假象。
+2. **谓词 ld1ub 按字节偏移寻址**：`svld1ub_u16(pg_hi, p)` 的活跃 lane k
+   读 `p+k`（不是 `p+2k`）。要把某行像素 0..7 载入 lane 8..15，地址必须
+   前移 8 字节：`svld1ub_u16(pg_hi, row_start - 8)`。
+3. **GCC 16.1 会把“同一 SVE 寄存器上两次互补谓词 load”错误合并**
+   （只发一条 load，谓词/地址错乱）。必须两个寄存器分别 load + `svsel`
+   合并。
+4. **循环里用 `diff[i]` 数组会导致 12 条额外向量 store/load**
+   （stur q×8 + ldp q×4）：改手写展开 + 固定局部变量后，SVE↔NEON
+   bridge 的 `svget_neonq` 是零指令，fused_uop 98→86。

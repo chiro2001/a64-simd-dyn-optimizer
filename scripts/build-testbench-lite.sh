@@ -7,8 +7,9 @@
 # seconds without rebuilding TestBench or the library.
 #
 # The full x265 TestBench run (scripts/build-testbench-inject.sh,
-# `--testbench transforms --nobench`) remains the acceptance golden standard;
-# this lite gate is for per-iteration development.
+# `--testbench transforms --nobench`) remains the acceptance golden standard
+# for DCT16; for SA8D the lite gate IS the acceptance gate (user decision
+# 2026-08-13). Lite is the per-iteration fast gate for everything else.
 #
 # Usage: scripts/build-testbench-lite.sh [candidate.o] [outdir] [-- seed]
 set -euo pipefail
@@ -23,6 +24,13 @@ SRC="$ROOT/third_party/x265/source"
 CXX=/usr/bin/aarch64-linux-gnu-g++
 
 CAND="$(readlink -f "$CAND")"
+# The lite binary hosts both the DCT16 and SA8D gates; link the DCT16
+# reference candidate too so either --gate works with a single invocation.
+if [ -f "$ROOT/kernels/dct16/candidates/best_sve2.o" ]; then
+    CAND_DCT16="$ROOT/kernels/dct16/candidates/best_sve2.o"
+else
+    CAND_DCT16=""
+fi
 mkdir -p "$LITE"
 
 if [ ! -f "$OUT/libx265.a" ]; then
@@ -39,10 +47,12 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$SRC/test/mbdstharness.cpp" -o "$LITE/mbdstharness.o"
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
+    -c "$SRC/test/pixelharness.cpp" -o "$LITE/pixelharness.o"
+"$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$ROOT/tools/testbench_lite.cpp" -o "$LITE/testbench_lite.o"
 
-"$CXX" "$CAND" -Wl,-Bsymbolic,-znoexecstack \
-    "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" \
+"$CXX" "$CAND" $CAND_DCT16 -Wl,-Bsymbolic,-znoexecstack \
+    "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" "$LITE/pixelharness.o" \
     -o "$LITE/TestBenchLite" "$OUT/libx265.a" -lpthread -lrt -ldl
 
 echo "running testbench-lite under QEMU (VL=256)..."
