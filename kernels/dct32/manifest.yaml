@@ -71,6 +71,9 @@ layouts:
   # op backend 已实现并验证（7724），grouped 只实现 legacy_ex。
   legacy_ex: [0, 1]
   legacy_k4: [0, 1]
+  # 2026-08-13: 切片实现（tbl2 = 原 12 TBL/组；zip = 10 固定
+  # zip/trn d-lane 转置，7724→7222）。仅 op backend 消费，grouped 忽略。
+  slice_kind: [tbl2, zip]
 
 # 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，

@@ -153,7 +153,8 @@ def make_emitter(kernel, backend="acle"):
                     narrow_batch=4,
                     constant_layout="derived-replicated",
                     legacy_ex=combo.get("legacy_ex", 0),
-                    legacy_k4=combo.get("legacy_k4", 0))
+                    legacy_k4=combo.get("legacy_k4", 0),
+                    slice_kind=combo.get("slice_kind", "tbl2"))
                 return emit_from_plan(
                     replace(dct32_v31_plan(), lowering=lo),
                     func_name="dynopt_dct32_sve2_shared")
