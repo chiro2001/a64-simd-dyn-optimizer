@@ -113,5 +113,19 @@ int main()
     print32("uzp1s    ", u);
     print16("rshrnb   ", n);
     print16("uzp1_s16 ", c);
+
+    // --- tbl2_s32 merge semantics ---
+    {
+        svint32_t v0 = svindex_s32(1, 1);        // 1..8
+        svint32_t v1 = svindex_s32(101, 1);      // 101..108
+        const uint32_t idx8[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        const svuint32_t id = svld1_u32(svptrue_b32(), idx8);
+        svint32_t m = svtbl2_s32(svcreate2_s32(v0, v1), id);
+        print32("tbl2s idx0..7", m);
+        const uint32_t idx16[8] = { 0, 4, 1, 5, 2, 6, 3, 7 };
+        const svuint32_t id16 = svld1_u32(svptrue_b32(), idx16);
+        svint32_t m16 = svtbl2_s32(svcreate2_s32(v0, v1), id16);
+        print32("tbl2s idx 0,4,1,5,2,6,3,7", m16);
+    }
     return 0;
 }
