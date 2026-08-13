@@ -361,6 +361,11 @@ def main():
     ok.sort(key=lambda r: r["counts"]["vector_fused_uop"])
     baseline = manifest.get("targets", {}).get("baseline_fused_uop")
     gate = manifest.get("targets", {}).get("halve_gate", 0.5)
+    shape = manifest.get("shape", {})
+    n_out = None
+    if shape.get("kind") in (None, "dct"):
+        n = shape.get("n", 16)
+        n_out = n * n
     print("rank by uop-honest fused count (scatter/gather = 4 uops, "
           "docs/17 §1):")
     for r in ok:
@@ -370,14 +375,17 @@ def main():
         if ratio is not None:
             gate_mark = (" HALVED" if ratio <= gate else
                          " near-gate" if ratio <= gate * 1.25 else " NO")
-        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d%s"
+        per_out = (" per_out=%.2f" % (fu / n_out)) if n_out else ""
+        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d%s%s"
               % (r["tag"], r["counts"]["vector"],
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
-                 fu, gate_mark))
+                 fu, per_out, gate_mark))
         if ratio is not None:
             r["baseline_ratio"] = ratio
             r["halve_gate_met"] = ratio <= gate
+        if n_out:
+            r["fused_uop_per_output"] = round(fu / n_out, 3)
     if args.finalize and ok:
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")
