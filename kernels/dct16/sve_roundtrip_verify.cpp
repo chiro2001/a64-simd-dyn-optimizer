@@ -20,10 +20,17 @@ int main(int argc, char** argv)
 #ifndef PR_SVE_SET_VL
 #define PR_SVE_SET_VL 50
 #endif
-    if (prctl(PR_SVE_SET_VL, 32, 0, 0, 0, 0) < 0)
+    const int vl = prctl(PR_SVE_SET_VL, 32, 0, 0, 0, 0);
+    if (vl < 0)
     {
         perror("prctl(PR_SVE_SET_VL)");
         return 77;
+    }
+    if (vl != 32)
+    {
+        fprintf(stderr, "prctl returned VL=%d bytes, contract requires 32\n",
+                vl);
+        return 78;
     }
 
     const int cases = argc > 1 ? atoi(argv[1]) : 100000;
