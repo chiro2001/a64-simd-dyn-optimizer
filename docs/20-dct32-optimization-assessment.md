@@ -473,6 +473,10 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   排序会反转——实机裁决前两个数字都保留。
 - `search_sve2_layouts.py` 已支持 `--backend op`（dct32：`op_pass_4`
   起点 + `-fno-tree-pre` + 强制 odd=sdot.d），全链路复现 best 8283。
+- movprfx 构成：v2 的 1664 全部跟在 `sdot/mul` 前（per-op 初值拷贝，
+  因其逐行结构每个 sdot/mul 都从 zero/常量起算）；op legacy 448 是
+  per-chain 初值。free-movprfx 口径下 v2 占便宜，raw vector 口径下
+  op legacy 领先；两个口径都保留到实机裁决。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 

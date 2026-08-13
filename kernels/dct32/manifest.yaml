@@ -66,6 +66,11 @@ layouts:
   acc_split: [1, 2, 4]
   # isa (sve1/sve2) 暂为发射器手工选项，不进入搜索轴（编译 flag 不同，
   # 避免搜索空间翻倍；SVE1 变体由 --isa sve1 单独生成/验证）。
+  # 2026-08-13（用户放开 legacy-internal-exact，黄金标准=TestBenchLite）：
+  # pass2 k2（legacy_ex）与 k4（legacy_k4）走 s16 切片 + sdot.d；
+  # op backend 已实现并验证（7724），grouped 只实现 legacy_ex。
+  legacy_ex: [0, 1]
+  legacy_k4: [0, 1]
 
 # 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，
