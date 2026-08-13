@@ -2,21 +2,28 @@
 
 ## 1. 基线（QEMU VL=256）
 
-| 实现 | dynamic | vector | movprfx | fused_uop |
-| --- | ---: | ---: | ---: | ---: |
-| 上游 x265::dct32_sve（128-bit 风格） | 13362 | 12710 | 0 | 12710 |
-| 工具生成 v1（16-lane SVE2，叶子缓冲） | 21218 | 9974 | 1032 | 8942 |
-| 工具生成 v2（行主序，叶子不落缓冲） | 16768 | 8854 | 1664 | 7190 |
-| 工具生成 v3（4 行切片 + lane-per-output sdot） | 6129 | 4634 | 368 | 4266 |
-| **工具生成 v3.1（+ k≡2 pass1 切片）** | **5785** | **4226** | 264 | **3962** |
+> **2026-08-13 口径修正（重要）**：此前 v3/v3.1 的 fused_uop
+> （4266/3962）是 **pass1-only**（搜索工具 range 只覆盖
+> `pass32_impl<4>`）。修正后完整调用（pass1+pass2+wrapper）：
+> **v3.1 = 8292（0.652x），v3 = 8596（0.676x），均差于 v2（7190，
+> 0.566x）**。v3/v3.1 的“HALVED / 超越内部参考”结论撤销；当前
+> full-call best 仍是 **v2**（near-gate，未过半数门）。
 
-- v2 相对上游 -43.4%（near-gate）；**v3 相对上游 -66.4%（0.336x，
-  HALVED）**，fused_uop=4266 已低于内部参考的 4827（fused_uop 口径），
-  与内部 fused_adj=4251 基本持平（4.17 vs 4.15/输出）；零 scatter、
-  200k 差分 0（upstream-exact）。
-- **v3.1 相对上游 -68.8%（0.312x）**：fused_uop=3962，per_out=3.87，
-  已**正式超越内部参考**（4251/4827），且保持 upstream-exact、零
-  scatter、200k 差分 0。
+| 实现 | dynamic(full) | vector(full) | movprfx | fused_uop(full) | ratio |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 上游 x265::dct32_sve（128-bit 风格） | 13362 | 12710 | 0 | 12710 | 1.000 |
+| 工具生成 v1（16-lane SVE2，叶子缓冲） | 21233 | 9974 | 1032 | 8942 | 0.704 |
+| 工具生成 v2（行主序，叶子不落缓冲） | 16783 | 8854 | 1664 | 7190 | **0.566** |
+| 工具生成 v3（4 行切片 + lane-per-output sdot，pass1-only 4266） | 12381 | 9332 | 736 | 8596 | 0.676 |
+| **工具生成 v3.1（+ k≡2 pass1 切片，pass1-only 3962）** | 12034 | 8924 | 632 | **8292** | 0.652 |
+| 上游 dct32_neon（参考 b 档基线） | 13604 | 11949 | 0 | 11949 | 0.940 |
+
+- v2 相对上游 -43.4%（near-gate，**未过半数门 6355**）；v3/v3.1 的
+  pass1 确实更少（4266/3962），但 pass2 未优化（4330/4698），
+  full-call 反而比 v2 多。v3/v3.1 保持 upstream-exact、零 scatter、
+  200k 差分 0，但**不是当前指令数最优结构**。
+- 内部参考 full fused_uop = 4827（0.380x，真 HALVED），本项目 best
+  （v2）7190 仍落后约 49%；“v3.1 超越内部”为 pass1-only 假象。
 - 正确性：2 万例差分 0（vs `x265::dct32_sve`）；`TestBenchLite --gate dct32`
   PASS（MBDstHarness + C 参照 `dct32_c`）。
 - 2026-08-13 全链复验：20 万例差分 0（204.8M lane）、TestBenchLite
@@ -69,7 +76,8 @@ v2 改为逐行：叶子留在寄存器里，一行内完成全部 32 个输出
   lane-per-output 必须用 sdot .d（s64）+ uzp1 收窄。
 
 验证：2 万例 + 20 万例差分均 0（upstream-exact），TestBenchLite PASS，
-stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
+stack_vector 229（spill 下降）。**注意：以下 4266/3962 为 pass1-only
+计数；full-call 见 §1（v3=8596、v3.1=8292，未过半数门，且差于 v2）。**
 
 ### v3.1：k≡2 pass1 同构切片（2026-08-13）
 
@@ -79,22 +87,24 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   替代逐行 mul+saddv+fmov 的 12+）；
 - pass2 的 EO 是 s32（避免回绕），保持 vmul 路径；`if (shift == 4)`
   由模板常量折叠；
-- 结果 4266 → **3962**；每输出 4.17 → 3.87（内部 4.15）。
+- 结果 4266 → **3962**（pass1-only）；每输出 4.17 → 3.87（内部 4.15）。
+  full-call：v3=8596 → v3.1=8292（pass2 未优化，仍差于 v2 7190）。
 
 ### P0 轴解耦（round-0012，2026-08-13）
 
 - 按顶级模型建议把 v3.1 的第一个独立机制拆为搜索轴
   `pass1_k2_slice ∈ {0,1}`（manifest + 发射器 `--pass1-k2-slice`）；
-- 回放验证：`layout=v3, pass1_k2_slice=0` = **4266**（历史 v3 计数），
-  `=1` = **3962**（v3.1），两者 20k 差分 0、零 scatter；v1/v2/v2b
-  不受该轴影响（源码哈希去重）；
+- 回放验证：`layout=v3, pass1_k2_slice=0` = **4266**（历史 v3 计数，
+  pass1-only），`=1` = **3962**（v3.1，pass1-only），两者 20k 差分 0、
+  零 scatter；full-call 为 8596/8292（§1）。v1/v2/v2b 不受该轴影响
+  （源码哈希去重）；
 - 续（同批）：`odd_lowering ∈ {sdot.d, row-reduce}` 与
   `narrow_batch ∈ {1, 4}` 也拆为独立轴，得到 6 个 v3 消融点
   （20k 差分全 0、零 scatter）：
 
-  | v3 组合（k2 slice / odd / narrow） | fused_uop | 说明 |
+  | v3 组合（k2 slice / odd / narrow） | fused_uop（pass1-only） | 说明 |
   | --- | ---: | --- |
-  | 1 / sdot.d / 4 | **3962** | v3.1，保持 best |
+  | 1 / sdot.d / 4 | **3962** | v3.1（full 8292） |
   | 1 / row-reduce / 1 | 4252 | 去掉 odd lane-per-output |
   | 0 / sdot.d / 4 | 4266 | 历史 v3 |
   | 0 / row-reduce / 1 | 4488 | 两个机制都去掉 |
@@ -107,9 +117,10 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 - 再续（同批）：`constant_layout ∈ {derived-replicated, canonical}`：
   canonical 用运行时 4 条 TBL 从原始 C32 复制切片，derived-replicated
   是 CODD 预复制（v3.1）。最佳组合（k2=1/odd=sdot.d/narrow=4）下
-  canonical = 4189 vs derived = **3962（+227）**，证明“常量吸收”净省
-  ~227 fused_uop；全部 20k 差分 0、零 scatter。当前 64 个 manifest
-  组合去重后 14 个唯一候选，全搜索约 37s，仍在 <60s 预算内。
+  canonical = 4189 vs derived = **3962（+227）**（pass1-only），证明
+  “常量吸收”净省 ~227 fused_uop；全部 20k 差分 0、零 scatter。当前
+  manifest（含 acc_split 轴）192 个组合去重后 31 个唯一候选，修正
+  range 后全搜索约 2 分钟，>60s 预算；后续加 layout_prune 收紧。
 - 这是“复合模板 → 可组合语义轴”的第一步；剩余轴（lane_owner、
   row_group=8、interpass_layout、store_topology）随模板重构继续拆出
   （lane_owner 与 odd_lowering 强相关：output↔sdot.d、partial↔
@@ -127,7 +138,7 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   round-shift 的计划全部被拒；
 - 下一步：原子 rewrite（assign_output_lanes / segment_dot /
   batch_round_narrow_store / derive_constant_map），以“禁用复合 v3
-  模板仍盲搜回 <=3962”为 Go 判据。
+  模板仍盲搜回 pass1<=3962 / full<=8292”为 Go 判据。
 
 ### P1 增量 3-4：按块组装 + rewrite 驱动搜索（round-0012，2026-08-13）
 
@@ -135,7 +146,8 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   `_grouped_body_cpp()` 按机制块组装（leaf / odd slices / k2 EX /
   odd / k2 / k4 / k0，块由独立轴选择）；新增 `emit_grouped()`，plan
   路径不再携带 `layout` 预设。`emit(layout=v3)` 与 `emit_grouped()`
-  输出逐字节一致（sha d67990fab4b6…），搜索/finalize 计数不变（3962）。
+  输出逐字节一致（sha d67990fab4b6…），搜索/finalize 计数不变
+  （pass1 3962 / full 8292）。
 - **增量 4（搜索由 rewrite 定义）**：`tools/search_plans.py` 从规格
   plan 枚举 18 个合法 rewrite 子集（无 assign 2 个 + 有 assign 16 个），
   每个计划过 `verify_layout` → `lower()` → 编译 → 与 P0 搜索结果按
@@ -259,7 +271,7 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 
 ### 5.2 LLVM-MCA（Neoverse V2/N2，迭代 1，直通静态体）
 
-| 指标 | best_sve2（3962 fused_uop） | 上游 dct32_sve（12710） |
+| 指标 | best_sve2（full 8292 / pass1 3962） | 上游 dct32_sve（12710） |
 | --- | ---: | ---: |
 | 静态指令数 | 1681 | 2502 |
 | N2 uOps | 2002 | 3102 |
@@ -305,7 +317,7 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 - 双寄存器 `svtbl2`（SVE2）→ 两条单寄存器 `svtbl` + `orr`（+2 条/处，
   索引为编译期常量，B 表索引向量预加载）；
 - 静态 simd：best_sve2.o 1019 → best_sve1.o 1125（+106），fused_uop
-  约 3962 → ~4080。
+  full 8292 → 9042（SVE1 降级代价 ~9%）。
 
 920B 实机（SVE1/VL=256，CNTVCT latency 20000）：
 
@@ -316,13 +328,29 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 | 上游 dct32_sve | 222 |
 | **best_sve1（v3.1 降级，20k 差分 0）** | **226** |
 
-**结论：指令数减少 3 倍（fused_uop ~4080 vs 12710）在鲲鹏 920B 上未
+**结论：指令数减少（full 9042 vs 12710，-29%）在鲲鹏 920B 上未
 转化为周期收益（226 vs 222，约 -1.8%）**，与 920G 观测一致。结合
 MCA（Neoverse 系预测 ~1.4×）与实机（无收益）的分歧，假设是：
 v3.1 把每个输出串成 4 条依赖的 `sdot.d` 累加链，指令少了但关键路径
 变长、ILP 变差；而 920B/920G 的 sdot 吞吐/延迟与 Neoverse 不同。
 **下一步工具方向：在搜索排序中加入依赖链深度/MCA cycles 或独立
 accumulator 轴（row_group/双链拆分），而不是只看 fused_uop。**
+
+### 5.5 acc_split（独立累加链）消融（2026-08-13）
+
+为验证“依赖链/ILP”假设，发射器新增 `--acc-split {1,2,4}` 轴：
+
+| SVE1 变体 | 结构 | full fused_uop | 920B p50 cycles |
+| --- | --- | ---: | ---: |
+| as1 | 4 连 sdot 链（v3.1 默认） | 9042 | 226 |
+| as2 | 2+2 独立链 + add | 9298 | 236 |
+| as4 | 4 独立 sdot + 树状 add | 9307 | 236 |
+
+三者均 20k 差分 0。**拆链反而更慢（+10 cycles）**：额外 add/寄存器
+压力抵消 ILP 收益，说明 920B 上瓶颈既不是指令数也不是 sdot 链深度。
+同时修正 full-call 口径后，**v2（7190）仍是 full-call best**；后续
+优化应回到 v2 结构（或对 v2 做 pass2 切片），并把真实机周期作为
+排名依据，而不是 pass1-only fused_uop。
 
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst

@@ -142,7 +142,9 @@ def make_emitter(kernel):
                         odd_lowering=combo.get("odd_lowering", "sdot.d"),
                         narrow_batch=combo.get("narrow_batch", 4),
                         constant_layout=combo.get("constant_layout",
-                                                  "derived-replicated"))
+                                                  "derived-replicated"),
+                        isa=combo.get("isa", "sve2"),
+                        acc_split=combo.get("acc_split", 1))
         return emit_fn
     if kernel == "interp8":
         from emit_interp8_sve2_shared import emit
@@ -331,6 +333,14 @@ def main():
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
             continue
+        end_sym = manifest["candidate"].get("range_end")
+        if end_sym:
+            rng_end = symbol_range(driver, end_sym)
+            if rng_end is None:
+                results.append({"tag": tag, **combo,
+                                "passed": False, "counts": None})
+                continue
+            rng = (rng[0], rng_end[1])
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(args.outdir, tag + "-trace.log"))
         if counts is None:

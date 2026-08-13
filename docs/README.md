@@ -26,7 +26,8 @@
 本初始规划完成后直接进入执行，不安排规划审核轮次。`expert-advice/round-NNNN/` 只保留给后续已经完成验证和 benchmark 的实际优化迭代；咨询频率为**每完成三个实际优化迭代请求一次**，请求以可写沙箱（仅允许写该 round 目录）在后台执行，主流程不阻塞等待，响应落盘后在下一次自然检查点写 `decision.md`。
 
 2026-08-13 状态速览：DCT16 legacy 704（uop 口径，低于内部 827）、
-DCT32 v3.1 = 3962（0.312x，超越内部参考）、sa8d16 189（结构地板）、
+DCT32 v2 = 7190（0.566x，near-gate；v3.1 的 3962 系 pass1-only，
+full-call 8292，未过半数门）、sa8d16 189（结构地板）、
 interp8 127（-10%，已接入 lite 门禁）；详见
 [11-status-and-decision.md](11-status-and-decision.md) 与
 [22-interp8-assessment.md](22-interp8-assessment.md)。

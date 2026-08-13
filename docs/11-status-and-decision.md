@@ -182,10 +182,12 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 
 ## 8. DCT32 突破与 interp8 评估（2026-08-13 深夜）
 
-- **DCT32 v3.1 = 3962 fused_uop（0.312x，HALVED）**：4 行切片 +
-  lane-per-output `sdot .d` + rshrnb 批量窄化，upstream-exact、
-  零 scatter、200k 差分 0、多 seed lite PASS——**工具生成已超越内部
-  参考（4251/4827）**（docs/20 §v3/v3.1）；
+- **DCT32 口径修正（2026-08-13）**：v3.1 的 3962 是 **pass1-only**
+  （搜索 range 只覆盖 `pass32_impl<4>`）；full-call = **8292
+  （0.652x，未过半数门）**，v3 = 8596，**均差于 v2（7190，0.566x，
+  near-gate）**。v3/v3.1 仍 upstream-exact、200k 差分 0、lite PASS，
+  但“HALVED / 超越内部 4251/4827”结论撤销；内部参考 full 4827 仍
+  领先（docs/20 §1/§5.5）；
 - dct8 切片迁移被否决：8x8 结构太薄，切片开销无法摊销（估算 ≈ 上游
   323，无收益）；
 - sa8d16 归约经复核已是最小（4 条：movi/mov/udot/uaddv），189 为该
@@ -221,8 +223,9 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
   verify_layout/lower）+ `rewrites_dct32.py`（5 个原子 rewrite +
   ProofCertificate）；`rediscover_v31(spec)` 精确复现 v3.1 plan；
   `search_plans.py` 以 18 个 rewrite 子集做自包含测量（语义→canonical→
-  source-proof→编译/20k 差分/trace），best 3962、零 scatter，全程无
-  `layout` 预设；`layout_verify.check_source` 提供块粒度静态一致性证明。
+  source-proof→编译/20k 差分/trace），pass1 best 3962 / full 8292、
+  零 scatter，全程无 `layout` 预设；`layout_verify.check_source` 提供
+  块粒度静态一致性证明。搜索 range 已加 `range_end` 修正为 full-call。
 - **P2 轴依赖声明化**：manifest `layout_prune` 通用规则替代 DCT16
   硬编码链（520/520 等价，best 704 不变）。
 - 剩余：op 级原子后端（逐 op 生成，非 C++ 块）、canonical-key 在

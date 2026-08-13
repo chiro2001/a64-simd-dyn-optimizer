@@ -363,8 +363,38 @@ def _sve1_narrow(lo, shift):
             % {"lo": lo, "shift": shift})
 
 
+def _odd_sdot_chain(acc_split):
+    """Emit the 4-term sdot.d accumulation for one odd k.
+
+    acc_split=1: one 4-deep accumulator chain (v3.1 default).
+    acc_split=2: two independent 2-deep chains + add (depth 3).
+    acc_split=4: four independent sdots + tree-add (depth 2).
+    """
+    if acc_split == 1:
+        return ("            svint64_t t = svdot_s64(zero64, X0, c0);\n"
+                "            t = svdot_s64(t, X1, c1);\n"
+                "            t = svdot_s64(t, X2, c2);\n"
+                "            t = svdot_s64(t, X3, c3);\n")
+    if acc_split == 2:
+        return ("            svint64_t t0 = svdot_s64(zero64, X0, c0);\n"
+                "            t0 = svdot_s64(t0, X1, c1);\n"
+                "            svint64_t t1 = svdot_s64(zero64, X2, c2);\n"
+                "            t1 = svdot_s64(t1, X3, c3);\n"
+                "            svint64_t t = svadd_s64_x(p64, t0, t1);\n")
+    if acc_split == 4:
+        return ("            svint64_t t0 = svdot_s64(zero64, X0, c0);\n"
+                "            svint64_t t1 = svdot_s64(zero64, X1, c1);\n"
+                "            svint64_t t2 = svdot_s64(zero64, X2, c2);\n"
+                "            svint64_t t3 = svdot_s64(zero64, X3, c3);\n"
+                "            svint64_t t = svadd_s64_x(p64, "
+                "svadd_s64_x(p64, t0, t1),\n"
+                "                                       "
+                "svadd_s64_x(p64, t2, t3));\n")
+    raise ValueError("acc_split must be 1, 2 or 4, got %r" % (acc_split,))
+
+
 def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
-                isa="sve2"):
+                isa="sve2", acc_split=1):
     """Lane-per-output sdot.d over 4 rows; batch or scalar narrow.
 
     constant_layout:
@@ -382,10 +412,6 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
             svint16_t c1 = svtbl_s16(c, ic1);
             svint16_t c2 = svtbl_s16(c, ic2);
             svint16_t c3 = svtbl_s16(c, ic3);
-            svint64_t t = svdot_s64(zero64, X0, c0);
-            t = svdot_s64(t, X1, c1);
-            t = svdot_s64(t, X2, c2);
-            t = svdot_s64(t, X3, c3);
 """ % k
     else:
         head = """\
@@ -394,12 +420,8 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
             svint16_t c1 = svld1_s16(p16, CODD[%d][1]);
             svint16_t c2 = svld1_s16(p16, CODD[%d][2]);
             svint16_t c3 = svld1_s16(p16, CODD[%d][3]);
-            svint64_t t = svdot_s64(zero64, X0, c0);
-            t = svdot_s64(t, X1, c1);
-            t = svdot_s64(t, X2, c2);
-            t = svdot_s64(t, X3, c3);
 """ % (kk, kk, kk, kk)
-    body = head
+    body = head + _odd_sdot_chain(acc_split)
     if narrow_batch == 4:
         if isa == "sve1":
             body += """\
@@ -485,10 +507,12 @@ def _grouped_slices_cpp(isa="sve2"):
 
 
 def _grouped_odd_cpp(odd_lowering="sdot.d", narrow_batch=4,
-                     constant_layout="derived-replicated", isa="sve2"):
+                     constant_layout="derived-replicated", isa="sve2",
+                     acc_split=1):
     if odd_lowering == "row-reduce":
         return "\n".join(_odd_row_reduce(kk) for kk in range(16))
-    return "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout, isa)
+    return "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout, isa,
+                                 acc_split)
                      for kk in range(16))
 
 
@@ -660,14 +684,16 @@ def _grouped_idx_low_cpp(isa="sve2"):
 
 def _grouped_body_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                       narrow_batch=4,
-                      constant_layout="derived-replicated", isa="sve2"):
+                      constant_layout="derived-replicated", isa="sve2",
+                      acc_split=1):
     """Assemble the grouped pass32_impl body from per-mechanism blocks
     (leaf / odd slices / k2 EX / odd / k2 / k4 / k0), each selected by an
     independent plan axis. This is the P1 increment-3 structure: no single
     composite function owns all mechanisms."""
     leaf = _grouped_leaf_cpp()
     slices = _grouped_slices_cpp(isa)
-    odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout, isa)
+    odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout, isa,
+                           acc_split)
     ex = _grouped_ex_cpp(isa)
     k2 = _grouped_k2_cpp(pass1_k2_slice, isa)
     k4 = _grouped_k4_cpp()
@@ -721,10 +747,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 
 def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                      narrow_batch=4, constant_layout="derived-replicated",
-                     isa="sve2"):
+                     isa="sve2", acc_split=1):
     """Backward-compatible wrapper kept for the search driver's v3 preset."""
     return _grouped_body_cpp(pass1_k2_slice, odd_lowering, narrow_batch,
-                             constant_layout, isa)
+                             constant_layout, isa, acc_split)
 
 
 def _assemble(func_name, pass_body, call, isa="sve2"):
@@ -794,7 +820,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
 def emit_grouped(func_name="dynopt_dct32_sve2_shared",
                  pass1_k2_slice=True, odd_lowering="sdot.d",
                  narrow_batch=4,
-                 constant_layout="derived-replicated", isa="sve2"):
+                 constant_layout="derived-replicated", isa="sve2",
+                 acc_split=1):
     """Plan-driven grouped DCT32 emitter (P1 increment 3).
 
     Used by layout_ir.lower() for plans produced by atomic rewrites; it
@@ -805,16 +832,17 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
             "    pass32_impl<11>(coef, dst, 32);")
     return _assemble(func_name,
                      _grouped_body_cpp(pass1_k2_slice, odd_lowering,
-                                       narrow_batch, constant_layout, isa),
+                                       narrow_batch, constant_layout, isa,
+                                       acc_split),
                      call, isa)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
          pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
-         constant_layout="derived-replicated", isa="sve2"):
+         constant_layout="derived-replicated", isa="sve2", acc_split=1):
     if layout == "v3":
         return emit_grouped(func_name, pass1_k2_slice, odd_lowering,
-                            narrow_batch, constant_layout, isa)
+                            narrow_batch, constant_layout, isa, acc_split)
     if layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
         call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
@@ -836,6 +864,7 @@ def main():
     ap.add_argument("--narrow-batch", type=int, default=4)
     ap.add_argument("--constant-layout", default="derived-replicated")
     ap.add_argument("--isa", default="sve2", choices=["sve1", "sve2"])
+    ap.add_argument("--acc-split", type=int, default=1, choices=[1, 2, 4])
     args = ap.parse_args()
     with open(args.out, "w") as f:
         f.write(emit(func_name=args.func_name,
@@ -844,7 +873,8 @@ def main():
                      odd_lowering=args.odd_lowering,
                      narrow_batch=args.narrow_batch,
                      constant_layout=args.constant_layout,
-                     isa=args.isa))
+                     isa=args.isa,
+                     acc_split=args.acc_split))
     print("wrote %s" % args.out)
 
 

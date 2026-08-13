@@ -14,6 +14,9 @@ candidate:
   # wrapper sits after it, so tracing from pass32_impl covers the real work.
   # v3 instantiates pass32_impl<4>/<11> (noinline): trace from the <4> one.
   range_start: [_ZL11pass32_implPKsPsli, _Z11pass32_implILi4EEvPKsPsl]
+  # 2026-08-13 口径修正: range_start 只覆盖 pass1，full-kernel 必须扩到
+  # wrapper 结束（pass1+pass2+wrapper），否则 fused_uop 少算一半以上。
+  range_end: dynopt_dct32_sve2_shared
   verify_src: kernels/dct16/sve_shared_verify.cpp
   trace_driver_src: kernels/dct32/trace_driver.cpp
   trace_driver_c: kernels/dct32/trace_driver.cpp
@@ -58,6 +61,11 @@ layouts:
   # round-0012 P0: odd 常量布局（derived-replicated = CODD 预复制切片；
   # canonical = 运行时 4 条 TBL 复制原始 C32，消融“常量吸收”机制）。
   constant_layout: [derived-replicated, canonical]
+  # 2026-08-13: sdot.d 累加链拆分（1=4 连链 v3.1；2=2+2 独立链+add；
+  # 4=4 独立 sdot+树状 add）。针对实机“指令数不转化周期”的 ILP 假设。
+  acc_split: [1, 2, 4]
+  # isa (sve1/sve2) 暂为发射器手工选项，不进入搜索轴（编译 flag 不同，
+  # 避免搜索空间翻倍；SVE1 变体由 --isa sve1 单独生成/验证）。
 
 # 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，

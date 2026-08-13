@@ -30,7 +30,7 @@
 | `optimizer/ir/asm_ir.py` | 指令流 → 寄存器 SSA asm-IR | DCT16 覆盖 |
 | `optimizer/ir/layout_ir.py` | typed LayoutIR（ValueLayout/RoundBarrier/ConstantMap/MemoryMap/Tile/Plan + canonical key + verify_layout + lower 回放） | P1 第一增量；DCT32 v3.1 计划可回放 |
 | `optimizer/ir/rewrites_dct32.py` | 原子 rewrite（assign_output_lanes/segment_dot/batch_round_narrow_store/derive_constant_map/k2_pass1_slice）+ ProofCertificate | P1 第二增量；rediscover_v31 精确复现 v3.1 plan |
-| `tools/search_plans.py` | rewrite 子集 → plan → 分层漏斗（语义/canonical/源码）→ 编译 + 20k 差分 + trace 实测 | P1/P2；18 计划实测重发现 best 3962 |
+| `tools/search_plans.py` | rewrite 子集 → plan → 分层漏斗（语义/canonical/源码）→ 编译 + 20k 差分 + trace 实测 | P1/P2；18 计划实测重发现 pass1 best 3962 / full 8292（2026-08-13 加 range_end 修正） |
 | `optimizer/analysis/layout_verify.py` | `check_source(plan, src)`：pass32_impl 逐指令族计数与 plan 声明比对 + 零 scatter 硬门 | P1 增量 5；search_plans 编译前自动执行 |
 | `tools/recover_loops.py` | 指令流 JSON → 循环骨架（trip/period/depth） | 原型，通用 |
 | `tools/sve2p3_canary.S/.c` + `scripts/sve2p3-canary.sh` | SVE2p3 `sdot.h` 执行能力探针（汇编器接受 → 执行器逐 lane 校验；SIGILL → exit 3） | 纯汇编，不依赖 ACLE |
