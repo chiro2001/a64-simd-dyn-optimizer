@@ -147,10 +147,9 @@ def k2_pass1_slice(plan: Plan):
 def rediscover_v31(base: Plan):
     """Apply the four atomic rewrites in dependency order to a spec plan.
 
-    Returns the v3.1-equivalent Plan. NOTE: `layout=v3` is stamped only as
-    the codegen bridge to the existing grouped emitter; the blind-search
-    acceptance (no composite template) is not claimed until the atomic
-    backend replaces pass_grouped_cpp.
+    Returns the v3.1-equivalent Plan. lower() emits it through
+    emit_grouped (no `layout` preset), so the plan path no longer depends
+    on the composite-template selector.
     """
     p, c1 = assign_output_lanes(base, row_group=4)
     p, c2 = segment_dot(p)
@@ -158,8 +157,7 @@ def rediscover_v31(base: Plan):
     p, c4 = derive_constant_map(p)
     p, c5 = k2_pass1_slice(p)
     p = replace(p, lowering={**p.lowering,
-                             "func_name": "dynopt_dct32_sve2_shared",
-                             "layout": "v3"})
+                             "func_name": "dynopt_dct32_sve2_shared"})
     return p, (c1, c2, c3, c4, c5)
 
 

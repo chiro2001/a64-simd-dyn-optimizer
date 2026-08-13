@@ -158,17 +158,14 @@ def lower(plan: Plan) -> str:
     _tools = os.path.join(_root, "tools")
     if _tools not in sys.path:
         sys.path.insert(0, _tools)
-    from emit_dct32_sve2_shared import emit  # noqa: E402
+    from emit_dct32_sve2_shared import emit_grouped  # noqa: E402
     lo = plan.lowering
-    if not lo:
-        raise ValueError("lower: plan has no lowering axes")
-    return emit(
+    return emit_grouped(
         func_name=lo.get("func_name", "dynopt_dct32_sve2_shared"),
-        layout=lo.get("layout", "v1"),
-        pass1_k2_slice=lo.get("pass1_k2_slice", 1),
-        odd_lowering=lo.get("odd_lowering", "sdot.d"),
-        narrow_batch=lo.get("narrow_batch", 4),
-        constant_layout=lo.get("constant_layout", "derived-replicated"))
+        pass1_k2_slice=lo.get("pass1_k2_slice", 0),
+        odd_lowering=lo.get("odd_lowering", "row-reduce"),
+        narrow_batch=lo.get("narrow_batch", 1),
+        constant_layout=lo.get("constant_layout", "canonical"))
 
 
 def dct32_v31_plan() -> Plan:
@@ -201,7 +198,6 @@ def dct32_v31_plan() -> Plan:
     )
     lowering = {
         "func_name": "dynopt_dct32_sve2_shared",
-        "layout": "v3",
         "pass1_k2_slice": 1,
         "odd_lowering": "sdot.d",
         "narrow_batch": 4,

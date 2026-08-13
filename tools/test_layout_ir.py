@@ -27,7 +27,7 @@ from rewrites_dct32 import (  # noqa: E402
     rediscover_v31,
     segment_dot,
 )
-from emit_dct32_sve2_shared import emit  # noqa: E402
+from emit_dct32_sve2_shared import emit_grouped  # noqa: E402
 
 
 def fail(msg):
@@ -48,8 +48,9 @@ def main():
         rc |= fail("canonical key must be stable sha256, got %r" % k1)
 
     # lower() must byte-identical-replay the v3.1 emitter source.
-    want = emit(layout="v3", pass1_k2_slice=1, odd_lowering="sdot.d",
-                narrow_batch=4, constant_layout="derived-replicated")
+    want = emit_grouped(pass1_k2_slice=1, odd_lowering="sdot.d",
+                        narrow_batch=4,
+                        constant_layout="derived-replicated")
     got = lower(plan)
     if got != want:
         rc |= fail("lower(plan) != emit(v3.1) (%d vs %d bytes)"
@@ -99,6 +100,8 @@ def main():
         rc |= fail("rediscovered plan != v3.1 plan")
     if lower(found) != want:
         rc |= fail("lower(rediscovered) != emit(v3.1)")
+    if "layout" in found.lowering:
+        rc |= fail("rediscovered plan must not carry a layout preset")
 
     if rc == 0:
         print("layout_ir self-test: PASS (key=%s...)" % k1[:16])

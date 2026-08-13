@@ -129,6 +129,25 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   batch_round_narrow_store / derive_constant_map），以“禁用复合 v3
   模板仍盲搜回 <=3962”为 Go 判据。
 
+### P1 增量 3-4：按块组装 + rewrite 驱动搜索（round-0012，2026-08-13）
+
+- **增量 3（结构解耦）**：`emit_dct32_sve2_shared.py` 的分组体改为
+  `_grouped_body_cpp()` 按机制块组装（leaf / odd slices / k2 EX /
+  odd / k2 / k4 / k0，块由独立轴选择）；新增 `emit_grouped()`，plan
+  路径不再携带 `layout` 预设。`emit(layout=v3)` 与 `emit_grouped()`
+  输出逐字节一致（sha d67990fab4b6…），搜索/finalize 计数不变（3962）。
+- **增量 4（搜索由 rewrite 定义）**：`tools/search_plans.py` 从规格
+  plan 枚举 18 个合法 rewrite 子集（无 assign 2 个 + 有 assign 16 个），
+  每个计划过 `verify_layout` → `lower()` → 编译 → 与 P0 搜索结果按
+  源码哈希对齐。结果：18 计划 → 12 个唯一候选，best 仍为
+  `k2=1/sdot.d/narrow=4/derived` = **3962**（零 scatter），即
+  “搜索空间由原子 rewrite 定义、不使用 manifest layout 字符串”的
+  E1 验收已实质性达成；复合 `pass_grouped_cpp` 仅保留为旧搜索路径的
+  兼容包装。
+- 剩余诚实口径：`emit_grouped` 仍复用同一批 C++ 块（plan 的 tiles 语义
+  暂由 rewrite 证书承载，未逐块反汇编成 op 级 IR）；op 级原子后端是
+  P1 的后续增量，不作为当前 Go 判据。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。

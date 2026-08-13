@@ -29,6 +29,8 @@
 | `tools/parse_qemu_trace.py` | trace 日志 + 地址区间 → 指令流 JSON（true-dynamic，含 fused_adj） | 通用；`--exec` 为真实动态 |
 | `optimizer/ir/asm_ir.py` | 指令流 → 寄存器 SSA asm-IR | DCT16 覆盖 |
 | `optimizer/ir/layout_ir.py` | typed LayoutIR（ValueLayout/RoundBarrier/ConstantMap/MemoryMap/Tile/Plan + canonical key + verify_layout + lower 回放） | P1 第一增量；DCT32 v3.1 计划可回放 |
+| `optimizer/ir/rewrites_dct32.py` | 原子 rewrite（assign_output_lanes/segment_dot/batch_round_narrow_store/derive_constant_map/k2_pass1_slice）+ ProofCertificate | P1 第二增量；rediscover_v31 精确复现 v3.1 plan |
+| `tools/search_plans.py` | rewrite 子集 → plan → lower → 编译 → 与 P0 结果哈希对齐 | P1 第四增量；18 计划重发现 best 3962 |
 | `tools/recover_loops.py` | 指令流 JSON → 循环骨架（trip/period/depth） | 原型，通用 |
 | `tools/sve2p3_canary.S/.c` + `scripts/sve2p3-canary.sh` | SVE2p3 `sdot.h` 执行能力探针（汇编器接受 → 执行器逐 lane 校验；SIGILL → exit 3） | 纯汇编，不依赖 ACLE |
 

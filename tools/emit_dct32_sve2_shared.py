@@ -398,16 +398,7 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated"):
     return body
 
 
-def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
-                     narrow_batch=4, constant_layout="derived-replicated"):
-    """v3: 4-row groups; odd-k uses lane-per-output SDOT .s slices +
-    RSHRNB batch narrow (no per-output uaddv/fmov), mirroring the internal
-    reference's structure. Even-k keeps the v2 per-row mul+saddv path.
-
-    pass1_k2_slice: k==2 mod 4 in pass1 (shift==4) uses the sliced
-    s16 SDOT .d path (v3.1, 3962); when disabled it falls back to the
-    v3-era mul+saddv path (4266), making this mechanism an independent
-    search axis (round-0012 P0)."""
+def _grouped_leaf_cpp():
     leaf = []
     for rr in range(4):
         r = rr
@@ -436,7 +427,10 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
             EEEE%(r)d = svadd_s32_x(p8s, EEE%(r)d, EEEr%(r)d);
             EEEO%(r)d = svsub_s32_x(p8s, EEE%(r)d, EEEr%(r)d);
         }""" % {"r": r}))
-    leaf = "\n".join(leaf)
+    return "\n".join(leaf)
+
+
+def _grouped_slices_cpp():
     slices = []
     for m in range(4):
         slices.append("""\
@@ -444,12 +438,18 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
         svint16_t q%d = svtbl2_s16(svcreate2_s16(O2, O3), i%d);
         svint16_t X%d = svtbl2_s16(svcreate2_s16(p%d, q%d), ilo);
 """ % (m, m, m, m, m, m, m))
-    slices = "".join(slices)
+    return "".join(slices)
+
+
+def _grouped_odd_cpp(odd_lowering="sdot.d", narrow_batch=4,
+                     constant_layout="derived-replicated"):
     if odd_lowering == "row-reduce":
-        odd = "\n".join(_odd_row_reduce(kk) for kk in range(16))
-    else:
-        odd = "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout)
-                        for kk in range(16))
+        return "\n".join(_odd_row_reduce(kk) for kk in range(16))
+    return "\n".join(_odd_sdot_d(kk, narrow_batch, constant_layout)
+                     for kk in range(16))
+
+
+def _grouped_ex_cpp():
     ex = []
     for m in range(2):
         ex.append("""\
@@ -457,7 +457,10 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
         svint16_t f%d = svtbl2_s16(svcreate2_s16(EO16_2, EO16_3), i%d);
         svint16_t EX%d = svtbl2_s16(svcreate2_s16(e%d, f%d), ilo);
 """ % (m, m, m, m, m, m, m))
-    ex = "".join(ex)
+    return "".join(ex)
+
+
+def _grouped_k2_cpp(pass1_k2_slice=True):
     k2 = []
     for kk in range(8):
         d0 = 4 * kk + 2
@@ -510,8 +513,11 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
             dst[%d * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
             dst[%d * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }""" % (kk, d0, d0, d0, d0))
-    k2 = "\n".join(k2)
-    k4 = "\n".join(
+    return "\n".join(k2)
+
+
+def _grouped_k4_cpp():
+    return "\n".join(
         """\
         {
             svint32_t c = svld1_s32(pg4s, K4[%d]);
@@ -529,7 +535,10 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
             dst[(%d) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
         }""" % (kk, 8 * kk + 4, 8 * kk + 4, 8 * kk + 4, 8 * kk + 4)
         for kk in range(4))
-    k0 = "\n".join(
+
+
+def _grouped_k0_cpp():
+    return "\n".join(
         """\
         {
         int32_t e0[2], o0[2];
@@ -542,6 +551,31 @@ def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
         dst[24 * 32 + base + %d] = (int16_t)((K0[3][0] * o00 + K0[3][1] * o01 + add) >> shift);
         }
 """ % (rr, rr, rr, rr, rr, rr) for rr in range(4))
+
+
+def _grouped_prologue_cpp(constant_layout="derived-replicated"):
+    if constant_layout != "canonical":
+        return ""
+    return ("    const svuint16_t ic0 = svld1_u16(p16, IDX_C0);\n"
+            "    const svuint16_t ic1 = svld1_u16(p16, IDX_C1);\n"
+            "    const svuint16_t ic2 = svld1_u16(p16, IDX_C2);\n"
+            "    const svuint16_t ic3 = svld1_u16(p16, IDX_C3);")
+
+
+def _grouped_body_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
+                      narrow_batch=4,
+                      constant_layout="derived-replicated"):
+    """Assemble the grouped pass32_impl body from per-mechanism blocks
+    (leaf / odd slices / k2 EX / odd / k2 / k4 / k0), each selected by an
+    independent plan axis. This is the P1 increment-3 structure: no single
+    composite function owns all mechanisms."""
+    leaf = _grouped_leaf_cpp()
+    slices = _grouped_slices_cpp()
+    odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout)
+    ex = _grouped_ex_cpp()
+    k2 = _grouped_k2_cpp(pass1_k2_slice)
+    k4 = _grouped_k4_cpp()
+    k0 = _grouped_k0_cpp()
     return """\
 template<int shift>
 __attribute__((noinline))
@@ -584,33 +618,19 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 %s
     }
 }
-""" % (("    const svuint16_t ic0 = svld1_u16(p16, IDX_C0);\n"
-        "    const svuint16_t ic1 = svld1_u16(p16, IDX_C1);\n"
-        "    const svuint16_t ic2 = svld1_u16(p16, IDX_C2);\n"
-        "    const svuint16_t ic3 = svld1_u16(p16, IDX_C3);"
-        if constant_layout == "canonical" else ""),
+""" % (_grouped_prologue_cpp(constant_layout),
        leaf, (slices if odd_lowering == "sdot.d" else ""),
        ex, odd, k2, k4, k0)
 
 
-def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
-         pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
-         constant_layout="derived-replicated"):
-    if layout == "v3":
-        pass_body = pass_grouped_cpp(pass1_k2_slice=pass1_k2_slice,
-                                     odd_lowering=odd_lowering,
-                                     narrow_batch=narrow_batch,
-                                     constant_layout=constant_layout)
-    elif layout in ("v2", "v2b"):
-        pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
-    else:
-        pass_body = pass_cpp()
-    if layout == "v3":
-        call = ("    pass32_impl<4>(src, coef, srcStride);\n"
-                "    pass32_impl<11>(coef, dst, 32);")
-    else:
-        call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
-                "    pass32_impl(coef, dst, 32, shift2);")
+def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
+                     narrow_batch=4, constant_layout="derived-replicated"):
+    """Backward-compatible wrapper kept for the search driver's v3 preset."""
+    return _grouped_body_cpp(pass1_k2_slice, odd_lowering, narrow_batch,
+                             constant_layout)
+
+
+def _assemble(func_name, pass_body, call):
     idx = """\
 static const uint16_t IDX_REV8[16] =
     { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 };
@@ -656,6 +676,41 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
 %s
 }
 """ % (idx, cpp_constants(), leaf_build_cpp(), pass_body, func_name, call)
+
+
+def emit_grouped(func_name="dynopt_dct32_sve2_shared",
+                 pass1_k2_slice=True, odd_lowering="sdot.d",
+                 narrow_batch=4,
+                 constant_layout="derived-replicated"):
+    """Plan-driven grouped DCT32 emitter (P1 increment 3).
+
+    Used by layout_ir.lower() for plans produced by atomic rewrites; it
+    does NOT take a `layout` preset, so a rediscovered plan cannot be
+    re-wrapped as `v3_like`.
+    """
+    call = ("    pass32_impl<4>(src, coef, srcStride);\n"
+            "    pass32_impl<11>(coef, dst, 32);")
+    return _assemble(func_name,
+                     _grouped_body_cpp(pass1_k2_slice, odd_lowering,
+                                       narrow_batch, constant_layout),
+                     call)
+
+
+def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
+         pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
+         constant_layout="derived-replicated"):
+    if layout == "v3":
+        return emit_grouped(func_name, pass1_k2_slice, odd_lowering,
+                            narrow_batch, constant_layout)
+    if layout in ("v2", "v2b"):
+        pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
+        call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
+                "    pass32_impl(coef, dst, 32, shift2);")
+    else:
+        pass_body = pass_cpp()
+        call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
+                "    pass32_impl(coef, dst, 32, shift2);")
+    return _assemble(func_name, pass_body, call)
 
 
 def main():
