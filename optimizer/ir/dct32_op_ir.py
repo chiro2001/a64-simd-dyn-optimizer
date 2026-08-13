@@ -18,16 +18,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 
 from layout_ir import Plan
-
-
-@dataclass(frozen=True)
-class Op:
-    op_id: str
-    kind: str
-    tile_id: str
-    out: str = ""
-    inputs: Tuple[str, ...] = ()
-    attrs: Dict = field(default_factory=dict)
+from op_ir import Op  # noqa: F401  (re-exported for back-compat)
 
 
 ODD_K = tuple(range(1, 32, 2))       # 16 odd k
