@@ -111,7 +111,8 @@ layouts:
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，
 # 920B SVE1/VL=256 可跑，20k 差分 0，p50=226 vs 上游 222）。
 
-# 2026-08-13: op 后端 row8 legacy 最优候选
-# candidates/best_op_r8.{cpp,S}（-O2 -fno-tree-pre，6520 full，
+# 2026-08-14: op 后端 row16 legacy 最优候选
+# candidates/best_op_r16.{cpp,S}（-O2 -fno-tree-pre，4944 full，
 # TestBenchLite 5 seed PASS；生成：layout_ir.dct32_v31_plan +
-# lowering legacy_ex/k4=1, slice_kind=zip, row_group=8）。
+# lowering legacy_ex/k4=1, slice_kind=zip, row_group=16,
+# k0_even_sve=1, k0_merge8=1, k0_shared_mul=0）。
