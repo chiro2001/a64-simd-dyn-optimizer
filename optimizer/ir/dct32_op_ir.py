@@ -76,6 +76,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # wrap (probe_k0_epack two-pass random 0 mismatch, but TestBenchLite
     # constant/structured vectors FAIL) -- the same trap as k0_even_sdot.
     k0_epack = bool(lo.get("k0_epack", 0)) and k0_even_sve
+    # sdot_indexed: pack two k-families' 4-coefficient groups into one
+    # 16-lane constant vector ([kA c0..3, kB c0..3, kA c0..3, kB c0..3])
+    # and use SVE2 indexed SDOT (Zda.D, Zn.H, Zm.H[0/1]); the index
+    # selects the same 64-bit group in each 128-bit segment, so one load
+    # serves two k rows. Cuts the per-k constant loads ~2x.
+    sdot_indexed = bool(lo.get("sdot_indexed", 0))
     k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
         and row_group in (8, 16)
     ops: List[Op] = []
@@ -906,6 +912,22 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": ((pass_id, k, r),),
                                    "topology": "contiguous"})
+    if sdot_indexed:
+        for op in ops:
+            if op.kind != "dot_segment":
+                continue
+            cs = op.attrs.get("const_src", "")
+            m = op.attrs.get("slice", 0)
+            k = int(op.tile_id.split(".")[2][1:])
+            if cs.startswith("CODD"):
+                op.attrs["const_src"] = "CODDI[%d][%d]" % (m, k // 4)
+                op.attrs["index"] = 0 if k % 4 == 1 else 1
+            elif cs.startswith("K2S"):
+                op.attrs["const_src"] = "K2SI[%d][%d]" % (m, k // 8)
+                op.attrs["index"] = 0 if k % 8 == 2 else 1
+            elif cs.startswith("K4S"):
+                op.attrs["const_src"] = "K4SI[%d]" % (k // 16)
+                op.attrs["index"] = 0 if k % 16 == 4 else 1
     return ops
 
 

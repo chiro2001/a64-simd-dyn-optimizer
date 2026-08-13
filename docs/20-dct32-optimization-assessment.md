@@ -971,6 +971,46 @@ E-pack）。剩余差距集中在 pass2 k0 双 pack（~144 ops）、spill
 （~475）、zip1 打包链（304 vs 152）——需要“转置换位/共享打包”结构
 设计（docs/18 §7/§8），或 pass2 无回绕 E-pack 变体。
 
+### 6.10 2026-08-14 深夜：indexed sdot 常量共享 → 4682→4514
+
+分析内部参考反汇编（/tmp/dct-sve.s，仅分析不入库）发现其大量使用
+**SVE2 indexed SDOT**（`sdot z4.d, z18.h, z0.h[0]`），常量只加载
+~7 个向量；我们每个 (k, slice) 单独加载全向量常量（ld1h 450）。
+
+探针 `probe_sdot_lane.cpp` 实证（VL=256）：indexed sdot
+（Zda.D, Zn.H, Zm.H[imm]）的 imm 在每个 128-bit 段内选择同一个
+64-bit 组（4 个 s16 常量），因此一个 16-lane 常量向量可装两个 k 的
+系数组 `[kA c0..3, kB c0..3, kA c0..3, kB c0..3]`（imm=0→kA、
+imm=1→kB）。GCC 16 原生支持 `svdot_lane_s64`。
+
+新增 `sdot_indexed ∈ {0,1}` 轴（op 后端）：
+
+- 常量表 CODDI[4][8][16] / K2SI[2][4][16] / K4SI[2][16]：两个 k 族
+  的 4 系数组打包进一个向量（两段重复）；
+- op DAG 后处理：dot_segment 的 const_src 改写为打包表 + attrs
+  ["index"]=0/1；发射器按 const_src 缓存（kA/kB 共享一次加载），
+  发 `svdot_lane_s64(zero64, data, c, idx)`。
+
+**结果**：
+
+| 指标 | 4682 | **4514** | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 4682 | **4514** | -168（-3.6%） |
+| vector raw | 5146 | 4974 | -172 |
+| ld1h（估计） | ~450 | ~280 | -170 |
+| 20k legacy 签名 | 7268 | 7268 | 0 |
+| TestBenchLite | 5 seed PASS | **5 seed PASS** | — |
+
+全布局搜索（288 候选全过）确认 best 还包含 **k0_shared_mul=1**——
+该轴在 4682 时代是负收益（+16），与 sdot_indexed 组合后由负转正
+（-14），是工具搜索发现非显然交互的实例。相对上游 12710 =
+**0.355×**；距内部 fused_uop 4827 = **0.935×**；距内部 fused_adj
+4251 = **1.062×**。`best_op_r16.{cpp,S}` 已按 4514 重新固化。
+
+经验：indexed SDOT 把“数据切片共享、常量按 k 独立”改为“常量向量
+按 k 对打包共享”，是 SVE2 代码密度的重要杠杆；后续可扩展到 k0 的
+sdot 化（若回绕允许）与 DCT16。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；

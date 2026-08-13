@@ -20,6 +20,7 @@ TOOLS = os.path.join(ROOT, "tools")
 if TOOLS not in sys.path:
     sys.path.insert(0, TOOLS)
 from emit_dct32_sve2_shared import cpp_constants  # noqa: E402
+from dct32_constants import GT32  # noqa: E402
 
 
 IDX_DEFS = """\
@@ -87,6 +88,48 @@ static const int32_t K0EVEN[4][8] = {
 };
 
 """
+
+
+def _indexed_constants_cpp():
+    """Packed indexed-SDOT constants: each 16-lane vector holds
+    [kA c0..3, kB c0..3, kA c0..3, kB c0..3] (index 0 -> kA, 1 -> kB,
+    same 64-bit group selected in both 128-bit segments)."""
+    lines = ["// Indexed-SDOT packed constants (sdot_indexed axis):",
+             "// CODDI[m][p] = odd k=4p+1 (idx0) and k=4p+3 (idx1),"
+             " slice m.",
+             "static const int16_t CODDI[4][8][16] = {"]
+    for m in range(4):
+        lines.append("    {")
+        for p in range(8):
+            ka, kb = 4 * p + 1, 4 * p + 3
+            a = [str(GT32[ka][4 * m + j]) for j in range(4)]
+            b = [str(GT32[kb][4 * m + j]) for j in range(4)]
+            lanes = (a + b) * 2
+            lines.append("        { %s },  // k=%d/%d slice=%d"
+                         % (", ".join(lanes), ka, kb, m))
+        lines.append("    },")
+    lines.append("};")
+    lines.append("static const int16_t K2SI[2][4][16] = {")
+    for s in range(2):
+        lines.append("    {")
+        for p in range(4):
+            ka, kb = 8 * p + 2, 8 * p + 6
+            a = [str(GT32[ka][4 * s + j]) for j in range(4)]
+            b = [str(GT32[kb][4 * s + j]) for j in range(4)]
+            lanes = (a + b) * 2
+            lines.append("        { %s },  // k=%d/%d slice=%d"
+                         % (", ".join(lanes), ka, kb, s))
+        lines.append("    },")
+    lines.append("};")
+    lines.append("static const int16_t K4SI[2][16] = {")
+    for p in range(2):
+        ka, kb = 16 * p + 4, 16 * p + 12
+        a = [str(GT32[ka][j]) for j in range(4)]
+        b = [str(GT32[kb][j]) for j in range(4)]
+        lanes = (a + b) * 2
+        lines.append("    { %s },  // k=%d/%d" % (", ".join(lanes), ka, kb))
+    lines.append("};")
+    return "\n".join(lines)
 
 
 def _ctype(elem: str) -> str:
@@ -259,33 +302,52 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
         elif kind == "dot_segment":
             tid = op.tile_id
             ckey = tid
-            if ckey not in const_cache:
-                k = _k_from_tile(tid)
-                names = []
-                nconst = attrs.get("nconst", 4 if k % 2 == 1 else 2)
-                if "K4S" in attrs.get("const_src", ""):
-                    table = "K4S"
-                    tidx = k // 8
-                elif k % 2 == 1:
-                    table = "CODD"
-                    tidx = k // 2
-                else:
-                    table = "K2S"
-                    tidx = k // 4
-                for m in range(nconst):
-                    nm = "c_%s_%d" % (tid.replace(".", "_"), m)
-                    if table == "K4S":
-                        body.append("    svint16_t %s = svld1_s16(p16, "
-                                    "K4S[%d]);" % (nm, tidx))
+            cs_attr = attrs.get("const_src", "")
+            if "CODDI" in cs_attr or "K2SI" in cs_attr or \
+                    "K4SI" in cs_attr:
+                # indexed sdot: one packed constant vector serves two k
+                # families; cache by the const_src so the pair shares the
+                # load. The immediate index is 0/1 (attrs["index"]).
+                if cs_attr not in const_cache:
+                    nm = "c_%s" % v(out)
+                    body.append("    svint16_t %s = svld1_s16(p16, %s);"
+                                % (nm, cs_attr))
+                    const_cache[cs_attr] = [nm]
+                body.append(
+                    "    svint64_t %s = svdot_lane_s64(zero64, %s, %s, %d);"
+                    % (out, ins[0], const_cache[cs_attr][0],
+                       attrs.get("index", 0)))
+                ctype[out] = "svint64_t"
+            else:
+                if ckey not in const_cache:
+                    k = _k_from_tile(tid)
+                    names = []
+                    nconst = attrs.get("nconst", 4 if k % 2 == 1 else 2)
+                    if "K4S" in attrs.get("const_src", ""):
+                        table = "K4S"
+                        tidx = k // 8
+                    elif k % 2 == 1:
+                        table = "CODD"
+                        tidx = k // 2
                     else:
-                        body.append("    svint16_t %s = svld1_s16(p16, "
-                                    "%s[%d][%d]);" % (nm, table, tidx, m))
-                    names.append(nm)
-                const_cache[ckey] = names
-            m = attrs.get("slice", 0)
-            body.append("    svint64_t %s = svdot_s64(zero64, %s, %s);"
-                        % (out, ins[0], const_cache[ckey][m]))
-            ctype[out] = "svint64_t"
+                        table = "K2S"
+                        tidx = k // 4
+                    for m in range(nconst):
+                        nm = "c_%s_%d" % (tid.replace(".", "_"), m)
+                        if table == "K4S":
+                            body.append(
+                                "    svint16_t %s = svld1_s16(p16, "
+                                "K4S[%d]);" % (nm, tidx))
+                        else:
+                            body.append(
+                                "    svint16_t %s = svld1_s16(p16, "
+                                "%s[%d][%d]);" % (nm, table, tidx, m))
+                        names.append(nm)
+                    const_cache[ckey] = names
+                m = attrs.get("slice", 0)
+                body.append("    svint64_t %s = svdot_s64(zero64, %s, %s);"
+                            % (out, ins[0], const_cache[ckey][m]))
+                ctype[out] = "svint64_t"
         elif kind == "accumulate":
             body.append("    svint64_t %s = svadd_s64_x(p64, %s, %s);"
                         % (out, ins[0], ins[1]))
@@ -524,6 +586,7 @@ def emit_acle(plan: Plan, ops: List[Op],
 %s
 %s
 %s
+%s
 
 extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t stride)
 {
@@ -532,7 +595,7 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t stride)
     op_pass_11(coef, dst, 32);
 }
 """ % (IDX_DEFS, HELPERS32, cpp_constants(), K0EVEN_CPP,
-       pass4, pass11, func_name)
+       _indexed_constants_cpp(), pass4, pass11, func_name)
 
 
 def emit_from_plan(plan: Plan, func_name: str = "dynopt_dct32_opbackend") -> str:
