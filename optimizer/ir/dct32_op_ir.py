@@ -271,8 +271,10 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "row_group": 4})
             # ---- k2 ----
             if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
-                for b in range(len(banks)):
-                    rb = banks[b]
+                k2k4_banks = banks if row_group == 4 \
+                    else [rows[0::2], rows[1::2]]
+                exs = []
+                for b, rb in enumerate(k2k4_banks):
                     suffix = "_b%d" % b
                     tid = "p%d.k2.slice%s" % (pass_id, suffix)
                     ex = []
@@ -315,40 +317,82 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                           (e.out, f.out),
                                           attrs={"kind": "tbl2", "idx": "ilo",
                                                  "lane_owner": "output"}).out)
+                    exs.append(ex)
+                if row_group == 8:
                     for k in K2_K:
                         tid = "p%d.k2.k%d" % (pass_id, k)
-                        t0 = new("dot_segment", tid,
-                                 "k2t0_%d%s" % (k, suffix), (ex[0],),
+                        rs = []
+                        for b in range(2):
+                            ex = exs[b]
+                            t0 = new("dot_segment", tid,
+                                     "k2t0_%d_b%d" % (k, b), (ex[0],),
+                                     attrs={"acc_bits": 64,
+                                            "lane_owner": "output",
+                                            "slice": 0,
+                                            "terms": tuple(_g(k, j)
+                                                           for j in range(4)),
+                                            "const_src": "K2S[%d][0]"
+                                            % (k // 4)})
+                            t1 = new("dot_segment", tid,
+                                     "k2t1_%d_b%d" % (k, b), (ex[1],),
+                                     attrs={"acc_bits": 64,
+                                            "lane_owner": "output",
+                                            "slice": 1,
+                                            "terms": tuple(_g(k, 4 + j)
+                                                           for j in range(4)),
+                                            "const_src": "K2S[%d][1]"
+                                            % (k // 4)})
+                            acc = new("accumulate", tid,
+                                      "k2acc_%d_b%d" % (k, b),
+                                      (t0.out, t1.out),
+                                      attrs={"acc_bits": 64})
+                            rnd = new("round_shift", tid,
+                                      "k2rnd_%d_b%d" % (k, b), (acc.out,),
+                                      attrs={"shift": shift,
+                                             "epoch": pass_id,
+                                             "mode": "half-up"})
+                            rs.append(rnd)
+                        n8 = new("narrow8", tid, "k2n8_%d" % k,
+                                 (rs[0].out, rs[1].out),
+                                 attrs={"from": "s64", "to": "s16",
+                                        "kind": "trn1+uzp"})
+                        new("store", tid, "", (n8.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rows),
+                                   "topology": "contiguous",
+                                   "row_group": 8})
+                else:
+                    for k in K2_K:
+                        tid = "p%d.k2.k%d" % (pass_id, k)
+                        ex = exs[0]
+                        t0 = new("dot_segment", tid, "k2t0_%d" % k, (ex[0],),
                                  attrs={"acc_bits": 64,
                                         "lane_owner": "output", "slice": 0,
                                         "terms": tuple(_g(k, j)
                                                        for j in range(4)),
                                         "const_src": "K2S[%d][0]" % (k // 4)})
-                        t1 = new("dot_segment", tid,
-                                 "k2t1_%d%s" % (k, suffix), (ex[1],),
+                        t1 = new("dot_segment", tid, "k2t1_%d" % k, (ex[1],),
                                  attrs={"acc_bits": 64,
                                         "lane_owner": "output", "slice": 1,
                                         "terms": tuple(_g(k, 4 + j)
                                                        for j in range(4)),
                                         "const_src": "K2S[%d][1]" % (k // 4)})
-                        acc = new("accumulate", tid,
-                                  "k2acc_%d%s" % (k, suffix),
+                        acc = new("accumulate", tid, "k2acc_%d" % k,
                                   (t0.out, t1.out), attrs={"acc_bits": 64})
-                        rnd = new("round_shift", tid, "k2rnd_%d%s" % (k, suffix),
+                        rnd = new("round_shift", tid, "k2rnd_%d" % k,
                                   (acc.out,),
                                   attrs={"shift": shift, "epoch": pass_id,
                                          "mode": "half-up"})
-                        nar = new("narrow", tid, "k2nar_%d%s" % (k, suffix),
-                                  (rnd.out,),
+                        nar = new("narrow", tid, "k2nar_%d" % k, (rnd.out,),
                                   attrs={"from": "s64", "to": "s16",
                                          "kind": "uzp+rshrnb+uzp"})
                         new("store", tid, "", (nar.out,),
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": tuple((pass_id, k, r)
-                                                  for r in rb),
+                                                  for r in rows),
                                    "topology": "contiguous",
-                                   "row_group": row_group,
-                                   "base_off": b * 4})
+                                   "row_group": 4})
             else:
                 for k in K2_K:
                     for r in rows:
@@ -369,8 +413,10 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "topology": "contiguous"})
             # ---- k4 ----
             if legacy_k4:
-                for b in range(len(banks)):
-                    rb = banks[b]
+                k4_banks = banks if row_group == 4 \
+                    else [rows[0::2], rows[1::2]]
+                xk4s = []
+                for b, rb in enumerate(k4_banks):
                     suffix = "_b%d" % b
                     tid = "p%d.k4.slice%s" % (pass_id, suffix)
                     if slice_kind == "zip":
@@ -399,31 +445,61 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                   (pk4.out, qk4.out),
                                   attrs={"kind": "tbl2", "idx": "ilo",
                                          "lane_owner": "output"})
+                    xk4s.append(xk4)
+                if row_group == 8:
                     for k in K4_K:
                         tid = "p%d.k4.k%d" % (pass_id, k)
-                        t = new("dot_segment", tid, "k4t_%d%s" % (k, suffix),
-                                (xk4.out,),
+                        rs = []
+                        for b in range(2):
+                            t = new("dot_segment", tid,
+                                    "k4t_%d_b%d" % (k, b), (xk4s[b].out,),
+                                    attrs={"acc_bits": 64,
+                                           "lane_owner": "output",
+                                           "slice": 0, "nconst": 1,
+                                           "terms": tuple(_g(k, j)
+                                                          for j in range(4)),
+                                           "const_src": "K4S[%d]"
+                                           % (k // 8)})
+                            rnd = new("round_shift", tid,
+                                      "k4rnd_%d_b%d" % (k, b), (t.out,),
+                                      attrs={"shift": shift,
+                                             "epoch": pass_id,
+                                             "mode": "half-up"})
+                            rs.append(rnd)
+                        n8 = new("narrow8", tid, "k4n8_%d" % k,
+                                 (rs[0].out, rs[1].out),
+                                 attrs={"from": "s64", "to": "s16",
+                                        "kind": "trn1+uzp"})
+                        new("store", tid, "", (n8.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rows),
+                                   "topology": "contiguous",
+                                   "row_group": 8})
+                else:
+                    for k in K4_K:
+                        tid = "p%d.k4.k%d" % (pass_id, k)
+                        t = new("dot_segment", tid, "k4t_%d" % k,
+                                (xk4s[0].out,),
                                 attrs={"acc_bits": 64,
                                        "lane_owner": "output", "slice": 0,
                                        "nconst": 1,
                                        "terms": tuple(_g(k, j)
                                                       for j in range(4)),
                                        "const_src": "K4S[%d]" % (k // 8)})
-                        rnd = new("round_shift", tid,
-                                  "k4rnd_%d%s" % (k, suffix), (t.out,),
+                        rnd = new("round_shift", tid, "k4rnd_%d" % k,
+                                  (t.out,),
                                   attrs={"shift": shift, "epoch": pass_id,
                                          "mode": "half-up"})
-                        nar = new("narrow", tid, "k4nar_%d%s" % (k, suffix),
-                                  (rnd.out,),
+                        nar = new("narrow", tid, "k4nar_%d" % k, (rnd.out,),
                                   attrs={"from": "s64", "to": "s16",
                                          "kind": "uzp+rshrnb+uzp"})
                         new("store", tid, "", (nar.out,),
                             attrs={"base": "dst", "index": "k*32+i",
                                    "lanes": tuple((pass_id, k, r)
-                                                  for r in rb),
+                                                  for r in rows),
                                    "topology": "contiguous",
-                                   "row_group": row_group,
-                                   "base_off": b * 4})
+                                   "row_group": 4})
             else:
                 for k in K4_K:
                     for r in rows:
