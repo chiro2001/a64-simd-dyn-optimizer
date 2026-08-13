@@ -753,3 +753,11 @@ short+full 差分，零 scatter，vector 5854 / movprfx 464 / stack 630）。
   sdot.d 的 4-lane 组边界对齐（每行 2 term → 4 行 × 2 term 占 8 lane，
   一个 sdot.d 双 128 段覆盖），或按行 2×[term,0] 浪费半条。实现时先用
   独立数值探针验证分歧率 ~0.104% 再并入发射器。
+- **s16 链的等价选择（实现关键）**：`saddlb/lb` 在 SVE 中取每个 128-bit
+  段的**低半 4 个 s16 lane** 加宽；当前 quarter 恰好打包在低半，所以
+  s16 版把 `saddlb(x,y)` 替换为 `svadd_s16_x(pg4h, x, y)`（pg4h =
+  `svwhilelt_b16(0,4)`）即保持同样的 lane 选择，只是不再加宽；zip1s/
+  zip2s/uzp1s/revw_d32 对应替换为 s16 版本（zip1h/zip2h/uzp1h +
+  revh/revw 16-bit）。EEp/EOp 变成 s16 后，`K0EVEN` 用 s16 双份
+  `[c0,c1,c0,c1]` 切片，每 4-lane 组两行各 2 term，一个 sdot.d 同时
+  算 4 行 2-term dot。
