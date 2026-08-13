@@ -211,3 +211,23 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
   字节/行 NEON 存储，5 seed lite PASS + 20k 差分 0，fused_uop 127；
 - QEMU 更新路径已核查：上游 2026-06 才有 SVE2p2，master 无 SVE2p3，
   `sdot .h`（方案 B，预估 -35%）继续挂起，等 960/QEMU SVE2p3。
+
+## 11. DCT32 工具化：P0/P1/P2 状态（2026-08-13）
+
+- **P0 轴解耦**：v3.1 的四个机制全部独立可搜索（pass1_k2_slice /
+  odd_lowering / narrow_batch / constant_layout），消融见 docs/20；
+  64 组合去重后 14 个唯一候选，全搜索约 37s。
+- **P1 typed LayoutIR**：`optimizer/ir/layout_ir.py`（Plan/canonical_key/
+  verify_layout/lower）+ `rewrites_dct32.py`（5 个原子 rewrite +
+  ProofCertificate）；`rediscover_v31(spec)` 精确复现 v3.1 plan；
+  `search_plans.py` 以 18 个 rewrite 子集做自包含测量（语义→canonical→
+  source-proof→编译/20k 差分/trace），best 3962、零 scatter，全程无
+  `layout` 预设；`layout_verify.check_source` 提供块粒度静态一致性证明。
+- **P2 轴依赖声明化**：manifest `layout_prune` 通用规则替代 DCT16
+  硬编码链（520/520 等价，best 704 不变）。
+- 剩余：op 级原子后端（逐 op 生成，非 C++ 块）、canonical-key 在
+  主搜索驱动 codegen 前去重、row_group=8/interpass_layout（需
+  accumulator 调度解决寄存器压力）、SVE2p3 执行器（960/QEMU）。
+- round-0013 咨询（每 3 阶段一次，2026-08-13）已后台启动，聚焦
+  E1 验收充分性、op 级后端与 row_group=8 优先级、search_plans 与
+  主驱动合并路线。

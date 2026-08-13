@@ -195,6 +195,24 @@ def main():
           % (len(semantic), len(layout_unique), len(by_src), len(rows)))
     print("rewrite-driven search: best=%s (fused_uop %s)" % (best[0],
                                                              best[1]))
+    out = {
+        "layers": {
+            "semantic": len(semantic),
+            "canonical": len(layout_unique),
+            "lowering": len(by_src),
+            "measured": len(rows),
+        },
+        "candidates": [
+            {"tag": t, "fused_uop": fu, "scatter": sg, "stack_vector": stk,
+             "source_hash": h}
+            for t, fu, sg, stk, h in rows
+        ],
+        "best": {"tag": best[0], "fused_uop": best[1],
+                 "scatter": best[2]},
+    }
+    with open(os.path.join(workdir, "results.json"), "w") as f:
+        json.dump(out, f, indent=1)
+    print("wrote %s" % os.path.join(workdir, "results.json"))
     return 0
 
 
