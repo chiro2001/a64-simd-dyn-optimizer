@@ -53,7 +53,7 @@ def _k_from_tile(tile_id: str) -> int:
     return int(tile_id.split(".")[2][1:])
 
 
-def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
+def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
     body: List[str] = []
     ctype: Dict[str, str] = {}
     const_cache: Dict[str, List[str]] = {}
@@ -97,8 +97,8 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
             base = "src"
             stride = "stride" if pass_id == 1 else "32"
             body.append("    svint16_t %s = svld1_s16(p16, "
-                        "%s + (g * 4 + %d) * %s%s);"
-                        % (out, base, row, stride,
+                        "%s + (g * %d + %d) * %s%s);"
+                        % (out, base, row_group, row, stride,
                            " + 16" if "+16" in attrs["index"] else ""))
             ctype[out] = "svint16_t"
         elif kind == "rev":
@@ -222,6 +222,12 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
             body.append("    svint16_t %s = svuzp1_s16(%s, %s);"
                         % (out, ins[0], ins[0]))
             ctype[out] = "svint16_t"
+        elif kind == "narrow8":
+            # even/odd row banks + rshrnb results in even h16 lanes:
+            # trn1 interleaves the even lanes -> row order [0..7].
+            body.append("    svint16_t %s = svtrn1_s16(%s, %s);"
+                        % (out, ins[0], ins[1]))
+            ctype[out] = "svint16_t"
         elif kind == "store":
             lanes = attrs["lanes"]
             pass_id, k, row = lanes[0]
@@ -245,20 +251,24 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
                     expr = "((int64_t)K0[%d][0] * %s[0] + " \
                            "(int64_t)K0[%d][1] * %s[1])" \
                         % (idx, mulin, idx, mulin)
-                rloc = row % 4
-                body.append("    dst[%d * 32 + g * 4 + %d] = (int16_t)"
+                rloc = row % row_group
+                body.append("    dst[%d * 32 + g * %d + %d] = (int16_t)"
                             "((%s + add) >> %d);"
-                            % (k, rloc, expr, rnd.attrs["shift"]))
+                            % (k, row_group, rloc, expr, rnd.attrs["shift"]))
                 continue
             if ctype.get(ins[0]) == "svint16_t" and len(lanes) > 1:
-                body.append("    svst1_s16(pg4h, dst + %d * 32 + g * 4, %s);"
-                            % (k, ins[0]))
+                pg = "pg8h" if len(lanes) == 8 else "pg4h"
+                body.append("    svst1_s16(%s, dst + %d * 32 + g * %d + %d,"
+                            " %s);"
+                            % (pg, k, row_group, attrs.get("base_off", 0),
+                               ins[0]))
             else:
-                rloc = row % 4
-                body.append("    dst[%d * 32 + g * 4 + %d] = (int16_t)%s;"
-                            % (k, rloc, ins[0]))
+                rloc = row % row_group
+                body.append("    dst[%d * 32 + g * %d + %d] = (int16_t)%s;"
+                            % (k, row_group, rloc, ins[0]))
     body.insert(0, "    add = %d;" % add_value)
-    body.insert(1, "    for (int g = 0; g < 8; g++)")
+    body.insert(1, "    for (int g = 0; g < %d; g++)"
+                % (8 if row_group == 4 else 4))
     body.insert(2, "    {")
     body.append("    }")
     return body
@@ -266,10 +276,11 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
 
 def emit_acle(plan: Plan, ops: List[Op],
               func_name: str = "dynopt_dct32_opbackend") -> str:
+    row_group = int(plan.lowering.get("row_group", 4))
     pass1 = [o for o in ops if o.tile_id.startswith("p1.")]
     pass2 = [o for o in ops if o.tile_id.startswith("p2.")]
-    b1 = _emit_pass(pass1, 8)
-    b2 = _emit_pass(pass2, 1024)
+    b1 = _emit_pass(pass1, 8, row_group)
+    b2 = _emit_pass(pass2, 1024, row_group)
     prologue = """\
     const svbool_t p16 = svptrue_b16();
     const svbool_t p8s = svptrue_b32();
@@ -286,6 +297,8 @@ def emit_acle(plan: Plan, ops: List[Op],
     const svuint16_t i3 = svld1_u16(p16, IDX_CF);
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
 """
+    if row_group == 8:
+        prologue += "    const svbool_t pg8h = svwhilelt_b16(0, 8);\n"
     if plan.lowering.get("legacy_k4"):
         prologue += "    const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);\n"
     pass4 = "static __attribute__((noinline)) void op_pass_4("\

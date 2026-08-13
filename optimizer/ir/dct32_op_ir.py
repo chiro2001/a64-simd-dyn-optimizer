@@ -55,6 +55,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     legacy_ex = bool(lo.get("legacy_ex", 0))
     legacy_k4 = bool(lo.get("legacy_k4", 0))
     slice_kind = lo.get("slice_kind", "tbl2")
+    row_group = int(lo.get("row_group", 4))
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
@@ -72,9 +73,11 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
 
     for pass_id in (1, 2):
         shift = 4 if pass_id == 1 else 11
-        for g in range(8):
+        for g in range(8 if row_group == 4 else 4):
             cur["g"] = g
-            rows = tuple(g * 4 + r for r in range(4))
+            rows = tuple(g * row_group + r for r in range(row_group))
+            banks = [rows[b * 4:(b + 1) * 4]
+                     for b in range(row_group // 4)]
             # ---- leaf per row ----
             o = {}
             eo16 = {}
@@ -153,154 +156,199 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 eeeo[r] = new("sub", tid, "EEEO_%d" % r, (EEE.out, EEEr.out),
                               attrs={"elem": "s32"}).out
 
-            # ---- odd k: lane-per-output sdot.d (4 rows per 4 s64 lanes) ----
+            # ---- odd k: lane-per-output sdot.d ----
             if odd_sdot:
-                tid = "p%d.odd.slice" % pass_id
-                xs = []
-                if slice_kind == "zip":
-                    # 4-row d-lane transpose (verified on QEMU):
-                    #   X0 = zip1(zip1(O0,O2), zip1(O1,O3))
-                    #   X1 = zip1(trn2(O0,O2), trn2(O1,O3))
-                    #   X2 = zip2(trn1(O0,O2), trn1(O1,O3))
-                    #   X3 = zip2(trn2(O0,O2), trn2(O1,O3))
-                    p01 = new("permute", tid, "z01", (o[rows[0]], o[rows[2]]),
-                              attrs={"kind": "zip1d",
-                                     "lane_owner": "output"})
-                    p02 = new("permute", tid, "z02", (o[rows[1]], o[rows[3]]),
-                              attrs={"kind": "zip1d",
-                                     "lane_owner": "output"})
-                    t11 = new("permute", tid, "t11", (o[rows[0]], o[rows[2]]),
-                              attrs={"kind": "trn1d",
-                                     "lane_owner": "output"})
-                    t12 = new("permute", tid, "t12", (o[rows[1]], o[rows[3]]),
-                              attrs={"kind": "trn1d",
-                                     "lane_owner": "output"})
-                    t21 = new("permute", tid, "t21", (o[rows[0]], o[rows[2]]),
-                              attrs={"kind": "trn2d",
-                                     "lane_owner": "output"})
-                    t22 = new("permute", tid, "t22", (o[rows[1]], o[rows[3]]),
-                              attrs={"kind": "trn2d",
-                                     "lane_owner": "output"})
-                    combos = ((p01, p02, "zip1d"), (t21, t22, "zip1d"),
-                              (t11, t12, "zip2d"), (t21, t22, "zip2d"))
-                    for m, (sa, sb, kd) in enumerate(combos):
-                        x = new("permute", tid, "X%d" % m, (sa.out, sb.out),
-                                attrs={"kind": kd,
-                                       "lane_owner": "output"})
-                        xs.append(x.out)
-                else:
-                    for m in range(4):
-                        p = new("permute", tid, "p%d" % m,
-                                (o[rows[0]], o[rows[1]]),
-                                attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                       "lane_owner": "output"})
-                        q = new("permute", tid, "q%d" % m,
-                                (o[rows[2]], o[rows[3]]),
-                                attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                       "lane_owner": "output"})
-                        x = new("permute", tid, "X%d" % m, (p.out, q.out),
-                                attrs={"kind": "tbl2", "idx": "ilo",
-                                       "lane_owner": "output"})
-                        xs.append(x.out)
+                def build_slices(rb, suffix):
+                    tid = "p%d.odd.slice%s" % (pass_id, suffix)
+                    xs = []
+                    if slice_kind == "zip":
+                        p01 = new("permute", tid, "z01%s" % suffix,
+                                  (o[rb[0]], o[rb[2]]),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"})
+                        p02 = new("permute", tid, "z02%s" % suffix,
+                                  (o[rb[1]], o[rb[3]]),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"})
+                        t11 = new("permute", tid, "t11%s" % suffix,
+                                  (o[rb[0]], o[rb[2]]),
+                                  attrs={"kind": "trn1d",
+                                         "lane_owner": "output"})
+                        t12 = new("permute", tid, "t12%s" % suffix,
+                                  (o[rb[1]], o[rb[3]]),
+                                  attrs={"kind": "trn1d",
+                                         "lane_owner": "output"})
+                        t21 = new("permute", tid, "t21%s" % suffix,
+                                  (o[rb[0]], o[rb[2]]),
+                                  attrs={"kind": "trn2d",
+                                         "lane_owner": "output"})
+                        t22 = new("permute", tid, "t22%s" % suffix,
+                                  (o[rb[1]], o[rb[3]]),
+                                  attrs={"kind": "trn2d",
+                                         "lane_owner": "output"})
+                        combos = ((p01, p02, "zip1d"), (t21, t22, "zip1d"),
+                                  (t11, t12, "zip2d"), (t21, t22, "zip2d"))
+                        for m, (sa, sb, kd) in enumerate(combos):
+                            x = new("permute", tid, "X%d%s" % (m, suffix),
+                                    (sa.out, sb.out),
+                                    attrs={"kind": kd,
+                                           "lane_owner": "output"})
+                            xs.append(x.out)
+                    else:
+                        for m in range(4):
+                            p = new("permute", tid, "p%d%s" % (m, suffix),
+                                    (o[rb[0]], o[rb[1]]),
+                                    attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                           "lane_owner": "output"})
+                            q = new("permute", tid, "q%d%s" % (m, suffix),
+                                    (o[rb[2]], o[rb[3]]),
+                                    attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                           "lane_owner": "output"})
+                            x = new("permute", tid, "X%d%s" % (m, suffix),
+                                    (p.out, q.out),
+                                    attrs={"kind": "tbl2", "idx": "ilo",
+                                           "lane_owner": "output"})
+                            xs.append(x.out)
+                    return xs
+                odd_banks = banks if row_group == 4 \
+                    else [rows[0::2], rows[1::2]]
+                all_xs = [build_slices(rb, "_b%d" % b)
+                          for b, rb in enumerate(odd_banks)]
                 for k in ODD_K:
                     tid = "p%d.odd.k%d" % (pass_id, k)
-                    terms = []
-                    for m in range(4):
-                        t = new("dot_segment", tid, "t_%d_%d" % (k, m),
-                                (xs[m],),
-                                attrs={"acc_bits": 64,
-                                       "lane_owner": "output",
-                                       "slice": m,
-                                       "terms": tuple(
-                                           _g(k, 4 * m + j) for j in range(4)),
-                                       "const_src": ("CODD[%d][%d]"
-                                                     % ((k // 2), m)
-                                                     if const_layout
-                                                     == "derived-replicated"
-                                                     else "C32[%d]" % k)})
-                        terms.append(t.out)
-                    acc = terms[0]
-                    for m in range(1, 4):
-                        acc = new("accumulate", tid, "acc_%d_%d" % (k, m),
-                                  (acc, terms[m]),
-                                  attrs={"acc_bits": 64}).out
-                    rnd = new("round_shift", tid, "rnd_%d" % k, (acc,),
-                              attrs={"shift": shift, "epoch": pass_id,
-                                     "mode": "half-up"})
-                    nar = new("narrow", tid, "nar_%d" % k, (rnd.out,),
-                              attrs={"from": "s64", "to": "s16",
-                                     "kind": "uzp+rshrnb+uzp"})
-                    new("store", tid, "", (nar.out,),
-                        attrs={"base": "dst", "index": "k*32+i",
-                               "lanes": tuple((pass_id, k, r) for r in rows),
-                               "topology": "contiguous"})
+                    rs = []
+                    for b in range(len(banks)):
+                        xs = all_xs[b]
+                        terms = []
+                        for m in range(4):
+                            t = new("dot_segment", tid,
+                                    "t_%d_%d_b%d" % (k, m, b), (xs[m],),
+                                    attrs={"acc_bits": 64,
+                                           "lane_owner": "output",
+                                           "slice": m,
+                                           "terms": tuple(
+                                               _g(k, 4 * m + j)
+                                               for j in range(4)),
+                                           "const_src": (
+                                               "CODD[%d][%d]"
+                                               % ((k // 2), m)
+                                               if const_layout
+                                               == "derived-replicated"
+                                               else "C32[%d]" % k)})
+                            terms.append(t.out)
+                        acc = terms[0]
+                        for m in range(1, 4):
+                            acc = new("accumulate", tid,
+                                      "acc_%d_%d_b%d" % (k, m, b),
+                                      (acc, terms[m]),
+                                      attrs={"acc_bits": 64}).out
+                        rnd = new("round_shift", tid, "rnd_%d_b%d" % (k, b),
+                                  (acc,),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
+                        rs.append(rnd)
+                    if row_group == 8:
+                        n8 = new("narrow8", tid, "n8_%d" % k,
+                                 (rs[0].out, rs[1].out),
+                                 attrs={"from": "s64", "to": "s16",
+                                        "kind": "zip+rshrnb+uzp"})
+                        new("store", tid, "", (n8.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rows),
+                                   "topology": "contiguous",
+                                   "row_group": 8})
+                    else:
+                        nar = new("narrow", tid, "nar_%d" % k,
+                                  (rs[0].out,),
+                                  attrs={"from": "s64", "to": "s16",
+                                         "kind": "uzp+rshrnb+uzp"})
+                        new("store", tid, "", (nar.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rows),
+                                   "topology": "contiguous",
+                                   "row_group": 4})
             # ---- k2 ----
             if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
-                tid = "p%d.k2.slice" % pass_id
-                ex = []
-                if slice_kind == "zip":
-                    z1 = new("permute", tid, "k2z1",
-                             (eo16[rows[0]], eo16[rows[2]]),
-                             attrs={"kind": "zip1d",
-                                    "lane_owner": "output"})
-                    z2 = new("permute", tid, "k2z2",
-                             (eo16[rows[1]], eo16[rows[3]]),
-                             attrs={"kind": "zip1d",
-                                    "lane_owner": "output"})
-                    t1 = new("permute", tid, "k2t1",
-                             (eo16[rows[0]], eo16[rows[2]]),
-                             attrs={"kind": "trn2d",
-                                    "lane_owner": "output"})
-                    t2 = new("permute", tid, "k2t2",
-                             (eo16[rows[1]], eo16[rows[3]]),
-                             attrs={"kind": "trn2d",
-                                    "lane_owner": "output"})
-                    ex.append(new("permute", tid, "EX0", (z1.out, z2.out),
-                                  attrs={"kind": "zip1d",
-                                         "lane_owner": "output"}).out)
-                    ex.append(new("permute", tid, "EX1", (t1.out, t2.out),
-                                  attrs={"kind": "zip1d",
-                                         "lane_owner": "output"}).out)
-                else:
-                    for m in range(2):
-                        e = new("permute", tid, "e%d" % m,
-                                (eo16[rows[0]], eo16[rows[1]]),
-                                attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                       "lane_owner": "output"})
-                        f = new("permute", tid, "f%d" % m,
-                                (eo16[rows[2]], eo16[rows[3]]),
-                                attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                       "lane_owner": "output"})
-                        ex.append(new("permute", tid, "EX%d" % m,
-                                      (e.out, f.out),
-                                      attrs={"kind": "tbl2", "idx": "ilo",
+                for b in range(len(banks)):
+                    rb = banks[b]
+                    suffix = "_b%d" % b
+                    tid = "p%d.k2.slice%s" % (pass_id, suffix)
+                    ex = []
+                    if slice_kind == "zip":
+                        z1 = new("permute", tid, "k2z1%s" % suffix,
+                                 (eo16[rb[0]], eo16[rb[2]]),
+                                 attrs={"kind": "zip1d",
+                                        "lane_owner": "output"})
+                        z2 = new("permute", tid, "k2z2%s" % suffix,
+                                 (eo16[rb[1]], eo16[rb[3]]),
+                                 attrs={"kind": "zip1d",
+                                        "lane_owner": "output"})
+                        t1 = new("permute", tid, "k2t1%s" % suffix,
+                                 (eo16[rb[0]], eo16[rb[2]]),
+                                 attrs={"kind": "trn2d",
+                                        "lane_owner": "output"})
+                        t2 = new("permute", tid, "k2t2%s" % suffix,
+                                 (eo16[rb[1]], eo16[rb[3]]),
+                                 attrs={"kind": "trn2d",
+                                        "lane_owner": "output"})
+                        ex.append(new("permute", tid, "EX0%s" % suffix,
+                                      (z1.out, z2.out),
+                                      attrs={"kind": "zip1d",
                                              "lane_owner": "output"}).out)
-                for k in K2_K:
-                    tid = "p%d.k2.k%d" % (pass_id, k)
-                    t0 = new("dot_segment", tid, "k2t0_%d" % k, (ex[0],),
-                             attrs={"acc_bits": 64, "lane_owner": "output",
-                                    "slice": 0,
-                                    "terms": tuple(_g(k, j) for j in range(4)),
-                                    "const_src": "K2S[%d][0]" % (k // 4)})
-                    t1 = new("dot_segment", tid, "k2t1_%d" % k, (ex[1],),
-                             attrs={"acc_bits": 64, "lane_owner": "output",
-                                    "slice": 1,
-                                    "terms": tuple(_g(k, 4 + j)
-                                                   for j in range(4)),
-                                    "const_src": "K2S[%d][1]" % (k // 4)})
-                    acc = new("accumulate", tid, "k2acc_%d" % k,
-                              (t0.out, t1.out), attrs={"acc_bits": 64})
-                    rnd = new("round_shift", tid, "k2rnd_%d" % k,
-                              (acc.out,),
-                              attrs={"shift": shift, "epoch": pass_id,
-                                     "mode": "half-up"})
-                    nar = new("narrow", tid, "k2nar_%d" % k, (rnd.out,),
-                              attrs={"from": "s64", "to": "s16",
-                                     "kind": "uzp+rshrnb+uzp"})
-                    new("store", tid, "", (nar.out,),
-                        attrs={"base": "dst", "index": "k*32+i",
-                               "lanes": tuple((pass_id, k, r) for r in rows),
-                               "topology": "contiguous"})
+                        ex.append(new("permute", tid, "EX1%s" % suffix,
+                                      (t1.out, t2.out),
+                                      attrs={"kind": "zip1d",
+                                             "lane_owner": "output"}).out)
+                    else:
+                        for m in range(2):
+                            e = new("permute", tid, "e%d%s" % (m, suffix),
+                                    (eo16[rb[0]], eo16[rb[1]]),
+                                    attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                           "lane_owner": "output"})
+                            f = new("permute", tid, "f%d%s" % (m, suffix),
+                                    (eo16[rb[2]], eo16[rb[3]]),
+                                    attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                           "lane_owner": "output"})
+                            ex.append(new("permute", tid, "EX%d%s" % (m, suffix),
+                                          (e.out, f.out),
+                                          attrs={"kind": "tbl2", "idx": "ilo",
+                                                 "lane_owner": "output"}).out)
+                    for k in K2_K:
+                        tid = "p%d.k2.k%d" % (pass_id, k)
+                        t0 = new("dot_segment", tid,
+                                 "k2t0_%d%s" % (k, suffix), (ex[0],),
+                                 attrs={"acc_bits": 64,
+                                        "lane_owner": "output", "slice": 0,
+                                        "terms": tuple(_g(k, j)
+                                                       for j in range(4)),
+                                        "const_src": "K2S[%d][0]" % (k // 4)})
+                        t1 = new("dot_segment", tid,
+                                 "k2t1_%d%s" % (k, suffix), (ex[1],),
+                                 attrs={"acc_bits": 64,
+                                        "lane_owner": "output", "slice": 1,
+                                        "terms": tuple(_g(k, 4 + j)
+                                                       for j in range(4)),
+                                        "const_src": "K2S[%d][1]" % (k // 4)})
+                        acc = new("accumulate", tid,
+                                  "k2acc_%d%s" % (k, suffix),
+                                  (t0.out, t1.out), attrs={"acc_bits": 64})
+                        rnd = new("round_shift", tid, "k2rnd_%d%s" % (k, suffix),
+                                  (acc.out,),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
+                        nar = new("narrow", tid, "k2nar_%d%s" % (k, suffix),
+                                  (rnd.out,),
+                                  attrs={"from": "s64", "to": "s16",
+                                         "kind": "uzp+rshrnb+uzp"})
+                        new("store", tid, "", (nar.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rb),
+                                   "topology": "contiguous",
+                                   "row_group": row_group,
+                                   "base_off": b * 4})
             else:
                 for k in K2_K:
                     for r in rows:
@@ -321,49 +369,61 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                    "topology": "contiguous"})
             # ---- k4 ----
             if legacy_k4:
-                tid = "p%d.k4.slice" % pass_id
-                if slice_kind == "zip":
-                    kz1 = new("permute", tid, "k4z1",
-                              (eeo16[rows[0]], eeo16[rows[2]]),
-                              attrs={"kind": "zip1d",
-                                     "lane_owner": "output"})
-                    kz2 = new("permute", tid, "k4z2",
-                              (eeo16[rows[1]], eeo16[rows[3]]),
-                              attrs={"kind": "zip1d",
-                                     "lane_owner": "output"})
-                    xk4 = new("permute", tid, "Xk4", (kz1.out, kz2.out),
-                              attrs={"kind": "zip1d",
-                                     "lane_owner": "output"})
-                else:
-                    pk4 = new("permute", tid, "pk4",
-                              (eeo16[rows[0]], eeo16[rows[1]]),
-                              attrs={"kind": "tbl2", "idx": "i0",
-                                     "lane_owner": "output"})
-                    qk4 = new("permute", tid, "qk4",
-                              (eeo16[rows[2]], eeo16[rows[3]]),
-                              attrs={"kind": "tbl2", "idx": "i0",
-                                     "lane_owner": "output"})
-                    xk4 = new("permute", tid, "Xk4", (pk4.out, qk4.out),
-                              attrs={"kind": "tbl2", "idx": "ilo",
-                                     "lane_owner": "output"})
-                for k in K4_K:
-                    tid = "p%d.k4.k%d" % (pass_id, k)
-                    t = new("dot_segment", tid, "k4t_%d" % k, (xk4.out,),
-                            attrs={"acc_bits": 64, "lane_owner": "output",
-                                   "slice": 0, "nconst": 1,
-                                   "terms": tuple(_g(k, j) for j in range(4)),
-                                   "const_src": "K4S[%d]" % (k // 8)})
-                    rnd = new("round_shift", tid, "k4rnd_%d" % k,
-                              (t.out,),
-                              attrs={"shift": shift, "epoch": pass_id,
-                                     "mode": "half-up"})
-                    nar = new("narrow", tid, "k4nar_%d" % k, (rnd.out,),
-                              attrs={"from": "s64", "to": "s16",
-                                     "kind": "uzp+rshrnb+uzp"})
-                    new("store", tid, "", (nar.out,),
-                        attrs={"base": "dst", "index": "k*32+i",
-                               "lanes": tuple((pass_id, k, r) for r in rows),
-                               "topology": "contiguous"})
+                for b in range(len(banks)):
+                    rb = banks[b]
+                    suffix = "_b%d" % b
+                    tid = "p%d.k4.slice%s" % (pass_id, suffix)
+                    if slice_kind == "zip":
+                        kz1 = new("permute", tid, "k4z1%s" % suffix,
+                                  (eeo16[rb[0]], eeo16[rb[2]]),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"})
+                        kz2 = new("permute", tid, "k4z2%s" % suffix,
+                                  (eeo16[rb[1]], eeo16[rb[3]]),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"})
+                        xk4 = new("permute", tid, "Xk4%s" % suffix,
+                                  (kz1.out, kz2.out),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"})
+                    else:
+                        pk4 = new("permute", tid, "pk4%s" % suffix,
+                                  (eeo16[rb[0]], eeo16[rb[1]]),
+                                  attrs={"kind": "tbl2", "idx": "i0",
+                                         "lane_owner": "output"})
+                        qk4 = new("permute", tid, "qk4%s" % suffix,
+                                  (eeo16[rb[2]], eeo16[rb[3]]),
+                                  attrs={"kind": "tbl2", "idx": "i0",
+                                         "lane_owner": "output"})
+                        xk4 = new("permute", tid, "Xk4%s" % suffix,
+                                  (pk4.out, qk4.out),
+                                  attrs={"kind": "tbl2", "idx": "ilo",
+                                         "lane_owner": "output"})
+                    for k in K4_K:
+                        tid = "p%d.k4.k%d" % (pass_id, k)
+                        t = new("dot_segment", tid, "k4t_%d%s" % (k, suffix),
+                                (xk4.out,),
+                                attrs={"acc_bits": 64,
+                                       "lane_owner": "output", "slice": 0,
+                                       "nconst": 1,
+                                       "terms": tuple(_g(k, j)
+                                                      for j in range(4)),
+                                       "const_src": "K4S[%d]" % (k // 8)})
+                        rnd = new("round_shift", tid,
+                                  "k4rnd_%d%s" % (k, suffix), (t.out,),
+                                  attrs={"shift": shift, "epoch": pass_id,
+                                         "mode": "half-up"})
+                        nar = new("narrow", tid, "k4nar_%d%s" % (k, suffix),
+                                  (rnd.out,),
+                                  attrs={"from": "s64", "to": "s16",
+                                         "kind": "uzp+rshrnb+uzp"})
+                        new("store", tid, "", (nar.out,),
+                            attrs={"base": "dst", "index": "k*32+i",
+                                   "lanes": tuple((pass_id, k, r)
+                                                  for r in rb),
+                                   "topology": "contiguous",
+                                   "row_group": row_group,
+                                   "base_off": b * 4})
             else:
                 for k in K4_K:
                     for r in rows:
