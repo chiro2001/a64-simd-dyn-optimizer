@@ -79,6 +79,12 @@ flowchart LR
   不再需要“人先想到轴再写 emitter”。
 - 验收：不给任何参考方向，仅用 spec plan + rewrite 库，能重发现在 6464。
 
+**进度（2026-08-13）**：P0 增量 1 完成——`optimizer/ir/dct32_rewrites.py`
+实现 `tbl2_to_zip` 原子 rewrite（按 pass/group 感知的链匹配 + 惰性 prep），
+接入 `emit_from_plan`；rewrite 路径与手工 zip 变体计数完全一致
+（row4 7938、row8-legacy 6464），20k 差分/TestBenchLite 均过。
+下一步 rewrite：`merge_narrow8`、`legacy_k2/k4`、`const_prearrange`。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。
