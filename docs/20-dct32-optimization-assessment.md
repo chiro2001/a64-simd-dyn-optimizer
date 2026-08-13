@@ -687,3 +687,49 @@ latency），已修复为每 call 独立 dst（`benchmarks/dct32_microbench.cpp`
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
 或足够深的 unroll（后续修复）。
+
+## 6. 2026-08-14 更新：op 后端 best 5390 vs 内部 4251 差距分解
+
+工具链进展（本轮已提交）：搜索并行（--workers）、rewrite 依赖剪枝
+（781→219 键/31 源）、两级差分（2k→20k）、流式 trace（--stream）。
+dct32 op 布局搜索（W=8，全新目录）复现 best **5390**（72/72 过
+short+full 差分，零 scatter，vector 5854 / movprfx 464 / stack 630）。
+
+与内部参考（fused_adj 4251 / vector 4731）的指令类别差距（向量 raw）：
+
+| 类别 | 5390 | 内部 4251 | 差 |
+| --- | ---: | ---: | ---: |
+| sdot | 1344 | 1376 | -32 |
+| ld1h | 736 | 864 | -128 |
+| uzp1 | 592 | 480 | +112 |
+| movprfx | 464 | 480 | -16 |
+| str（8-lane 连续存） | 422 | 192（st1d，禁 scatter） | +230 |
+| zip1 / zip2 | 336 / 192 | 152 / 152 | +184 / +40 |
+| rshrnb | 288 | 256 | +32 |
+| ldr（栈 spill 重载） | 256 | 0 | +256 |
+| add / sub | 240 / 208 | 272 / 144 | -32 / +64 |
+| rev | 128 | 112 | +16 |
+| tbl / trn2 / trn1 / revh | 64 / 64 / 32 / 64 | 0 | +224 |
+| saddlb / saddlt | 64 / 64 | 32 / 32 | +64 |
+| mul / addp（k0 偶路径） | 64 / 64 | 32 / 0 | +32 / +64 |
+| revw / mov / ld1w / stp / uzp2 / movi / ldp | 48/40/32/16/16/8/8 | 0 | +168 |
+
+主要结构结论（可工具化）：
+
+1. **k0 偶路径 sdot 化**（下一主项）：当前 `k0_even_sve` 在 s32 域
+   mul(K0EVEN)+addp+uzp1；内部全部 k 走 sdot（s16 域，0.104% 回绕
+   签名即来自此）。新增 lowering 轴 `k0_even_sdot ∈ {0,1}`：s16 域
+   重建 EEp/EOp 切片 + sdot.d + s64 收窄（复用 odd 路径的
+   uzp1_s32→rshrnb→uzp1_s16 机制）。预期移除 mul 64 + addp 64 +
+   uzp1s/zip 链一部分，净 -100~-250；需过 TestBenchLite（legacy 合同）。
+2. **store 宽度**：422 条 8-lane `str`（q 寄存器）→ 若能合并为 16-lane
+   `str z`（row_group=16 或跨 g 迭代缓存），可再 -200；受寄存器压力
+   约束，先做静态可行性探针。
+3. **spill 消除（ldr 256）**：常量栈重载来自编译器寄存器压力
+   （row_group=8 最佳已定）；内部以 rodata 预排列 + ld1h 直载替代。
+   方向：常量预排列轴（constant_layout 第三档 packed-pairs）。
+4. **置换折叠**：tbl/trn/revh 224 条中大部分属于打包链；常量吸收
+   方向已证（derived vs canonical -227），继续把索引折进常量布局。
+
+下一轮执行顺序：实现 `k0_even_sdot` 轴 → 搜索验证（5390 目标 <5150）
+→ TestBenchLite → 视结果再开 store_wide / spill 消除。
