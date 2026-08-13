@@ -152,7 +152,8 @@ stack_vector 229（spill 下降）。**注意：以下 4266/3962 为 pass1-only
   plan 枚举 18 个合法 rewrite 子集（无 assign 2 个 + 有 assign 16 个），
   每个计划过 `verify_layout` → `lower()` → 编译 → 与 P0 搜索结果按
   源码哈希对齐。结果：18 计划 → 12 个唯一候选，best 仍为
-  `k2=1/sdot.d/narrow=4/derived` = **3962**（零 scatter），即
+  `k2=1/sdot.d/narrow=4/derived` = **pass1 3962 / full 8292**
+  （零 scatter，2026-08-13 range_end 修正），即
   “搜索空间由原子 rewrite 定义、不使用 manifest layout 字符串”的
   E1 验收已实质性达成；复合 `pass_grouped_cpp` 仅保留为旧搜索路径的
   兼容包装。
@@ -168,7 +169,8 @@ stack_vector 229（spill 下降）。**注意：以下 4266/3962 为 pass1-only
   编译 + 20k 上游差分 + true-dynamic trace（测量层）；
 - 实测结果：18 个语义计划 → 18 个 canonical 计划 → 12 个唯一源码 →
   12 个全测候选；best = `assign+segment+narrow4+derived+k2` =
-  **3962 fused_uop**（零 scatter、20k 差分 0），与 P0/P1 完全一致；
+  **pass1 3962 / full 8292 fused_uop**（零 scatter、20k 差分 0），
+  与 P0/P1 修正后一致；
 - 该搜索路径全程不含 `layout` 预设字符串，分层漏斗可直接用于评估
   新 rewrite 加入后的候选数压缩与耗时预算。
 
