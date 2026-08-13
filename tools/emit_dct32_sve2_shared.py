@@ -189,7 +189,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
 """
 
 
-def pass_rowmajor_cpp():
+def pass_rowmajor_cpp(lazy_c24=False):
     co = "\n".join(
         "    svint16_t CO%d = svld1_s16(p16, C32[%d]);" % (kk, 2 * kk + 1)
         for kk in range(16))
@@ -206,15 +206,34 @@ def pass_rowmajor_cpp():
             int64_t sum = svaddv_s64(p64, t);
             dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
         }""" % (kk, 2 * kk + 1) for kk in range(16))
-    k2 = "\n".join(
-        """\
+    if lazy_c24:
+        k2 = "\n".join(
+            """\
+        {
+            svint32_t c = svld1_s32(p8s, K2[%d]);
+            svint32_t t = svmul_s32_x(p8s, EO, c);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }""" % (kk, 4 * kk + 2) for kk in range(8))
+        k4 = "\n".join(
+            """\
+        {
+            svint32_t c = svld1_s32(pg4s, K4[%d]);
+            svint32_t t = svmul_s32_x(p8s, EEO, c);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }""" % (kk, 8 * kk + 4) for kk in range(4))
+        c2 = c4 = ""
+    else:
+        k2 = "\n".join(
+            """\
         {
             svint32_t t = svmul_s32_x(p8s, EO, C2%d);
             int64_t sum = (int64_t)svaddv_s32(p8s, t);
             dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
         }""" % (kk, 4 * kk + 2) for kk in range(8))
-    k4 = "\n".join(
-        """\
+        k4 = "\n".join(
+            """\
         {
             svint32_t t = svmul_s32_x(p8s, EEO, C4%d);
             int64_t sum = (int64_t)svaddv_s32(pg4s, t);
@@ -276,8 +295,8 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1"):
-    if layout == "v2":
-        pass_body = pass_rowmajor_cpp()
+    if layout in ("v2", "v2b"):
+        pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
     else:
         pass_body = pass_cpp()
     idx = """\

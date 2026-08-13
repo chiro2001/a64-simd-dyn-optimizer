@@ -44,4 +44,4 @@ targets:
   halve_gate: 0.5
 
 layouts:
-  layout: [v1, v2]
+  layout: [v1, v2, v2b]
