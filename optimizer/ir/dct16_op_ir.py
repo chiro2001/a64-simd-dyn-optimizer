@@ -99,6 +99,20 @@ def lower_pass1_odd(leaves: Dict[int, Tuple[str, str]]) -> List[Op]:
     return ops
 
 
+def neon_pack_op(sve_out: str, tile: str, out: str = "npack") -> Op:
+    """SVE->NEON bridge op (low 128-bit view of an s32 vector)."""
+    return Op("d16npack", "neon_pack", tile, out, (sve_out,),
+              {"g": 0, "from": "svint32_t", "to": "int32x4_t"})
+
+
+def neon_reduce_narrow_op(partials, shift: int, tile: str,
+                          out: str = "nnarrow") -> Op:
+    """vpaddq tree + vrshrn bridge op (validated by neon_bridge_probe)."""
+    return Op("d16nnarrow", "neon_reduce_narrow", tile, out,
+              tuple(partials), {"g": 0, "shift": shift,
+                                "from": "int32x4_t", "to": "int16x4_t"})
+
+
 def dct16_pass1_provenance(ops: List[Op]) -> Dict:
     """Extend leaf provenance with odd-k dot term coverage."""
     res = dct16_leaf_provenance(
