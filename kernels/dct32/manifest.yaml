@@ -79,7 +79,7 @@ layouts:
   row_group: [4, 8]
   # 2026-08-13: op 级原子 rewrite 序列（P0；当前仅 tbl2_to_zip）。
   # 与 slice_kind 并存会去重；这是“结构空间搜索”的第一维。
-  rewrites: [none, tbl2_to_zip, legacy_k2]
+  rewrites: [none, tbl2_to_zip, legacy_k2, legacy_k4]
 
 # 2026-08-13: 发射器新增 isa 轴（sve1/sve2 降级），SVE1 变体见
 # candidates/best_sve1.{cpp,S,o}（同符号 dynopt_dct32_sve2_shared，

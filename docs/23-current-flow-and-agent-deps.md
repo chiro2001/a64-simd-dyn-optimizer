@@ -93,6 +93,12 @@ rewrite 组合同样可达 6464——结构空间搜索的第一维已闭环。
 （对照手工 legacy_ex=7966，差 ~1% 为调度微差）。已加入 rewrites
 搜索轴。
 
+**进度（2026-08-13）**：P0 inc4 完成——新增 `legacy_k4` 原子 rewrite
+（两 pass k4 mul→EEO16 切片 + sdot，自动补 E16/EE16/EEO16 与 rev8）；
+序列 `[legacy_k2, legacy_k4]` 可组合应用（fused 7617、raw 8065、
+TestBenchLite PASS）。修复 op_id 跨 rewrite 冲突（counter 从输入
+最大编号之后开始）。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。

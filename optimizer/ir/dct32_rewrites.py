@@ -139,6 +139,15 @@ REWRITES = {
 K2_K = tuple(range(2, 32, 4))
 
 
+def _op_id_base(ops: List[Op]) -> int:
+    mx = 0
+    for o in ops:
+        m = re.match(r"^(?:op|rw)(\d+)$", o.op_id)
+        if m:
+            mx = max(mx, int(m.group(1)))
+    return mx + 1
+
+
 def rewrite_legacy_k2(ops: List[Op]) -> List[Op]:
     """Pass2 k2: replace per-row s32 mul_reduce with EX slices + sdot.d.
 
@@ -149,12 +158,15 @@ def rewrite_legacy_k2(ops: List[Op]) -> List[Op]:
     Only row_group=4 is handled; row8 pass2 k2 is already EX under legacy.
     """
     pid = 2
-    counter = [0]
+    counter = [_op_id_base(ops)]
+    created = set()
 
     def fresh(kind, tile_id, out, ins, attrs):
         counter[0] += 1
-        return Op("rw%04d" % counter[0], kind, tile_id, out,
-                  tuple(ins), dict(attrs))
+        op = Op("rw%04d" % counter[0], kind, tile_id, out,
+                tuple(ins), dict(attrs))
+        created.add(op.op_id)
+        return op
 
     by_out = {(pid, o.attrs.get("g", 0), o.out): o for o in ops}
 
@@ -275,9 +287,11 @@ def rewrite_legacy_k2(ops: List[Op]) -> List[Op]:
                 for o in ops:
                     if o.kind == "round_shift" and o.inputs \
                             and o.inputs[0] == m.out \
+                            and o.tile_id.startswith("p2.") \
                             and o.attrs.get("g", 0) == g:
                         rnd_o = o
                     if o.kind == "store" and o.inputs and rnd_o \
+                            and o.tile_id.startswith("p2.") \
                             and o.inputs[0] == rnd_o.out:
                         st_o = o
                 if rnd_o:
@@ -296,6 +310,167 @@ def rewrite_legacy_k2(ops: List[Op]) -> List[Op]:
 
 
 REWRITES["legacy_k2"] = rewrite_legacy_k2
+
+
+K4_K = tuple(range(4, 32, 8))
+
+
+def rewrite_legacy_k4(ops: List[Op]) -> List[Op]:
+    """Both-pass k4: replace per-row s32 mul_reduce with EEO16 slice + sdot.
+
+    Adds E16/EE16/EEO16 to the leaf when missing, builds a tbl2 Xk4 slice
+    per 4-row group, and replaces each k4 row chain with
+    (dot_segment -> round_shift -> narrow -> store4). row_group=4 only.
+    """
+    counter = [_op_id_base(ops)]
+    created = set()
+
+    def fresh(kind, tile_id, out, ins, attrs):
+        counter[0] += 1
+        op = Op("rw%04d" % counter[0], kind, tile_id, out,
+                tuple(ins), dict(attrs))
+        created.add(op.op_id)
+        return op
+
+    remove = set()
+    insert_at = {}
+    group_inserted = set()
+
+    for pid in (1, 2):
+        by_out = {(pid, o.attrs.get("g", 0), o.out): o for o in ops}
+        leaf = {}
+        muls = {}
+        for op in ops:
+            tid = op.tile_id
+            if tid.startswith("p%d.leaf.row" % pid):
+                row = int(tid.rsplit("row", 1)[1])
+                g = op.attrs.get("g", 0)
+                leaf.setdefault((g, row), {})[op.out] = op
+            if op.kind == "mul_reduce" and \
+                    tid.startswith("p%d.k4.k" % pid):
+                parts = tid.split(".")
+                k = int(parts[2][1:])
+                row = int(parts[3][3:])
+                g = op.attrs.get("g", 0)
+                muls[(g, k, row)] = op
+        groups = {}
+        for (g, row) in leaf:
+            groups.setdefault(g, []).append(row)
+        groups = {g: sorted(rows) for g, rows in groups.items()}
+        for g in sorted(groups):
+            rows = groups[g]
+            if len(rows) != 4:
+                continue
+            eeo16 = {}
+            for r in rows:
+                lo = leaf[(g, r)].get("lo_%d" % r)
+                rv = leaf[(g, r)].get("rv_%d" % r)
+                if lo is None or rv is None:
+                    continue
+                E16 = leaf[(g, r)].get("E16_%d" % r)
+                if E16 is None:
+                    E16 = fresh("add", "p%d.leaf.row%d" % (pid, r),
+                                "E16_%d" % r, (lo.out, rv.out),
+                                {"elem": "s16", "g": g})
+                    leaf[(g, r)]["E16_%d" % r] = E16
+                E16rr = fresh("permute", "p%d.leaf.row%d" % (pid, r),
+                              "E16rr_%d" % r, (E16.out,),
+                              {"kind": "rev16", "g": g})
+                EE16 = fresh("add", "p%d.leaf.row%d" % (pid, r),
+                             "EE16_%d" % r, (E16.out, E16rr.out),
+                             {"elem": "s16", "g": g})
+                EEr8 = fresh("permute", "p%d.leaf.row%d" % (pid, r),
+                             "EEr16_%d" % r, (EE16.out,),
+                             {"kind": "tbl", "idx": "rev8", "g": g})
+                EEO16 = fresh("sub", "p%d.leaf.row%d" % (pid, r),
+                              "EEO16_%d" % r, (EE16.out, EEr8.out),
+                              {"elem": "s16", "lane_owner": "partial",
+                               "g": g})
+                eeo16[r] = EEO16.out
+                leaf[(g, r)]["E16rr_%d" % r] = E16rr
+                leaf[(g, r)]["EE16_%d" % r] = EE16
+                leaf[(g, r)]["EEr16_%d" % r] = EEr8
+                leaf[(g, r)]["EEO16_%d" % r] = EEO16
+            pk4 = fresh("permute", "p%d.k4.slice" % pid, "pk4",
+                        (eeo16[rows[0]], eeo16[rows[1]]),
+                        {"kind": "tbl2", "idx": "i0",
+                         "lane_owner": "output", "g": g})
+            qk4 = fresh("permute", "p%d.k4.slice" % pid, "qk4",
+                        (eeo16[rows[2]], eeo16[rows[3]]),
+                        {"kind": "tbl2", "idx": "i0",
+                         "lane_owner": "output", "g": g})
+            xk4 = fresh("permute", "p%d.k4.slice" % pid, "Xk4",
+                        (pk4.out, qk4.out),
+                        {"kind": "tbl2", "idx": "ilo",
+                         "lane_owner": "output", "g": g})
+            for k in K4_K:
+                row_muls = [muls.get((g, k, r)) for r in rows]
+                if not all(row_muls):
+                    continue
+                anchor = row_muls[0]
+                ops_new = []
+                if (pid, g) not in group_inserted:
+                    for r in rows:
+                        for nm in ("E16_%d" % r, "E16rr_%d" % r,
+                                   "EE16_%d" % r, "EEr16_%d" % r,
+                                   "EEO16_%d" % r):
+                            o = leaf[(g, r)][nm]
+                            if o.op_id in created:
+                                ops_new.append(o)
+                    ops_new.extend([pk4, qk4, xk4])
+                    group_inserted.add((pid, g))
+                t = fresh("dot_segment", "p%d.k4.k%d" % (pid, k),
+                          "k4t_%d" % k, (xk4.out,),
+                          {"acc_bits": 64, "lane_owner": "output",
+                           "slice": 0, "nconst": 1,
+                           "terms": tuple("G[%d][%d]" % (k, j)
+                                          for j in range(4)),
+                           "const_src": "K4S[%d]" % (k // 8), "g": g})
+                rnd = fresh("round_shift", "p%d.k4.k%d" % (pid, k),
+                            "k4rnd_%d" % k, (t.out,),
+                            {"shift": 4 if pid == 1 else 11,
+                             "epoch": pid, "mode": "half-up", "g": g})
+                nar = fresh("narrow", "p%d.k4.k%d" % (pid, k),
+                            "k4nar_%d" % k, (rnd.out,),
+                            {"from": "s64", "to": "s16",
+                             "kind": "uzp+rshrnb+uzp", "g": g})
+                st = fresh("store", "p%d.k4.k%d" % (pid, k), "",
+                           (nar.out,),
+                           {"base": "dst", "index": "k*32+i",
+                            "lanes": tuple((pid, k, r) for r in rows),
+                            "topology": "contiguous",
+                            "row_group": 4, "base_off": 0, "g": g})
+                ops_new.extend([t, rnd, nar, st])
+                insert_at[anchor.op_id] = ops_new
+                for m in row_muls:
+                    remove.add(m.op_id)
+                    rnd_o = st_o = None
+                    for o in ops:
+                        if o.kind == "round_shift" and o.inputs \
+                                and o.inputs[0] == m.out \
+                                and o.tile_id.startswith("p%d." % pid) \
+                                and o.attrs.get("g", 0) == g:
+                            rnd_o = o
+                        if o.kind == "store" and o.inputs and rnd_o \
+                                and o.tile_id.startswith("p%d." % pid) \
+                                and o.inputs[0] == rnd_o.out:
+                            st_o = o
+                    if rnd_o:
+                        remove.add(rnd_o.op_id)
+                    if st_o:
+                        remove.add(st_o.op_id)
+
+    result = []
+    for op in ops:
+        if op.op_id in insert_at:
+            result.extend(insert_at[op.op_id])
+        if op.op_id in remove:
+            continue
+        result.append(op)
+    return result
+
+
+REWRITES["legacy_k4"] = rewrite_legacy_k4
 
 
 def apply_rewrites(ops: List[Op], names: List[str]) -> List[Op]:

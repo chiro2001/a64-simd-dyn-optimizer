@@ -66,6 +66,15 @@ def main():
                 if o.kind == "mul_reduce"
                 and o.tile_id.startswith("p2.k2.k")]
     assert not left_mul, "pass2 k2 mul_reduce should be rewritten"
+
+    # Op-level rewrite: legacy_k4 (both passes k4 mul -> EEO16 sdot).
+    ops7 = apply_rewrites(ops, ["legacy_k4"])
+    r7 = provenance_report(plan, ops7)
+    assert r7["ok"], r7["issues"]
+    left_k4 = [o for o in ops7
+               if o.kind == "mul_reduce"
+               and ".k4.k" in o.tile_id]
+    assert not left_k4, "k4 mul_reduce should be rewritten"
     print("OpIR slice OK: %d ops, coverage %.2f, negatives detected"
           % (r["op_count"], r["coverage"]))
     return 0
