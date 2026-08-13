@@ -52,31 +52,31 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
    搜索按合同过滤；
 4. 行分组轴：4 行组 → 8 行组，配合窄化合并自然出现。
 
-## 5. IR 级差距量化（2026-08-13 晚，内部 731 vs 当前最优 1015/928）
+## 5. IR 级差距量化（2026-08-13 晚，内部 731 vs 当前最优 999/908）
 
 同口径（QEMU VL=256、true-dynamic、单次调用 stride=32）三方对比：
 
 | 指标 | 内部 | upstream-exact best | legacy best |
 | --- | ---: | ---: | ---: |
-| 配置 | — | quarter/p1k4/odd-quarter/p2k1/nm1 | 同左 + legacy/p2k2 |
-| total | 983 | 1283 | 1238 |
-| 向量 raw | 843 | 1135 | 1063 |
+| 配置 | — | quarter/p1k4/odd-quarter/p2k1/nm1/sm16 | 同左 + legacy/p2k2/sm16 |
+| total | 983 | 1259 | 1208 |
+| 向量 raw | 843 | 1119 | 1043 |
 | movprfx | 112 | 120 | 135 |
-| **fused_adj** | **731** | **1015** | **928** |
+| **fused_adj** | **731** | **999** | **908** |
 
 指令类别直方图（向量 raw 计数，逐 mnemonic 合计）：
 
-| 类别（mn 明细） | 内部 | upstream best | legacy best |
+| 类别（mn 明细） | 内部 | upstream best(999) | legacy best(908) |
 | --- | ---: | ---: | ---: |
 | dot：sdot | 176 | 192 | 208 |
 | 载入：ld1h/ld1d/ld1w/ldp/ldr/ldur | 122 | 121 | 116 |
-| 存储：st1d/stp/str/stur | 36 | 64 | 58 |
+| 存储：st1d/stp/str/stur | 36 | 48 | 38 |
 | 窄化：sqrshrnb / rshrnb+rshrn / +xtn | 64 | 80 | 88 |
-| 置换/搬移：tbl+tbx / mov / rev 系 / zip+uzp1 | 0+0 / 1 / 32 / 148 | 81 / 71 / 24 / 104 | 94 / 54 / 24 / 120 |
+| 置换/搬移：tbl+tbx / mov / rev 系 / zip+uzp1 | 0+0 / 1 / 32 / 148 | 81 / 71 / 24 / 96 | 94 / 54 / 24 / 116 |
 | 算术：add / sub / mul / addp / saddl 系 / shl | 40/32/16/8/16/0 | 32/48/88/64/32/4 | 32/48/24/16/32/4 |
 | movprfx | 112 | 120 | 135 |
 
-**差距分解（legacy best 928 vs 内部 731，-197）**：
+**差距分解（legacy best 908 vs 内部 731，-177）**：
 
 1. **置换/搬移链 ~-80**：内部常量预排列，运行期只保留 zip1/zip2+uzp1+rev
    （148+32），无 tbl/tbx/mov；legacy 仍有 tbl 62 + tbx 32 + mov 54
@@ -85,18 +85,24 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
    无 xtn/rshrn）；legacy 对 k=0/4/8/12 仍保留 s32 NEON 段（mul 24 +
    addp 16 + saddl 32 + sqrshrn 16 + xtn 16）。方向：k=0/4/8/12 也 s16
    sdot 化（legacy 合同内），或常量对称性复用；
-3. **存储 ~-20**：内部 st1d 32 条；legacy str 34 + stp 24。方向：8-lane
-   连续输出合并（st1h×2 或 st1d 视角）；
+3. **存储 ~-2**：内部 st1d 32 条；legacy 经 store_merge16 已到 str 18 +
+   stp 20 = 38（sm16 前 58）。剩余为 4-lane NEON 偶数路径存储；
 4. **sdot 密度 +32**：内部 176，legacy 208（奇数路径 176 + 偶数 s16 段
    32）。方向：偶数路径与奇数路径共享已打包的 QEOW/QO 布局，消除重复
    打包；
 5. **movprfx +23**：内部 112，legacy 135。方向：sdot 累加形式
    （svdot 就地累加 vs movprfx+dot 两指令）的布局选择。
 
-结论：剩余 ~197 中，约 **80 属常量预排列/打包方案**（纯工具轴）、约
+结论：剩余 ~177 中，约 **80 属常量预排列/打包方案**（纯工具轴）、约
 **40 属偶数路径 s16 化收敛**（legacy 合同内）、约 **60 属窄化/存储合并
 与 sdot 密度**。按工具优先原则，下一步实现"运行期 tbl 折叠进常量表"
 （预计 -40~-60）与"偶数路径全 s16 sdot 化"（预计 -30~-40）。
+
+> 2026-08-13 晚 store_merge16 轴：利用 rshrnb 输出偶 lane 布局 + 单次
+> uzp1，把每 k 的 2×(8-lane 窄化+存储) 合并为 1×16-lane 存储。
+> upstream 1015→999（200k 差分 0 分歧）、legacy 928→908（分歧率保持
+> 0.045078%，TestBench 6/6）。best_sve2.* 与 best.json 已按
+> upstream+sm16（999）重新固化。
 
 > 2026-08-13 固化产物刷新：`kernels/dct16/candidates/best_sve2.cpp/.S/.o`
 > 此前残留旧版（trace 出 fused 1269，与 best.json 的 1015 不符）；已用

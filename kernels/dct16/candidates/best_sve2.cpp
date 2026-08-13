@@ -647,6 +647,7 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
     int16x4_t EO16_g3_0, EO16_g3_1, EO16_g3_2, EO16_g3_3;
 
 
+
         {
             const int16x8_t s0_lo = vld1q_s16(src + 0 * line);
             const int16x8_t s0_hi = rev16(vld1q_s16(src + 0 * line + 8));
@@ -1126,17 +1127,13 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
                 const svint32_t w01 = svuzp1_s32(
                     svreinterpret_s32_s64(d_0_0),
                     svreinterpret_s32_s64(d_1_0));
-                svint16_t n = svrshrnb_n_s32(w01, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p8q, dst + (kb + 0) * line + 0, n);
-            }
-            {
                 const svint32_t w23 = svuzp1_s32(
                     svreinterpret_s32_s64(d_2_0),
                     svreinterpret_s32_s64(d_3_0));
-                svint16_t n2 = svrshrnb_n_s32(w23, shift);
-                n2 = svuzp1_s16(n2, n2);
-                svst1_s16(p8q, dst + (kb + 0) * line + 8, n2);
+                const svint16_t nb = svrshrnb_n_s32(w01, shift);
+                const svint16_t nt = svrshrnb_n_s32(w23, shift);
+                const svint16_t n16 = svuzp1_s16(nb, nt);
+                svst1_s16(p16q, dst + (kb + 0) * line + 0, n16);
             }
     }
 }

@@ -322,7 +322,7 @@ dynopt_dct16_sve2_shared:
 	addp	v31.4s, v31.4s, v30.4s
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x2], 128
-	cmp	x5, x2
+	cmp	x2, x5
 	bne	.L3
 	addp	v31.4s, v25.4s, v6.4s
 	add	x2, x4, :lo12:.LANCHOR0
@@ -429,7 +429,7 @@ dynopt_dct16_sve2_shared:
 	addp	v31.4s, v31.4s, v30.4s
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x2], 128
-	cmp	x5, x2
+	cmp	x2, x5
 	bne	.L4
 	addp	v31.4s, v16.4s, v4.4s
 	add	x2, x4, :lo12:.LANCHOR0
@@ -645,25 +645,24 @@ dynopt_dct16_sve2_shared:
 	cmp	x2, x3
 	bne	.L6
 	addp	v31.4s, v25.4s, v0.4s
-	add	x3, x4, :lo12:.LANCHOR0
+	add	x2, x4, :lo12:.LANCHOR0
 	ptrue	p7.b, all
-	add	x5, x1, 32
-	add	x4, x3, 64
-	add	x1, x1, 48
-	add	x3, x3, 576
-	ldr	q30, [x3, 656]
+	add	x3, x2, 64
+	add	x1, x1, 32
+	add	x2, x2, 576
 	mov	x0, 0
+	ldr	q30, [x2, 656]
 	shl	v31.4s, v31.4s, 6
 	rshrn	v31.4h, v31.4s, 10
-	str	d31, [x1, -24]
+	str	d31, [x1, -8]
 	mul	v31.4s, v4.4s, v30.4s
 	mul	v30.4s, v3.4s, v30.4s
 	addp	v31.4s, v31.4s, v30.4s
-	ldr	q30, [x3, 688]
+	ldr	q30, [x2, 688]
 	rshrn	v31.4h, v31.4s, 10
 	mul	v3.4s, v3.4s, v30.4s
-	str	d31, [x1, 104]
-	ldr	q31, [x3, 672]
+	str	d31, [x1, 120]
+	ldr	q31, [x2, 672]
 	mul	v25.4s, v25.4s, v31.4s
 	mul	v0.4s, v0.4s, v31.4s
 	mul	v31.4s, v4.4s, v30.4s
@@ -672,8 +671,8 @@ dynopt_dct16_sve2_shared:
 	addp	v31.4s, v31.4s, v3.4s
 	rshrn	v25.4h, v25.4s, 10
 	rshrn	v31.4h, v31.4s, 10
-	str	d25, [x1, 232]
-	str	d31, [x1, 360]
+	str	d25, [x1, 248]
+	str	d31, [x1, 376]
 	mov	z31.d, z18.d
 	tbl	z26.h, {z30.h - z31.h}, z28.h
 	mov	z30.d, z7.d
@@ -686,31 +685,28 @@ dynopt_dct16_sve2_shared:
 	movi	d27, #0
 	.p2align 5,,15
 .L7:
-	lsl	x2, x0, 1
-	ld1h	z28.h, p7/z, [x4, x0, lsl 1]
-	ld1h	z29.h, p7/z, [x3, x0, lsl 1]
-	movprfx	z30, z27
-	sdot	z30.d, z23.h, z28.h
+	ld1h	z28.h, p7/z, [x3, x0, lsl 1]
+	ld1h	z29.h, p7/z, [x2, x0, lsl 1]
+	movprfx	z31, z27
+	sdot	z31.d, z23.h, z28.h
 	movprfx	z25, z27
 	sdot	z25.d, z21.h, z28.h
-	sdot	z30.d, z24.h, z29.h
+	movprfx	z30, z27
+	sdot	z30.d, z19.h, z28.h
+	sdot	z31.d, z24.h, z29.h
 	sdot	z25.d, z22.h, z29.h
-	uzp1	z30.s, z30.s, z25.s
-	rshrnb	z30.h, z30.s, #10
-	uzp1	z30.h, z30.h, z30.h
-	str	q30, [x5, x2]
-	movprfx	z31, z27
-	sdot	z31.d, z19.h, z28.h
+	sdot	z30.d, z20.h, z29.h
 	movprfx	z26, z27
 	sdot	z26.d, z17.h, z28.h
-	sdot	z31.d, z20.h, z29.h
+	uzp1	z31.s, z31.s, z25.s
 	movprfx	z28, z26
 	sdot	z28.d, z18.h, z29.h
-	add	x0, x0, 32
-	uzp1	z31.s, z31.s, z28.s
 	rshrnb	z31.h, z31.s, #10
-	uzp1	z31.h, z31.h, z31.h
-	str	q31, [x1, x2]
+	uzp1	z30.s, z30.s, z28.s
+	rshrnb	z30.h, z30.s, #10
+	uzp1	z31.h, z31.h, z30.h
+	st1h	z31.h, p7, [x1, x0, lsl 1]
+	add	x0, x0, 32
 	cmp	x0, 256
 	bne	.L7
 	add	sp, sp, 512

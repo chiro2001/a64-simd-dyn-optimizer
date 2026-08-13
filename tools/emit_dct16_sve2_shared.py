@@ -408,8 +408,27 @@ def pack_group(g):
         }""" % (base, base + 1, base + 2, base + 3, g, g)
 
 
-def legacy_even_dot_block(pack, k):
+def legacy_even_dot_block(pack, k, store_merge16=0):
     """One even-k SVE2 s16 dot+narrow block (legacy semantics)."""
+    if store_merge16:
+        return (
+            "        {\n"
+            "            const svint16_t cq = svld1_s16(p16q, CQ_LO[%d]);\n"
+            "            svint64_t de0 = svdot_s64(zaccq, %s0, cq);\n"
+            "            svint64_t de1 = svdot_s64(zaccq, %s1, cq);\n"
+            "            svint64_t de2 = svdot_s64(zaccq, %s2, cq);\n"
+            "            svint64_t de3 = svdot_s64(zaccq, %s3, cq);\n"
+            "            const svint32_t w01 = svuzp1_s32(\n"
+            "                svreinterpret_s32_s64(de0),\n"
+            "                svreinterpret_s32_s64(de1));\n"
+            "            const svint32_t w23 = svuzp1_s32(\n"
+            "                svreinterpret_s32_s64(de2),\n"
+            "                svreinterpret_s32_s64(de3));\n"
+            "            const svint16_t nb = svqrshrnb_n_s32(w01, shift);\n"
+            "            const svint16_t nt = svqrshrnb_n_s32(w23, shift);\n"
+            "            const svint16_t n16 = svuzp1_s16(nb, nt);\n"
+            "            svst1_s16(p16q, dst + %d * line + 0, n16);\n"
+            "        }\n" % (k, pack, pack, pack, pack, k))
     return (
         "        {\n"
         "            const svint16_t cq = svld1_s16(p16q, CQ_LO[%d]);\n"
@@ -437,7 +456,7 @@ def legacy_even_dot_block(pack, k):
 
 
 def pass2_odd_quarter_interleaved(k_tile=1, narrow_merge=1, legacy=0,
-                                  legacy_even_full=0):
+                                  legacy_even_full=0, store_merge16=0):
     """Interleaved pass2: row-pairs -> named EO/EEE/EEO -> per-group even
     dots -> packs -> odd k-loop. No EO/EEE/EEO arrays, no stack spills."""
     parts = []
@@ -560,33 +579,50 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
                 "QO1_%d, cq_hiq%d);\n"
                 % (g, t, g, t, g, t, g, t, g, t)
                 for g in range(4))))
-        dot_blocks.append(
-            "            {\n"
-            "                const svint32_t w01 = svuzp1_s32(\n"
-            "                    svreinterpret_s32_s64(d_0_%d),\n"
-            "                    svreinterpret_s32_s64(d_1_%d));\n"
-            "                svint16_t n = svrshrnb_n_s32(w01, shift);\n"
-            "                n = svuzp1_s16(n, n);\n"
-            "                svst1_s16(p8q, dst + (%s) * line + 0, n);\n"
-            "            }\n"
-            "            {\n"
-            "                const svint32_t w23 = svuzp1_s32(\n"
-            "                    svreinterpret_s32_s64(d_2_%d),\n"
-            "                    svreinterpret_s32_s64(d_3_%d));\n"
-            "                svint16_t n2 = svrshrnb_n_s32(w23, shift);\n"
-            "                n2 = svuzp1_s16(n2, n2);\n"
-            "                svst1_s16(p8q, dst + (%s) * line + 8, n2);\n"
-            "            }"
-            % (t, t, kexpr, t, t, kexpr))
+        if store_merge16:
+            dot_blocks.append(
+                "            {\n"
+                "                const svint32_t w01 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_0_%d),\n"
+                "                    svreinterpret_s32_s64(d_1_%d));\n"
+                "                const svint32_t w23 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_2_%d),\n"
+                "                    svreinterpret_s32_s64(d_3_%d));\n"
+                "                const svint16_t nb = svrshrnb_n_s32(w01, shift);\n"
+                "                const svint16_t nt = svrshrnb_n_s32(w23, shift);\n"
+                "                const svint16_t n16 = svuzp1_s16(nb, nt);\n"
+                "                svst1_s16(p16q, dst + (%s) * line + 0, n16);\n"
+                "            }"
+                % (t, t, t, t, kexpr))
+        else:
+            dot_blocks.append(
+                "            {\n"
+                "                const svint32_t w01 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_0_%d),\n"
+                "                    svreinterpret_s32_s64(d_1_%d));\n"
+                "                svint16_t n = svrshrnb_n_s32(w01, shift);\n"
+                "                n = svuzp1_s16(n, n);\n"
+                "                svst1_s16(p8q, dst + (%s) * line + 0, n);\n"
+                "            }\n"
+                "            {\n"
+                "                const svint32_t w23 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_2_%d),\n"
+                "                    svreinterpret_s32_s64(d_3_%d));\n"
+                "                svint16_t n2 = svrshrnb_n_s32(w23, shift);\n"
+                "                n2 = svuzp1_s16(n2, n2);\n"
+                "                svst1_s16(p8q, dst + (%s) * line + 8, n2);\n"
+                "            }"
+                % (t, t, kexpr, t, t, kexpr))
     parts.append("    for (int kb = 1; kb < 16; kb += %d)\n"
                  "    {\n%s\n    }\n" % (2 * k_tile, "\n".join(dot_blocks)))
     if legacy:
         if legacy_even_full:
             parts.append("\n".join(
-                legacy_even_dot_block("QEOW", k)
+                legacy_even_dot_block("QEOW", k, store_merge16)
                 for k in (2, 6, 10, 14)))
             parts.append("\n".join(
-                legacy_even_dot_block("QEEW", k) for k in (0, 4, 8, 12)))
+                legacy_even_dot_block("QEEW", k, store_merge16)
+                for k in (0, 4, 8, 12)))
             return "\n".join(parts) + "}\n"
         even_dots = []
         for t in range(k_tile):
@@ -617,6 +653,32 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
                 "                }\n"
                 "            }\n"
                 % (t, kexpr, t, t, t, t, kexpr, kexpr))
+        if store_merge16:
+            # replace the two 8-lane narrow/store blocks with one 16-lane
+            # store (rshrnb even-lane layout + single uzp1).
+            even_dots = []
+            for t in range(k_tile):
+                kexpr = "kb + %d" % (4 * t)
+                even_dots.append(
+                    "            {\n"
+                    "                const svint16_t cq_e%d = "
+                    "svld1_s16(p16q, CQ_LO[%s]);\n"
+                    "                svint64_t de0 = svdot_s64(zaccq, QEOW0, cq_e%d);\n"
+                    "                svint64_t de1 = svdot_s64(zaccq, QEOW1, cq_e%d);\n"
+                    "                svint64_t de2 = svdot_s64(zaccq, QEOW2, cq_e%d);\n"
+                    "                svint64_t de3 = svdot_s64(zaccq, QEOW3, cq_e%d);\n"
+                    "                const svint32_t w01 = svuzp1_s32(\n"
+                    "                    svreinterpret_s32_s64(de0),\n"
+                    "                    svreinterpret_s32_s64(de1));\n"
+                    "                const svint32_t w23 = svuzp1_s32(\n"
+                    "                    svreinterpret_s32_s64(de2),\n"
+                    "                    svreinterpret_s32_s64(de3));\n"
+                    "                const svint16_t nb = svqrshrnb_n_s32(w01, shift);\n"
+                    "                const svint16_t nt = svqrshrnb_n_s32(w23, shift);\n"
+                    "                const svint16_t n16 = svuzp1_s16(nb, nt);\n"
+                    "                svst1_s16(p16q, dst + (%s) * line + 0, n16);\n"
+                    "            }\n"
+                    % (t, kexpr, t, t, t, t, kexpr))
         parts.append("    for (int kb = 2; kb < 16; kb += %d)\n"
                      "    {\n%s\n    }\n"
                      % (4 * k_tile, "\n".join(even_dots)))
@@ -624,7 +686,7 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 
 
 def pass2_cpp(pass2_layout="upstream", k_tile=1, narrow_merge=0, legacy=0,
-              legacy_even_full=0):
+              legacy_even_full=0, store_merge16=0):
     """pass2 body. 'upstream' matches dct16_sve exactly (E s32 vaddl,
     O s16 bridge SDOT, even path vmulq/vpaddq). 'odd-quarter' keeps the
     even-k/E/EO/EEE/EEO NEON path but replaces the odd-k per-row bridge
@@ -762,7 +824,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
         if narrow_merge:
             return pass2_odd_quarter_interleaved(
                 k_tile=k_tile, legacy=legacy,
-                legacy_even_full=legacy_even_full)
+                legacy_even_full=legacy_even_full,
+                store_merge16=store_merge16)
         return prelude + pass2_odd_quarter_cpp(k_tile=k_tile,
                                                narrow_merge=0)
     raise ValueError("unknown pass2_layout %r" % pass2_layout)
@@ -935,7 +998,8 @@ def group_block(g):
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          export_pass2=False, pass1_layout="quarter",
          pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1,
-         narrow_merge=0, legacy_semantics=0, legacy_even_full=0):
+         narrow_merge=0, legacy_semantics=0, legacy_even_full=0,
+         store_merge16=0):
     if not legacy_semantics:
         legacy_even_full = 0
     rows = const_rows_cpp()
@@ -948,7 +1012,8 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
                                    narrow_merge=narrow_merge)
     pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile,
                           narrow_merge=narrow_merge, legacy=legacy_semantics,
-                          legacy_even_full=legacy_even_full)
+                          legacy_even_full=legacy_even_full,
+                          store_merge16=store_merge16)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
         pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"

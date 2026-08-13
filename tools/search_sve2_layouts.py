@@ -94,7 +94,8 @@ def make_emitter(kernel):
                         pass2_k_tile=combo.get("pass2_k_tile", 1),
                         narrow_merge=combo.get("narrow_merge", 0),
                         legacy_semantics=combo.get("legacy_semantics", 0),
-                        legacy_even_full=combo.get("legacy_even_full", 0))
+                        legacy_even_full=combo.get("legacy_even_full", 0),
+                        store_merge16=combo.get("store_merge16", 0))
         return emit_fn
     if kernel == "dct8":
         from emit_dct8_sve2_shared import emit

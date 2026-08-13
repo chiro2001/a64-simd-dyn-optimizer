@@ -568,3 +568,18 @@ TestBench 裁决。
 域频繁回绕，只有反称行（k=2/6/10/14，EO 差值小）可 s16 sdot 化；内部
 0.045% 分歧特征佐证其同样如此。搜索代理容差据此从 <=5120 收紧到
 <=3072（0.06%），full-even 组合保留在结果中但被拒绝（4620 mismatches）。
+
+### store_merge16 轴（2026-08-13 晚，首个落地净收益）
+
+探针确认 `rshrnb` 输出为偶 lane 布局；`uzp1(rshrnb(w01), rshrnb(w23))`
+一次拼出 16 个连续输出。每 k 的
+`[2×uzp1_s32 + 2×rshrnb + 2×uzp1_s16 + 2×st1]` 变为
+`[2×uzp1_s32 + 2×rshrnb + 1×uzp1_s16 + 1×st1(p16q)]`。
+
+| 合同 | 之前 fused_adj | 之后 | 验证 |
+| --- | ---: | ---: | ---: |
+| upstream-exact | 1015 | **999** | 200k 差分 0 分歧 |
+| legacy-internal-exact | 928 | **908** | 分歧率 0.045078% 不变，TestBench 6/6 |
+
+存储指令从 legacy 58 → 38、uzp1 112 → 100。`best_sve2.cpp/.S/.o` 与
+best.json 已按 upstream+sm16（999）重新固化。
