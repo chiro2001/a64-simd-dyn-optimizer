@@ -148,6 +148,18 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   暂由 rewrite 证书承载，未逐块反汇编成 op 级 IR）；op 级原子后端是
   P1 的后续增量，不作为当前 Go 判据。
 
+### P2 增量：rewrite 搜索自包含测量 + 分层漏斗（2026-08-13）
+
+- `tools/search_plans.py` 升级：不再对齐 P0 历史结果，而是对每个
+  rewrite 计划**端到端实测**——`verify_layout`（语义层）→
+  canonical-key 去重（布局层）→ 源码哈希去重（lowering 层）→
+  编译 + 20k 上游差分 + true-dynamic trace（测量层）；
+- 实测结果：18 个语义计划 → 18 个 canonical 计划 → 12 个唯一源码 →
+  12 个全测候选；best = `assign+segment+narrow4+derived+k2` =
+  **3962 fused_uop**（零 scatter、20k 差分 0），与 P0/P1 完全一致；
+- 该搜索路径全程不含 `layout` 预设字符串，分层漏斗可直接用于评估
+  新 rewrite 加入后的候选数压缩与耗时预算。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。

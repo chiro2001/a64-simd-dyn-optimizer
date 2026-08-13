@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Rewrite-driven DCT32 plan search (round-0012 P1, increment 4).
+"""Rewrite-driven DCT32 plan search (round-0012 P1/P2).
 
 Enumerates valid subsets of the atomic rewrites from the canonical spec
 plan, lowers each to source through emit_grouped (NO `layout` preset, no
-composite-template selector), and checks that the resulting candidate set
-reproduces the P0 axis search exactly -- including the v3.1 best of 3962
-fused_uop (upstream-exact, zero scatter).
+composite-template selector), and MEASURES each unique candidate
+end-to-end: compile -> 20k upstream differential -> true-dynamic trace.
+The v3.1 best must reappear at 3962 fused_uop (upstream-exact, zero
+scatter).
 
-This is the "search from rewrites" version of the E1 blind-rediscovery
-acceptance: the search space is defined by rewrites, not by manifest
-layout strings.
+Layers (P2): semantic (verify_layout) -> layout (canonical-key dedup) ->
+lowering (source-hash dedup) -> measurement (differential + trace).
 """
 
 import hashlib
@@ -17,11 +17,15 @@ import json
 import os
 import subprocess
 import sys
+from collections import defaultdict
+from itertools import combinations
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+from gen_verify import generate as gen_verify  # noqa: E402
+from kernel_manifest import load_manifest, repo_path  # noqa: E402
 from layout_ir import lower, verify_layout  # noqa: E402
 from rewrites_dct32 import (  # noqa: E402
     assign_output_lanes,
@@ -31,6 +35,7 @@ from rewrites_dct32 import (  # noqa: E402
     k2_pass1_slice,
     segment_dot,
 )
+from search_sve2_layouts import QEMU, run, symbol_range, true_dynamic  # noqa
 
 
 def apply(plan, rewrites):
@@ -50,12 +55,9 @@ def all_plans():
     )
     plans = []
     base = dct32_spec_plan()
-    # without assign: no-op and narrow-only (source-identical for row-reduce)
     plans.append(("spec", base, ()))
     plans.append(("spec+narrow4", apply(base, (optional[1][1],)),
                   (optional[1][1],)))
-    # with assign: all 16 subsets of the four optional rewrites
-    from itertools import combinations
     for mask in range(1 << len(optional)):
         chosen = [f for i, (_, f) in enumerate(optional) if mask & (1 << i)]
         rewrites = list(with_assign) + chosen
@@ -65,83 +67,128 @@ def all_plans():
     return plans
 
 
-def p0_index(outdir):
-    """sha256(<tag>.cpp) -> (tag, counts) from the P0 layout search."""
-    idx = {}
-    results = json.load(open(os.path.join(outdir, "results.json")))
-    for r in results:
-        path = os.path.join(outdir, r["tag"] + ".cpp")
-        if not os.path.exists(path):
-            continue
-        h = hashlib.sha256(open(path, "rb").read()).hexdigest()
-        idx[h] = (r["tag"], r.get("counts", {}))
-    return idx
+def measure(manifest, verify_src, src, workdir, tag):
+    """Compile -> 20k differential -> true-dynamic counts. Returns
+    (passed, mismatches, counts) or (False, reason, None)."""
+    obj = os.path.join(workdir, tag + ".o")
+    c = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+             "-march=armv8.2-a+sve2", "-c", src, "-o", obj])
+    if c.returncode != 0:
+        return False, "compile failed", None
+    verify = os.path.join(workdir, tag + "-verify")
+    v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+             "-march=armv8.2-a+sve2", verify_src, obj,
+             "-Wl,--start-group",
+             repo_path(manifest, manifest["reference"]["lib"]),
+             "-Wl,--end-group", "-lpthread", "-ldl", "-o", verify])
+    if v.returncode != 0:
+        return False, "verify link failed", None
+    r = run(QEMU + [verify, "20000"])
+    if "mismatches=" not in r.stdout:
+        return False, "verify produced no mismatch line", None
+    mism = 0
+    try:
+        mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
+    except (ValueError, IndexError):
+        return False, "unparseable mismatch line", None
+    if r.returncode != 0 or mism != 0:
+        return False, "mismatches=%d" % mism, None
+
+    driver = os.path.join(workdir, tag + "-trace-driver")
+    d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+             "-std=c++11",
+             repo_path(manifest,
+                       manifest["candidate"]["trace_driver_src"]),
+             obj, "-o", driver])
+    if d.returncode != 0:
+        return False, "trace driver link failed", None
+    start_syms = manifest["candidate"].get(
+        "range_start", manifest["candidate"]["symbol"])
+    if isinstance(start_syms, str):
+        start_syms = [start_syms]
+    rng = None
+    for start_sym in start_syms:
+        rng = symbol_range(driver, start_sym)
+        if rng:
+            break
+    if rng is None:
+        return False, "no trace range", None
+    counts = true_dynamic(driver, rng[0], rng[1],
+                          os.path.join(workdir, tag + "-trace.log"))
+    if counts is None:
+        return False, "trace failed", None
+    return True, mism, counts
 
 
 def main():
-    outdir = os.path.join(ROOT,
-                          "experiments/m30-dct32-search/layout-search")
-    if not os.path.exists(os.path.join(outdir, "results.json")):
-        print("missing P0 results; run search_sve2_layouts.py --kernel dct32 "
-              "first", file=sys.stderr)
-        return 2
-    index = p0_index(outdir)
-    cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-          "-march=armv8.2-a+sve2", "-c"]
+    manifest = load_manifest("dct32")
+    workdir = "/tmp/dct32-plan-search"
+    os.makedirs(workdir, exist_ok=True)
+    verify_src = os.path.join(workdir, "verify_generated.cpp")
+    with open(verify_src, "w") as f:
+        f.write(gen_verify(manifest))
 
-    rows = []
-    seen_hash = set()
-    compiled = set()
-    missing = []
+    # layer 1: semantic -- every rewrite plan must pass verify_layout
     plans = all_plans()
+    semantic = []
     for tag, plan, rewrites in plans:
         ok, why = verify_layout(plan)
         if not ok:
-            missing.append((tag, "verify_layout: " + why))
-            continue
+            print("semantic FAIL %s: %s" % (tag, why))
+            return 1
+        semantic.append((tag, plan, rewrites))
+
+    # layer 2: layout -- dedup by canonical plan key before codegen
+    by_key = {}
+    for tag, plan, rewrites in semantic:
+        by_key.setdefault(plan.canonical_key(), (tag, plan, rewrites))
+    layout_unique = list(by_key.values())
+
+    # layer 3: lowering -- dedup by generated source hash
+    by_src = {}
+    for tag, plan, rewrites in layout_unique:
         src = lower(plan)
         h = hashlib.sha256(src.encode()).hexdigest()
-        if h not in compiled:
-            compiled.add(h)
-            tmp = "/tmp/plan-%s.cpp" % tag.replace("+", "_")
-            with open(tmp, "w") as f:
-                f.write(src)
-            p = subprocess.run(cc + [tmp, "-o", tmp[:-4] + ".o"],
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, text=True)
-            if p.returncode != 0:
-                missing.append((tag, "compile failed:\n" + p.stdout))
-                continue
-        ent = index.get(h)
-        if ent is None:
-            missing.append((tag, "no matching P0 candidate (source hash)"))
+        if h not in by_src:
+            by_src[h] = (tag, plan, src)
+
+    # layer 4: measurement -- compile/verify/trace each unique source
+    rows = []
+    failures = []
+    for i, (h, (tag, plan, src)) in enumerate(by_src.items()):
+        src_path = os.path.join(workdir, "plan-%02d-%s.cpp" % (i, tag))
+        with open(src_path, "w") as f:
+            f.write(src)
+        passed, why, counts = measure(manifest, verify_src, src_path,
+                                      workdir, "plan-%02d" % i)
+        if not passed:
+            failures.append((tag, why))
             continue
-        if h in seen_hash:
-            continue
-        seen_hash.add(h)
-        rows.append((ent[0], ent[1].get("vector_fused_uop"),
-                     ent[1].get("scatter_gather", 0),
-                     ent[1].get("stack_vector", 0), h[:12], tag))
+        rows.append((tag, counts.get("vector_fused_uop"),
+                     counts.get("scatter_gather", 0),
+                     counts.get("stack_vector", 0), h[:12]))
+
+    if failures:
+        print("measurement failures:")
+        for tag, why in failures:
+            print("  %-36s %s" % (tag, why))
+        return 1
 
     rows.sort(key=lambda r: r[1])
-    print("%-74s %7s %4s %4s" %
-          ("p0 tag", "fused", "sg", "stk"))
-    for tag, fu, sg, stk, h, plan_tag in rows:
-        print("%-74s %7s %4s %4s  %s" % (tag, fu, sg, stk, h))
-    if missing:
-        print("\nmissing/failed plans:")
-        for tag, why in missing:
-            print("  %-28s %s" % (tag, why))
-        return 1
+    print("%-78s %7s %4s %4s" % ("plan tag", "fused", "sg", "stk"))
+    for tag, fu, sg, stk, h in rows:
+        print("%-78s %7s %4s %4s  %s" % (tag, fu, sg, stk, h))
 
     best = rows[0]
     if best[1] != 3962 or best[2] != 0:
         print("FAIL: rewrite search best must be 3962 fused_uop, zero "
               "scatter; got %r" % (best,))
         return 1
-    print("\nrewrite-driven search: %d plans -> %d unique candidates, "
-          "best=%s (fused_uop %s)"
-          % (len(plans), len(rows), best[0], best[1]))
+    print("\nlayers: semantic=%d plans -> layout=%d canonical plans -> "
+          "lowering=%d unique sources -> measured=%d"
+          % (len(semantic), len(layout_unique), len(by_src), len(rows)))
+    print("rewrite-driven search: best=%s (fused_uop %s)" % (best[0],
+                                                             best[1]))
     return 0
 
 
