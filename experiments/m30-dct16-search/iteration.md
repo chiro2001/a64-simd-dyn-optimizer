@@ -648,3 +648,10 @@ TestBench 6/6。
 st1d（指令数口径 1 条/16 输出，实机代价待测）；upstream 保持 887
 （even_sve 仅 legacy 可用，upstream 的 k=2/6/10/14 必须保留 s32 路径）。
 legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。
+
+> 2026-08-14 尝试把 even_sve 扩展到 upstream（k=2/6/10/14 用 s32
+> mul/addp 路径），20 万例上游差分 25% 分歧（首例 idx=32 want=-333
+> got=-310/2）：上游 k2 的 NEON lane 语义与 SVE s32 猜测不匹配，且
+> 内部算子对 k2 用的是 legacy s16 sdot（无 upstream-exact 参考），
+> 撤回该扩展。upstream 的 k2 s32 路径需要从我们自己的 NEON 路径
+> 逐 lane 推导，列为后续任务。
