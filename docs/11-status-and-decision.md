@@ -168,3 +168,28 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 - 960 未流片，本机数据仅校准成本模型；下一步方向：逐段周期剖析
   （pass1/pass2、依赖链、发射率），找出 SVE2 相对 NEON 的周期开销
   来源，再决定是优化 ILP 还是回到 NEON 侧。
+
+## 7. DCT32 收敛与下一算子约束（2026-08-13）
+
+- DCT32 upstream-exact 收敛点 = **7190（v2，0.566x，near-gate）**；
+  半数门 6355 与内部 4251 需要 legacy-internal-exact 合同族
+  （见 docs/21 §5：延迟舍入实证分歧 3.87%，partial 直通被否决）；
+- `interp8_hpp` 仅存在于 HIGH_BIT_DEPTH 构建，当前 8-bit 库无该符号，
+  评估需先建立 16-bit 构建或改用 8-bit 的 `interp_hv_pp` 族；
+- sa8d16 189→≤186 的归约微调（dot→unpklo+addv）存在舍入语义风险，
+  暂不触碰已验证候选；dct8（323=上游等价）与 interp 族待按
+  “计算 bound”规则（SIMD > load）评估后决定是否投入。
+
+## 8. DCT32 突破与 interp8 评估（2026-08-13 深夜）
+
+- **DCT32 v3.1 = 3962 fused_uop（0.312x，HALVED）**：4 行切片 +
+  lane-per-output `sdot .d` + rshrnb 批量窄化，upstream-exact、
+  零 scatter、200k 差分 0、多 seed lite PASS——**工具生成已超越内部
+  参考（4251/4827）**（docs/20 §v3/v3.1）；
+- dct8 切片迁移被否决：8x8 结构太薄，切片开销无法摊销（估算 ≈ 上游
+  323，无收益）；
+- sa8d16 归约经复核已是最小（4 条：movi/mov/udot/uaddv），189 为该
+  结构地板；
+- **interp8（8-bit 水平 8-tap）评估为计算 bound**：total 162 /
+  load 56 / 计算 106；v3 切片技术可直接迁移（预估 141→~70-90），
+  列入下一 kernel 候选（docs/22）。
