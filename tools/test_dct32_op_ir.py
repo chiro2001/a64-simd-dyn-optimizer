@@ -6,12 +6,14 @@ Run: python3 tools/test_dct32_op_ir.py
 import copy
 import os
 import sys
+import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from dct32_op_ir import lower_plan_to_ops, provenance_report  # noqa: E402
 from dct32_rewrites import apply_rewrites  # noqa: E402
+from dataclasses import replace  # noqa: E402
 from layout_ir import dct32_v31_plan  # noqa: E402
 
 
@@ -86,6 +88,24 @@ def main():
             if o.kind == "store" and ".odd.k" in o.tile_id
             and len(o.attrs.get("lanes", ())) == 8]
     assert odd8, "odd stores should be 8-lane after merge"
+
+    # Op-level rewrite: k0_even_sve (scalar k0 -> quarter EEp/EOp).
+    legacy_plan = replace(
+        plan, lowering=dict(plan.lowering, pass1_k2_slice=1,
+                            legacy_ex=1, legacy_k4=1, slice_kind="zip",
+                            row_group=8, k0_even_sve=0))
+    ops9 = apply_rewrites(lower_plan_to_ops(legacy_plan), ["k0_even_sve"])
+    r9 = provenance_report(legacy_plan, ops9)
+    assert r9["ok"], r9["issues"]
+    assert not [o for o in ops9 if o.kind == "extract2"]
+    assert not [o for o in ops9 if o.kind == "store"
+                and re.match(r"^p\d\.k0\.k\d+\.row\d+$", o.tile_id)]
+    assert [o for o in ops9 if ".k0es." in o.tile_id]
+    # Full sequence from the upstream base: legacy_k2/k4 then k0_even_sve.
+    ops10 = apply_rewrites(ops, ["legacy_k2", "legacy_k4", "k0_even_sve"])
+    r10 = provenance_report(plan, ops10)
+    assert r10["ok"], r10["issues"]
+    assert [o for o in ops10 if ".k0es." in o.tile_id]
     print("OpIR slice OK: %d ops, coverage %.2f, negatives detected"
           % (r["op_count"], r["coverage"]))
     return 0

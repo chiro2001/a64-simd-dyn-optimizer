@@ -477,6 +477,198 @@ def rewrite_legacy_k4(ops: List[Op]) -> List[Op]:
 REWRITES["legacy_k4"] = rewrite_legacy_k4
 
 
+def rewrite_k0_even_sve(ops: List[Op]) -> List[Op]:
+    """Replace the scalar k0 family (extract2 + scalar2 mul) with the
+    quarter EEp/EOp structure (k0_even_sve mechanism, docs/20 §5.12).
+
+    Applies to a legacy DAG (E16/EO16/EEO16 present) with the per-row s32
+    E-chain whose only consumer is k0. Removes the s32 chain + scalar k0
+    ops and inserts per-4-row packs:
+      lo/hi packs -> e0..e3 (s32, no s16 wrap) -> w/s/u/v ->
+      EEp/EOp -> per k: mul(K0EVEN) + addp + uzp1 + rshrnb +
+      uzp1_s16 + st1(pg4h).
+    """
+    K0EVEN_IDX = {0: 0, 8: 1, 16: 2, 24: 3}
+    K0_K = (0, 8, 16, 24)
+
+    def pid(o: Op) -> int:
+        return int(o.tile_id.split(".")[0][1:])
+
+    by_out = {o.out: o for o in ops}
+    by_id = {o.op_id: o for o in ops}
+    k0_stores = [o for o in ops
+                 if o.kind == "store"
+                 and re.match(r"^p\d\.k0\.k\d+\.row\d+$", o.tile_id)]
+    if not k0_stores:
+        return ops
+    # must be legacy structure: EO16 + EEO16 chains exist
+    has_eo16 = any(o.kind == "sub" and o.out.startswith("EO16_")
+                   for o in ops)
+    has_eeo16 = any(o.kind == "sub" and o.out.startswith("EEO16_")
+                    for o in ops)
+    if not (has_eo16 and has_eeo16):
+        return ops
+    if any(".k0es." in o.tile_id for o in ops):
+        return ops
+
+    # remove k0 scalar ops + the per-row s32 E-chain (all group copies;
+    # out names repeat across groups/passes so a closure is ambiguous).
+    S32_CHAIN = re.compile(r"^(?:loa|lob|rva|rvb|Ea|Eb|Erb|EE|EO|EEr|"
+                           r"EEE|EEO|EEEr|EEEE|EEEO)_\d+$")
+    remove = set()
+    for o in ops:
+        if o.kind == "store" and \
+                re.match(r"^p\d\.k0\.k\d+\.row\d+$", o.tile_id):
+            remove.add(o.op_id)
+        elif o.kind in ("round_shift", "mul_reduce", "extract2") and \
+                re.match(r"^p\d\.k0\.", o.tile_id):
+            remove.add(o.op_id)
+        elif o.tile_id.startswith(("p1.leaf.", "p2.leaf.")) and \
+                S32_CHAIN.match(o.out or ""):
+            remove.add(o.op_id)
+
+    # group structure
+    groups = {}
+    for o in ops:
+        if o.kind == "load" and re.match(r"^p\d\.leaf\.row\d+$", o.tile_id):
+            g = o.attrs.get("g", 0)
+            groups.setdefault(g, set()).add(int(o.tile_id.rsplit("row", 1)[1]))
+    row_group = max((len(rs) for rs in groups.values()), default=8)
+    counter = [_op_id_base(ops)]
+    new_ops_all = []
+
+    def fresh(kind, tile_id, ins, attrs, out=None):
+        counter[0] += 1
+        op = Op("rw%04d" % counter[0], kind, tile_id,
+                out or "rw_%s" % counter[0], tuple(ins), dict(attrs))
+        new_ops_all.append(op)
+        return op
+
+    insert_at = {}
+    for pass_id in (1, 2):
+        pstores = [o for o in k0_stores if pid(o) == pass_id]
+        if not pstores:
+            continue
+        del new_ops_all[:]     # per-pass new ops
+        anchor = min(ops.index(o) for o in pstores)
+        for g in sorted(groups):
+            rows = sorted(groups[g])
+            if len(rows) != row_group:
+                continue
+            for b in range(row_group // 4):
+                pr = rows[b * 4:(b + 1) * 4]
+                tid = "p%d.k0es.pack%d" % (pass_id, b)
+
+                def pack(src, tag):
+                    a = [fresh("permute", tid, (src[m],),
+                               {"kind": "view_s64", "g": g})
+                         for m in range(4)]
+                    t = [fresh("permute", tid, (a[0].out, a[2].out),
+                               {"kind": "zip1d64", "g": g}),
+                         fresh("permute", tid, (a[0].out, a[2].out),
+                               {"kind": "zip2d64", "g": g}),
+                         fresh("permute", tid, (a[1].out, a[3].out),
+                               {"kind": "zip1d64", "g": g}),
+                         fresh("permute", tid, (a[1].out, a[3].out),
+                               {"kind": "zip2d64", "g": g})]
+                    p = [fresh("permute", tid,
+                               (t[0].out, t[2].out) if m < 2
+                               else (t[1].out, t[3].out),
+                               {"kind": "zip1d64" if m % 2 == 0
+                                else "zip2d64", "g": g})
+                         for m in range(4)]
+                    q = [fresh("permute", tid, (p[m].out,),
+                               {"kind": "view_s16", "g": g})
+                         for m in range(4)]
+                    qr = [fresh("permute", tid, (q[m].out,),
+                                {"kind": "revh_d", "g": g})
+                          for m in (2, 3)]
+                    return q[0].out, q[1].out, qr[0].out, qr[1].out
+
+                l0, l1, l2, l3 = pack(["lo_%d" % r for r in pr], "L")
+                h0, h1, h2, h3 = pack(["hi_%d" % r for r in pr], "H")
+                e = []
+                for idx, (a_, b_, kind_) in enumerate(
+                        ((l0, h3, "lb"), (l0, h3, "lt"),
+                         (l3, h0, "lb"), (l3, h0, "lt"),
+                         (l1, h2, "lb"), (l1, h2, "lt"),
+                         (l2, h1, "lb"), (l2, h1, "lt"))):
+                    w = fresh("widen_add_sve", tid, (a_, b_),
+                              {"kind": kind_, "g": g})
+                    e.append(w)
+                e0 = fresh("add", tid, (e[0].out, e[2].out),
+                           {"elem": "s32", "g": g})
+                e1 = fresh("add", tid, (e[1].out, e[3].out),
+                           {"elem": "s32", "g": g})
+                e2 = fresh("add", tid, (e[4].out, e[6].out),
+                           {"elem": "s32", "g": g})
+                e3 = fresh("add", tid, (e[5].out, e[7].out),
+                           {"elem": "s32", "g": g})
+                w0 = fresh("permute", tid, (e0.out, e1.out),
+                           {"kind": "zip1s", "g": g})
+                w1 = fresh("permute", tid, (e0.out, e1.out),
+                           {"kind": "zip2s", "g": g})
+                u2 = fresh("permute", tid, (e2.out,),
+                           {"kind": "revw_d32", "g": g})
+                u3 = fresh("permute", tid, (e3.out,),
+                           {"kind": "revw_d32", "g": g})
+                w2 = fresh("permute", tid, (u3.out, u2.out),
+                           {"kind": "zip1s", "g": g})
+                w3 = fresh("permute", tid, (u3.out, u2.out),
+                           {"kind": "zip2s", "g": g})
+                s0 = fresh("sub", tid, (w0.out, w2.out),
+                           {"elem": "s32", "g": g})
+                s1 = fresh("sub", tid, (w1.out, w3.out),
+                           {"elem": "s32", "g": g})
+                s2 = fresh("add", tid, (w0.out, w2.out),
+                           {"elem": "s32", "g": g})
+                s3 = fresh("add", tid, (w1.out, w3.out),
+                           {"elem": "s32", "g": g})
+                v0 = fresh("permute", tid, (s2.out, s3.out),
+                           {"kind": "uzp1d", "g": g})
+                v1 = fresh("permute", tid, (s2.out, s3.out),
+                           {"kind": "uzp2d", "g": g})
+                v1r = fresh("permute", tid, (v1.out,),
+                            {"kind": "revw_d64", "g": g})
+                eep = fresh("add", tid, (v0.out, v1r.out),
+                            {"elem": "s32", "view": "s64", "g": g})
+                eop = fresh("sub", tid, (v0.out, v1r.out),
+                            {"elem": "s32", "view": "s64", "g": g})
+                shift = 4 if pass_id == 1 else 11
+                for k in K0_K:
+                    ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
+                    src = eep if k in (0, 16) else eop
+                    m = fresh("mul", ktid, (src.out,),
+                              {"elem": "s32",
+                               "const_src": "K0EVEN[%d]"
+                               % K0EVEN_IDX[k], "g": g})
+                    pa = fresh("addp32", ktid, (m.out, m.out), {"g": g})
+                    xa = fresh("permute", ktid, (pa.out, pa.out),
+                               {"kind": "uzp1s", "g": g})
+                    na = fresh("narrow4_sve", ktid, (xa.out,),
+                               {"shift": shift, "mode": "rshrn", "g": g})
+                    nc = fresh("narrow", ktid, (na.out, na.out),
+                               {"from": "s16", "to": "s16", "g": g})
+                    fresh("store", ktid, (nc.out,),
+                          {"base": "dst", "index": "k*32+i",
+                           "lanes": tuple((pass_id, k, r) for r in pr),
+                           "topology": "contiguous",
+                           "base_off": 4 * b, "g": g})
+        insert_at[anchor] = new_ops_all[:]
+
+    result = []
+    for i, op in enumerate(ops):
+        if i in insert_at:
+            result.extend(insert_at[i])
+        if op.op_id in remove:
+            continue
+        result.append(op)
+    return result
+
+
+REWRITES["k0_even_sve"] = rewrite_k0_even_sve
+
+
 def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
     """Merge two 4-row groups into one 8-row super-group (odd path)."""
     base = _op_id_base(ops)

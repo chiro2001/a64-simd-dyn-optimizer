@@ -37,7 +37,7 @@ KERNELS = {
         "out": os.path.join(ROOT, "experiments", "m30-dct32-search",
                             "layout-search-rwseq"),
         "rewrites": ["none", "tbl2_to_zip", "legacy_k2", "legacy_k4",
-                     "merge_narrow8"],
+                     "merge_narrow8", "k0_even_sve"],
         "manifest": "dct32",
         "range_start": "_ZL9op_pass_4PKsPsl",
         "range_end": "dynopt_dct32_sve2_shared",
