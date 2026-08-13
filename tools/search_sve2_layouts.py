@@ -118,6 +118,14 @@ def make_emitter(kernel):
         def emit_fn(combo):
             return emit(k_tile=combo.get("k_tile", 1))
         return emit_fn
+    if kernel == "sa8d":
+        from emit_sa8d_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit(pack=combo.get("pack", "pair"),
+                        reduce=combo.get("reduce", "neon"),
+                        unroll=combo.get("unroll", 1))
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 

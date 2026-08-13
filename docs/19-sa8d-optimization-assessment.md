@@ -59,6 +59,31 @@ abs/sabd/umax 各 4、udot 2、misc 8。
 | pair 循环版（diff[] 数组） | 98 | 0 | 98 | 2 万例差分 0 |
 | **pair 手写展开版** | **86** | 0 | **86** | 2 万例差分 0 + 5000 例上游逐位 0 |
 
+## 5b. 搜索轴扩展后的结果（2026-08-13，第二轮）
+
+SA8D 已接入 `search_sve2_layouts.py`（manifest + `gen_verify` 的 sa8d
+shape），新增两个发射器轴：
+
+- `pack`：`pair`（[r0|r1]…）或 `evenpair`（[r0|r2],[r1|r3]…，级 1 列
+  Hadamard 变成免费的 lane-wise add/sub）；
+- `reduce`：`neon`（提取 8 行走上游 128-bit 归约）或 `sve`
+  （全 SVE 列变换：TBL2 重打包 + 半区旋转 max + unpklo/addv 归约）。
+
+| 组合 | fused_uop | 2 万例差分 |
+| --- | ---: | --- |
+| pack=pair, reduce=neon（上轮 best） | 86 | 0 |
+| pack=evenpair, reduce=neon | 86 | 0 |
+| pack=pair, reduce=sve | 84 | 0 |
+| **pack=evenpair, reduce=sve（本轮 best）** | **79** | 0 |
+
+- 相对开源 SVE2（97）**-18.6%**；`TestBenchLite --gate sa8d` PASS。
+- **ISA 级别核查（2026-08-13）**：best 汇编只用 SVE1+SVE2
+  （SVE2 独有：cadd、TBL2、uunpklo），编译目标 `-march=armv8.2-a+sve2`，
+  **无 SVE2p3 指令**；因此 920B（SVE1）不能跑，需 SVE2 平台（960/920G）。
+- 两个 SVE 归约变体的调试教训：`svdot_u64` 是累加指令，初值不能给
+  `svundef`；`svtbl2` 的参数是 `svcreate2` 二元组；S 寄存器两半区重复
+  同一 lane 和，归约只能取低 8 lane（unpklo+uaddv）。
+
 - 展开版比开源少 **11 个 fused_uop（-11.3%）**，进入 docs §3 预估的
   ~75-85 区间上沿。
 - 正确性：`kernels/sa8d/candidates/sve2_pair.o` 通过 2 万例差分

@@ -1,0 +1,41 @@
+# SA8D SVE2 kernel manifest (docs/16 schema v0.2, shape.kind=sa8d).
+# Acceptance (user decision 2026-08-13): TestBenchLite --gate sa8d; the
+# search funnel uses the upstream SVE2 kernel as the bit-exact reference
+# (x265::sa8d8_sve2<8,8>, which itself passes the pixel TestBench).
+kernel: sa8d
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sa8d
+  n: 8
+
+candidate:
+  symbol: dynopt_sa8d_8x8_sve2
+  verify_src: kernels/sa8d/sve_verify.cpp
+  trace_driver_src: kernels/sa8d/trace_driver.cpp
+  trace_driver_c: kernels/sa8d/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: sa8d8_sve2
+  symbol_mangled: _ZN4x26510sa8d8_sve2ILi8ELi8EEEiPKhlS2_l
+  call: x265::sa8d8_sve2<8, 8>
+  decl: |
+    namespace x265 {
+    template <int W, int H> int sa8d8_sve2(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+    }
+
+baselines:
+  sve2:
+    driver: kernels/sa8d/trace_driver.cpp
+    symbol_mangled: _ZN4x26510sa8d8_sve2ILi8ELi8EEEiPKhlS2_l
+
+corpus:
+  strides: [8, 16, 17, 32]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  pack: [pair, evenpair]
+  reduce: [neon, sve]
