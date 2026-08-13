@@ -259,15 +259,23 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                "lanes": ((pass_id, k, r),),
                                "topology": "contiguous"})
             # ---- k0 ----
+            k0e = {}
+            k0o = {}
+            for r in rows:
+                tid = "p%d.k0.extract.row%d" % (pass_id, r)
+                k0e[r] = new("extract2", tid, "k0e_%d" % r, (eeee[r],),
+                             attrs={"which": "e", "elem": "s32"}).out
+                k0o[r] = new("extract2", tid, "k0o_%d" % r, (eeeo[r],),
+                             attrs={"which": "o", "elem": "s32"}).out
             for k in K0_K:
                 for r in rows:
                     tid = "p%d.k0.k%d.row%d" % (pass_id, k, r)
-                    src_val = eeee[r] if k in (0, 16) else eeeo[r]
+                    src_val = k0e[r] if k in (0, 16) else k0o[r]
                     t = new("mul_reduce", tid, "k0m_%d_%d" % (k, r),
                             (src_val,),
                             attrs={"elem": "s32",
                                    "terms": (_g(k, 0), _g(k, 1)),
-                                   "reduce": "scalar",
+                                   "reduce": "scalar2",
                                    "lane_owner": "partial"})
                     rnd = new("round_shift", tid, "k0mr_%d_%d" % (k, r),
                               (t.out,),

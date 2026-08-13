@@ -431,13 +431,14 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   store lane 全覆盖，provenance 正/负向测试全过。
 - `optimizer/ir/dct32_op_emit.py`：op DAG → ACLE 源码，**不调用任何
   grouped C++ 块**（仅复用数据表）。20k upstream 差分 **0 mismatch**；
-  full fused_uop：循环恢复版 9044，全展开版 8406（Go 判据 8292，
-  差 +1.4%/+9%）。
-- 差距归因（直方图）：循环版 str/ldr 偏多（寻址/寄存器压力），全展开
-  版 movprfx/fmov 偏多；属于**调度/寻址结构缺口**，不是语义错误。
-- E1-B 状态：**codegen 已从 op DAG 独立生成并正确**；尚未满足
-  “≤8292 重发现” Go 判据，下一步修调度（base 寻址、常量生命周期、
-  循环骨架与 grouped 对齐）。
+  **TestBenchLite dct32 PASS**。
+- 调度修正链（每步都 20k=0）：单函数全展开 8406 → 循环恢复 9044
+  （z-spill 暴涨）→ k0 共享提取 8819 → **noinline 分 pass 8307**
+  （-O2，Go 判据 8292，差 15 条 = 0.18%）；-O3 反而 8490。
+- 差距归因：剩下 15 条为标量 temp spill（str +54 / fmov -40），
+  属于调度微差；下一步做“标量 round+store 融合”即可过 Go。
+- E1-B 状态：**codegen 已从 op DAG 独立生成、正确且过 lite**；
+  “≤8292 重发现”只差 0.18%。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
