@@ -1,0 +1,37 @@
+# DCT8 SVE2 kernel manifest (docs/16 schema v0.2: adds shape)
+kernel: dct8
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  n: 8
+
+candidate:
+  symbol: dynopt_dct8_sve2_shared        # emitter pending (v10+)
+  verify_src: kernels/dct8/sve_shared_verify.cpp
+  trace_driver_src: kernels/dct8/sve_trace_driver.cpp
+  trace_driver_c: kernels/dct8/sve_trace_driver.c
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: dct8_sve
+  symbol_mangled: _ZN4x2658dct8_sveEPKsPsl
+  call: x265::dct8_sve
+  decl: |
+    namespace x265 {
+    void dct8_sve(const int16_t*, int16_t*, intptr_t);
+    }
+
+baselines:
+  sve:
+    driver: kernels/dct8/sve_trace_driver.cpp
+    symbol_mangled: _ZN4x2658dct8_sveEPKsPsl
+  neon:
+    driver: kernels/dct8/neon_trace_driver.cpp
+    symbol_mangled: _ZN4x2659dct8_neonEPKsPsl
+
+corpus:
+  strides: [8, 16, 17, 32]
+  value_range: [-255, 255]
+  cases: 20000
+
+layouts: {}

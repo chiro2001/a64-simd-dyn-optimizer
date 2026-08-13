@@ -226,16 +226,20 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--backend", choices=("asm", "acle"), default="asm")
     ap.add_argument("--kernel", default="dct16")
-    ap.add_argument("--outdir", default=os.path.join(
-        ROOT, "experiments/m30-dct16-search/layout-search"))
+    ap.add_argument("--outdir", default=None)
     ap.add_argument("stage", nargs="?",
                     choices=("baseline", "search", "report", "finalize"))
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
+    if args.outdir is None:
+        args.outdir = os.path.join(
+            ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
 
     if args.all or args.stage == "baseline":
         if stage_baseline(args.outdir, manifest) != 0:
             return 1
+        if args.stage == "baseline":
+            return 0
     if args.all or args.stage == "search":
         if stage_search(args.backend, manifest) != 0:
             return 1
