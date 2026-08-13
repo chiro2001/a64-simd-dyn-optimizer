@@ -109,3 +109,32 @@ even-k 只能保留 grouped 发射器作为 oracle。
 3. `search_rewrite_sequences.py` 参数化 kernel（当前硬编码 dct32 符号
    `_ZL9op_pass_4` 与基线），验收：无内部参考时自动重发现 ≤ 704；
 4. 之后才进入 legacy_k2/k4 的 DCT16 k 族适配与常量预排列。
+
+## 8. pass2 odd-quarter op 后端切片（2026-08-13 晚，已交付）
+
+- `lower_pass2_odd_quarter(pack_zip, store_merge16, k_tile)`：rowpair
+  E/EO/EEE/EEO 蝴蝶链（SVE load + NEON s32 链）+ SVE zO zip pack
+  （view_s64/zip1d/zip2d/view_s16）+ odd k 链式 SDOT
+  （dot_segment + dot_accum）+ narrow8/narrow16 合并窄化与 store
+  merge（16-lane store）+ 每 group NEON even 路径。
+- 新增 op 种类：`dot_accum`、`narrow8`、`narrow16`、SVE view/zip
+  permute、`neon_pack`(s16→int16x8_t)；常量表 CQ_LO/CQ_HI。
+- `emit_from_combo` 已按 manifest 轴选择 pass2 形态；搜索驱动现在会
+  生成 upstream 与 odd-quarter（× pack_zip × store_merge16 × k_tile）
+  多个唯一源。
+
+验证（pass1 per-row + pass2 odd-quarter，upstream-exact）：
+
+| 项 | 结果 |
+| --- | --- |
+| 逐 pass 差分 vs grouped odd-quarter | 0 mismatch |
+| 全量 20k 差分 | 0 mismatch |
+| TestBenchLite dct16 | PASS |
+| 动态计数（op 后端） | fused **1275** / vector 1568 |
+| grouped 同配置 | fused 1270 / vector 1566 |
+
+计算指令完全同数；差异全在访存调度（ld1h/st1h/stp/ldr 组合，net
+vector +2、movprfx -3）。op 后端在 ≤5 条误差内复现 odd-quarter
+结构——下一步可直接在其上移植 rewrite（`tbl2_to_zip` 的 DCT16 适配
+对象就是这里的 zip pack / 未来 tbl2 pack；`merge_narrow8` 对应
+narrow8/16 合并，32//n_groups 参数化已在 DCT32 版本确认）。
