@@ -305,6 +305,30 @@ per-row                       1895   1511
 编译器原本已对旧结构做部分 CSE，直接打包净省 ~14 条（v6a 相对 v3
 1524→1510）。两个 quarter 布局差距在 6 条以内，最终由实机裁决。
 
+## v7 假设：pass2 偶数路径 SVE2 quarter 化（2026-08-13 归档，未实现）
+
+偶数路径（E 必须 s32）当前是上游 NEON 结构，修正口径约 477 条
+（setup ~202 + k=2,6,10,14 ~168 + k=0,4,8,12 ~107）。分析：
+
+- 保持 butterfly 的 EO/EEE/EEO 4/2-lane 形式（不要用全 8-dot，那是
+  - 每 k 每 4 行 13 条，反而更差）；
+- EO 4-lane：4 行 quarter 打包（16 s32 = 2 寄存器），每 k =
+  2 svmul_s32 + 2 addp_s32（段内两两，行内 4 乘积直接成 f）+ 3 窄化
+  ≈ 7 条/4 行（vs NEON 8）；
+- EEE/EEO 2-lane：1 svmul + 1 addp + 3 窄化 ≈ 5 条/4 行（vs 8）；
+- setup 改为 E32=saddl 拓宽 + EO/EEE/EEO 的 s32 quarter 打包，
+  预计 ~150 条；
+- 合计偶数路径 ~477 → ~250-300（-37~-48%），全 kernel fused 1318 →
+  ~1150；仍不足以单独达成 +130%（需 ~660），但作为 v7 可测假设，
+  与循环级搜索（docs/15）并行推进。
+
+## 专家咨询 round-0008：blocked（2026-08-13）
+
+按协议触发后运行约 3 小时（≈316k tokens），多次重连失败未写出
+`response.md`；记录 `expert-advice/round-0008/blocked.md`，不伪造回复。
+会话中确认的线索（is_vector 漏计 q/d 访存、VL 断言）已由主流程修复。
+下一批满 3 个阶段后重试 round-0009。
+
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
 构建命令可完全复现。已实现的搜索参数：
