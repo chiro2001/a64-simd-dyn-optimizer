@@ -41,3 +41,4 @@ experiments/**/corpus-*.bin
 experiments/**/oracle-*.txt
 experiments/**/llvm-ir/pixel-prim.ll
 expert-advice/*/session.log
+build/resource-monitor*.log
