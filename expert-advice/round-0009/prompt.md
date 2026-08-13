@@ -1,6 +1,8 @@
 # 顶级模型分析请求（round-0009，GPT-5.6-sol）
 
-你是本项目的顶级模型分析顾问。请只在本仓库
+你是本项目的顶级模型分析顾问。请先阅读
+`expert-advice/round-0009/context.md`（本批涉及的 commit/候选/文件），
+然后只在本仓库
 `/home/chiro/projects/a64-simd-dyn-optimizer` 内做**只读分析**并产出下一阶段
 工具优化路线，不要修改任何代码/构建/运行产物（写建议文档除外）。
 

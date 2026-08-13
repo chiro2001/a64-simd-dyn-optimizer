@@ -98,7 +98,8 @@ def make_emitter(kernel):
                         store_merge16=combo.get("store_merge16", 0),
                         pass1_even_factor=combo.get("pass1_even_factor", 0),
                         pass1_pack_zip=combo.get("pass1_pack_zip", 0),
-                        pass2_pack_zip=combo.get("pass2_pack_zip", 0))
+                        pass2_pack_zip=combo.get("pass2_pack_zip", 0),
+                        even_sve=combo.get("even_sve", 0))
         return emit_fn
     if kernel == "dct8":
         from emit_dct8_sve2_shared import emit
@@ -155,6 +156,11 @@ def main():
             continue
         if combo.get("pass2_pack_zip") and not (
                 combo.get("pass2") == "odd-quarter"
+                and combo.get("narrow_merge")):
+            continue
+        if combo.get("even_sve") and not (
+                combo.get("legacy_semantics")
+                and combo.get("pass2") == "odd-quarter"
                 and combo.get("narrow_merge")):
             continue
         if combo.get("legacy_even_full") and not (

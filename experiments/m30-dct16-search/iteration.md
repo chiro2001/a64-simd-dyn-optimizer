@@ -631,3 +631,20 @@ saddlb/saddlt（偶/奇宽化加）、addp（目标==第一源，成对加）、
 revw 语义均已 QEMU 实测；内部偶数 s32 常量 = T8E ×2。发现内部用
 **散布 st1d**（load_offset 表）一次写 16 输出——指令数口径 1 条，但实机
 scatter 代价存疑；复刻前需定口径（对齐指令数 vs 对齐实机）。
+
+### pass2_even_sve 轴落地（2026-08-14，首次低于内部参考）
+
+按内部反汇编逐条复刻 pass2 偶数路径：zip/revh 构建 → saddlb/saddlt +
+.s 级 zip/revw 生成 s32 EE'/EO' 与 EO s16 打包（z26，1 条 uzp1）→
+k=0/4/8/12 用 4×mul.s + 2×addp + sqrshrnb + 散布 st1d（偏移
+[0,128,256,384]）。20 万例 legacy 差分 0.0448%（与基线一致），
+TestBench 6/6。
+
+| 合同 | 之前 fused_adj | 之后 | mul/addp/sqrshrnb | 验证 |
+| --- | ---: | ---: | ---: | ---: |
+| legacy-internal-exact | 791 | **692** | 24/16/88 → **16/8/64**（与内部一致） | 20 万例 0.0448%，TestBench 6/6 |
+
+**里程碑：legacy 692 < 内部 731（-39）**。注意：偶数输出改用 4 条散布
+st1d（指令数口径 1 条/16 输出，实机代价待测）；upstream 保持 887
+（even_sve 仅 legacy 可用，upstream 的 k=2/6/10/14 必须保留 s32 路径）。
+legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。

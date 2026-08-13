@@ -45,3 +45,4 @@ layouts:
   pass1_even_factor: [0, 1]
   pass1_pack_zip: [0, 1]
   pass2_pack_zip: [0, 1]
+  even_sve: [0, 1]

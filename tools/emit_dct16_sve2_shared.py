@@ -473,13 +473,84 @@ def legacy_even_dot_block(pack, k, store_merge16=0):
         "        }\n" % (k, pack, pack, pack, pack, k, k))
 
 
+def sve_even_group_block(g, legacy=0):
+    """Internal-style pass2 build: zip/revh O row-slices + saddlb/saddlt
+    s32 EE'/EO' + mul/addp even path (k=0/4/8/12), scattered st1d."""
+    base = 4 * g
+    qeow = ("            QEOW%d = svuzp1_s16(svreinterpret_s16_s32(s0),"
+            " svreinterpret_s16_s32(s1));\n" % g) if legacy else ""
+    return """\
+        {
+            const svint16_t z0 = svld1_s16(p16q, src + %d * line);
+            const svint16_t z1 = svld1_s16(p16q, src + %d * line);
+            const svint16_t z2 = svld1_s16(p16q, src + %d * line);
+            const svint16_t z3 = svld1_s16(p16q, src + %d * line);
+            const svint64_t a0 = svreinterpret_s64_s16(z0);
+            const svint64_t a1 = svreinterpret_s64_s16(z1);
+            const svint64_t a2 = svreinterpret_s64_s16(z2);
+            const svint64_t a3 = svreinterpret_s64_s16(z3);
+            const svint64_t t0 = svzip1_s64(a0, a2);
+            const svint64_t t1 = svzip2_s64(a0, a2);
+            const svint64_t t2 = svzip1_s64(a1, a3);
+            const svint64_t t3 = svzip2_s64(a1, a3);
+            const svint64_t p0 = svzip1_s64(t0, t2);
+            const svint64_t p1 = svzip2_s64(t0, t2);
+            const svint64_t p2 = svzip1_s64(t1, t3);
+            const svint64_t p3 = svzip2_s64(t1, t3);
+            const svint16_t q0 = svreinterpret_s16_s64(p0);
+            const svint16_t q1 = svreinterpret_s16_s64(p1);
+            const svint16_t q2 = revh_d(svreinterpret_s16_s64(p2));
+            const svint16_t q3 = revh_d(svreinterpret_s16_s64(p3));
+            QO0_%d = svsub_s16_x(p16q, q0, q3);
+            QO1_%d = svsub_s16_x(p16q, q1, q2);
+            const svint32_t e0 = svaddlb_s32(q0, q3);
+            const svint32_t e1 = svaddlt_s32(q0, q3);
+            const svint32_t e2 = svaddlb_s32(q1, q2);
+            const svint32_t e3 = svaddlt_s32(q1, q2);
+            const svint32_t w0 = svzip1_s32(e0, e1);
+            const svint32_t w1 = svzip2_s32(e0, e1);
+            const svint32_t u2 = revw_d32(e2);
+            const svint32_t u3 = revw_d32(e3);
+            const svint32_t w2 = svzip1_s32(u3, u2);
+            const svint32_t w3 = svzip2_s32(u3, u2);
+            const svint32_t s0 = svsub_s32_x(p32, w0, w2);
+            const svint32_t s1 = svsub_s32_x(p32, w1, w3);
+            const svint32_t s2 = svadd_s32_x(p32, w0, w2);
+            const svint32_t s3 = svadd_s32_x(p32, w1, w3);
+%s
+            const svint64_t v0 = svuzp1_s64(svreinterpret_s64_s32(s2),
+                                            svreinterpret_s64_s32(s3));
+            const svint64_t v1 = svuzp2_s64(svreinterpret_s64_s32(s2),
+                                            svreinterpret_s64_s32(s3));
+            const svint64_t v1r = revw_d64(v1);
+            const svint32_t EEp = svadd_s32_x(p32, svreinterpret_s32_s64(v0),
+                                              svreinterpret_s32_s64(v1r));
+            const svint32_t EOp = svsub_s32_x(p32, svreinterpret_s32_s64(v0),
+                                              svreinterpret_s32_s64(v1r));
+            const svint32_t m0 = svmul_s32_x(p32, EEp, cT0);
+            const svint32_t m1 = svmul_s32_x(p32, EOp, cT1);
+            const svint32_t m2 = svmul_s32_x(p32, EEp, cT2);
+            const svint32_t m3 = svmul_s32_x(p32, EOp, cT3);
+            const svint32_t pa = addp_s32(m0, m2);
+            const svint32_t pb = addp_s32(m1, m3);
+            const svint32_t xa = svuzp1_s32(pa, pb);
+            const svint32_t xb = svuzp2_s32(pa, pb);
+            const svint16_t na = svrshrnb_n_s32(xa, shift);
+            const svint16_t nb = svrshrnb_n_s32(xb, shift);
+            const svint16_t n16 = svuzp1_s16(na, nb);
+            st1d_scatter_s16(dst + %d, evoffs, n16);
+        }
+""" % (base, base + 1, base + 2, base + 3, g, g, qeow, base)
+
+
 def pass2_odd_quarter_interleaved(k_tile=1, narrow_merge=1, legacy=0,
                                   legacy_even_full=0, store_merge16=0,
-                                  pass2_pack_zip=0):
+                                  pass2_pack_zip=0, even_sve=0):
     """Interleaved pass2: row-pairs -> named EO/EEE/EEO -> per-group even
     dots -> packs -> odd k-loop. No EO/EEE/EEO arrays, no stack spills."""
     parts = []
     extra_decls = ""
+    extra_prelude = ""
     if legacy_even_full:
         extra_decls = (
             "    svint16_t QEEW0, QEEW1, QEEW2, QEEW3;\n" +
@@ -487,6 +558,15 @@ def pass2_odd_quarter_interleaved(k_tile=1, narrow_merge=1, legacy=0,
                 "    int16x4_t EE16_g%d_0, EE16_g%d_1, "
                 "EE16_g%d_2, EE16_g%d_3;" % (g, g, g, g)
                 for g in range(4)) + "\n")
+    if even_sve:
+        extra_prelude = (
+            "    const svbool_t p32 = svptrue_b32();\n"
+            "    const svint32_t cT0 = svld1_s32(p32, T8E8[0]);\n"
+            "    const svint32_t cT1 = svld1_s32(p32, T8E8[1]);\n"
+            "    const svint32_t cT2 = svld1_s32(p32, T8E8[2]);\n"
+            "    const svint32_t cT3 = svld1_s32(p32, T8E8[3]);\n"
+            "    const svint64_t evoffs = "
+            "svld1_s64(svptrue_b64(), EVEN_OFFS);\n")
     parts.append("""\
 static void pass2_upstream(const int16_t* src, int16_t* dst)
 {
@@ -502,6 +582,7 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
     const svuint16_t q1q = svld1_u16(p16q, idx_q1);
     const svuint16_t qsel = svld1_u16(p16q, idx_q0);
     const svint64_t zaccq = svdup_n_s64(0);
+%s
 
     svint16_t zO0, zO1, zO2, zO3, zO4, zO5, zO6, zO7;
     svint16_t zO8, zO9, zO10, zO11, zO12, zO13, zO14, zO15;
@@ -521,9 +602,12 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
     int16x4_t EO16_g3_0, EO16_g3_1, EO16_g3_2, EO16_g3_3;
 
 %s
-""" % extra_decls)
+""" % (extra_prelude, extra_decls))
     for g in range(4):
         base = 4 * g
+        if even_sve:
+            parts.append(sve_even_group_block(g, legacy=bool(legacy)))
+            continue
         ee_a = ("EE16_g%d_0" % g) if legacy_even_full else None
         ee_b = ("EE16_g%d_1" % g) if legacy_even_full else None
         ee_c = ("EE16_g%d_2" % g) if legacy_even_full else None
@@ -723,7 +807,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 
 
 def pass2_cpp(pass2_layout="upstream", k_tile=1, narrow_merge=0, legacy=0,
-              legacy_even_full=0, store_merge16=0, pass2_pack_zip=0):
+              legacy_even_full=0, store_merge16=0, pass2_pack_zip=0,
+              even_sve=0):
     """pass2 body. 'upstream' matches dct16_sve exactly (E s32 vaddl,
     O s16 bridge SDOT, even path vmulq/vpaddq). 'odd-quarter' keeps the
     even-k/E/EO/EEE/EEO NEON path but replaces the odd-k per-row bridge
@@ -863,7 +948,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
                 k_tile=k_tile, legacy=legacy,
                 legacy_even_full=legacy_even_full,
                 store_merge16=store_merge16,
-                pass2_pack_zip=pass2_pack_zip)
+                pass2_pack_zip=pass2_pack_zip,
+                even_sve=even_sve)
         return prelude + pass2_odd_quarter_cpp(k_tile=k_tile,
                                                narrow_merge=0)
     raise ValueError("unknown pass2_layout %r" % pass2_layout)
@@ -1090,17 +1176,6 @@ def quarter_pass_cpp(k_tile=2, narrow_merge=0, even_factor=0, pack_zip=0):
         dot_src = ("    for (int kb = 0; kb < 16; kb += %d)\n    {\n%s\n    }\n"
                    % (k_tile, "\n".join(tiles)))
     return """\
-static inline svint16_t revh_d(svint16_t x)
-{
-    // SVE REVH with .d register view: reverse 16-bit lanes within each
-    // 64-bit element (per-row 4-lane reversal for EE/EO quarter packs).
-    svint16_t r;
-    asm volatile("revh %%[r].d, %%[p]/m, %%[x].d"
-                 : [r] "=w" (r)
-                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
-    return r;
-}
-
 template <int shift>
 static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
@@ -1163,9 +1238,10 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1,
          narrow_merge=0, legacy_semantics=0, legacy_even_full=0,
          store_merge16=0, pass1_even_factor=0, pass1_pack_zip=0,
-         pass2_pack_zip=0):
+         pass2_pack_zip=0, even_sve=0):
     if not legacy_semantics:
         legacy_even_full = 0
+        even_sve = 0  # upstream must keep the s32 k=2/6/10/14 NEON path
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
@@ -1180,7 +1256,8 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
                           narrow_merge=narrow_merge, legacy=legacy_semantics,
                           legacy_even_full=legacy_even_full,
                           store_merge16=store_merge16,
-                          pass2_pack_zip=pass2_pack_zip)
+                          pass2_pack_zip=pass2_pack_zip,
+                          even_sve=even_sve)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
         pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"
@@ -1216,6 +1293,57 @@ extern "C" void %s_pass2(const int16_t* src, int16_t* dst)
 
 namespace {
 
+static inline svint16_t revh_d(svint16_t x)
+{
+    // SVE REVH with .d register view: reverse 16-bit lanes within each
+    // 64-bit element (per-row 4-lane reversal).
+    svint16_t r;
+    asm volatile("revh %%[r].d, %%[p]/m, %%[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t revw_d32(svint32_t x)
+{
+    // REVW .d: swap the two 32-bit halves of each 64-bit element.
+    svint32_t r;
+    asm volatile("revw %%[r].d, %%[p]/m, %%[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint64_t revw_d64(svint64_t x)
+{
+    svint64_t r;
+    asm volatile("revw %%[r].d, %%[p]/m, %%[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t addp_s32(svint32_t a, svint32_t b)
+{
+    // SVE2 ADDP (Zd must equal Zn): out[2k]=a[2k]+a[2k+1],
+    // out[2k+1]=b[2k]+b[2k+1].
+    svint32_t r = a;
+    asm volatile("addp %%[r].s, %%[p]/m, %%[r].s, %%[b].s"
+                 : [r] "+w" (r)
+                 : [b] "w" (b), [p] "Upl" (svptrue_b32()));
+    return r;
+}
+
+static inline void st1d_scatter_s16(int16_t* base, svint64_t offs,
+                                    svint16_t data)
+{
+    asm volatile("st1d {%%[d].d}, %%[p], [%%[b], %%[o].d]"
+                 :
+                 : [d] "w" (data), [b] "r" (base), [o] "w" (offs),
+                   [p] "Upl" (svptrue_b64())
+                 : "memory");
+}
+
 static const int16_t C8[16][8] = {
 %s
 };
@@ -1231,6 +1359,15 @@ static const int32_t GT16_S32[4][4] = {
 static const int32_t T8E[4][4] = {
 %s
 };
+
+static const int32_t T8E8[4][8] = {
+    { 64, 64, 64, 64, 64, 64, 64, 64 },
+    { 83, 36, 83, 36, 83, 36, 83, 36 },
+    { 64, -64, 64, -64, 64, -64, 64, -64 },
+    { 36, -83, 36, -83, 36, -83, 36, -83 },
+};
+
+static const int64_t EVEN_OFFS[4] = { 0, 128, 256, 384 };
 
 static const int16_t CQ_LO[16][16] = {
 %s

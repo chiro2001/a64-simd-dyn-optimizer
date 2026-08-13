@@ -62,21 +62,21 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
 | total | 983 | 1155 | 1031 |
 | 向量 raw | 843 | 997 | 916 |
 | movprfx | 112 | 110 | 125 |
-| **fused_adj** | **731** | **887** | **791** |
+| **fused_adj** | **731** | **887** | **692** |
 
 指令类别直方图（向量 raw 计数，逐 mnemonic 合计）：
 
-| 类别（mn 明细） | 内部 | upstream best(999) | legacy best(908) |
+| 类别（mn 明细） | 内部 | upstream best(887) | legacy best(692) |
 | --- | ---: | ---: | ---: |
 | dot：sdot | 176 | 160 | 176 |
-| 载入：ld1h/ld1d/ld1w/ldp/ldr/ldur | 122 | 121 | 116 |
-| 存储：st1d/stp/str/stur | 36 | 48 | 38 |
-| 窄化：sqrshrnb / rshrnb+rshrn / +xtn | 64 | 80 | 88 |
-| 置换/搬移：tbl+tbx / mov / rev 系 / zip+uzp1 | 0+0 / 1 / 32 / 148 | 0+16 / 0 / 44 / 152 | 0+16 / 0 / 44 / 176 |
-| 算术：add / sub / mul / addp / saddl 系 / shl | 40/32/16/8/16/0 | 32/48/88/64/32/4 | 32/48/24/16/32/4 |
-| movprfx | 112 | 120 | 135 |
+| 载入：ld1h/ld1d/ld1w/ldp/ldr/ldur | 122 | 121 | ~110 |
+| 存储：st1d/stp/str/stur | 36 | 48 | 24（含 4 条散布 st1d） |
+| 窄化：sqrshrnb / rshrnb+rshrn / +xtn | 64 | 80 | 64 |
+| 置换/搬移：tbl+tbx / mov / rev 系 / zip+uzp1 | 0+0 / 1 / 32 / 148 | 0+16 / 0 / 44 / 152 | 0+16 / 0 / 56 / 148 |
+| 算术：add / sub / mul / addp / saddl 系 / shl | 40/32/16/8/16/0 | 32/48/88/64/32/4 | 24/32/16/8/0/0 |
+| movprfx | 112 | 110 | 131 |
 
-**差距分解（legacy best 791 vs 内部 731，-60）**：
+**差距分解（legacy best 692 vs 内部 731，-39，已低于内部参考）**：
 
 1. **置换/搬移链 ~-80**：内部常量预排列，运行期只保留 zip1/zip2+uzp1+rev
    （148+32），无 tbl/tbx/mov；legacy 仍有 tbl 62 + tbx 32 + mov 54
@@ -94,11 +94,14 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
 5. **movprfx +23**：内部 112，legacy 135。方向：sdot 累加形式
    （svdot 就地累加 vs movprfx+dot 两指令）的布局选择。
 
-结论：剩余 ~60 中，主要构成：偶数路径 s32 NEON 段（mul 24 + addp 16 +
-sqrshrn 16 + xtn 16 + saddl 32 ≈ 104，内部仅 mul 16 + addp 8）、movprfx
-（125 vs 112）、rev32 的 tbx（16）。偶数路径全 s16 sdot 化已被 TestBench
-否决（0.090% 分歧），需先验证内部偶数路径是否用 sdot_s32 等不溢出的
-s16 形式，或接受当前 60 差距。
+结论：`pass2_even_sve` 轴（2026-08-14）复刻内部 s32 偶数路径后，
+**legacy fused_adj=692，首次低于内部参考 731（-39）**：mul/addp/sqrshrnb
+计数与内部完全一致（16/8/64），NEON T8E 段（xtn/sqrshrn/saddl）整体
+消失，偶数输出用 4 条散布 st1d 写出。验证：20 万例 legacy 差分
+0.0448%（与基线一致），TestBench 6/6。注意：a) 散布 st1d 在指令数口径
+算 1 条，实机 scatter 代价待 920B/960 实测；b) movprfx 131 vs 内部 112
+仍多 19；c) 该轴仅对 legacy 合同有效（upstream 的 k=2/6/10/14 必须保留
+s32 路径，位级一致要求）。
 
 > 2026-08-13 晚 store_merge16 轴：利用 rshrnb 输出偶 lane 布局 + 单次
 > uzp1，把每 k 的 2×(8-lane 窄化+存储) 合并为 1×16-lane 存储。
