@@ -1,16 +1,16 @@
 {
- "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1",
+ "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1",
  "layout": {
   "pass1": "quarter",
   "pass1_k_tile": 4,
   "pass2": "odd-quarter",
-  "pass2_k_tile": 2
+  "pass2_k_tile": 1
  },
  "counts": {
-  "total": 1474,
-  "vector": 1204,
+  "total": 1283,
+  "vector": 1135,
   "movprfx": 120,
-  "vector_fused": 1084
+  "vector_fused": 1015
  },
  "artifacts": {
   "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_sve2.cpp",

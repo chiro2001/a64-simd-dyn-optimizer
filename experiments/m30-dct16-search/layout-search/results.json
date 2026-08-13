@@ -53,10 +53,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1525,
-   "vector": 1224,
+   "total": 1305,
+   "vector": 1151,
    "movprfx": 120,
-   "vector_fused": 1104
+   "vector_fused": 1031
   }
  },
  {
@@ -83,10 +83,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1508,
-   "vector": 1219,
+   "total": 1301,
+   "vector": 1151,
    "movprfx": 120,
-   "vector_fused": 1099
+   "vector_fused": 1031
   }
  },
  {
@@ -143,10 +143,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1494,
-   "vector": 1208,
+   "total": 1283,
+   "vector": 1135,
    "movprfx": 120,
-   "vector_fused": 1088
+   "vector_fused": 1015
   }
  },
  {
@@ -173,10 +173,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1474,
-   "vector": 1204,
+   "total": 1277,
+   "vector": 1135,
    "movprfx": 120,
-   "vector_fused": 1084
+   "vector_fused": 1015
   }
  },
  {
@@ -233,10 +233,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 2143,
-   "vector": 1696,
+   "total": 2030,
+   "vector": 1643,
    "movprfx": 296,
-   "vector_fused": 1400
+   "vector_fused": 1347
   }
  },
  {
@@ -263,10 +263,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 2122,
-   "vector": 1690,
+   "total": 2026,
+   "vector": 1643,
    "movprfx": 296,
-   "vector_fused": 1394
+   "vector_fused": 1347
   }
  }
 ]
