@@ -137,7 +137,8 @@ def make_emitter(kernel):
         from emit_dct32_sve2_shared import emit
 
         def emit_fn(combo):
-            return emit(layout=combo.get("layout", "v1"))
+            return emit(layout=combo.get("layout", "v1"),
+                        pass1_k2_slice=combo.get("pass1_k2_slice", 1))
         return emit_fn
     if kernel == "interp8":
         from emit_interp8_sve2_shared import emit

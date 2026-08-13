@@ -81,6 +81,16 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   由模板常量折叠；
 - 结果 4266 → **3962**；每输出 4.17 → 3.87（内部 4.15）。
 
+### P0 轴解耦（round-0012，2026-08-13）
+
+- 按顶级模型建议把 v3.1 的第一个独立机制拆为搜索轴
+  `pass1_k2_slice ∈ {0,1}`（manifest + 发射器 `--pass1-k2-slice`）；
+- 回放验证：`layout=v3, pass1_k2_slice=0` = **4266**（历史 v3 计数），
+  `=1` = **3962**（v3.1），两者 20k 差分 0、零 scatter；v1/v2/v2b
+  不受该轴影响（源码哈希去重）；
+- 这是“复合模板 → 可组合语义轴”的第一步；后续轴（odd_lowering、
+  lane_owner、narrow_batch、constant_layout）随模板重构逐个拆出。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。

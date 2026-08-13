@@ -660,7 +660,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (2) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 2 * 32 + base, rz);
             }
             else
             {
@@ -673,10 +673,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(2) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(2) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(2) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(2) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[2 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[2 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[2 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[2 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -690,7 +690,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (6) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 6 * 32 + base, rz);
             }
             else
             {
@@ -703,10 +703,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(6) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(6) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(6) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(6) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[6 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[6 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[6 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[6 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -720,7 +720,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (10) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 10 * 32 + base, rz);
             }
             else
             {
@@ -733,10 +733,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(10) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(10) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(10) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(10) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[10 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[10 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[10 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[10 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -750,7 +750,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (14) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 14 * 32 + base, rz);
             }
             else
             {
@@ -763,10 +763,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(14) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(14) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(14) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(14) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[14 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[14 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[14 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[14 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -780,7 +780,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (18) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 18 * 32 + base, rz);
             }
             else
             {
@@ -793,10 +793,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(18) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(18) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(18) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(18) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[18 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[18 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[18 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[18 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -810,7 +810,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (22) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 22 * 32 + base, rz);
             }
             else
             {
@@ -823,10 +823,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(22) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(22) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(22) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(22) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[22 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[22 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[22 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[22 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -840,7 +840,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (26) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 26 * 32 + base, rz);
             }
             else
             {
@@ -853,10 +853,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(26) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(26) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(26) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(26) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[26 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[26 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[26 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[26 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {
@@ -870,7 +870,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (30) * 32 + base, rz);
+                svst1_s16(pg4h, dst + 30 * 32 + base, rz);
             }
             else
             {
@@ -883,10 +883,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(30) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(30) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(30) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(30) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[30 * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[30 * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[30 * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[30 * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
         }
         {

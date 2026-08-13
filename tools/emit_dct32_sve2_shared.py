@@ -317,10 +317,15 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
 """ % (co, c2, c4, odd, k2, k4)
 
 
-def pass_grouped_cpp():
+def pass_grouped_cpp(pass1_k2_slice=True):
     """v3: 4-row groups; odd-k uses lane-per-output SDOT .s slices +
     RSHRNB batch narrow (no per-output uaddv/fmov), mirroring the internal
-    reference's structure. Even-k keeps the v2 per-row mul+saddv path."""
+    reference's structure. Even-k keeps the v2 per-row mul+saddv path.
+
+    pass1_k2_slice: k==2 mod 4 in pass1 (shift==4) uses the sliced
+    s16 SDOT .d path (v3.1, 3962); when disabled it falls back to the
+    v3-era mul+saddv path (4266), making this mechanism an independent
+    search axis (round-0012 P0)."""
     leaf = []
     for rr in range(4):
         r = rr
@@ -383,8 +388,11 @@ def pass_grouped_cpp():
         svint16_t EX%d = svtbl2_s16(svcreate2_s16(e%d, f%d), ilo);
 """ % (m, m, m, m, m, m, m))
     ex = "".join(ex)
-    k2 = "\n".join(
-        """\
+    k2 = []
+    for kk in range(8):
+        d0 = 4 * kk + 2
+        if pass1_k2_slice:
+            k2.append("""\
         {
             if (shift == 4)
             {
@@ -396,7 +404,7 @@ def pass_grouped_cpp():
                                           svreinterpret_s32_s64(t));
                 svint16_t r = svrshrnb_n_s32(lo, shift);
                 svint16_t rz = svuzp1_s16(r, r);
-                svst1_s16(pg4h, dst + (%d) * 32 + base, rz);
+                svst1_s16(pg4h, dst + %d * 32 + base, rz);
             }
             else
             {
@@ -409,13 +417,30 @@ def pass_grouped_cpp():
                 int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
                 int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
                 int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-                dst[(%d) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-                dst[(%d) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-                dst[(%d) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-                dst[(%d) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+                dst[%d * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[%d * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[%d * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[%d * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
             }
-        }""" % (kk, kk, 4 * kk + 2, kk, 4 * kk + 2, 4 * kk + 2, 4 * kk + 2,
-                4 * kk + 2) for kk in range(8))
+        }""" % (kk, kk, d0, kk, d0, d0, d0, d0))
+        else:
+            k2.append("""\
+        {
+            svint32_t c = svld1_s32(p8s, K2[%d]);
+            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+            dst[%d * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+            dst[%d * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+            dst[%d * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+            dst[%d * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+        }""" % (kk, d0, d0, d0, d0))
+    k2 = "\n".join(k2)
     k4 = "\n".join(
         """\
         {
@@ -490,9 +515,10 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 """ % (leaf, slices, ex, odd, k2, k4, k0)
 
 
-def emit(func_name="dynopt_dct32_sve2_shared", layout="v1"):
+def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
+         pass1_k2_slice=True):
     if layout == "v3":
-        pass_body = pass_grouped_cpp()
+        pass_body = pass_grouped_cpp(pass1_k2_slice=pass1_k2_slice)
     elif layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
     else:
@@ -546,9 +572,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out", default="generated/dct32/sve2_shared.cpp")
     ap.add_argument("--layout", default="v1")
+    ap.add_argument("--pass1-k2-slice", type=int, default=1)
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(layout=args.layout))
+        f.write(emit(layout=args.layout,
+                     pass1_k2_slice=bool(args.pass1_k2_slice)))
     print("wrote %s" % args.out)
 
 

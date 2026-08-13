@@ -46,3 +46,6 @@ targets:
 
 layouts:
   layout: [v1, v2, v2b, v3]
+  # round-0012 P0: v3.1 的 pass1 k≡2 切片拆成独立轴（0=4266, 1=3962）；
+  # 对 v1/v2/v2b 无效果（源码哈希去重）。
+  pass1_k2_slice: [0, 1]
