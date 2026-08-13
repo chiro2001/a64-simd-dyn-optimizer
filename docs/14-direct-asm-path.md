@@ -50,6 +50,13 @@ ACLE 层的问题：
 上游差分（0 分歧），true-dynamic 计数与 ACLE 路径完全一致
 （1183/1246/1636，fused_adj 1054/1087/1252）。
 
+2026-08-13 扩展到 DCT32/interp8：同一 `--backend asm` 通道
+（bootstrap 一次 `.S`，之后纯 `as`）在 DCT32 全部 4 个布局
+（v1/v2/v2b/v3）与 interp8 path-a 上复现 ACLE 计数完全一致
+（DCT32 v3 = 3962，interp8 = 127），20k 差分 0 分歧。证明
+“kernel→优化→kernel→评估”的纯汇编重建通道对所有当前 kernel
+家族可用，P1/P2 的指令流后端可以在这条已验证骨架上叠加。
+
 实测提速：
 
 ```text
