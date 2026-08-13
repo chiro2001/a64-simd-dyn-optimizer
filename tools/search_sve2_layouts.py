@@ -162,6 +162,7 @@ def make_emitter(kernel, backend="acle"):
                     odd_lowering="sdot.d",
                     narrow_batch=4,
                     constant_layout="derived-replicated",
+                    acc_split=combo.get("acc_split", 1),
                     legacy_ex=combo.get("legacy_ex", 0),
                     legacy_k4=combo.get("legacy_k4", 0),
                     slice_kind=combo.get("slice_kind", "tbl2"),
@@ -250,6 +251,11 @@ def main():
     src_seen = {}
     emitted = {}
     for combo in combos:
+        if args.backend == "op" and args.kernel == "dct32":
+            # rewrite sequences are searched separately by
+            # search_rewrite_sequences.py; keep the layout search bounded.
+            combo = {k: v for k, v in combo.items()
+                     if not k.startswith("rw")}
         if combo.get("legacy_k4") and args.backend != "op":
             # grouped emitter has no legacy_k4 lowering yet; only the op
             # backend implements it (dct32, 2026-08-13).

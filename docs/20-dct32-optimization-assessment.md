@@ -514,6 +514,54 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   `experiments/m30-dct32-search/layout-search-op-final/results.json`
   （32 个实测候选，best = row8+legacy+zip+svlastb = 6464）。
 
+### 5.11 acc_split 轴补全与 6464 差距分解（2026-08-13 晚）
+
+- **op 后端补上 `acc_split` 轴**（此前 manifest 有轴但 lo 未透传，
+  恒为顺序链）：1=4 连链、2/4=平衡树 (t0+t1)+(t2+t3)；
+  `search_sve2_layouts --backend op --kernel dct32` 同步透传，并跳过
+  rw1..rw4 轴（rewrite 序列由 `search_rewrite_sequences.py` 单独搜索，
+  避免布局搜索膨胀到 ~2 万组合）。
+- 全量 op 布局搜索（64 个实测候选）：best 仍为
+  row8+legacy+zip+svlastb+acc_split=1 = **6464**；同配置 acc_split=2
+  = 6696（平衡树在展开代码里寄存器分配更差，+232），其余 acc_split=2
+  候选普遍 +200~700——该轴对指令数无正收益，保留到 MCA/实机 ILP 裁决。
+
+**6464 vs 内部 4827 的逐 mnemonic 差距（QEMU VL=256 同口径）**：
+
+| 类别 | op 6464 | 内部 4827 | 差 |
+| --- | ---: | ---: | ---: |
+| sdot | 1344 | 1376 | -32 |
+| ld1h | 736 | 864 | -128 |
+| movprfx | 440 | 480 | -40 |
+| uzp1 | 448 | 480 | -32 |
+| **rshrnb** | **448** | **256** | **+192** |
+| **add** | **448** | **272** | **+176** |
+| **rev** | **256** | **112** | **+144** |
+| **sub** | **256** | **144** | **+112** |
+| zip1/zip2 | 208/32 | 152/152 | +56/-120 |
+| tbl | 128 | 0 | +128 |
+| trn1/trn2 | 256/64 | — | — |
+| saddlb/saddlt | 0 | 32/32 | -64 |
+| mul | 0 | 32 | -32 |
+| st1d（scatter） | 0 | 192 | -192 |
+
+解读：op 后端在 sdot/ld1h/movprfx/uzp1/scatter 上已优于内部；超额
+集中在 **rshrnb +192**（每指令 4 输出 vs 内部 8 输出：内部把 8 行的
+归约结果合并进一条 16-lane s32 后再窄化，我们仍是双 bank 各自 4 行
+各一条）、**add/sub +288**（内部用 s16 域 saddlb/saddlt+addp 的
+quarter 结构，省掉 s32 E 链的加/减）与 **rev/tbl +272**（内部常量
+预排列后无运行期 tbl，rev 只剩 112）。
+
+下一步（工具化路径，与 DCT16 even_sve 同构）：
+1. DCT32 pass2 k0-family（k=0/8/16/24）改为 per-4-row-group 的
+   quarter even_sve 结构（zip pack + saddlb/saddlt + EEp/EOp +
+   mul/addp + 合并窄化），替换现有 per-row s32 E 链 + 标量 k0
+   （extract2/svlastb + 标量 store，约 203 str + 112 ldr + 104 fmov/
+   pass 的栈流量来源）；
+2. 8 行合并窄化：双 bank acc 合并为单条 16-lane s32 后再 rshrnb
+   （rshrnb 448→256 方向，需要复刻内部的切片/归约排列）；
+3. leaf rev4s/tbl 预排列进常量表（tbl 128 → 0）。
+
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
 微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈

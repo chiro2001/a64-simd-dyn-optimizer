@@ -47,6 +47,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     legacy_k4 = bool(lo.get("legacy_k4", 0))
     slice_kind = lo.get("slice_kind", "tbl2")
     row_group = int(lo.get("row_group", 4))
+    acc_split = int(lo.get("acc_split", 1))
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
@@ -227,12 +228,32 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                                == "derived-replicated"
                                                else "C32[%d]" % k)})
                             terms.append(t.out)
-                        acc = terms[0]
-                        for m in range(1, 4):
-                            acc = new("accumulate", tid,
-                                      "acc_%d_%d_b%d" % (k, m, b),
-                                      (acc, terms[m]),
-                                      attrs={"acc_bits": 64}).out
+                        if acc_split >= 2:
+                            # balanced tree: (t0+t1)+(t2+t3)
+                            lvl = list(terms)
+                            depth = 0
+                            while len(lvl) > 1:
+                                nxt = []
+                                for i in range(0, len(lvl), 2):
+                                    if i + 1 < len(lvl):
+                                        nxt.append(new(
+                                            "accumulate", tid,
+                                            "acc_%d_d%d_%d_b%d"
+                                            % (k, depth, i // 2, b),
+                                            (lvl[i], lvl[i + 1]),
+                                            attrs={"acc_bits": 64}).out)
+                                    else:
+                                        nxt.append(lvl[i])
+                                lvl = nxt
+                                depth += 1
+                            acc = lvl[0]
+                        else:
+                            acc = terms[0]
+                            for m in range(1, 4):
+                                acc = new("accumulate", tid,
+                                          "acc_%d_%d_b%d" % (k, m, b),
+                                          (acc, terms[m]),
+                                          attrs={"acc_bits": 64}).out
                         rnd = new("round_shift", tid, "rnd_%d_b%d" % (k, b),
                                   (acc,),
                                   attrs={"shift": shift, "epoch": pass_id,
