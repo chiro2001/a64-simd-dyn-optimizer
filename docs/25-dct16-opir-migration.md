@@ -173,3 +173,52 @@ narrow8/16 合并，32//n_groups 参数化已在 DCT32 版本确认）。
    704 需要，注意 scatter 实机多 uop 的取舍）；
 3. `search_rewrite_sequences.py` 参数化 kernel，验收自动重发现
    ≤ 704。
+
+## 10. legacy + even_sve op 后端（2026-08-13 晚，已交付）
+
+- `lower_pass2_odd_quarter_legacy_even_sve(k_tile, store_merge16)`：
+  每组 zip quarter + QEOW（saddlb/saddlt + zip/revw + uzp1_wide）+
+  EEp/EOp（uzp1d/revw_d64 + s32 add/sub）→ T8E8 四乘
+  （svmul + addp32）→ qrshrn + uzp1 + `st1d_scatter`（EVEN_OFFS
+  bytes {0,128,256,384}，覆盖 k=0/4/8/12）；odd k 链式 SDOT +
+  narrow16；legacy k=2/6/10/14 用 QEOW 单常量 SDOT + narrow16。
+- 新增 op：`widen_add_sve`(saddlb/lt)、`mul`(s32 SVE)、`addp32`、
+  `narrow4_sve`、SVE `zip1s/zip2s/uzp1s/uzp2s/uzp1d/uzp2d/uzp1_wide/
+  revw_d32/revw_d64`、scatter store；helper：revw_d32/revw_d64/
+  addp_s32/st1d_scatter_s16；常量 T8E8/EVEN_OFFS；legacy 模式
+  `rshrnb → qrshrnb`。
+- provenance 支持 scatter 拓扑（记录 `scatter_stores`，默认不判错）。
+
+### 验证与结果
+
+| 项 | 结果 |
+| --- | --- |
+| 逐 pass 差分 vs grouped legacy 704 | 0 mismatch（2000 例） |
+| 20k 差分 vs 上游 | 2300 / 0.0449%（legacy 签名，与 grouped 完全一致） |
+| TestBenchLite dct16 | PASS |
+| op 后端 fused_uop（含 4 scatter） | **699**（vector 803 / fused 687 / sg 4） |
+| grouped 704 同构实测 | 708（vector 812 / fused 696 / sg 4） |
+| 全 op 搜索最优（upstream-exact、无 scatter） | 895 |
+
+op 后端已完整复现 DCT16 legacy best 704 结构，且全展开后寄存器分配
+更好（stack_vector 16 vs 24），fused_uop 699 < 704/708。**DCT16
+“kernel→op DAG→ACLE→验证→计数”主链全部打通**，四种结构
+（upstream / odd-quarter / quarter+odd-quarter / legacy+even_sve）
+均由同一 op 发射器生成，manifest 轴驱动的搜索可直接排序。
+
+### 已知口径
+
+- legacy even_sve 路径当前固定合并窄化（store_merge16 忽略）；搜索
+  tag 中 store_merge16-0/1 去重为同一源。
+- scatter 计 4 uop（docs/17 §1 口径）；若后续实机发现 scatter 多 uop
+  更差，op 后端可加 rewrite 把 4×scatter 改回普通 st1。
+
+### 下一步（工具链收官）
+
+1. `search_rewrite_sequences.py` 参数化 kernel（当前硬编码 dct32
+   符号 `_ZL9op_pass_4` 与基线），在 DCT16 op DAG 上跑 rewrite
+   序列，验收：无内部参考时自动重发现 ≤ 699；
+2. 移植 `tbl2_to_zip`（DCT16 的 tbl2 pack 变体）、`merge_narrow8`
+   （16//n_groups 参数化）；
+3. 然后回到 DCT32 把发现的通用 rewrite 反向收益确认，并更新
+   docs/23 流程图中的 Agent 依赖点。

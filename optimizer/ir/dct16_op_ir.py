@@ -826,17 +826,216 @@ def lower_pass1_quarter(k_tile: int = 4, pack_zip: bool = True,
     return b.ops
 
 
+def lower_pass2_odd_quarter_legacy_even_sve(k_tile: int = 2,
+                                            store_merge16: bool = True,
+                                            shift: int = 10) -> List[Op]:
+    """pass2 odd-quarter legacy + even_sve (the 704 family):
+    `sve_even_group_block(g, legacy=1)` per group (zip quarters + QEOW +
+    EEp/EOp mul/addp + rshrn + scatter store for k=0/4/8/12), odd k
+    chained SDOT on QO packs, then legacy QEOW SDOT loop for
+    k=2/6/10/14 (single const, merged narrow).
+    """
+    b = _Builder("d16")
+
+    def _g(k, j):
+        return "G[%d][%d]" % (k, j)
+
+    qo0: Dict[int, str] = {}
+    qo1: Dict[int, str] = {}
+    qeow: Dict[int, str] = {}
+    for g in range(4):
+        tid = "p2.evensve.g%d" % g
+        base = 4 * g
+        z = {}
+        for m in range(4):
+            z[m] = b.new("load", tid, "z_%d" % (base + m),
+                         attrs={"arch": "sve", "elem": "s16",
+                                "row": base + m, "half": "full",
+                                "base": "src", "index": "r*line"}).out
+        a = {}
+        for m in range(4):
+            a[m] = b.new("permute", tid, "pa%d_%d" % (m, g), (z[m],),
+                         attrs={"kind": "view_s64", "arch": "sve"}).out
+        t = []
+        t.append(b.new("permute", tid, "pt0_%d" % g, (a[0], a[2]),
+                       attrs={"kind": "zip1d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt1_%d" % g, (a[0], a[2]),
+                       attrs={"kind": "zip2d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt2_%d" % g, (a[1], a[3]),
+                       attrs={"kind": "zip1d", "arch": "sve"}).out)
+        t.append(b.new("permute", tid, "pt3_%d" % g, (a[1], a[3]),
+                       attrs={"kind": "zip2d", "arch": "sve"}).out)
+        p0 = b.new("permute", tid, "pp0_%d" % g, (t[0], t[2]),
+                   attrs={"kind": "zip1d", "arch": "sve"}).out
+        p1 = b.new("permute", tid, "pp1_%d" % g, (t[0], t[2]),
+                   attrs={"kind": "zip2d", "arch": "sve"}).out
+        p2 = b.new("permute", tid, "pp2_%d" % g, (t[1], t[3]),
+                   attrs={"kind": "zip1d", "arch": "sve"}).out
+        p3 = b.new("permute", tid, "pp3_%d" % g, (t[1], t[3]),
+                   attrs={"kind": "zip2d", "arch": "sve"}).out
+        q0 = b.new("permute", tid, "q0_%d" % g, (p0,),
+                   attrs={"kind": "view_s16", "arch": "sve"}).out
+        q1 = b.new("permute", tid, "q1_%d" % g, (p1,),
+                   attrs={"kind": "view_s16", "arch": "sve"}).out
+        q2 = b.new("permute", tid, "q2_%d" % g,
+                   (b.new("permute", tid, "v2_%d" % g, (p2,),
+                          attrs={"kind": "view_s16", "arch": "sve"}).out,),
+                   attrs={"kind": "revh_d", "arch": "sve"}).out
+        q3 = b.new("permute", tid, "q3_%d" % g,
+                   (b.new("permute", tid, "v3_%d" % g, (p3,),
+                          attrs={"kind": "view_s16", "arch": "sve"}).out,),
+                   attrs={"kind": "revh_d", "arch": "sve"}).out
+        qo0[g] = b.new("sub", tid, "QO0_%d" % g, (q0, q3),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        qo1[g] = b.new("sub", tid, "QO1_%d" % g, (q1, q2),
+                       attrs={"elem": "s16", "arch": "sve"}).out
+        # widening adds -> s32 pairs
+        e = []
+        e.append(b.new("widen_add_sve", tid, "e0_%d" % g, (q0, q3),
+                       attrs={"kind": "lb"}).out)
+        e.append(b.new("widen_add_sve", tid, "e1_%d" % g, (q0, q3),
+                       attrs={"kind": "lt"}).out)
+        e.append(b.new("widen_add_sve", tid, "e2_%d" % g, (q1, q2),
+                       attrs={"kind": "lb"}).out)
+        e.append(b.new("widen_add_sve", tid, "e3_%d" % g, (q1, q2),
+                       attrs={"kind": "lt"}).out)
+        w0 = b.new("permute", tid, "w0_%d" % g, (e[0], e[1]),
+                   attrs={"kind": "zip1s", "arch": "sve"}).out
+        w1 = b.new("permute", tid, "w1_%d" % g, (e[0], e[1]),
+                   attrs={"kind": "zip2s", "arch": "sve"}).out
+        u2 = b.new("permute", tid, "u2_%d" % g, (e[2],),
+                   attrs={"kind": "revw_d32", "arch": "sve"}).out
+        u3 = b.new("permute", tid, "u3_%d" % g, (e[3],),
+                   attrs={"kind": "revw_d32", "arch": "sve"}).out
+        w2 = b.new("permute", tid, "w2_%d" % g, (u3, u2),
+                   attrs={"kind": "zip1s", "arch": "sve"}).out
+        w3 = b.new("permute", tid, "w3_%d" % g, (u3, u2),
+                   attrs={"kind": "zip2s", "arch": "sve"}).out
+        s0 = b.new("sub", tid, "s0_%d" % g, (w0, w2),
+                   attrs={"elem": "s32", "arch": "sve"}).out
+        s1 = b.new("sub", tid, "s1_%d" % g, (w1, w3),
+                   attrs={"elem": "s32", "arch": "sve"}).out
+        s2 = b.new("add", tid, "s2_%d" % g, (w0, w2),
+                   attrs={"elem": "s32", "arch": "sve"}).out
+        s3 = b.new("add", tid, "s3_%d" % g, (w1, w3),
+                   attrs={"elem": "s32", "arch": "sve"}).out
+        qeow[g] = b.new("permute", tid, "QEOW_%d" % g, (s0, s1),
+                        attrs={"kind": "uzp1_wide", "arch": "sve"}).out
+        v0 = b.new("permute", tid, "v0_%d" % g, (s2, s3),
+                   attrs={"kind": "uzp1d", "arch": "sve"}).out
+        v1 = b.new("permute", tid, "v1_%d" % g, (s2, s3),
+                   attrs={"kind": "uzp2d", "arch": "sve"}).out
+        v1r = b.new("permute", tid, "v1r_%d" % g, (v1,),
+                    attrs={"kind": "revw_d64", "arch": "sve"}).out
+        eep = b.new("add", tid, "EEp_%d" % g, (v0, v1r),
+                    attrs={"elem": "s32", "arch": "sve", "view": "s64"}).out
+        eop = b.new("sub", tid, "EOp_%d" % g, (v0, v1r),
+                    attrs={"elem": "s32", "arch": "sve", "view": "s64"}).out
+        m = []
+        for i, (src, cexpr) in enumerate(
+                ((eep, "T8E8[0]"), (eop, "T8E8[1]"),
+                 (eep, "T8E8[2]"), (eop, "T8E8[3]"))):
+            c = b.new("load", tid, "ct_%d_%d" % (i, g),
+                      attrs={"arch": "sve-const", "elem": "s32",
+                             "const": cexpr})
+            m.append(b.new("mul", tid, "m%d_%d" % (i, g), (src,),
+                           attrs={"elem": "s32", "arch": "sve",
+                                  "const_src": cexpr}).out)
+        pa = b.new("addp32", tid, "pa_%d" % g, (m[0], m[2]), attrs={}).out
+        pb = b.new("addp32", tid, "pb_%d" % g, (m[1], m[3]), attrs={}).out
+        xa = b.new("permute", tid, "xa_%d" % g, (pa, pb),
+                   attrs={"kind": "uzp1s", "arch": "sve"}).out
+        xb = b.new("permute", tid, "xb_%d" % g, (pa, pb),
+                   attrs={"kind": "uzp2s", "arch": "sve"}).out
+        na = b.new("narrow4_sve", tid, "na_%d" % g, (xa,),
+                   attrs={"shift": shift, "mode": "rshrn"}).out
+        nb = b.new("narrow4_sve", tid, "nb_%d" % g, (xb,),
+                   attrs={"shift": shift, "mode": "rshrn"}).out
+        n16 = b.new("permute", tid, "n16_%d" % g, (na, nb),
+                    attrs={"kind": "uzp1_wide", "arch": "sve",
+                           "inputs_s16": True}).out
+        b.new("store", tid, "", (n16,),
+              attrs={"arch": "sve-scatter", "base": "dst",
+                     "index": "scatter 4*g",
+                     "lanes": tuple((2, k, 4 * g + j)
+                                    for k in (0, 4, 8, 12)
+                                    for j in range(4)),
+                     "topology": "scatter", "n_lanes": 4,
+                     "evoffs": "EVEN_OFFS"})
+    # odd k loop (chained SDOT, merged narrow16)
+    for kb in range(1, 16, 2 * k_tile):
+        for t in range(k_tile):
+            k = kb + 2 * t
+            tid = "p2.odd.k%d" % k
+            clo = "CQ_LO[%d]" % k
+            chi = "CQ_HI[%d]" % k
+            b.new("load", tid, "clo_%d" % k,
+                  attrs={"arch": "sve-const", "elem": "s16", "const": clo})
+            b.new("load", tid, "chi_%d" % k,
+                  attrs={"arch": "sve-const", "elem": "s16", "const": chi})
+            dots = []
+            for g in range(4):
+                d0 = b.new("dot_segment", "p2.odd.k%d.g%d" % (k, g),
+                           "d0_%d_%d" % (k, g), (qo0[g],),
+                           attrs={"arch": "sve", "acc_bits": 64,
+                                  "lane_owner": "output",
+                                  "terms": tuple(_g(k, j) for j in range(4)),
+                                  "const_src": clo})
+                d1 = b.new("dot_accum", "p2.odd.k%d.g%d" % (k, g),
+                           "d1_%d_%d" % (k, g), (d0.out, qo1[g]),
+                           attrs={"acc_bits": 64,
+                                  "terms": tuple(_g(k, 4 + j)
+                                                 for j in range(4)),
+                                  "const_src": chi})
+                dots.append(d1.out)
+            nn = b.new("narrow16", tid, "nn_%d" % k, tuple(dots),
+                       attrs={"shift": shift, "mode": "qrshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "sve", "base": "dst", "index": "16*k",
+                         "lanes": tuple((2, k, r) for r in range(16)),
+                         "topology": "contiguous", "n_lanes": 16})
+    # legacy even k = 2,6,10,14 via QEOW (single const sdot)
+    for kb in range(2, 16, 4 * k_tile):
+        for t in range(k_tile):
+            k = kb + 4 * t
+            tid = "p2.legacy.k%d" % k
+            clo = "CQ_LO[%d]" % k
+            b.new("load", tid, "clo_%d" % k,
+                  attrs={"arch": "sve-const", "elem": "s16", "const": clo})
+            dots = []
+            for g in range(4):
+                dots.append(b.new(
+                    "dot_segment", "p2.legacy.k%d.g%d" % (k, g),
+                    "d_%d_%d" % (k, g), (qeow[g],),
+                    attrs={"arch": "sve", "acc_bits": 64,
+                           "lane_owner": "output",
+                           "terms": tuple(_g(k, j) for j in range(8)),
+                           "const_src": clo}).out)
+            nn = b.new("narrow16", tid, "nn_%d" % k, tuple(dots),
+                       attrs={"shift": shift, "mode": "qrshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "sve", "base": "dst", "index": "16*k",
+                         "lanes": tuple((2, k, r) for r in range(16)),
+                         "topology": "contiguous", "n_lanes": 16})
+    return b.ops
+
+
 def dct16_upstream_provenance(ops: List[Op]) -> Dict:
     """Full upstream pass1+pass2 output-lane coverage + dot-term and
     round-epoch checks (analogous to dct32 provenance_report)."""
     issues: List[str] = []
     stores: Dict[Tuple[int, int, int], Op] = {}
     dot_terms: Dict[Tuple[int, int], set] = {}
+    scatter = 0
     for op in ops:
         if op.kind == "store":
-            if op.attrs.get("topology") != "contiguous":
+            topo = op.attrs.get("topology")
+            if topo == "scatter":
+                scatter += 1
+            elif topo != "contiguous":
                 issues.append("%s: non-contiguous store" % op.op_id)
-            if "scatter" in op.attrs.get("index", ""):
+            if topo == "contiguous" and "scatter" in op.attrs.get(
+                    "index", ""):
                 issues.append("%s: scatter store" % op.op_id)
             for lane in op.attrs.get("lanes", ()):
                 if lane in stores:
@@ -891,6 +1090,7 @@ def dct16_upstream_provenance(ops: List[Op]) -> Dict:
         "store_count": len(stores),
         "expected_lanes": len(expected),
         "coverage": len(stores) / len(expected) if expected else 0.0,
+        "scatter_stores": scatter,
         "issues": issues,
         "ok": not issues,
     }

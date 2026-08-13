@@ -10,7 +10,7 @@ from dct16_op_ir import (  # noqa: E402
     dct16_leaf_provenance, dct16_pass1_provenance,
     dct16_upstream_provenance, lower_pass1_leaf, lower_pass1_odd,
     lower_pass1_perrow, lower_pass1_quarter, lower_pass2_odd_quarter,
-    lower_pass2_upstream)
+    lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_upstream)
 
 
 def main():
@@ -54,6 +54,15 @@ def main():
     n1q = len([o for o in qq if o.tile_id.startswith("p1.")])
     print("DCT16 quarter+odd-quarter DAG OK: pass1_ops=%d stores=%d"
           % (n1q, r5["store_count"]))
+    # Legacy even_sve (704 family): scatter path + QEOW sdot.
+    lg = lower_pass1_quarter(k_tile=4, pack_zip=True, even_factor=True) \
+        + lower_pass2_odd_quarter_legacy_even_sve(k_tile=2,
+                                                  store_merge16=True)
+    r6 = dct16_upstream_provenance(lg)
+    assert r6["ok"], r6["issues"]
+    assert r6["scatter_stores"] == 4
+    print("DCT16 legacy even_sve DAG OK: ops=%d scatter=%d"
+          % (len(lg), r6["scatter_stores"]))
     return 0
 
 
