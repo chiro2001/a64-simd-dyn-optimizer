@@ -11,6 +11,7 @@ from dct16_op_ir import (  # noqa: E402
     dct16_upstream_provenance, lower_pass1_leaf, lower_pass1_odd,
     lower_pass1_perrow, lower_pass1_quarter, lower_pass2_odd_quarter,
     lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_upstream)
+from dct16_rewrites import apply_rewrites  # noqa: E402
 
 
 def main():
@@ -63,6 +64,21 @@ def main():
     assert r6["scatter_stores"] == 4
     print("DCT16 legacy even_sve DAG OK: ops=%d scatter=%d"
           % (len(lg), r6["scatter_stores"]))
+    # Cross-kernel rewrites on a tbl2 + store_merge16=0 base.
+    base = lower_pass1_quarter(k_tile=4, pack_zip=True, even_factor=True) \
+        + lower_pass2_odd_quarter(pack_zip=False, store_merge16=False,
+                                  k_tile=2)
+    for seq in (["tbl2_to_zip"], ["merge_narrow8"],
+                ["tbl2_to_zip", "merge_narrow8"]):
+        rw = apply_rewrites(list(base), seq)
+        r = dct16_upstream_provenance(rw)
+        assert r["ok"], (seq, r["issues"])
+    try:
+        apply_rewrites(list(base), ["bogus"])
+        raise AssertionError("expected ValueError for unknown rewrite")
+    except ValueError:
+        pass
+    print("DCT16 rewrites OK (tbl2_to_zip / merge_narrow8)")
     return 0
 
 

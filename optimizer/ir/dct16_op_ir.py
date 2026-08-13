@@ -443,6 +443,8 @@ def lower_pass2_odd_quarter(pack_zip: bool = True,
     eo: Dict[int, str] = {}
     eee: Dict[int, str] = {}
     eeo: Dict[int, str] = {}
+    qo0: Dict[int, str] = {}
+    qo1: Dict[int, str] = {}
     for i in range(0, 16, 2):
         tid = "p2.leaf.rowpair%d" % (i // 2)
         z, r = {}, {}
@@ -500,12 +502,28 @@ def lower_pass2_odd_quarter(pack_zip: bool = True,
                             (t0.out, t1.out),
                             attrs={"elem": "s32", "arch": "neon",
                                    "lane_owner": "partial"}).out
-    # ---- quarter packs (zip variant) ----
-    qo0: Dict[int, str] = {}
-    qo1: Dict[int, str] = {}
+    # ---- quarter packs (zip or tbl2 variant) ----
     for g in range(4):
         tid = "p2.pack.g%d" % g
         base = 4 * g
+        if not pack_zip:
+            po01 = b.new("permute", tid, "PO01_%d" % g,
+                         (zO[base], zO[base + 1]),
+                         attrs={"kind": "tbl2", "idx": "iloq",
+                                "arch": "sve"})
+            po23 = b.new("permute", tid, "PO23_%d" % g,
+                         (zO[base + 2], zO[base + 3]),
+                         attrs={"kind": "tbl2", "idx": "iloq",
+                                "arch": "sve"})
+            qo0[g] = b.new("permute", tid, "QO0_%d" % g,
+                           (po01.out, po23.out),
+                           attrs={"kind": "tbl2", "idx": "q0q",
+                                  "arch": "sve"}).out
+            qo1[g] = b.new("permute", tid, "QO1_%d" % g,
+                           (po01.out, po23.out),
+                           attrs={"kind": "tbl2", "idx": "q1q",
+                                  "arch": "sve"}).out
+            continue
         a = {}
         for m in range(4):
             a[m] = b.new("permute", tid, "pa%d_%d" % (m, g),

@@ -11,7 +11,7 @@ Compile contract: -O2 -fno-tree-pre -march=armv8.2-a+sve2.
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from dct16_op_ir import G16, GT16_S32, T8E, lower_pass1_perrow, \
     lower_pass1_quarter, lower_pass2_odd_quarter, \
@@ -21,6 +21,13 @@ from op_ir import Op
 
 IDX_REV = "static const uint16_t idx_rev[16] =\n" \
           "    { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };\n"
+
+IDX_LO = "static const uint16_t idx_lo[16] =\n" \
+    "    { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };\n"
+IDX_QA = "static const uint16_t idx_qa[16] =\n" \
+    "    { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };\n"
+IDX_QB = "static const uint16_t idx_qb[16] =\n" \
+    "    { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };\n"
 
 REV16_TBL = "static const uint8_t rev16_tbl[16] =\n" \
     "    { 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1 };\n"
@@ -264,6 +271,7 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
     used_p32 = False
     used_p64 = False
     scatter_loaded = False
+    used_idx = set()
     rshrn = "svqrshrnb_n_s32" if legacy else "svrshrnb_n_s32"
 
     def sv_load_const(op: Op) -> str:
@@ -385,6 +393,12 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
                 body.append("    svint16_t %s = revh_d(%s);"
                             % (out, ins[0]))
                 ctype[out] = "svint16_t"
+            elif pk == "tbl2":
+                body.append("    svint16_t %s = svtbl2_s16("
+                            "svcreate2_s16(%s, %s), %s);"
+                            % (out, ins[0], ins[1], attrs["idx"]))
+                ctype[out] = "svint16_t"
+                used_idx.add(attrs["idx"])
             elif pk == "rev16":
                 body.append("    int16x8_t %s = rev16(%s);" % (out, ins[0]))
                 ctype[out] = "int16x8_t"
@@ -561,7 +575,7 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
                             % (k, base, ins[0]))
         else:
             raise ValueError("pass2: unsupported op %s (%s)" % (kind, out))
-    return body, used_p8, used_p32, used_p64
+    return body, used_p8, used_p32, used_p64, used_idx
 
 
 def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
@@ -587,9 +601,15 @@ def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
                                        k_tile=pass2_k_tile)
     else:
         ops += lower_pass2_upstream()
+    return emit_ops(ops, func_name)
+
+
+def emit_ops(ops, func_name: str = "dynopt_dct16_sve2_shared",
+             legacy: bool = False) -> str:
+    """Emit ACLE from an already-built op list (rewrites applied)."""
     b1, p1_p8, p1_p4 = _emit_pass1(
         [o for o in ops if o.tile_id.startswith("p1.")], legacy=legacy)
-    b2, used_p8, used_p32, used_p64 = _emit_pass2(
+    b2, used_p8, used_p32, used_p64, used_idx = _emit_pass2(
         [o for o in ops if o.tile_id.startswith("p2.")], legacy=legacy)
     need_irv = any(o.kind == "permute" and o.attrs.get("idx") == "rev16"
                    for o in ops if o.tile_id.startswith("p1."))
@@ -613,6 +633,11 @@ def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
         prologue2 += "    const svbool_t p32 = svptrue_b32();\n"
     if used_p64:
         prologue2 += "    const svbool_t p64 = svptrue_b64();\n"
+    for idx in ("iloq", "q0q", "q1q"):
+        if idx in used_idx:
+            prologue2 += "    const svuint16_t %s = svld1_u16(p16, %s);\n" \
+                % (idx, {"iloq": "idx_lo", "q0q": "idx_qa",
+                         "q1q": "idx_qb"}[idx])
     pass2_fn = "static __attribute__((noinline)) void op_pass_11(" \
                "const int16_t* src, int16_t* dst)\n{\n%s%s\n}" \
                % (prologue2, "\n".join(b2))
@@ -623,6 +648,10 @@ def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
 #include <arm_neon.h>
 #include <arm_neon_sve_bridge.h>
 #include <cstdint>
+
+%s
+%s
+%s
 
 %s
 %s
@@ -652,16 +681,27 @@ extern "C" void dynopt_dct16_op_pass2(
 {
     op_pass_11(src, dst);
 }
-""" % (IDX_REV, REV16_TBL, REV32_TBL, HELPERS, _const_decls(),
-       pass1, pass2_fn, func_name)
+""" % (IDX_REV, REV16_TBL, REV32_TBL, IDX_LO, IDX_QA, IDX_QB,
+       HELPERS, _const_decls(), pass1, pass2_fn, func_name)
 
 
 def emit_from_combo(combo=None,
-                    func_name: str = "dynopt_dct16_sve2_shared") -> str:
-    """Manifest-combo entry point. The op backend currently lowers the
-    upstream per-row pass1 + upstream pass2 for every combo (legacy and
-    odd-quarter axes are the next slice); identical sources dedupe in the
-    search driver."""
+                    func_name: str = "dynopt_dct16_sve2_shared",
+                    rewrites: Optional[List[str]] = None) -> str:
+    """Manifest-combo entry point with optional op rewrite sequence."""
+    ops = _build_ops(combo, func_name)
+    if rewrites:
+        from dct16_rewrites import apply_rewrites  # noqa: E402
+        ops = apply_rewrites(ops, rewrites)
+    return emit_ops(ops, func_name,
+                    legacy=bool((combo or {}).get("legacy_semantics", 0)))
+
+
+def _build_ops(combo, func_name: str = "dynopt_dct16_sve2_shared"):
+    """Rebuild the op DAG for a combo (shared by emit_from_combo)."""
+    from dct16_op_ir import lower_pass1_perrow, lower_pass1_quarter, \
+        lower_pass2_odd_quarter, lower_pass2_odd_quarter_legacy_even_sve, \
+        lower_pass2_upstream  # noqa: E402
     combo = combo or {}
     pass1 = combo.get("pass1", "per-row")
     if pass1 not in ("per-row", "quarter"):
@@ -669,15 +709,26 @@ def emit_from_combo(combo=None,
     pass2 = combo.get("pass2", "upstream")
     if pass2 not in ("upstream", "odd-quarter"):
         pass2 = "upstream"
-    return emit_acle(
-        func_name,
-        pass1=pass1,
-        pass1_k_tile=int(combo.get("pass1_k_tile", 4)),
-        pass1_pack_zip=bool(combo.get("pass1_pack_zip", 1)),
-        pass1_even_factor=bool(combo.get("pass1_even_factor", 1)),
-        pass2=pass2,
-        pass2_k_tile=int(combo.get("pass2_k_tile", 1)),
-        pass2_pack_zip=bool(combo.get("pass2_pack_zip", 1)),
-        store_merge16=bool(combo.get("store_merge16", 1)),
-        legacy=bool(combo.get("legacy_semantics", 0)),
-        even_sve=bool(combo.get("even_sve", 0)))
+    ops = []
+    if pass1 == "quarter":
+        ops += lower_pass1_quarter(
+            k_tile=int(combo.get("pass1_k_tile", 4)),
+            pack_zip=bool(combo.get("pass1_pack_zip", 1)),
+            even_factor=bool(combo.get("pass1_even_factor", 1)),
+            narrow_merge=True)
+    else:
+        ops += lower_pass1_perrow()
+    legacy = bool(combo.get("legacy_semantics", 0))
+    even_sve = bool(combo.get("even_sve", 0))
+    if pass2 == "odd-quarter" and legacy and even_sve:
+        ops += lower_pass2_odd_quarter_legacy_even_sve(
+            k_tile=int(combo.get("pass2_k_tile", 1)),
+            store_merge16=bool(combo.get("store_merge16", 1)))
+    elif pass2 == "odd-quarter":
+        ops += lower_pass2_odd_quarter(
+            pack_zip=bool(combo.get("pass2_pack_zip", 1)),
+            store_merge16=bool(combo.get("store_merge16", 1)),
+            k_tile=int(combo.get("pass2_k_tile", 1)))
+    else:
+        ops += lower_pass2_upstream()
+    return ops

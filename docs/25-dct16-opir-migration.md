@@ -222,3 +222,37 @@ op 后端已完整复现 DCT16 legacy best 704 结构，且全展开后寄存器
    （16//n_groups 参数化）；
 3. 然后回到 DCT32 把发现的通用 rewrite 反向收益确认，并更新
    docs/23 流程图中的 Agent 依赖点。
+
+## 11. DCT16 rewrite 引擎 + 参数化序列搜索（2026-08-13 晚，已交付）
+
+- `optimizer/ir/dct16_rewrites.py`（跨 kernel 移植，与 dct32_rewrites
+  同契约）：
+  - `tbl2_to_zip`：pass2 odd-quarter pack 链
+    （PO01/PO23 + QO0/QO1 tbl2 → view/zip1d/zip2d 转置，保持 QO 名）；
+  - `merge_narrow8`：pass2 odd k 两对 narrow8+8-lane store →
+    narrow16+16-lane store；
+  - `apply_rewrites(ops, names)` 顺序应用。
+- `lower_pass2_odd_quarter` 补 tbl2 pack 变体（pack_zip=False）；
+  发射器补 svtbl2/idx_lo/idx_qa/idx_qb。
+- `search_rewrite_sequences.py` 参数化：`--kernel dct32|dct16`，
+  每 kernel 配置 base/rewrites/verify/driver/range/ref_lib；
+  dct16 base = quarter + odd-quarter + tbl2 + store_merge16=0。
+
+### 结果
+
+| kernel | base fused_uop | best 序列 | 结果 |
+| --- | --- | --- | --- |
+| dct16 | 965（tbl2 + sm16=0） | `tbl2_to_zip`（或 +merge_narrow8） | **903**（MCA 260 cyc / 1238 uops） |
+| dct32（回归） | — | `legacy_k2\|legacy_k4\|merge_narrow8\|tbl2_to_zip` | **6456**（与重构前一致） |
+
+重写后的源码与 grouped 逐 pass bit-exact、20k 差分 0；两 kernel 共用
+同一搜索骨架。DCT16 的 903 已接近 layout 搜索的零 scatter 最优 895；
+≤704 的 legacy 路径目前仍是 layout 轴机制（699），要变成原子 rewrite
+（QEOW/even_sve）才能被序列搜索自动重发现——这是下一个显式缺口。
+
+### 下一步
+
+1. DCT16 `legacy_k2`（QEOW s16 链 + sdot）与 `even_sve`（scatter 纯
+   SVE even 路径）原子 rewrite，使序列搜索能从 965 自动降到 ≤ 704；
+2. DCT32 侧把 `const_prearrange`/k0 向量化做成 rewrite（内部参考
+   4827 → 目标）后，再回填 docs/23 的 Agent 依赖表。
