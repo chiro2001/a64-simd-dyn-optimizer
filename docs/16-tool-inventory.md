@@ -66,10 +66,31 @@
 | `tools/gen_verify.py` | 从 manifest 生成上游差分 harness（参考/corpus/VL） |
 | `kernels/<name>/manifest.yaml` | kernel 接入契约：参考库/符号、driver、corpus、VL、布局域 |
 
+### 验收门禁（x265 TestBench 黄金标准）
+
+| 工具 | 说明 |
+| --- | --- |
+| `scripts/testbench-inject.patch` | 在 `testbench.cpp` 文件作用域声明候选符号，并在 `setupIntrinsicPrimitives` 后把 `vecprim.cu[BLOCK_16x16].dct` 替换为候选 |
+| `scripts/build-testbench-inject.sh` | 打补丁 → 交叉构建完整 TestBench（候选 .o 经 linker flags 链入）→ 静态校验调用点 → QEMU VL=256 跑 `--testbench transforms --nobench`。**验收黄金标准** |
+| `scripts/build-testbench-lite.sh` | 只编译 `MBDstHarness` + `tools/testbench_lite.cpp`，链接已有 `libx265.a` 与候选 .o，秒级跑同一套随机数据/128 轮差分。**开发期快速门禁** |
+| `tools/testbench_lite.cpp` | lite 主程序：复用 x265 的 `MBDstHarness`（同缓冲生成、同 `check_dct_primitive`、同 C 参考 `dct16_c`），只接线指定 kernel 槽 |
+
+要点：
+- 完整 TestBench 通过 linker flags 链入候选 .o；**候选 .o 内容变化不会触发
+  自动重链**，脚本必须 `rm -f TestBench` 强制重链，并在构建后用
+  `nm -u testbench.cpp.o` 确认调用点已编译进（只出现符号不代表被调用）；
+- 验证门禁真实性的负向对照：注入故意错误的候选必须 FAIL（当前已验：
+  `dct16x16 failed` + 非零退出）；
+- x265 本构建因缺 `arm_neon_sve_bridge.h` 禁用 SVE/SVE2 编译，`--cpuid
+  SVE2` 无效，门禁用 `NEON,Neon_DotProd,Neon_I8MM` 标签；注入的函数仍为
+  SVE2 候选，QEMU `-cpu max,sve-max-vq=2` 下以 VL=256 真实执行。
+
 ## 3. 现状判定
 
 - **DCT16 纵切**：pipeline 一键可跑（~3.4s），优化只改 manifest 布局域 /
   发射器参数；finalize 输出稳定交付产物（best_sve2.cpp/.S）；
+- **验收门禁**：完整 TestBench 注入已跑通（含负向对照），lite 门禁秒级
+  可复跑，两者共用 x265 官方 harness 数据与 C 参考；
 - **通用化缺口**：manifest 仅 dct16 一份；verify harness、lane 语义、
   发射器仍是 per-kernel；rewrites（MachineIR）未接到 SVE2 流程；
 - **搜索空间**：当前 3 个布局组合穷举，耗时 <60s，暂不需要启发式算法；

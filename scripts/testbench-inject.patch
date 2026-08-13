@@ -1,0 +1,22 @@
+--- a/source/test/testbench.cpp
++++ b/source/test/testbench.cpp
+@@ -143,6 +143,11 @@ IntraPredHarness HIPred;
+ IntraPredHarness HIPred;
+ 
++// dynopt injection: tool-generated DCT16 candidate (golden-standard TestBench
++// gate). Declared at file scope because C linkage is not allowed inside main().
++extern "C" void dynopt_dct16_sve2_shared(
++    const int16_t*, int16_t*, intptr_t);
++
+ int main(int argc, char *argv[])
+ {
+     bool enableavx512 = true;
+     int cpuid = X265_NS::cpu_detect(enableavx512);
+@@ -235,6 +240,7 @@ int main(int argc, char *argv[])
+         EncoderPrimitives vecprim;
+         memset(&vecprim, 0, sizeof(vecprim));
+         setupIntrinsicPrimitives(vecprim, testArch[i].flag);
+         setupAliasPrimitives(vecprim);
++        vecprim.cu[BLOCK_16x16].dct = dynopt_dct16_sve2_shared;
+         for (size_t h = 0; h < sizeof(harness) / sizeof(TestHarness*); h++)
+         {

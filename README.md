@@ -31,6 +31,8 @@ scripts/doctor.sh            # 环境体检
 scripts/bootstrap.sh         # 幂等安装缺失工具
 scripts/build-x265.sh        # 构建未修改 x265（默认 8-bit Release + Tests）
 scripts/run-testbench.sh     # 运行 x265 TestBench correctness
+scripts/build-testbench-inject.sh  # 黄金标准：注入候选并跑 TestBench transforms
+scripts/build-testbench-lite.sh    # 开发期快速门禁：复用 MBDstHarness 秒级验证
 scripts/capture-env.sh <dir> # 保存环境快照
 scripts/build-sve-sa8d.sh    # SVE2 SA8D 候选生成/编译/QEMU 验证（支持交叉）
 ```
