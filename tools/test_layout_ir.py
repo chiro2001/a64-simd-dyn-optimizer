@@ -20,6 +20,13 @@ from layout_ir import (  # noqa: E402
     lower,
     verify_layout,
 )
+from rewrites_dct32 import (  # noqa: E402
+    batch_round_narrow_store,
+    dct32_spec_plan,
+    derive_constant_map,
+    rediscover_v31,
+    segment_dot,
+)
 from emit_dct32_sve2_shared import emit  # noqa: E402
 
 
@@ -76,6 +83,22 @@ def main():
     if ok or "{4, 11}" not in why:
         rc |= fail("round shifts must be {4,11}, got ok=%s why=%s"
                    % (ok, why))
+
+    # P1 increment 2: atomic rewrites rediscover the v3.1 plan.
+    spec = dct32_spec_plan()
+    ok, why = verify_layout(spec)
+    if not ok:
+        rc |= fail("spec plan must verify: %s" % why)
+    found, certs = rediscover_v31(spec)
+    if len(certs) != 5:
+        rc |= fail("rediscovery must produce 5 certificates, got %d"
+                   % len(certs))
+    if any(not c.obligations for c in certs):
+        rc |= fail("every rewrite must carry proof obligations")
+    if found.canonical_key() != plan.canonical_key():
+        rc |= fail("rediscovered plan != v3.1 plan")
+    if lower(found) != want:
+        rc |= fail("lower(rediscovered) != emit(v3.1)")
 
     if rc == 0:
         print("layout_ir self-test: PASS (key=%s...)" % k1[:16])

@@ -81,6 +81,17 @@ class Plan:
         """Order-independent hash over the logical plan (not generated
         source), so equivalent plans dedup before codegen."""
         obj = asdict(self)
+        obj["tiles"] = sorted(
+            obj["tiles"],
+            key=lambda t: (t["pass_id"], t["k_family"], t["k_tile"],
+                           t["row_group"], t["lane_owner"], t["acc_bits"]))
+        obj["constant_map"]["entries"] = sorted(
+            obj["constant_map"]["entries"], key=lambda e: e[0])
+        obj["memory_map"] = sorted(
+            obj["memory_map"],
+            key=lambda m: (m["logical_value"], m["base"]))
+        obj["round_barriers"] = sorted(
+            obj["round_barriers"], key=lambda b: b["stage"])
         raw = json.dumps(obj, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(raw.encode()).hexdigest()
 
