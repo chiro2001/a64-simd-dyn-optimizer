@@ -54,3 +54,20 @@ emit_dct16_sve2_asm.py），且目标必须是 SVE2p1（960 可，920G 未知）
 
 结论：interp8 值得投入但优先级低于已收敛的 dct 族；先做方案 A
 （SVE2-safe，-16%）建立管线，SVE2p1 asm 路径作为后续轴。
+
+## 4. 方案 A 实测（2026-08-13 深夜）
+
+已落地 `kernels/interp8`（manifest + gen_verify interp8 shape + 发射器 +
+搜索注册）：
+
+| 实现 | dynamic | vector | movprfx | fused_uop |
+| --- | ---: | ---: | ---: | ---: |
+| 上游 interp_horiz_pp_neon<8,8,8> | 162 | 141 | 0 | 141 |
+| 工具 path-a（sdot.d 切片） | 217 | 150 | 16 | **134** |
+
+- 2 万例 × 3 相位差分 0（upstream-exact）；fused_uop **-5%**；
+- 实际收益低于预估（-16%）：ldur 47→8 的节省被 tbl 切片（每行 3）+ 
+  sdot/归约开销抵消，且 vector raw 150 > 141，fused 靠 movprfx 融合
+  才到 134；
+- 达标路径仍是方案 B（SVE2p1 sdot.h，预估 -35%，GCC 16.1 无 intrinsic，
+  需 asm backend）；方案 A 保留为 SVE2 兼容基线。

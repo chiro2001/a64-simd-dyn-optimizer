@@ -139,6 +139,12 @@ def make_emitter(kernel):
         def emit_fn(combo):
             return emit(layout=combo.get("layout", "v1"))
         return emit_fn
+    if kernel == "interp8":
+        from emit_interp8_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
