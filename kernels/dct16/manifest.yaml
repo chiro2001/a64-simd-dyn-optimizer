@@ -1,0 +1,33 @@
+# DCT16 SVE2 kernel manifest (docs/16 schema v0.1)
+kernel: dct16
+contract: upstream-exact
+vl_bytes: 32
+
+candidate:
+  symbol: dynopt_dct16_sve2_shared
+  verify_src: kernels/dct16/sve_shared_verify.cpp
+  trace_driver_src: kernels/dct16/shared_trace_driver.cpp
+  trace_driver_c: kernels/dct16/shared_trace_driver.c
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: dct16_sve
+  symbol_mangled: _ZN4x2659dct16_sveEPKsPsl
+
+baselines:
+  neon:
+    driver: kernels/dct16/trace_driver.cpp
+    object: build/dct16_roundtrip.o
+    symbol: dynopt_dct16_neon_candidate
+  sve:
+    driver: kernels/dct16/sve_trace_driver.cpp
+    symbol_mangled: _ZN4x2659dct16_sveEPKsPsl
+
+corpus:
+  strides: [16, 17, 32]
+  value_range: [-255, 255]
+  cases: 20000
+
+layouts:
+  pass1: [quarter, per-row]
+  pass2: [upstream, odd-quarter]

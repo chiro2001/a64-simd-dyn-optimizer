@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""Layout search driver for the tool-generated SVE2 DCT16 candidate.
+"""Layout search driver, driven by the kernel manifest (docs/16).
 
-Enumerates emitter parameters, generates the candidate, compiles it,
-runs the upstream-exact differential in QEMU (fixed VL=256), and records
-the true-dynamic instruction counts. Every distinct body must still be
-measured on the target machine later; this is the static/dynamic funnel.
+Enumerates the cartesian product of the manifest's layout axes, generates
+each candidate, compiles it (ACLE or direct asm backend), runs the
+upstream-exact differential in QEMU (fixed VL from the manifest), and
+records true-dynamic instruction counts. Every distinct body must still
+be measured on the target machine later; this is the static/dynamic
+funnel. Search space is kept small (<60s) by design; add axes/values in
+the manifest when the optimizer gains new structure.
 
 Usage:
-  python3 tools/search_sve2_layouts.py [--outdir experiments/m30-dct16-search/layout-search]
+  python3 tools/search_sve2_layouts.py [--kernel dct16] [--backend asm|acle]
+      [--outdir experiments/m30-dct16-search/layout-search]
 
 Exit code 0 only if at least one candidate passes the upstream-exact gate.
 """
@@ -24,13 +28,11 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from emit_dct16_sve2_shared import emit  # noqa: E402
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
+from kernel_manifest import layout_combos, load_manifest, repo_path  # noqa: E402
 
 
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
-VERIFY_SRC = os.path.join(ROOT, "kernels/dct16/sve_shared_verify.cpp")
-TRACE_DRIVER = os.path.join(ROOT, "kernels/dct16/shared_trace_driver.cpp")
-UPSTREAM_LIB = os.path.join(ROOT, "build/x265-8-clang-sve/libx265.a")
 
 
 def run(cmd, **kw):
@@ -83,29 +85,31 @@ def true_dynamic(binary, start, end, log):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm"), default="acle")
+    ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir",
                     default=os.path.join(ROOT,
                                          "experiments/m30-dct16-search/"
                                          "layout-search"))
     args = ap.parse_args()
+    manifest = load_manifest(args.kernel)
     os.makedirs(args.outdir, exist_ok=True)
 
-    combos = [
-        ("quarter", "upstream"),
-        ("quarter", "odd-quarter"),
-        ("per-row", "upstream"),
-    ]
+    combos = layout_combos(manifest)
+    if not combos or not manifest.get("layouts"):
+        print("manifest has no layout axes", file=sys.stderr)
+        return 2
     driver_o = os.path.join(args.outdir, "trace-driver.o")
     if args.backend == "asm" and not os.path.exists(driver_o):
         run(["aarch64-linux-gnu-gcc", "-O2", "-c",
-             os.path.join(ROOT, "kernels/dct16/shared_trace_driver.c"),
+             repo_path(manifest, manifest["candidate"]["trace_driver_c"]),
              "-o", driver_o])
     results = []
-    for p1, p2 in combos:
-        tag = "p1-%s_p2-%s" % (p1, p2)
+    for combo in combos:
+        tag = "_".join("%s-%s" % (k, v) for k, v in combo.items())
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
-            f.write(emit(pass1_layout=p1, pass2_layout=p2))
+            f.write(emit(pass1_layout=combo.get("pass1", "quarter"),
+                         pass2_layout=combo.get("pass2", "upstream")))
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")
@@ -120,8 +124,11 @@ def main():
             continue
         verify = os.path.join(args.outdir, tag + "-verify")
         v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                 "-march=armv8.2-a+sve2", VERIFY_SRC, obj,
-                 "-Wl,--start-group", UPSTREAM_LIB, "-Wl,--end-group",
+                 "-march=armv8.2-a+sve2",
+                 repo_path(manifest, manifest["candidate"]["verify_src"]),
+                 obj, "-Wl,--start-group",
+                 repo_path(manifest, manifest["reference"]["lib"]),
+                 "-Wl,--end-group",
                  "-lpthread", "-ldl", "-o", verify])
         if v.returncode != 0:
             print("%-24s LINK FAIL" % tag)
@@ -131,7 +138,7 @@ def main():
         print("%-24s verify: %s" % (tag, r.stdout.strip().splitlines()[-1]
                                     if r.stdout.strip() else "no output"))
         if not ok:
-            results.append({"tag": tag, "pass1": p1, "pass2": p2,
+            results.append({"tag": tag, **combo,
                             "upstream_exact": False, "verify": r.stdout})
             continue
         driver = os.path.join(args.outdir, tag + "-trace-driver")
@@ -140,19 +147,22 @@ def main():
                      obj, driver_o, "-o", driver])
         else:
             d = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-                     "-std=c++11", TRACE_DRIVER, obj, "-o", driver])
+                     "-std=c++11",
+                     repo_path(manifest,
+                               manifest["candidate"]["trace_driver_src"]),
+                     obj, "-o", driver])
         if d.returncode != 0:
             results.append({"tag": tag, "pass1": p1, "pass2": p2,
                             "upstream_exact": True, "counts": None})
             continue
-        rng = symbol_range(driver, "dynopt_dct16_sve2_shared")
+        rng = symbol_range(driver, manifest["candidate"]["symbol"])
         if rng is None:
-            results.append({"tag": tag, "pass1": p1, "pass2": p2,
+            results.append({"tag": tag, **combo,
                             "upstream_exact": True, "counts": None})
             continue
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(args.outdir, tag + "-trace.log"))
-        results.append({"tag": tag, "pass1": p1, "pass2": p2,
+        results.append({"tag": tag, **combo,
                         "upstream_exact": True, "counts": counts})
         if counts:
             print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d"

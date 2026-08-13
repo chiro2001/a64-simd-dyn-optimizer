@@ -22,6 +22,10 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+
+from kernel_manifest import load_manifest, repo_path  # noqa: E402
+
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
 
@@ -72,42 +76,35 @@ def trace_count(binary, start, end, log):
             "vector_fused": c.get("vector_fused", len(d["vector"]))}
 
 
-def stage_baseline(outdir):
+def stage_baseline(outdir, manifest):
     os.makedirs(outdir, exist_ok=True)
     result = {}
 
     # upstream SVE baseline
-    sve_bin = os.path.join(outdir, "baseline-sve-driver")
-    r = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-             "-std=c++11",
-             os.path.join(ROOT, "kernels/dct16/sve_trace_driver.cpp"),
-             "-Wl,--start-group",
-             os.path.join(ROOT, "build/x265-8-clang-sve/libx265.a"),
-             "-Wl,--end-group", "-lpthread", "-ldl", "-o", sve_bin])
-    if r.returncode != 0:
-        print("baseline SVE BUILD FAIL:\n%s" % r.stdout[-2000:])
-        return 1
-    rng = symbol_range(sve_bin, "_ZN4x2659dct16_sveEPKsPsl")
-    if rng:
-        counts = trace_count(sve_bin, rng[0], rng[1],
-                             os.path.join(outdir, "baseline-sve.log"))
-        result["upstream_sve"] = counts
-
-    # NEON roundtrip baseline (upstream-exact, fully unrolled)
-    neon_bin = os.path.join(outdir, "baseline-neon-driver")
-    r = run(["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
-             "-std=c++11",
-             os.path.join(ROOT, "kernels/dct16/trace_driver.cpp"),
-             os.path.join(ROOT, "build/dct16_roundtrip.o"),
-             "-o", neon_bin])
-    if r.returncode != 0:
-        print("baseline NEON BUILD FAIL:\n%s" % r.stdout[-2000:])
-        return 1
-    rng = symbol_range(neon_bin, "dynopt_dct16_neon_candidate")
-    if rng:
-        counts = trace_count(neon_bin, rng[0], rng[1],
-                             os.path.join(outdir, "baseline-neon.log"))
-        result["neon"] = counts
+    for name, b in manifest.get("baselines", {}).items():
+        bin_path = os.path.join(outdir, "baseline-%s-driver" % name)
+        obj = repo_path(manifest, b["object"]) if b.get("object") else None
+        lib = repo_path(manifest, manifest["reference"]["lib"]) \
+            if not obj else None
+        cmd = ["aarch64-linux-gnu-g++", "-O2", "-no-pie", "-static",
+               "-std=c++11", repo_path(manifest, b["driver"])]
+        if obj:
+            cmd += [obj]
+        else:
+            cmd += ["-Wl,--start-group", lib, "-Wl,--end-group",
+                    "-lpthread", "-ldl"]
+        cmd += ["-o", bin_path]
+        r = run(cmd)
+        if r.returncode != 0:
+            print("baseline %s BUILD FAIL:\n%s" % (name, r.stdout[-2000:]))
+            return 1
+        sym = b.get("symbol_mangled", b.get("symbol"))
+        rng = symbol_range(bin_path, sym)
+        if rng:
+            counts = trace_count(bin_path, rng[0], rng[1],
+                                 os.path.join(outdir, "baseline-%s.log"
+                                              % name))
+            result[name] = counts
 
     json.dump(result, open(os.path.join(outdir, "baseline.json"), "w"),
               indent=1)
@@ -116,9 +113,10 @@ def stage_baseline(outdir):
     return 0
 
 
-def stage_search(backend):
+def stage_search(backend, manifest):
     return run(["python3", os.path.join(ROOT, "tools/search_sve2_layouts.py"),
-                "--backend", backend]).returncode
+                "--backend", backend, "--kernel",
+                manifest["kernel"]]).returncode
 
 
 def stage_report(outdir):
@@ -158,17 +156,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--backend", choices=("asm", "acle"), default="asm")
+    ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=os.path.join(
         ROOT, "experiments/m30-dct16-search/layout-search"))
     ap.add_argument("stage", nargs="?", choices=("baseline", "search",
                                                  "report"))
     args = ap.parse_args()
+    manifest = load_manifest(args.kernel)
 
     if args.all or args.stage == "baseline":
-        if stage_baseline(args.outdir) != 0:
+        if stage_baseline(args.outdir, manifest) != 0:
             return 1
     if args.all or args.stage == "search":
-        if stage_search(args.backend) != 0:
+        if stage_search(args.backend, manifest) != 0:
             return 1
     if args.all or args.stage == "report":
         return stage_report(args.outdir)
