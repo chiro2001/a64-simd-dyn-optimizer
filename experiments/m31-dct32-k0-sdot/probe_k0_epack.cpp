@@ -274,17 +274,20 @@ int main(int argc, char** argv)
     const int ncase = argc > 1 ? atoi(argv[1]) : 200;
     const bool two_pass = argc > 2;
     std::mt19937 rng(0xE9A6C21u);
-    if (two_pass)
+    if (argc > 3 && two_pass)
     {
-        long mism[4] = {0, 0, 0, 0};
-        long tot = 0;
-        int16_t src[32][32];
-        for (int it = 0; it < ncase; it++)
+        // structured-input regression: constant / extreme rows.
+        // The full-pass E-pack passed 20k random but FAILED TestBenchLite
+        // on these (pass2 E = coef+coef wraps at ~+-65k); the pass1-only
+        // variant must stay exact here.
+        const int vals[] = { -255, 255, -32768, 32767, -1000, 1000 };
+        long bad = 0;
+        for (int v : vals)
         {
+            int16_t src[32][32], coef[32][32];
             for (int r = 0; r < 32; r++)
                 for (int j = 0; j < 32; j++)
-                    src[r][j] = (int16_t)((int)(rng() % 511) - 255);
-            int16_t coef[32][32];
+                    src[r][j] = (int16_t)v;
             dct32_pass1_exact(src, coef);
             for (int p = 0; p < 8; p++)
             {
@@ -335,6 +338,123 @@ int main(int argc, char** argv)
                         K0Ref ref = k0_scalar_row(coef[row0 + r]);
                         int want = k0_scalar_out(ref, k, 11);
                         if (got != want)
+                            bad++;
+                    }
+                }
+            }
+        }
+        printf("structured-input mism=%ld (must be 0 for pass1-only)\n",
+               bad);
+        return 0;
+    }
+    if (two_pass)
+    {
+        long mism[4] = {0, 0, 0, 0};
+        long ewrap = 0;
+        long etot = 0;
+        int32_t emax = 0;
+        long tot = 0;
+        int16_t src[32][32];
+        for (int it = 0; it < ncase; it++)
+        {
+            for (int r = 0; r < 32; r++)
+                for (int j = 0; j < 32; j++)
+                    src[r][j] = (int16_t)((int)(rng() % 511) - 255);
+            int16_t coef[32][32];
+            dct32_pass1_exact(src, coef);
+            for (int p = 0; p < 8; p++)
+            {
+                const int row0 = p * 4;
+                svint16_t lo0 = svld1_s16(svptrue_b16(), coef[row0]);
+                svint16_t lo1 = svld1_s16(svptrue_b16(), coef[row0 + 1]);
+                svint16_t lo2 = svld1_s16(svptrue_b16(), coef[row0 + 2]);
+                svint16_t lo3 = svld1_s16(svptrue_b16(), coef[row0 + 3]);
+                svint16_t hi0 = svld1_s16(svptrue_b16(), coef[row0] + 16);
+                svint16_t hi1 = svld1_s16(svptrue_b16(), coef[row0 + 1] + 16);
+                svint16_t hi2 = svld1_s16(svptrue_b16(), coef[row0 + 2] + 16);
+                svint16_t hi3 = svld1_s16(svptrue_b16(), coef[row0 + 3] + 16);
+                svint16_t E0 = svadd_s16_x(svptrue_b16(), lo0,
+                                           svrev_s16(hi0));
+                svint16_t E1 = svadd_s16_x(svptrue_b16(), lo1,
+                                           svrev_s16(hi1));
+                svint16_t E2 = svadd_s16_x(svptrue_b16(), lo2,
+                                           svrev_s16(hi2));
+                svint16_t E3 = svadd_s16_x(svptrue_b16(), lo3,
+                                           svrev_s16(hi3));
+                // quantify the pass2 E-wrap condition (full-pass E-pack
+                // failure mode): count E values beyond s16 and max |E|.
+                int16_t el[16];
+                svst1_s16(svptrue_b16(), el, E0);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (abs((int)el[i]) > emax)
+                        emax = abs((int)el[i]);
+                    etot++;
+                }
+                svst1_s16(svptrue_b16(), el, E1);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (abs((int)el[i]) > emax)
+                        emax = abs((int)el[i]);
+                    etot++;
+                }
+                svst1_s16(svptrue_b16(), el, E2);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (abs((int)el[i]) > emax)
+                        emax = abs((int)el[i]);
+                    etot++;
+                }
+                svst1_s16(svptrue_b16(), el, E3);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (abs((int)el[i]) > emax)
+                        emax = abs((int)el[i]);
+                    etot++;
+                }
+                svint32_t eep, eop;
+                build_epack_c1(E0, E1, E2, E3, eep, eop);
+                int32_t ep[8], op[8];
+                svst1_s32(svptrue_b32(), ep, eep);
+                svst1_s32(svptrue_b32(), op, eop);
+                // E-wrap indicator: exact E would need >16 bits; detect
+                // by comparing s16 E with the exact s32 E per lane.
+                {
+                    svint32_t e0x = svadd_s32_x(svptrue_b32(),
+                        svunpklo_s32(lo0), svunpklo_s32(svrev_s16(hi0)));
+                    int32_t a[8];
+                    svst1_s32(svptrue_b32(), a, e0x);
+                    int16_t el[16];
+                    svst1_s16(svptrue_b16(), el, E0);
+                    for (int i = 0; i < 8; i++)
+                        if (el[i] != (int16_t)a[i])
+                            ewrap++;
+                }
+                for (int kk = 0; kk < 4; kk++)
+                {
+                    int k = kk * 8;
+                    for (int r = 0; r < 4; r++)
+                    {
+                        int got;
+                        if (k == 0)
+                            got = (int)(((int64_t)ep[2 * r] * 64 +
+                                         (int64_t)ep[2 * r + 1] * 64 +
+                                         1024) >> 11);
+                        else if (k == 16)
+                            got = (int)(((int64_t)ep[2 * r] * 64 +
+                                         (int64_t)ep[2 * r + 1] * -64 +
+                                         1024) >> 11);
+                        else if (k == 8)
+                            got = (int)(((int64_t)op[2 * r] * 83 +
+                                         (int64_t)op[2 * r + 1] * 36 +
+                                         1024) >> 11);
+                        else
+                            got = (int)(((int64_t)op[2 * r] * 36 +
+                                         (int64_t)op[2 * r + 1] * -83 +
+                                         1024) >> 11);
+                        K0Ref ref = k0_scalar_row(coef[row0 + r]);
+                        int want = k0_scalar_out(ref, k, 11);
+                        if (got != want)
                             mism[kk]++;
                         tot++;
                     }
@@ -344,6 +464,8 @@ int main(int argc, char** argv)
         for (int k = 0; k < 4; k++)
             printf("twopass k=%d mism=%ld/%ld (%.4f%%)\n",
                    k * 8, mism[k], tot / 4, 100.0 * mism[k] / (tot / 4));
+        printf("pass2 E wrap lanes=%ld/%ld, max|E|=%d\n",
+               ewrap, etot, emax);
         return 0;
     }
     long mism = 0;
