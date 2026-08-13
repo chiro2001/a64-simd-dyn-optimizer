@@ -1803,24 +1803,28 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 .LFB12:
 	.cfi_startproc
 	cntb	x12
-	rdvl	x3, #29
+	mov	x13, 65
 	ptrue	p7.b, all
-	lsl	x12, x12, 6
-	lsl	x3, x3, 1
-	ptrue	p6.d, all
-	sub	sp, sp, x12
-	.cfi_escape 0xf,0xa,0x8f,0,0x92,0x2e,0,0xa,0,0x2,0x1e,0x22
 	adrp	x2, .LANCHOR0
-	sub	sp, sp, #64
-	.cfi_escape 0xf,0xc,0x8f,0,0x92,0x2e,0,0xa,0,0x2,0x1e,0x23,0x40,0x22
 	add	x2, x2, :lo12:.LANCHOR0
-	ld1w	z31.s, p7/z, [x2]
-	add	x3, sp, x3
-	cntb	x5, all, mul #15
-	add	x3, x3, 64
-	lsl	x5, x5, 2
-	stp	d8, d9, [sp]
+	ptrue	p6.d, all
+	mul	x12, x12, x13
+	add	x3, x2, 32
+	ld1h	z5.h, p7/z, [x3]
+	add	x3, x2, 64
+	ld1w	z31.s, p7/z, [x3]
+	cntb	x5, all, mul #7
+	sub	sp, sp, x12
+	.cfi_escape 0xf,0xa,0x8f,0,0x92,0x2e,0,0xa,0x8,0x2,0x1e,0x22
+	lsl	x5, x5, 3
+	ld1w	z0.s, p7/z, [x2]
+	sub	sp, sp, #64
+	.cfi_escape 0xf,0xc,0x8f,0,0x92,0x2e,0,0xa,0x8,0x2,0x1e,0x23,0x40,0x22
 	add	x4, x0, 2048
+	mov	z6.d, z5.d
+	addvl	x3, sp, #1
+	add	x3, x3, 64
+	stp	d8, d9, [sp]
 	stp	d10, d11, [sp, 16]
 	stp	d12, d13, [sp, 32]
 	stp	d14, d15, [sp, 48]
@@ -1833,33 +1837,47 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	.cfi_escape 0x10,0x4e,0x2,0x8f,0x30
 	.cfi_escape 0x10,0x4f,0x2,0x8f,0x38
 	str	z31, [x3]
-	add	x3, x2, 32
-	ld1h	z5.h, p7/z, [x3]
-	add	x3, x2, 64
-	ld1w	z31.s, p7/z, [x3]
-	addvl	x3, sp, #1
-	add	x3, x3, 64
-	str	z31, [x3]
 	add	x3, x2, 96
 	ld1w	z31.s, p7/z, [x3]
-	add	x3, sp, 64
+	addvl	x3, sp, #2
+	add	x3, x3, 64
 	str	z31, [x3]
 	add	x3, x2, 160
 	ld1w	z31.s, p7/z, [x3]
+	addvl	x3, sp, #3
+	add	x3, x3, 64
+	str	z31, [x3]
+	add	x3, x2, 192
+	ld1h	z31.h, p7/z, [x3]
+	addvl	x3, x5, #1
+	cntb	x5, all, mul #15
+	add	x3, x3, 64
+	lsl	x5, x5, 2
+	add	x3, sp, x3
+	str	z31, [x3]
+	add	x3, x2, 448
+	ld1h	z31.h, p7/z, [x3]
+	rdvl	x3, #29
+	lsl	x3, x3, 1
+	add	x3, sp, x3
+	add	x3, x3, 64
+	str	z31, [x3]
+	add	x3, x2, 704
+	ld1h	z31.h, p7/z, [x3]
 	addvl	x3, x5, #-1
 	cntb	x5, all, mul #15
 	add	x3, x3, 64
 	lsl	x5, x5, 2
 	add	x3, sp, x3
 	str	z31, [x3]
-	add	x3, x2, 192
+	add	x3, x2, 960
 	ld1h	z31.h, p7/z, [x3]
 	cntb	x3, all, mul #15
 	lsl	x3, x3, 2
 	add	x3, sp, x3
 	add	x3, x3, 64
 	str	z31, [x3]
-	add	x3, x2, 448
+	add	x3, x2, 224
 	ld1h	z31.h, p7/z, [x3]
 	addvl	x3, x5, #1
 	cntb	x5
@@ -1867,329 +1885,285 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	lsl	x5, x5, 6
 	add	x3, sp, x3
 	str	z31, [x3]
-	add	x3, x2, 704
+	add	x3, x2, 480
 	ld1h	z31.h, p7/z, [x3]
 	rdvl	x3, #31
 	lsl	x3, x3, 1
 	add	x3, sp, x3
 	add	x3, x3, 64
 	str	z31, [x3]
-	add	x3, x2, 960
-	ld1h	z0.h, p7/z, [x3]
-	add	x3, x2, 224
-	ld1h	z1.h, p7/z, [x3]
-	add	x3, x2, 480
-	ld1h	z2.h, p7/z, [x3]
 	add	x3, x2, 736
-	ld1h	z3.h, p7/z, [x3]
-	add	x3, x2, 992
-	ld1h	z4.h, p7/z, [x3]
+	ld1h	z31.h, p7/z, [x3]
 	addvl	x3, x5, #-1
 	add	x3, x3, 64
 	add	x3, sp, x3
-	str	z1, [x3]
-	mov	z1.d, z4.d
-	mov	z4.d, z2.d
-.L7:
-	add	x3, x0, 32
-	ld1h	z23.h, p7/z, [x3]
-	ld1h	z28.h, p7/z, [x0]
-	addvl	x3, sp, #10
-	rev	z31.h, z23.h
-	sub	z29.h, z28.h, z31.h
-	add	x3, x3, 64
-	str	z29, [x3]
-	add	z31.h, z28.h, z31.h
-	addvl	x3, sp, #11
-	rev	z30.h, z31.h
-	sub	z27.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z27, [x3]
-	add	z31.h, z31.h, z30.h
-	addvl	x3, sp, #12
-	tbl	z30.h, {z31.h}, z5.h
-	sub	z31.h, z31.h, z30.h
-	add	x3, x3, 64
 	str	z31, [x3]
-	cntb	x5
-	add	x3, x0, 64
-	ld1h	z14.h, p7/z, [x3]
-	lsl	x5, x5, 5
-	add	x3, x0, 96
-	ld1h	z15.h, p7/z, [x3]
-	rev	z31.h, z15.h
-	addvl	x3, sp, #13
-	sub	z30.h, z14.h, z31.h
-	add	z31.h, z14.h, z31.h
-	add	x3, x3, 64
-	str	z30, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #14
-	sub	z26.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z26, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #15
-	sub	z25.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z25, [x3]
-	add	x3, x0, 128
-	ld1h	z2.h, p7/z, [x3]
-	add	x3, x0, 160
+	add	x3, x2, 992
 	ld1h	z31.h, p7/z, [x3]
-	addvl	x3, sp, #2
-	add	x3, x3, 64
-	str	z31, [x3]
-	rev	z31.h, z31.h
-	addvl	x3, sp, #16
-	sub	z27.h, z2.h, z31.h
-	add	z31.h, z2.h, z31.h
-	add	x3, x3, 64
-	str	z27, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #17
-	sub	z25.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z25, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #18
-	sub	z24.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z24, [x3]
-	add	x3, x0, 192
-	ld1h	z7.h, p7/z, [x3]
-	add	x3, x0, 224
-	ld1h	z26.h, p7/z, [x3]
-	rev	z31.h, z26.h
-	addvl	x3, sp, #19
-	sub	z25.h, z7.h, z31.h
-	add	z31.h, z7.h, z31.h
-	add	x3, x3, 64
-	str	z25, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #20
-	sub	z24.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z24, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #21
-	sub	z22.h, z31.h, z30.h
-	mov	z10.d, z26.d
-	add	x3, x3, 64
-	str	z22, [x3]
-	add	x3, x0, 256
-	ld1h	z8.h, p7/z, [x3]
-	add	x3, x0, 288
-	ld1h	z24.h, p7/z, [x3]
-	rev	z31.h, z24.h
-	addvl	x3, sp, #3
-	sub	z22.h, z8.h, z31.h
-	add	z31.h, z8.h, z31.h
-	add	x3, x3, 64
-	str	z24, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #22
-	sub	z21.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z22, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #23
-	sub	z20.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z21, [x3]
-	addvl	x3, sp, #24
-	add	x3, x3, 64
-	str	z20, [x3]
-	add	x3, x0, 320
-	ld1h	z9.h, p7/z, [x3]
-	add	x3, x0, 352
-	ld1h	z21.h, p7/z, [x3]
-	rev	z31.h, z21.h
-	addvl	x3, sp, #4
-	sub	z20.h, z9.h, z31.h
-	add	z31.h, z9.h, z31.h
-	add	x3, x3, 64
-	str	z21, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #25
-	sub	z19.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z20, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #26
-	sub	z18.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z19, [x3]
-	addvl	x3, sp, #27
-	add	x3, x3, 64
-	str	z18, [x3]
-	add	x3, x0, 384
-	ld1h	z29.h, p7/z, [x3]
-	add	x3, x0, 416
-	ld1h	z24.h, p7/z, [x3]
-	rev	z31.h, z24.h
-	addvl	x3, sp, #28
-	sub	z19.h, z29.h, z31.h
-	add	z31.h, z29.h, z31.h
-	add	x3, x3, 64
-	str	z19, [x3]
-	rev	z30.h, z31.h
-	addvl	x3, sp, #29
-	sub	z18.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z18, [x3]
-	tbl	z30.h, {z31.h}, z5.h
-	addvl	x3, sp, #30
-	sub	z17.h, z31.h, z30.h
-	add	x3, x3, 64
-	str	z17, [x3]
-	add	x3, x0, 448
-	ld1h	z20.h, p7/z, [x3]
-	add	x3, x0, 480
-	ld1h	z16.h, p7/z, [x3]
-	rev	z31.h, z16.h
-	addvl	x3, sp, #31
-	sub	z18.h, z20.h, z31.h
-	add	z31.h, z20.h, z31.h
-	add	x3, x3, 64
-	str	z18, [x3]
-	rev	z30.h, z31.h
 	cntb	x3
-	sub	z17.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	lsl	x3, x3, 5
-	tbl	z30.h, {z31.h}, z5.h
-	sub	z13.h, z31.h, z30.h
+	lsl	x3, x3, 6
 	add	x3, sp, x3
 	add	x3, x3, 64
-	str	z17, [x3]
+	str	z31, [x3]
+.L7:
+	add	x3, x0, 32
+	ld1h	z10.h, p7/z, [x3]
+	ld1h	z21.h, p7/z, [x0]
+	addvl	x3, sp, #20
+	rev	z10.h, z10.h
+	add	z31.h, z21.h, z10.h
+	add	x3, x3, 64
+	rev	z30.h, z31.h
+	sub	z28.h, z31.h, z30.h
+	str	z28, [x3]
+	addvl	x3, sp, #21
+	add	z31.h, z31.h, z30.h
+	add	x3, x3, 64
+	tbl	z30.h, {z31.h}, z6.h
+	sub	z31.h, z31.h, z30.h
+	str	z31, [x3]
+	add	x3, x0, 64
+	ld1h	z17.h, p7/z, [x3]
+	add	x3, x0, 96
+	ld1h	z22.h, p7/z, [x3]
+	rev	z22.h, z22.h
+	addvl	x3, sp, #22
+	add	z31.h, z17.h, z22.h
+	rev	z30.h, z31.h
+	add	x3, x3, 64
+	sub	z27.h, z31.h, z30.h
+	str	z27, [x3]
+	addvl	x3, sp, #23
+	add	z31.h, z31.h, z30.h
+	tbl	z30.h, {z31.h}, z6.h
+	add	x3, x3, 64
+	sub	z30.h, z31.h, z30.h
+	str	z30, [x3]
+	add	x3, x0, 128
+	ld1h	z1.h, p7/z, [x3]
+	cntb	x5
+	add	x3, x0, 160
+	ld1h	z26.h, p7/z, [x3]
+	rev	z26.h, z26.h
+	addvl	x3, sp, #24
+	add	z31.h, z1.h, z26.h
+	rev	z30.h, z31.h
+	add	x3, x3, 64
+	sub	z29.h, z31.h, z30.h
+	str	z29, [x3]
+	addvl	x3, sp, #25
+	add	z31.h, z31.h, z30.h
+	tbl	z30.h, {z31.h}, z6.h
+	add	x3, x3, 64
+	sub	z25.h, z31.h, z30.h
+	str	z25, [x3]
+	add	x3, x0, 192
+	ld1h	z2.h, p7/z, [x3]
+	lsl	x5, x5, 5
+	add	x3, x0, 224
+	ld1h	z11.h, p7/z, [x3]
+	rev	z11.h, z11.h
+	addvl	x3, sp, #26
+	add	z31.h, z2.h, z11.h
+	rev	z30.h, z31.h
+	add	x3, x3, 64
+	sub	z25.h, z31.h, z30.h
+	str	z25, [x3]
+	addvl	x3, sp, #27
+	add	z31.h, z31.h, z30.h
+	tbl	z30.h, {z31.h}, z6.h
+	add	x3, x3, 64
+	sub	z24.h, z31.h, z30.h
+	str	z24, [x3]
+	add	x3, x0, 256
+	ld1h	z3.h, p7/z, [x3]
+	add	x3, x0, 288
+	ld1h	z12.h, p7/z, [x3]
+	rev	z12.h, z12.h
+	addvl	x3, sp, #28
+	add	z30.h, z3.h, z12.h
+	rev	z31.h, z30.h
+	add	x3, x3, 64
+	sub	z24.h, z30.h, z31.h
+	str	z24, [x3]
+	addvl	x3, sp, #29
+	add	z31.h, z30.h, z31.h
+	tbl	z30.h, {z31.h}, z6.h
+	add	x3, x3, 64
+	sub	z23.h, z31.h, z30.h
+	str	z23, [x3]
+	add	x3, x0, 320
+	ld1h	z18.h, p7/z, [x3]
+	add	x3, x0, 352
+	ld1h	z24.h, p7/z, [x3]
+	rev	z24.h, z24.h
+	addvl	x3, sp, #30
+	add	z30.h, z18.h, z24.h
+	rev	z31.h, z30.h
+	add	x3, x3, 64
+	sub	z23.h, z30.h, z31.h
+	str	z23, [x3]
+	addvl	x3, sp, #31
+	add	z31.h, z30.h, z31.h
+	tbl	z30.h, {z31.h}, z6.h
+	add	x3, x3, 64
+	sub	z20.h, z31.h, z30.h
+	str	z20, [x3]
+	add	x3, x0, 384
+	ld1h	z23.h, p7/z, [x3]
+	add	x3, x0, 416
+	ld1h	z27.h, p7/z, [x3]
+	rev	z27.h, z27.h
+	cntb	x3
+	add	z30.h, z23.h, z27.h
+	rev	z31.h, z30.h
+	lsl	x3, x3, 5
+	sub	z20.h, z30.h, z31.h
+	add	z31.h, z30.h, z31.h
+	add	x3, sp, x3
+	tbl	z30.h, {z31.h}, z6.h
+	sub	z19.h, z31.h, z30.h
+	add	x3, x3, 64
+	str	z20, [x3]
 	addvl	x3, x5, #1
 	rdvl	x5, #17
 	add	x3, x3, 64
 	lsl	x5, x5, 1
 	add	x3, sp, x3
-	str	z13, [x3]
-	add	x3, x0, 512
-	ld1h	z30.h, p7/z, [x3]
-	add	x3, x0, 544
-	ld1h	z17.h, p7/z, [x3]
-	rev	z31.h, z17.h
-	addvl	x3, sp, #6
-	sub	z13.h, z30.h, z31.h
-	add	z31.h, z30.h, z31.h
-	add	x3, x3, 64
-	str	z17, [x3]
+	str	z19, [x3]
+	add	x3, x0, 448
+	ld1h	z4.h, p7/z, [x3]
+	add	x3, x0, 480
+	ld1h	z13.h, p7/z, [x3]
+	rev	z13.h, z13.h
 	rdvl	x3, #17
+	add	z30.h, z4.h, z13.h
+	rev	z31.h, z30.h
 	lsl	x3, x3, 1
+	sub	z19.h, z30.h, z31.h
+	add	z31.h, z30.h, z31.h
 	add	x3, sp, x3
+	tbl	z30.h, {z31.h}, z6.h
+	sub	z16.h, z31.h, z30.h
 	add	x3, x3, 64
-	str	z13, [x3]
-	addvl	x3, sp, #5
-	add	x3, x3, 64
-	str	z30, [x3]
-	rev	z30.h, z31.h
+	str	z19, [x3]
 	addvl	x3, x5, #1
-	sub	z12.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
-	add	x3, x3, 64
-	tbl	z30.h, {z31.h}, z5.h
-	sub	z11.h, z31.h, z30.h
-	add	x3, sp, x3
-	str	z12, [x3]
 	cntb	x5, all, mul #9
-	cntb	x3, all, mul #9
+	add	x3, x3, 64
 	lsl	x5, x5, 2
-	lsl	x3, x3, 2
 	add	x3, sp, x3
+	str	z16, [x3]
+	add	x3, x0, 512
+	ld1h	z5.h, p7/z, [x3]
+	add	x3, x0, 544
+	ld1h	z14.h, p7/z, [x3]
+	rev	z14.h, z14.h
+	cntb	x3, all, mul #9
+	add	z30.h, z5.h, z14.h
+	rev	z31.h, z30.h
+	lsl	x3, x3, 2
+	sub	z16.h, z30.h, z31.h
+	add	z31.h, z30.h, z31.h
+	add	x3, sp, x3
+	tbl	z30.h, {z31.h}, z6.h
+	sub	z15.h, z31.h, z30.h
 	add	x3, x3, 64
-	str	z11, [x3]
-	add	x3, x0, 576
-	ld1h	z11.h, p7/z, [x3]
-	add	x3, x0, 608
-	ld1h	z12.h, p7/z, [x3]
-	rev	z31.h, z12.h
-	addvl	x3, sp, #7
-	sub	z30.h, z11.h, z31.h
-	add	z31.h, z11.h, z31.h
-	add	x3, x3, 64
-	str	z12, [x3]
+	str	z16, [x3]
 	addvl	x3, x5, #1
 	cntb	x5, all, mul #5
 	add	x3, x3, 64
 	lsl	x5, x5, 3
 	add	x3, sp, x3
-	str	z30, [x3]
-	rev	z30.h, z31.h
+	str	z15, [x3]
+	add	x3, x0, 576
+	ld1h	z19.h, p7/z, [x3]
+	add	x3, x0, 608
+	ld1h	z25.h, p7/z, [x3]
+	rev	z25.h, z25.h
 	rdvl	x3, #19
-	sub	z22.h, z31.h, z30.h
-	add	z31.h, z31.h, z30.h
+	add	z30.h, z19.h, z25.h
+	rev	z31.h, z30.h
 	lsl	x3, x3, 1
-	tbl	z30.h, {z31.h}, z5.h
-	sub	z6.h, z31.h, z30.h
+	sub	z15.h, z30.h, z31.h
+	add	z31.h, z30.h, z31.h
 	add	x3, sp, x3
+	tbl	z30.h, {z31.h}, z6.h
+	sub	z9.h, z31.h, z30.h
 	add	x3, x3, 64
-	str	z22, [x3]
+	str	z15, [x3]
 	addvl	x3, x5, #-1
 	cntb	x5, all, mul #5
 	add	x3, x3, 64
 	lsl	x5, x5, 3
 	add	x3, sp, x3
-	str	z6, [x3]
+	str	z9, [x3]
 	add	x3, x0, 640
-	ld1h	z30.h, p7/z, [x3]
+	ld1h	z31.h, p7/z, [x3]
 	add	x3, x0, 672
-	ld1h	z25.h, p7/z, [x3]
-	rev	z31.h, z25.h
-	cntb	x3, all, mul #5
-	sub	z18.h, z30.h, z31.h
-	add	z31.h, z30.h, z31.h
-	lsl	x3, x3, 3
-	rev	z27.h, z31.h
-	sub	z13.h, z31.h, z27.h
-	add	x3, sp, x3
-	add	z31.h, z31.h, z27.h
-	tbl	z27.h, {z31.h}, z5.h
+	ld1h	z28.h, p7/z, [x3]
+	rev	z28.h, z28.h
+	addvl	x3, sp, #6
+	add	z29.h, z31.h, z28.h
 	add	x3, x3, 64
-	str	z18, [x3]
-	sub	z6.h, z31.h, z27.h
+	str	z31, [x3]
+	rev	z31.h, z29.h
+	cntb	x3, all, mul #5
+	sub	z9.h, z29.h, z31.h
+	add	z31.h, z29.h, z31.h
+	lsl	x3, x3, 3
+	tbl	z29.h, {z31.h}, z6.h
+	sub	z8.h, z31.h, z29.h
+	add	x3, sp, x3
+	add	x3, x3, 64
+	str	z9, [x3]
 	addvl	x3, x5, #1
 	rdvl	x5, #21
 	add	x3, x3, 64
 	lsl	x5, x5, 1
 	add	x3, sp, x3
-	str	z13, [x3]
-	rdvl	x3, #21
-	lsl	x3, x3, 1
-	add	x3, sp, x3
-	add	x3, x3, 64
-	str	z6, [x3]
+	str	z8, [x3]
 	add	x3, x0, 704
-	ld1h	z21.h, p7/z, [x3]
+	ld1h	z31.h, p7/z, [x3]
 	add	x3, x0, 736
-	ld1h	z17.h, p7/z, [x3]
-	rev	z31.h, z17.h
+	ld1h	z15.h, p7/z, [x3]
+	rev	z15.h, z15.h
+	addvl	x3, sp, #7
+	add	z29.h, z31.h, z15.h
+	add	x3, x3, 64
+	str	z31, [x3]
+	rev	z31.h, z29.h
+	rdvl	x3, #21
+	sub	z8.h, z29.h, z31.h
+	add	z31.h, z29.h, z31.h
+	lsl	x3, x3, 1
+	tbl	z29.h, {z31.h}, z6.h
+	sub	z7.h, z31.h, z29.h
+	add	x3, sp, x3
+	add	x3, x3, 64
+	str	z8, [x3]
 	addvl	x3, x5, #1
-	sub	z22.h, z21.h, z31.h
-	add	z31.h, z21.h, z31.h
 	add	x3, x3, 64
-	rev	z27.h, z31.h
-	sub	z19.h, z31.h, z27.h
 	add	x3, sp, x3
-	str	z22, [x3]
-	add	z31.h, z31.h, z27.h
+	str	z7, [x3]
+	add	x3, x0, 768
+	ld1h	z7.h, p7/z, [x3]
+	add	x3, x0, 800
+	ld1h	z31.h, p7/z, [x3]
+	rev	z29.h, z31.h
+	addvl	x3, sp, #4
+	add	x3, x3, 64
+	str	z29, [x3]
+	add	z29.h, z7.h, z29.h
 	cntb	x3, all, mul #11
-	tbl	z27.h, {z31.h}, z5.h
-	sub	z6.h, z31.h, z27.h
+	rev	z31.h, z29.h
+	sub	z20.h, z29.h, z31.h
 	lsl	x3, x3, 2
+	add	z31.h, z29.h, z31.h
+	tbl	z29.h, {z31.h}, z6.h
 	add	x3, sp, x3
+	sub	z30.h, z31.h, z29.h
 	add	x3, x3, 64
-	str	z19, [x3]
+	str	z20, [x3]
 	cntb	x3, all, mul #3
 	lsl	x5, x3, 4
 	sub	x3, x5, x3
@@ -2197,237 +2171,478 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	add	x3, x3, 64
 	lsl	x5, x5, 4
 	add	x3, sp, x3
-	str	z6, [x3]
-	add	x3, x0, 768
-	ld1h	z12.h, p7/z, [x3]
-	add	x3, x0, 800
-	ld1h	z19.h, p7/z, [x3]
-	rev	z31.h, z19.h
-	addvl	x3, sp, #8
-	sub	z13.h, z12.h, z31.h
-	add	z31.h, z12.h, z31.h
-	add	x3, x3, 64
-	str	z19, [x3]
-	rev	z27.h, z31.h
-	rdvl	x3, #23
-	lsl	x3, x3, 1
-	add	x3, sp, x3
-	add	x3, x3, 64
-	str	z13, [x3]
-	sub	z13.h, z31.h, z27.h
-	addvl	x3, x5, #-1
-	add	z31.h, z31.h, z27.h
-	tbl	z27.h, {z31.h}, z5.h
-	add	x3, x3, 64
-	sub	z6.h, z31.h, z27.h
-	cntb	x5, all, mul #3
-	add	x3, sp, x3
-	str	z13, [x3]
-	lsl	x5, x5, 4
-	cntb	x3, all, mul #3
-	lsl	x3, x3, 4
-	add	x3, sp, x3
-	add	x3, x3, 64
-	str	z6, [x3]
+	str	z30, [x3]
 	add	x3, x0, 832
-	ld1h	z13.h, p7/z, [x3]
+	ld1h	z20.h, p7/z, [x3]
 	add	x3, x0, 864
-	ld1h	z22.h, p7/z, [x3]
-	rev	z31.h, z22.h
-	addvl	x3, sp, #9
-	sub	z27.h, z13.h, z31.h
-	add	z31.h, z13.h, z31.h
+	ld1h	z31.h, p7/z, [x3]
+	rev	z16.h, z31.h
+	addvl	x3, sp, #5
+	add	z29.h, z20.h, z16.h
+	rev	z31.h, z29.h
 	add	x3, x3, 64
-	str	z22, [x3]
-	addvl	x3, x5, #1
-	cntb	x5, all, mul #13
-	add	x3, x3, 64
-	lsl	x5, x5, 2
-	add	x3, sp, x3
-	str	z27, [x3]
-	rev	z27.h, z31.h
-	rdvl	x3, #25
-	sub	z18.h, z31.h, z27.h
-	add	z31.h, z31.h, z27.h
+	str	z16, [x3]
+	sub	z9.h, z29.h, z31.h
+	rdvl	x3, #23
+	add	z31.h, z29.h, z31.h
+	tbl	z29.h, {z31.h}, z6.h
 	lsl	x3, x3, 1
-	tbl	z27.h, {z31.h}, z5.h
-	sub	z31.h, z31.h, z27.h
+	sub	z30.h, z31.h, z29.h
 	add	x3, sp, x3
 	add	x3, x3, 64
-	str	z18, [x3]
-	cntb	x3, all, mul #3
-	add	x3, x3, x3, lsl 4
+	str	z9, [x3]
+	addvl	x3, x5, #-1
+	cntb	x5, all, mul #3
 	add	x3, x3, 64
+	lsl	x5, x5, 4
 	add	x3, sp, x3
-	str	z31, [x3]
+	str	z30, [x3]
 	add	x3, x0, 896
 	ld1h	z31.h, p7/z, [x3]
 	add	x3, x0, 928
-	ld1h	z26.h, p7/z, [x3]
-	rev	z27.h, z26.h
-	cntb	x3, all, mul #13
-	sub	z19.h, z31.h, z27.h
-	add	z27.h, z31.h, z27.h
-	lsl	x3, x3, 2
-	rev	z22.h, z27.h
-	sub	z18.h, z27.h, z22.h
+	ld1h	z29.h, p7/z, [x3]
+	rev	z29.h, z29.h
+	cntb	x3, all, mul #3
+	add	z9.h, z31.h, z29.h
+	rev	z16.h, z9.h
+	lsl	x3, x3, 4
+	sub	z8.h, z9.h, z16.h
+	add	z16.h, z9.h, z16.h
 	add	x3, sp, x3
-	add	z27.h, z27.h, z22.h
-	tbl	z22.h, {z27.h}, z5.h
+	tbl	z9.h, {z16.h}, z6.h
+	sub	z30.h, z16.h, z9.h
 	add	x3, x3, 64
-	str	z19, [x3]
-	sub	z6.h, z27.h, z22.h
+	str	z8, [x3]
 	addvl	x3, x5, #1
-	cntb	x5, all, mul #7
 	add	x3, x3, 64
-	lsl	x5, x5, 3
 	add	x3, sp, x3
-	str	z18, [x3]
-	rdvl	x3, #27
+	str	z30, [x3]
+	add	x3, x0, 960
+	ld1h	z8.h, p7/z, [x3]
+	add	x3, x0, 992
+	ld1h	z16.h, p7/z, [x3]
+	rev	z16.h, z16.h
+	add	x3, sp, 64
+	add	z9.h, z8.h, z16.h
+	rev	z30.h, z9.h
+	str	z30, [x3]
+	rdvl	x3, #25
+	sub	z30.h, z9.h, z30.h
 	lsl	x3, x3, 1
 	add	x3, sp, x3
 	add	x3, x3, 64
-	str	z6, [x3]
-	add	x3, x0, 960
-	ld1h	z22.h, p7/z, [x3]
-	add	x3, x0, 992
-	ld1h	z18.h, p7/z, [x3]
-	rev	z27.h, z18.h
-	cntb	x3, all, mul #11
-	sub	z19.h, z22.h, z27.h
-	add	z27.h, z22.h, z27.h
-	add	x3, x3, x3, lsl 2
+	str	z30, [x3]
+	add	x3, sp, 64
+	ldr	z30, [x3]
+	add	z9.h, z9.h, z30.h
+	cntb	x3, all, mul #3
+	tbl	z30.h, {z9.h}, z6.h
+	sub	z9.h, z9.h, z30.h
+	add	x3, x3, x3, lsl 4
 	add	x3, x3, 64
 	add	x3, sp, x3
-	str	z19, [x3]
-	rev	z19.h, z27.h
-	cntb	x3, all, mul #7
-	sub	z6.h, z27.h, z19.h
-	add	z27.h, z27.h, z19.h
-	lsl	x3, x3, 3
-	tbl	z19.h, {z27.h}, z5.h
-	sub	z27.h, z27.h, z19.h
-	add	x3, sp, x3
-	zip1	z19.d, z28.d, z2.d
-	zip2	z28.d, z28.d, z2.d
-	add	x3, x3, 64
-	str	z6, [x3]
-	addvl	x3, x5, #1
-	add	x3, x3, 64
-	add	x3, sp, x3
-	str	z27, [x3]
-	zip1	z27.d, z14.d, z7.d
-	zip2	z14.d, z14.d, z7.d
-	zip1	z7.d, z19.d, z27.d
-	zip2	z19.d, z19.d, z27.d
-	zip1	z27.d, z28.d, z14.d
+	str	z9, [x3]
+	zip1	z9.d, z21.d, z1.d
+	zip2	z21.d, z21.d, z1.d
+	zip1	z1.d, z17.d, z2.d
+	zip2	z17.d, z17.d, z2.d
+	zip1	z2.d, z9.d, z1.d
+	zip2	z1.d, z9.d, z1.d
+	zip1	z9.d, z21.d, z17.d
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z27.d, p6/m, z27.d
+	revh z9.d, p6/m, z9.d
 // 0 "" 2
 #NO_APP
-	zip2	z28.d, z28.d, z14.d
+	zip2	z21.d, z21.d, z17.d
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z28.d, p6/m, z28.d
+	revh z17.d, p6/m, z21.d
 // 0 "" 2
 #NO_APP
-	addvl	x3, sp, #2
+	zip1	z21.d, z10.d, z26.d
+	add	x3, sp, 64
+	zip2	z26.d, z10.d, z26.d
+	str	z17, [x3]
+	zip1	z17.d, z22.d, z11.d
+	zip2	z22.d, z22.d, z11.d
+	zip2	z10.d, z21.d, z17.d
+	zip1	z11.d, z21.d, z17.d
+	zip1	z21.d, z26.d, z22.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z21.d, p6/m, z21.d
+// 0 "" 2
+#NO_APP
+	mov	z30.d, z21.d
+	zip2	z26.d, z26.d, z22.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z26.d, p6/m, z26.d
+// 0 "" 2
+#NO_APP
+	ldr	z17, [x3]
+	addvl	x3, sp, #8
+	mov	z22.d, z26.d
+	add	x3, x3, 64
+	saddlb	z26.s, z17.h, z26.h
+	saddlb	z21.s, z2.h, z11.h
+	add	z21.s, z21.s, z26.s
+	str	z2, [x3]
+	ldr	z26, [x3]
+	addvl	x3, sp, #11
+	add	x3, x3, 64
+	str	z11, [x3]
+	ldr	z11, [x3]
+	addvl	x3, sp, #14
+	saddlt	z11.s, z26.h, z11.h
+	saddlt	z26.s, z17.h, z22.h
+	add	x3, x3, 64
+	str	z22, [x3]
+	saddlb	z17.s, z1.h, z10.h
+	addvl	x3, sp, #9
+	add	z11.s, z11.s, z26.s
+	saddlb	z26.s, z9.h, z30.h
+	add	x3, x3, 64
+	str	z1, [x3]
+	ldr	z1, [x3]
+	addvl	x3, sp, #12
+	add	z17.s, z17.s, z26.s
+	saddlt	z22.s, z9.h, z30.h
+	add	x3, x3, 64
+	str	z10, [x3]
+	ldr	z10, [x3]
+	addvl	x3, sp, #10
+	saddlt	z26.s, z1.h, z10.h
+	add	z22.s, z26.s, z22.s
+	add	x3, x3, 64
+	str	z9, [x3]
+	addvl	x3, sp, #13
+	add	x3, x3, 64
+	str	z30, [x3]
+#APP
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z17.d, p6/m, z17.d
+// 0 "" 2
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z22.d, p6/m, z22.d
+// 0 "" 2
+#NO_APP
+	zip1	z26.s, z21.s, z11.s
+	zip2	z21.s, z21.s, z11.s
+	zip1	z10.s, z22.s, z17.s
+	zip2	z22.s, z22.s, z17.s
+	add	z26.s, z26.s, z10.s
+	add	z22.s, z21.s, z22.s
+	uzp2	z21.d, z26.d, z22.d
+#APP
+// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z21.d, p6/m, z21.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #1
+	cntb	x5, all, mul #13
+	uzp1	z26.d, z26.d, z22.d
 	add	x3, x3, 64
 	ldr	z2, [x3]
-	zip1	z14.d, z23.d, z2.d
-	zip2	z23.d, z23.d, z2.d
-	zip1	z2.d, z15.d, z10.d
-	zip2	z15.d, z15.d, z10.d
-	zip1	z6.d, z14.d, z2.d
-	zip2	z14.d, z14.d, z2.d
-	zip1	z2.d, z23.d, z15.d
+	lsl	x5, x5, 2
+	cntb	x3, all, mul #13
+	add	z22.s, z21.s, z26.s
+	sub	z26.s, z26.s, z21.s
+	lsl	x3, x3, 2
+	mul	z22.s, p7/m, z22.s, z2.s
+	uzp1	z21.s, z22.s, z22.s
+	add	x3, sp, x3
+	uzp2	z22.s, z22.s, z22.s
+	add	z11.s, z21.s, z22.s
+	add	x3, x3, 64
+	str	z11, [x3]
+	sub	z10.s, z21.s, z22.s
+	addvl	x3, x5, #1
+	ptrue	p5.s, all
+	add	x3, x3, 64
+	add	x3, sp, x3
+	str	z10, [x3]
+	addvl	x3, sp, #2
+	add	x3, x3, 64
+	ldr	z9, [x3]
+	movprfx	z17, z9
+	mul	z17.s, p7/m, z17.s, z26.s
 #APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z2.d, p6/m, z2.d
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z17.s, p5/m, z17.s, z17.s
 // 0 "" 2
 #NO_APP
-	zip2	z23.d, z23.d, z15.d
+	addvl	x3, sp, #3
+	add	x3, x3, 64
+	ldr	z1, [x3]
+	movprfx	z10, z26
+	mul	z10.s, p7/m, z10.s, z1.s
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z10.s, p5/m, z10.s, z10.s
+// 0 "" 2
+#NO_APP
+	zip1	z26.d, z3.d, z23.d
+	zip1	z22.d, z18.d, z4.d
+	zip2	z23.d, z3.d, z23.d
+	zip2	z18.d, z18.d, z4.d
+	zip1	z21.d, z26.d, z22.d
+	zip2	z4.d, z26.d, z22.d
+	zip1	z26.d, z23.d, z18.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z3.d, p6/m, z26.d
+// 0 "" 2
+#NO_APP
+	zip2	z23.d, z23.d, z18.d
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	revh z23.d, p6/m, z23.d
 // 0 "" 2
 #NO_APP
-	saddlb	z15.s, z7.h, z23.h
-	saddlt	z7.s, z7.h, z23.h
-	saddlb	z10.s, z28.h, z6.h
-	saddlb	z23.s, z19.h, z2.h
-	saddlt	z28.s, z28.h, z6.h
-	saddlt	z19.s, z19.h, z2.h
-	add	z28.s, z7.s, z28.s
-	add	z15.s, z15.s, z10.s
-	saddlb	z7.s, z27.h, z14.h
-	saddlt	z27.s, z27.h, z14.h
-	add	z23.s, z23.s, z7.s
-	add	z27.s, z19.s, z27.s
+	zip1	z26.d, z12.d, z27.d
+	mov	z18.d, z23.d
+	zip2	z27.d, z12.d, z27.d
+	zip1	z23.d, z24.d, z13.d
+	zip2	z24.d, z24.d, z13.d
+	zip2	z12.d, z26.d, z23.d
+	zip1	z13.d, z26.d, z23.d
+	zip1	z11.d, z27.d, z24.d
 #APP
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z23.d, p6/m, z23.d
-// 0 "" 2
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z27.d, p6/m, z27.d
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z11.d, p6/m, z11.d
 // 0 "" 2
 #NO_APP
-	zip1	z14.s, z27.s, z23.s
-	zip1	z19.s, z15.s, z28.s
-	zip2	z27.s, z27.s, z23.s
-	add	z19.s, z19.s, z14.s
-	zip2	z15.s, z15.s, z28.s
-	add	z27.s, z15.s, z27.s
-	uzp2	z23.d, z19.d, z27.d
+	zip2	z27.d, z27.d, z24.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z27.d, p6/m, z27.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #15
+	saddlb	z26.s, z18.h, z27.h
+	saddlb	z23.s, z21.h, z13.h
+	add	x3, x3, 64
+	add	z23.s, z23.s, z26.s
+	str	z21, [x3]
+	ldr	z26, [x3]
+	addvl	x3, sp, #19
+	saddlb	z22.s, z4.h, z12.h
+	add	x3, x3, 64
+	str	z13, [x3]
+	ldr	z13, [x3]
+	addvl	x3, sp, #18
+	saddlt	z21.s, z26.h, z13.h
+	saddlt	z26.s, z18.h, z27.h
+	add	x3, x3, 64
+	str	z18, [x3]
+	add	z21.s, z21.s, z26.s
+	addvl	x3, sp, #16
+	saddlb	z26.s, z3.h, z11.h
+	saddlt	z24.s, z3.h, z11.h
+	add	x3, x3, 64
+	str	z4, [x3]
+	ldr	z4, [x3]
+	addvl	x3, sp, #17
+	add	z22.s, z22.s, z26.s
+	saddlt	z26.s, z4.h, z12.h
+	add	x3, x3, 64
+	add	z24.s, z26.s, z24.s
+	str	z3, [x3]
+#APP
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z22.d, p6/m, z22.d
+// 0 "" 2
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z24.d, p6/m, z24.d
+// 0 "" 2
+#NO_APP
+	zip1	z26.s, z23.s, z21.s
+	zip2	z23.s, z23.s, z21.s
+	zip1	z18.s, z24.s, z22.s
+	zip2	z24.s, z24.s, z22.s
+	add	z26.s, z26.s, z18.s
+	add	z24.s, z23.s, z24.s
+	uzp2	z23.d, z26.d, z24.d
 #APP
 // 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	revw z23.d, p6/m, z23.d
 // 0 "" 2
 #NO_APP
-	addvl	x3, sp, #1
-	uzp1	z19.d, z19.d, z27.d
-	add	z28.s, z23.s, z19.s
+	rdvl	x3, #27
+	uzp1	z18.d, z26.d, z24.d
+	add	z26.s, z23.s, z18.s
+	lsl	x3, x3, 1
+	mul	z26.s, p7/m, z26.s, z2.s
+	uzp1	z24.s, z26.s, z26.s
+	add	x3, sp, x3
+	uzp2	z26.s, z26.s, z26.s
+	add	z4.s, z24.s, z26.s
 	add	x3, x3, 64
-	ldr	z27, [x3]
-	mul	z28.s, p7/m, z28.s, z27.s
-	uzp1	z27.s, z28.s, z28.s
-	add	x3, sp, 64
-	ldr	z6, [x3]
-	uzp2	z28.s, z28.s, z28.s
-	sub	z19.s, z19.s, z23.s
-	add	z7.s, z27.s, z28.s
-	sub	z2.s, z27.s, z28.s
-	ptrue	p5.s, all
-	movprfx	z27, z6
-	mul	z27.s, p7/m, z27.s, z19.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z27.s, p5/m, z27.s, z27.s
-// 0 "" 2
-#NO_APP
-	cntb	x5, all, mul #15
-	lsl	x5, x5, 2
-	addvl	x3, x5, #-1
+	str	z4, [x3]
+	sub	z13.s, z24.s, z26.s
+	cntb	x3, all, mul #11
+	sub	z18.s, z18.s, z23.s
+	mov	z4.d, z9.d
+	add	x3, x3, x3, lsl 2
 	add	x3, x3, 64
 	add	x3, sp, x3
-	ldr	z10, [x3]
-	mul	z19.s, p7/m, z19.s, z10.s
+	str	z13, [x3]
+	movprfx	z13, z9
+	mul	z13.s, p7/m, z13.s, z18.s
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z13.s, p5/m, z13.s, z13.s
+// 0 "" 2
+#NO_APP
+	mul	z18.s, p7/m, z18.s, z1.s
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z18.s, p5/m, z18.s, z18.s
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #6
+	add	x3, x3, 64
+	ldr	z30, [x3]
+	zip1	z9.d, z5.d, z30.d
+	addvl	x3, sp, #7
+	zip2	z30.d, z5.d, z30.d
+	add	x3, x3, 64
+	ldr	z5, [x3]
+	zip1	z26.d, z19.d, z5.d
+	zip2	z19.d, z19.d, z5.d
+	zip1	z5.d, z9.d, z26.d
+	zip1	z24.d, z30.d, z19.d
+	zip2	z9.d, z9.d, z26.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z24.d, p6/m, z24.d
+// 0 "" 2
+#NO_APP
+	zip2	z30.d, z30.d, z19.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z30.d, p6/m, z30.d
+// 0 "" 2
+#NO_APP
+	zip1	z23.d, z14.d, z28.d
+	zip1	z26.d, z25.d, z15.d
+	zip2	z28.d, z14.d, z28.d
+	zip2	z25.d, z25.d, z15.d
+	zip1	z21.d, z23.d, z26.d
+	zip1	z14.d, z28.d, z25.d
+	zip2	z23.d, z23.d, z26.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z14.d, p6/m, z14.d
+// 0 "" 2
+#NO_APP
+	zip2	z28.d, z28.d, z25.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z28.d, p6/m, z28.d
+// 0 "" 2
+#NO_APP
+	saddlb	z26.s, z30.h, z28.h
+	saddlb	z22.s, z5.h, z21.h
+	addvl	x3, sp, #6
+	add	z22.s, z22.s, z26.s
+	saddlt	z26.s, z30.h, z28.h
+	add	x3, x3, 64
+	str	z5, [x3]
+	ldr	z5, [x3]
+	saddlt	z5.s, z5.h, z21.h
+	add	z5.s, z5.s, z26.s
+	saddlb	z26.s, z24.h, z14.h
+	saddlb	z15.s, z9.h, z23.h
+	saddlt	z25.s, z24.h, z14.h
+	add	z15.s, z15.s, z26.s
+	saddlt	z26.s, z9.h, z23.h
+	add	z25.s, z26.s, z25.s
+#APP
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z15.d, p6/m, z15.d
+// 0 "" 2
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z25.d, p6/m, z25.d
+// 0 "" 2
+#NO_APP
+	zip1	z26.s, z22.s, z5.s
+	zip2	z22.s, z22.s, z5.s
+	zip1	z19.s, z25.s, z15.s
+	zip2	z25.s, z25.s, z15.s
+	add	z26.s, z26.s, z19.s
+	add	z25.s, z22.s, z25.s
+	uzp2	z22.d, z26.d, z25.d
+#APP
+// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z22.d, p6/m, z22.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #7
+	uzp1	z19.d, z26.d, z25.d
+	add	z26.s, z22.s, z19.s
+	add	x3, x3, 64
+	mul	z26.s, p7/m, z26.s, z2.s
+	uzp1	z25.s, z26.s, z26.s
+	uzp2	z26.s, z26.s, z26.s
+	add	z15.s, z25.s, z26.s
+	str	z15, [x3]
+	cntb	x3, all, mul #7
+	sub	z19.s, z19.s, z22.s
+	sub	z5.s, z25.s, z26.s
+	lsl	x3, x3, 3
+	movprfx	z15, z4
+	mul	z15.s, p7/m, z15.s, z19.s
+	add	x3, sp, x3
+	add	x3, x3, 64
+	str	z5, [x3]
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z15.s, p5/m, z15.s, z15.s
+// 0 "" 2
+#NO_APP
+	mul	z19.s, p7/m, z19.s, z1.s
 #APP
 // 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	addp z19.s, p5/m, z19.s, z19.s
 // 0 "" 2
 #NO_APP
-	zip1	z28.d, z8.d, z29.d
-	zip1	z23.d, z9.d, z20.d
-	zip2	z29.d, z8.d, z29.d
-	zip1	z15.d, z28.d, z23.d
-	zip2	z20.d, z9.d, z20.d
-	zip2	z23.d, z28.d, z23.d
-	zip1	z28.d, z29.d, z20.d
+	zip1	z26.d, z7.d, z31.d
+	zip1	z25.d, z20.d, z8.d
+	zip2	z31.d, z7.d, z31.d
+	zip2	z20.d, z20.d, z8.d
+	zip1	z7.d, z26.d, z25.d
+	zip2	z8.d, z26.d, z25.d
+	zip1	z26.d, z31.d, z20.d
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z28.d, p6/m, z28.d
+	revh z26.d, p6/m, z26.d
+// 0 "" 2
+#NO_APP
+	zip2	z31.d, z31.d, z20.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z31.d, p6/m, z31.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #4
+	add	x3, x3, 64
+	ldr	z5, [x3]
+	zip1	z25.d, z5.d, z29.d
+	addvl	x3, sp, #5
+	zip2	z29.d, z5.d, z29.d
+	add	x3, x3, 64
+	ldr	z22, [x3]
+	zip1	z5.d, z22.d, z16.d
+	zip2	z20.d, z22.d, z16.d
+	zip1	z22.d, z25.d, z5.d
+	zip1	z2.d, z29.d, z20.d
+	zip2	z25.d, z25.d, z5.d
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z2.d, p6/m, z2.d
 // 0 "" 2
 #NO_APP
 	zip2	z29.d, z29.d, z20.d
@@ -2436,1059 +2651,877 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	revh z29.d, p6/m, z29.d
 // 0 "" 2
 #NO_APP
-	addvl	x3, sp, #3
-	add	x3, x3, 64
-	ldr	z8, [x3]
-	zip1	z20.d, z8.d, z24.d
-	addvl	x3, sp, #4
-	zip2	z24.d, z8.d, z24.d
-	add	x3, x3, 64
-	ldr	z9, [x3]
-	zip1	z14.d, z9.d, z16.d
-	zip2	z16.d, z9.d, z16.d
-	zip1	z9.d, z20.d, z14.d
-	zip2	z14.d, z20.d, z14.d
-	zip1	z20.d, z24.d, z16.d
+	saddlb	z20.s, z31.h, z29.h
+	saddlb	z5.s, z7.h, z22.h
+	add	z5.s, z5.s, z20.s
+	saddlt	z20.s, z31.h, z29.h
+	saddlt	z3.s, z7.h, z22.h
+	add	z3.s, z3.s, z20.s
+	saddlb	z20.s, z26.h, z2.h
+	saddlb	z4.s, z8.h, z25.h
+	saddlt	z16.s, z26.h, z2.h
+	add	z4.s, z4.s, z20.s
+	saddlt	z20.s, z8.h, z25.h
+	add	z16.s, z20.s, z16.s
 #APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z20.d, p6/m, z20.d
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z4.d, p6/m, z4.d
+// 0 "" 2
+// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z16.d, p6/m, z16.d
 // 0 "" 2
 #NO_APP
-	zip2	z24.d, z24.d, z16.d
+	zip1	z20.s, z5.s, z3.s
+	zip2	z5.s, z5.s, z3.s
+	zip1	z1.s, z16.s, z4.s
+	zip2	z16.s, z16.s, z4.s
+	add	z20.s, z20.s, z1.s
+	add	z16.s, z5.s, z16.s
+	uzp2	z5.d, z20.d, z16.d
+#APP
+// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revw z5.d, p6/m, z5.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #1
+	uzp1	z20.d, z20.d, z16.d
+	add	z16.s, z5.s, z20.s
+	add	x3, x3, 64
+	sub	z20.s, z20.s, z5.s
+	ldr	z5, [x3]
+	addvl	x3, sp, #4
+	mul	z16.s, p7/m, z16.s, z5.s
+	uzp1	z1.s, z16.s, z16.s
+	add	x3, x3, 64
+	uzp2	z16.s, z16.s, z16.s
+	add	z5.s, z1.s, z16.s
+	str	z5, [x3]
+	addvl	x3, sp, #2
+	sub	z1.s, z1.s, z16.s
+	add	x3, x3, 64
+	ldr	z3, [x3]
+	mul	z3.s, p7/m, z3.s, z20.s
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z3.s, p5/m, z3.s, z3.s
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #3
+	add	x3, x3, 64
+	ldr	z16, [x3]
+	mul	z20.s, p7/m, z20.s, z16.s
+#APP
+// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	addp z20.s, p5/m, z20.s, z20.s
+// 0 "" 2
+#NO_APP
+	cntb	x3, all, mul #13
+	cntb	x5, all, mul #13
+	lsl	x3, x3, 2
+	lsl	x5, x5, 2
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z4, [x3]
+	rdvl	x3, #27
+	lsl	x3, x3, 1
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z5, [x3]
+	tbl	z16.s, {z4.s - z5.s}, z0.s
+	addvl	x3, sp, #7
+	rshrnb	z16.h, z16.s, #11
+	uzp1	z16.h, z16.h, z16.h
+	add	x3, x3, 64
+	ldr	z4, [x3]
+	addvl	x3, sp, #4
+	add	x3, x3, 64
+	ldr	z5, [x3]
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	addvl	x3, x5, #1
+	rshrnb	z4.h, z4.s, #11
+	uzp1	z4.h, z4.h, z4.h
+	uzp1	z5.s, z13.s, z13.s
+	add	x3, x3, 64
+	stp	q16, q4, [x1]
+	uzp1	z4.s, z17.s, z17.s
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	rshrnb	z4.h, z4.s, #11
+	add	x3, sp, x3
+	uzp1	z17.h, z4.h, z4.h
+	uzp1	z4.s, z15.s, z15.s
+	uzp1	z5.s, z3.s, z3.s
+	tbl	z16.s, {z4.s - z5.s}, z0.s
+	rshrnb	z16.h, z16.s, #11
+	uzp1	z16.h, z16.h, z16.h
+	stp	q17, q16, [x1, 512]
+	ldr	z4, [x3]
+	cntb	x3, all, mul #11
+	add	x3, x3, x3, lsl 2
+	add	x3, x3, 64
+	add	x3, sp, x3
+	ldr	z5, [x3]
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	cntb	x3, all, mul #7
+	rshrnb	z4.h, z4.s, #11
+	uzp1	z4.h, z4.h, z4.h
+	lsl	x3, x3, 3
+	str	q4, [x1, 1024]
+	mov	z5.d, z1.d
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z4, [x3]
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	addvl	x3, sp, #8
+	rshrnb	z4.h, z4.s, #11
+	uzp1	z4.h, z4.h, z4.h
+	add	x3, x3, 64
+	uzp1	z5.s, z18.s, z18.s
+	str	q4, [x1, 1040]
+	uzp1	z4.s, z10.s, z10.s
+	ldr	z10, [x3]
+	addvl	x3, sp, #11
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	add	x3, x3, 64
+	uzp1	z5.s, z20.s, z20.s
+	rshrnb	z4.h, z4.s, #11
+	uzp1	z4.h, z4.h, z4.h
+	str	q4, [x1, 1536]
+	uzp1	z4.s, z19.s, z19.s
+	tbl	z4.s, {z4.s - z5.s}, z0.s
+	ldr	z5, [x3]
+	addvl	x3, sp, #9
+	sub	z20.h, z10.h, z5.h
+	rshrnb	z4.h, z4.s, #11
+	add	x3, x3, 64
+	ldr	z1, [x3]
+	uzp1	z4.h, z4.h, z4.h
+	addvl	x3, sp, #12
+	add	x3, x3, 64
+	ldr	z10, [x3]
+	sub	z19.h, z1.h, z10.h
+	addvl	x3, sp, #10
+	add	x3, x3, 64
+	ldr	z18, [x3]
+	addvl	x3, sp, #13
+	add	x3, x3, 64
+	ldr	z16, [x3]
+	sub	z18.h, z18.h, z16.h
+	str	q4, [x1, 1552]
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z18.d, p6/m, z18.d
+// 0 "" 2
+#NO_APP
+	add	x3, sp, 64
+	ldr	z17, [x3]
+	addvl	x3, sp, #14
+	add	x3, x3, 64
+	ldr	z16, [x3]
+	sub	z16.h, z17.h, z16.h
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z16.d, p6/m, z16.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #15
+	add	x3, x3, 64
+	ldr	z17, [x3]
+	addvl	x3, sp, #19
+	add	x3, x3, 64
+	ldr	z10, [x3]
+	sub	z17.h, z17.h, z10.h
+	addvl	x3, sp, #16
+	add	x3, x3, 64
+	ldr	z10, [x3]
+	sub	z15.h, z10.h, z12.h
+	addvl	x3, sp, #17
+	add	x3, x3, 64
+	ldr	z3, [x3]
+	sub	z13.h, z3.h, z11.h
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z13.d, p6/m, z13.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #18
+	add	x3, x3, 64
+	ldr	z12, [x3]
+	sub	z27.h, z12.h, z27.h
+#APP
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z27.d, p6/m, z27.d
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #6
+	sub	z23.h, z9.h, z23.h
+	sub	z24.h, z24.h, z14.h
+	add	x3, x3, 64
+	ldr	z12, [x3]
+	sub	z21.h, z12.h, z21.h
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	revh z24.d, p6/m, z24.d
 // 0 "" 2
 #NO_APP
-	saddlb	z16.s, z15.h, z24.h
-	saddlt	z15.s, z15.h, z24.h
-	saddlb	z8.s, z29.h, z9.h
-	saddlb	z24.s, z23.h, z20.h
-	saddlt	z29.s, z29.h, z9.h
-	saddlt	z23.s, z23.h, z20.h
-	add	z29.s, z15.s, z29.s
-	add	z16.s, z16.s, z8.s
-	saddlb	z15.s, z28.h, z14.h
-	saddlt	z28.s, z28.h, z14.h
-	add	z24.s, z24.s, z15.s
-	add	z28.s, z23.s, z28.s
-#APP
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z24.d, p6/m, z24.d
-// 0 "" 2
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z28.d, p6/m, z28.d
-// 0 "" 2
-#NO_APP
-	zip1	z20.s, z28.s, z24.s
-	zip1	z23.s, z16.s, z29.s
-	zip2	z28.s, z28.s, z24.s
-	add	z23.s, z23.s, z20.s
-	zip2	z16.s, z16.s, z29.s
-	add	z28.s, z16.s, z28.s
-	uzp2	z24.d, z23.d, z28.d
-#APP
-// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z24.d, p6/m, z24.d
-// 0 "" 2
-#NO_APP
-	addvl	x3, sp, #1
-	uzp1	z23.d, z23.d, z28.d
-	add	z29.s, z24.s, z23.s
-	add	x3, x3, 64
-	ldr	z28, [x3]
-	mul	z29.s, p7/m, z29.s, z28.s
-	uzp1	z28.s, z29.s, z29.s
-	sub	z23.s, z23.s, z24.s
-	uzp2	z29.s, z29.s, z29.s
-	add	z9.s, z28.s, z29.s
-	sub	z8.s, z28.s, z29.s
-	movprfx	z28, z6
-	mul	z28.s, p7/m, z28.s, z23.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z28.s, p5/m, z28.s, z28.s
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z10.d
-	mul	z23.s, p7/m, z23.s, z10.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z23.s, p5/m, z23.s, z23.s
-// 0 "" 2
-#NO_APP
-	addvl	x3, sp, #5
-	add	x3, x3, 64
-	ldr	z24, [x3]
-	zip1	z29.d, z24.d, z30.d
-	zip2	z30.d, z24.d, z30.d
-	zip1	z24.d, z11.d, z21.d
-	zip2	z21.d, z11.d, z21.d
-	zip1	z20.d, z29.d, z24.d
-	zip2	z24.d, z29.d, z24.d
-	zip1	z29.d, z30.d, z21.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z29.d, p6/m, z29.d
-// 0 "" 2
-#NO_APP
-	zip2	z30.d, z30.d, z21.d
+	sub	z30.h, z30.h, z28.h
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	revh z30.d, p6/m, z30.d
 // 0 "" 2
 #NO_APP
-	addvl	x3, sp, #6
-	add	x3, x3, 64
-	ldr	z10, [x3]
-	zip1	z21.d, z10.d, z25.d
-	addvl	x3, sp, #7
-	zip2	z25.d, z10.d, z25.d
-	add	x3, x3, 64
-	ldr	z10, [x3]
-	zip1	z16.d, z10.d, z17.d
-	zip2	z17.d, z10.d, z17.d
-	zip1	z15.d, z21.d, z16.d
-	zip2	z16.d, z21.d, z16.d
-	zip1	z21.d, z25.d, z17.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z21.d, p6/m, z21.d
-// 0 "" 2
-#NO_APP
-	zip2	z25.d, z25.d, z17.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z25.d, p6/m, z25.d
-// 0 "" 2
-#NO_APP
-	saddlb	z17.s, z20.h, z25.h
-	saddlt	z20.s, z20.h, z25.h
-	saddlb	z14.s, z30.h, z15.h
-	saddlb	z25.s, z24.h, z21.h
-	saddlt	z30.s, z30.h, z15.h
-	saddlt	z24.s, z24.h, z21.h
-	add	z30.s, z20.s, z30.s
-	add	z17.s, z17.s, z14.s
-	saddlb	z20.s, z29.h, z16.h
-	saddlt	z29.s, z29.h, z16.h
-	add	z25.s, z25.s, z20.s
-	add	z29.s, z24.s, z29.s
-#APP
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z25.d, p6/m, z25.d
-// 0 "" 2
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z29.d, p6/m, z29.d
-// 0 "" 2
-#NO_APP
-	zip1	z21.s, z29.s, z25.s
-	zip1	z24.s, z17.s, z30.s
-	zip2	z29.s, z29.s, z25.s
-	add	z24.s, z24.s, z21.s
-	zip2	z17.s, z17.s, z30.s
-	add	z29.s, z17.s, z29.s
-	uzp2	z25.d, z24.d, z29.d
-#APP
-// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z25.d, p6/m, z25.d
-// 0 "" 2
-#NO_APP
-	addvl	x3, sp, #1
-	uzp1	z24.d, z24.d, z29.d
-	add	z29.s, z25.s, z24.s
-	add	x3, x3, 64
-	ldr	z10, [x3]
-	sub	z30.s, z24.s, z25.s
-	mul	z29.s, p7/m, z29.s, z10.s
-	add	x3, sp, 64
-	ldr	z11, [x3]
-	uzp1	z24.s, z29.s, z29.s
-	movprfx	z25, z11
-	mul	z25.s, p7/m, z25.s, z30.s
-	uzp2	z29.s, z29.s, z29.s
-	add	z21.s, z24.s, z29.s
-	sub	z24.s, z24.s, z29.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z25.s, p5/m, z25.s, z25.s
-// 0 "" 2
-#NO_APP
-	mul	z30.s, p7/m, z30.s, z6.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z30.s, p5/m, z30.s, z30.s
-// 0 "" 2
-#NO_APP
-	zip1	z29.d, z12.d, z31.d
-	zip1	z20.d, z13.d, z22.d
-	zip2	z31.d, z12.d, z31.d
-	zip1	z17.d, z29.d, z20.d
-	zip2	z22.d, z13.d, z22.d
-	zip2	z20.d, z29.d, z20.d
-	zip1	z29.d, z31.d, z22.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z29.d, p6/m, z29.d
-// 0 "" 2
-#NO_APP
-	zip2	z31.d, z31.d, z22.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z31.d, p6/m, z31.d
-// 0 "" 2
-#NO_APP
-	addvl	x3, sp, #8
-	add	x3, x3, 64
-	ldr	z15, [x3]
-	zip1	z22.d, z15.d, z26.d
-	addvl	x3, sp, #9
-	zip2	z26.d, z15.d, z26.d
-	add	x3, x3, 64
-	ldr	z15, [x3]
-	zip1	z16.d, z15.d, z18.d
-	zip2	z18.d, z15.d, z18.d
-	zip1	z15.d, z22.d, z16.d
-	zip2	z16.d, z22.d, z16.d
-	zip1	z22.d, z26.d, z18.d
-#APP
-// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revh z22.d, p6/m, z22.d
-// 0 "" 2
-#NO_APP
-	zip2	z26.d, z26.d, z18.d
+	sub	z22.h, z7.h, z22.h
+	sub	z25.h, z8.h, z25.h
+	sub	z26.h, z26.h, z2.h
 #APP
 // 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
 	revh z26.d, p6/m, z26.d
 // 0 "" 2
 #NO_APP
-	saddlb	z18.s, z17.h, z26.h
-	saddlt	z17.s, z17.h, z26.h
-	saddlb	z14.s, z31.h, z15.h
-	saddlb	z26.s, z20.h, z22.h
-	saddlt	z31.s, z31.h, z15.h
-	saddlt	z20.s, z20.h, z22.h
-	add	z31.s, z17.s, z31.s
-	add	z18.s, z18.s, z14.s
-	saddlb	z17.s, z29.h, z16.h
-	saddlt	z29.s, z29.h, z16.h
-	add	z26.s, z26.s, z17.s
-	add	z29.s, z20.s, z29.s
+	sub	z31.h, z31.h, z29.h
 #APP
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z26.d, p6/m, z26.d
-// 0 "" 2
-// 34 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z29.d, p6/m, z29.d
-// 0 "" 2
-#NO_APP
-	zip1	z20.s, z29.s, z26.s
-	zip1	z22.s, z18.s, z31.s
-	zip2	z29.s, z29.s, z26.s
-	add	z22.s, z22.s, z20.s
-	zip2	z18.s, z18.s, z31.s
-	add	z29.s, z18.s, z29.s
-	uzp2	z26.d, z22.d, z29.d
-#APP
-// 43 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	revw z26.d, p6/m, z26.d
-// 0 "" 2
-#NO_APP
-	uzp1	z22.d, z22.d, z29.d
-	add	z29.s, z26.s, z22.s
-	sub	z31.s, z22.s, z26.s
-	mul	z29.s, p7/m, z29.s, z10.s
-	uzp1	z26.s, z29.s, z29.s
-	uzp2	z29.s, z29.s, z29.s
-	add	z20.s, z26.s, z29.s
-	sub	z26.s, z26.s, z29.s
-	movprfx	z29, z11
-	mul	z29.s, p7/m, z29.s, z31.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z29.s, p5/m, z29.s, z29.s
-// 0 "" 2
-#NO_APP
-	mul	z31.s, p7/m, z31.s, z6.s
-#APP
-// 52 "kernels/dct32/candidates/best_op_r16.cpp" 1
-	addp z31.s, p5/m, z31.s, z31.s
+// 25 "kernels/dct32/candidates/best_op_r16.cpp" 1
+	revh z31.d, p6/m, z31.d
 // 0 "" 2
 #NO_APP
 	rdvl	x3, #29
-	mov	z17.d, z9.d
-	mov	z16.d, z7.d
+	cntb	x5, all, mul #7
+	movi	d29, #0
 	lsl	x3, x3, 1
-	mov	z14.d, z21.d
-	uzp1	z21.s, z28.s, z28.s
+	lsl	x5, x5, 3
 	add	x3, sp, x3
-	mov	z28.d, z2.d
-	mov	z15.d, z20.d
-	add	x3, x3, 64
-	ldr	z22, [x3]
-	tbl	z16.s, {z16.s - z17.s}, z22.s
-	uzp1	z17.s, z29.s, z29.s
-	mov	z29.d, z8.d
-	tbl	z28.s, {z28.s - z29.s}, z22.s
-	mov	z29.d, z26.d
-	rshrnb	z28.h, z28.s, #11
-	uzp1	z28.h, z28.h, z28.h
-	addvl	x3, sp, #10
-	str	q28, [x1, 1024]
-	mov	z28.d, z24.d
-	tbl	z28.s, {z28.s - z29.s}, z22.s
-	uzp1	z29.s, z23.s, z23.s
-	rshrnb	z28.h, z28.s, #11
-	uzp1	z28.h, z28.h, z28.h
-	add	x3, x3, 64
-	rshrnb	z16.h, z16.s, #11
-	uzp1	z16.h, z16.h, z16.h
-	str	q28, [x1, 1040]
-	uzp1	z28.s, z19.s, z19.s
-	tbl	z28.s, {z28.s - z29.s}, z22.s
-	uzp1	z29.s, z31.s, z31.s
-	rshrnb	z28.h, z28.s, #11
-	uzp1	z28.h, z28.h, z28.h
-	tbl	z14.s, {z14.s - z15.s}, z22.s
-	uzp1	z20.s, z27.s, z27.s
-	rshrnb	z14.h, z14.s, #11
-	tbl	z20.s, {z20.s - z21.s}, z22.s
-	uzp1	z14.h, z14.h, z14.h
-	rshrnb	z20.h, z20.s, #11
-	uzp1	z20.h, z20.h, z20.h
-	stp	q16, q14, [x1]
-	uzp1	z16.s, z25.s, z25.s
-	tbl	z16.s, {z16.s - z17.s}, z22.s
-	rshrnb	z16.h, z16.s, #11
-	uzp1	z16.h, z16.h, z16.h
-	stp	q20, q16, [x1, 512]
-	cntb	x5, all, mul #9
-	lsl	x5, x5, 2
-	str	q28, [x1, 1536]
-	uzp1	z28.s, z30.s, z30.s
-	tbl	z28.s, {z28.s - z29.s}, z22.s
-	ldr	z29, [x3]
-	addvl	x3, sp, #16
-	rshrnb	z28.h, z28.s, #11
-	add	x3, x3, 64
-	ldr	z27, [x3]
-	uzp1	z28.h, z28.h, z28.h
-	addvl	x3, sp, #13
-	str	q28, [x1, 1552]
-	trn2	z21.d, z29.d, z27.d
-	add	x3, x3, 64
-	ldr	z28, [x3]
-	zip1	z24.d, z29.d, z27.d
-	addvl	x3, sp, #19
-	trn1	z27.d, z29.d, z27.d
 	add	x0, x0, 1024
 	add	x3, x3, 64
-	ldr	z26, [x3]
-	zip1	z30.d, z28.d, z26.d
-	addvl	x3, sp, #22
-	zip1	z24.d, z24.d, z30.d
-	trn2	z31.d, z28.d, z26.d
-	add	x3, x3, 64
-	ldr	z29, [x3]
-	trn1	z30.d, z28.d, z26.d
-	addvl	x3, sp, #28
-	zip2	z27.d, z27.d, z30.d
-	zip1	z23.d, z21.d, z31.d
-	add	x3, x3, 64
-	ldr	z28, [x3]
-	trn2	z22.d, z29.d, z28.d
-	addvl	x3, sp, #25
-	zip1	z20.d, z29.d, z28.d
-	trn1	z28.d, z29.d, z28.d
-	add	x3, x3, 64
-	ldr	z26, [x3]
-	zip2	z21.d, z21.d, z31.d
-	addvl	x3, sp, #31
-	add	x3, x3, 64
-	ldr	z25, [x3]
-	zip1	z30.d, z26.d, z25.d
-	rdvl	x3, #17
-	zip1	z20.d, z20.d, z30.d
-	trn2	z31.d, z26.d, z25.d
-	lsl	x3, x3, 1
-	trn1	z30.d, z26.d, z25.d
-	zip2	z28.d, z28.d, z30.d
-	add	x3, sp, x3
-	zip1	z19.d, z22.d, z31.d
-	zip2	z22.d, z22.d, z31.d
-	add	x3, x3, 64
-	ldr	z29, [x3]
-	cntb	x3, all, mul #5
-	lsl	x3, x3, 3
-	add	x3, sp, x3
-	add	x3, x3, 64
-	ldr	z18, [x3]
-	zip1	z17.d, z29.d, z18.d
-	addvl	x3, x5, #1
-	rdvl	x5, #21
-	trn2	z25.d, z29.d, z18.d
-	add	x3, x3, 64
-	lsl	x5, x5, 1
-	trn1	z29.d, z29.d, z18.d
-	add	x3, sp, x3
-	ldr	z26, [x3]
-	addvl	x3, x5, #1
-	cntb	x5, all, mul #3
-	add	x3, x3, 64
-	lsl	x5, x5, 4
-	add	x3, sp, x3
-	ldr	z16, [x3]
-	zip1	z30.d, z26.d, z16.d
-	rdvl	x3, #23
-	zip1	z17.d, z17.d, z30.d
-	trn1	z30.d, z26.d, z16.d
-	lsl	x3, x3, 1
-	zip2	z29.d, z29.d, z30.d
-	trn2	z31.d, z26.d, z16.d
-	add	x3, sp, x3
-	zip1	z15.d, z25.d, z31.d
-	zip2	z25.d, z25.d, z31.d
-	add	x3, x3, 64
-	ldr	z14, [x3]
-	cntb	x3, all, mul #13
-	lsl	x3, x3, 2
-	add	x3, sp, x3
-	add	x3, x3, 64
-	ldr	z12, [x3]
-	trn2	z26.d, z14.d, z12.d
+	ldr	z10, [x3]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z10.h[0]
 	addvl	x3, x5, #1
 	cntb	x5, all, mul #15
-	zip1	z18.d, z14.d, z12.d
+	movprfx	z11, z29
+	sdot	z11.d, z15.h, z10.h[0]
 	add	x3, x3, 64
 	lsl	x5, x5, 2
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z10.h[0]
 	add	x3, sp, x3
-	ldr	z13, [x3]
-	cntb	x3, all, mul #11
-	add	x3, x3, x3, lsl 2
+	ldr	z9, [x3]
+	movprfx	z12, z29
+	sdot	z12.d, z25.h, z10.h[0]
+	addvl	x3, x5, #-1
+	sdot	z28.d, z20.h, z9.h[0]
+	sdot	z11.d, z17.h, z9.h[0]
 	add	x3, x3, 64
+	sdot	z14.d, z21.h, z9.h[0]
+	sdot	z12.d, z22.h, z9.h[0]
 	add	x3, sp, x3
-	ldr	z11, [x3]
-	zip1	z30.d, z13.d, z11.d
+	ldr	z8, [x3]
+	sdot	z28.d, z18.h, z8.h[0]
+	cntb	x3, all, mul #15
+	sdot	z14.d, z24.h, z8.h[0]
+	sdot	z12.d, z26.h, z8.h[0]
+	lsl	x3, x3, 2
+	sdot	z11.d, z13.h, z8.h[0]
+	cntb	x5, all, mul #15
+	add	x3, sp, x3
+	lsl	x5, x5, 2
+	add	x3, x3, 64
+	ldr	z7, [x3]
+	sdot	z11.d, z27.h, z7.h[0]
+	add	x3, x1, 64
+	sdot	z12.d, z31.h, z7.h[0]
+	sdot	z14.d, z30.h, z7.h[0]
+	sdot	z28.d, z16.h, z7.h[0]
+	uzp1	z14.s, z14.s, z12.s
+	uzp1	z28.s, z28.s, z11.s
+	rshrnb	z14.h, z14.s, #11
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
+	add	x3, x1, 192
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z10.h[1]
+	movprfx	z11, z29
+	sdot	z11.d, z15.h, z10.h[1]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z10.h[1]
+	movprfx	z12, z29
+	sdot	z12.d, z25.h, z10.h[1]
+	sdot	z28.d, z20.h, z9.h[1]
+	sdot	z11.d, z17.h, z9.h[1]
+	sdot	z28.d, z18.h, z8.h[1]
+	sdot	z14.d, z21.h, z9.h[1]
+	sdot	z12.d, z22.h, z9.h[1]
+	sdot	z14.d, z24.h, z8.h[1]
+	sdot	z12.d, z26.h, z8.h[1]
+	sdot	z14.d, z30.h, z7.h[1]
+	sdot	z12.d, z31.h, z7.h[1]
+	sdot	z28.d, z16.h, z7.h[1]
+	sdot	z11.d, z13.h, z8.h[1]
+	uzp1	z14.s, z14.s, z12.s
+	sdot	z11.d, z27.h, z7.h[1]
+	rshrnb	z14.h, z14.s, #11
+	uzp1	z28.s, z28.s, z11.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
+	rdvl	x3, #31
+	lsl	x3, x3, 1
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z10, [x3]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z10.h[0]
 	addvl	x3, x5, #1
-	zip1	z18.d, z18.d, z30.d
-	trn2	z31.d, z13.d, z11.d
+	cntb	x5
+	movprfx	z11, z29
+	sdot	z11.d, z15.h, z10.h[0]
 	add	x3, x3, 64
-	trn1	z30.d, z14.d, z12.d
+	lsl	x5, x5, 6
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z10.h[0]
+	add	x3, sp, x3
+	ldr	z9, [x3]
+	movprfx	z12, z29
+	sdot	z12.d, z25.h, z10.h[0]
+	addvl	x3, x5, #-1
+	sdot	z28.d, z20.h, z9.h[0]
+	sdot	z11.d, z17.h, z9.h[0]
+	add	x3, x3, 64
+	sdot	z14.d, z21.h, z9.h[0]
+	sdot	z12.d, z22.h, z9.h[0]
+	add	x3, sp, x3
+	ldr	z8, [x3]
+	sdot	z28.d, z18.h, z8.h[0]
+	cntb	x3
+	sdot	z14.d, z24.h, z8.h[0]
+	sdot	z12.d, z26.h, z8.h[0]
+	lsl	x3, x3, 6
+	sdot	z11.d, z13.h, z8.h[0]
 	cntb	x5
 	add	x3, sp, x3
-	ldr	z10, [x3]
-	trn1	z14.d, z13.d, z11.d
-	cntb	x3, all, mul #15
-	zip1	z16.d, z26.d, z31.d
-	zip2	z30.d, z30.d, z14.d
-	lsl	x3, x3, 2
-	zip2	z26.d, z26.d, z31.d
-	lsl	x5, x5, 6
-	add	x3, sp, x3
-	movi	d31, #0
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z10.h[0]
+	lsl	x5, x5, 5
 	add	x3, x3, 64
-	ldr	z9, [x3]
-	movprfx	z11, z31
-	sdot	z11.d, z19.h, z10.h[0]
-	rdvl	x3, #31
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z10.h[0]
-	movprfx	z12, z31
-	sdot	z12.d, z16.h, z10.h[0]
-	lsl	x3, x3, 1
-	sdot	z14.d, z24.h, z9.h[0]
-	sdot	z11.d, z20.h, z9.h[0]
-	add	x3, sp, x3
-	sdot	z13.d, z17.h, z9.h[0]
-	sdot	z12.d, z18.h, z9.h[0]
-	add	x3, x3, 64
-	ldr	z8, [x3]
-	sdot	z14.d, z27.h, z8.h[0]
-	add	x3, x1, 64
-	sdot	z11.d, z28.h, z8.h[0]
-	sdot	z13.d, z29.h, z8.h[0]
-	sdot	z11.d, z22.h, z0.h[0]
-	sdot	z12.d, z30.h, z8.h[0]
-	sdot	z14.d, z21.h, z0.h[0]
-	sdot	z12.d, z26.h, z0.h[0]
-	sdot	z13.d, z25.h, z0.h[0]
-	uzp1	z14.s, z14.s, z11.s
-	uzp1	z13.s, z13.s, z12.s
-	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
-	add	x3, x1, 192
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z10.h[1]
-	movprfx	z11, z31
-	sdot	z11.d, z19.h, z10.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z10.h[1]
-	movprfx	z12, z31
-	sdot	z12.d, z16.h, z10.h[1]
-	sdot	z14.d, z24.h, z9.h[1]
-	sdot	z11.d, z20.h, z9.h[1]
-	sdot	z14.d, z27.h, z8.h[1]
-	sdot	z11.d, z28.h, z8.h[1]
-	sdot	z14.d, z21.h, z0.h[1]
-	sdot	z11.d, z22.h, z0.h[1]
-	sdot	z13.d, z17.h, z9.h[1]
-	sdot	z12.d, z18.h, z9.h[1]
-	sdot	z13.d, z29.h, z8.h[1]
-	sdot	z12.d, z30.h, z8.h[1]
-	sdot	z13.d, z25.h, z0.h[1]
-	sdot	z12.d, z26.h, z0.h[1]
-	uzp1	z14.s, z14.s, z11.s
-	uzp1	z13.s, z13.s, z12.s
-	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
-	addvl	x3, x5, #-1
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z4.h[0]
-	add	x3, x3, 64
-	movprfx	z11, z31
-	sdot	z11.d, z19.h, z4.h[0]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z4.h[0]
-	add	x3, sp, x3
-	ldr	z10, [x3]
-	movprfx	z12, z31
-	sdot	z12.d, z16.h, z4.h[0]
+	ldr	z7, [x3]
+	sdot	z11.d, z27.h, z7.h[0]
 	add	x3, x1, 320
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z11.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z3.h[0]
-	sdot	z11.d, z28.h, z3.h[0]
-	sdot	z14.d, z21.h, z1.h[0]
-	sdot	z11.d, z22.h, z1.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z12.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z3.h[0]
-	sdot	z12.d, z30.h, z3.h[0]
-	sdot	z13.d, z25.h, z1.h[0]
-	sdot	z12.d, z26.h, z1.h[0]
-	uzp1	z14.s, z14.s, z11.s
-	uzp1	z13.s, z13.s, z12.s
+	sdot	z12.d, z31.h, z7.h[0]
+	sdot	z14.d, z30.h, z7.h[0]
+	sdot	z28.d, z16.h, z7.h[0]
+	uzp1	z14.s, z14.s, z12.s
+	uzp1	z28.s, z28.s, z11.s
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 448
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z4.h[1]
-	movprfx	z11, z31
-	sdot	z11.d, z19.h, z4.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z11.d, z20.h, z10.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z4.h[1]
-	movprfx	z12, z31
-	sdot	z12.d, z16.h, z4.h[1]
-	sdot	z14.d, z27.h, z3.h[1]
-	sdot	z11.d, z28.h, z3.h[1]
-	sdot	z14.d, z21.h, z1.h[1]
-	sdot	z11.d, z22.h, z1.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z12.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z3.h[1]
-	sdot	z12.d, z30.h, z3.h[1]
-	sdot	z13.d, z25.h, z1.h[1]
-	sdot	z12.d, z26.h, z1.h[1]
-	uzp1	z14.s, z14.s, z11.s
-	uzp1	z13.s, z13.s, z12.s
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z10.h[1]
+	movprfx	z11, z29
+	sdot	z11.d, z15.h, z10.h[1]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z10.h[1]
+	movprfx	z12, z29
+	sdot	z12.d, z25.h, z10.h[1]
+	sdot	z28.d, z20.h, z9.h[1]
+	sdot	z11.d, z17.h, z9.h[1]
+	sdot	z28.d, z18.h, z8.h[1]
+	sdot	z14.d, z21.h, z9.h[1]
+	sdot	z12.d, z22.h, z9.h[1]
+	sdot	z14.d, z24.h, z8.h[1]
+	sdot	z12.d, z26.h, z8.h[1]
+	sdot	z14.d, z30.h, z7.h[1]
+	sdot	z12.d, z31.h, z7.h[1]
+	sdot	z28.d, z16.h, z7.h[1]
+	sdot	z11.d, z13.h, z8.h[1]
+	uzp1	z14.s, z14.s, z12.s
+	sdot	z11.d, z27.h, z7.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z11.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 256
 	ld1h	z10.h, p7/z, [x3]
-	rdvl	x5, #17
 	add	x3, x2, 512
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 768
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1024
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 576
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 704
-	movprfx	z14, z31
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[1]
+	movprfx	z14, z29
 	sdot	z14.d, z23.h, z9.h[1]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[1]
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z7.d, z20.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	sdot	z7.d, z28.h, z11.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z7.d, z22.h, z12.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z8.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z11.h[1]
-	sdot	z8.d, z30.h, z11.h[1]
-	sdot	z13.d, z25.h, z12.h[1]
-	sdot	z8.d, z26.h, z12.h[1]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	sdot	z7.d, z17.h, z10.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z14.d, z21.h, z10.h[1]
+	sdot	z8.d, z22.h, z10.h[1]
+	sdot	z14.d, z24.h, z11.h[1]
+	sdot	z8.d, z26.h, z11.h[1]
+	sdot	z14.d, z30.h, z12.h[1]
+	sdot	z8.d, z31.h, z12.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z7.d, z13.h, z11.h[1]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 288
 	ld1h	z10.h, p7/z, [x3]
 	add	x3, x2, 544
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 800
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1056
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 832
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 960
-	movprfx	z14, z31
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[1]
+	movprfx	z14, z29
 	sdot	z14.d, z23.h, z9.h[1]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[1]
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z7.d, z20.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	sdot	z7.d, z28.h, z11.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z7.d, z22.h, z12.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z8.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z11.h[1]
-	sdot	z8.d, z30.h, z11.h[1]
-	sdot	z13.d, z25.h, z12.h[1]
-	sdot	z8.d, z26.h, z12.h[1]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	sdot	z7.d, z17.h, z10.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z14.d, z21.h, z10.h[1]
+	sdot	z8.d, z22.h, z10.h[1]
+	sdot	z14.d, z24.h, z11.h[1]
+	sdot	z8.d, z26.h, z11.h[1]
+	sdot	z14.d, z30.h, z12.h[1]
+	sdot	z8.d, z31.h, z12.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z7.d, z13.h, z11.h[1]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 320
 	ld1h	z10.h, p7/z, [x3]
 	add	x3, x2, 576
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 832
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1088
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 1088
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 1216
-	movprfx	z14, z31
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[1]
+	movprfx	z14, z29
 	sdot	z14.d, z23.h, z9.h[1]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[1]
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z7.d, z20.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	sdot	z7.d, z28.h, z11.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z7.d, z22.h, z12.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z8.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z11.h[1]
-	sdot	z8.d, z30.h, z11.h[1]
-	sdot	z13.d, z25.h, z12.h[1]
-	sdot	z8.d, z26.h, z12.h[1]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	sdot	z7.d, z17.h, z10.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z14.d, z21.h, z10.h[1]
+	sdot	z8.d, z22.h, z10.h[1]
+	sdot	z14.d, z24.h, z11.h[1]
+	sdot	z8.d, z26.h, z11.h[1]
+	sdot	z14.d, z30.h, z12.h[1]
+	sdot	z8.d, z31.h, z12.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z7.d, z13.h, z11.h[1]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 352
 	ld1h	z10.h, p7/z, [x3]
 	add	x3, x2, 608
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 864
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1120
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 1344
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 1472
-	movprfx	z14, z31
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[1]
+	movprfx	z14, z29
 	sdot	z14.d, z23.h, z9.h[1]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[1]
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z7.d, z20.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	sdot	z7.d, z28.h, z11.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z7.d, z22.h, z12.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z8.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z11.h[1]
-	sdot	z8.d, z30.h, z11.h[1]
-	sdot	z13.d, z25.h, z12.h[1]
-	sdot	z8.d, z26.h, z12.h[1]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	sdot	z7.d, z17.h, z10.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z14.d, z21.h, z10.h[1]
+	sdot	z8.d, z22.h, z10.h[1]
+	sdot	z14.d, z24.h, z11.h[1]
+	sdot	z8.d, z26.h, z11.h[1]
+	sdot	z14.d, z30.h, z12.h[1]
+	sdot	z8.d, z31.h, z12.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z7.d, z13.h, z11.h[1]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 384
 	ld1h	z10.h, p7/z, [x3]
 	add	x3, x2, 640
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 896
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1152
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 1600
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x1, 1728
-	movprfx	z14, z31
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[1]
+	movprfx	z14, z29
 	sdot	z14.d, z23.h, z9.h[1]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[1]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[1]
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z7.d, z20.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	sdot	z7.d, z28.h, z11.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z7.d, z22.h, z12.h[1]
-	sdot	z13.d, z17.h, z10.h[1]
-	sdot	z8.d, z18.h, z10.h[1]
-	sdot	z13.d, z29.h, z11.h[1]
-	sdot	z8.d, z30.h, z11.h[1]
-	sdot	z13.d, z25.h, z12.h[1]
-	sdot	z8.d, z26.h, z12.h[1]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	sdot	z7.d, z17.h, z10.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z14.d, z21.h, z10.h[1]
+	sdot	z8.d, z22.h, z10.h[1]
+	sdot	z14.d, z24.h, z11.h[1]
+	sdot	z8.d, z26.h, z11.h[1]
+	sdot	z14.d, z30.h, z12.h[1]
+	sdot	z8.d, z31.h, z12.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z7.d, z13.h, z11.h[1]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[1]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
+	uzp1	z28.s, z28.s, z7.s
+	rshrnb	z28.h, z28.s, #11
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
 	add	x3, x2, 416
 	ld1h	z10.h, p7/z, [x3]
 	add	x3, x2, 672
 	ld1h	z9.h, p7/z, [x3]
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[0]
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[0]
 	add	x3, x2, 928
 	ld1h	z11.h, p7/z, [x3]
-	movprfx	z7, z31
-	sdot	z7.d, z19.h, z9.h[0]
+	movprfx	z7, z29
+	sdot	z7.d, z15.h, z9.h[0]
 	add	x3, x2, 1184
 	ld1h	z12.h, p7/z, [x3]
-	movprfx	z13, z31
-	sdot	z13.d, z15.h, z9.h[0]
+	movprfx	z14, z29
+	sdot	z14.d, z23.h, z9.h[0]
 	add	x3, x1, 1856
-	movprfx	z8, z31
-	sdot	z8.d, z16.h, z9.h[0]
-	sdot	z14.d, z24.h, z10.h[0]
-	sdot	z7.d, z20.h, z10.h[0]
-	sdot	z14.d, z27.h, z11.h[0]
-	sdot	z7.d, z28.h, z11.h[0]
-	sdot	z14.d, z21.h, z12.h[0]
-	sdot	z7.d, z22.h, z12.h[0]
-	sdot	z13.d, z17.h, z10.h[0]
-	sdot	z8.d, z18.h, z10.h[0]
-	sdot	z13.d, z29.h, z11.h[0]
-	sdot	z8.d, z30.h, z11.h[0]
-	sdot	z13.d, z25.h, z12.h[0]
-	sdot	z8.d, z26.h, z12.h[0]
-	uzp1	z14.s, z14.s, z7.s
-	uzp1	z13.s, z13.s, z8.s
+	movprfx	z8, z29
+	sdot	z8.d, z25.h, z9.h[0]
+	sdot	z28.d, z20.h, z10.h[0]
+	sdot	z7.d, z17.h, z10.h[0]
+	sdot	z28.d, z18.h, z11.h[0]
+	sdot	z14.d, z21.h, z10.h[0]
+	sdot	z8.d, z22.h, z10.h[0]
+	sdot	z14.d, z24.h, z11.h[0]
+	sdot	z8.d, z26.h, z11.h[0]
+	sdot	z14.d, z30.h, z12.h[0]
+	sdot	z8.d, z31.h, z12.h[0]
+	sdot	z28.d, z16.h, z12.h[0]
+	sdot	z7.d, z13.h, z11.h[0]
+	uzp1	z14.s, z14.s, z8.s
+	sdot	z7.d, z27.h, z12.h[0]
 	rshrnb	z14.h, z14.s, #11
-	rshrnb	z13.h, z13.s, #11
-	uzp1	z14.h, z14.h, z13.h
-	st1h	z14.h, p7, [x3]
-	add	x3, x1, 1984
-	movprfx	z14, z31
-	sdot	z14.d, z23.h, z9.h[1]
-	sdot	z14.d, z24.h, z10.h[1]
-	sdot	z14.d, z27.h, z11.h[1]
-	movprfx	z27, z31
-	sdot	z27.d, z19.h, z9.h[1]
-	sdot	z14.d, z21.h, z12.h[1]
-	sdot	z27.d, z20.h, z10.h[1]
-	sdot	z27.d, z28.h, z11.h[1]
-	movprfx	z28, z31
-	sdot	z28.d, z15.h, z9.h[1]
-	sdot	z27.d, z22.h, z12.h[1]
-	sdot	z28.d, z17.h, z10.h[1]
-	uzp1	z14.s, z14.s, z27.s
-	sdot	z28.d, z29.h, z11.h[1]
-	rshrnb	z14.h, z14.s, #11
-	movprfx	z29, z31
-	sdot	z29.d, z16.h, z9.h[1]
-	sdot	z28.d, z25.h, z12.h[1]
-	sdot	z29.d, z18.h, z10.h[1]
-	sdot	z29.d, z30.h, z11.h[1]
-	sdot	z29.d, z26.h, z12.h[1]
-	uzp1	z28.s, z28.s, z29.s
+	uzp1	z28.s, z28.s, z7.s
 	rshrnb	z28.h, z28.s, #11
-	uzp1	z14.h, z14.h, z28.h
-	st1h	z14.h, p7, [x3]
-	addvl	x3, sp, #11
-	lsl	x5, x5, 1
-	add	x3, x3, 64
-	ldr	z28, [x3]
-	addvl	x3, sp, #17
-	add	x3, x3, 64
-	ldr	z25, [x3]
-	zip1	z30.d, z28.d, z25.d
-	addvl	x3, sp, #14
-	trn2	z28.d, z28.d, z25.d
-	add	x3, x3, 64
-	ldr	z27, [x3]
+	uzp1	z28.h, z28.h, z14.h
+	st1h	z28.h, p7, [x3]
+	add	x3, x1, 1984
+	movprfx	z28, z29
+	sdot	z28.d, z19.h, z9.h[1]
+	sdot	z28.d, z20.h, z10.h[1]
+	movprfx	z20, z29
+	sdot	z20.d, z15.h, z9.h[1]
+	sdot	z28.d, z18.h, z11.h[1]
+	sdot	z20.d, z17.h, z10.h[1]
+	sdot	z28.d, z16.h, z12.h[1]
+	sdot	z20.d, z13.h, z11.h[1]
+	sdot	z20.d, z27.h, z12.h[1]
+	movprfx	z27, z29
+	sdot	z27.d, z23.h, z9.h[1]
+	uzp1	z28.s, z28.s, z20.s
+	sdot	z27.d, z21.h, z10.h[1]
+	rshrnb	z28.h, z28.s, #11
+	sdot	z27.d, z24.h, z11.h[1]
+	sdot	z27.d, z30.h, z12.h[1]
+	movprfx	z30, z29
+	sdot	z30.d, z25.h, z9.h[1]
+	sdot	z30.d, z22.h, z10.h[1]
+	sdot	z30.d, z26.h, z11.h[1]
+	sdot	z30.d, z31.h, z12.h[1]
+	uzp1	z27.s, z27.s, z30.s
+	rshrnb	z27.h, z27.s, #11
+	uzp1	z28.h, z28.h, z27.h
+	st1h	z28.h, p7, [x3]
 	addvl	x3, sp, #20
 	add	x3, x3, 64
-	ldr	z16, [x3]
-	zip1	z29.d, z27.d, z16.d
-	addvl	x3, sp, #23
-	zip1	z30.d, z30.d, z29.d
-	trn2	z29.d, z27.d, z16.d
+	ldr	z28, [x3]
+	addvl	x3, sp, #24
 	add	x3, x3, 64
 	ldr	z26, [x3]
-	zip1	z29.d, z28.d, z29.d
-	addvl	x3, sp, #29
+	zip1	z31.d, z28.d, z26.d
+	addvl	x3, sp, #22
+	trn2	z28.d, z28.d, z26.d
 	add	x3, x3, 64
-	ldr	z24, [x3]
-	zip1	z28.d, z26.d, z24.d
+	ldr	z27, [x3]
 	addvl	x3, sp, #26
-	trn2	z26.d, z26.d, z24.d
 	add	x3, x3, 64
-	ldr	z25, [x3]
+	ldr	z18, [x3]
+	ldr	z17, [x3]
+	addvl	x3, sp, #28
+	zip1	z30.d, z27.d, z17.d
+	zip1	z31.d, z31.d, z30.d
+	add	x3, x3, 64
+	ldr	z26, [x3]
+	trn2	z30.d, z27.d, z18.d
 	cntb	x3
+	zip1	z30.d, z28.d, z30.d
 	lsl	x3, x3, 5
 	add	x3, sp, x3
 	add	x3, x3, 64
-	ldr	z15, [x3]
-	zip1	z27.d, z25.d, z15.d
-	addvl	x3, x5, #1
-	cntb	x5, all, mul #5
-	zip1	z28.d, z28.d, z27.d
-	add	x3, x3, 64
-	lsl	x5, x5, 3
-	trn2	z27.d, z25.d, z15.d
-	add	x3, sp, x3
 	ldr	z24, [x3]
-	zip1	z26.d, z26.d, z27.d
-	addvl	x3, x5, #1
-	cntb	x5, all, mul #3
+	zip1	z28.d, z26.d, z24.d
+	addvl	x3, sp, #30
+	trn2	z26.d, z26.d, z24.d
 	add	x3, x3, 64
-	lsl	x5, x5, 4
+	ldr	z25, [x3]
+	rdvl	x3, #17
+	lsl	x3, x3, 1
 	add	x3, sp, x3
-	ldr	z21, [x3]
-	zip1	z25.d, z24.d, z21.d
+	add	x3, x3, 64
+	ldr	z18, [x3]
+	zip1	z27.d, z25.d, z18.d
+	cntb	x3, all, mul #9
+	zip1	z28.d, z28.d, z27.d
+	trn2	z27.d, z25.d, z18.d
+	lsl	x3, x3, 2
+	zip1	z26.d, z26.d, z27.d
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z24, [x3]
+	cntb	x3, all, mul #5
+	lsl	x3, x3, 3
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z22, [x3]
+	zip1	z25.d, z24.d, z22.d
 	rdvl	x3, #19
-	trn2	z24.d, z24.d, z21.d
+	trn2	z24.d, z24.d, z22.d
 	lsl	x3, x3, 1
 	add	x3, sp, x3
 	add	x3, x3, 64
 	ldr	z23, [x3]
+	rdvl	x3, #21
+	lsl	x3, x3, 1
+	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z18, [x3]
+	zip1	z27.d, z23.d, z18.d
+	ldr	z18, [x3]
 	cntb	x3, all, mul #11
-	lsl	x3, x3, 2
-	add	x3, sp, x3
-	add	x3, x3, 64
-	ldr	z15, [x3]
-	ldr	z16, [x3]
-	addvl	x3, x5, #-1
-	cntb	x5, all, mul #13
-	zip1	z27.d, z23.d, z15.d
-	add	x3, x3, 64
-	lsl	x5, x5, 2
 	zip1	z25.d, z25.d, z27.d
-	add	x3, sp, x3
-	ldr	z22, [x3]
-	trn2	z27.d, z23.d, z16.d
-	addvl	x3, x5, #1
+	lsl	x3, x3, 2
+	trn2	z27.d, z23.d, z18.d
 	zip1	z24.d, z24.d, z27.d
-	cntb	x5
-	add	x3, x3, 64
-	lsl	x5, x5, 5
 	add	x3, sp, x3
+	add	x3, x3, 64
+	ldr	z22, [x3]
+	cntb	x3, all, mul #3
+	lsl	x3, x3, 4
+	add	x3, sp, x3
+	add	x3, x3, 64
 	ldr	z20, [x3]
 	zip1	z23.d, z22.d, z20.d
-	rdvl	x3, #25
+	rdvl	x3, #23
 	lsl	x3, x3, 1
 	add	x3, sp, x3
 	add	x3, x3, 64
 	ldr	z21, [x3]
-	cntb	x3, all, mul #7
-	lsl	x3, x3, 3
+	rdvl	x3, #25
+	lsl	x3, x3, 1
 	add	x3, sp, x3
 	add	x3, x3, 64
-	ldr	z19, [x3]
-	zip1	z27.d, z21.d, z19.d
+	ldr	z18, [x3]
+	zip1	z27.d, z21.d, z18.d
+	zip1	z23.d, z23.d, z27.d
+	trn2	z27.d, z22.d, z20.d
+	mov	z22.d, z21.d
+	ldr	z21, [x3]
 	add	x3, x2, 1216
 	ld1h	z15.h, p7/z, [x3]
-	zip1	z23.d, z23.d, z27.d
 	add	x3, x2, 1344
-	trn2	z27.d, z22.d, z20.d
+	trn2	z22.d, z22.d, z21.d
 	ld1h	z14.h, p7/z, [x3]
-	trn2	z22.d, z21.d, z19.d
 	add	x3, x1, 128
 	zip1	z27.d, z27.d, z22.d
-	movprfx	z19, z31
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[0]
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[0]
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[0]
 	sdot	z19.d, z28.h, z15.h[0]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[0]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[0]
-	sdot	z22.d, z30.h, z15.h[0]
+	sdot	z22.d, z31.h, z15.h[0]
 	sdot	z20.d, z23.h, z15.h[0]
 	sdot	z21.d, z25.h, z15.h[0]
 	uzp1	z22.s, z22.s, z19.s
@@ -3498,16 +3531,16 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	uzp1	z22.h, z22.h, z21.h
 	st1h	z22.h, p7, [x3]
 	add	x3, x1, 384
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[1]
-	movprfx	z19, z31
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[1]
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[1]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[1]
 	sdot	z19.d, z28.h, z15.h[1]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[1]
-	sdot	z22.d, z30.h, z15.h[1]
+	sdot	z22.d, z31.h, z15.h[1]
 	sdot	z20.d, z23.h, z15.h[1]
 	sdot	z21.d, z25.h, z15.h[1]
 	uzp1	z22.s, z22.s, z19.s
@@ -3520,17 +3553,17 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	ld1h	z15.h, p7/z, [x3]
 	add	x3, x2, 1376
 	ld1h	z14.h, p7/z, [x3]
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[0]
 	add	x3, x1, 640
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[0]
-	movprfx	z19, z31
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[0]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[0]
 	sdot	z19.d, z28.h, z15.h[0]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[0]
-	sdot	z22.d, z30.h, z15.h[0]
+	sdot	z22.d, z31.h, z15.h[0]
 	sdot	z20.d, z23.h, z15.h[0]
 	sdot	z21.d, z25.h, z15.h[0]
 	uzp1	z22.s, z22.s, z19.s
@@ -3540,16 +3573,16 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	uzp1	z22.h, z22.h, z21.h
 	st1h	z22.h, p7, [x3]
 	add	x3, x1, 896
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[1]
-	movprfx	z19, z31
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[1]
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[1]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[1]
 	sdot	z19.d, z28.h, z15.h[1]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[1]
-	sdot	z22.d, z30.h, z15.h[1]
+	sdot	z22.d, z31.h, z15.h[1]
 	sdot	z20.d, z23.h, z15.h[1]
 	sdot	z21.d, z25.h, z15.h[1]
 	uzp1	z22.s, z22.s, z19.s
@@ -3562,17 +3595,17 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	ld1h	z15.h, p7/z, [x3]
 	add	x3, x2, 1408
 	ld1h	z14.h, p7/z, [x3]
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[0]
 	add	x3, x1, 1152
-	movprfx	z19, z31
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[0]
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[0]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[0]
 	sdot	z19.d, z28.h, z15.h[0]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[0]
-	sdot	z22.d, z30.h, z15.h[0]
+	sdot	z22.d, z31.h, z15.h[0]
 	sdot	z20.d, z23.h, z15.h[0]
 	sdot	z21.d, z25.h, z15.h[0]
 	uzp1	z22.s, z22.s, z19.s
@@ -3582,16 +3615,16 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	uzp1	z22.h, z22.h, z21.h
 	st1h	z22.h, p7, [x3]
 	add	x3, x1, 1408
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[1]
-	movprfx	z19, z31
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[1]
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[1]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[1]
 	sdot	z19.d, z28.h, z15.h[1]
-	movprfx	z20, z31
+	movprfx	z20, z29
 	sdot	z20.d, z27.h, z14.h[1]
-	sdot	z22.d, z30.h, z15.h[1]
+	sdot	z22.d, z31.h, z15.h[1]
 	sdot	z20.d, z23.h, z15.h[1]
 	sdot	z21.d, z25.h, z15.h[1]
 	uzp1	z22.s, z22.s, z19.s
@@ -3604,135 +3637,142 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	ld1h	z15.h, p7/z, [x3]
 	add	x3, x2, 1440
 	ld1h	z14.h, p7/z, [x3]
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[0]
 	add	x3, x1, 1664
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[0]
-	movprfx	z19, z31
+	sdot	z22.d, z31.h, z15.h[0]
+	movprfx	z19, z29
 	sdot	z19.d, z26.h, z14.h[0]
-	sdot	z22.d, z30.h, z15.h[0]
-	sdot	z19.d, z28.h, z15.h[0]
-	movprfx	z21, z31
+	movprfx	z21, z29
 	sdot	z21.d, z24.h, z14.h[0]
-	movprfx	z20, z31
-	sdot	z20.d, z27.h, z14.h[0]
+	sdot	z19.d, z28.h, z15.h[0]
 	sdot	z21.d, z25.h, z15.h[0]
-	sdot	z20.d, z23.h, z15.h[0]
+	movprfx	z20, z29
+	sdot	z20.d, z27.h, z14.h[0]
 	uzp1	z22.s, z22.s, z19.s
-	uzp1	z21.s, z21.s, z20.s
+	sdot	z20.d, z23.h, z15.h[0]
 	rshrnb	z22.h, z22.s, #11
+	uzp1	z21.s, z21.s, z20.s
 	rshrnb	z21.h, z21.s, #11
 	uzp1	z22.h, z22.h, z21.h
 	st1h	z22.h, p7, [x3]
 	add	x3, x1, 1920
-	movprfx	z22, z31
-	sdot	z22.d, z29.h, z14.h[1]
-	movprfx	z29, z31
-	sdot	z29.d, z24.h, z14.h[1]
-	sdot	z22.d, z30.h, z15.h[1]
-	sdot	z29.d, z25.h, z15.h[1]
-	movprfx	z30, z31
-	sdot	z30.d, z26.h, z14.h[1]
-	sdot	z30.d, z28.h, z15.h[1]
-	movprfx	z28, z31
+	movprfx	z22, z29
+	sdot	z22.d, z30.h, z14.h[1]
+	movprfx	z30, z29
+	sdot	z30.d, z24.h, z14.h[1]
+	sdot	z22.d, z31.h, z15.h[1]
+	sdot	z30.d, z25.h, z15.h[1]
+	movprfx	z31, z29
+	sdot	z31.d, z26.h, z14.h[1]
+	sdot	z31.d, z28.h, z15.h[1]
+	movprfx	z28, z29
 	sdot	z28.d, z27.h, z14.h[1]
-	uzp1	z22.s, z22.s, z30.s
+	uzp1	z22.s, z22.s, z31.s
 	sdot	z28.d, z23.h, z15.h[1]
 	rshrnb	z22.h, z22.s, #11
-	uzp1	z29.s, z29.s, z28.s
-	rshrnb	z29.h, z29.s, #11
-	uzp1	z22.h, z22.h, z29.h
+	uzp1	z30.s, z30.s, z28.s
+	rshrnb	z30.h, z30.s, #11
+	uzp1	z22.h, z22.h, z30.h
 	st1h	z22.h, p7, [x3]
-	addvl	x3, sp, #12
-	add	x3, x3, 64
-	ldr	z30, [x3]
-	addvl	x3, sp, #18
-	add	x3, x3, 64
-	ldr	z29, [x3]
-	zip1	z27.d, z30.d, z29.d
-	addvl	x3, sp, #15
-	add	x3, x3, 64
-	ldr	z30, [x3]
 	addvl	x3, sp, #21
 	add	x3, x3, 64
-	ldr	z29, [x3]
-	zip1	z30.d, z30.d, z29.d
-	addvl	x3, sp, #24
-	zip1	z27.d, z27.d, z30.d
+	ldr	z31, [x3]
+	addvl	x3, sp, #25
 	add	x3, x3, 64
-	ldr	z30, [x3]
-	addvl	x3, sp, #30
+	ldr	z28, [x3]
+	zip1	z27.d, z31.d, z28.d
+	addvl	x3, sp, #23
 	add	x3, x3, 64
-	ldr	z29, [x3]
-	zip1	z28.d, z30.d, z29.d
+	ldr	z31, [x3]
 	addvl	x3, sp, #27
 	add	x3, x3, 64
-	ldr	z30, [x3]
+	ldr	z28, [x3]
+	zip1	z31.d, z31.d, z28.d
+	addvl	x3, sp, #29
+	zip1	z27.d, z27.d, z31.d
+	add	x3, x3, 64
+	ldr	z31, [x3]
+	addvl	x3, x5, #1
+	rdvl	x5, #17
+	add	x3, x3, 64
+	lsl	x5, x5, 1
+	add	x3, sp, x3
+	ldr	z28, [x3]
+	zip1	z28.d, z31.d, z28.d
+	addvl	x3, sp, #31
+	add	x3, x3, 64
+	ldr	z31, [x3]
+	addvl	x3, x5, #1
+	cntb	x5, all, mul #9
+	add	x3, x3, 64
+	lsl	x5, x5, 2
+	add	x3, sp, x3
+	ldr	z26, [x3]
+	zip1	z31.d, z31.d, z26.d
+	addvl	x3, x5, #1
+	cntb	x5, all, mul #5
+	zip1	z28.d, z28.d, z31.d
+	add	x3, x3, 64
+	lsl	x5, x5, 3
+	add	x3, sp, x3
+	ldr	z31, [x3]
 	addvl	x3, x5, #1
 	cntb	x5, all, mul #5
 	add	x3, x3, 64
 	lsl	x5, x5, 3
 	add	x3, sp, x3
-	ldr	z29, [x3]
-	zip1	z30.d, z30.d, z29.d
-	cntb	x3, all, mul #9
-	zip1	z28.d, z28.d, z30.d
-	lsl	x3, x3, 2
-	add	x3, sp, x3
+	ldr	z26, [x3]
+	zip1	z30.d, z31.d, z26.d
+	addvl	x3, x5, #-1
+	rdvl	x5, #21
 	add	x3, x3, 64
-	ldr	z30, [x3]
-	rdvl	x3, #21
-	lsl	x3, x3, 1
+	lsl	x5, x5, 1
 	add	x3, sp, x3
+	ldr	z31, [x3]
+	addvl	x3, x5, #1
 	add	x3, x3, 64
-	ldr	z29, [x3]
-	zip1	z29.d, z30.d, z29.d
+	add	x3, sp, x3
+	ldr	z26, [x3]
+	zip1	z31.d, z31.d, z26.d
+	cntb	x3, all, mul #3
+	zip1	z30.d, z30.d, z31.d
+	lsl	x5, x3, 4
+	sub	x3, x5, x3
+	cntb	x5, all, mul #3
+	add	x3, x3, 64
+	lsl	x5, x5, 4
+	add	x3, sp, x3
+	ldr	z31, [x3]
+	addvl	x3, x5, #1
+	cntb	x5, all, mul #3
+	add	x3, x3, 64
+	lsl	x5, x5, 4
+	add	x3, sp, x3
+	ldr	z26, [x3]
+	zip1	z31.d, z31.d, z26.d
 	addvl	x3, x5, #-1
 	add	x3, x3, 64
 	add	x3, sp, x3
-	ldr	z30, [x3]
-	cntb	x3, all, mul #3
-	lsl	x5, x3, 4
-	sub	x3, x5, x3
-	cntb	x5, all, mul #7
-	add	x3, x3, 64
-	lsl	x5, x5, 3
-	add	x3, sp, x3
 	ldr	z26, [x3]
-	zip1	z30.d, z30.d, z26.d
-	cntb	x3, all, mul #3
-	zip1	z29.d, z29.d, z30.d
-	lsl	x3, x3, 4
-	add	x3, sp, x3
-	add	x3, x3, 64
-	ldr	z30, [x3]
-	rdvl	x3, #27
-	lsl	x3, x3, 1
-	add	x3, sp, x3
-	add	x3, x3, 64
-	ldr	z26, [x3]
-	zip1	z30.d, z30.d, z26.d
 	cntb	x3, all, mul #3
 	add	x3, x3, x3, lsl 4
-	add	x3, x3, 64
-	add	x3, sp, x3
-	ldr	z26, [x3]
-	addvl	x3, x5, #1
 	add	x3, x3, 64
 	add	x3, sp, x3
 	ldr	z25, [x3]
 	zip1	z26.d, z26.d, z25.d
 	add	x3, x2, 1472
 	ld1h	z15.h, p7/z, [x3]
-	zip1	z30.d, z30.d, z26.d
+	zip1	z31.d, z31.d, z26.d
 	add	x3, x1, 256
-	movprfx	z23, z31
+	movprfx	z23, z29
 	sdot	z23.d, z28.h, z15.h[0]
-	movprfx	z24, z31
-	sdot	z24.d, z30.h, z15.h[0]
-	movprfx	z26, z31
+	movprfx	z24, z29
+	sdot	z24.d, z31.h, z15.h[0]
+	movprfx	z26, z29
 	sdot	z26.d, z27.h, z15.h[0]
-	movprfx	z25, z31
-	sdot	z25.d, z29.h, z15.h[0]
+	movprfx	z25, z29
+	sdot	z25.d, z30.h, z15.h[0]
 	uzp1	z26.s, z26.s, z23.s
 	uzp1	z25.s, z25.s, z24.s
 	rshrnb	z26.h, z26.s, #11
@@ -3740,14 +3780,14 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	uzp1	z26.h, z26.h, z25.h
 	st1h	z26.h, p7, [x3]
 	add	x3, x1, 768
-	movprfx	z23, z31
+	movprfx	z23, z29
 	sdot	z23.d, z28.h, z15.h[1]
-	movprfx	z24, z31
-	sdot	z24.d, z30.h, z15.h[1]
-	movprfx	z26, z31
+	movprfx	z24, z29
+	sdot	z24.d, z31.h, z15.h[1]
+	movprfx	z26, z29
 	sdot	z26.d, z27.h, z15.h[1]
-	movprfx	z25, z31
-	sdot	z25.d, z29.h, z15.h[1]
+	movprfx	z25, z29
+	sdot	z25.d, z30.h, z15.h[1]
 	uzp1	z26.s, z26.s, z23.s
 	uzp1	z25.s, z25.s, z24.s
 	rshrnb	z26.h, z26.s, #11
@@ -3757,14 +3797,14 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	add	x3, x2, 1504
 	ld1h	z15.h, p7/z, [x3]
 	add	x3, x1, 1280
-	movprfx	z26, z31
+	movprfx	z26, z29
 	sdot	z26.d, z27.h, z15.h[0]
-	movprfx	z23, z31
+	movprfx	z23, z29
 	sdot	z23.d, z28.h, z15.h[0]
-	movprfx	z24, z31
-	sdot	z24.d, z30.h, z15.h[0]
-	movprfx	z25, z31
-	sdot	z25.d, z29.h, z15.h[0]
+	movprfx	z25, z29
+	sdot	z25.d, z30.h, z15.h[0]
+	movprfx	z24, z29
+	sdot	z24.d, z31.h, z15.h[0]
 	uzp1	z26.s, z26.s, z23.s
 	uzp1	z25.s, z25.s, z24.s
 	rshrnb	z26.h, z26.s, #11
@@ -3772,25 +3812,26 @@ _ZL10op_pass_11PKsPsl.constprop.0:
 	uzp1	z26.h, z26.h, z25.h
 	st1h	z26.h, p7, [x3]
 	add	x3, x1, 1792
-	movprfx	z26, z31
+	movprfx	z26, z29
 	sdot	z26.d, z27.h, z15.h[1]
-	movprfx	z27, z31
+	movprfx	z27, z29
 	sdot	z27.d, z28.h, z15.h[1]
-	movprfx	z28, z31
-	sdot	z28.d, z29.h, z15.h[1]
-	sdot	z31.d, z30.h, z15.h[1]
-	uzp1	z30.s, z26.s, z27.s
-	uzp1	z31.s, z28.s, z31.s
-	rshrnb	z30.h, z30.s, #11
+	movprfx	z28, z29
+	sdot	z28.d, z30.h, z15.h[1]
+	sdot	z29.d, z31.h, z15.h[1]
+	uzp1	z31.s, z26.s, z27.s
+	uzp1	z30.s, z28.s, z29.s
 	rshrnb	z31.h, z31.s, #11
-	uzp1	z31.h, z30.h, z31.h
+	rshrnb	z30.h, z30.s, #11
+	uzp1	z31.h, z31.h, z30.h
 	st1h	z31.h, p7, [x3]
 	add	x1, x1, 32
 	cmp	x4, x0
 	bne	.L7
+	mov	x13, 65
 	cntb	x12
-	lsl	x12, x12, 6
 	ldp	d8, d9, [sp]
+	mul	x12, x12, x13
 	ldp	d10, d11, [sp, 16]
 	ldp	d12, d13, [sp, 32]
 	ldp	d14, d15, [sp, 48]

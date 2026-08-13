@@ -110,6 +110,11 @@ layouts:
   # 16-lane 常量向量（[kA c0..3, kB c0..3, kA c0..3, kB c0..3]，
   # 索引在每 128-bit 段内选同一 64-bit 组），常量加载减半。
   sdot_indexed: [0, 1]
+  # 2026-08-14: odd_from_k0packs（仅 op backend；要求 k0_even_sve=1）：
+  # pass2 的 k0 pack(hi) 换成 pack(rv)（e 链配对等价，探针验证），
+  # odd 切片用 L_q - R_q 子（+revh 恢复 2/3 顺序），替代每 bank
+  # build_slices 的 10 条 zip/trn。
+  odd_from_k0packs: [0, 1]
   # 2026-08-13: op 级原子 rewrite 序列（P0），最多 4 步、按 rw1..rw4
   # 顺序应用。完整序列 [legacy_k2, legacy_k4, merge_narrow8,
   # tbl2_to_zip] 从基础 plan 重发现 6456。
@@ -123,8 +128,8 @@ layouts:
 # 920B SVE1/VL=256 可跑，20k 差分 0，p50=226 vs 上游 222）。
 
 # 2026-08-14: op 后端 row16 legacy 最优候选
-# candidates/best_op_r16.{cpp,S}（-O2 -fno-tree-pre，4514 full，
+# candidates/best_op_r16.{cpp,S}（-O2 -fno-tree-pre，4480 full，
 # TestBenchLite 5 seed PASS；生成：layout_ir.dct32_v31_plan +
 # lowering legacy_ex/k4=1, slice_kind=zip, row_group=16,
 # k0_even_sve=1, k0_merge8=1, k0_shared_mul=1, k0_epack=1,
-# sdot_indexed=1）。
+# sdot_indexed=1, odd_from_k0packs=1）。

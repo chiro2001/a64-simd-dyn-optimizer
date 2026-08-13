@@ -82,6 +82,17 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # selects the same 64-bit group in each 128-bit segment, so one load
     # serves two k rows. Cuts the per-k constant loads ~2x.
     sdot_indexed = bool(lo.get("sdot_indexed", 0))
+    # odd_from_k0packs: pass2's k0 packs lo and rv (pack(rv) is
+    # mathematically equivalent to pack(hi) with adjusted e-chain
+    # pairings, probe_odd_from_packs verified). Since O = lo - rv,
+    # the odd slices are L_q - R_q (slices 2/3 need a revh to restore
+    # the in-order slice) -- 4 sub + 2 revh replace build_slices'
+    # 10 zip/trn per bank (probe-verified for X0/X1, X2/X3 = revh).
+    odd_from_k0packs = bool(lo.get("odd_from_k0packs", 0)) and k0_even_sve
+    if odd_from_k0packs:
+        # the odd slices consume the k0 packs; force k0 before odd in
+        # the emitted source order.
+        lo["emit_order"] = "k0,odd,k2,k4"
     k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
         and row_group in (8, 16)
     ops: List[Op] = []
@@ -248,8 +259,37 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                             xs.append(x.out)
                     return xs
                 odd_banks = banks
-                all_xs = [build_slices(rb, "_b%d" % b)
-                          for b, rb in enumerate(odd_banks)]
+                use_shared_odd = odd_from_k0packs and not (
+                    k0_epack and pass_id == 1)
+                all_xs = []
+                for b, rb in enumerate(odd_banks):
+                    if use_shared_odd:
+                        # O = lo - rv, so slice(O) = slice(lo) - slice(rv);
+                        # the k0 packs already provide L_q/R_q for this
+                        # bank (probe_odd_from_packs verified X0/X1 direct,
+                        # X2/X3 = revh of the sub).
+                        xs = []
+                        for m, (ln, rn, rev) in enumerate((
+                                ("L_q0", "R_q0", False),
+                                ("L_q1", "R_q1", False),
+                                ("L_qr2", "R_qr2", True),
+                                ("L_qr3", "R_qr3", True))):
+                            tid = "p%d.odd.slice_b%d" % (pass_id, b)
+                            y = new("sub", tid,
+                                    "Xs%d_b%d" % (m, b),
+                                    ("%s_%d_%d" % (ln, b, pass_id),
+                                     "%s_%d_%d" % (rn, b, pass_id)),
+                                    attrs={"elem": "s16",
+                                           "lane_owner": "output"})
+                            if rev:
+                                y = new("permute", tid,
+                                        "X%d_b%d" % (m, b),
+                                        (y.out,),
+                                        attrs={"kind": "revh_d"})
+                            xs.append(y.out)
+                    else:
+                        xs = build_slices(rb, "_b%d" % b)
+                    all_xs.append(xs)
                 for k in ODD_K:
                     tid = "p%d.odd.k%d" % (pass_id, k)
                     accs = []
@@ -707,40 +747,43 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     else:
                         l0, l1, l2, l3 = pack(
                             ["lo_%d" % r for r in pr], "L")
-                        h0, h1, h2, h3 = pack(
-                            ["hi_%d" % r for r in pr], "H")
-                        # e0 = saddlb(lo0, revh(hi3)) + saddlb(lo3, hi0)
+                        r0, r1, r2, r3 = pack(
+                            ["rv_%d" % r for r in pr], "R")
+                        # pack(rv) reproduces the pack(hi) pairings:
+                        # H3 == R0, H0 == R3r, H2 == R1, H1 == R2r
+                        # (probe_odd_from_packs verified).
+                        # e0 = saddlb(lo0, rv0) + saddlb(lo3, rv3r)
                         e0 = new("add", tid, "e0_%d_%d" % (b, pass_id),
                                  (new("widen_add_sve", tid,
                                       "we0_%d_%d" % (b, pass_id),
-                                      (l0, h3), attrs={"kind": "lb"}).out,
+                                      (l0, r0), attrs={"kind": "lb"}).out,
                                   new("widen_add_sve", tid,
                                       "we1_%d_%d" % (b, pass_id),
-                                      (l3, h0), attrs={"kind": "lb"}).out),
+                                      (l3, r3), attrs={"kind": "lb"}).out),
                                  attrs={"elem": "s32"})
                         e1 = new("add", tid, "e1_%d_%d" % (b, pass_id),
                                  (new("widen_add_sve", tid,
                                       "we2_%d_%d" % (b, pass_id),
-                                      (l0, h3), attrs={"kind": "lt"}).out,
+                                      (l0, r0), attrs={"kind": "lt"}).out,
                                   new("widen_add_sve", tid,
                                       "we3_%d_%d" % (b, pass_id),
-                                      (l3, h0), attrs={"kind": "lt"}).out),
+                                      (l3, r3), attrs={"kind": "lt"}).out),
                                  attrs={"elem": "s32"})
                         e2 = new("add", tid, "e2_%d_%d" % (b, pass_id),
                                  (new("widen_add_sve", tid,
                                       "we4_%d_%d" % (b, pass_id),
-                                      (l1, h2), attrs={"kind": "lb"}).out,
+                                      (l1, r1), attrs={"kind": "lb"}).out,
                                   new("widen_add_sve", tid,
                                       "we5_%d_%d" % (b, pass_id),
-                                      (l2, h1), attrs={"kind": "lb"}).out),
+                                      (l2, r2), attrs={"kind": "lb"}).out),
                                  attrs={"elem": "s32"})
                         e3 = new("add", tid, "e3_%d_%d" % (b, pass_id),
                                  (new("widen_add_sve", tid,
                                       "we6_%d_%d" % (b, pass_id),
-                                      (l1, h2), attrs={"kind": "lt"}).out,
+                                      (l1, r1), attrs={"kind": "lt"}).out,
                                   new("widen_add_sve", tid,
                                       "we7_%d_%d" % (b, pass_id),
-                                      (l2, h1), attrs={"kind": "lt"}).out),
+                                      (l2, r2), attrs={"kind": "lt"}).out),
                                  attrs={"elem": "s32"})
                     w0 = new("permute", tid, "w0_%d_%d" % (b, pass_id),
                              (e0.out, e1.out), attrs={"kind": "zip1s"})

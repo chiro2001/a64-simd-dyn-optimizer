@@ -178,6 +178,7 @@ def make_emitter(kernel, backend="acle"):
                     k0_merge8=combo.get("k0_merge8", 0),
                     k0_epack=combo.get("k0_epack", 0),
                     sdot_indexed=combo.get("sdot_indexed", 0),
+                    odd_from_k0packs=combo.get("odd_from_k0packs", 0),
                     slice_kind=combo.get("slice_kind", "tbl2"),
                     row_group=combo.get("row_group", 4),
                     rewrites=[c for c in (combo.get("rw1", "none"),

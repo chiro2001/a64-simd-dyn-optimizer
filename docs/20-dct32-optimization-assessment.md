@@ -1011,6 +1011,34 @@ imm=1→kB）。GCC 16 原生支持 `svdot_lane_s64`。
 按 k 对打包共享”，是 SVE2 代码密度的重要杠杆；后续可扩展到 k0 的
 sdot 化（若回绕允许）与 DCT16。
 
+### 6.11 2026-08-14 深夜：odd 切片复用 k0 pack → 4514→4480
+
+探针 `probe_odd_from_packs.cpp` 验证两个代数事实：
+
+1. **pack(rv) 等价替换 pack(hi)**：rv = rev(hi) 且
+   `H3≡R0、H0≡R3r、H2≡R1、H1≡R2r`，k0 e 链配对
+   `saddlb(L0,R0)+saddlb(L3r,R3r)` 等与旧配对逐 lane 相等；
+2. **odd 切片线性可分**：O = lo − rv ⇒ slice(O) = slice(lo) −
+   slice(rv)，即 `X0=L0−R0、X1=L1−R1`；X2/X3 是 4-lane 反转
+   （`revh` 一次还原）。
+
+新增 `odd_from_k0packs ∈ {0,1}` 轴（op 后端，要求 k0_even_sve）：
+k0 非 E-pack 分支改为 pack(lo)+pack(rv)（e 链配对相应替换），odd
+路径每 bank 用 4 sub + 2 revh 替代 build_slices 的 10 条 zip/trn；
+发射顺序强制 k0 在 odd 前。
+
+| 指标 | 4514 | **4480** | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 4514 | **4480** | -34 |
+| vector raw | 4974 | 4940 | -34 |
+| stack | 481 | 520 | +39（live-range 略增） |
+| 20k legacy 签名 | 7268 | 7268 | 0 |
+| TestBenchLite | 5 seed PASS | **5 seed PASS** | — |
+
+全布局搜索（416 候选全过）确认 best 组合不变（+odd_from_k0packs）。
+相对上游 12710 = **0.352×**；距内部 fused_uop 4827 = **0.928×**；
+距内部 fused_adj 4251 = **1.054×**。`best_op_r16.{cpp,S}` 已重新固化。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；
