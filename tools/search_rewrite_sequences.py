@@ -134,6 +134,7 @@ def main():
               if r.get("fused_uop") is not None}
 
     seen = {}
+    seen_src = {}
     seqs = []
     for combo in itertools.product(cfg["rewrites"], repeat=4):
         seq = [c for c in combo if c != "none"]
@@ -142,6 +143,11 @@ def main():
             continue
         seen[key] = True
         src = emit_seq(kernel, seq)
+        h = hashlib.sha256(src.encode()).hexdigest()[:12]
+        if h in seen_src:
+            seen_src[h].append(key)
+            continue
+        seen_src[h] = [key]
         seqs.append((key, src))
 
     rows = []
@@ -237,6 +243,10 @@ def main():
                   % (r["seq"], r["fused_uop"], cycles, uops))
     with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump({"kernel": kernel, "rows": rows,
+                   "seq_keys": len(seen), "unique_sources": len(seqs),
+                   "source_aliases": {h: ks
+                                      for h, ks in seen_src.items()
+                                      if len(ks) > 1},
                    "best": min(measured, key=lambda r: r["fused_uop"])
                    if measured else None}, f, indent=1)
 
