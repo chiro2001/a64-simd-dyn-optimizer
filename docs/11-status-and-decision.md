@@ -117,13 +117,18 @@ latency 正项，但不足以单独立项；作为 N+2 接入后的宽 kernel �
 | 合同 | 最优 | 相对内部参考 731 |
 | --- | ---: | ---: |
 | upstream-exact | 887 | +156 |
-| legacy-internal-exact | **692** | **-39（已低于内部参考）** |
+| legacy-internal-exact | **692**（uop 口径 **704**） | **-39（uop 口径 -123，已低于内部参考）** |
 
 里程碑链条（本轮）：store_merge16 → pass1_even_factor →
 pass1/pass2 pack_zip（tbl/mov 归零）→ pass2_even_sve（复刻内部 s32
 偶数路径：saddlb/saddlt + mul/addp + 散布 st1d），legacy 791→692，
 首次低于内部参考。验证：legacy 20 万例差分 0.0448%（与基线同签名）、
 TestBench 6/6；upstream 200k 零分歧。
+
+> 2026-08-14 用户裁定：gather/scatter 在 ARM 拆分为多个 ldst uops，
+> 禁止为表面指令数使用。指标增加 `fused_uop = fused_adj + 3×sg`；
+> 同口径内部 = 827（sg=32），legacy best = 704（sg=4）——诚实口径下
+> 仍低于内部且领先扩大。搜索排名已切换为 fused_uop。
 
 工具侧：manifest 现有 10 个布局轴；搜索驱动新增源码哈希规范化去重
 （本轮 75 个重复组合跳过）；round-0009 顶级模型咨询完成（sss/gpt-5.6-

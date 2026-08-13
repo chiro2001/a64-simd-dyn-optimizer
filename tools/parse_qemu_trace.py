@@ -82,6 +82,20 @@ def fused_adjust(vector):
     return movprfx, len(vector) - movprfx
 
 
+def scatter_gather_count(vector):
+    """Count gather loads / scatter stores (SVE ld1/st1 with a vector
+    offset register). On ARM these decompose into multiple ldst uops, so
+    they must NOT be used to inflate surface instruction counts
+    (user policy 2026-08-14)."""
+    n = 0
+    for ins in vector:
+        m = ins["mn"]
+        if m.startswith(("ld1", "st1")) and re.search(
+                r"\[[^\]]*,\s*z\d+", ins["ops"]):
+            n += 1
+    return n
+
+
 def main():
     if len(sys.argv) < 4:
         print(__doc__)
@@ -100,18 +114,24 @@ def main():
     insns = parse_exec(path, start, end) if exec_mode else parse(path, start, end)
     vec = [i for i in insns if is_vector(i)]
     movprfx, fused_adj = fused_adjust(vec)
+    sg = scatter_gather_count(vec)
+    # uop-honest metric: scatter/gather count as 4 ldst uops (penalty +3).
+    fused_uop = fused_adj + 3 * sg
     if counts_only:
         from optimizer.ir.asm_ir import dynamic_counts, import_asm_trace
 
         nodes, _ = import_asm_trace(insns)
         print(json.dumps(dynamic_counts(nodes)))
         return 0
-    print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj %d)"
-          % (len(insns), len(vec), movprfx, fused_adj))
+    print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj %d, "
+          "scatter_gather %d, fused_uop %d)"
+          % (len(insns), len(vec), movprfx, fused_adj, sg, fused_uop))
     if out_json:
         json.dump({"instructions": insns, "vector": vec,
                    "counts": {"vector_raw": len(vec), "movprfx": movprfx,
-                              "vector_fused": fused_adj}},
+                              "vector_fused": fused_adj,
+                              "scatter_gather": sg,
+                              "vector_fused_uop": fused_uop}},
                   open(out_json, "w"), indent=1)
     if vector_only:
         insns = vec

@@ -94,6 +94,10 @@
   按 `contract|生成源码哈希` 复用已验证的 passed/mismatches/counts，
   仅源码或合同变化才重跑；增量重跑从 ~7.8 分钟降到 ~0.1 秒。另有源码
   哈希规范化去重（相同生成代码只验证一次）。
+- **uop 口径（2026-08-14 用户裁定）**：gather/scatter 在 ARM 上拆分为
+  多个 ldst uops，禁止为表面指令数使用。`parse_qemu_trace.py` 输出
+  `scatter_gather` 与 `vector_fused_uop = fused_adj + 3×sg`；搜索按
+  fused_uop 排名。
 - **DCT8 已收敛到 upstream-exact（2026-08-14）**：旧 quarter 发射器
   pass2 用 s16 E/O 回绕（0.11% vs C，合同不满足）；改为逐条移植上游
   `partialButterfly8_sve`（E s32 不回绕、O s16 回绕、偶 k vmul/vpadd、

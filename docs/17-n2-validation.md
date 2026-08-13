@@ -12,6 +12,15 @@ true-dynamic 计数；920B 是 SVE1，无法执行本项目的 s16→s64 SDOT
 > （如 Graviton4 / Neoverse V2 级），可先做早期校准，但正式验收仍以
 > 960 为准。
 
+> **2026-08-14 口径修正（用户裁定）：gather/scatter 在 ARM 上会拆分为
+> 多个 ldst uops，效率低下；禁止为了表面指令数使用 gather/scatter 类
+> 指令。** 指标增加 uop 等效口径：`fused_uop = fused_adj + 3 ×
+> (gather+scatter 条数)`（即每条按 4 个 ldst uops 计）。搜索排名与
+> 验收代理均以 fused_uop 为准；fused_adj 仅作参考。内部参考按同口径
+> 折算：内部 fused_adj=731 / sg=32 / **fused_uop=827**；本项目 legacy
+> best fused_adj=692 / sg=4 / **fused_uop=704**——诚实口径下领先内部
+> 更多（704 < 827）。
+
 ## 1. 目标与基线
 
 | 档位 | 基线（同机冻结） | 保留 | 优秀 |

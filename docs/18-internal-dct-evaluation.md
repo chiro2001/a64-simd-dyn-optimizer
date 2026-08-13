@@ -63,6 +63,7 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
 | 向量 raw | 843 | 997 | 916 |
 | movprfx | 112 | 110 | 125 |
 | **fused_adj** | **731** | **887** | **692** |
+| **fused_uop（sg×4 惩罚）** | **827** | 887 | **704** |
 
 指令类别直方图（向量 raw 计数，逐 mnemonic 合计）：
 
@@ -95,13 +96,15 @@ fused 约 1000-1100（相对上游 1911 约 0.52-0.58x）；若同时接受
    （svdot 就地累加 vs movprfx+dot 两指令）的布局选择。
 
 结论：`pass2_even_sve` 轴（2026-08-14）复刻内部 s32 偶数路径后，
-**legacy fused_adj=692，首次低于内部参考 731（-39）**：mul/addp/sqrshrnb
+**legacy fused_adj=692，首次低于内部参考 731（-39）**；按用户口径对
+gather/scatter 做 uop 惩罚后（每条 +3），legacy **fused_uop=704** 仍
+低于内部 **827**（内部有 32 条散布 st1d，我们仅 4 条）。mul/addp/sqrshrnb
 计数与内部完全一致（16/8/64），NEON T8E 段（xtn/sqrshrn/saddl）整体
 消失，偶数输出用 4 条散布 st1d 写出。验证：20 万例 legacy 差分
-0.0448%（与基线一致），TestBench 6/6。注意：a) 散布 st1d 在指令数口径
-算 1 条，实机 scatter 代价待 920B/960 实测；b) movprfx 131 vs 内部 112
-仍多 19；c) 该轴仅对 legacy 合同有效（upstream 的 k=2/6/10/14 必须保留
-s32 路径，位级一致要求）。
+0.0448%（与基线一致），TestBench 6/6。注意：a) 散布 st1d 按用户裁定
+以 uop 惩罚计（fused_uop），不再以表面指令数邀功；b) movprfx 131 vs
+内部 112 仍多 19；c) 该轴仅对 legacy 合同有效（upstream 的 k=2/6/10/14
+必须保留 s32 路径，位级一致要求）。
 
 > 2026-08-13 晚 store_merge16 轴：利用 rshrnb 输出偶 lane 布局 + 单次
 > uzp1，把每 k 的 2×(8-lane 窄化+存储) 合并为 1×16-lane 存储。

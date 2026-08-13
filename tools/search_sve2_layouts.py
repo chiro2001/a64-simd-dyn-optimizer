@@ -77,10 +77,20 @@ def true_dynamic(binary, start, end, log):
         return None
     d = json.load(open(log + ".json"))
     c = d.get("counts", {})
+    if "vector_fused_uop" not in c:
+        from parse_qemu_trace import scatter_gather_count  # noqa
+        sg = scatter_gather_count(d.get("vector", []))
+        c = dict(c)
+        c["scatter_gather"] = sg
+        c["vector_fused_uop"] = c.get("vector_fused",
+                                      len(d["vector"])) + 3 * sg
     return {"total": len(d["instructions"]),
             "vector": len(d["vector"]),
             "movprfx": c.get("movprfx", 0),
-            "vector_fused": c.get("vector_fused", len(d["vector"]))}
+            "vector_fused": c.get("vector_fused", len(d["vector"])),
+            "scatter_gather": c.get("scatter_gather", 0),
+            "vector_fused_uop": c.get("vector_fused_uop",
+                                      len(d["vector"]))}
 
 
 def make_emitter(kernel):
@@ -303,20 +313,25 @@ def main():
                         "verify_mismatches": mism,
                         "counts": counts})
         if counts:
-            print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d"
+            print("  dynamic total=%d vector=%d movprfx=%d fused_adj=%d "
+                  "sg=%d fused_uop=%d"
                   % (counts["total"], counts["vector"],
-                     counts["movprfx"], counts["vector_fused"]))
+                     counts["movprfx"], counts["vector_fused"],
+                     counts["scatter_gather"], counts["vector_fused_uop"]))
 
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)
     json.dump(cache, open(cache_path, "w"), indent=1)
     ok = [r for r in results if r.get("passed") and r.get("counts")]
-    ok.sort(key=lambda r: r["counts"]["vector_fused"])
-    print("rank by fused-adjusted vector count (docs/09 §1.5):")
+    ok.sort(key=lambda r: r["counts"]["vector_fused_uop"])
+    print("rank by uop-honest fused count (scatter/gather = 4 uops, "
+          "docs/17 §1):")
     for r in ok:
-        print("  %-24s vector=%d fused_adj=%d"
+        print("  %-24s vector=%d fused_adj=%d sg=%d fused_uop=%d"
               % (r["tag"], r["counts"]["vector"],
-                 r["counts"]["vector_fused"]))
+                 r["counts"]["vector_fused"],
+                 r["counts"].get("scatter_gather", 0),
+                 r["counts"]["vector_fused_uop"]))
     return 0 if ok else 1
 
 

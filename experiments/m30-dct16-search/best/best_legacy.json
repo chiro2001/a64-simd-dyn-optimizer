@@ -19,7 +19,9 @@
   "total": 947,
   "vector": 823,
   "movprfx": 131,
-  "vector_fused": 692
+  "vector_fused": 692,
+  "scatter_gather": 4,
+  "vector_fused_uop": 704
  },
  "artifacts": {
   "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_legacy_sve2.cpp",

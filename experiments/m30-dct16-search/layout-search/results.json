@@ -110,7 +110,9 @@
    "total": 1802,
    "vector": 1510,
    "movprfx": 192,
-   "vector_fused": 1318
+   "vector_fused": 1318,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1318
   },
   "cached": true
  },
@@ -137,7 +139,9 @@
    "total": 1781,
    "vector": 1484,
    "movprfx": 192,
-   "vector_fused": 1292
+   "vector_fused": 1292,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1292
   },
   "cached": true
  },
@@ -164,7 +168,9 @@
    "total": 1762,
    "vector": 1460,
    "movprfx": 192,
-   "vector_fused": 1268
+   "vector_fused": 1268,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1268
   },
   "cached": true
  },
@@ -191,7 +197,9 @@
    "total": 1732,
    "vector": 1426,
    "movprfx": 192,
-   "vector_fused": 1234
+   "vector_fused": 1234,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1234
   },
   "cached": true
  },
@@ -306,7 +314,9 @@
    "total": 1671,
    "vector": 1383,
    "movprfx": 192,
-   "vector_fused": 1191
+   "vector_fused": 1191,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1191
   },
   "cached": true
  },
@@ -333,7 +343,9 @@
    "total": 1649,
    "vector": 1356,
    "movprfx": 192,
-   "vector_fused": 1164
+   "vector_fused": 1164,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1164
   },
   "cached": true
  },
@@ -360,7 +372,9 @@
    "total": 1634,
    "vector": 1344,
    "movprfx": 192,
-   "vector_fused": 1152
+   "vector_fused": 1152,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1152
   },
   "cached": true
  },
@@ -387,7 +401,9 @@
    "total": 1612,
    "vector": 1318,
    "movprfx": 192,
-   "vector_fused": 1126
+   "vector_fused": 1126,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1126
   },
   "cached": true
  },
@@ -502,7 +518,9 @@
    "total": 1797,
    "vector": 1397,
    "movprfx": 96,
-   "vector_fused": 1301
+   "vector_fused": 1301,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1301
   },
   "cached": true
  },
@@ -529,7 +547,9 @@
    "total": 1757,
    "vector": 1354,
    "movprfx": 96,
-   "vector_fused": 1258
+   "vector_fused": 1258,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1258
   },
   "cached": true
  },
@@ -556,7 +576,9 @@
    "total": 1733,
    "vector": 1339,
    "movprfx": 96,
-   "vector_fused": 1243
+   "vector_fused": 1243,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1243
   },
   "cached": true
  },
@@ -583,7 +605,9 @@
    "total": 1701,
    "vector": 1296,
    "movprfx": 96,
-   "vector_fused": 1200
+   "vector_fused": 1200,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1200
   },
   "cached": true
  },
@@ -962,7 +986,9 @@
    "total": 1221,
    "vector": 1067,
    "movprfx": 136,
-   "vector_fused": 931
+   "vector_fused": 931,
+   "scatter_gather": 0,
+   "vector_fused_uop": 931
   },
   "cached": true
  },
@@ -989,7 +1015,9 @@
    "total": 1061,
    "vector": 901,
    "movprfx": 118,
-   "vector_fused": 783
+   "vector_fused": 783,
+   "scatter_gather": 4,
+   "vector_fused_uop": 795
   },
   "cached": true
  },
@@ -1016,7 +1044,9 @@
    "total": 1149,
    "vector": 998,
    "movprfx": 120,
-   "vector_fused": 878
+   "vector_fused": 878,
+   "scatter_gather": 0,
+   "vector_fused_uop": 878
   },
   "cached": true
  },
@@ -1043,7 +1073,9 @@
    "total": 1167,
    "vector": 1009,
    "movprfx": 120,
-   "vector_fused": 889
+   "vector_fused": 889,
+   "scatter_gather": 0,
+   "vector_fused_uop": 889
   },
   "cached": true
  },
@@ -1070,7 +1102,9 @@
    "total": 1043,
    "vector": 874,
    "movprfx": 118,
-   "vector_fused": 756
+   "vector_fused": 756,
+   "scatter_gather": 4,
+   "vector_fused_uop": 768
   },
   "cached": true
  },
@@ -1097,7 +1131,9 @@
    "total": 1133,
    "vector": 975,
    "movprfx": 120,
-   "vector_fused": 855
+   "vector_fused": 855,
+   "scatter_gather": 0,
+   "vector_fused_uop": 855
   },
   "cached": true
  },
@@ -1124,7 +1160,9 @@
    "total": 1179,
    "vector": 1021,
    "movprfx": 128,
-   "vector_fused": 893
+   "vector_fused": 893,
+   "scatter_gather": 0,
+   "vector_fused_uop": 893
   },
   "cached": true
  },
@@ -1151,7 +1189,9 @@
    "total": 1026,
    "vector": 862,
    "movprfx": 118,
-   "vector_fused": 744
+   "vector_fused": 744,
+   "scatter_gather": 4,
+   "vector_fused_uop": 756
   },
   "cached": true
  },
@@ -1178,7 +1218,9 @@
    "total": 1115,
    "vector": 961,
    "movprfx": 120,
-   "vector_fused": 841
+   "vector_fused": 841,
+   "scatter_gather": 0,
+   "vector_fused_uop": 841
   },
   "cached": true
  },
@@ -1205,7 +1247,9 @@
    "total": 1133,
    "vector": 971,
    "movprfx": 120,
-   "vector_fused": 851
+   "vector_fused": 851,
+   "scatter_gather": 0,
+   "vector_fused_uop": 851
   },
   "cached": true
  },
@@ -1232,7 +1276,9 @@
    "total": 1007,
    "vector": 836,
    "movprfx": 118,
-   "vector_fused": 718
+   "vector_fused": 718,
+   "scatter_gather": 4,
+   "vector_fused_uop": 730
   },
   "cached": true
  },
@@ -1259,7 +1305,9 @@
    "total": 1097,
    "vector": 937,
    "movprfx": 120,
-   "vector_fused": 817
+   "vector_fused": 817,
+   "scatter_gather": 0,
+   "vector_fused_uop": 817
   },
   "cached": true
  },
@@ -1286,7 +1334,9 @@
    "total": 1184,
    "vector": 1043,
    "movprfx": 136,
-   "vector_fused": 907
+   "vector_fused": 907,
+   "scatter_gather": 0,
+   "vector_fused_uop": 907
   },
   "cached": true
  },
@@ -1313,7 +1363,9 @@
    "total": 1024,
    "vector": 877,
    "movprfx": 118,
-   "vector_fused": 759
+   "vector_fused": 759,
+   "scatter_gather": 4,
+   "vector_fused_uop": 771
   },
   "cached": true
  },
@@ -1340,7 +1392,9 @@
    "total": 1112,
    "vector": 974,
    "movprfx": 120,
-   "vector_fused": 854
+   "vector_fused": 854,
+   "scatter_gather": 0,
+   "vector_fused_uop": 854
   },
   "cached": true
  },
@@ -1367,7 +1421,9 @@
    "total": 1130,
    "vector": 985,
    "movprfx": 120,
-   "vector_fused": 865
+   "vector_fused": 865,
+   "scatter_gather": 0,
+   "vector_fused_uop": 865
   },
   "cached": true
  },
@@ -1394,7 +1450,9 @@
    "total": 1002,
    "vector": 850,
    "movprfx": 118,
-   "vector_fused": 732
+   "vector_fused": 732,
+   "scatter_gather": 4,
+   "vector_fused_uop": 744
   },
   "cached": true
  },
@@ -1421,7 +1479,9 @@
    "total": 1096,
    "vector": 951,
    "movprfx": 120,
-   "vector_fused": 831
+   "vector_fused": 831,
+   "scatter_gather": 0,
+   "vector_fused_uop": 831
   },
   "cached": true
  },
@@ -1448,7 +1508,9 @@
    "total": 1141,
    "vector": 997,
    "movprfx": 128,
-   "vector_fused": 869
+   "vector_fused": 869,
+   "scatter_gather": 0,
+   "vector_fused_uop": 869
   },
   "cached": true
  },
@@ -1475,7 +1537,9 @@
    "total": 988,
    "vector": 838,
    "movprfx": 118,
-   "vector_fused": 720
+   "vector_fused": 720,
+   "scatter_gather": 4,
+   "vector_fused_uop": 732
   },
   "cached": true
  },
@@ -1502,7 +1566,9 @@
    "total": 1077,
    "vector": 937,
    "movprfx": 120,
-   "vector_fused": 817
+   "vector_fused": 817,
+   "scatter_gather": 0,
+   "vector_fused_uop": 817
   },
   "cached": true
  },
@@ -1529,7 +1595,9 @@
    "total": 1095,
    "vector": 947,
    "movprfx": 120,
-   "vector_fused": 827
+   "vector_fused": 827,
+   "scatter_gather": 0,
+   "vector_fused_uop": 827
   },
   "cached": true
  },
@@ -1556,7 +1624,9 @@
    "total": 966,
    "vector": 812,
    "movprfx": 118,
-   "vector_fused": 694
+   "vector_fused": 694,
+   "scatter_gather": 4,
+   "vector_fused_uop": 706
   },
   "cached": true
  },
@@ -1583,7 +1653,9 @@
    "total": 1060,
    "vector": 913,
    "movprfx": 120,
-   "vector_fused": 793
+   "vector_fused": 793,
+   "scatter_gather": 0,
+   "vector_fused_uop": 793
   },
   "cached": true
  },
@@ -2226,7 +2298,9 @@
    "total": 1772,
    "vector": 1397,
    "movprfx": 96,
-   "vector_fused": 1301
+   "vector_fused": 1301,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1301
   },
   "cached": true
  },
@@ -2253,7 +2327,9 @@
    "total": 1744,
    "vector": 1359,
    "movprfx": 96,
-   "vector_fused": 1263
+   "vector_fused": 1263,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1263
   },
   "cached": true
  },
@@ -2280,7 +2356,9 @@
    "total": 1710,
    "vector": 1339,
    "movprfx": 96,
-   "vector_fused": 1243
+   "vector_fused": 1243,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1243
   },
   "cached": true
  },
@@ -2307,7 +2385,9 @@
    "total": 1672,
    "vector": 1297,
    "movprfx": 96,
-   "vector_fused": 1201
+   "vector_fused": 1201,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1201
   },
   "cached": true
  },
@@ -2686,7 +2766,9 @@
    "total": 1192,
    "vector": 1061,
    "movprfx": 135,
-   "vector_fused": 926
+   "vector_fused": 926,
+   "scatter_gather": 0,
+   "vector_fused_uop": 926
   },
   "cached": true
  },
@@ -2713,7 +2795,9 @@
    "total": 1032,
    "vector": 895,
    "movprfx": 117,
-   "vector_fused": 778
+   "vector_fused": 778,
+   "scatter_gather": 4,
+   "vector_fused_uop": 790
   },
   "cached": true
  },
@@ -2740,7 +2824,9 @@
    "total": 1119,
    "vector": 992,
    "movprfx": 119,
-   "vector_fused": 873
+   "vector_fused": 873,
+   "scatter_gather": 0,
+   "vector_fused_uop": 873
   },
   "cached": true
  },
@@ -2767,7 +2853,9 @@
    "total": 1139,
    "vector": 1003,
    "movprfx": 119,
-   "vector_fused": 884
+   "vector_fused": 884,
+   "scatter_gather": 0,
+   "vector_fused_uop": 884
   },
   "cached": true
  },
@@ -2794,7 +2882,9 @@
    "total": 1012,
    "vector": 868,
    "movprfx": 117,
-   "vector_fused": 751
+   "vector_fused": 751,
+   "scatter_gather": 4,
+   "vector_fused_uop": 763
   },
   "cached": true
  },
@@ -2821,7 +2911,9 @@
    "total": 1103,
    "vector": 969,
    "movprfx": 119,
-   "vector_fused": 850
+   "vector_fused": 850,
+   "scatter_gather": 0,
+   "vector_fused_uop": 850
   },
   "cached": true
  },
@@ -2848,7 +2940,9 @@
    "total": 1151,
    "vector": 1015,
    "movprfx": 127,
-   "vector_fused": 888
+   "vector_fused": 888,
+   "scatter_gather": 0,
+   "vector_fused_uop": 888
   },
   "cached": true
  },
@@ -2875,7 +2969,9 @@
    "total": 998,
    "vector": 856,
    "movprfx": 117,
-   "vector_fused": 739
+   "vector_fused": 739,
+   "scatter_gather": 4,
+   "vector_fused_uop": 751
   },
   "cached": true
  },
@@ -2902,7 +2998,9 @@
    "total": 1087,
    "vector": 955,
    "movprfx": 119,
-   "vector_fused": 836
+   "vector_fused": 836,
+   "scatter_gather": 0,
+   "vector_fused_uop": 836
   },
   "cached": true
  },
@@ -2929,7 +3027,9 @@
    "total": 1105,
    "vector": 965,
    "movprfx": 119,
-   "vector_fused": 846
+   "vector_fused": 846,
+   "scatter_gather": 0,
+   "vector_fused_uop": 846
   },
   "cached": true
  },
@@ -2956,7 +3056,9 @@
    "total": 976,
    "vector": 830,
    "movprfx": 117,
-   "vector_fused": 713
+   "vector_fused": 713,
+   "scatter_gather": 4,
+   "vector_fused_uop": 725
   },
   "cached": true
  },
@@ -2983,7 +3085,9 @@
    "total": 1068,
    "vector": 931,
    "movprfx": 119,
-   "vector_fused": 812
+   "vector_fused": 812,
+   "scatter_gather": 0,
+   "vector_fused_uop": 812
   },
   "cached": true
  },
@@ -3010,7 +3114,9 @@
    "total": 1162,
    "vector": 1041,
    "movprfx": 135,
-   "vector_fused": 906
+   "vector_fused": 906,
+   "scatter_gather": 0,
+   "vector_fused_uop": 906
   },
   "cached": true
  },
@@ -3037,7 +3143,9 @@
    "total": 1002,
    "vector": 875,
    "movprfx": 117,
-   "vector_fused": 758
+   "vector_fused": 758,
+   "scatter_gather": 4,
+   "vector_fused_uop": 770
   },
   "cached": true
  },
@@ -3064,7 +3172,9 @@
    "total": 1089,
    "vector": 972,
    "movprfx": 119,
-   "vector_fused": 853
+   "vector_fused": 853,
+   "scatter_gather": 0,
+   "vector_fused_uop": 853
   },
   "cached": true
  },
@@ -3091,7 +3201,9 @@
    "total": 1109,
    "vector": 983,
    "movprfx": 119,
-   "vector_fused": 864
+   "vector_fused": 864,
+   "scatter_gather": 0,
+   "vector_fused_uop": 864
   },
   "cached": true
  },
@@ -3118,7 +3230,9 @@
    "total": 982,
    "vector": 848,
    "movprfx": 117,
-   "vector_fused": 731
+   "vector_fused": 731,
+   "scatter_gather": 4,
+   "vector_fused_uop": 743
   },
   "cached": true
  },
@@ -3145,7 +3259,9 @@
    "total": 1073,
    "vector": 949,
    "movprfx": 119,
-   "vector_fused": 830
+   "vector_fused": 830,
+   "scatter_gather": 0,
+   "vector_fused_uop": 830
   },
   "cached": true
  },
@@ -3172,7 +3288,9 @@
    "total": 1121,
    "vector": 995,
    "movprfx": 127,
-   "vector_fused": 868
+   "vector_fused": 868,
+   "scatter_gather": 0,
+   "vector_fused_uop": 868
   },
   "cached": true
  },
@@ -3199,7 +3317,9 @@
    "total": 968,
    "vector": 836,
    "movprfx": 117,
-   "vector_fused": 719
+   "vector_fused": 719,
+   "scatter_gather": 4,
+   "vector_fused_uop": 731
   },
   "cached": true
  },
@@ -3226,7 +3346,9 @@
    "total": 1057,
    "vector": 935,
    "movprfx": 119,
-   "vector_fused": 816
+   "vector_fused": 816,
+   "scatter_gather": 0,
+   "vector_fused_uop": 816
   },
   "cached": true
  },
@@ -3253,7 +3375,9 @@
    "total": 1075,
    "vector": 945,
    "movprfx": 119,
-   "vector_fused": 826
+   "vector_fused": 826,
+   "scatter_gather": 0,
+   "vector_fused_uop": 826
   },
   "cached": true
  },
@@ -3280,7 +3404,9 @@
    "total": 946,
    "vector": 810,
    "movprfx": 117,
-   "vector_fused": 693
+   "vector_fused": 693,
+   "scatter_gather": 4,
+   "vector_fused_uop": 705
   },
   "cached": true
  },
@@ -3307,7 +3433,9 @@
    "total": 1038,
    "vector": 911,
    "movprfx": 119,
-   "vector_fused": 792
+   "vector_fused": 792,
+   "scatter_gather": 0,
+   "vector_fused_uop": 792
   },
   "cached": true
  },
@@ -3950,7 +4078,9 @@
    "total": 1763,
    "vector": 1487,
    "movprfx": 192,
-   "vector_fused": 1295
+   "vector_fused": 1295,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1295
   },
   "cached": true
  },
@@ -3977,7 +4107,9 @@
    "total": 1736,
    "vector": 1452,
    "movprfx": 192,
-   "vector_fused": 1260
+   "vector_fused": 1260,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1260
   },
   "cached": true
  },
@@ -4004,7 +4136,9 @@
    "total": 1777,
    "vector": 1475,
    "movprfx": 191,
-   "vector_fused": 1284
+   "vector_fused": 1284,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1284
   },
   "cached": true
  },
@@ -4031,7 +4165,9 @@
    "total": 1761,
    "vector": 1450,
    "movprfx": 191,
-   "vector_fused": 1259
+   "vector_fused": 1259,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1259
   },
   "cached": true
  },
@@ -4146,7 +4282,9 @@
    "total": 1646,
    "vector": 1367,
    "movprfx": 192,
-   "vector_fused": 1175
+   "vector_fused": 1175,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1175
   },
   "cached": true
  },
@@ -4173,7 +4311,9 @@
    "total": 1621,
    "vector": 1340,
    "movprfx": 192,
-   "vector_fused": 1148
+   "vector_fused": 1148,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1148
   },
   "cached": true
  },
@@ -4200,7 +4340,9 @@
    "total": 1649,
    "vector": 1356,
    "movprfx": 191,
-   "vector_fused": 1165
+   "vector_fused": 1165,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1165
   },
   "cached": true
  },
@@ -4227,7 +4369,9 @@
    "total": 1625,
    "vector": 1330,
    "movprfx": 191,
-   "vector_fused": 1139
+   "vector_fused": 1139,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1139
   },
   "cached": true
  },
@@ -4342,7 +4486,9 @@
    "total": 1744,
    "vector": 1365,
    "movprfx": 96,
-   "vector_fused": 1269
+   "vector_fused": 1269,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1269
   },
   "cached": true
  },
@@ -4369,7 +4515,9 @@
    "total": 1704,
    "vector": 1323,
    "movprfx": 96,
-   "vector_fused": 1227
+   "vector_fused": 1227,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1227
   },
   "cached": true
  },
@@ -4396,7 +4544,9 @@
    "total": 1801,
    "vector": 1353,
    "movprfx": 95,
-   "vector_fused": 1258
+   "vector_fused": 1258,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1258
   },
   "cached": true
  },
@@ -4423,7 +4573,9 @@
    "total": 1761,
    "vector": 1311,
    "movprfx": 95,
-   "vector_fused": 1216
+   "vector_fused": 1216,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1216
   },
   "cached": true
  },
@@ -4802,7 +4954,9 @@
    "total": 1195,
    "vector": 1051,
    "movprfx": 136,
-   "vector_fused": 915
+   "vector_fused": 915,
+   "scatter_gather": 0,
+   "vector_fused_uop": 915
   },
   "cached": true
  },
@@ -4829,7 +4983,9 @@
    "total": 1036,
    "vector": 885,
    "movprfx": 118,
-   "vector_fused": 767
+   "vector_fused": 767,
+   "scatter_gather": 4,
+   "vector_fused_uop": 779
   },
   "cached": true
  },
@@ -4856,7 +5012,9 @@
    "total": 1124,
    "vector": 982,
    "movprfx": 120,
-   "vector_fused": 862
+   "vector_fused": 862,
+   "scatter_gather": 0,
+   "vector_fused_uop": 862
   },
   "cached": true
  },
@@ -4883,7 +5041,9 @@
    "total": 1142,
    "vector": 993,
    "movprfx": 120,
-   "vector_fused": 873
+   "vector_fused": 873,
+   "scatter_gather": 0,
+   "vector_fused_uop": 873
   },
   "cached": true
  },
@@ -4910,7 +5070,9 @@
    "total": 1013,
    "vector": 858,
    "movprfx": 118,
-   "vector_fused": 740
+   "vector_fused": 740,
+   "scatter_gather": 4,
+   "vector_fused_uop": 752
   },
   "cached": true
  },
@@ -4937,7 +5099,9 @@
    "total": 1108,
    "vector": 959,
    "movprfx": 120,
-   "vector_fused": 839
+   "vector_fused": 839,
+   "scatter_gather": 0,
+   "vector_fused_uop": 839
   },
   "cached": true
  },
@@ -4964,7 +5128,9 @@
    "total": 1169,
    "vector": 1019,
    "movprfx": 127,
-   "vector_fused": 892
+   "vector_fused": 892,
+   "scatter_gather": 0,
+   "vector_fused_uop": 892
   },
   "cached": true
  },
@@ -4991,7 +5157,9 @@
    "total": 1045,
    "vector": 892,
    "movprfx": 132,
-   "vector_fused": 760
+   "vector_fused": 760,
+   "scatter_gather": 4,
+   "vector_fused_uop": 772
   },
   "cached": true
  },
@@ -5018,7 +5186,9 @@
    "total": 1128,
    "vector": 985,
    "movprfx": 126,
-   "vector_fused": 859
+   "vector_fused": 859,
+   "scatter_gather": 0,
+   "vector_fused_uop": 859
   },
   "cached": true
  },
@@ -5045,7 +5215,9 @@
    "total": 1129,
    "vector": 976,
    "movprfx": 126,
-   "vector_fused": 850
+   "vector_fused": 850,
+   "scatter_gather": 0,
+   "vector_fused_uop": 850
   },
   "cached": true
  },
@@ -5072,7 +5244,9 @@
    "total": 1006,
    "vector": 849,
    "movprfx": 132,
-   "vector_fused": 717
+   "vector_fused": 717,
+   "scatter_gather": 4,
+   "vector_fused_uop": 729
   },
   "cached": true
  },
@@ -5099,7 +5273,9 @@
    "total": 1090,
    "vector": 942,
    "movprfx": 126,
-   "vector_fused": 816
+   "vector_fused": 816,
+   "scatter_gather": 0,
+   "vector_fused_uop": 816
   },
   "cached": true
  },
@@ -5126,7 +5302,9 @@
    "total": 1157,
    "vector": 1027,
    "movprfx": 136,
-   "vector_fused": 891
+   "vector_fused": 891,
+   "scatter_gather": 0,
+   "vector_fused_uop": 891
   },
   "cached": true
  },
@@ -5153,7 +5331,9 @@
    "total": 999,
    "vector": 861,
    "movprfx": 118,
-   "vector_fused": 743
+   "vector_fused": 743,
+   "scatter_gather": 4,
+   "vector_fused_uop": 755
   },
   "cached": true
  },
@@ -5180,7 +5360,9 @@
    "total": 1087,
    "vector": 958,
    "movprfx": 120,
-   "vector_fused": 838
+   "vector_fused": 838,
+   "scatter_gather": 0,
+   "vector_fused_uop": 838
   },
   "cached": true
  },
@@ -5207,7 +5389,9 @@
    "total": 1105,
    "vector": 969,
    "movprfx": 120,
-   "vector_fused": 849
+   "vector_fused": 849,
+   "scatter_gather": 0,
+   "vector_fused_uop": 849
   },
   "cached": true
  },
@@ -5234,7 +5418,9 @@
    "total": 975,
    "vector": 834,
    "movprfx": 118,
-   "vector_fused": 716
+   "vector_fused": 716,
+   "scatter_gather": 4,
+   "vector_fused_uop": 728
   },
   "cached": true
  },
@@ -5261,7 +5447,9 @@
    "total": 1067,
    "vector": 935,
    "movprfx": 120,
-   "vector_fused": 815
+   "vector_fused": 815,
+   "scatter_gather": 0,
+   "vector_fused_uop": 815
   },
   "cached": true
  },
@@ -5288,7 +5476,9 @@
    "total": 1128,
    "vector": 995,
    "movprfx": 127,
-   "vector_fused": 868
+   "vector_fused": 868,
+   "scatter_gather": 0,
+   "vector_fused_uop": 868
   },
   "cached": true
  },
@@ -5315,7 +5505,9 @@
    "total": 1008,
    "vector": 868,
    "movprfx": 132,
-   "vector_fused": 736
+   "vector_fused": 736,
+   "scatter_gather": 4,
+   "vector_fused_uop": 748
   },
   "cached": true
  },
@@ -5342,7 +5534,9 @@
    "total": 1090,
    "vector": 961,
    "movprfx": 126,
-   "vector_fused": 835
+   "vector_fused": 835,
+   "scatter_gather": 0,
+   "vector_fused_uop": 835
   },
   "cached": true
  },
@@ -5369,7 +5563,9 @@
    "total": 1092,
    "vector": 952,
    "movprfx": 126,
-   "vector_fused": 826
+   "vector_fused": 826,
+   "scatter_gather": 0,
+   "vector_fused_uop": 826
   },
   "cached": true
  },
@@ -5396,7 +5592,9 @@
    "total": 968,
    "vector": 825,
    "movprfx": 132,
-   "vector_fused": 693
+   "vector_fused": 693,
+   "scatter_gather": 4,
+   "vector_fused_uop": 705
   },
   "cached": true
  },
@@ -5423,7 +5621,9 @@
    "total": 1052,
    "vector": 918,
    "movprfx": 126,
-   "vector_fused": 792
+   "vector_fused": 792,
+   "scatter_gather": 0,
+   "vector_fused_uop": 792
   },
   "cached": true
  },
@@ -6066,7 +6266,9 @@
    "total": 1717,
    "vector": 1365,
    "movprfx": 96,
-   "vector_fused": 1269
+   "vector_fused": 1269,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1269
   },
   "cached": true
  },
@@ -6093,7 +6295,9 @@
    "total": 1680,
    "vector": 1323,
    "movprfx": 96,
-   "vector_fused": 1227
+   "vector_fused": 1227,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1227
   },
   "cached": true
  },
@@ -6120,7 +6324,9 @@
    "total": 1774,
    "vector": 1353,
    "movprfx": 95,
-   "vector_fused": 1258
+   "vector_fused": 1258,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1258
   },
   "cached": true
  },
@@ -6147,7 +6353,9 @@
    "total": 1736,
    "vector": 1311,
    "movprfx": 95,
-   "vector_fused": 1216
+   "vector_fused": 1216,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1216
   },
   "cached": true
  },
@@ -6526,7 +6734,9 @@
    "total": 1167,
    "vector": 1045,
    "movprfx": 135,
-   "vector_fused": 910
+   "vector_fused": 910,
+   "scatter_gather": 0,
+   "vector_fused_uop": 910
   },
   "cached": true
  },
@@ -6553,7 +6763,9 @@
    "total": 1007,
    "vector": 879,
    "movprfx": 117,
-   "vector_fused": 762
+   "vector_fused": 762,
+   "scatter_gather": 4,
+   "vector_fused_uop": 774
   },
   "cached": true
  },
@@ -6580,7 +6792,9 @@
    "total": 1094,
    "vector": 976,
    "movprfx": 119,
-   "vector_fused": 857
+   "vector_fused": 857,
+   "scatter_gather": 0,
+   "vector_fused_uop": 857
   },
   "cached": true
  },
@@ -6607,7 +6821,9 @@
    "total": 1114,
    "vector": 987,
    "movprfx": 119,
-   "vector_fused": 868
+   "vector_fused": 868,
+   "scatter_gather": 0,
+   "vector_fused_uop": 868
   },
   "cached": true
  },
@@ -6634,7 +6850,9 @@
    "total": 985,
    "vector": 852,
    "movprfx": 117,
-   "vector_fused": 735
+   "vector_fused": 735,
+   "scatter_gather": 4,
+   "vector_fused_uop": 747
   },
   "cached": true
  },
@@ -6661,7 +6879,9 @@
    "total": 1077,
    "vector": 953,
    "movprfx": 119,
-   "vector_fused": 834
+   "vector_fused": 834,
+   "scatter_gather": 0,
+   "vector_fused_uop": 834
   },
   "cached": true
  },
@@ -6688,7 +6908,9 @@
    "total": 1137,
    "vector": 1013,
    "movprfx": 126,
-   "vector_fused": 887
+   "vector_fused": 887,
+   "scatter_gather": 0,
+   "vector_fused_uop": 887
   },
   "cached": true
  },
@@ -6715,7 +6937,9 @@
    "total": 1015,
    "vector": 886,
    "movprfx": 131,
-   "vector_fused": 755
+   "vector_fused": 755,
+   "scatter_gather": 4,
+   "vector_fused_uop": 767
   },
   "cached": true
  },
@@ -6742,7 +6966,9 @@
    "total": 1099,
    "vector": 979,
    "movprfx": 125,
-   "vector_fused": 854
+   "vector_fused": 854,
+   "scatter_gather": 0,
+   "vector_fused_uop": 854
   },
   "cached": true
  },
@@ -6769,7 +6995,9 @@
    "total": 1098,
    "vector": 970,
    "movprfx": 125,
-   "vector_fused": 845
+   "vector_fused": 845,
+   "scatter_gather": 0,
+   "vector_fused_uop": 845
   },
   "cached": true
  },
@@ -6796,7 +7024,9 @@
    "total": 977,
    "vector": 843,
    "movprfx": 131,
-   "vector_fused": 712
+   "vector_fused": 712,
+   "scatter_gather": 4,
+   "vector_fused_uop": 724
   },
   "cached": true
  },
@@ -6823,7 +7053,9 @@
    "total": 1061,
    "vector": 936,
    "movprfx": 125,
-   "vector_fused": 811
+   "vector_fused": 811,
+   "scatter_gather": 0,
+   "vector_fused_uop": 811
   },
   "cached": true
  },
@@ -6850,7 +7082,9 @@
    "total": 1137,
    "vector": 1025,
    "movprfx": 135,
-   "vector_fused": 890
+   "vector_fused": 890,
+   "scatter_gather": 0,
+   "vector_fused_uop": 890
   },
   "cached": true
  },
@@ -6877,7 +7111,9 @@
    "total": 977,
    "vector": 859,
    "movprfx": 117,
-   "vector_fused": 742
+   "vector_fused": 742,
+   "scatter_gather": 4,
+   "vector_fused_uop": 754
   },
   "cached": true
  },
@@ -6904,7 +7140,9 @@
    "total": 1064,
    "vector": 956,
    "movprfx": 119,
-   "vector_fused": 837
+   "vector_fused": 837,
+   "scatter_gather": 0,
+   "vector_fused_uop": 837
   },
   "cached": true
  },
@@ -6931,7 +7169,9 @@
    "total": 1084,
    "vector": 967,
    "movprfx": 119,
-   "vector_fused": 848
+   "vector_fused": 848,
+   "scatter_gather": 0,
+   "vector_fused_uop": 848
   },
   "cached": true
  },
@@ -6958,7 +7198,9 @@
    "total": 955,
    "vector": 832,
    "movprfx": 117,
-   "vector_fused": 715
+   "vector_fused": 715,
+   "scatter_gather": 4,
+   "vector_fused_uop": 727
   },
   "cached": true
  },
@@ -6985,7 +7227,9 @@
    "total": 1047,
    "vector": 933,
    "movprfx": 119,
-   "vector_fused": 814
+   "vector_fused": 814,
+   "scatter_gather": 0,
+   "vector_fused_uop": 814
   },
   "cached": true
  },
@@ -7012,7 +7256,9 @@
    "total": 1107,
    "vector": 993,
    "movprfx": 126,
-   "vector_fused": 867
+   "vector_fused": 867,
+   "scatter_gather": 0,
+   "vector_fused_uop": 867
   },
   "cached": true
  },
@@ -7039,7 +7285,9 @@
    "total": 985,
    "vector": 866,
    "movprfx": 131,
-   "vector_fused": 735
+   "vector_fused": 735,
+   "scatter_gather": 4,
+   "vector_fused_uop": 747
   },
   "cached": true
  },
@@ -7066,7 +7314,9 @@
    "total": 1069,
    "vector": 959,
    "movprfx": 125,
-   "vector_fused": 834
+   "vector_fused": 834,
+   "scatter_gather": 0,
+   "vector_fused_uop": 834
   },
   "cached": true
  },
@@ -7093,7 +7343,9 @@
    "total": 1068,
    "vector": 950,
    "movprfx": 125,
-   "vector_fused": 825
+   "vector_fused": 825,
+   "scatter_gather": 0,
+   "vector_fused_uop": 825
   },
   "cached": true
  },
@@ -7120,7 +7372,9 @@
    "total": 947,
    "vector": 823,
    "movprfx": 131,
-   "vector_fused": 692
+   "vector_fused": 692,
+   "scatter_gather": 4,
+   "vector_fused_uop": 704
   },
   "cached": true
  },
@@ -7147,7 +7401,9 @@
    "total": 1031,
    "vector": 916,
    "movprfx": 125,
-   "vector_fused": 791
+   "vector_fused": 791,
+   "scatter_gather": 0,
+   "vector_fused_uop": 791
   },
   "cached": true
  },
@@ -7746,7 +8002,9 @@
    "total": 2316,
    "vector": 1762,
    "movprfx": 288,
-   "vector_fused": 1474
+   "vector_fused": 1474,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1474
   },
   "cached": true
  },
@@ -7861,7 +8119,9 @@
    "total": 1880,
    "vector": 1543,
    "movprfx": 312,
-   "vector_fused": 1231
+   "vector_fused": 1231,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1231
   },
   "cached": true
  },
@@ -7888,7 +8148,9 @@
    "total": 1762,
    "vector": 1418,
    "movprfx": 310,
-   "vector_fused": 1108
+   "vector_fused": 1108,
+   "scatter_gather": 4,
+   "vector_fused_uop": 1120
   },
   "cached": true
  },
@@ -7915,7 +8177,9 @@
    "total": 1847,
    "vector": 1513,
    "movprfx": 312,
-   "vector_fused": 1201
+   "vector_fused": 1201,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1201
   },
   "cached": true
  },
@@ -7942,7 +8206,9 @@
    "total": 1842,
    "vector": 1519,
    "movprfx": 312,
-   "vector_fused": 1207
+   "vector_fused": 1207,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1207
   },
   "cached": true
  },
@@ -7969,7 +8235,9 @@
    "total": 1724,
    "vector": 1394,
    "movprfx": 310,
-   "vector_fused": 1084
+   "vector_fused": 1084,
+   "scatter_gather": 4,
+   "vector_fused_uop": 1096
   },
   "cached": true
  },
@@ -7996,7 +8264,9 @@
    "total": 1810,
    "vector": 1489,
    "movprfx": 312,
-   "vector_fused": 1177
+   "vector_fused": 1177,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1177
   },
   "cached": true
  },
@@ -8177,7 +8447,9 @@
    "total": 2298,
    "vector": 1766,
    "movprfx": 288,
-   "vector_fused": 1478
+   "vector_fused": 1478,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1478
   },
   "cached": true
  },
@@ -8292,7 +8564,9 @@
    "total": 1852,
    "vector": 1537,
    "movprfx": 311,
-   "vector_fused": 1226
+   "vector_fused": 1226,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1226
   },
   "cached": true
  },
@@ -8319,7 +8593,9 @@
    "total": 1734,
    "vector": 1412,
    "movprfx": 309,
-   "vector_fused": 1103
+   "vector_fused": 1103,
+   "scatter_gather": 4,
+   "vector_fused_uop": 1115
   },
   "cached": true
  },
@@ -8346,7 +8622,9 @@
    "total": 1819,
    "vector": 1507,
    "movprfx": 311,
-   "vector_fused": 1196
+   "vector_fused": 1196,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1196
   },
   "cached": true
  },
@@ -8373,7 +8651,9 @@
    "total": 1822,
    "vector": 1517,
    "movprfx": 311,
-   "vector_fused": 1206
+   "vector_fused": 1206,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1206
   },
   "cached": true
  },
@@ -8400,7 +8680,9 @@
    "total": 1704,
    "vector": 1392,
    "movprfx": 309,
-   "vector_fused": 1083
+   "vector_fused": 1083,
+   "scatter_gather": 4,
+   "vector_fused_uop": 1095
   },
   "cached": true
  },
@@ -8427,7 +8709,9 @@
    "total": 1789,
    "vector": 1487,
    "movprfx": 311,
-   "vector_fused": 1176
+   "vector_fused": 1176,
+   "scatter_gather": 0,
+   "vector_fused_uop": 1176
   },
   "cached": true
  },

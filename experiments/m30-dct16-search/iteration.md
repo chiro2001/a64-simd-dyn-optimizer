@@ -649,6 +649,14 @@ st1d（指令数口径 1 条/16 输出，实机代价待测）；upstream 保持
 （even_sve 仅 legacy 可用，upstream 的 k=2/6/10/14 必须保留 s32 路径）。
 legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。
 
+> **2026-08-14 口径修正（用户裁定）**：gather/scatter 在 ARM 上拆分为
+> 多个 ldst uops，**禁止为表面指令数使用该类指令**。指标增加
+> `fused_uop = fused_adj + 3×sg`（sg = gather+scatter 条数）。同口径
+> 对比：内部 fused_adj=731 / sg=32 / **fused_uop=827**；legacy best
+> fused_adj=692 / sg=4 / **fused_uop=704**——诚实口径下仍低于内部，
+> 且领先扩大。parse_qemu_trace.py 已输出 sg 与 fused_uop；搜索按
+> fused_uop 排名。
+
 > 2026-08-14 尝试把 even_sve 扩展到 upstream（k=2/6/10/14 用 s32
 > mul/addp 路径），20 万例上游差分 25% 分歧（首例 idx=32 want=-333
 > got=-310/2）：上游 k2 的 NEON lane 语义与 SVE s32 猜测不匹配，且
