@@ -36,6 +36,21 @@
 - 舍入口径：最后 (sum+add)>>shift 与上游 vrshrn 一致（各 partial 和
   先 s32 累计再 round，验证 20000 差分 0）。
 
+### 修订切片（2026-08-13，实施范围收敛）
+
+原 M1（pass2 不动）被否决：pass2 若回读 partial 需 3 条 s32 add/输出，
+且行加载变 4×，净收益为负。收敛为 **odd-k-only 切片**：
+
+- pass1 odd-k：sdot（4×s64 partial）→ `svuzp1_s32` 取低半（1/行）→
+  按 4 行组以 st1 向量存储到 `coef32[k][i][0..3]`（16KB），**不再写
+  s16 coef 奇数行**；pass1 偶 k（k≡2/4/0）路径不变，仍写 s16 coef；
+- pass2 odd-k：从 coef32 读 partial（行加载 4×s32），E/O 叶按 partial
+  平行构建（4 组），输出 = 4 组 16-term dot 的 addp 合并，**无逐输出
+  uaddv**；
+- pass2 偶 k：读 s16 coef，结构完全不变；
+- 预期净变化：pass1 -1024（uaddv+fmov 换 uzp1+st1），pass2 变化待测
+  （E/O 叶 ×4 vs 去掉 uaddv），目标 7190 → ≤6355。
+
 ### M3：k≡2/k≡4 族同构扩展 + k≡0 向量化
 
 ## 3. 验证与门槛（每 M 阶段）
