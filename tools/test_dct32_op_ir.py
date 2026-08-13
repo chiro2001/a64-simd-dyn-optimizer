@@ -11,6 +11,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from dct32_op_ir import lower_plan_to_ops, provenance_report  # noqa: E402
+from dct32_rewrites import apply_rewrites  # noqa: E402
 from layout_ir import dct32_v31_plan  # noqa: E402
 
 
@@ -46,6 +47,16 @@ def main():
     r4 = provenance_report(plan, ops4)
     assert not r4["ok"] and any("round shift 11 at epoch 1" in i
                                 for i in r4["issues"])
+
+    # Op-level rewrite: tbl2 slices -> zip/trn permutes.
+    ops5 = apply_rewrites(ops, ["tbl2_to_zip"])
+    r5 = provenance_report(plan, ops5)
+    assert r5["ok"], r5["issues"]
+    left_tbl2 = [o for o in ops5
+                 if o.kind == "permute" and o.attrs.get("kind") == "tbl2"
+                 and o.attrs.get("idx") == "ilo"]
+    assert not left_tbl2, "tbl2 ilo chains should be rewritten"
+    assert any(o.attrs.get("kind") == "zip1d" for o in ops5)
     print("OpIR slice OK: %d ops, coverage %.2f, negatives detected"
           % (r["op_count"], r["coverage"]))
     return 0

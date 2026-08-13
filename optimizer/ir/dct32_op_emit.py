@@ -331,4 +331,9 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t stride)
 
 
 def emit_from_plan(plan: Plan, func_name: str = "dynopt_dct32_opbackend") -> str:
-    return emit_acle(plan, lower_plan_to_ops(plan), func_name)
+    ops = lower_plan_to_ops(plan)
+    rewrites = plan.lowering.get("rewrites") or []
+    if rewrites:
+        from dct32_rewrites import apply_rewrites  # noqa: E402
+        ops = apply_rewrites(ops, rewrites)
+    return emit_acle(plan, ops, func_name)
