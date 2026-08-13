@@ -65,7 +65,6 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
                    uint8_t* dst, intptr_t dstStride, int coeffIdx)
 {
     const svbool_t p16 = svptrue_b16();
-    const svbool_t p8b = svptrue_b8();
     const svint64_t zero64 = svdup_n_s64(0);
     const int ph = (coeffIdx >= 1 && coeffIdx <= 3) ? coeffIdx : 2;
     const svint16_t c0 = svld1_s16(p16, CTBL[ph - 1][0]);
@@ -95,8 +94,10 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
         svint16_t rr = svrshrnb_n_s32(all, 6);
         svint16_t rz = svuzp1_s16(rr, rr);
         uint8x8_t u = vqmovun_s16(svget_neonq_s16(rz));
-        svst1_u8(p8b, dst + r * dstStride,
-                 svset_neonq_u8(svundef_u8(), vcombine_u8(u, vdup_n_u8(0))));
+        // Exactly 8 bytes per row: a full-width SVE store (or the 16-byte
+        // NEON bridge value) would scribble past the 8x8 tile and fail the
+        // IPFilterHarness whole-buffer memcmp gate.
+        vst1_u8(dst + r * dstStride, u);
     }
 }
 """ % (cpp_constants(), func_name)

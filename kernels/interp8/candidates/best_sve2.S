@@ -52,7 +52,7 @@ dynopt_interp8_8x8_sve2:
 	sqxtun	v30.8b, v30.8h
 	add	x0, x0, x1
 	subs	w4, w4, #1
-	st1b	z30.b, p7, [x2]
+	str	d30, [x2]
 	add	x2, x2, x3
 	bne	.L3
 	ret

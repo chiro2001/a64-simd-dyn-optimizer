@@ -74,6 +74,30 @@ emit_dct16_sve2_asm.py），且目标必须是 SVE2p1（960 可，920G 未知）
 - 达标路径仍是方案 B（SVE2p1 sdot.h，预估 -35%，GCC 16.1 无 intrinsic，
   需 asm backend）；方案 A 保留为 SVE2 兼容基线。
 
+### 4.1 存储越界修复与 lite 门禁（2026-08-13）
+
+path-a 最初用整宽 SVE 存储：
+`svst1_u8(p8b, dst, svset_neonq_u8(svundef_u8(), vcombine_u8(u, ...)))`。
+VL=256 时该指令写 **32 字节/行**，只有低 8 字节有效，其余为未定义值，
+构成越界写。此前 roundtrip 差分只比较每行前 8 字节，未能发现；
+接入 IPFilterHarness 门禁后其**整缓冲 memcmp**（40000 字节，含 0xCD
+哨兵）立即 FAIL。
+
+修复：改为 NEON `vst1_u8(dst + r * dstStride, u)`，精确 8 字节/行。
+修复后：TestBenchLite `--gate interp8` 5 个 seed 全 PASS、20k 差分 0、
+fused_uop 仍 127。这是“lite 门禁比窄差分强”的实证：差分应保留为快速
+筛选，验收门禁必须覆盖写足迹。
+
+### 4.2 TestBenchLite interp8 门禁（2026-08-13）
+
+- `tools/testbench_lite.cpp` 新增 `--gate interp8`：复用 x265
+  `IPFilterHarness`（100 次 × 3 相位 × 随机/最小/最大输入模式，整缓冲
+  比较）；ref = 上游 `interp_horiz_pp_neon<8,8,8>`（upstream-exact
+  合同，用户裁定不需要 C ref）。
+- `scripts/build-testbench-lite.sh` 编译并链接 `ipfilterharness.cpp`，
+  自动携带 interp8 候选对象。
+- 门禁接入后发现的越界写已修复（§4.1）。
+
 ## 5. 方案 B 工具链实测（2026-08-13）
 
 - `sdot z0.h, z1.b, z2.b`（8-bit→16-bit，8 输出/指令）在
@@ -83,3 +107,10 @@ emit_dct16_sve2_asm.py），且目标必须是 SVE2p1（960 可，920G 未知）
   无法验证；需 960 实机或更新 QEMU；
 - 方案 B 保持待验证状态，ACLE intrinsic 亦缺失（asm backend 就绪后
   可发射，但正确性门需要能执行它的环境）。
+
+### 5.1 QEMU 更新路径核查（2026-08-13）
+
+核查 QEMU 上游：2026-06-04 才出现 FEAT_SVE2p2（SVEVER>=3）补丁系列
+（qemu-arm 邮件列表），GitHub `qemu/qemu` 仓库检索不到任何 SVE2p3
+提交。因此**当前无法通过升级 QEMU 解锁 `sdot .h`**；方案 B 验证继续
+挂起，等 960 实机或 QEMU SVE2p3 落地后恢复。

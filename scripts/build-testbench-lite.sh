@@ -46,6 +46,11 @@ if [ -f "$ROOT/kernels/dct32/candidates/best_sve2.o" ]; then
 else
     CAND_DCT32=""
 fi
+if [ -f "$ROOT/kernels/interp8/candidates/best_sve2.o" ]; then
+    CAND_INTERP8="$ROOT/kernels/interp8/candidates/best_sve2.o"
+else
+    CAND_INTERP8=""
+fi
 # Drop a reference candidate when the caller passes the same object, so the
 # link does not see duplicate definitions of its symbol.
 [ -n "$CAND_DCT16" ] && [ "$(readlink -f "$CAND_DCT16")" = "$CAND" ] \
@@ -56,6 +61,8 @@ fi
     && CAND_SA8D16=""
 [ -n "$CAND_DCT32" ] && [ "$(readlink -f "$CAND_DCT32")" = "$CAND" ] \
     && CAND_DCT32=""
+[ -n "$CAND_INTERP8" ] && [ "$(readlink -f "$CAND_INTERP8")" = "$CAND" ] \
+    && CAND_INTERP8=""
 mkdir -p "$LITE"
 
 if [ ! -f "$OUT/libx265.a" ]; then
@@ -74,11 +81,15 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$SRC/test/pixelharness.cpp" -o "$LITE/pixelharness.o"
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
+    -c "$SRC/test/ipfilterharness.cpp" -o "$LITE/ipfilterharness.o"
+"$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$ROOT/tools/testbench_lite.cpp" -o "$LITE/testbench_lite.o"
 
 "$CXX" "$CAND" $CAND_DCT16 $CAND_SA8D $CAND_SA8D16 $CAND_DCT32 \
+    $CAND_INTERP8 \
     -Wl,-Bsymbolic,-znoexecstack \
     "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" "$LITE/pixelharness.o" \
+    "$LITE/ipfilterharness.o" \
     -o "$LITE/TestBenchLite" "$OUT/libx265.a" -lpthread -lrt -ldl
 
 echo "running testbench-lite under QEMU (VL=256)..."

@@ -201,3 +201,13 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 - 方案 B（SVE2p1，sdot .h）：预估 ~100（-35%），但 GCC 16.1 无
   `svdot_s16`/s16→s8 饱和窄化 intrinsic，需 asm backend；
 - 结论：先做方案 A 建管线，SVE2p1 作后续轴（docs/22 §3）。
+
+## 10. interp8 门禁与 SVE2p3 状态（2026-08-13 深夜）
+
+- **interp8 已接入 TestBenchLite 门禁**（`--gate interp8`，复用
+  IPFilterHarness，ref = 上游 neon；整缓冲 memcmp 同时覆盖写足迹）；
+- 门禁首次运行 FAIL 并暴露 path-a 候选的**整宽 32 字节越界写**
+  （roundtrip 差分只比较每行前 8 字节，未发现）；已修复为精确 8
+  字节/行 NEON 存储，5 seed lite PASS + 20k 差分 0，fused_uop 127；
+- QEMU 更新路径已核查：上游 2026-06 才有 SVE2p2，master 无 SVE2p3，
+  `sdot .h`（方案 B，预估 -35%）继续挂起，等 960/QEMU SVE2p3。

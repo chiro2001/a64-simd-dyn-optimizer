@@ -20,11 +20,19 @@
 
 #include "mbdstharness.h"
 #include "pixelharness.h"
+#include "ipfilterharness.h"
 
 namespace X265_NS {
 /* C reference for DCT16 (defined in x265 common/dct.cpp, no header decl). */
 void dct16_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
 void dct32_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
+/* Upstream assembly reference for the 8-tap luma horizontal interpolation
+ * (common/arm/ipfilter8.S). The interp8 contract is upstream-exact (user
+ * ruling 2026-08-13: matching the open-source kernel is enough; the C ref
+ * in ipfilter.cpp is not required). */
+template <int N, int W, int H>
+void interp_horiz_pp_neon(const pixel* src, intptr_t srcStride, pixel* dst,
+                          intptr_t dstStride, int coeffIdx);
 }
 
 using namespace X265_NS;
@@ -164,6 +172,8 @@ extern "C" int dynopt_sa8d_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 extern "C" void dynopt_dct32_sve2_shared(
     const int16_t*, int16_t*, intptr_t);
+extern "C" void dynopt_interp8_8x8_sve2(
+    const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
 
 static int gate_dct16(unsigned int seed)
 {
@@ -269,6 +279,32 @@ static int gate_dct32(unsigned int seed)
     return ok ? 0 : 1;
 }
 
+static int gate_interp8(unsigned int seed)
+{
+    srand(seed);
+
+    EncoderPrimitives ref;
+    memset(&ref, 0, sizeof(ref));
+    ref.pu[LUMA_8x8].luma_hpp = interp_horiz_pp_neon<8, 8, 8>;
+
+    EncoderPrimitives opt;
+    memset(&opt, 0, sizeof(opt));
+    opt.pu[LUMA_8x8].luma_hpp = dynopt_interp8_8x8_sve2;
+
+    if (!opt.pu[LUMA_8x8].luma_hpp)
+    {
+        fprintf(stderr, "TestBenchLite: interp8 slot is NULL, gate would be "
+                        "a false PASS; refusing to run\n");
+        return 2;
+    }
+
+    IPFilterHarness h;   // constructor fills the random test buffers
+    const bool ok = h.testCorrectness(ref, opt);
+    printf("TestBenchLite: seed=0x%08X interp8[8x8 luma_hpp] %s\n",
+           seed, ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(int argc, char* argv[])
 {
     unsigned int seed = (unsigned int)time(NULL);
@@ -282,14 +318,17 @@ int main(int argc, char* argv[])
             gate = argv[++i];
         else if (!strncmp(argv[i], "--help", 6))
         {
-            printf("usage: TestBenchLite [--gate dct16|dct32|sa8d|sa8d16] "
+            printf("usage: TestBenchLite [--gate "
+                   "dct16|dct32|sa8d|sa8d16|interp8] "
                    "[--seed N]\n"
-                   "reuses x265 MBDstHarness/PixelHarness data and C "
-                   "references\n");
+                   "reuses x265 MBDstHarness/PixelHarness/IPFilterHarness "
+                   "data and C references\n");
             return 0;
         }
     }
 
+    if (!strcmp(gate, "interp8"))
+        return gate_interp8(seed);
     if (!strcmp(gate, "sa8d"))
         return gate_sa8d(seed);
     if (!strcmp(gate, "sa8d16"))
