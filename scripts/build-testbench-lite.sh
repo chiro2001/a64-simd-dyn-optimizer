@@ -24,12 +24,17 @@ SRC="$ROOT/third_party/x265/source"
 CXX=/usr/bin/aarch64-linux-gnu-g++
 
 CAND="$(readlink -f "$CAND")"
-# The lite binary hosts both the DCT16 and SA8D gates; link the DCT16
-# reference candidate too so either --gate works with a single invocation.
+# The lite binary hosts the DCT16 and SA8D (8x8/16x16) gates; link the
+# reference candidates too so any --gate works with a single invocation.
 if [ -f "$ROOT/kernels/dct16/candidates/best_sve2.o" ]; then
     CAND_DCT16="$ROOT/kernels/dct16/candidates/best_sve2.o"
 else
     CAND_DCT16=""
+fi
+if [ -f "$ROOT/kernels/sa8d/candidates/best_sve2.o" ]; then
+    CAND_SA8D="$ROOT/kernels/sa8d/candidates/best_sve2.o"
+else
+    CAND_SA8D=""
 fi
 mkdir -p "$LITE"
 
@@ -51,7 +56,7 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$ROOT/tools/testbench_lite.cpp" -o "$LITE/testbench_lite.o"
 
-"$CXX" "$CAND" $CAND_DCT16 -Wl,-Bsymbolic,-znoexecstack \
+"$CXX" "$CAND" $CAND_DCT16 $CAND_SA8D -Wl,-Bsymbolic,-znoexecstack \
     "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" "$LITE/pixelharness.o" \
     -o "$LITE/TestBenchLite" "$OUT/libx265.a" -lpthread -lrt -ldl
 

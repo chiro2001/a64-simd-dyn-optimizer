@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     {
         const intptr_t sa = strides[rng() % ${nstrides}];
         const intptr_t sb = strides[rng() % ${nstrides}];
-        uint8_t buf[2][8 * 64 + 64];
+        uint8_t buf[2][${n} * 64 + 64];
         for (int j = 0; j < (int)(sizeof(buf[0]) / sizeof(buf[0][0])); j++)
         {
             buf[0][j] = (uint8_t)(rng() % 256);
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
         return t.substitute(
             path=manifest["_path"], contract=contract, vl=vl,
             decl=ref_decl, cand_sym=cand["symbol"], cases=cases,
-            nstrides=nstrides, strides_c=strides_c, ref_call=ref_call)
+            nstrides=nstrides, strides_c=strides_c, ref_call=ref_call, n=n)
     if contract == "legacy-internal-exact":
         # Spec-defined legacy oracle (no internal code): pass2 E/O wrap in
         # s16, narrowing rounds then saturates (sqrshrnb semantics).

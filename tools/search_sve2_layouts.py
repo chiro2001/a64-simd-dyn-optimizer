@@ -126,6 +126,12 @@ def make_emitter(kernel):
                         reduce=combo.get("reduce", "neon"),
                         unroll=combo.get("unroll", 1))
         return emit_fn
+    if kernel == "sa8d16":
+        from emit_sa8d_sve2_shared import emit_16x16
+
+        def emit_fn(combo):
+            return emit_16x16()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
