@@ -8,9 +8,10 @@ verification.md）已落盘。本文件记录采纳与修正。
 - **E1-R（rewrite-driven rediscovery）= PASS**：18→18→12→12 漏斗、
   `lower()` 前 canonical key 去重、20k upstream-exact 0 分歧、零
   scatter 均可复核。
-- **E1-B（backend-independent blind discovery）= 未通过（conditional）**：
-  `lower()` 仍消费 grouped C++ 块，Tile/lane 语义没有逐 op 驱动
-  codegen。按建议下一批做 DCT32 OpIR backend 垂直切片。
+- **E1-B（backend-independent blind discovery）= 已达成（2026-08-13）**：
+  `optimizer/ir/dct32_op_ir.py` + `dct32_op_emit.py` 从 op DAG 独立
+  codegen（不调用 grouped C++ 块），`-O2 -fno-tree-pre` 下 full
+  fused_uop **8283 ≤ 8292**、20k 差分 0、TestBenchLite PASS。
 - **ProofReport 四级化**（plan/lowering/object/trace）与
   `REJECT/UNKNOWN` 分流、带正负例的剪枝规则：采纳，进入工具清单。
 - **统一 SearchAdapter / 合并搜索驱动**：采纳为下一批主项之一；先做

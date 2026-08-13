@@ -55,6 +55,8 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
     body: List[str] = []
     ctype: Dict[str, str] = {}
     const_cache: Dict[str, List[str]] = {}
+    fused: Dict[str, str] = {}
+    fuse_ids = set()
 
     def v(name: str) -> str:
         return name.replace(".", "_")
@@ -64,7 +66,25 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
 
     # The op DAG is per-4-row-group; emit one group body inside a loop.
     ops0 = [o for o in ops if o.attrs.get("g", 0) == 0]
+    by_out = {o.out: o for o in ops0}
+    # Prepass: fuse scalar mul_reduce -> round_shift -> store into one
+    # expression so the compiler does not spill scalar temps.
     for op in ops0:
+        if op.kind != "store":
+            continue
+        rnd = by_out.get(op.inputs[0]) if op.inputs else None
+        if not rnd or rnd.kind != "round_shift":
+            continue
+        mul = by_out.get(rnd.inputs[0]) if rnd.inputs else None
+        if not mul or mul.kind != "mul_reduce" or \
+                mul.attrs.get("reduce") not in ("saddv", "scalar2"):
+            continue
+        fuse_ids.add(rnd.op_id)
+        fuse_ids.add(mul.op_id)
+        fused[op.op_id] = mul.out
+    for op in ops0:
+        if op.kind != "store" and op.op_id in fuse_ids:
+            continue
         kind = op.kind
         attrs = op.attrs
         pass_id = int(op.tile_id.split(".")[0][1:])
@@ -170,6 +190,31 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
         elif kind == "store":
             lanes = attrs["lanes"]
             pass_id, k, row = lanes[0]
+            if op.op_id in fused:
+                mul = by_out[fused[op.op_id]]
+                rnd = by_out[op.inputs[0]]
+                km = _k_from_tile(mul.tile_id)
+                mulin = "%s_p%d" % (mul.inputs[0].replace(".", "_"),
+                                    pass_id)
+                if mul.attrs["reduce"] == "saddv":
+                    if km % 4 == 2:
+                        cexpr = "svld1_s32(p8s, K2[%d])" % (km // 4)
+                        redpg = "p8s"
+                    else:
+                        cexpr = "svld1_s32(pg4s, K4[%d])" % (km // 8)
+                        redpg = "pg4s"
+                    expr = "svaddv_s32(%s, svmul_s32_x(p8s, %s, %s))" \
+                        % (redpg, mulin, cexpr)
+                else:
+                    idx = km // 8
+                    expr = "((int64_t)K0[%d][0] * %s[0] + " \
+                           "(int64_t)K0[%d][1] * %s[1])" \
+                        % (idx, mulin, idx, mulin)
+                rloc = row % 4
+                body.append("    dst[%d * 32 + g * 4 + %d] = (int16_t)"
+                            "((%s + add) >> %d);"
+                            % (k, rloc, expr, rnd.attrs["shift"]))
+                continue
             if ctype.get(ins[0]) == "svint16_t" and len(lanes) > 1:
                 body.append("    svst1_s16(pg4h, dst + %d * 32 + g * 4, %s);"
                             % (k, ins[0]))

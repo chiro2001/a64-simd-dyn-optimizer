@@ -436,9 +436,12 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   （z-spill 暴涨）→ k0 共享提取 8819 → **noinline 分 pass 8307**
   （-O2，Go 判据 8292，差 15 条 = 0.18%）；-O3 反而 8490。
 - 差距归因：剩下 15 条为标量 temp spill（str +54 / fmov -40），
-  属于调度微差；下一步做“标量 round+store 融合”即可过 Go。
-- E1-B 状态：**codegen 已从 op DAG 独立生成、正确且过 lite**；
-  “≤8292 重发现”只差 0.18%。
+  属于调度微差；标量 round+store 融合后编译器本已等价（8307 不变）。
+- **E1-B Go 达成（2026-08-13）**：op 后端以 `-O2 -fno-tree-pre`
+  编译 → full fused_uop = **8283 ≤ 8292**，20k 差分 0，
+  TestBenchLite dct32 PASS——**不调用任何 grouped C++ 块的 op DAG
+  codegen 已盲重发现 v3.1 计数**。`-fno-tree-pre` 计入 backend 编译
+  契约（其余 flag 8307）。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
