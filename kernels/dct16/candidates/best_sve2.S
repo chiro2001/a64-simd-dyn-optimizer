@@ -286,9 +286,8 @@ dynopt_dct16_sve2_shared:
 	addvl	x0, sp, #12
 	add	x2, x5, :lo12:.LANCHOR0
 	add	x0, x0, 288
-	add	x7, x1, 32
-	add	x6, x2, 64
-	add	x4, x2, 576
+	add	x4, x2, 64
+	add	x6, x1, 32
 	ldr	q11, [x0]
 	addvl	x0, sp, #12
 	add	x0, x0, 304
@@ -562,7 +561,6 @@ dynopt_dct16_sve2_shared:
 	sub	z23.h, z9.h, z23.h
 	str	z23, [x0]
 	addvl	x0, sp, #11
-	sub	z9.h, z12.h, z26.h
 	add	x0, x0, 288
 	saddl2	v21.4s, v10.8h, v24.8h
 	saddl	v22.4s, v10.4h, v24.4h
@@ -571,366 +569,371 @@ dynopt_dct16_sve2_shared:
 	tbx	v29.16b, {v29.16b}, v30.16b
 	add	x0, x2, 1088
 	tbx	v21.16b, {v21.16b}, v30.16b
-	sub	v23.4s, v8.4s, v29.4s
+	sub	v24.4s, v8.4s, v29.4s
 	add	v29.4s, v8.4s, v29.4s
-	sub	z8.h, z11.h, z25.h
-	tbl	z26.h, {z8.h - z9.h}, z31.h
-	sub	v10.4s, v22.4s, v21.4s
-	sub	z8.h, z13.h, z27.h
-	sub	z9.h, z14.h, z28.h
+	sub	v30.4s, v22.4s, v21.4s
 	add	v22.4s, v22.4s, v21.4s
-	tbl	z13.h, {z8.h - z9.h}, z31.h
-	mov	z12.d, z26.d
-	movi	d14, #0
-	zip1	v30.2d, v29.2d, v22.2d
+	zip1	v23.2d, v29.2d, v22.2d
 	zip2	v29.2d, v29.2d, v22.2d
+	sub	z22.h, z11.h, z25.h
 	rev64	v29.4s, v29.4s
-	add	v24.4s, v29.4s, v30.4s
-	sub	v29.4s, v30.4s, v29.4s
-	ld1h	z30.h, p7/z, [x0]
+	add	v10.4s, v29.4s, v23.4s
+	sub	v9.4s, v23.4s, v29.4s
+	ld1h	z29.h, p7/z, [x0]
 	add	x0, x2, 1120
-	ld1h	z22.h, p7/z, [x0]
+	add	x2, x2, 576
+	ld1h	z21.h, p7/z, [x0]
+	sub	z23.h, z12.h, z26.h
 	mov	x0, 0
-	tbl	z21.h, {z12.h - z13.h}, z30.h
+	tbl	z26.h, {z22.h - z23.h}, z31.h
+	sub	z22.h, z13.h, z27.h
+	sub	z23.h, z14.h, z28.h
+	tbl	z13.h, {z22.h - z23.h}, z31.h
+	mov	z12.d, z26.d
 	ptrue	p7.b, all
-	tbl	z13.h, {z8.h - z9.h}, z31.h
-	tbl	z27.h, {z12.h - z13.h}, z22.h
+	tbl	z25.h, {z12.h - z13.h}, z29.h
+	tbl	z13.h, {z22.h - z23.h}, z31.h
+	movi	d23, #0
+	tbl	z27.h, {z12.h - z13.h}, z21.h
 	.p2align 5,,15
 .L3:
 	lsl	x3, x0, 1
-	ld1h	z26.h, p7/z, [x6, x0, lsl 1]
-	ld1h	z25.h, p7/z, [x4, x0, lsl 1]
+	ld1h	z26.h, p7/z, [x4, x0, lsl 1]
+	movprfx	z28, z23
+	sdot	z28.d, z25.h, z26.h
+	ld1h	z26.h, p7/z, [x2, x0, lsl 1]
 	add	x0, x0, 32
-	movprfx	z28, z14
-	sdot	z28.d, z27.h, z25.h
-	sdot	z28.d, z21.h, z26.h
+	sdot	z28.d, z27.h, z26.h
 	uzp1	z28.s, z28.s, z28.s
 	rshrnb	z28.h, z28.s, #10
 	uzp1	z28.h, z28.h, z28.h
-	str	d28, [x7, x3]
+	str	d28, [x6, x3]
 	cmp	x0, 256
 	bne	.L3
-	ldr	q27, [x2, 1152]
-	add	x2, x2, 1184
-	add	x0, x1, 192
-	add	x4, x1, 576
-	mov	x3, x2
-	mul	v26.4s, v0.4s, v27.4s
-	mul	v28.4s, v15.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v1.4s, v27.4s
-	mul	v27.4s, v2.4s, v27.4s
-	addp	v26.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 64]
-.L4:
-	ldr	q27, [x3], 16
-	mul	v26.4s, v0.4s, v27.4s
-	mul	v28.4s, v15.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v1.4s, v27.4s
-	mul	v27.4s, v2.4s, v27.4s
-	addp	v27.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x0], 128
-	cmp	x4, x0
-	bne	.L4
-	ldp	q26, q21, [sp, 64]
-	ptrue	p7.b, all
-	add	x8, x5, :lo12:.LANCHOR0
-	ldp	q25, q15, [sp, 96]
 	add	x0, sp, 288
-	ldr	q27, [x8, 1232]
-	add	x7, x1, 40
-	addp	v28.4s, v26.4s, v25.4s
-	add	x6, x8, 64
-	add	x4, x8, 576
-	shl	v28.4s, v28.4s, 6
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1]
-	mul	v28.4s, v21.4s, v27.4s
-	mul	v27.4s, v15.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 128]
-	ldr	q28, [x8, 1248]
-	mul	v27.4s, v26.4s, v28.4s
 	ldr	z26, [x0]
+	add	x3, x5, :lo12:.LANCHOR0
 	addvl	x0, sp, #1
-	mul	v28.4s, v25.4s, v28.4s
+	add	x4, x3, 64
+	ptrue	p7.b, all
 	add	x0, x0, 288
-	addp	v27.4s, v27.4s, v28.4s
-	ldr	q28, [x8, 1264]
-	rshrn	v27.4h, v27.4s, 10
-	str	d27, [x1, 256]
-	mul	v27.4s, v21.4s, v28.4s
-	movi	d21, #0
-	mul	v28.4s, v15.4s, v28.4s
-	addp	v27.4s, v27.4s, v28.4s
-	rshrn	v27.4h, v27.4s, 10
-	str	d27, [x1, 384]
 	ldr	z27, [x0]
+	tbl	z25.h, {z26.h - z27.h}, z31.h
 	addvl	x0, sp, #2
+	add	x6, x1, 40
 	add	x0, x0, 288
-	ldr	z14, [x0]
-	tbl	z12.h, {z26.h - z27.h}, z31.h
+	ldr	z26, [x0]
+	add	x3, x3, 576
 	addvl	x0, sp, #3
 	add	x0, x0, 288
-	ldr	z15, [x0]
-	tbl	z14.h, {z14.h - z15.h}, z31.h
+	ldr	z27, [x0]
+	tbl	z28.h, {z26.h - z27.h}, z31.h
 	mov	x0, 0
-	mov	z13.d, z14.d
-	tbl	z15.h, {z12.h - z13.h}, z30.h
-	tbl	z12.h, {z26.h - z27.h}, z31.h
-	tbl	z27.h, {z12.h - z13.h}, z22.h
+	mov	z26.d, z25.d
+	mov	z27.d, z28.d
+	movi	d25, #0
+	tbl	z23.h, {z26.h - z27.h}, z29.h
+	tbl	z27.h, {z26.h - z27.h}, z21.h
 	.p2align 5,,15
-.L5:
-	lsl	x3, x0, 1
-	ld1h	z26.h, p7/z, [x6, x0, lsl 1]
-	ld1h	z25.h, p7/z, [x4, x0, lsl 1]
+.L4:
+	lsl	x2, x0, 1
+	ld1h	z26.h, p7/z, [x4, x0, lsl 1]
+	movprfx	z28, z25
+	sdot	z28.d, z23.h, z26.h
+	ld1h	z26.h, p7/z, [x3, x0, lsl 1]
 	add	x0, x0, 32
-	movprfx	z28, z21
-	sdot	z28.d, z27.h, z25.h
-	sdot	z28.d, z15.h, z26.h
+	sdot	z28.d, z27.h, z26.h
 	uzp1	z28.s, z28.s, z28.s
 	rshrnb	z28.h, z28.s, #10
 	uzp1	z28.h, z28.h, z28.h
-	str	d28, [x7, x3]
+	str	d28, [x6, x2]
 	cmp	x0, 256
-	bne	.L5
-	ldr	q27, [x8, 1152]
-	add	x0, x1, 200
-	add	x4, x1, 584
-	mov	x3, x2
-	mul	v26.4s, v4.4s, v27.4s
-	mul	v28.4s, v3.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v5.4s, v27.4s
-	mul	v27.4s, v6.4s, v27.4s
-	addp	v26.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 72]
-.L6:
-	ldr	q27, [x3], 16
-	mul	v26.4s, v4.4s, v27.4s
-	mul	v28.4s, v3.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v5.4s, v27.4s
-	mul	v27.4s, v6.4s, v27.4s
-	addp	v27.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x0], 128
-	cmp	x0, x4
-	bne	.L6
-	ldp	q26, q21, [sp, 128]
-	ptrue	p7.b, all
-	add	x8, x5, :lo12:.LANCHOR0
-	ldp	q25, q15, [sp, 160]
+	bne	.L4
 	addvl	x0, sp, #4
-	ldr	q27, [x8, 1232]
+	add	x3, x5, :lo12:.LANCHOR0
+	ptrue	p7.b, all
 	add	x0, x0, 288
-	addp	v28.4s, v26.4s, v25.4s
-	add	x7, x1, 48
-	add	x6, x8, 64
-	add	x4, x8, 576
-	shl	v28.4s, v28.4s, 6
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 8]
-	mul	v28.4s, v21.4s, v27.4s
-	mul	v27.4s, v15.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 136]
-	ldr	q28, [x8, 1248]
-	mul	v27.4s, v26.4s, v28.4s
 	ldr	z26, [x0]
+	add	x4, x3, 64
 	addvl	x0, sp, #5
-	mul	v28.4s, v25.4s, v28.4s
+	add	x6, x1, 48
 	add	x0, x0, 288
-	addp	v27.4s, v27.4s, v28.4s
-	rshrn	v27.4h, v27.4s, 10
-	str	d27, [x1, 264]
-	ldr	q27, [x8, 1264]
-	mul	v28.4s, v21.4s, v27.4s
-	mul	v27.4s, v15.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
 	ldr	z27, [x0]
-	addvl	x0, sp, #6
-	add	x0, x0, 288
 	tbl	z25.h, {z26.h - z27.h}, z31.h
+	addvl	x0, sp, #6
+	add	x3, x3, 576
+	add	x0, x0, 288
 	ldr	z26, [x0]
 	addvl	x0, sp, #7
 	add	x0, x0, 288
 	ldr	z27, [x0]
-	rshrn	v28.4h, v28.4s, 10
-	mov	x0, 0
-	str	d28, [x1, 392]
 	tbl	z28.h, {z26.h - z27.h}, z31.h
+	mov	x0, 0
 	mov	z26.d, z25.d
 	mov	z27.d, z28.d
 	movi	d25, #0
-	tbl	z21.h, {z26.h - z27.h}, z30.h
-	tbl	z27.h, {z26.h - z27.h}, z22.h
+	tbl	z23.h, {z26.h - z27.h}, z29.h
+	tbl	z27.h, {z26.h - z27.h}, z21.h
 	.p2align 5,,15
-.L7:
-	lsl	x3, x0, 1
-	ld1h	z26.h, p7/z, [x6, x0, lsl 1]
-	ld1h	z15.h, p7/z, [x4, x0, lsl 1]
-	add	x0, x0, 32
+.L5:
+	lsl	x2, x0, 1
+	ld1h	z26.h, p7/z, [x4, x0, lsl 1]
 	movprfx	z28, z25
-	sdot	z28.d, z27.h, z15.h
-	sdot	z28.d, z21.h, z26.h
+	sdot	z28.d, z23.h, z26.h
+	ld1h	z26.h, p7/z, [x3, x0, lsl 1]
+	add	x0, x0, 32
+	sdot	z28.d, z27.h, z26.h
 	uzp1	z28.s, z28.s, z28.s
 	rshrnb	z28.h, z28.s, #10
 	uzp1	z28.h, z28.h, z28.h
-	str	d28, [x7, x3]
+	str	d28, [x6, x2]
 	cmp	x0, 256
-	bne	.L7
-	ldr	q27, [x8, 1152]
-	add	x0, x1, 208
-	add	x4, x1, 592
-	mov	x3, x2
-	mul	v26.4s, v16.4s, v27.4s
-	mul	v28.4s, v7.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v17.4s, v27.4s
-	mul	v27.4s, v18.4s, v27.4s
-	addp	v27.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 80]
-.L8:
-	ldr	q27, [x3], 16
-	mul	v26.4s, v16.4s, v27.4s
-	mul	v28.4s, v7.4s, v27.4s
-	addp	v28.4s, v28.4s, v26.4s
-	mul	v26.4s, v17.4s, v27.4s
-	mul	v27.4s, v18.4s, v27.4s
-	addp	v27.4s, v26.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x0], 128
-	cmp	x0, x4
-	bne	.L8
-	ldp	q26, q21, [sp, 192]
-	ptrue	p7.b, all
-	add	x8, x5, :lo12:.LANCHOR0
-	ldp	q25, q18, [sp, 224]
+	bne	.L5
 	addvl	x0, sp, #8
-	ldr	q27, [x8, 1232]
+	add	x3, x5, :lo12:.LANCHOR0
+	ptrue	p7.b, all
 	add	x0, x0, 288
-	addp	v28.4s, v26.4s, v25.4s
-	add	x7, x1, 56
-	add	x6, x8, 64
-	add	x4, x8, 576
-	shl	v28.4s, v28.4s, 6
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 16]
-	mul	v28.4s, v21.4s, v27.4s
-	mul	v27.4s, v18.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
-	ldr	q27, [x8, 1248]
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 144]
-	mul	v28.4s, v26.4s, v27.4s
 	ldr	z26, [x0]
+	add	x7, x1, 56
 	addvl	x0, sp, #9
-	mul	v27.4s, v25.4s, v27.4s
+	add	x6, x3, 64
 	add	x0, x0, 288
-	movi	d25, #0
-	addp	v28.4s, v28.4s, v27.4s
-	ldr	q27, [x8, 1264]
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 272]
-	mul	v28.4s, v21.4s, v27.4s
-	mul	v27.4s, v18.4s, v27.4s
-	addp	v28.4s, v28.4s, v27.4s
 	ldr	z27, [x0]
-	addvl	x0, sp, #10
-	add	x0, x0, 288
-	rshrn	v28.4h, v28.4s, 10
-	str	d28, [x1, 400]
 	tbl	z28.h, {z26.h - z27.h}, z31.h
+	addvl	x0, sp, #10
+	add	x4, x3, 576
+	add	x0, x0, 288
 	ldr	z26, [x0]
 	addvl	x0, sp, #11
 	add	x0, x0, 288
 	ldr	z27, [x0]
 	tbl	z31.h, {z26.h - z27.h}, z31.h
 	mov	x0, 0
-	mov	z26.d, z28.d
 	mov	z27.d, z31.d
-	tbl	z30.h, {z26.h - z27.h}, z30.h
-	tbl	z26.h, {z26.h - z27.h}, z22.h
+	mov	z26.d, z28.d
+	tbl	z29.h, {z26.h - z27.h}, z29.h
+	tbl	z26.h, {z26.h - z27.h}, z21.h
+	movi	d27, #0
 	.p2align 5,,15
-.L9:
-	lsl	x3, x0, 1
+.L6:
+	lsl	x2, x0, 1
 	ld1h	z28.h, p7/z, [x6, x0, lsl 1]
-	ld1h	z27.h, p7/z, [x4, x0, lsl 1]
+	movprfx	z31, z27
+	sdot	z31.d, z29.h, z28.h
+	ld1h	z28.h, p7/z, [x4, x0, lsl 1]
 	add	x0, x0, 32
-	movprfx	z31, z25
-	sdot	z31.d, z26.h, z27.h
-	sdot	z31.d, z30.h, z28.h
+	sdot	z31.d, z26.h, z28.h
 	uzp1	z31.s, z31.s, z31.s
 	rshrnb	z31.h, z31.s, #10
 	uzp1	z31.h, z31.h, z31.h
-	str	d31, [x7, x3]
+	str	d31, [x7, x2]
 	cmp	x0, 256
-	bne	.L9
-	ldr	q30, [x8, 1152]
-	add	x0, x1, 216
-	add	x3, x1, 600
-	mul	v28.4s, v20.4s, v30.4s
-	mul	v31.4s, v19.4s, v30.4s
+	bne	.L6
+	ldr	q29, [x3, 1152]
+	add	x0, x3, 1184
+	add	x2, x1, 192
+	add	x4, x1, 576
+	mov	x3, x0
+	mul	v28.4s, v0.4s, v29.4s
+	mul	v31.4s, v15.4s, v29.4s
 	addp	v31.4s, v31.4s, v28.4s
-	mul	v28.4s, v23.4s, v30.4s
-	mul	v30.4s, v10.4s, v30.4s
-	addp	v30.4s, v28.4s, v30.4s
-	addp	v31.4s, v31.4s, v30.4s
+	mul	v28.4s, v1.4s, v29.4s
+	mul	v29.4s, v2.4s, v29.4s
+	addp	v28.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 64]
+.L7:
+	ldr	q29, [x3], 16
+	mul	v28.4s, v0.4s, v29.4s
+	mul	v31.4s, v15.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v1.4s, v29.4s
+	mul	v29.4s, v2.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x2], 128
+	cmp	x2, x4
+	bne	.L7
+	ldp	q28, q26, [sp, 64]
+	add	x2, x5, :lo12:.LANCHOR0
+	ldp	q27, q25, [sp, 96]
+	add	x4, x1, 584
+	ldr	q29, [x2, 1232]
+	mov	x3, x0
+	addp	v31.4s, v28.4s, v27.4s
+	shl	v31.4s, v31.4s, 6
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1248]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 128]
+	mul	v31.4s, v28.4s, v29.4s
+	mul	v29.4s, v27.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1264]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 256]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1152]
+	add	x2, x1, 200
+	rshrn	v31.4h, v31.4s, 10
+	mul	v28.4s, v4.4s, v29.4s
+	str	d31, [x1, 384]
+	mul	v31.4s, v3.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v5.4s, v29.4s
+	mul	v29.4s, v6.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 72]
+.L8:
+	ldr	q29, [x3], 16
+	mul	v28.4s, v4.4s, v29.4s
+	mul	v31.4s, v3.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v5.4s, v29.4s
+	mul	v29.4s, v6.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x2], 128
+	cmp	x4, x2
+	bne	.L8
+	ldp	q28, q26, [sp, 128]
+	add	x2, x5, :lo12:.LANCHOR0
+	ldp	q27, q25, [sp, 160]
+	add	x4, x1, 592
+	ldr	q29, [x2, 1232]
+	mov	x3, x0
+	addp	v31.4s, v28.4s, v27.4s
+	shl	v31.4s, v31.4s, 6
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 8]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1248]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 136]
+	mul	v31.4s, v28.4s, v29.4s
+	mul	v29.4s, v27.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1264]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 264]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1152]
+	add	x2, x1, 208
+	rshrn	v31.4h, v31.4s, 10
+	mul	v28.4s, v16.4s, v29.4s
+	str	d31, [x1, 392]
+	mul	v31.4s, v7.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v17.4s, v29.4s
+	mul	v29.4s, v18.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 80]
+.L9:
+	ldr	q29, [x3], 16
+	mul	v28.4s, v16.4s, v29.4s
+	mul	v31.4s, v7.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v17.4s, v29.4s
+	mul	v29.4s, v18.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x2], 128
+	cmp	x4, x2
+	bne	.L9
+	ldp	q28, q26, [sp, 192]
+	add	x2, x5, :lo12:.LANCHOR0
+	ldp	q27, q25, [sp, 224]
+	add	x3, x1, 600
+	ldr	q29, [x2, 1232]
+	addp	v31.4s, v28.4s, v27.4s
+	shl	v31.4s, v31.4s, 6
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 16]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1248]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 144]
+	mul	v31.4s, v28.4s, v29.4s
+	mul	v29.4s, v27.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1264]
+	rshrn	v31.4h, v31.4s, 10
+	str	d31, [x1, 272]
+	mul	v31.4s, v26.4s, v29.4s
+	mul	v29.4s, v25.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
+	ldr	q29, [x2, 1152]
+	add	x2, x1, 216
+	rshrn	v31.4h, v31.4s, 10
+	mul	v28.4s, v20.4s, v29.4s
+	str	d31, [x1, 400]
+	mul	v31.4s, v19.4s, v29.4s
+	addp	v31.4s, v31.4s, v28.4s
+	mul	v28.4s, v24.4s, v29.4s
+	mul	v29.4s, v30.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x1, 88]
 .L10:
-	ldr	q30, [x2], 16
-	mul	v28.4s, v20.4s, v30.4s
-	mul	v31.4s, v19.4s, v30.4s
+	ldr	q29, [x0], 16
+	mul	v28.4s, v20.4s, v29.4s
+	mul	v31.4s, v19.4s, v29.4s
 	addp	v31.4s, v31.4s, v28.4s
-	mul	v28.4s, v23.4s, v30.4s
-	mul	v30.4s, v10.4s, v30.4s
-	addp	v30.4s, v28.4s, v30.4s
-	addp	v31.4s, v31.4s, v30.4s
+	mul	v28.4s, v24.4s, v29.4s
+	mul	v29.4s, v30.4s, v29.4s
+	addp	v29.4s, v28.4s, v29.4s
+	addp	v31.4s, v31.4s, v29.4s
 	rshrn	v31.4h, v31.4s, 10
-	str	d31, [x0], 128
-	cmp	x3, x0
+	str	d31, [x2], 128
+	cmp	x3, x2
 	bne	.L10
-	ldp	q28, q27, [sp, 256]
+	ldp	q29, q28, [sp, 256]
 	add	x5, x5, :lo12:.LANCHOR0
-	ldp	d8, d9, [sp]
-	addp	v31.4s, v28.4s, v24.4s
-	ldr	q30, [x5, 1232]
-	ldp	d10, d11, [sp, 16]
-	shl	v31.4s, v31.4s, 6
 	ldp	d12, d13, [sp, 32]
+	addp	v31.4s, v29.4s, v10.4s
+	ldr	q30, [x5, 1232]
 	ldp	d14, d15, [sp, 48]
+	shl	v31.4s, v31.4s, 6
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x1, 24]
-	mul	v31.4s, v27.4s, v30.4s
-	mul	v30.4s, v29.4s, v30.4s
+	mul	v31.4s, v28.4s, v30.4s
+	mul	v30.4s, v9.4s, v30.4s
 	addp	v31.4s, v31.4s, v30.4s
 	ldr	q30, [x5, 1248]
 	rshrn	v31.4h, v31.4s, 10
-	mul	v24.4s, v24.4s, v30.4s
+	mul	v10.4s, v10.4s, v30.4s
 	str	d31, [x1, 152]
-	mul	v31.4s, v28.4s, v30.4s
+	mul	v31.4s, v29.4s, v30.4s
 	ldr	q30, [x5, 1264]
-	addp	v31.4s, v31.4s, v24.4s
-	mul	v29.4s, v29.4s, v30.4s
+	addp	v31.4s, v31.4s, v10.4s
+	mul	v9.4s, v9.4s, v30.4s
+	ldp	d10, d11, [sp, 16]
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x1, 280]
-	mul	v31.4s, v27.4s, v30.4s
-	addp	v31.4s, v31.4s, v29.4s
+	mul	v31.4s, v28.4s, v30.4s
+	addp	v31.4s, v31.4s, v9.4s
+	ldp	d8, d9, [sp]
 	rshrn	v31.4h, v31.4s, 10
 	str	d31, [x1, 408]
 	.cfi_restore 78

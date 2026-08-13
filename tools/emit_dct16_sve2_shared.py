@@ -81,7 +81,7 @@ def gt16_s32_cpp():
     return "\n".join(rows)
 
 
-def pass2_odd_quarter_cpp(k_tile=1):
+def pass2_odd_quarter_cpp(k_tile=1, narrow_merge=0):
     """Unrolled 4-row groups: O quarters + tiled odd-k quarter dot +
     even-k NEON."""
     parts = []
@@ -89,12 +89,20 @@ def pass2_odd_quarter_cpp(k_tile=1):
     // odd k: quarter-interleaved O packs, 2 SDOT + 1 aligned add per k.
     const svbool_t p64q = svptrue_b64();
     const svbool_t p4q = svwhilelt_b16(0, 4);
+    const svbool_t p8q = svwhilelt_b16(0, 8);
     const svuint16_t iloq = svld1_u16(p16q, idx_lo);
     const svuint16_t q0q = svld1_u16(p16q, idx_q0);
     const svuint16_t q1q = svld1_u16(p16q, idx_q1);
     const svint64_t zaccq = svdup_n_s64(0);
 
 """)
+    if narrow_merge:
+        parts.append(
+            "    svint16_t QO0_0, QO1_0, QO0_1, QO1_1;\n"
+            "    svint16_t QO0_2, QO1_2, QO0_3, QO1_3;\n\n")
+    pack_blocks = []
+    dot_blocks = []
+    even_blocks = []
     for g in range(4):
         base = 4 * g
         pack = """\
@@ -103,11 +111,13 @@ def pass2_odd_quarter_cpp(k_tile=1):
                 svcreate2_s16(zO%d, zO%d), iloq);
             const svint16_t PO23 = svtbl2_s16(
                 svcreate2_s16(zO%d, zO%d), iloq);
-            const svint16_t QO0_%d = svtbl2_s16(
+            %s QO0_%d = svtbl2_s16(
                 svcreate2_s16(PO01, PO23), q0q);
-            const svint16_t QO1_%d = svtbl2_s16(
+            %s QO1_%d = svtbl2_s16(
                 svcreate2_s16(PO01, PO23), q1q);
-""" % (base, base + 1, base + 2, base + 3, g, g)
+""" % (base, base + 1, base + 2, base + 3,
+       "const svint16_t" if not narrow_merge else "", g,
+       "const svint16_t" if not narrow_merge else "", g)
         bodies = []
         for t in range(k_tile):
             kexpr = "kb + %d" % (2 * t)
@@ -118,25 +128,26 @@ def pass2_odd_quarter_cpp(k_tile=1):
                 "svld1_s16(p16q, CQ_LO[%s]);\n"
                 "                const svint16_t %s = "
                 "svld1_s16(p16q, CQ_HI[%s]);\n"
-                "                const svint64_t d0 = "
+                "                svint64_t d_%d_%d = "
                 "svdot_s64(zaccq, QO0_%d, %s);\n"
-                "                const svint64_t d1 = "
-                "svdot_s64(zaccq, QO1_%d, %s);\n"
-                "                const svint64_t f = "
-                "svadd_s64_x(p64q, d0, d1);\n"
+                "                d_%d_%d = svdot_s64(d_%d_%d, QO1_%d, %s);\n"
                 "                const svint32_t w = "
-                "svuzp1_s32(svreinterpret_s32_s64(f),\n"
+                "svuzp1_s32(svreinterpret_s32_s64(d_%d_%d),\n"
                 "                                           "
-                "svreinterpret_s32_s64(f));\n"
+                "svreinterpret_s32_s64(d_%d_%d));\n"
                 "                svint16_t n = svrshrnb_n_s32(w, shift);\n"
                 "                n = svuzp1_s16(n, n);\n"
                 "                svst1_s16(p4q, dst + (%s) * line + %d, n);\n"
                 "            }"
-                % (lo, kexpr, hi, kexpr, g, lo, g, hi, kexpr, base))
-        odd_loop = ("        for (int kb = 1; kb < 16; kb += %d)\n"
-                    "        {\n%s\n        }\n"
-                    % (2 * k_tile, "\n".join(bodies)))
-        pack = pack + odd_loop + "        }\n\n"
+                % (lo, kexpr, hi, kexpr, g, t, g, lo, g, t, g, t, g, hi,
+                   g, t, g, t, kexpr, base))
+        if narrow_merge:
+            pack_blocks.append(pack + "        }\n\n")
+        else:
+            odd_loop = ("        for (int kb = 1; kb < 16; kb += %d)\n"
+                        "        {\n%s\n        }\n"
+                        % (2 * k_tile, "\n".join(bodies)))
+            pack_blocks.append(pack + odd_loop + "        }\n\n")
         even = """\
         for (int k = 2; k < 16; k += 4)
         {
@@ -177,7 +188,53 @@ def pass2_odd_quarter_cpp(k_tile=1):
        2 * g, 2 * g, base,
        2 * g, 2 * g, base,
        2 * g, 2 * g, base)
-        parts.append(pack + even)
+        even_blocks.append(even)
+    if narrow_merge:
+        # k loop hoisted outside groups: dot all groups, then merge
+        for t in range(k_tile):
+            kexpr = "kb + %d" % (2 * t)
+            dot_blocks.append(
+                "            const svint16_t cq_loq%d = "
+                "svld1_s16(p16q, CQ_LO[%s]);\n"
+                "            const svint16_t cq_hiq%d = "
+                "svld1_s16(p16q, CQ_HI[%s]);\n"
+                % (t, kexpr, t, kexpr))
+            dot_blocks.append(
+                "            // k=%s, groups 0..3\n%s\n"
+                % (kexpr, "\n".join(
+                    "                svint64_t d_%d_%d = "
+                    "svdot_s64(zaccq, QO0_%d, cq_loq%d);\n"
+                    "                d_%d_%d = svdot_s64(d_%d_%d, "
+                    "QO1_%d, cq_hiq%d);\n"
+                    % (g, t, g, t, g, t, g, t, g, t)
+                    for g in range(4))))
+            dot_blocks.append(
+                "            {\n"
+                "                const svint32_t w01 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_0_%d),\n"
+                "                    svreinterpret_s32_s64(d_1_%d));\n"
+                "                svint16_t n = svrshrnb_n_s32(w01, shift);\n"
+                "                n = svuzp1_s16(n, n);\n"
+                "                svst1_s16(p8q, dst + (%s) * line + 0, n);\n"
+                "            }\n"
+                "            {\n"
+                "                const svint32_t w23 = svuzp1_s32(\n"
+                "                    svreinterpret_s32_s64(d_2_%d),\n"
+                "                    svreinterpret_s32_s64(d_3_%d));\n"
+                "                svint16_t n2 = svrshrnb_n_s32(w23, shift);\n"
+                "                n2 = svuzp1_s16(n2, n2);\n"
+                "                svst1_s16(p8q, dst + (%s) * line + 8, n2);\n"
+                "            }"
+                % (t, t, kexpr, t, t, kexpr))
+    if narrow_merge:
+        dot_src = ("    for (int kb = 1; kb < 16; kb += %d)\n"
+                   "    {\n%s\n    }\n"
+                   % (2 * k_tile, "\n".join(dot_blocks)))
+        parts.append("\n".join(pack_blocks) + dot_src
+                     + "\n" + "\n".join(even_blocks))
+    else:
+        parts.append("\n".join(pack_blocks) + "\n"
+                     + "\n".join(even_blocks))
     return "\n".join(parts) + "}\n"
 
 
@@ -235,7 +292,7 @@ def rowpair_block(i, zO_names=None):
     return head
 
 
-def pass2_cpp(pass2_layout="upstream", k_tile=1):
+def pass2_cpp(pass2_layout="upstream", k_tile=1, narrow_merge=0):
     """pass2 body. 'upstream' matches dct16_sve exactly (E s32 vaddl,
     O s16 bridge SDOT, even path vmulq/vpaddq). 'odd-quarter' keeps the
     even-k/E/EO/EEE/EEO NEON path but replaces the odd-k per-row bridge
@@ -370,7 +427,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 """
         return prelude + odd_loop + even_tail
     if pass2_layout == "odd-quarter":
-        return prelude + pass2_odd_quarter_cpp(k_tile=k_tile)
+        return prelude + pass2_odd_quarter_cpp(k_tile=k_tile,
+                                               narrow_merge=narrow_merge)
     raise ValueError("unknown pass2_layout %r" % pass2_layout)
 
 
@@ -550,7 +608,8 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
     dot_src = "\n".join(group_block(g) for g in range(4))
     quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile,
                                    narrow_merge=narrow_merge)
-    pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile)
+    pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile,
+                          narrow_merge=narrow_merge)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
         pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"

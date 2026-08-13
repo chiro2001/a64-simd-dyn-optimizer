@@ -38,7 +38,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 1790,
+   "total": 1797,
    "vector": 1397,
    "movprfx": 96,
    "vector_fused": 1301
@@ -53,10 +53,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1669,
-   "vector": 1285,
-   "movprfx": 112,
-   "vector_fused": 1173
+   "total": 1525,
+   "vector": 1224,
+   "movprfx": 120,
+   "vector_fused": 1104
   }
  },
  {
@@ -68,7 +68,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 1769,
+   "total": 1772,
    "vector": 1397,
    "movprfx": 96,
    "vector_fused": 1301
@@ -83,10 +83,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1649,
-   "vector": 1285,
-   "movprfx": 112,
-   "vector_fused": 1173
+   "total": 1508,
+   "vector": 1219,
+   "movprfx": 120,
+   "vector_fused": 1099
   }
  },
  {
@@ -128,7 +128,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 1737,
+   "total": 1744,
    "vector": 1365,
    "movprfx": 96,
    "vector_fused": 1269
@@ -143,10 +143,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1641,
-   "vector": 1269,
-   "movprfx": 112,
-   "vector_fused": 1157
+   "total": 1494,
+   "vector": 1208,
+   "movprfx": 120,
+   "vector_fused": 1088
   }
  },
  {
@@ -158,7 +158,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 1714,
+   "total": 1717,
    "vector": 1365,
    "movprfx": 96,
    "vector_fused": 1269
@@ -173,10 +173,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1618,
-   "vector": 1269,
-   "movprfx": 112,
-   "vector_fused": 1157
+   "total": 1474,
+   "vector": 1204,
+   "movprfx": 120,
+   "vector_fused": 1084
   }
  },
  {
@@ -218,7 +218,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 2309,
+   "total": 2316,
    "vector": 1762,
    "movprfx": 288,
    "vector_fused": 1474
@@ -233,10 +233,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 2309,
-   "vector": 1762,
-   "movprfx": 288,
-   "vector_fused": 1474
+   "total": 2143,
+   "vector": 1696,
+   "movprfx": 296,
+   "vector_fused": 1400
   }
  },
  {
@@ -248,7 +248,7 @@
   "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 2295,
+   "total": 2298,
    "vector": 1766,
    "movprfx": 288,
    "vector_fused": 1478
@@ -263,10 +263,10 @@
   "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 2295,
-   "vector": 1766,
-   "movprfx": 288,
-   "vector_fused": 1478
+   "total": 2122,
+   "vector": 1690,
+   "movprfx": 296,
+   "vector_fused": 1394
   }
  }
 ]
