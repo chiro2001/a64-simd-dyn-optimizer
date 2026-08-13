@@ -5,6 +5,13 @@ true-dynamic 计数；920B 是 SVE1，无法执行本项目的 s16→s64 SDOT
 （SVE2），因此**中间档 920B 只对 NEON 候选有效**，SVE2 候选直接以
 960 为验收目标。
 
+> **2026-08-14 硬件现实更新：960 尚未流片**，实机 paired PMU 验收无法
+> 在近期执行。流片前验收口径调整为：**以 QEMU fused_adj（movprfx 融合
+> 后的向量指令数）为验收代理**；达到指标即标记“指令数达标（QEMU 口径）”，
+> 实机 cycles 验证挂起至 960 硅片可用。若期间可访问其他 SVE2 平台
+> （如 Graviton4 / Neoverse V2 级），可先做早期校准，但正式验收仍以
+> 960 为准。
+
 ## 1. 目标与基线
 
 | 档位 | 基线（同机冻结） | 保留 | 优秀 |
@@ -28,7 +35,8 @@ true-dynamic 计数；920B 是 SVE1，无法执行本项目的 s16→s64 SDOT
   进程，报 median/p05/p95/MAD + bootstrap 95% CI；
 - cycles 用 PMU（CNTVCT 或 perf），不拿 TestBench ticks 当 cycles；
 - 正确性：上游位级一致（manifest 生成 harness，200k 例 0 分歧）+
-  x265 transforms TestBench + 单线程 deterministic encode 回归。
+  x265 transforms TestBench + 单线程 deterministic encode 回归
+  （QEMU 口径；960 流片后补实机）。
 
 ## 3. 候选注册条件（960 接入前可完成的静态门禁）
 

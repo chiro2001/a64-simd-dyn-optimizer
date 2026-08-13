@@ -682,3 +682,10 @@ upstream-exact 也不满足 C-exact。
 s32（mul/addp 路径，无 sdot）；选项 b) upstream-exact：复刻 dct8_sve
 的 s16 回绕语义（类似 dct16 的 legacy 合同）。两者都需要重写 dct8
 pass2，列为后续任务；搜索门禁如实报 FAIL，不伪报。
+
+> 2026-08-14 解决：选择 upstream-exact（与项目默认合同一致），把
+> `partialButterfly8_sve` 逐条移植为 dct8 发射器（E s32 vaddl 不回绕、
+> O s16 vsubq 回绕、偶 k vmul/vpadd、奇 k sdot）。2 万例与 dct8_sve
+> **0 分歧**（与 C 分歧 0.051% = 上游签名），fused_adj=323（上游基线
+> 等价）。manifest 的 trace_driver_src 修正为候选驱动
+> `kernels/dct8/shared_trace_driver.cpp`；搜索 k_tile-2 被源码去重。

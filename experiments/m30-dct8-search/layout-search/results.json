@@ -1,0 +1,15 @@
+[
+ {
+  "tag": "k_tile-1",
+  "k_tile": 1,
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "counts": {
+   "total": 492,
+   "vector": 355,
+   "movprfx": 32,
+   "vector_fused": 323
+  }
+ }
+]

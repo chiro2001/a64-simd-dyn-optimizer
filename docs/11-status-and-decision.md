@@ -131,10 +131,15 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 连续/scatter 存储并列、960 PMU 实机口径。
 
 剩余事项：
-1. **实机验证阻塞**：960（SVE2.3 4×256）未接入；920B 是 SVE1 无法运行
-   本 SVE2 候选。scatter st1d 的实机代价、fused_adj→cycles 校准均待
-   960；
+1. **实机验证阻塞（2026-08-14 确认：960 尚未流片）**：SVE2 实机
+   验收挂起；流片前以 QEMU fused_adj 为验收代理，920B（SVE1）只对
+   NEON 候选有效。scatter st1d 的实机代价、fused_adj→cycles 校准待
+   960 硅片或可访问的其他 SVE2 平台；
 2. 工具进化：typed LayoutIR（lane map/range proof/常量 map/存储地址
    图）与分层搜索（>60s 预算已触发，当前 ~7.5min）；
 3. upstream 合同仍差 156（k=2/6/10/14 的 s32 位级一致约束下，sdot 化
    空间有限；可考虑 SVE s32 形式的 k2 路径）。
+4. dct8：upstream-exact 已通过逐条移植上游 `partialButterfly8_sve`
+   达成（2 万例 0 分歧，fused_adj=323，即上游基线等价实现）；后续
+   可把 DCT16 的优化轴（zip 打包、even_factor、store_merge16）移植到
+   dct8。

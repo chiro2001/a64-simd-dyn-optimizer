@@ -8,7 +8,7 @@ shape:
 candidate:
   symbol: dynopt_dct8_sve2_shared
   verify_src: kernels/dct8/sve_shared_verify.cpp
-  trace_driver_src: kernels/dct8/sve_trace_driver.cpp
+  trace_driver_src: kernels/dct8/shared_trace_driver.cpp
   trace_driver_c: kernels/dct8/sve_trace_driver.c
 
 reference:
