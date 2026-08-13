@@ -111,8 +111,8 @@ static void leaf32(const int16_t* src, intptr_t stride, int shift,
 
 def pass_cpp():
     return """\
-static void pass32(const int16_t* src, int16_t* dst, intptr_t stride,
-                   int shift)
+static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
+                        int shift)
 {
     const svbool_t p16 = svptrue_b16();
     const svbool_t p64 = svptrue_b64();
@@ -189,7 +189,97 @@ static void pass32(const int16_t* src, int16_t* dst, intptr_t stride,
 """
 
 
-def emit(func_name="dynopt_dct32_sve2_shared"):
+def pass_rowmajor_cpp():
+    co = "\n".join(
+        "    svint16_t CO%d = svld1_s16(p16, C32[%d]);" % (kk, 2 * kk + 1)
+        for kk in range(16))
+    c2 = "\n".join(
+        "    svint32_t C2%d = svld1_s32(p8s, K2[%d]);" % (kk, kk)
+        for kk in range(8))
+    c4 = "\n".join(
+        "    svint32_t C4%d = svld1_s32(pg4s, K4[%d]);" % (kk, kk)
+        for kk in range(4))
+    odd = "\n".join(
+        """\
+        {
+            svint64_t t = svdot_s64(zero64, O, CO%d);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }""" % (kk, 2 * kk + 1) for kk in range(16))
+    k2 = "\n".join(
+        """\
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C2%d);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }""" % (kk, 4 * kk + 2) for kk in range(8))
+    k4 = "\n".join(
+        """\
+        {
+            svint32_t t = svmul_s32_x(p8s, EEO, C4%d);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(%d) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }""" % (kk, 8 * kk + 4) for kk in range(4))
+    return """\
+static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
+                        int shift)
+{
+    const svbool_t p16 = svptrue_b16();
+    const svbool_t p8s = svptrue_b32();
+    const svbool_t p64 = svptrue_b64();
+    const svbool_t pg4s = svwhilelt_b32(0, 4);
+    const svbool_t pg2s = svwhilelt_b32(0, 2);
+    const svint64_t zero64 = svdup_n_s64(0);
+    const int add = 1 << (shift - 1);
+    const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
+
+%s
+%s
+%s
+
+    for (int i = 0; i < 32; i++)
+    {
+        const int16_t* s = src + i * stride;
+        svint16_t lo = svld1_s16(p16, s);
+        svint16_t hi = svld1_s16(p16, s + 16);
+        svint16_t rv = svrev_s16(hi);
+        svint16_t O = svsub_s16_x(p16, lo, rv);
+        svint32_t loa = svunpklo_s32(lo), lob = svunpkhi_s32(lo);
+        svint32_t rva = svunpklo_s32(rv), rvb = svunpkhi_s32(rv);
+        svint32_t Ea = svadd_s32_x(p8s, loa, rva);
+        svint32_t Eb = svadd_s32_x(p8s, lob, rvb);
+        svint32_t Erb = svrev_s32(Eb);
+        svint32_t EE = svadd_s32_x(p8s, Ea, Erb);
+        svint32_t EO = svsub_s32_x(p8s, Ea, Erb);
+        svint32_t EEr = svrev_s32(EE);
+        svint32_t EEE = svadd_s32_x(p8s, EE, EEr);
+        svint32_t EEO = svsub_s32_x(p8s, EE, EEr);
+        svint32_t EEEr = svtbl_s32(EEE, rev4s);
+        svint32_t EEEE = svadd_s32_x(p8s, EEE, EEEr);
+        svint32_t EEEO = svsub_s32_x(p8s, EEE, EEEr);
+
+%s
+%s
+%s
+
+        int32_t ee[2], oo[2];
+        svst1_s32(pg2s, ee, EEEE);
+        svst1_s32(pg2s, oo, EEEO);
+        int64_t e0 = ee[0], e1 = ee[1], o0 = oo[0], o1 = oo[1];
+        dst[0 * 32 + i] = (int16_t)((K0[0][0] * e0 + K0[0][1] * e1 + add) >> shift);
+        dst[16 * 32 + i] = (int16_t)((K0[2][0] * e0 + K0[2][1] * e1 + add) >> shift);
+        dst[8 * 32 + i] = (int16_t)((K0[1][0] * o0 + K0[1][1] * o1 + add) >> shift);
+        dst[24 * 32 + i] = (int16_t)((K0[3][0] * o0 + K0[3][1] * o1 + add) >> shift);
+    }
+}
+""" % (co, c2, c4, odd, k2, k4)
+
+
+def emit(func_name="dynopt_dct32_sve2_shared", layout="v1"):
+    if layout == "v2":
+        pass_body = pass_rowmajor_cpp()
+    else:
+        pass_body = pass_cpp()
     idx = """\
 static const uint16_t IDX_REV8[16] =
     { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 };
@@ -214,18 +304,19 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
     const int shift1 = 4;   // 8-bit depth
     const int shift2 = 11;
     int16_t coef[32 * 32];
-    pass32(src, coef, srcStride, shift1);
-    pass32(coef, dst, 32, shift2);
+    pass32_impl(src, coef, srcStride, shift1);
+    pass32_impl(coef, dst, 32, shift2);
 }
-""" % (idx, cpp_constants(), leaf_build_cpp(), pass_cpp(), func_name)
+""" % (idx, cpp_constants(), leaf_build_cpp(), pass_body, func_name)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out", default="generated/dct32/sve2_shared.cpp")
+    ap.add_argument("--layout", default="v1")
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit())
+        f.write(emit(layout=args.layout))
     print("wrote %s" % args.out)
 
 

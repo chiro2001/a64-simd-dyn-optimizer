@@ -10,9 +10,9 @@ shape:
 
 candidate:
   symbol: dynopt_dct32_sve2_shared
-  # pass32 is a local symbol (mangled); leaf32 is inlined into it. The
-  # wrapper sits after pass32, so tracing from pass32 covers the real work.
-  range_start: _ZL6pass32PKsPsli
+  # pass32_impl is a local symbol (mangled); leaf32 is inlined into it. The
+  # wrapper sits after it, so tracing from pass32_impl covers the real work.
+  range_start: _ZL11pass32_implPKsPsli
   verify_src: kernels/dct16/sve_shared_verify.cpp
   trace_driver_src: kernels/dct32/trace_driver.cpp
   trace_driver_c: kernels/dct32/trace_driver.cpp
@@ -38,4 +38,4 @@ corpus:
   cases: 20000
 
 layouts:
-  family: [v1]
+  layout: [v1, v2]

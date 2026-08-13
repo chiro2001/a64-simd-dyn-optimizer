@@ -132,17 +132,11 @@ def make_emitter(kernel):
         def emit_fn(combo):
             return emit_16x16()
         return emit_fn
-    if kernel == "sa8d16x32":
-        from emit_sa8d_sve2_shared import emit_16x32
-
-        def emit_fn(combo):
-            return emit_16x32()
-        return emit_fn
     if kernel == "dct32":
         from emit_dct32_sve2_shared import emit
 
         def emit_fn(combo):
-            return emit()
+            return emit(layout=combo.get("layout", "v1"))
         return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 

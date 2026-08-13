@@ -122,75 +122,213 @@ static void leaf32(const int16_t* src, intptr_t stride, int shift,
     (void)shift;
 }
 
-static void pass32(const int16_t* src, int16_t* dst, intptr_t stride,
-                   int shift)
+static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride,
+                        int shift)
 {
     const svbool_t p16 = svptrue_b16();
+    const svbool_t p8s = svptrue_b32();
     const svbool_t p64 = svptrue_b64();
-    const svbool_t p32 = svptrue_b32();
-    const svbool_t pg8 = svwhilelt_b16(0, 8);
     const svbool_t pg4s = svwhilelt_b32(0, 4);
-    const svint16_t zero16 = svdup_n_s16(0);
+    const svbool_t pg2s = svwhilelt_b32(0, 2);
     const svint64_t zero64 = svdup_n_s64(0);
     const int add = 1 << (shift - 1);
+    const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
 
-    // E/O: 32x16 s16; EO/EEO/EEEE/EEEO: 32x16 s32 (2 s16 each).
-    int16_t leaves[32 * 32 + 32 * 16 * 2];
-    leaf32(src, stride, shift, leaves);
-    const int16_t* LE = leaves;
-    const int16_t* LO = LE + 32 * 16;
-    const int32_t* LEO = (const int32_t*)(LO + 32 * 16);
-    const int32_t* LEEO = LEO + 32 * 8;
-    const int32_t* LEEEE = LEEO + 32 * 4;
-    const int32_t* LEEEO = LEEEE + 32 * 2;
+    svint16_t CO0 = svld1_s16(p16, C32[1]);
+    svint16_t CO1 = svld1_s16(p16, C32[3]);
+    svint16_t CO2 = svld1_s16(p16, C32[5]);
+    svint16_t CO3 = svld1_s16(p16, C32[7]);
+    svint16_t CO4 = svld1_s16(p16, C32[9]);
+    svint16_t CO5 = svld1_s16(p16, C32[11]);
+    svint16_t CO6 = svld1_s16(p16, C32[13]);
+    svint16_t CO7 = svld1_s16(p16, C32[15]);
+    svint16_t CO8 = svld1_s16(p16, C32[17]);
+    svint16_t CO9 = svld1_s16(p16, C32[19]);
+    svint16_t CO10 = svld1_s16(p16, C32[21]);
+    svint16_t CO11 = svld1_s16(p16, C32[23]);
+    svint16_t CO12 = svld1_s16(p16, C32[25]);
+    svint16_t CO13 = svld1_s16(p16, C32[27]);
+    svint16_t CO14 = svld1_s16(p16, C32[29]);
+    svint16_t CO15 = svld1_s16(p16, C32[31]);
+    svint32_t C20 = svld1_s32(p8s, K2[0]);
+    svint32_t C21 = svld1_s32(p8s, K2[1]);
+    svint32_t C22 = svld1_s32(p8s, K2[2]);
+    svint32_t C23 = svld1_s32(p8s, K2[3]);
+    svint32_t C24 = svld1_s32(p8s, K2[4]);
+    svint32_t C25 = svld1_s32(p8s, K2[5]);
+    svint32_t C26 = svld1_s32(p8s, K2[6]);
+    svint32_t C27 = svld1_s32(p8s, K2[7]);
+    svint32_t C40 = svld1_s32(pg4s, K4[0]);
+    svint32_t C41 = svld1_s32(pg4s, K4[1]);
+    svint32_t C42 = svld1_s32(pg4s, K4[2]);
+    svint32_t C43 = svld1_s32(pg4s, K4[3]);
 
-    // k odd: full 16-term dot on O.
-    for (int k = 1; k < 32; k += 2)
-    {
-        svint16_t c = svld1_s16(p16, C32[k]);
-        int16_t* d = dst + k * 32;
-        for (int i = 0; i < 32; i++)
-        {
-            svint16_t o = svld1_s16(p16, LO + i * 16);
-            svint64_t t = svdot_s64(zero64, o, c);
-            int64_t sum = svaddv_s64(p64, t);
-            d[i] = (int16_t)((sum + add) >> shift);
-        }
-    }
-
-    // k = 2 mod 4: 8-term mul on EO (s32, upstream pass2 form).
-    for (int k = 2; k < 32; k += 4)
-    {
-        svint32_t c = svld1_s32(p32, K2[(k - 2) / 4]);
-        int16_t* d = dst + k * 32;
-        for (int i = 0; i < 32; i++)
-        {
-            svint32_t eo = svld1_s32(p32, LEO + i * 8);
-            svint32_t t = svmul_s32_x(p32, eo, c);
-            int64_t sum = (int64_t)svaddv_s32(p32, t);
-            d[i] = (int16_t)((sum + add) >> shift);
-        }
-    }
-
-    // k = 4 mod 8: 4-term mul on EEO (s32).
-    for (int k = 4; k < 32; k += 8)
-    {
-        svint32_t c = svld1_s32(p32, K4[(k - 4) / 8]);
-        int16_t* d = dst + k * 32;
-        for (int i = 0; i < 32; i++)
-        {
-            svint32_t eeo = svld1_s32(pg4s, LEEO + i * 4);
-            svint32_t t = svmul_s32_x(p32, eeo, c);
-            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
-            d[i] = (int16_t)((sum + add) >> shift);
-        }
-    }
-
-    // k = 0 mod 8: t8_even 2-term dots on EEEE/EEEO (v1: scalar).
     for (int i = 0; i < 32; i++)
     {
-        int64_t e0 = LEEEE[i * 2 + 0], e1 = LEEEE[i * 2 + 1];
-        int64_t o0 = LEEEO[i * 2 + 0], o1 = LEEEO[i * 2 + 1];
+        const int16_t* s = src + i * stride;
+        svint16_t lo = svld1_s16(p16, s);
+        svint16_t hi = svld1_s16(p16, s + 16);
+        svint16_t rv = svrev_s16(hi);
+        svint16_t O = svsub_s16_x(p16, lo, rv);
+        svint32_t loa = svunpklo_s32(lo), lob = svunpkhi_s32(lo);
+        svint32_t rva = svunpklo_s32(rv), rvb = svunpkhi_s32(rv);
+        svint32_t Ea = svadd_s32_x(p8s, loa, rva);
+        svint32_t Eb = svadd_s32_x(p8s, lob, rvb);
+        svint32_t Erb = svrev_s32(Eb);
+        svint32_t EE = svadd_s32_x(p8s, Ea, Erb);
+        svint32_t EO = svsub_s32_x(p8s, Ea, Erb);
+        svint32_t EEr = svrev_s32(EE);
+        svint32_t EEE = svadd_s32_x(p8s, EE, EEr);
+        svint32_t EEO = svsub_s32_x(p8s, EE, EEr);
+        svint32_t EEEr = svtbl_s32(EEE, rev4s);
+        svint32_t EEEE = svadd_s32_x(p8s, EEE, EEEr);
+        svint32_t EEEO = svsub_s32_x(p8s, EEE, EEEr);
+
+        {
+            svint64_t t = svdot_s64(zero64, O, CO0);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(1) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO1);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(3) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO2);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(5) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO3);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(7) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO4);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(9) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO5);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(11) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO6);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(13) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO7);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(15) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO8);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(17) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO9);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(19) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO10);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(21) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO11);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(23) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO12);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(25) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO13);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(27) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO14);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(29) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint64_t t = svdot_s64(zero64, O, CO15);
+            int64_t sum = svaddv_s64(p64, t);
+            dst[(31) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C20);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(2) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C21);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(6) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C22);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(10) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C23);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(14) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C24);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(18) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C25);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(22) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C26);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(26) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EO, C27);
+            int64_t sum = (int64_t)svaddv_s32(p8s, t);
+            dst[(30) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EEO, C40);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(4) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EEO, C41);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(12) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EEO, C42);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(20) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+        {
+            svint32_t t = svmul_s32_x(p8s, EEO, C43);
+            int64_t sum = (int64_t)svaddv_s32(pg4s, t);
+            dst[(28) * 32 + i] = (int16_t)((sum + add) >> shift);
+        }
+
+        int32_t ee[2], oo[2];
+        svst1_s32(pg2s, ee, EEEE);
+        svst1_s32(pg2s, oo, EEEO);
+        int64_t e0 = ee[0], e1 = ee[1], o0 = oo[0], o1 = oo[1];
         dst[0 * 32 + i] = (int16_t)((K0[0][0] * e0 + K0[0][1] * e1 + add) >> shift);
         dst[16 * 32 + i] = (int16_t)((K0[2][0] * e0 + K0[2][1] * e1 + add) >> shift);
         dst[8 * 32 + i] = (int16_t)((K0[1][0] * o0 + K0[1][1] * o1 + add) >> shift);
@@ -204,6 +342,6 @@ extern "C" void dynopt_dct32_sve2_shared(const int16_t* src, int16_t* dst, intpt
     const int shift1 = 4;   // 8-bit depth
     const int shift2 = 11;
     int16_t coef[32 * 32];
-    pass32(src, coef, srcStride, shift1);
-    pass32(coef, dst, 32, shift2);
+    pass32_impl(src, coef, srcStride, shift1);
+    pass32_impl(coef, dst, 32, shift2);
 }
