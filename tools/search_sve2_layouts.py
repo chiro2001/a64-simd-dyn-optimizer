@@ -94,7 +94,7 @@ def true_dynamic(binary, start, end, log):
                                       len(d["vector"]))}
 
 
-def make_emitter(kernel):
+def make_emitter(kernel, backend="acle"):
     """Return emit(combo) for the kernel's manifest layout axes."""
     if kernel == "dct16":
         from emit_dct16_sve2_shared import emit
@@ -137,6 +137,26 @@ def make_emitter(kernel):
         from emit_dct32_sve2_shared import emit
 
         def emit_fn(combo):
+            if backend == "op":
+                import sys as _sys
+                _ir = os.path.join(ROOT, "optimizer", "ir")
+                if _ir not in _sys.path:
+                    _sys.path.insert(0, _ir)
+                from dataclasses import replace  # noqa: E402
+                from dct32_op_emit import emit_from_plan  # noqa: E402
+                from layout_ir import dct32_v31_plan  # noqa: E402
+                lo = dict(
+                    pass1_k2_slice=combo.get("pass1_k2_slice", 1),
+                    # op backend currently lowers odd only via sdot.d
+                    # lane-per-output (row-reduce = TODO hybrid).
+                    odd_lowering="sdot.d",
+                    narrow_batch=4,
+                    constant_layout="derived-replicated",
+                    legacy_ex=combo.get("legacy_ex", 0),
+                    legacy_k4=combo.get("legacy_k4", 0))
+                return emit_from_plan(
+                    replace(dct32_v31_plan(), lowering=lo),
+                    func_name="dynopt_dct32_sve2_shared")
             return emit(layout=combo.get("layout", "v1"),
                         pass1_k2_slice=combo.get("pass1_k2_slice", 1),
                         odd_lowering=combo.get("odd_lowering", "sdot.d"),
@@ -159,7 +179,8 @@ def make_emitter(kernel):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--backend", choices=("acle", "asm"), default="acle")
+    ap.add_argument("--backend", choices=("acle", "asm", "op"),
+                    default="acle")
     ap.add_argument("--contract", default=None)
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=None)
@@ -174,7 +195,7 @@ def main():
     if args.outdir is None:
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
-    emit = make_emitter(args.kernel)
+    emit = make_emitter(args.kernel, args.backend)
     os.makedirs(args.outdir, exist_ok=True)
     cache_path = os.path.join(args.outdir, "verify_cache.json")
     cache = {}
@@ -258,8 +279,11 @@ def main():
             c = run(["aarch64-linux-gnu-as", "-march=armv8.2-a+sve2",
                      "-o", obj, s_path])
         else:
-            c = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                     "-march=armv8.2-a+sve2", "-c", src, "-o", obj])
+            cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                  "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
+            if args.backend == "op":
+                cc.insert(2, "-fno-tree-pre")
+            c = run(cc)
         if c.returncode != 0:
             print("%-24s BUILD FAIL" % tag)
             continue
@@ -322,8 +346,11 @@ def main():
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
             continue
-        start_syms = manifest["candidate"].get(
-            "range_start", manifest["candidate"]["symbol"])
+        if args.backend == "op" and args.kernel == "dct32":
+            start_syms = ["_ZL9op_pass_4PKsPsl"]
+        else:
+            start_syms = manifest["candidate"].get(
+                "range_start", manifest["candidate"]["symbol"])
         if isinstance(start_syms, str):
             start_syms = [start_syms]
         rng = None

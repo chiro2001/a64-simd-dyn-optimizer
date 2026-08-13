@@ -458,6 +458,21 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   反而更差（8041，spill 暴涨）——84 个常量驻留寄存器不可行。
   下一步方向：v2 行循环 odd + 4 行分组仅用于 k2/k4 legacy 切片的
   混合结构，或内部式 zip 切片 + 常量预排列。
+- **movprfx 口径透明化（2026-08-13）**：统计口径保持
+  `fused_adj = vector − movprfx`（movprfx 视为与下条融合，不单独计），
+  但报告必须同时给 raw vector 与 movprfx：
+
+  | 候选 | raw vector | movprfx | fused_adj |
+  | --- | ---: | ---: | ---: |
+  | v2 | 8854 | 1664 | 7190 |
+  | op 后端 E1-B | 8915 | 632 | 8283 |
+  | **op 后端 k2/k4 legacy** | **8172** | 448 | **7724** |
+
+  raw vector 上 op legacy 已优于 v2（8172 < 8854）；v2 的 fused 领先
+  主要来自 1216 条“免费”movprfx。若硬件上 movprfx 并非完全免费，
+  排序会反转——实机裁决前两个数字都保留。
+- `search_sve2_layouts.py` 已支持 `--backend op`（dct32：`op_pass_4`
+  起点 + `-fno-tree-pre` + 强制 odd=sdot.d），全链路复现 best 8283。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
