@@ -1,38 +1,272 @@
 [
  {
-  "tag": "p1-quarter_p2-upstream",
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0",
   "pass1": "quarter",
+  "pass1_k_tile": 2,
   "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
-   "total": 1840,
+   "total": 1802,
    "vector": 1510,
    "movprfx": 192,
    "vector_fused": 1318
   }
  },
  {
-  "tag": "p1-quarter_p2-odd-quarter",
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-1",
   "pass1": "quarter",
-  "pass2": "odd-quarter",
+  "pass1_k_tile": 2,
+  "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
   "upstream_exact": true,
   "counts": {
-   "total": 1787,
-   "vector": 1420,
-   "movprfx": 96,
-   "vector_fused": 1324
+   "total": 1671,
+   "vector": 1383,
+   "movprfx": 192,
+   "vector_fused": 1191
   }
  },
  {
-  "tag": "p1-per-row_p2-upstream",
-  "pass1": "per-row",
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0",
+  "pass1": "quarter",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1790,
+   "vector": 1397,
+   "movprfx": 96,
+   "vector_fused": 1301
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1",
+  "pass1": "quarter",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1669,
+   "vector": 1285,
+   "movprfx": 112,
+   "vector_fused": 1173
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0",
+  "pass1": "quarter",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1769,
+   "vector": 1397,
+   "movprfx": 96,
+   "vector_fused": 1301
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1",
+  "pass1": "quarter",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1649,
+   "vector": 1285,
+   "movprfx": 112,
+   "vector_fused": 1173
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-upstream_pass2_k_tile-1_narrow_merge-0",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
   "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1763,
+   "vector": 1487,
+   "movprfx": 192,
+   "vector_fused": 1295
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-upstream_pass2_k_tile-1_narrow_merge-1",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1646,
+   "vector": 1367,
+   "movprfx": 192,
+   "vector_fused": 1175
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1737,
+   "vector": 1365,
+   "movprfx": 96,
+   "vector_fused": 1269
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1641,
+   "vector": 1269,
+   "movprfx": 112,
+   "vector_fused": 1157
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1714,
+   "vector": 1365,
+   "movprfx": 96,
+   "vector_fused": 1269
+  }
+ },
+ {
+  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1",
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 1618,
+   "vector": 1269,
+   "movprfx": 112,
+   "vector_fused": 1157
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
   "upstream_exact": true,
   "counts": {
    "total": 2353,
    "vector": 1895,
    "movprfx": 384,
    "vector_fused": 1511
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-1",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "upstream",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 2353,
+   "vector": 1895,
+   "movprfx": 384,
+   "vector_fused": 1511
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 2309,
+   "vector": 1762,
+   "movprfx": 288,
+   "vector_fused": 1474
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 1,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 2309,
+   "vector": 1762,
+   "movprfx": 288,
+   "vector_fused": 1474
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 0,
+  "upstream_exact": true,
+  "counts": {
+   "total": 2295,
+   "vector": 1766,
+   "movprfx": 288,
+   "vector_fused": 1478
+  }
+ },
+ {
+  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1",
+  "pass1": "per-row",
+  "pass1_k_tile": 2,
+  "pass2": "odd-quarter",
+  "pass2_k_tile": 2,
+  "narrow_merge": 1,
+  "upstream_exact": true,
+  "counts": {
+   "total": 2295,
+   "vector": 1766,
+   "movprfx": 288,
+   "vector_fused": 1478
   }
  }
 ]

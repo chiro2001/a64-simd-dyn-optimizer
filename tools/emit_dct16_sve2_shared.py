@@ -408,7 +408,30 @@ def quarter_dot_group(g, kexpr, lo, hi):
            kexpr, 4 * g, g))
 
 
-def quarter_pass_cpp(k_tile=2):
+def quarter_dot_compute(g, kexpr, lo, hi):
+    """4-row quarter dot without narrow/store (for merged narrow)."""
+    return (
+        "            const svint16_t x0_%d = (%s & 1) ? QO0_%d : QE0_%d;\n"
+        "            const svint16_t x1_%d = (%s & 1) ? QO1_%d : QE1_%d;\n"
+        "            svint64_t d_%d = svdot_s64(zacc, x0_%d, %s);\n"
+        "            d_%d = svdot_s64(d_%d, x1_%d, %s);\n"
+        % (g, kexpr, g, g, g, kexpr, g, g, g, g, lo, g, g, g, hi))
+
+
+def merged_narrow(g0, g1, kexpr, row_base):
+    """Narrow two 4-row groups into one 8-lane store."""
+    return (
+        "            {\n"
+        "                const svint32_t w = svuzp1_s32(\n"
+        "                    svreinterpret_s32_s64(d_%d),\n"
+        "                    svreinterpret_s32_s64(d_%d));\n"
+        "                svint16_t n = svrshrnb_n_s32(w, shift);\n"
+        "                n = svuzp1_s16(n, n);\n"
+        "                svst1_s16(p8h, dst + 16 * (%s) + %d, n);\n"
+        "            }" % (g0, g1, kexpr, row_base))
+
+
+def quarter_pass_cpp(k_tile=2, narrow_merge=0):
     """pass1 in quarter-interleaved layout (v3), k-loop tiled by k_tile."""
     blocks = []
     for g in range(4):
@@ -447,10 +470,15 @@ def quarter_pass_cpp(k_tile=2):
         header = "        const svint16_t %s = svld1_s16(p16, CQ_LO[kb + %d]);\n" \
                  "        const svint16_t %s = svld1_s16(p16, CQ_HI[kb + %d]);\n" \
                  % (lo, t, hi, t)
-        tiles.append("{\n%s%s\n        }"
-                     % (header,
-                        "\n".join(quarter_dot_group(g, kexpr, lo, hi)
-                                  for g in range(4))))
+        if narrow_merge:
+            body = "\n".join(quarter_dot_compute(g, kexpr, lo, hi)
+                             for g in range(4))
+            body += "\n" + merged_narrow(0, 1, kexpr, 0)
+            body += "\n" + merged_narrow(2, 3, kexpr, 8)
+        else:
+            body = "\n".join(quarter_dot_group(g, kexpr, lo, hi)
+                             for g in range(4))
+        tiles.append("{\n%s\n%s\n        }" % (header, body))
     dot_src = ("    for (int kb = 0; kb < 16; kb += %d)\n    {\n%s\n    }\n"
                % (k_tile, "\n".join(tiles)))
     return """\
@@ -460,6 +488,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     const svbool_t p16 = svptrue_b16();
     const svbool_t p64 = svptrue_b64();
     const svbool_t p4h = svwhilelt_b16(0, 4);
+    const svbool_t p8h = svwhilelt_b16(0, 8);
     const svuint16_t ilo = svld1_u16(p16, idx_lo);
     const svuint16_t qa = svld1_u16(p16, idx_qa);
     const svuint16_t qb = svld1_u16(p16, idx_qb);
@@ -511,14 +540,16 @@ def group_block(g):
 
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          export_pass2=False, pass1_layout="quarter",
-         pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1):
+         pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1,
+         narrow_merge=0):
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
     cq_lo, cq_hi = quarter_consts_cpp()
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
-    quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile)
+    quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile,
+                                   narrow_merge=narrow_merge)
     pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"

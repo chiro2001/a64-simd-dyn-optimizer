@@ -26,7 +26,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
-from emit_dct16_sve2_shared import emit  # noqa: E402
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
 from kernel_manifest import layout_combos, load_manifest, repo_path  # noqa: E402
 from gen_verify import generate as gen_verify  # noqa: E402
@@ -83,16 +82,38 @@ def true_dynamic(binary, start, end, log):
             "vector_fused": c.get("vector_fused", len(d["vector"]))}
 
 
+def make_emitter(kernel):
+    """Return emit(combo) for the kernel's manifest layout axes."""
+    if kernel == "dct16":
+        from emit_dct16_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit(pass1_layout=combo.get("pass1", "quarter"),
+                        pass2_layout=combo.get("pass2", "upstream"),
+                        pass1_k_tile=combo.get("pass1_k_tile", 2),
+                        pass2_k_tile=combo.get("pass2_k_tile", 1),
+                        narrow_merge=combo.get("narrow_merge", 0))
+        return emit_fn
+    if kernel == "dct8":
+        from emit_dct8_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit(k_tile=combo.get("k_tile", 1))
+        return emit_fn
+    raise ValueError("no emitter registered for kernel %r" % kernel)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm"), default="acle")
     ap.add_argument("--kernel", default="dct16")
-    ap.add_argument("--outdir",
-                    default=os.path.join(ROOT,
-                                         "experiments/m30-dct16-search/"
-                                         "layout-search"))
+    ap.add_argument("--outdir", default=None)
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
+    if args.outdir is None:
+        args.outdir = os.path.join(
+            ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
+    emit = make_emitter(args.kernel)
     os.makedirs(args.outdir, exist_ok=True)
     verify_src = os.path.join(args.outdir, "verify_generated.cpp")
     if not os.path.exists(verify_src):
@@ -111,20 +132,19 @@ def main():
     results = []
     seen = set()
     for combo in combos:
-        if combo.get("pass1") != "quarter":
-            combo["pass1_k_tile"] = 2   # tile axis only applies to quarter
-        if combo.get("pass2") != "odd-quarter":
-            combo["pass2_k_tile"] = 1   # tile axis only applies to odd-quarter
+        if "pass1" in manifest.get("layouts", {}):
+            if combo.get("pass1") != "quarter":
+                combo["pass1_k_tile"] = 2   # tile only applies to quarter
+        if "pass2" in manifest.get("layouts", {}):
+            if combo.get("pass2") != "odd-quarter":
+                combo["pass2_k_tile"] = 1   # tile only applies to odd-quarter
         tag = "_".join("%s-%s" % (k, v) for k, v in combo.items())
         if tag in seen:
             continue
         seen.add(tag)
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
-            f.write(emit(pass1_layout=combo.get("pass1", "quarter"),
-                         pass2_layout=combo.get("pass2", "upstream"),
-                         pass1_k_tile=combo.get("pass1_k_tile", 2),
-                         pass2_k_tile=combo.get("pass2_k_tile", 1)))
+            f.write(emit(combo))
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")

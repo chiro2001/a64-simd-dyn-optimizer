@@ -340,6 +340,25 @@ quarter + k_tile=2 + odd-quarter：fused 1301
 相对上游 SVE 1911：0.664x；减半回收率 67%。产物已 finalize
 （best_sve2.cpp/.S，200k 验证）。
 
+## v11：合并窄化轴（2026-08-13）
+
+受内部参考（docs/18，仅记录量化结论）确认的"8 行合并窄化"方向启发，
+发射器新增 `narrow_merge` 轴：每 k 的两组 4 行输出先 `uzp1_s32` 合并
+成 8 个 s32，再 `rshrnb + uzp1_s16 + 8-lane store`（保持非饱和
+rshrnb，upstream-exact 不变）。结果（全部 20k 上游差分 0 分歧）：
+
+```text
+最佳组合：quarter + odd-quarter + narrow_merge=1
+  raw 1365 → 1285，fused 1269 → 1173
+相对上游 SVE 1911：0.614x；减半回收率 77%
+```
+
+工具链同步泛化：gen_verify 支持 shape.n（dct8 8×8），
+`pipeline.py --kernel dct8 baseline` 跑通（SVE 289 / NEON 333）；
+DCT8 发射器已实现（tools/emit_dct8_sve2_shared.py）并接入搜索注册表，
+候选上游差分 0 分歧（性能与上游持平，符合 round-0007 对 DCT8 的
+预判）。
+
 ## 宽度效率核算（2026-08-13，用户标准：SVE256 应对 128-bit 上游减半）
 
 上游 SVE 是 128-bit 有效（NEON-SVE bridge 只使用低半）；在 SVE256 下

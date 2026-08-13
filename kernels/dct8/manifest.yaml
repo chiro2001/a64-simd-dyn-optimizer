@@ -6,7 +6,7 @@ shape:
   n: 8
 
 candidate:
-  symbol: dynopt_dct8_sve2_shared        # emitter pending (v10+)
+  symbol: dynopt_dct8_sve2_shared
   verify_src: kernels/dct8/sve_shared_verify.cpp
   trace_driver_src: kernels/dct8/sve_trace_driver.cpp
   trace_driver_c: kernels/dct8/sve_trace_driver.c
@@ -34,4 +34,5 @@ corpus:
   value_range: [-255, 255]
   cases: 20000
 
-layouts: {}
+layouts:
+  k_tile: [1, 2]

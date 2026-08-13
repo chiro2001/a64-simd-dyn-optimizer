@@ -337,6 +337,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     const svbool_t p16 = svptrue_b16();
     const svbool_t p64 = svptrue_b64();
     const svbool_t p4h = svwhilelt_b16(0, 4);
+    const svbool_t p8h = svwhilelt_b16(0, 8);
     const svuint16_t ilo = svld1_u16(p16, idx_lo);
     const svuint16_t qa = svld1_u16(p16, idx_qa);
     const svuint16_t qb = svld1_u16(p16, idx_qb);
@@ -448,6 +449,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
         const svint16_t cq_lo0 = svld1_s16(p16, CQ_LO[kb + 0]);
         const svint16_t cq_hi0 = svld1_s16(p16, CQ_HI[kb + 0]);
+
             const svint16_t x0_0 = (kb + 0 & 1) ? QO0_0 : QE0_0;
             const svint16_t x1_0 = (kb + 0 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo0);
@@ -488,6 +490,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
         const svint16_t cq_lo1 = svld1_s16(p16, CQ_LO[kb + 1]);
         const svint16_t cq_hi1 = svld1_s16(p16, CQ_HI[kb + 1]);
+
             const svint16_t x0_0 = (kb + 1 & 1) ? QO0_0 : QE0_0;
             const svint16_t x1_0 = (kb + 1 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo1);
@@ -528,6 +531,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
         const svint16_t cq_lo2 = svld1_s16(p16, CQ_LO[kb + 2]);
         const svint16_t cq_hi2 = svld1_s16(p16, CQ_HI[kb + 2]);
+
             const svint16_t x0_0 = (kb + 2 & 1) ? QO0_0 : QE0_0;
             const svint16_t x1_0 = (kb + 2 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo2);
@@ -568,6 +572,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
 {
         const svint16_t cq_lo3 = svld1_s16(p16, CQ_LO[kb + 3]);
         const svint16_t cq_hi3 = svld1_s16(p16, CQ_HI[kb + 3]);
+
             const svint16_t x0_0 = (kb + 3 & 1) ? QO0_0 : QE0_0;
             const svint16_t x1_0 = (kb + 3 & 1) ? QO1_0 : QE1_0;
             svint64_t d_0 = svdot_s64(zacc, x0_0, cq_lo3);

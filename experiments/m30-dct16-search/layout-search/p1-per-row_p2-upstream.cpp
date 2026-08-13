@@ -134,6 +134,10 @@ static const uint16_t idx_q0[16] =
     { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
 static const uint16_t idx_q1[16] =
     { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
+static const uint16_t idx_qa[16] =
+    { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
+static const uint16_t idx_qb[16] =
+    { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
 
 template <int shift>
 static void pass(const int16_t* src, int16_t* dst, intptr_t stride)

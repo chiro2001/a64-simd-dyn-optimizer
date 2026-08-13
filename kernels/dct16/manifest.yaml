@@ -38,3 +38,4 @@ layouts:
   pass1_k_tile: [2, 4]
   pass2: [upstream, odd-quarter]
   pass2_k_tile: [1, 2]
+  narrow_merge: [0, 1]
