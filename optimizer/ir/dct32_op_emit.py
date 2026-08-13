@@ -278,7 +278,12 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
 
 def emit_acle(plan: Plan, ops: List[Op],
               func_name: str = "dynopt_dct32_opbackend") -> str:
-    row_group = int(plan.lowering.get("row_group", 4))
+    # Derive the group loop from the op DAG: max g -> n_groups, so an
+    # op-level rewrite can re-tag g (e.g. merge_narrow8) without any
+    # plan flag. Both passes share the same g range.
+    max_g = max((int(o.attrs.get("g", 0)) for o in ops), default=7)
+    n_groups = max_g + 1
+    row_group = 32 // n_groups
     pass1 = [o for o in ops if o.tile_id.startswith("p1.")]
     pass2 = [o for o in ops if o.tile_id.startswith("p2.")]
     b1 = _emit_pass(pass1, 8, row_group)
@@ -302,7 +307,8 @@ def emit_acle(plan: Plan, ops: List[Op],
 """
     if row_group == 8:
         prologue += "    const svbool_t pg8h = svwhilelt_b16(0, 8);\n"
-    if plan.lowering.get("legacy_k4"):
+    if any(o.kind == "permute" and o.attrs.get("idx") == "rev8"
+           for o in ops):
         prologue += "    const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);\n"
     pass4 = "static __attribute__((noinline)) void op_pass_4("\
             "const int16_t* src, int16_t* dst, intptr_t stride)\n{\n%s\n%s\n}"\

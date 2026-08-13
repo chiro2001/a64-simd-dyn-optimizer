@@ -99,6 +99,11 @@ rewrite 组合同样可达 6464——结构空间搜索的第一维已闭环。
 TestBenchLite PASS）。修复 op_id 跨 rewrite 冲突（counter 从输入
 最大编号之后开始）。
 
+**进度（2026-08-13）**：P0 inc5 前置完成——发射器改为从 op DAG 推导
+`n_groups/row_group`（不再读 plan row_group flag），rewrite 只需重打
+g 标签即可改变循环结构；推导后 row8 legacy 仍为 6464/6904（回归通过）。
+`merge_narrow8`（双 bank 重排 + trn1 合并）作为下一步原子 rewrite。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。
