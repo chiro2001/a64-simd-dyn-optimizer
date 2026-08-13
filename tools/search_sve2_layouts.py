@@ -96,6 +96,16 @@ def true_dynamic(binary, start, end, log):
 
 def make_emitter(kernel, backend="acle"):
     """Return emit(combo) for the kernel's manifest layout axes."""
+    if kernel == "dct16" and backend == "op":
+        import sys as _sys
+        _ir = os.path.join(ROOT, "optimizer", "ir")
+        if _ir not in _sys.path:
+            _sys.path.insert(0, _ir)
+        from dct16_op_emit import emit_from_combo  # noqa: E402
+
+        def emit_fn(combo):
+            return emit_from_combo(combo)
+        return emit_fn
     if kernel == "dct16":
         from emit_dct16_sve2_shared import emit
 
@@ -156,8 +166,11 @@ def make_emitter(kernel, backend="acle"):
                     legacy_k4=combo.get("legacy_k4", 0),
                     slice_kind=combo.get("slice_kind", "tbl2"),
                     row_group=combo.get("row_group", 4),
-                    rewrites=([] if combo.get("rewrites", "none") == "none"
-                              else [combo["rewrites"]]))
+                    rewrites=[c for c in (combo.get("rw1", "none"),
+                                          combo.get("rw2", "none"),
+                                          combo.get("rw3", "none"),
+                                          combo.get("rw4", "none"))
+                              if c != "none"])
                 return emit_from_plan(
                     replace(dct32_v31_plan(), lowering=lo),
                     func_name="dynopt_dct32_sve2_shared")
@@ -358,7 +371,7 @@ def main():
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
             continue
-        if args.backend == "op" and args.kernel == "dct32":
+        if args.backend == "op" and args.kernel in ("dct32", "dct16"):
             start_syms = ["_ZL9op_pass_4PKsPsl"]
         else:
             start_syms = manifest["candidate"].get(
@@ -375,6 +388,11 @@ def main():
                             "passed": False, "counts": None})
             continue
         end_sym = manifest["candidate"].get("range_end")
+        if end_sym is None and args.backend == "op" \
+                and args.kernel == "dct16":
+            # op backend emits op_pass_4/op_pass_11 + wrapper; trace the
+            # two inner passes and stop at the wrapper (it only calls them).
+            end_sym = manifest["candidate"]["symbol"]
         if end_sym:
             rng_end = symbol_range(driver, end_sym)
             if rng_end is None:

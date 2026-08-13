@@ -63,6 +63,20 @@ fi
     && CAND_DCT32=""
 [ -n "$CAND_INTERP8" ] && [ "$(readlink -f "$CAND_INTERP8")" = "$CAND" ] \
     && CAND_INTERP8=""
+
+# Drop any reference candidate that shares an exported symbol with the
+# candidate under test (op-backend candidates reuse the dynopt_* symbol
+# that the grouped reference objects also define).
+for var in CAND_DCT16 CAND_SA8D CAND_SA8D16 CAND_DCT32 CAND_INTERP8; do
+    eval "f=\${$var:-}"
+    [ -n "$f" ] || continue
+    if comm -12 \
+        <(nm -g --defined-only "$CAND" 2>/dev/null | awk '{print $3}' | sort -u) \
+        <(nm -g --defined-only "$f" 2>/dev/null | awk '{print $3}' | sort -u) \
+        | grep -q .; then
+        eval "$var="
+    fi
+done
 mkdir -p "$LITE"
 
 if [ ! -f "$OUT/libx265.a" ]; then
