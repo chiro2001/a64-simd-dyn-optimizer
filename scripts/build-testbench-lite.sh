@@ -36,6 +36,19 @@ if [ -f "$ROOT/kernels/sa8d/candidates/best_sve2.o" ]; then
 else
     CAND_SA8D=""
 fi
+if [ -f "$ROOT/kernels/sa8d16/candidates/best_sve2.o" ]; then
+    CAND_SA8D16="$ROOT/kernels/sa8d16/candidates/best_sve2.o"
+else
+    CAND_SA8D16=""
+fi
+# Drop a reference candidate when the caller passes the same object, so the
+# link does not see duplicate definitions of its symbol.
+[ -n "$CAND_DCT16" ] && [ "$(readlink -f "$CAND_DCT16")" = "$CAND" ] \
+    && CAND_DCT16=""
+[ -n "$CAND_SA8D" ] && [ "$(readlink -f "$CAND_SA8D")" = "$CAND" ] \
+    && CAND_SA8D=""
+[ -n "$CAND_SA8D16" ] && [ "$(readlink -f "$CAND_SA8D16")" = "$CAND" ] \
+    && CAND_SA8D16=""
 mkdir -p "$LITE"
 
 if [ ! -f "$OUT/libx265.a" ]; then
@@ -56,7 +69,8 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
 "$CXX" -std=gnu++98 -O3 -DNDEBUG -fPIC "${DEFS[@]}" "${INCS[@]}" \
     -c "$ROOT/tools/testbench_lite.cpp" -o "$LITE/testbench_lite.o"
 
-"$CXX" "$CAND" $CAND_DCT16 $CAND_SA8D -Wl,-Bsymbolic,-znoexecstack \
+"$CXX" "$CAND" $CAND_DCT16 $CAND_SA8D $CAND_SA8D16 \
+    -Wl,-Bsymbolic,-znoexecstack \
     "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" "$LITE/pixelharness.o" \
     -o "$LITE/TestBenchLite" "$OUT/libx265.a" -lpthread -lrt -ldl
 

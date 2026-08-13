@@ -141,6 +141,9 @@ def main():
     ap.add_argument("--contract", default=None)
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=None)
+    ap.add_argument("--finalize", action="store_true",
+                    help="copy the best candidate to kernels/<name>/candidates/"
+                         "best_sve2.{cpp,S,o} and run its TestBenchLite gate")
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
     if args.contract:
@@ -183,6 +186,7 @@ def main():
     results = []
     seen = set()
     src_seen = {}
+    emitted = {}
     for combo in combos:
         if "pass1" in manifest.get("layouts", {}):
             if combo.get("pass1") != "quarter":
@@ -246,6 +250,7 @@ def main():
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
             f.write(src_text)
+        emitted[tag] = src_text
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")
@@ -354,6 +359,36 @@ def main():
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
                  r["counts"]["vector_fused_uop"]))
+    if args.finalize and ok:
+        best = ok[0]
+        cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")
+        os.makedirs(cand_dir, exist_ok=True)
+        src_path = os.path.join(cand_dir, "best_sve2.cpp")
+        s_path = os.path.join(cand_dir, "best_sve2.S")
+        obj_path = os.path.join(cand_dir, "best_sve2.o")
+        with open(src_path, "w") as f:
+            meta = {"tag", "contract", "upstream_exact", "passed",
+                    "verify_mismatches", "verify", "counts", "cached"}
+            combo = {k: v for k, v in best.items() if k not in meta}
+            f.write(emit(combo))
+        run(["aarch64-linux-gnu-g++", "-O2", "-march=armv8.2-a+sve2",
+             "-S", src_path, "-o", s_path])
+        c = run(["aarch64-linux-gnu-g++", "-O2", "-march=armv8.2-a+sve2",
+                 "-c", src_path, "-o", obj_path])
+        if c.returncode == 0:
+            print("finalized %s (fused_uop=%d)"
+                  % (src_path, best["counts"]["vector_fused_uop"]))
+            gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
+                    "dct16": "dct16"}.get(args.kernel)
+            if gate:
+                lite = run(["scripts/build-testbench-lite.sh", obj_path,
+                            "build/x265-8-testbench", "--", "--gate", gate,
+                            "--seed", "0x12345678"])
+                tail = lite.stdout.strip().splitlines()
+                print("  lite gate %s: %s"
+                      % (gate, tail[-1] if tail else "no output"))
+        else:
+            print("finalize FAIL: best candidate did not compile")
     return 0 if ok else 1
 
 
