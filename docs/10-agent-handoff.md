@@ -16,6 +16,20 @@
   k0_even_sdot 全 s16 方案被探针否决（docs/20 §6.4）；
   k0_shared_mul 在 row16 下反增 16（调度差异），k0_merge8 仅在
   shared=0 时净收益。
+
+### 0.11 下一主项（2026-08-14 深夜更新）
+
+- 设计文档已落盘：**docs/24-dct32-pass2-shared-pack.md**——pass2
+  共享打包/转置换位（内部结构方向），预期 -250~-330（fused_adj 口径
+  逼近内部 4251）。实现前必做探针已列明（s32 E 链共享派生、常量反转
+  吸收、k2/k4 切片派生）。
+- 本轮已完成的探针：`probe_odd_slice.cpp`（pack(O) q0/q1==X0/X1、
+  q2r/q3r==revh(X2/X3)，可折进常量）；`probe_k4_slice.cpp`
+  （slice(rev8) 非切片内置换，§6.9）；`probe_k0_epack.cpp`
+  （E-pack 仅 pass1，§6.8）。
+- 阴性：per-pass row_group 混合（16/8、8/16 均 >4682）、k4 常量折叠
+  （数学不成立）、clang 后端（5292）、g 循环 unroll（4991）、GCC
+  调度标志（无差异）——全部记录 docs/20 §6.9。
 - DCT16 best 705（含 4 scatter）/ 零 scatter 895（超内部 731）。
 - DCT32 rewrite 序列搜索（剪枝后）：781→219 计划键、31 唯一源，
   best `[legacy_k2, legacy_k4, merge_narrow8, k0_even_sve]` = 6322。
