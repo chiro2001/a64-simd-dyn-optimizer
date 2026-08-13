@@ -173,14 +173,20 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     E16 = new("add", tid, "E16_%d" % r, (lo_v.out, rv.out),
                               attrs={"elem": "s16"})
                     e16[r] = E16.out
-                    if (k2_slice and pass_id == 1) or \
-                            (legacy_ex and pass_id == 2):
+                    need_eo16 = ((k2_slice and pass_id == 1)
+                                 or (legacy_ex and pass_id == 2)) \
+                        and not (k2k4_from_packs and (
+                            pass_id == 2
+                            or (pass_id == 1 and k0_epack)))
+                    if need_eo16:
                         E16r = new("rev", tid, "E16r_%d" % r, (E16.out,),
                                    attrs={"elem": "s16"})
                         eo16[r] = new(
                             "sub", tid, "EO16_%d" % r, (E16.out, E16r.out),
                             attrs={"elem": "s16", "lane_owner": "partial"}).out
-                    if legacy_k4:
+                    if legacy_k4 and not (k2k4_from_packs and (
+                            pass_id == 2
+                            or (pass_id == 1 and k0_epack))):
                         # EE16 = E16 + rev16(E16); EEO16 = EE16 - rev8(EE16)
                         E16rr = new("permute", tid, "E16rr_%d" % r,
                                     (E16.out,),
@@ -394,24 +400,40 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     suffix = "_b%d" % b
                     tid = "p%d.k2.slice%s" % (pass_id, suffix)
                     ex = []
-                    if k2k4_from_packs and pass_id == 2:
+                    if k2k4_from_packs and (
+                            pass_id == 2
+                            or (pass_id == 1 and k0_epack)):
                         # E16-pack slices from the k0 lo/rv packs (shared
                         # with k4): t0..t3; EX0 = t0-t3, EX1 = t1-t2.
-                        pkt = []
-                        for m, (ln, rn) in enumerate((
-                                ("L_q0", "R_q0"), ("L_q1", "R_q1"),
-                                ("L_qr2", "R_qr2"), ("L_qr3", "R_qr3"))):
-                            pkt.append(new(
-                                "add", tid, "pkt%d%s" % (m, suffix),
-                                ("%s_%d_%d" % (ln, b, pass_id),
-                                 "%s_%d_%d" % (rn, b, pass_id)),
-                                attrs={"elem": "s16"}).out)
-                        ex.append(new("sub", tid, "EX0%s" % suffix,
-                                      (pkt[0], pkt[3]),
-                                      attrs={"elem": "s16"}).out)
-                        ex.append(new("sub", tid, "EX1%s" % suffix,
-                                      (pkt[1], pkt[2]),
-                                      attrs={"elem": "s16"}).out)
+                        if pass_id == 2:
+                            pkt = []
+                            for m, (ln, rn) in enumerate((
+                                    ("L_q0", "R_q0"), ("L_q1", "R_q1"),
+                                    ("L_qr2", "R_qr2"),
+                                    ("L_qr3", "R_qr3"))):
+                                pkt.append(new(
+                                    "add", tid, "pkt%d%s" % (m, suffix),
+                                    ("%s_%d_%d" % (ln, b, pass_id),
+                                     "%s_%d_%d" % (rn, b, pass_id)),
+                                    attrs={"elem": "s16"}).out)
+                            ex.append(new("sub", tid, "EX0%s" % suffix,
+                                          (pkt[0], pkt[3]),
+                                          attrs={"elem": "s16"}).out)
+                            ex.append(new("sub", tid, "EX1%s" % suffix,
+                                          (pkt[1], pkt[2]),
+                                          attrs={"elem": "s16"}).out)
+                        else:
+                            # pass1: the k0 E-pack's E16 slices already
+                            # are t0..t3 (EO16 = E16 - rev(E16)):
+                            # EX0 = eq0 - eq3r, EX1 = eq1 - eq2r.
+                            ex.append(new("sub", tid, "EX0%s" % suffix,
+                                          ("E_q0_%d_%d" % (b, pass_id),
+                                           "E_qr3_%d_%d" % (b, pass_id)),
+                                          attrs={"elem": "s16"}).out)
+                            ex.append(new("sub", tid, "EX1%s" % suffix,
+                                          ("E_q1_%d_%d" % (b, pass_id),
+                                           "E_qr2_%d_%d" % (b, pass_id)),
+                                          attrs={"elem": "s16"}).out)
                     elif slice_kind == "zip":
                         z1 = new("permute", tid, "k2z1%s" % suffix,
                                  (eo16[rb[0]], eo16[rb[2]]),
@@ -568,15 +590,25 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 for b, rb in enumerate(k4_banks):
                     suffix = "_b%d" % b
                     tid = "p%d.k4.slice%s" % (pass_id, suffix)
-                    if k2k4_from_packs and pass_id == 2:
+                    if k2k4_from_packs and (
+                            pass_id == 2
+                            or (pass_id == 1 and k0_epack)):
                         # Xk4 = (t0+t3) - revh(t1+t2), t0..t3 from the k2
                         # pack slices (probe_k2k4_from_packs verified).
+                        if pass_id == 2:
+                            t0, t1, t2, t3 = (
+                                "pkt0%s" % suffix, "pkt1%s" % suffix,
+                                "pkt2%s" % suffix, "pkt3%s" % suffix)
+                        else:
+                            t0, t1, t2, t3 = (
+                                "E_q0_%d_%d" % (b, pass_id),
+                                "E_q1_%d_%d" % (b, pass_id),
+                                "E_qr2_%d_%d" % (b, pass_id),
+                                "E_qr3_%d_%d" % (b, pass_id))
                         s0 = new("add", tid, "k4s0%s" % suffix,
-                                 ("pkt0%s" % suffix, "pkt3%s" % suffix),
-                                 attrs={"elem": "s16"})
+                                 (t0, t3), attrs={"elem": "s16"})
                         s1 = new("add", tid, "k4s1%s" % suffix,
-                                 ("pkt1%s" % suffix, "pkt2%s" % suffix),
-                                 attrs={"elem": "s16"})
+                                 (t1, t2), attrs={"elem": "s16"})
                         rh = new("permute", tid, "k4rh%s" % suffix,
                                  (s1.out,), attrs={"kind": "revh_d"})
                         xk4 = new("sub", tid, "Xk4%s" % suffix,

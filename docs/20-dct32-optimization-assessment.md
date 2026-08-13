@@ -1069,6 +1069,37 @@ odd_from_k0packs=1；发射顺序强制 k0 最先）。
 已重新固化。本轮从 5390 到 4234 的累计 -21.5% 全部由工具搜索的
 新轴驱动：row16/merge8/epack/order/sdot_indexed/odd 共享/k2k4 共享。
 
+### 6.13 2026-08-14：k2k4 共享扩展到 pass1 → 4234→4002
+
+pass1 的 k0 用 E-pack（pack(E16)），其输出 eq0/eq1/eq2r/eq3r 就是
+E16-pack 切片；由于 EO16 = E16 − rev(E16)（k2 输入）与
+EEO16 = EE16 − rev8(EE16)（k4 输入）可线性展开，pass1 的 k2/k4
+切片同样可以直接派生（探针 probe_k2k4_from_packs 的等式对 E-pack
+切片同样成立）：
+
+- k2：EX0 = eq0 − eq3r、EX1 = eq1 − eq2r；
+- k4：Xk4 = (eq0+eq3r) − revh(eq1+eq2r)；
+- pass1 leaf 的 eo16/ee16/eeo16 链成为死代码（DCE）。
+
+| 指标 | 4234 | **4002** | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 4234 | **4002** | -232（-5.5%） |
+| vector raw | 4694 | 4466 | -228 |
+| stack | 442 | 387 | -55 |
+| total | 6131 | 5619 | -512 |
+| 20k legacy 签名 | 7268 | 7268 | 0 |
+| TestBenchLite | 5 seed PASS | **5 seed PASS** | — |
+
+全布局搜索（608 候选全过）发现 best 的 **k0_shared_mul=0**——该轴
+在 4514 时代因 sdot_indexed 由负转正，pass1 共享后再次由正转负
+（又一个非显然交互）。相对上游 12710 = **0.315×**；fused_uop
+0.829×、fused_adj 0.941× 内部参考。`best_op_r16.{cpp,S}` 已重新
+固化。累计 5390→4002（-25.7%）。
+
+**内存教训（用户反馈）**：搜索进程 RSS ~3GB（8 worker fork COW 共享），
+与 codex 咨询并发时曾打满 swap 并 OOM 杀掉咨询进程。已新增
+`scripts/monitor-resources.sh` 后台监控；后续大搜索与咨询错峰执行。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；

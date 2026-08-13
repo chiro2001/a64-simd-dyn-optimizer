@@ -7,14 +7,15 @@
 
 ### 0.1 当前 best 与验收
 
-- **DCT32 op 后端 best = 4234 fused_uop**（vector 4694 / movprfx 460 /
-  stack 442 / 零 scatter），相对上游 12710 = 0.333×，**低于内部参考
-  fused_uop 4827 = 0.877×、fused_adj 4251 = 0.996×**。由 row16 合并
+- **DCT32 op 后端 best = 4002 fused_uop**（vector 4466 / movprfx 464 /
+  stack 387 / 零 scatter），相对上游 12710 = 0.315×，**低于内部参考
+  fused_uop 4827 = 0.829×、fused_adj 4251 = 0.941×**。由 row16 合并
   存储 + k0_merge8 + k0 先发射 + pass1 专用 k0 E-pack +
   **indexed sdot 常量共享（sdot_indexed 轴）+ odd/k2/k4 切片复用
-  k0 pack（odd_from_k0packs/k2k4_from_packs 轴）**达成
-  （5390→4234，-21.5%），全布局搜索 608 候选确认（best 含
-  k0_shared_mul=1，与 sdot_indexed 交互后由负转正），
+  k0 pack（odd_from_k0packs/k2k4_from_packs 轴，pass1 用 E-pack
+  切片、pass2 用 L/R pack）**达成（5390→4002，-25.7%），全布局
+  搜索 608 候选确认（best 的 k0_shared_mul=0——与 pass1 共享交互
+  后再次由正转负），
   **TestBenchLite dct32 5 seed 全 PASS（黄金标准已闭合）**；
   k0_even_sdot 全 s16 方案被探针否决（docs/20 §6.4）；
   k0_shared_mul 在 row16 下反增 16（调度差异），k0_merge8 仅在

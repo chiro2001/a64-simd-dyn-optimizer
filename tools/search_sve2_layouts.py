@@ -460,7 +460,6 @@ def main():
     results = []
     seen = set()
     src_seen = {}
-    emitted = {}
     tasks = []
     for combo in combos:
         if combo.get("legacy_k4") and args.backend != "op":
@@ -507,7 +506,6 @@ def main():
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
             f.write(src_text)
-        emitted[tag] = src_text
         tasks.append((tag, combo, src_text, ckey, args.outdir, args.backend,
                       manifest, verify_src, driver_o, args.kernel,
                       c_contract,
