@@ -473,6 +473,262 @@ def rewrite_legacy_k4(ops: List[Op]) -> List[Op]:
 REWRITES["legacy_k4"] = rewrite_legacy_k4
 
 
+def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
+    """Merge two 4-row groups into one 8-row super-group (odd path)."""
+    base = _op_id_base(ops)
+    counter = [base]
+
+    def fresh(kind, tile_id, out, ins, attrs):
+        counter[0] += 1
+        return Op("rw%04d" % counter[0], kind, tile_id, out,
+                  tuple(ins), dict(attrs))
+
+    def pid(o):
+        return int(o.tile_id.split(".")[0][1:])
+
+    retagged = [Op(o.op_id, o.kind, o.tile_id, o.out, o.inputs,
+                   dict(o.attrs, g=o.attrs.get("g", 0) // 2))
+                for o in ops]
+    leaf = {}
+    for o in retagged:
+        if o.tile_id.startswith("p%d.leaf.row" % pid(o)):
+            row = int(o.tile_id.rsplit("row", 1)[1])
+            leaf.setdefault((pid(o), o.attrs.get("g", 0), row), {})[o.out] = o
+
+    remove = set()
+    insert_at = {}
+    old_odd = {}
+    for o in retagged:
+        if o.tile_id.startswith("p") and ".odd.k" in o.tile_id:
+            parts = o.tile_id.split(".")
+            p = int(parts[0][1:])
+            k = int(parts[2][1:])
+            g = o.attrs.get("g", 0)
+            old_odd.setdefault((p, g, k), []).append(o)
+
+    old_slices = {}
+    for o in retagged:
+        if o.tile_id.startswith("p") and "odd.slice" in o.tile_id:
+            p = pid(o)
+            g = o.attrs.get("g", 0)
+            old_slices.setdefault((p, g), []).append(o)
+
+    for p in (1, 2):
+        for b in range(4):
+            rows = sorted(row for (pp, gg, row) in leaf
+                          if pp == p and gg == b and
+                          b * 8 <= row < b * 8 + 8)
+            if len(rows) != 8:
+                continue
+            even = rows[0::2]
+            oddr = rows[1::2]
+            banks = (even, oddr)
+            xs_per_bank = []
+            slice_ops = []
+            for bi, bank in enumerate(banks):
+                xs = []
+                for m in range(4):
+                    pm = fresh(
+                        "permute", "p%d.odd.slice_b%d" % (p, b),
+                        "p%d_%d_b%d" % (m, bi, b),
+                        (leaf[(p, b, bank[0])]["O_%d" % bank[0]].out,
+                         leaf[(p, b, bank[1])]["O_%d" % bank[1]].out),
+                        {"kind": "tbl2", "idx": "i%d" % m,
+                         "lane_owner": "output", "g": b})
+                    slice_ops.append(pm)
+                    qm = fresh(
+                        "permute", "p%d.odd.slice_b%d" % (p, b),
+                        "q%d_%d_b%d" % (m, bi, b),
+                        (leaf[(p, b, bank[2])]["O_%d" % bank[2]].out,
+                         leaf[(p, b, bank[3])]["O_%d" % bank[3]].out),
+                        {"kind": "tbl2", "idx": "i%d" % m,
+                         "lane_owner": "output", "g": b})
+                    slice_ops.append(qm)
+                    xm = fresh("permute", "p%d.odd.slice_b%d" % (p, b),
+                               "X%d_%d_b%d" % (m, bi, b),
+                               (pm.out, qm.out),
+                               {"kind": "tbl2", "idx": "ilo",
+                                "lane_owner": "output", "g": b})
+                    xs.append(xm)
+                    slice_ops.append(xm)
+                xs_per_bank.append(xs)
+            inserted_slices = False
+            for k in range(1, 32, 2):
+                old_all = old_odd.get((p, b, k), [])
+                if not old_all:
+                    continue
+                stores = [o for o in old_all if o.kind == "store"]
+                if len(stores) != 2:
+                    continue
+                stores.sort(key=lambda o: o.attrs["lanes"][0][2])
+                anchor = stores[0]
+                ops_new = list(slice_ops) if not inserted_slices else []
+                inserted_slices = True
+                rs = []
+                for bi, (bank, xs) in enumerate(zip(banks, xs_per_bank)):
+                    terms = []
+                    for m in range(4):
+                        t = fresh("dot_segment", "p%d.odd.k%d" % (p, k),
+                                  "t_%d_%d_b%d" % (k, m, bi),
+                                  (xs[m].out,),
+                                  {"acc_bits": 64,
+                                   "lane_owner": "output", "slice": m,
+                                   "terms": tuple("G[%d][%d]"
+                                                  % (k, 4 * m + j)
+                                                  for j in range(4)),
+                                   "const_src": "CODD[%d][%d]"
+                                   % (k // 2, m), "g": b})
+                        terms.append(t)
+                    acc = terms[0].out
+                    acc_ops = []
+                    for m in range(1, 4):
+                        a = fresh("accumulate", "p%d.odd.k%d" % (p, k),
+                                  "acc_%d_%d_b%d" % (k, m, bi),
+                                  (acc, terms[m].out),
+                                  {"acc_bits": 64, "g": b})
+                        acc = a.out
+                        acc_ops.append(a)
+                    rnd = fresh("round_shift", "p%d.odd.k%d" % (p, k),
+                                "rnd_%d_b%d" % (k, bi), (acc,),
+                                {"shift": 4 if p == 1 else 11,
+                                 "epoch": p, "mode": "half-up", "g": b})
+                    rs.append(rnd)
+                    ops_new.extend(terms)
+                    ops_new.extend(acc_ops)
+                    ops_new.append(rnd)
+                n8 = fresh("narrow8", "p%d.odd.k%d" % (p, k),
+                           "n8_%d" % k, (rs[0].out, rs[1].out),
+                           {"from": "s64", "to": "s16",
+                            "kind": "trn1+uzp", "g": b})
+                st = fresh("store", "p%d.odd.k%d" % (p, k), "", (n8.out,),
+                           {"base": "dst", "index": "k*32+i",
+                            "lanes": tuple((p, k, r) for r in rows),
+                            "topology": "contiguous", "row_group": 8,
+                            "base_off": 0, "g": b})
+                ops_new.extend([n8, st])
+                insert_at[anchor.op_id] = ops_new
+                remove.update(o.op_id for o in old_all)
+                remove.update(o.op_id for o in
+                              old_slices.get((p, b), []))
+            # ---- k2 EX (dot chains) rebuild: dual bank + merged narrow ----
+            k2_dots = [o for o in retagged
+                       if o.kind == "dot_segment"
+                       and o.tile_id.startswith("p%d.k2.k" % p)
+                       and o.attrs.get("g", 0) == b]
+            if k2_dots:
+                k2_slice_old = [o for o in retagged
+                                if o.tile_id.startswith("p%d.k2.slice" % p)
+                                and o.attrs.get("g", 0) == b]
+                exs = []
+                k2_slice_new = []
+                for bi, bank in enumerate(banks):
+                    e0 = leaf[(p, b, bank[0])]["EO16_%d" % bank[0]]
+                    e1 = leaf[(p, b, bank[1])]["EO16_%d" % bank[1]]
+                    e2 = leaf[(p, b, bank[2])]["EO16_%d" % bank[2]]
+                    e3 = leaf[(p, b, bank[3])]["EO16_%d" % bank[3]]
+                    exs_b = []
+                    for m in (0, 1):
+                        em = fresh("permute", "p%d.k2.slice_b%d" % (p, b),
+                                   "k2e%d_%d_b%d" % (m, bi, b),
+                                   (e0.out, e1.out),
+                                   {"kind": "tbl2", "idx": "i%d" % m,
+                                    "lane_owner": "output", "g": b})
+                        fm = fresh("permute", "p%d.k2.slice_b%d" % (p, b),
+                                   "k2f%d_%d_b%d" % (m, bi, b),
+                                   (e2.out, e3.out),
+                                   {"kind": "tbl2", "idx": "i%d" % m,
+                                    "lane_owner": "output", "g": b})
+                        ex = fresh("permute", "p%d.k2.slice_b%d" % (p, b),
+                                   "k2EX%d_%d_b%d" % (m, bi, b),
+                                   (em.out, fm.out),
+                                   {"kind": "tbl2", "idx": "ilo",
+                                    "lane_owner": "output", "g": b})
+                        exs_b.append(ex)
+                        k2_slice_new.extend([em, fm, ex])
+                    exs.append(exs_b)
+                k2_inserted = False
+                for k in K2_K:
+                    chains = [o for o in retagged
+                              if o.tile_id == "p%d.k2.k%d" % (p, k)
+                              and o.attrs.get("g", 0) == b]
+                    stores = [o for o in chains if o.kind == "store"]
+                    if len(stores) != 2:
+                        continue
+                    stores.sort(key=lambda o: o.attrs["lanes"][0][2])
+                    anchor = stores[0]
+                    ops_new = (list(k2_slice_new)
+                               if not k2_inserted else [])
+                    k2_inserted = True
+                    rs = []
+                    for bi in (0, 1):
+                        t0 = fresh("dot_segment", "p%d.k2.k%d" % (p, k),
+                                   "k2t0_%d_b%d" % (k, bi),
+                                   (exs[bi][0].out,),
+                                   {"acc_bits": 64,
+                                    "lane_owner": "output", "slice": 0,
+                                    "terms": tuple("G[%d][%d]" % (k, j)
+                                                   for j in range(4)),
+                                    "const_src": "K2S[%d][0]" % (k // 4),
+                                    "g": b})
+                        t1 = fresh("dot_segment", "p%d.k2.k%d" % (p, k),
+                                   "k2t1_%d_b%d" % (k, bi),
+                                   (exs[bi][1].out,),
+                                   {"acc_bits": 64,
+                                    "lane_owner": "output", "slice": 1,
+                                    "terms": tuple("G[%d][%d]" % (k, 4 + j)
+                                                   for j in range(4)),
+                                    "const_src": "K2S[%d][1]" % (k // 4),
+                                    "g": b})
+                        acc = fresh("accumulate", "p%d.k2.k%d" % (p, k),
+                                    "k2acc_%d_b%d" % (k, bi),
+                                    (t0.out, t1.out),
+                                    {"acc_bits": 64, "g": b})
+                        rnd = fresh("round_shift", "p%d.k2.k%d" % (p, k),
+                                    "k2rnd_%d_b%d" % (k, bi),
+                                    (acc.out,),
+                                    {"shift": 4 if p == 1 else 11,
+                                     "epoch": p, "mode": "half-up", "g": b})
+                        rs.append(rnd)
+                        ops_new.extend([t0, t1, acc, rnd])
+                    n8 = fresh("narrow8", "p%d.k2.k%d" % (p, k),
+                               "k2n8_%d" % k, (rs[0].out, rs[1].out),
+                               {"from": "s64", "to": "s16",
+                                "kind": "trn1+uzp", "g": b})
+                    st = fresh("store", "p%d.k2.k%d" % (p, k), "",
+                               (n8.out,),
+                               {"base": "dst", "index": "k*32+i",
+                                "lanes": tuple((p, k, r) for r in rows),
+                                "topology": "contiguous",
+                                "row_group": 8, "base_off": 0, "g": b})
+                    ops_new.extend([n8, st])
+                    insert_at[anchor.op_id] = ops_new
+                    remove.update(o.op_id for o in chains)
+                remove.update(o.op_id for o in k2_slice_old)
+
+    result = []
+    emitted = set()
+    # Leaf ops first: everything else (slices/dots/stores) depends on them,
+    # and a merge rewrite can move 8-row consumers before later leaves.
+    for o in retagged:
+        if o.op_id in remove or o.op_id in insert_at:
+            continue
+        if ".leaf." in o.tile_id:
+            result.append(o)
+            emitted.add(o.op_id)
+    for o in retagged:
+        if o.op_id in insert_at:
+            result.extend(insert_at[o.op_id])
+            emitted.add(o.op_id)
+            continue
+        if o.op_id in emitted or o.op_id in remove:
+            continue
+        result.append(o)
+    return result
+
+
+REWRITES["merge_narrow8"] = rewrite_merge_narrow8
+
+
 def apply_rewrites(ops: List[Op], names: List[str]) -> List[Op]:
     """Apply named rewrites in order; unknown names raise."""
     out = list(ops)

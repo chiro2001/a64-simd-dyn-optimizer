@@ -75,6 +75,17 @@ def main():
                if o.kind == "mul_reduce"
                and ".k4.k" in o.tile_id]
     assert not left_k4, "k4 mul_reduce should be rewritten"
+
+    # Op-level rewrite: merge_narrow8 (odd dual-bank, row4 -> row8).
+    ops8 = apply_rewrites(ops, ["merge_narrow8"])
+    r8 = provenance_report(plan, ops8)
+    assert r8["ok"], r8["issues"]
+    max_g = max(o.attrs.get("g", 0) for o in ops8)
+    assert max_g == 3, "row8 rewrite must re-tag g into 0..3"
+    odd8 = [o for o in ops8
+            if o.kind == "store" and ".odd.k" in o.tile_id
+            and len(o.attrs.get("lanes", ())) == 8]
+    assert odd8, "odd stores should be 8-lane after merge"
     print("OpIR slice OK: %d ops, coverage %.2f, negatives detected"
           % (r["op_count"], r["coverage"]))
     return 0

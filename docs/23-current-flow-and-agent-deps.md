@@ -104,6 +104,12 @@ TestBenchLite PASS）。修复 op_id 跨 rewrite 冲突（counter 从输入
 g 标签即可改变循环结构；推导后 row8 legacy 仍为 6464/6904（回归通过）。
 `merge_narrow8`（双 bank 重排 + trn1 合并）作为下一步原子 rewrite。
 
+**进度（2026-08-13）**：P0 inc5 完成（odd + k2-EX）——`merge_narrow8`
+原子 rewrite：g 重打为 0..3、odd/k2-EX 按偶/奇行双 bank 重建、合并
+`narrow8(trn1)+store8`；row4 上游 8283 → row8 上游 **7778**（-505），
+20k=0、TestBenchLite PASS。限制：k4 legacy dot 链尚未重建（下一步）；
+与计划级 row8（7686）差 ~1% 为调度微差。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。
