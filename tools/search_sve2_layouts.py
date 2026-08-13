@@ -93,7 +93,8 @@ def make_emitter(kernel):
                         pass1_k_tile=combo.get("pass1_k_tile", 2),
                         pass2_k_tile=combo.get("pass2_k_tile", 1),
                         narrow_merge=combo.get("narrow_merge", 0),
-                        legacy_semantics=combo.get("legacy_semantics", 0))
+                        legacy_semantics=combo.get("legacy_semantics", 0),
+                        legacy_even_full=combo.get("legacy_even_full", 0))
         return emit_fn
     if kernel == "dct8":
         from emit_dct8_sve2_shared import emit
@@ -185,7 +186,11 @@ def main():
             except (ValueError, IndexError):
                 mism = -1
         if combo.get("legacy_semantics"):
-            ok = r.returncode in (0, 1) and 0 <= mism <= 5120  # <=0.1% proxy
+            # Proxy bound calibrated against the TestBench golden standard:
+            # 0.045078% (k=2/6/10/14 s16 sdot) passes 6/6 runs; 0.090234%
+            # (k=0/4/8/12 also s16 sdot) fails the first run. Accept only
+            # rates near the internal signature (~0.045%), i.e. <= 0.06%.
+            ok = r.returncode in (0, 1) and 0 <= mism <= 3072  # <=0.06% proxy
         else:
             ok = r.returncode == 0 and mism == 0
         print("%-24s verify: %s" % (tag, r.stdout.strip().splitlines()[-1]

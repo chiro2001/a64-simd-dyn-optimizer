@@ -559,3 +559,12 @@ TestBench 裁决。
 不同；因 TestBench 通过且与内部分歧特征一致，暂不追查，作为后续工具
 优化点记录（若要使 legacy oracle 真正刻画内部语义，需要内部算子逐例
 对拍数据，当前无源码可参照）。
+
+### legacy_even_full 负结果（2026-08-13 晚）
+
+尝试把 k=0/4/8/12 也 s16 sdot 化（QEEW 打包 + sqrshrnb，替换 NEON T8E
+段）：fused 928→883（-45），但与 legacy oracle 分歧率翻倍至 0.090234%，
+完整 TestBench 首跑即失败（`dct16x16 failed`）。结论：对称行 EE 在 s16
+域频繁回绕，只有反称行（k=2/6/10/14，EO 差值小）可 s16 sdot 化；内部
+0.045% 分歧特征佐证其同样如此。搜索代理容差据此从 <=5120 收紧到
+<=3072（0.06%），full-even 组合保留在结果中但被拒绝（4620 mismatches）。

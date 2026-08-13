@@ -85,9 +85,10 @@
   SVE2` 无效，门禁用 `NEON,Neon_DotProd,Neon_I8MM` 标签；注入的函数仍为
   SVE2 候选，QEMU `-cpu max,sve-max-vq=2` 下以 VL=256 真实执行。
 - `search_sve2_layouts.py --contract legacy-internal-exact`：legacy 组合
-  按 TestBench 口径接受 `mismatches <= 5120`（<=0.1% 代理容差）并记录
-  实际分歧率；upstream-exact 组合仍要求 0 分歧。指标 `fused_adj` 只含
-  movprfx 融合，其他融合对尚未实现。
+  按 TestBench 口径接受 `mismatches <= 3072`（20000 例，<=0.06% 代理
+  容差，由实测校准：0.045% 通过 6/6、0.090% 首跑失败）并记录实际分歧率；
+  upstream-exact 组合仍要求 0 分歧。指标 `fused_adj` 只含 movprfx 融合，
+  其他融合对尚未实现。
 
 ## 3. 现状判定
 
