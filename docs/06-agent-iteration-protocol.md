@@ -162,7 +162,7 @@ expert-advice/
 codex -p sss \
   -c 'model="gpt-5.6-sol"' \
   -c 'model_reasoning_effort="max"' \
-  -s read-only \
+  -s workspace-write \
   -C "$PWD" \
   exec -o expert-advice/round-0001/response.md - < expert-advice/round-0001/prompt.md
 ```
@@ -171,7 +171,13 @@ codex -p sss \
 
 若需要完整过程记录，可增加 `--json` 并把 stdout 保存为 `session.jsonl`；最终自然语言仍用 `-o response.md`。顶级模型当前不可用、Codex 未安装或认证失败时，只记录 `blocked.md` 和错误，不得伪造 response，也不得因此阻塞、重跑或延长主体实验。
 
-模型默认使用只读 sandbox，因为它的职责是审阅并给建议。只有在独立、外部已隔离的工作区且确有必要时才提升权限；不要把 `--yolo`/绕过审批作为协议要求。OpenAI 官方 CLI 参考也建议避免在非专用 sandbox VM 中绕过 sandbox。相关官方资料：
+**沙箱口径（用户裁定 2026-08-13）**：咨询模型**不用只读模式**，使用
+`-s workspace-write`，但 prompt 明确限制它只写 `expert-advice/round-NNNN/`
+下的输出文档（`summary.md`/`tooling-roadmap.md`/`verification.md` 等），
+不得改动源码、manifest、实验产物或构建目录。round-0010 曾因 read-only
+被拒写导致三份文档无法落盘（只能由主进程从最终答复补录）；此后一律用
+可写沙箱 + 目录约束。不要把 `--yolo`/绕过审批作为协议要求。OpenAI 官方
+CLI 参考也建议避免在非专用 sandbox VM 中绕过 sandbox。相关官方资料：
 
 - <https://developers.openai.com/codex/cli/reference>
 - <https://developers.openai.com/codex/models>
