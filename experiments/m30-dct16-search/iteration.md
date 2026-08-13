@@ -624,3 +624,10 @@ upstream+zip2（887）重新固化。
 每 16 输出 ~100 条。且内部 EO s16 打包（QEOW 等价物）只需 1 条 uzp1。
 下一迭代实现 `pass2_even_sve` 轴（SVE s32 偶数路径，无回绕风险），
 预计 -40~-50。
+
+### pass2_even_sve 前置探针（2026-08-14）
+
+saddlb/saddlt（偶/奇宽化加）、addp（目标==第一源，成对加）、zip.s、
+revw 语义均已 QEMU 实测；内部偶数 s32 常量 = T8E ×2。发现内部用
+**散布 st1d**（load_offset 表）一次写 16 输出——指令数口径 1 条，但实机
+scatter 代价存疑；复刻前需定口径（对齐指令数 vs 对齐实机）。
