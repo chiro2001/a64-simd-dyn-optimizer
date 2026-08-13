@@ -446,8 +446,7 @@ def emit_acle(plan: Plan, ops: List[Op],
     # op-level rewrite can re-tag g (e.g. merge_narrow8) without any
     # plan flag. Both passes share the same g range.
     max_g = max((int(o.attrs.get("g", 0)) for o in ops), default=7)
-    n_groups = max_g + 1
-    row_group = 32 // n_groups
+    row_group = 32 // (max_g + 1)
     def _reorder(pass_ops, order):
         """Emit families in `order` (leaf first, then the listed families,
         then any leftover) so the op-DAG source order (live-range shape)
@@ -477,6 +476,7 @@ def emit_acle(plan: Plan, ops: List[Op],
     order = plan.lowering.get("emit_order", "k0,odd,k2,k4").split(",")
     pass1 = _reorder([o for o in ops if o.tile_id.startswith("p1.")], order)
     pass2 = _reorder([o for o in ops if o.tile_id.startswith("p2.")], order)
+
     b1 = _emit_pass(pass1, 8, row_group)
     b2 = _emit_pass(pass2, 1024, row_group)
     prologue = """\
