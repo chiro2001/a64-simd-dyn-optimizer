@@ -262,6 +262,27 @@ shared v3   : 1246   (pass1 ~522 + pass2 ~724)   ← -21% vs 上游 SVE
 改成 SVE2 四分之一布局（E 走 s32、O 走 s16 sdot 或 smull 变体），
 静态目标 pass2 < 200。
 
+## v4：pass2 奇数路径 quarter 化（2026-08-13）
+
+发射器新增 `pass2_layout=odd-quarter`：偶数 k 与 E/EO/EEE/EEO 保持上游
+NEON 结构（E 必须 s32），奇数 k 改为 O 的四分之一交错打包 + 2 sdot +
+1 对齐 add + 纯 SVE 窄化（每组 4 行 4 个 tbl2 打包，跨 8 个奇数 k
+复用）。修复了发射器格式化残留变量 bug（`QO0_%d` 引用循环外 g=3）。
+
+```text
+true-dynamic vector counts（均与上游 dct16_sve 位级一致）：
+dct16_neon                 : 1553
+dct16_sve                  : 1577
+shared v3 (p1-quarter)     : 1246
+shared v4 (p2-odd-quarter) : 1183   ← -25% vs 上游 SVE，-24% vs NEON
+```
+
+960 周期估算：1183/4=296 vs 388 → 约 +31%。`tools/search_sve2_layouts.py`
+现在枚举 3 个布局组合（quarter/odd-quarter 1183、quarter/upstream
+1246、per-row/upstream 1636），全部过 20k 上游差分。偶数路径（E s32）
+仍是 pass2 的主要剩余（~600 条），其 SVE2 重构在 s32×s32→s64 点积无
+原生指令的前提下暂不划算；等待 round-0008 专家建议后再定 v5 方向。
+
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
 构建命令可完全复现。已实现的搜索参数：

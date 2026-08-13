@@ -81,14 +81,115 @@ def gt16_s32_cpp():
     return "\n".join(rows)
 
 
-def pass2_cpp():
-    """Upstream-structure pass2 (bit-exact by construction with dct16_sve).
+def pass2_odd_quarter_cpp():
+    """Unrolled 4-row groups: O quarters + odd-k quarter dot + even-k NEON."""
+    parts = []
+    parts.append("""\
+    // odd k: quarter-interleaved O packs, 2 SDOT + 1 aligned add per k.
+    const svbool_t p16q = svptrue_b16();
+    const svbool_t p64q = svptrue_b64();
+    const svbool_t p4q = svwhilelt_b16(0, 4);
+    const svuint16_t iloq = svld1_u16(p16q, idx_lo);
+    const svuint16_t q0q = svld1_u16(p16q, idx_q0);
+    const svuint16_t q1q = svld1_u16(p16q, idx_q1);
+    const svint64_t zaccq = svdup_n_s64(0);
 
-    E stays s32 (vaddl), O stays s16 (vsubq_s16 + bridge SDOT), matching
-    x265::pass2Butterfly16_sve exactly; only the constant tables are
-    emitted by the tool.
-    """
-    return """\
+    const svint16_t zO0 = svset_neonq_s16(svundef_s16(), O[0]);
+    const svint16_t zO1 = svset_neonq_s16(svundef_s16(), O[1]);
+    const svint16_t zO2 = svset_neonq_s16(svundef_s16(), O[2]);
+    const svint16_t zO3 = svset_neonq_s16(svundef_s16(), O[3]);
+    const svint16_t zO4 = svset_neonq_s16(svundef_s16(), O[4]);
+    const svint16_t zO5 = svset_neonq_s16(svundef_s16(), O[5]);
+    const svint16_t zO6 = svset_neonq_s16(svundef_s16(), O[6]);
+    const svint16_t zO7 = svset_neonq_s16(svundef_s16(), O[7]);
+    const svint16_t zO8 = svset_neonq_s16(svundef_s16(), O[8]);
+    const svint16_t zO9 = svset_neonq_s16(svundef_s16(), O[9]);
+    const svint16_t zO10 = svset_neonq_s16(svundef_s16(), O[10]);
+    const svint16_t zO11 = svset_neonq_s16(svundef_s16(), O[11]);
+    const svint16_t zO12 = svset_neonq_s16(svundef_s16(), O[12]);
+    const svint16_t zO13 = svset_neonq_s16(svundef_s16(), O[13]);
+    const svint16_t zO14 = svset_neonq_s16(svundef_s16(), O[14]);
+    const svint16_t zO15 = svset_neonq_s16(svundef_s16(), O[15]);
+
+""")
+    for g in range(4):
+        base = 4 * g
+        parts.append("""\
+        {
+            const svint16_t PO01 = svtbl2_s16(
+                svcreate2_s16(zO%d, zO%d), iloq);
+            const svint16_t PO23 = svtbl2_s16(
+                svcreate2_s16(zO%d, zO%d), iloq);
+            const svint16_t QO0_%d = svtbl2_s16(
+                svcreate2_s16(PO01, PO23), q0q);
+            const svint16_t QO1_%d = svtbl2_s16(
+                svcreate2_s16(PO01, PO23), q1q);
+            for (int k = 1; k < 16; k += 2)
+            {
+                const svint16_t cq_loq = svld1_s16(p16q, CQ_LO[k]);
+                const svint16_t cq_hiq = svld1_s16(p16q, CQ_HI[k]);
+                const svint64_t d0 = svdot_s64(zaccq, QO0_%d, cq_loq);
+                const svint64_t d1 = svdot_s64(zaccq, QO1_%d, cq_hiq);
+                const svint64_t f = svadd_s64_x(p64q, d0, d1);
+                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(f),
+                                               svreinterpret_s32_s64(f));
+                svint16_t n = svrshrnb_n_s32(w, shift);
+                n = svuzp1_s16(n, n);
+                svst1_s16(p4q, dst + k * line + %d, n);
+            }
+        }
+
+        for (int k = 2; k < 16; k += 4)
+        {
+            const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
+            const int32x4_t t0 = vmulq_s32(c0, EO[%d + 0]);
+            const int32x4_t t1 = vmulq_s32(c0, EO[%d + 1]);
+            const int32x4_t t2 = vmulq_s32(c0, EO[%d + 2]);
+            const int32x4_t t3 = vmulq_s32(c0, EO[%d + 3]);
+            const int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                           vpaddq_s32(t2, t3));
+            const int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + %d, res);
+        }
+
+        {
+            const int32x4_t c0 = vld1q_s32(T8E[0]);
+            const int32x4_t c4 = vld1q_s32(T8E[1]);
+            const int32x4_t c8 = vld1q_s32(T8E[2]);
+            const int32x4_t c12 = vld1q_s32(T8E[3]);
+            const int32x4_t t0 = vpaddq_s32(EEE[%d + 0], EEE[%d + 1]);
+            const int16x4_t res0 = vrshrn_n_s32(vmulq_s32(c0, t0), shift);
+            vst1_s16(dst + 0 * line + %d, res0);
+            const int32x4_t t2 = vmulq_s32(c4, EEO[%d + 0]);
+            const int32x4_t t3 = vmulq_s32(c4, EEO[%d + 1]);
+            const int16x4_t res4 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+            vst1_s16(dst + 4 * line + %d, res4);
+            const int32x4_t t4 = vmulq_s32(c8, EEE[%d + 0]);
+            const int32x4_t t5 = vmulq_s32(c8, EEE[%d + 1]);
+            const int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+            vst1_s16(dst + 8 * line + %d, res8);
+            const int32x4_t t6 = vmulq_s32(c12, EEO[%d + 0]);
+            const int32x4_t t7 = vmulq_s32(c12, EEO[%d + 1]);
+            const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+            vst1_s16(dst + 12 * line + %d, res12);
+        }
+""" % (base, base + 1, base + 2, base + 3,
+       g, g, g, g, base,
+       base, base, base, base, base,
+       2 * g, 2 * g, base,
+       2 * g, 2 * g, base,
+       2 * g, 2 * g, base,
+       2 * g, 2 * g, base))
+    return "\n".join(parts)
+
+
+def pass2_cpp(pass2_layout="upstream"):
+    """pass2 body. 'upstream' matches dct16_sve exactly (E s32 vaddl,
+    O s16 bridge SDOT, even path vmulq/vpaddq). 'odd-quarter' keeps the
+    even-k/E/EO/EEE/EEO NEON path but replaces the odd-k per-row bridge
+    SDOT block with the quarter-interleaved form (2 SDOT + 1 add per k
+    per 4-row group + pure-SVE narrow)."""
+    prelude = """\
 static void pass2_upstream(const int16_t* src, int16_t* dst)
 {
     const int shift = 10;
@@ -133,22 +234,8 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
         EEE[i / 2] = vaddq_s32(t0, t1);
         EEO[i / 2] = vsubq_s32(t0, t1);
     }
-
-    for (int i = 0; i < line; i += 4)
-    {
-        for (int k = 1; k < 16; k += 2)
-        {
-            const int16x8_t c0_c4 = vld1q_s16(GT16[k]);
-            const int64x2_t t0 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 0]);
-            const int64x2_t t1 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 1]);
-            const int64x2_t t2 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 2]);
-            const int64x2_t t3 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 3]);
-            const int32x4_t t01 = vcombine_s32(vmovn_s64(t0), vmovn_s64(t1));
-            const int32x4_t t23 = vcombine_s32(vmovn_s64(t2), vmovn_s64(t3));
-            const int16x4_t res = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
-            vst1_s16(dst + k * line, res);
-        }
-
+"""
+    even_tail = """\
         for (int k = 2; k < 16; k += 4)
         {
             const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
@@ -190,6 +277,27 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
     }
 }
 """
+    if pass2_layout == "upstream":
+        odd_loop = """\
+    for (int i = 0; i < line; i += 4)
+    {
+        for (int k = 1; k < 16; k += 2)
+        {
+            const int16x8_t c0_c4 = vld1q_s16(GT16[k]);
+            const int64x2_t t0 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 0]);
+            const int64x2_t t1 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 1]);
+            const int64x2_t t2 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 2]);
+            const int64x2_t t3 = sdotq_s16(vdupq_n_s64(0), c0_c4, O[i + 3]);
+            const int32x4_t t01 = vcombine_s32(vmovn_s64(t0), vmovn_s64(t1));
+            const int32x4_t t23 = vcombine_s32(vmovn_s64(t2), vmovn_s64(t3));
+            const int16x4_t res = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
+            vst1_s16(dst + k * line, res);
+        }
+"""
+        return prelude + odd_loop + even_tail
+    if pass2_layout == "odd-quarter":
+        return prelude + pass2_odd_quarter_cpp() + "}\n"
+    raise ValueError("unknown pass2_layout %r" % pass2_layout)
 
 
 def quarter_consts_cpp():
@@ -314,7 +422,8 @@ def group_block(g):
 
 
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
-         export_pass2=False, pass1_layout="quarter"):
+         export_pass2=False, pass1_layout="quarter",
+         pass2_layout="upstream"):
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
@@ -322,6 +431,7 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
     quarter_src = quarter_pass_cpp()
+    pass2_src = pass2_cpp(pass2_layout)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
         pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"
@@ -452,7 +562,7 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
     pass2_upstream(coef, dst);
 }
 %s""" % (rows, rows, g32, t8e, cq_lo, cq_hi, build_src, dot_src,
-         pass1_def, pass2_cpp(), func_name, pass1_call, pass1_export)
+         pass1_def, pass2_src, func_name, pass1_call, pass1_export)
 
 
 def main():

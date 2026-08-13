@@ -86,6 +86,7 @@ def main():
 
     combos = [
         ("quarter", "upstream"),
+        ("quarter", "odd-quarter"),
         ("per-row", "upstream"),
     ]
     results = []
@@ -93,7 +94,7 @@ def main():
         tag = "p1-%s_p2-%s" % (p1, p2)
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
-            f.write(emit(pass1_layout=p1))
+            f.write(emit(pass1_layout=p1, pass2_layout=p2))
         obj = os.path.join(args.outdir, tag + ".o")
         c = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
                  "-march=armv8.2-a+sve2", "-c", src, "-o", obj])
