@@ -24,6 +24,7 @@
 namespace X265_NS {
 /* C reference for DCT16 (defined in x265 common/dct.cpp, no header decl). */
 void dct16_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
+void dct32_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
 }
 
 using namespace X265_NS;
@@ -161,6 +162,8 @@ extern "C" int dynopt_sa8d_8x8_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 extern "C" int dynopt_sa8d_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+extern "C" void dynopt_dct32_sve2_shared(
+    const int16_t*, int16_t*, intptr_t);
 
 static int gate_dct16(unsigned int seed)
 {
@@ -240,6 +243,32 @@ static int gate_sa8d16(unsigned int seed)
     return ok ? 0 : 1;
 }
 
+static int gate_dct32(unsigned int seed)
+{
+    srand(seed);
+
+    EncoderPrimitives ref;
+    memset(&ref, 0, sizeof(ref));
+    ref.cu[BLOCK_32x32].dct = dct32_c;
+
+    EncoderPrimitives opt;
+    memset(&opt, 0, sizeof(opt));
+    opt.cu[BLOCK_32x32].dct = dynopt_dct32_sve2_shared;
+
+    if (!opt.cu[BLOCK_32x32].dct)
+    {
+        fprintf(stderr, "TestBenchLite: dct32 slot is NULL, gate would be a "
+                        "false PASS; refusing to run\n");
+        return 2;
+    }
+
+    MBDstHarness h;
+    const bool ok = h.testCorrectness(ref, opt);
+    printf("TestBenchLite: seed=0x%08X dct32 %s\n",
+           seed, ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(int argc, char* argv[])
 {
     unsigned int seed = (unsigned int)time(NULL);
@@ -253,7 +282,8 @@ int main(int argc, char* argv[])
             gate = argv[++i];
         else if (!strncmp(argv[i], "--help", 6))
         {
-            printf("usage: TestBenchLite [--gate dct16|sa8d|sa8d16] [--seed N]\n"
+            printf("usage: TestBenchLite [--gate dct16|dct32|sa8d|sa8d16] "
+                   "[--seed N]\n"
                    "reuses x265 MBDstHarness/PixelHarness data and C "
                    "references\n");
             return 0;
@@ -264,5 +294,7 @@ int main(int argc, char* argv[])
         return gate_sa8d(seed);
     if (!strcmp(gate, "sa8d16"))
         return gate_sa8d16(seed);
+    if (!strcmp(gate, "dct32"))
+        return gate_dct32(seed);
     return gate_dct16(seed);
 }

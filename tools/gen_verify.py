@@ -36,6 +36,7 @@ def generate(manifest):
     strides_c = ", ".join(str(s) for s in strides)
     nstrides = len(strides)
     kind = manifest.get("shape", {}).get("kind", "dct")
+    rows = manifest.get("shape", {}).get("rows", n)
     oracle = ""
     ref_call = ref["call"]
     ref_decl = ref["decl"]
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
     {
         const intptr_t sa = strides[rng() % ${nstrides}];
         const intptr_t sb = strides[rng() % ${nstrides}];
-        uint8_t buf[2][${n} * 64 + 64];
+        uint8_t buf[2][${rows} * 64 + 64];
         for (int j = 0; j < (int)(sizeof(buf[0]) / sizeof(buf[0][0])); j++)
         {
             buf[0][j] = (uint8_t)(rng() % 256);
@@ -112,7 +113,8 @@ int main(int argc, char** argv)
         return t.substitute(
             path=manifest["_path"], contract=contract, vl=vl,
             decl=ref_decl, cand_sym=cand["symbol"], cases=cases,
-            nstrides=nstrides, strides_c=strides_c, ref_call=ref_call, n=n)
+            nstrides=nstrides, strides_c=strides_c, ref_call=ref_call,
+            rows=rows)
     if contract == "legacy-internal-exact":
         # Spec-defined legacy oracle (no internal code): pass2 E/O wrap in
         # s16, narrowing rounds then saturates (sqrshrnb semantics).

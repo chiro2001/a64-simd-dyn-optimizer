@@ -132,6 +132,18 @@ def make_emitter(kernel):
         def emit_fn(combo):
             return emit_16x16()
         return emit_fn
+    if kernel == "sa8d16x32":
+        from emit_sa8d_sve2_shared import emit_16x32
+
+        def emit_fn(combo):
+            return emit_16x32()
+        return emit_fn
+    if kernel == "dct32":
+        from emit_dct32_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
@@ -322,7 +334,9 @@ def main():
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
             continue
-        rng = symbol_range(driver, manifest["candidate"]["symbol"])
+        start_sym = manifest["candidate"].get(
+            "range_start", manifest["candidate"]["symbol"])
+        rng = symbol_range(driver, start_sym)
         if rng is None:
             results.append({"tag": tag, **combo,
                             "passed": False, "counts": None})
@@ -379,7 +393,7 @@ def main():
             print("finalized %s (fused_uop=%d)"
                   % (src_path, best["counts"]["vector_fused_uop"]))
             gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
-                    "dct16": "dct16"}.get(args.kernel)
+                    "dct16": "dct16", "dct32": "dct32"}.get(args.kernel)
             if gate:
                 lite = run(["scripts/build-testbench-lite.sh", obj_path,
                             "build/x265-8-testbench", "--", "--gate", gate,

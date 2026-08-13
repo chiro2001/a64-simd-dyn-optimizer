@@ -1,0 +1,41 @@
+# DCT32 SVE2 kernel manifest. Reference = upstream x265::dct32_sve
+# (128-bit-style SVE, fused_uop 12710 at VL=256); v1 candidate is a
+# 16-lane SVE2 port (upstream-exact) establishing the pipeline before the
+# constant-rearrangement optimization iterations.
+kernel: dct32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  n: 32
+
+candidate:
+  symbol: dynopt_dct32_sve2_shared
+  # pass32 is a local symbol (mangled); leaf32 is inlined into it. The
+  # wrapper sits after pass32, so tracing from pass32 covers the real work.
+  range_start: _ZL6pass32PKsPsli
+  verify_src: kernels/dct16/sve_shared_verify.cpp
+  trace_driver_src: kernels/dct32/trace_driver.cpp
+  trace_driver_c: kernels/dct32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: dct32_sve
+  symbol_mangled: _ZN4x2659dct32_sveEPKsPsl
+  call: x265::dct32_sve
+  decl: |
+    namespace x265 {
+    void dct32_sve(const int16_t*, int16_t*, intptr_t);
+    }
+
+baselines:
+  sve:
+    driver: kernels/dct32/trace_driver_upstream.cpp
+    symbol_mangled: _ZN4x2659dct32_sveEPKsPsl
+
+corpus:
+  strides: [16, 17, 32]
+  value_range: [-255, 255]
+  cases: 20000
+
+layouts:
+  family: [v1]
