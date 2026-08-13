@@ -109,12 +109,19 @@ def main():
              repo_path(manifest, manifest["candidate"]["trace_driver_c"]),
              "-o", driver_o])
     results = []
+    seen = set()
     for combo in combos:
+        if combo.get("pass1") != "quarter":
+            combo["pass1_k_tile"] = 2   # tile axis only applies to quarter
         tag = "_".join("%s-%s" % (k, v) for k, v in combo.items())
+        if tag in seen:
+            continue
+        seen.add(tag)
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
             f.write(emit(pass1_layout=combo.get("pass1", "quarter"),
-                         pass2_layout=combo.get("pass2", "upstream")))
+                         pass2_layout=combo.get("pass2", "upstream"),
+                         pass1_k_tile=combo.get("pass1_k_tile", 2)))
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")

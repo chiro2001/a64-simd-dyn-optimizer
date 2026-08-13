@@ -305,6 +305,25 @@ per-row                       1895   1511
 编译器原本已对旧结构做部分 CSE，直接打包净省 ~14 条（v6a 相对 v3
 1524→1510）。两个 quarter 布局差距在 6 条以内，最终由实机裁决。
 
+## v8：pass1 k 循环分块轴（2026-08-13）
+
+新增 manifest 布局轴 `pass1_k_tile: [2, 4]`（发射器按 tile 显式展开
+k 循环体，常量每 tile 载入一次），验证 manifest 驱动的"加轴→自动枚举→
+差分→排名"工作流。结果（6 个唯一组合，6.4s，全部上游位级一致）：
+
+```text
+布局（fused_adj）：
+quarter + k_tile=4 + odd-quarter p2 : 1292   ← 新最优
+quarter + k_tile=4 + upstream p2   : 1295
+quarter + k_tile=2 + upstream p2   : 1318
+quarter + k_tile=2 + odd-quarter p2: 1324
+per-row + upstream/odd-quarter     : 1511 / 1490
+```
+
+k_tile=4 相对 k_tile=2 省约 26-32 条（循环开销减半）。距 +130% 目标
+（~660）仍有约 2 倍差距，剩余空间主要在 pass2 的结构性重构与 960
+实机验证；搜索耗时 6.4s 远低于 60s 阈值，暂不需要启发式算法。
+
 ## v7 假设：pass2 偶数路径 SVE2 quarter 化（2026-08-13 归档，未实现）
 
 偶数路径（E 必须 s32）当前是上游 NEON 结构，修正口径约 477 条
@@ -321,6 +340,13 @@ per-row                       1895   1511
 - 合计偶数路径 ~477 → ~250-300（-37~-48%），全 kernel fused 1318 →
   ~1150；仍不足以单独达成 +130%（需 ~660），但作为 v7 可测假设，
   与循环级搜索（docs/15）并行推进。
+
+> **v7 修订（2026-08-13）：偶数路径保持 NEON，SVE2 quarter 化否决**。
+> 逐指令量化：SVE2 s32 4 元素点积（4 行）= 2 svmul + 2 addp_s32 +
+> 2 uzp + 1 add + 4 窄化 ≈ 14 条/4 行，而 NEON vmulq+vpaddq 树 +
+> vrshrn+vst1 = 9 条/4 行。s32 段内两两归约（128-bit 段边界）需要
+> 额外的 uzp/add，抵消了宽度优势。偶数路径保留上游 NEON 结构；
+> 剩余优化转向循环级（k 分块、pass 融合）与 960 实机验证。
 
 ## 专家咨询 round-0008：blocked（2026-08-13）
 

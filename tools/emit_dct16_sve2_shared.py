@@ -311,8 +311,31 @@ def quarter_consts_cpp():
     return "\n".join(lo_rows), "\n".join(hi_rows)
 
 
-def quarter_pass_cpp():
-    """pass1 in quarter-interleaved layout (v3)."""
+def quarter_dot_group(g, kexpr, lo, hi):
+    """One 4-row group of the pass1 quarter dot, with k as a C expression."""
+    return (
+        "            const svint16_t x0_%d = (%s & 1) ? QO0_%d : QE0_%d;\n"
+        "            const svint16_t x1_%d = (%s & 1) ? QO1_%d : QE1_%d;\n"
+        "            svint64_t d_%d = svdot_s64(zacc, x0_%d, %s);\n"
+        "            d_%d = svdot_s64(d_%d, x1_%d, %s);\n"
+        "            const svint32_t w_%d = svuzp1_s32(\n"
+        "                svreinterpret_s32_s64(d_%d),"
+        " svreinterpret_s32_s64(d_%d));\n"
+        "            svint16_t n_%d = svrshrnb_n_s32(w_%d, shift);\n"
+        "            n_%d = svuzp1_s16(n_%d, n_%d);\n"
+        "            svst1_s16(p4h, dst + 16 * (%s) + %d, n_%d);"
+        % (g, kexpr, g, g,
+           g, kexpr, g, g,
+           g, g, lo,
+           g, g, g, hi,
+           g, g, g,
+           g, g,
+           g, g, g,
+           kexpr, 4 * g, g))
+
+
+def quarter_pass_cpp(k_tile=2):
+    """pass1 in quarter-interleaved layout (v3), k-loop tiled by k_tile."""
     blocks = []
     for g in range(4):
         base = 4 * g
@@ -342,21 +365,20 @@ def quarter_pass_cpp():
             QO1_%d = svsub_s16_x(p16, P1, R1);
         }""" % (base, base + 1, base + 2, base + 3, g, g, g, g))
     build_src = "\n".join(blocks)
-    dots = []
-    for g in range(4):
-        dots.append(
-            "            const svint16_t x0_%d = (k & 1) ? QO0_%d : QE0_%d;\n"
-            "            const svint16_t x1_%d = (k & 1) ? QO1_%d : QE1_%d;\n"
-            "            svint64_t d_%d = svdot_s64(zacc, x0_%d, cq_lo);\n"
-            "            d_%d = svdot_s64(d_%d, x1_%d, cq_hi);\n"
-            "            const svint32_t w_%d = svuzp1_s32(\n"
-            "                svreinterpret_s32_s64(d_%d), svreinterpret_s32_s64(d_%d));\n"
-            "            svint16_t n_%d = svrshrnb_n_s32(w_%d, shift);\n"
-            "            n_%d = svuzp1_s16(n_%d, n_%d);\n"
-            "            svst1_s16(p4h, dst + 16 * k + %d, n_%d);"
-            % (g, g, g, g, g, g, g, g, g, g, g, g, g, g, g,
-               g, g, g, g, 4 * g, g))
-    dot_src = "\n".join(dots)
+    tiles = []
+    for t in range(k_tile):
+        kexpr = "kb + %d" % t
+        lo = "cq_lo%d" % t
+        hi = "cq_hi%d" % t
+        header = "        const svint16_t %s = svld1_s16(p16, CQ_LO[kb + %d]);\n" \
+                 "        const svint16_t %s = svld1_s16(p16, CQ_HI[kb + %d]);\n" \
+                 % (lo, t, hi, t)
+        tiles.append("{\n%s%s\n        }"
+                     % (header,
+                        "\n".join(quarter_dot_group(g, kexpr, lo, hi)
+                                  for g in range(4))))
+    dot_src = ("    for (int kb = 0; kb < 16; kb += %d)\n    {\n%s\n    }\n"
+               % (k_tile, "\n".join(tiles)))
     return """\
 template <int shift>
 static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
@@ -375,12 +397,7 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     svint16_t QE0_3, QE1_3, QO0_3, QO1_3;
 %s
 
-    for (int k = 0; k < 16; k++)
-    {
-        const svint16_t cq_lo = svld1_s16(p16, CQ_LO[k]);
-        const svint16_t cq_hi = svld1_s16(p16, CQ_HI[k]);
 %s
-    }
 }
 """ % (build_src, dot_src)
 
@@ -420,14 +437,14 @@ def group_block(g):
 
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          export_pass2=False, pass1_layout="quarter",
-         pass2_layout="upstream"):
+         pass2_layout="upstream", pass1_k_tile=2):
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
     cq_lo, cq_hi = quarter_consts_cpp()
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
-    quarter_src = quarter_pass_cpp()
+    quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile)
     pass2_src = pass2_cpp(pass2_layout)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
