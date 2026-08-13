@@ -483,6 +483,15 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   **TestBenchLite 5 seed 全 PASS**；与 v2（7190）只差 **+0.4%**
   （fused），raw vector 领先 v2 1200 条。tbl 464 → 128（仅 leaf
   rev4s 等剩余）。
+- **row_group=8 静态可行性（2026-08-13，下一实现项）**：
+  - 双 bank：bankA rows0-3 / bankB rows4-7，各自 4 行 zip 转置切片
+    （20 permute/8 行，与 2×10 持平）；
+  - 合并窄化：`rA/rB = rshrnb(uzp1(tA/tB))` →
+    `zip1_s16(rA,rB)` → `uzp1_s16` → 1 条 8 输出 st1（pg8h）；
+    每 k 每 8 行从 8 条窄化/存储降到 7 条；
+  - 预计：rshrnb 448→256（对齐内部）、uzp1 896→~640、str 减少；
+    fused 7222 → **~7000（odd）/ ~6900（odd+k2+k4 合并）**，
+    首次低于 v2（7190）；内部 4827 仍需常量预排列。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
