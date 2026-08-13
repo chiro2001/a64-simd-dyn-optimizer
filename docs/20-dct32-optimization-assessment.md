@@ -642,6 +642,11 @@ rshrnb**（8 s32 → 8 s16，结果在偶 lane）+ `uzp1_s16` 压缩 + 单条
 0.429×。全 op 布局搜索（72 候选）best = 5454（k0es=1/row8）；
 k0es=0 的 merged narrow 版本 6080（旧 6464，-384）。
 
+**k4 并入 merged narrow（2026-08-13 晚）**：k4 在 slice_kind=zip 下的
+切片本就是 zip 构造（连续行兼容），同样可走连续 bank + 单条 rshrnb；
+tbl2 切片仍保留偶/奇 + trn1 旧窄化。**5390**（-64），MCA
+393/2123，20k 签名 7268 一致、lite PASS；相对内部 4827 = **1.117×**。
+
 **rewrite 序列搜索自动重发现**：`search_rewrite_sequences.py`（含
 k0_even_sve）跑完 781 序列，best =
 `legacy_k2|legacy_k4|merge_narrow8|k0_even_sve` → **6322**
