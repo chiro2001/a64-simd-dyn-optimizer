@@ -11,10 +11,14 @@
   C-exact 差分门禁、双机 paired 微基准；
 - 布局搜索主链（QEMU 真实动态 → lane 级 IR → manifest 布局轴 → 差分
   验证 → TestBenchLite 门禁 → fused_uop 排名）：DCT16 legacy 704（uop
-  口径，低于内部 827）、**DCT32 v2 = 7190（0.566x，near-gate，full-call
-  best）**、sa8d16 189（0.507x，结构地板）、interp8 127（-10%）；
+  口径，低于内部 827）、**DCT32 op 后端 row8+legacy+zip = 6464
+  （0.509x，低于 v2 7190；rewrite 序列可自动重发现 6456）**、sa8d16 189
+  （0.507x，结构地板）、interp8 127（-10%）；
   （2026-08-13 口径修正：v3.1 的 3962 为 pass1-only，full-call 8292，
   未过半数门，原“HALVED/超越内部”结论撤销）
+- **P0 op 级原子 rewrite + 序列搜索**：`tbl2_to_zip / legacy_k2 /
+  legacy_k4 / merge_narrow8`；625 序列 → 341 唯一 → 自动重发现 best
+  6456；LLVM-MCA 作为第二代理（best 516 cycles/2838 uops，排名一致）。
 - 门禁覆盖 dct16/dct32/sa8d/sa8d16/interp8；interp8 门禁还实证发现并
   修复了一个整宽存储越界写；
 - 关键路径回归在 9 点留一法上为负（M23），逐指令直接延迟也不能排序
