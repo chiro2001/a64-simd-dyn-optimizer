@@ -454,10 +454,13 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
     return body
 
 
-def _grouped_leaf_cpp():
+def _grouped_leaf_cpp(leaf_ex=True):
     leaf = []
     for rr in range(4):
         r = rr
+        eo16 = ("svint16_t E16_%(r)d = svadd_s16_x(p16, lo%(r)d, rv%(r)d);\n"
+                "            EO16_%(r)d = svsub_s16_x(p16, E16_%(r)d, "
+                "svrev_s16(E16_%(r)d));\n" % {"r": r}) if leaf_ex else ""
         leaf.append(("""\
         {
             const int16_t* s = src + (base + %(r)d) * stride;
@@ -474,15 +477,14 @@ def _grouped_leaf_cpp():
             svint32_t Erb%(r)d = svrev_s32(Eb%(r)d);
             svint32_t EE%(r)d = svadd_s32_x(p8s, Ea%(r)d, Erb%(r)d);
             EO%(r)d = svsub_s32_x(p8s, Ea%(r)d, Erb%(r)d);
-            svint16_t E16_%(r)d = svadd_s16_x(p16, lo%(r)d, rv%(r)d);
-            EO16_%(r)d = svsub_s16_x(p16, E16_%(r)d, svrev_s16(E16_%(r)d));
+%(eo16)s
             svint32_t EEr%(r)d = svrev_s32(EE%(r)d);
             svint32_t EEE%(r)d = svadd_s32_x(p8s, EE%(r)d, EEr%(r)d);
             EEO%(r)d = svsub_s32_x(p8s, EE%(r)d, EEr%(r)d);
             svint32_t EEEr%(r)d = svtbl_s32(EEE%(r)d, rev4s);
             EEEE%(r)d = svadd_s32_x(p8s, EEE%(r)d, EEEr%(r)d);
             EEEO%(r)d = svsub_s32_x(p8s, EEE%(r)d, EEEr%(r)d);
-        }""" % {"r": r}))
+        }""" % {"r": r, "eo16": eo16}))
     return "\n".join(leaf)
 
 
@@ -685,16 +687,16 @@ def _grouped_idx_low_cpp(isa="sve2"):
 def _grouped_body_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                       narrow_batch=4,
                       constant_layout="derived-replicated", isa="sve2",
-                      acc_split=1):
+                      acc_split=1, leaf_ex=True):
     """Assemble the grouped pass32_impl body from per-mechanism blocks
     (leaf / odd slices / k2 EX / odd / k2 / k4 / k0), each selected by an
     independent plan axis. This is the P1 increment-3 structure: no single
     composite function owns all mechanisms."""
-    leaf = _grouped_leaf_cpp()
+    leaf = _grouped_leaf_cpp(leaf_ex)
     slices = _grouped_slices_cpp(isa)
     odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout, isa,
                            acc_split)
-    ex = _grouped_ex_cpp(isa)
+    ex = _grouped_ex_cpp(isa) if leaf_ex else ""
     k2 = _grouped_k2_cpp(pass1_k2_slice, isa)
     k4 = _grouped_k4_cpp()
     k0 = _grouped_k0_cpp()
@@ -723,7 +725,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     {
         const int base = g * 4;
         svint16_t O0, O1, O2, O3;
-        svint16_t EO16_0, EO16_1, EO16_2, EO16_3;
+        %s
         svint32_t EO0, EO1, EO2, EO3;
         svint32_t EEO0, EEO1, EEO2, EEO3;
         svint32_t EEEE0, EEEE1, EEEE2, EEEE3;
@@ -741,16 +743,18 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     }
 }
 """ % (_grouped_prologue_cpp(constant_layout) + _grouped_idx_low_cpp(isa),
+       "        svint16_t EO16_0, EO16_1, EO16_2, EO16_3;\n"
+       if leaf_ex else "",
        leaf, (slices if odd_lowering == "sdot.d" else ""),
        ex, odd, k2, k4, k0)
 
 
 def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                      narrow_batch=4, constant_layout="derived-replicated",
-                     isa="sve2", acc_split=1):
+                     isa="sve2", acc_split=1, leaf_ex=True):
     """Backward-compatible wrapper kept for the search driver's v3 preset."""
     return _grouped_body_cpp(pass1_k2_slice, odd_lowering, narrow_batch,
-                             constant_layout, isa, acc_split)
+                             constant_layout, isa, acc_split, leaf_ex)
 
 
 def _assemble(func_name, pass_body, call, isa="sve2"):
@@ -821,7 +825,7 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
                  pass1_k2_slice=True, odd_lowering="sdot.d",
                  narrow_batch=4,
                  constant_layout="derived-replicated", isa="sve2",
-                 acc_split=1):
+                 acc_split=1, leaf_ex=True):
     """Plan-driven grouped DCT32 emitter (P1 increment 3).
 
     Used by layout_ir.lower() for plans produced by atomic rewrites; it
@@ -833,16 +837,18 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
     return _assemble(func_name,
                      _grouped_body_cpp(pass1_k2_slice, odd_lowering,
                                        narrow_batch, constant_layout, isa,
-                                       acc_split),
+                                       acc_split, leaf_ex),
                      call, isa)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
          pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
-         constant_layout="derived-replicated", isa="sve2", acc_split=1):
+         constant_layout="derived-replicated", isa="sve2", acc_split=1,
+         leaf_ex=True):
     if layout == "v3":
         return emit_grouped(func_name, pass1_k2_slice, odd_lowering,
-                            narrow_batch, constant_layout, isa, acc_split)
+                            narrow_batch, constant_layout, isa, acc_split,
+                            leaf_ex)
     if layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
         call = ("    pass32_impl(src, coef, srcStride, shift1);\n"
@@ -865,6 +871,7 @@ def main():
     ap.add_argument("--constant-layout", default="derived-replicated")
     ap.add_argument("--isa", default="sve2", choices=["sve1", "sve2"])
     ap.add_argument("--acc-split", type=int, default=1, choices=[1, 2, 4])
+    ap.add_argument("--leaf-ex", type=int, default=1, choices=[0, 1])
     args = ap.parse_args()
     with open(args.out, "w") as f:
         f.write(emit(func_name=args.func_name,
@@ -874,7 +881,8 @@ def main():
                      narrow_batch=args.narrow_batch,
                      constant_layout=args.constant_layout,
                      isa=args.isa,
-                     acc_split=args.acc_split))
+                     acc_split=args.acc_split,
+                     leaf_ex=bool(args.leaf_ex)))
     print("wrote %s" % args.out)
 
 

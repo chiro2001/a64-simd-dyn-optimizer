@@ -369,6 +369,25 @@ sdot 在 VL=256 上被 tbl2/uzp/常量重排开销抵消，不是方向。
 v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
 7190 → <6355（半数门）。
 
+### 5.7 v2-odd-sdot 探查结果（2026-08-13）
+
+- `leaf_ex=0`（去掉 v3 leaf 的 EO16/EX）后 full fused_uop 不变
+  （8596）：编译器已对未使用的 EO16/EX 做 DCE，该方向无收益。
+- v2 本身上 920B（SVE1/VL=256，SVE1 编译直接可跑）：cand p50=197
+  vs 上游 sve 193、neon 144；20k 差分 0。**在 ±10% 的运行间噪声内
+  无收益**——指令数最优结构（7190/12710）同样不转化 920B 周期。
+- 指令族直方图（full-call）：v2 的 uaddv 1024/saddv 768/fmov 1984/
+  movprfx 1664 是主要标量开销；v3.1 已去掉 uaddv 但引入 uzp1 896/
+  tbl 304/xtn2+shrn+sshr 424/ld1h 1080/str 648。
+- 内部参考（fused_adj 4251）的剩余优势主要来自：k2/k4 也走 s16
+  sdot（saddv=0、mul=32），zip1/zip2 304 替代 tbl，无 xtn2/shrn/
+  sshr。注意内部是 **legacy-internal-exact**（0.104% 分歧），在
+  upstream-exact 合同下 pass2 的 s32 k2/k4 必须走 mul+saddv，
+  天然多出 ~1024 条——这是合同差，不是工具差距。
+- **下一步（修订）**：做 v2-pass1 + k2-slice 混合（估 ~3290+3595
+  ≈6885），再做 k2/k4 向量化存储；若需追平内部 4827，需与用户确认
+  是否放开 legacy-internal-exact 合同族。
+
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
 或足够深的 unroll（后续修复）。
