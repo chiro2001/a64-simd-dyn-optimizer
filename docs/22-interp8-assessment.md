@@ -34,3 +34,23 @@
 - 下一步：建立 kernels/interp8 manifest + 差分（vs
   `interp_horiz_pp_neon<8,8,8>`）+ v3 切片发射器；
 - 实机验收仍等 960/950；920B 为 SVE1，仅可跑 NEON 对照。
+
+## 3. 实现路径评估（2026-08-13 深夜）
+
+语义：`src -= 3`；8-tap FIR；`vqrshrun_n_s16(d, IF_FILTER_PREC=6)`
+（饱和舍入窄化 s16→u8）；coeffIdx=1/2/3 三相位。
+
+方案 A（SVE2-safe，sdot .d）：每行 1 次 16 字节窗载入 +
+4 tbl 切片 + 4 sdot .d + uzp1/rshrnb 归约 + NEON bridge
+`vqrshrun_n_s16` 收窄。预估 **~136 vs 上游 162（-16%）**——
+收益主要来自 8 行合计 47 条 ldur 降到 8 条 ld1h；tbl 打包成本
+吃掉一半收益。
+
+方案 B（SVE2p1，sdot .h）：`svdot_s16`（s8→s16，每指令 8 输出 ×
+2 项）+ 每行 4 sdot.h + 1 次收窄，预估 **~100-105（-35%）**。
+但 **GCC 16.1 缺失 `svdot_s16` 与 s16→s8 饱和窄化 intrinsic**
+（svsqrshrunb_n_s8 等均不存在），需走 asm backend（参考
+emit_dct16_sve2_asm.py），且目标必须是 SVE2p1（960 可，920G 未知）。
+
+结论：interp8 值得投入但优先级低于已收敛的 dct 族；先做方案 A
+（SVE2-safe，-16%）建立管线，SVE2p1 asm 路径作为后续轴。

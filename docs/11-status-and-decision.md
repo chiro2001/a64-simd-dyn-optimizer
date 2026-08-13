@@ -193,3 +193,11 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 - **interp8（8-bit 水平 8-tap）评估为计算 bound**：total 162 /
   load 56 / 计算 106；v3 切片技术可直接迁移（预估 141→~70-90），
   列入下一 kernel 候选（docs/22）。
+
+## 9. interp8 实现路径与 ACLE 约束（2026-08-13 深夜）
+
+- 方案 A（SVE2-safe，sdot .d + NEON bridge 收窄）：预估 ~136
+  （-16%），主要来自 ldur 47→8；
+- 方案 B（SVE2p1，sdot .h）：预估 ~100（-35%），但 GCC 16.1 无
+  `svdot_s16`/s16→s8 饱和窄化 intrinsic，需 asm backend；
+- 结论：先做方案 A 建管线，SVE2p1 作后续轴（docs/22 §3）。
