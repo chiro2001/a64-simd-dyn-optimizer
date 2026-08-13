@@ -117,9 +117,14 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
             ctype[out] = _ctype(elem)
         elif kind == "permute":
             if attrs["kind"] == "tbl":
-                body.append("    svint32_t %s = svtbl_s32(%s, rev4s);"
-                            % (out, ins[0]))
-                ctype[out] = "svint32_t"
+                if attrs.get("idx") == "rev4":
+                    body.append("    svint16_t %s = svtbl_s16(%s, rev4);"
+                                % (out, ins[0]))
+                    ctype[out] = "svint16_t"
+                else:
+                    body.append("    svint32_t %s = svtbl_s32(%s, rev4s);"
+                                % (out, ins[0]))
+                    ctype[out] = "svint32_t"
             else:
                 body.append("    svint16_t %s = svtbl2_s16("
                             "svcreate2_s16(%s, %s), %s);"
@@ -131,13 +136,24 @@ def _emit_pass(ops: List[Op], add_value: int) -> List[str]:
             if ckey not in const_cache:
                 k = _k_from_tile(tid)
                 names = []
-                nconst = 4 if k % 2 == 1 else 2
-                table = "CODD" if k % 2 == 1 else "K2S"
+                nconst = attrs.get("nconst", 4 if k % 2 == 1 else 2)
+                if "K4S" in attrs.get("const_src", ""):
+                    table = "K4S"
+                    tidx = k // 8
+                elif k % 2 == 1:
+                    table = "CODD"
+                    tidx = k // 2
+                else:
+                    table = "K2S"
+                    tidx = k // 4
                 for m in range(nconst):
                     nm = "c_%s_%d" % (tid.replace(".", "_"), m)
-                    body.append("    svint16_t %s = svld1_s16(p16, "
-                                "%s[%d][%d]);"
-                                % (nm, table, k // (2 if k % 2 else 4), m))
+                    if table == "K4S":
+                        body.append("    svint16_t %s = svld1_s16(p16, "
+                                    "K4S[%d]);" % (nm, tidx))
+                    else:
+                        body.append("    svint16_t %s = svld1_s16(p16, "
+                                    "%s[%d][%d]);" % (nm, table, tidx, m))
                     names.append(nm)
                 const_cache[ckey] = names
             m = attrs.get("slice", 0)

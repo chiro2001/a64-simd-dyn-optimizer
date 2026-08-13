@@ -446,6 +446,10 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   EX sdot 路径（16/20.48M 分歧，同 grouped legacy 签名）→ full
   **7979**（比 grouped legacy 7989 少 10），TestBenchLite PASS；
   当前新 best（仍低于 v2 7190，但超过所有 v3 族）。
+- **k4 legacy 尝试（2026-08-13，已回滚）**：用 rev4 近似 EEO16 切片
+  导致 23% 分歧——EEO s32→s16 的 lane 映射需要 rev8/zip 级重排，
+  不是简单 rev4；已回滚，k4 sdot 化列为待办（需先做正确 EEO16
+  lane 映射 + 对应 slice）。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
