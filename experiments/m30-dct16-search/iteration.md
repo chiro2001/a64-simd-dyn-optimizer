@@ -163,6 +163,32 @@ O 高低半），17 组不同常量向量，每个命中 = 4 个输出 lane 共�
 部分和被否决 ✅ → 下一步发射"共享叶子 butterfly + 预置常量 SDOT"，
 静态预算约 2-3 条/输出，等待实机验证。
 
+## 上游 SVE DCT16 基线（2026-08-13）
+
+在 920B 用 Miniforge3 + clang 22.1.8（conda-forge）原生构建 x265
+（`ENABLE_SVE=ON ENABLE_SVE2=ON ENABLE_NEON_I8MM=ON`；注意
+`ENABLE_NEON_I8MM=OFF` 会因 x265 的级联约束静默禁用 SVE，缓存里
+`ENABLE_SVE` 仍显示 ON，但 SVE 源文件不会进 build.ninja）。库同步回
+本地：`build/x265-8-clang-sve/libx265.a`，QEMU `sve-max-vq=2` 下差分：
+
+```text
+kernels/dct16/sve_roundtrip_verify: cases=100000 lanes=25600000
+  mismatches=48 rate=0.000188%   first-diff idx=18 want=2773 got=-2987
+```
+
+上游 SVE kernel **接近但未达 C-exact**（0.000188% 分歧），我们的候选
+必须 0 分歧。动态指令流（固定 VL=256，同一输入，与 NEON trace 同口径）：
+
+```text
+dct16_neon: total=2075 vector=1553
+dct16_sve : total=970  vector=689   (1553 -> 689, ~2.25x 向量削减)
+```
+
+即开源的 SVE 版仅靠 s16→s64 SDOT 替换就砍掉约 55% 向量指令，每输出约
+1.35 条。工具生成候选的目标基线从 NEON 1553 改为 **SVE 689**：纯 SVE256
+宽度（每 SDOT 处理 4 个输出而非 2 个）叠加常量预置换后，静态预算应低于
+689 且 C-exact，才值得进入 960 实机。
+
 ### 下一步（发射器设计要点，2026-08-13 交接）
 
 发现报告已确认：奇数输出 k 的 4 个输出 lane 共享常量 `[C_k, -rev(C_k)]`，

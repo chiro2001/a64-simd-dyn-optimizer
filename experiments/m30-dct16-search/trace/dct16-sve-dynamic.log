@@ -1,0 +1,3880 @@
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400cec:  6dbb3bef  stp      d15, d14, [sp, #-0x50]!
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400cf0:  6d0133ed  stp      d13, d12, [sp, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400cf4:  6d022beb  stp      d11, d10, [sp, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400cf8:  6d0323e9  stp      d9, d8, [sp, #0x30]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400cfc:  a9047bfd  stp      x29, x30, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d00:  910103fd  add      x29, sp, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d04:  d11a43e9  sub      x9, sp, #0x690
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d08:  042956c9  addvl    x9, x9, #0xfffffffffffffff6
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d0c:  927be93f  and      sp, x9, #0xffffffffffffffe0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d10:  528000c8  mov      w8, #6
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d14:  8b02040b  add      x11, x0, x2, lsl #1
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d18:  8b02080c  add      x12, x0, x2, lsl #2
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d1c:  9b080048  madd     x8, x2, x8, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d20:  ad400001  ldp      q1, q0, [x0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d24:  ad400963  ldp      q3, q2, [x11]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d28:  52800149  mov      w9, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d2c:  ad401186  ldp      q6, q4, [x12]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d30:  5280018a  mov      w10, #0xc
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d34:  9b090049  madd     x9, x2, x9, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d38:  8b020c0d  add      x13, x0, x2, lsl #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d3c:  4e600800  rev64    v0.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d40:  4e600842  rev64    v2.8h, v2.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d44:  528001cb  mov      w11, #0xe
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d48:  900002ce  adrp     x14, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d4c:  9b0a004a  madd     x10, x2, x10, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d50:  4e600887  rev64    v7.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d54:  ad4045b0  ldp      q16, q17, [x13]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d58:  ad401504  ldp      q4, q5, [x8]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d5c:  4e6008a5  rev64    v5.8h, v5.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d60:  9b0b004b  madd     x11, x2, x11, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d64:  6e004012  ext      v18.16b, v0.16b, v0.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d68:  6e024053  ext      v19.16b, v2.16b, v2.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d6c:  ad405534  ldp      q20, q21, [x9]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d70:  6e0740e7  ext      v7.16b, v7.16b, v7.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d74:  52800248  mov      w8, #0x12
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d78:  8b021009  add      x9, x0, x2, lsl #4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d7c:  9b080048  madd     x8, x2, x8, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d80:  900002cf  adrp     x15, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d84:  900002d0  adrp     x16, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d88:  6e0540b6  ext      v22.16b, v5.16b, v5.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d8c:  4e600a25  rev64    v5.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d90:  4e600ab5  rev64    v21.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d94:  ad404542  ldp      q2, q17, [x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d98:  4e610258  saddl2   v24.4s, v18.8h, v1.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400d9c:  ad405d60  ldp      q0, q23, [x11]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400da0:  4e630279  saddl2   v25.4s, v19.8h, v3.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400da4:  4e6600fa  saddl2   v26.4s, v7.8h, v6.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400da8:  0e61025d  saddl    v29.4s, v18.4h, v1.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dac:  6e728432  sub      v18.8h, v1.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400db0:  4e600a31  rev64    v17.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400db4:  4e6402db  saddl2   v27.4s, v22.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400db8:  6e0540bc  ext      v28.16b, v5.16b, v5.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dbc:  4e600af7  rev64    v23.8h, v23.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dc0:  6e1542b5  ext      v21.16b, v21.16b, v21.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dc4:  4ea00b18  rev64    v24.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dc8:  4ea00b39  rev64    v25.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dcc:  3d8167f2  str      q18, [sp, #0x590]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dd0:  5280028a  mov      w10, #0x14
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dd4:  9b0a004b  madd     x11, x2, x10, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dd8:  528002ca  mov      w10, #0x16
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ddc:  911243ec  add      x12, sp, #0x490
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400de0:  6e114225  ext      v5.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400de4:  4ea00b51  rev64    v17.4s, v26.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400de8:  4ea00b7a  rev64    v26.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dec:  6e1742e1  ext      v1.16b, v23.16b, v23.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400df0:  0e630277  saddl    v23.4s, v19.4h, v3.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400df4:  6e738473  sub      v19.8h, v3.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400df8:  0e6600fb  saddl    v27.4s, v7.4h, v6.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400dfc:  6e6784c6  sub      v6.8h, v6.8h, v7.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e00:  0e700387  saddl    v7.4s, v28.4h, v16.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e04:  4e70039e  saddl2   v30.4s, v28.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e08:  6e184318  ext      v24.16b, v24.16b, v24.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e0c:  6e194339  ext      v25.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e10:  6e7c8603  sub      v3.8h, v16.8h, v28.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e14:  6e114230  ext      v16.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e18:  6e1a4351  ext      v17.16b, v26.16b, v26.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e1c:  4e7402bc  saddl2   v28.4s, v21.8h, v20.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e20:  0e6402da  saddl    v26.4s, v22.4h, v4.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e24:  3d816bf3  str      q19, [sp, #0x5a0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e28:  4ea00bd2  rev64    v18.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e2c:  6e768484  sub      v4.8h, v4.8h, v22.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e30:  4e6200b3  saddl2   v19.4s, v5.8h, v2.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e34:  4eb887b6  add      v22.4s, v29.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e38:  4eb986fe  add      v30.4s, v23.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e3c:  0e7402a9  saddl    v9.4s, v21.4h, v20.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e40:  4ea00b9c  rev64    v28.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e44:  4eb0877f  add      v31.4s, v27.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e48:  4eb18748  add      v8.4s, v26.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e4c:  6e758694  sub      v20.8h, v20.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e50:  4e600035  saddl2   v21.4s, v1.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e54:  6eb887b8  sub      v24.4s, v29.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e58:  4ede7add  zip2     v29.2d, v22.2d, v30.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e5c:  4ea00a73  rev64    v19.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e60:  6eb986f7  sub      v23.4s, v23.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e64:  4ec87bf9  zip2     v25.2d, v31.2d, v8.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e68:  6e124252  ext      v18.16b, v18.16b, v18.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e6c:  6eb08770  sub      v16.4s, v27.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e70:  4ea00ab5  rev64    v21.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e74:  6e1c439c  ext      v28.16b, v28.16b, v28.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e78:  6eb18751  sub      v17.4s, v26.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e7c:  6e1807d6  mov      v22.d[1], v30.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e80:  4e571b17  uzp1     v23.8h, v24.8h, v23.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e84:  6e18051f  mov      v31.d[1], v8.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e88:  4ea00bba  rev64    v26.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e8c:  6e134273  ext      v19.16b, v19.16b, v19.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e90:  3d8173e4  str      q4, [sp, #0x5c0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e94:  4ea00b38  rev64    v24.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e98:  4eb284f9  add      v25.4s, v7.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400e9c:  4e511a10  uzp1     v16.8h, v16.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ea0:  4ebc853b  add      v27.4s, v9.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ea4:  6e1542a4  ext      v4.16b, v21.16b, v21.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ea8:  0e6200aa  saddl    v10.4s, v5.4h, v2.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400eac:  0e600031  saddl    v17.4s, v1.4h, v0.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400eb0:  3d816fe6  str      q6, [sp, #0x5b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400eb4:  6eb284f2  sub      v18.4s, v7.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400eb8:  4eb68746  add      v6.4s, v26.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ebc:  3d8177e3  str      q3, [sp, #0x5d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ec0:  6e658442  sub      v2.8h, v2.8h, v5.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ec4:  4edb7b35  zip2     v21.2d, v25.2d, v27.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ec8:  ad14c3f7  stp      q23, q16, [sp, #0x290]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ecc:  4ebf8717  add      v23.4s, v24.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ed0:  6eba86d0  sub      v16.4s, v22.4s, v26.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ed4:  4eb38556  add      v22.4s, v10.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ed8:  6eb887f8  sub      v24.4s, v31.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400edc:  4ea4863a  add      v26.4s, v17.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ee0:  3d8127e6  str      q6, [sp, #0x490]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ee4:  4eb91f26  mov      v6.16b, v25.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ee8:  6ea48624  sub      v4.4s, v17.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400eec:  3d817bf4  str      q20, [sp, #0x5e0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ef0:  9b0a004a  madd     x10, x2, x10, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ef4:  4ea00aa7  rev64    v7.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ef8:  ad1ce3f0  stp      q16, q24, [sp, #0x390]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400efc:  6ebc8530  sub      v16.4s, v9.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f00:  4eda7ad5  zip2     v21.2d, v22.2d, v26.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f04:  6e180766  mov      v6.d[1], v27.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f08:  4eb61ed1  mov      v17.16b, v22.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f0c:  6e618400  sub      v0.8h, v0.8h, v1.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f10:  3d817fe2  str      q2, [sp, #0x5f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f14:  4e501a43  uzp1     v3.8h, v18.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f18:  6eb38550  sub      v16.4s, v10.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f1c:  3dc00533  ldr      q19, [x9, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f20:  6e180751  mov      v17.d[1], v26.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f24:  3d812bf7  str      q23, [sp, #0x4a0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f28:  910e43ed  add      x13, sp, #0x390
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f2c:  4ea00ab4  rev64    v20.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f30:  ad405502  ldp      q2, q21, [x8]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f34:  4e600a65  rev64    v5.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f38:  4e441a13  uzp1     v19.8h, v16.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f3c:  6ea784d7  sub      v23.4s, v6.4s, v7.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f40:  3d8183e0  str      q0, [sp, #0x600]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f44:  4e600ab5  rev64    v21.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f48:  3dc00124  ldr      q4, [x9]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f4c:  52800308  mov      w8, #0x18
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f50:  52800349  mov      w9, #0x1a
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f54:  9b080048  madd     x8, x2, x8, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f58:  9100418c  add      x12, x12, #0x10
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f5c:  3dc00552  ldr      q18, [x10, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f60:  6eb48630  sub      v16.4s, v17.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f64:  ad15cfe3  stp      q3, q19, [sp, #0x2b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f68:  6e0540a3  ext      v3.16b, v5.16b, v5.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f6c:  4ea684e5  add      v5.4s, v7.4s, v6.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f70:  6e1542a1  ext      v1.16b, v21.16b, v21.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f74:  ad401d60  ldp      q0, q7, [x11]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f78:  4e600a52  rev64    v18.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f7c:  4eb18686  add      v6.4s, v20.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f80:  9b090049  madd     x9, x2, x9, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f84:  ad1dc3f7  stp      q23, q16, [sp, #0x3b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f88:  528003cb  mov      w11, #0x1e
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f8c:  910041ad  add      x13, x13, #0x10
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f90:  4e6008e7  rev64    v7.8h, v7.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f94:  4e640071  saddl2   v17.4s, v3.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f98:  3d812fe5  str      q5, [sp, #0x4b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400f9c:  4e620033  saddl2   v19.4s, v1.8h, v2.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fa0:  3d8133e6  str      q6, [sp, #0x4c0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fa4:  3dc00145  ldr      q5, [x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fa8:  6e124252  ext      v18.16b, v18.16b, v18.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fac:  5280038a  mov      w10, #0x1c
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fb0:  9b0b004b  madd     x11, x2, x11, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fb4:  4ea00a26  rev64    v6.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fb8:  0e640071  saddl    v17.4s, v3.4h, v4.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fbc:  6e638496  sub      v22.8h, v4.8h, v3.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fc0:  4ea00a70  rev64    v16.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fc4:  6e0740f3  ext      v19.16b, v7.16b, v7.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fc8:  9b0a004a  madd     x10, x2, x10, x0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fcc:  ad401127  ldp      q7, q4, [x9]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fd0:  0e620034  saddl    v20.4s, v1.4h, v2.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fd4:  4e650258  saddl2   v24.4s, v18.8h, v5.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fd8:  0e650248  saddl    v8.4s, v18.4h, v5.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fdc:  3d8187f6  str      q22, [sp, #0x610]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fe0:  6e0640d5  ext      v21.16b, v6.16b, v6.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fe4:  ad400d06  ldp      q6, q3, [x8]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fe8:  6e104217  ext      v23.16b, v16.16b, v16.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400fec:  4e600270  saddl2   v16.4s, v19.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ff0:  4e60089b  rev64    v27.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ff4:  4ea00b18  rev64    v24.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ff8:  ad407144  ldp      q4, q28, [x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00400ffc:  4e600879  rev64    v25.8h, v3.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401000:  ad407563  ldp      q3, q29, [x11]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401004:  4ea00a1f  rev64    v31.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401008:  4eb5863a  add      v26.4s, v17.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040100c:  6eb58635  sub      v21.4s, v17.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401010:  4eb7869e  add      v30.4s, v20.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401014:  6e1b4371  ext      v17.16b, v27.16b, v27.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401018:  6eb78694  sub      v20.4s, v20.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040101c:  6e184318  ext      v24.16b, v24.16b, v24.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401020:  0e60027b  saddl    v27.4s, v19.4h, v0.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401024:  6e738400  sub      v0.8h, v0.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401028:  6e194330  ext      v16.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040102c:  4e600b99  rev64    v25.8h, v28.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401030:  4e600bbc  rev64    v28.8h, v29.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401034:  6e1f43ff  ext      v31.16b, v31.16b, v31.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401038:  4e541ab4  uzp1     v20.8h, v21.8h, v20.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040103c:  6e61845d  sub      v29.8h, v2.8h, v1.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401040:  6e7284a5  sub      v5.8h, v5.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401044:  4ede7b57  zip2     v23.2d, v26.2d, v30.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401048:  6e1807da  mov      v26.d[1], v30.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040104c:  4eb88516  add      v22.4s, v8.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401050:  6eb88513  sub      v19.4s, v8.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401054:  3d818fe0  str      q0, [sp, #0x630]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401058:  4e660209  saddl2   v9.4s, v16.8h, v6.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040105c:  6e194322  ext      v2.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401060:  6e1c4381  ext      v1.16b, v28.16b, v28.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401064:  4ebf8775  add      v21.4s, v27.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401068:  6ebf8772  sub      v18.4s, v27.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040106c:  4e670239  saddl2   v25.4s, v17.8h, v7.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401070:  3d818bfd  str      q29, [sp, #0x620]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401074:  4ea00af7  rev64    v23.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401078:  0e670220  saddl    v0.4s, v17.4h, v7.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040107c:  4ea0093c  rev64    v28.4s, v9.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401080:  3d8193e5  str      q5, [sp, #0x640]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401084:  911643e8  add      x8, sp, #0x590
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401088:  4ed67ab8  zip2     v24.2d, v21.2d, v22.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040108c:  4e64005d  saddl2   v29.4s, v2.8h, v4.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401090:  4e63003e  saddl2   v30.4s, v1.8h, v3.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401094:  4e531a45  uzp1     v5.8h, v18.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401098:  6e1806d5  mov      v21.d[1], v22.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040109c:  4ea00b39  rev64    v25.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010a0:  0e63003f  saddl    v31.4s, v1.4h, v3.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010a4:  4eba86e8  add      v8.4s, v23.4s, v26.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010a8:  6eb78757  sub      v23.4s, v26.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010ac:  6e1c439b  ext      v27.16b, v28.16b, v28.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010b0:  4ea00bbc  rev64    v28.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010b4:  4ea00bdd  rev64    v29.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010b8:  4ea00b12  rev64    v18.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010bc:  0e66021e  saddl    v30.4s, v16.4h, v6.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010c0:  9100810a  add      x10, x8, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010c4:  ad1697f4  stp      q20, q5, [sp, #0x2d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010c8:  6e194339  ext      v25.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010cc:  910a43e8  add      x8, sp, #0x290
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010d0:  3d8137e8  str      q8, [sp, #0x4d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010d4:  9100410b  add      x11, x8, #0x10
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010d8:  d00004e8  adrp     x8, #0x49f000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010dc:  6e1c4396  ext      v22.16b, v28.16b, v28.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010e0:  6e1d43b8  ext      v24.16b, v29.16b, v29.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010e4:  0e64005d  saddl    v29.4s, v2.4h, v4.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010e8:  4eb58645  add      v5.4s, v18.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010ec:  4ebb87d3  add      v19.4s, v30.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010f0:  6e628482  sub      v2.8h, v4.8h, v2.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010f4:  4eb9841c  add      v28.4s, v0.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010f8:  6eb98400  sub      v0.4s, v0.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004010fc:  910203e9  add      x9, sp, #0x80
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401100:  3d813be5  str      q5, [sp, #0x4e0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401104:  6eb286a5  sub      v5.4s, v21.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401108:  4eb687a9  add      v9.4s, v29.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040110c:  4eb887ea  add      v10.4s, v31.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401110:  6ebb87d2  sub      v18.4s, v30.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401114:  4edc7a74  zip2     v20.2d, v19.2d, v28.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401118:  6e180793  mov      v19.d[1], v28.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040111c:  3d819fe2  str      q2, [sp, #0x670]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401120:  ad1e97f7  stp      q23, q5, [sp, #0x3d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401124:  6e7084c5  sub      v5.8h, v6.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401128:  6e7184e6  sub      v6.8h, v7.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040112c:  6eb687a7  sub      v7.4s, v29.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401130:  6eb887f0  sub      v16.4s, v31.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401134:  4eca7935  zip2     v21.2d, v9.2d, v10.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401138:  4e401a40  uzp1     v0.8h, v18.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040113c:  4ea00a94  rev64    v20.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401140:  6e180549  mov      v9.d[1], v10.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401144:  3d8197e5  str      q5, [sp, #0x650]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401148:  4e5018e4  uzp1     v4.8h, v7.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040114c:  3d819be6  str      q6, [sp, #0x660]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401150:  4ea00ab1  rev64    v17.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401154:  6eb48672  sub      v18.4s, v19.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401158:  ad1793e0  stp      q0, q4, [sp, #0x2f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040115c:  6e618460  sub      v0.8h, v3.8h, v1.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401160:  4eb38683  add      v3.4s, v20.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401164:  3d80fff2  str      q18, [sp, #0x3f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401168:  6eb18521  sub      v1.4s, v9.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040116c:  3d81a3e0  str      q0, [sp, #0x680]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401170:  4ea98620  add      v0.4s, v17.4s, v9.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401174:  3d813fe3  str      q3, [sp, #0x4f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401178:  3d8143e0  str      q0, [sp, #0x500]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040117c:  3dc2cdc0  ldr      q0, [x14, #0xb30]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401180:  d10103ae  sub      x14, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401184:  f9469108  ldr      x8, [x8, #0xd20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401188:  3d8103e1  str      q1, [sp, #0x400]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040118c:  e5bf45c0  str      z0, [x14, #-7, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401190:  3dc04900  ldr      q0, [x8, #0x120]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401194:  3dc00901  ldr      q1, [x8, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401198:  3dc01902  ldr      q2, [x8, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040119c:  3dc02903  ldr      q3, [x8, #0xa0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011a0:  3dc03904  ldr      q4, [x8, #0xe0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011a4:  3dc05906  ldr      q6, [x8, #0x160]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011a8:  e5bf59c0  str      z0, [x14, #-2, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011ac:  3dc07900  ldr      q0, [x8, #0x1e0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011b0:  3dc06907  ldr      q7, [x8, #0x1a0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011b4:  e5bf5dc0  str      z0, [x14, #-1, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011b8:  f00002ae  adrp     x14, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011bc:  3dc2d1c0  ldr      q0, [x14, #0xb40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011c0:  d10103ae  sub      x14, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011c4:  e5bf41c0  str      z0, [x14, #-8, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011c8:  3dc2d5e0  ldr      q0, [x15, #0xb50]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011cc:  f00002af  adrp     x15, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011d0:  e5be5dc0  str      z0, [x14, #-9, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011d4:  3dc2da00  ldr      q0, [x16, #0xb60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011d8:  f00002b0  adrp     x16, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011dc:  e5be59c0  str      z0, [x14, #-0xa, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011e0:  3dc2e1e0  ldr      q0, [x15, #0xb80]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011e4:  f00002ae  adrp     x14, #0x458000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011e8:  3dc2ddc5  ldr      q5, [x14, #0xb70]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011ec:  9104012e  add      x14, x9, #0x100
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011f0:  9280006f  mov      x15, #-4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011f4:  3d801fe0  str      q0, [sp, #0x70]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011f8:  3dc2e600  ldr      q0, [x16, #0xb90]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004011fc:  3d801be0  str      q0, [sp, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401200:  6f00e41b  movi     v27.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401204:  6f00e41e  movi     v30.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401208:  d10103b0  sub      x16, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040120c:  ad7f5d58  ldp      q24, q23, [x10, #-0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401210:  6f00e41c  movi     v28.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401214:  6f00e41d  movi     v29.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401218:  6f00e408  movi     v8.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040121c:  6f00e409  movi     v9.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401220:  6f00e40a  movi     v10.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401224:  6f00e40b  movi     v11.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401228:  85bf5a00  ldr      z0, [x16, #-2, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040122c:  6f00e40c  movi     v12.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401230:  6f00e40d  movi     v13.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401234:  44d8003b  sdot     z27.d, z1.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401238:  6f00e410  movi     v16.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040123c:  6f00e411  movi     v17.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401240:  44d7003e  sdot     z30.d, z1.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401244:  ad406959  ldp      q25, q26, [x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401248:  44d80048  sdot     z8.d, z2.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040124c:  44d70049  sdot     z9.d, z2.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401250:  6f00e40e  movi     v14.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401254:  6f00e40f  movi     v15.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401258:  44d8006c  sdot     z12.d, z3.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040125c:  44d7006d  sdot     z13.d, z3.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401260:  6f00e412  movi     v18.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401264:  44d9003c  sdot     z28.d, z1.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401268:  44da003d  sdot     z29.d, z1.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040126c:  4e9e1b7b  uzp1     v27.4s, v27.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401270:  44d9004a  sdot     z10.d, z2.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401274:  44da004b  sdot     z11.d, z2.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401278:  6f00e41e  movi     v30.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040127c:  44d80090  sdot     z16.d, z4.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401280:  44d70091  sdot     z17.d, z4.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401284:  6f00e414  movi     v20.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401288:  44d9006e  sdot     z14.d, z3.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040128c:  44da006f  sdot     z15.d, z3.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401290:  6f00e415  movi     v21.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401294:  4e9d1b9f  uzp1     v31.4s, v28.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401298:  4e89191c  uzp1     v28.4s, v8.4s, v9.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040129c:  6f00e41d  movi     v29.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012a0:  4e8b1948  uzp1     v8.4s, v10.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012a4:  4e8d1989  uzp1     v9.4s, v12.4s, v13.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012a8:  6f00e40a  movi     v10.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012ac:  6f00e40c  movi     v12.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012b0:  4e911a10  uzp1     v16.4s, v16.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012b4:  6f00e411  movi     v17.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012b8:  44d9009e  sdot     z30.d, z4.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012bc:  44da0092  sdot     z18.d, z4.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012c0:  6f00e416  movi     v22.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012c4:  44d8001d  sdot     z29.d, z0.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012c8:  4e8f19cb  uzp1     v11.4s, v14.4s, v15.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012cc:  6f00e40d  movi     v13.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012d0:  44d7000a  sdot     z10.d, z0.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012d4:  6f00e40e  movi     v14.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012d8:  6f00e40f  movi     v15.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012dc:  44d9000c  sdot     z12.d, z0.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012e0:  44da0011  sdot     z17.d, z0.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012e4:  6f00e400  movi     v0.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012e8:  6f00e413  movi     v19.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012ec:  4e921bd2  uzp1     v18.4s, v30.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012f0:  44d800f4  sdot     z20.d, z7.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012f4:  44d700f5  sdot     z21.d, z7.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012f8:  44d900f6  sdot     z22.d, z7.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004012fc:  4ebfbf7b  addp     v27.4s, v27.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401300:  44d800cd  sdot     z13.d, z6.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401304:  44d700ce  sdot     z14.d, z6.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401308:  4ea8bf9c  addp     v28.4s, v28.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040130c:  44da00e0  sdot     z0.d, z7.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401310:  44d900cf  sdot     z15.d, z6.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401314:  4e911991  uzp1     v17.4s, v12.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401318:  44da00d3  sdot     z19.d, z6.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040131c:  4eb2be10  addp     v16.4s, v16.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401320:  4e8a1bb2  uzp1     v18.4s, v29.4s, v10.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401324:  4e951a94  uzp1     v20.4s, v20.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401328:  6f00e415  movi     v21.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040132c:  0f1d8f7b  rshrn    v27.4h, v27.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401330:  0f1d8f9c  rshrn    v28.4h, v28.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401334:  4e8e19bd  uzp1     v29.4s, v13.4s, v14.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401338:  6f00e41f  movi     v31.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040133c:  4e801ac0  uzp1     v0.4s, v22.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401340:  6f00e416  movi     v22.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401344:  6f00e408  movi     v8.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401348:  4e9319f3  uzp1     v19.4s, v15.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040134c:  4eb1be51  addp     v17.4s, v18.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401350:  85bf5e12  ldr      z18, [x16, #-1, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401354:  4eabbd3e  addp     v30.4s, v9.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401358:  fc1201db  stur     d27, [x14, #-0xe0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040135c:  85bf4609  ldr      z9, [x16, #-7, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401360:  fc1601dc  stur     d28, [x14, #-0xa0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401364:  0f1d8e10  rshrn    v16.4h, v16.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401368:  910011ef  add      x15, x15, #4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040136c:  44d80255  sdot     z21.d, z18.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401370:  44d70256  sdot     z22.d, z18.h, z23.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401374:  4ea0be80  addp     v0.4s, v20.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401378:  0f1d8fdc  rshrn    v28.4h, v30.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040137c:  4eb3bfbb  addp     v27.4s, v29.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401380:  44d9025f  sdot     z31.d, z18.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401384:  44da0248  sdot     z8.d, z18.h, z26.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401388:  6f00e412  movi     v18.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040138c:  6f00e413  movi     v19.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401390:  ad7fe578  ldp      q24, q25, [x11, #-0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401394:  6f00e414  movi     v20.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401398:  6f00e417  movi     v23.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040139c:  6f00e41a  movi     v26.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013a0:  6f00e41d  movi     v29.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013a4:  4e961ab5  uzp1     v21.4s, v21.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013a8:  6f00e416  movi     v22.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013ac:  6f00e41e  movi     v30.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013b0:  44d80132  sdot     z18.d, z9.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013b4:  44d90133  sdot     z19.d, z9.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013b8:  4e881bff  uzp1     v31.4s, v31.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013bc:  85bf4208  ldr      z8, [x16, #-8, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013c0:  85be5e09  ldr      z9, [x16, #-9, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013c4:  fc1a01dc  stur     d28, [x14, #-0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013c8:  85be5a1c  ldr      z28, [x16, #-0xa, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013cc:  0f1d8e31  rshrn    v17.4h, v17.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013d0:  fc1e01d0  stur     d16, [x14, #-0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013d4:  0f1d8f70  rshrn    v16.4h, v27.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013d8:  0f1d8c00  rshrn    v0.4h, v0.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013dc:  f10031ff  cmp      x15, #0xc
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013e0:  44d80114  sdot     z20.d, z8.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013e4:  44d80137  sdot     z23.d, z9.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013e8:  4e931a52  uzp1     v18.4s, v18.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013ec:  44d8039d  sdot     z29.d, z28.h, z24.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013f0:  44d9011a  sdot     z26.d, z8.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013f4:  9101014a  add      x10, x10, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013f8:  44d90136  sdot     z22.d, z9.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004013fc:  44d9039e  sdot     z30.d, z28.h, z25.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401400:  fd0011d1  str      d17, [x14, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401404:  4ebfbeb1  addp     v17.4s, v21.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401408:  ad7fd593  ldp      q19, q21, [x12, #-0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040140c:  ad7fe5b8  ldp      q24, q25, [x13, #-0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401410:  0f1d8e52  rshrn    v18.4h, v18.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401414:  4e9a1a94  uzp1     v20.4s, v20.4s, v26.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401418:  fd0031d0  str      d16, [x14, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040141c:  910081ad  add      x13, x13, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401420:  4e961af6  uzp1     v22.4s, v23.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401424:  4e9e1bb7  uzp1     v23.4s, v29.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401428:  4eb5be7a  addp     v26.4s, v19.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040142c:  ad437ffd  ldp      q29, q31, [sp, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401430:  4ea59f1b  mul      v27.4s, v24.4s, v5.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401434:  4ea59f3c  mul      v28.4s, v25.4s, v5.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401438:  0f1d8e31  rshrn    v17.4h, v17.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040143c:  fd0051c0  str      d0, [x14, #0xa0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401440:  0f1d8e90  rshrn    v16.4h, v20.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401444:  4f265754  shl      v20.4s, v26.4s, #6
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401448:  fc1401d2  stur     d18, [x14, #-0xc0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040144c:  4ebf9e73  mul      v19.4s, v19.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401450:  4ebf9eb5  mul      v21.4s, v21.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401454:  4ebd9f18  mul      v24.4s, v24.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401458:  4ebd9f39  mul      v25.4s, v25.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040145c:  0f1d8ed6  rshrn    v22.4h, v22.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401460:  9100818c  add      x12, x12, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401464:  4ebcbf60  addp     v0.4s, v27.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401468:  fd0071d1  str      d17, [x14, #0xe0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040146c:  0f1d8e92  rshrn    v18.4h, v20.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401470:  fc1c01d0  stur     d16, [x14, #-0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401474:  9100816b  add      x11, x11, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401478:  4eb5be71  addp     v17.4s, v19.4s, v21.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040147c:  0f1d8ef3  rshrn    v19.4h, v23.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401480:  4eb9bf14  addp     v20.4s, v24.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401484:  0f1d8c00  rshrn    v0.4h, v0.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401488:  fd0021d6  str      d22, [x14, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040148c:  fc1001d2  stur     d18, [x14, #-0x100]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401490:  0f1d8e30  rshrn    v16.4h, v17.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401494:  0f1d8e91  rshrn    v17.4h, v20.4s, #3
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401498:  fd0061d3  str      d19, [x14, #0xc0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040149c:  fc1801c0  stur     d0, [x14, #-0x80]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014a0:  fd0001d0  str      d16, [x14]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014a4:  fd0041d1  str      d17, [x14, #0x80]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014a8:  910021ce  add      x14, x14, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014ac:  54ffeaa3  b.lo     #0x401200
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014b0:  ad44e7e0  ldp      q0, q25, [sp, #0x90]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014b4:  911243ea  add      x10, sp, #0x490
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014b8:  ad45dff0  ldp      q16, q23, [sp, #0xb0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014bc:  910e43eb  add      x11, sp, #0x390
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014c0:  ad46d7f1  ldp      q17, q21, [sp, #0xd0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014c4:  910a43ec  add      x12, sp, #0x290
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014c8:  ad47cff2  ldp      q18, q19, [sp, #0xf0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014cc:  4e600800  rev64    v0.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014d0:  4e600a10  rev64    v16.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014d4:  3dc0013f  ldr      q31, [x9]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014d8:  911643e9  add      x9, sp, #0x590
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014dc:  4e600a31  rev64    v17.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014e0:  2598e080  ptrue    p0.s, vl4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014e4:  91008129  add      x9, x9, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014e8:  4e600a52  rev64    v18.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014ec:  3d8017f3  str      q19, [sp, #0x50]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014f0:  9100814a  add      x10, x10, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014f4:  6e00401c  ext      v28.16b, v0.16b, v0.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014f8:  ad4903f6  ldp      q22, q0, [sp, #0x120]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004014fc:  6e10421d  ext      v29.16b, v16.16b, v16.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401500:  ad4a23f3  ldp      q19, q8, [sp, #0x140]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401504:  6e11423e  ext      v30.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401508:  9100416b  add      x11, x11, #0x10
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040150c:  9100418c  add      x12, x12, #0x10
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401510:  6e12425b  ext      v27.16b, v18.16b, v18.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401514:  3dc047f2  ldr      q18, [sp, #0x110]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401518:  4e600800  rev64    v0.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040151c:  4e7f0390  saddl2   v16.4s, v28.8h, v31.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401520:  ad015bf3  stp      q19, q22, [sp, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401524:  4e600908  rev64    v8.8h, v8.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401528:  4e7903b1  saddl2   v17.4s, v29.8h, v25.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040152c:  ad4b27f3  ldp      q19, q9, [sp, #0x160]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401530:  4e7703d4  saddl2   v20.4s, v30.8h, v23.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401534:  4e600a52  rev64    v18.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401538:  0e7f038d  saddl    v13.4s, v28.4h, v31.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040153c:  4e75037a  saddl2   v26.4s, v27.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401540:  4ea00a10  rev64    v16.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401544:  0e7903ae  saddl    v14.4s, v29.4h, v25.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401548:  4ea00a31  rev64    v17.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040154c:  3d8007f3  str      q19, [sp, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401550:  3dc063f3  ldr      q19, [sp, #0x180]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401554:  4ea00a8a  rev64    v10.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401558:  4e60092c  rev64    v12.8h, v9.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040155c:  0e7703cf  saddl    v15.4s, v30.4h, v23.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401560:  4ea00b4b  rev64    v11.4s, v26.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401564:  3d8013f3  str      q19, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401568:  0e750373  saddl    v19.4s, v27.4h, v21.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040156c:  6e104210  ext      v16.16b, v16.16b, v16.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401570:  6e124256  ext      v22.16b, v18.16b, v18.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401574:  6e084109  ext      v9.16b, v8.16b, v8.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401578:  6e114231  ext      v17.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040157c:  6e7c87fc  sub      v28.8h, v31.8h, v28.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401580:  6e7d873d  sub      v29.8h, v25.8h, v29.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401584:  6e0a414a  ext      v10.16b, v10.16b, v10.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401588:  6e0c4188  ext      v8.16b, v12.16b, v12.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040158c:  6e7e86f9  sub      v25.8h, v23.8h, v30.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401590:  6e0b416b  ext      v11.16b, v11.16b, v11.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401594:  6e7b86b7  sub      v23.8h, v21.8h, v27.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401598:  6e004018  ext      v24.16b, v0.16b, v0.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040159c:  4eb085be  add      v30.4s, v13.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015a0:  3dc017e0  ldr      q0, [sp, #0x50]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015a4:  3d816bfd  str      q29, [sp, #0x5a0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015a8:  4eb185df  add      v31.4s, v14.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015ac:  6eb085b0  sub      v16.4s, v13.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015b0:  6eb185d1  sub      v17.4s, v14.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015b4:  4eaa85fb  add      v27.4s, v15.4s, v10.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015b8:  0e6002da  saddl    v26.4s, v22.4h, v0.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015bc:  4e6002d4  saddl2   v20.4s, v22.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015c0:  4eab866c  add      v12.4s, v19.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015c4:  ad4103f5  ldp      q21, q0, [sp, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015c8:  4edf7bdd  zip2     v29.2d, v30.2d, v31.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015cc:  6e1807fe  mov      v30.d[1], v31.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015d0:  3dc007f2  ldr      q18, [sp, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015d4:  4ea00a94  rev64    v20.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015d8:  3d8173f7  str      q23, [sp, #0x5c0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015dc:  6eaa85f7  sub      v23.4s, v15.4s, v10.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015e0:  4ecc7b6d  zip2     v13.2d, v27.2d, v12.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015e4:  4e60030e  saddl2   v14.4s, v24.8h, v0.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015e8:  6e18059b  mov      v27.d[1], v12.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015ec:  4e75013f  saddl2   v31.4s, v9.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015f0:  4e72010c  saddl2   v12.4s, v8.8h, v18.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015f4:  3d8127f0  str      q16, [sp, #0x490]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015f8:  4ea00bbd  rev64    v29.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004015fc:  3d812bf1  str      q17, [sp, #0x4a0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401600:  6eab8673  sub      v19.4s, v19.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401604:  4ea009ce  rev64    v14.4s, v14.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401608:  6e144290  ext      v16.16b, v20.16b, v20.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040160c:  3d812ff7  str      q23, [sp, #0x4b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401610:  4ea009ad  rev64    v13.4s, v13.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401614:  3d816ff9  str      q25, [sp, #0x5b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401618:  4ea00bf9  rev64    v25.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040161c:  4ea0099f  rev64    v31.4s, v12.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401620:  3d8167fc  str      q28, [sp, #0x590]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401624:  0e60031c  saddl    v28.4s, v24.4h, v0.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401628:  4ebe87b1  add      v17.4s, v29.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040162c:  3dc017ea  ldr      q10, [sp, #0x50]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401630:  6ebd87dd  sub      v29.4s, v30.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401634:  6e0e41d4  ext      v20.16b, v14.16b, v14.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401638:  6e788418  sub      v24.8h, v0.8h, v24.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040163c:  4eb21e5e  mov      v30.16b, v18.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401640:  4ebb85b7  add      v23.4s, v13.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401644:  6ead8760  sub      v0.4s, v27.4s, v13.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401648:  6e76854a  sub      v10.8h, v10.8h, v22.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040164c:  3d8133f3  str      q19, [sp, #0x4c0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401650:  6e194336  ext      v22.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401654:  6e1f43f3  ext      v19.16b, v31.16b, v31.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401658:  0e7e011b  saddl    v27.4s, v8.4h, v30.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040165c:  3d817bf8  str      q24, [sp, #0x5e0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401660:  9104002d  add      x13, x1, #0x100
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401664:  ad1483fd  stp      q29, q0, [sp, #0x290]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401668:  0e750120  saddl    v0.4s, v9.4h, v21.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040166c:  6eb48792  sub      v18.4s, v28.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401670:  ad1cdff1  stp      q17, q23, [sp, #0x390]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401674:  4eb08751  add      v17.4s, v26.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401678:  4eb48797  add      v23.4s, v28.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040167c:  6eb08750  sub      v16.4s, v26.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401680:  4eb3877c  add      v28.4s, v27.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401684:  6eb38773  sub      v19.4s, v27.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401688:  4eb68418  add      v24.4s, v0.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040168c:  3d813bf2  str      q18, [sp, #0x4e0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401690:  6e6986b2  sub      v18.8h, v21.8h, v9.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401694:  4eb11e3d  mov      v29.16b, v17.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401698:  4ed77a34  zip2     v20.2d, v17.2d, v23.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040169c:  6e6887da  sub      v26.8h, v30.8h, v8.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016a0:  3d8137f0  str      q16, [sp, #0x4d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016a4:  ad4dd7f1  ldp      q17, q21, [sp, #0x1b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016a8:  4edc7b19  zip2     v25.2d, v24.2d, v28.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016ac:  3d817ff2  str      q18, [sp, #0x5f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016b0:  6e180798  mov      v24.d[1], v28.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016b4:  6e1806fd  mov      v29.d[1], v23.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016b8:  ad4cdff0  ldp      q16, q23, [sp, #0x190]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016bc:  4ea00a94  rev64    v20.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016c0:  3d8143f3  str      q19, [sp, #0x500]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016c4:  3dc013f3  ldr      q19, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016c8:  4e600a31  rev64    v17.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016cc:  3d8183fa  str      q26, [sp, #0x600]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016d0:  6eb68400  sub      v0.4s, v0.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016d4:  4e600a10  rev64    v16.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016d8:  4ea00b32  rev64    v18.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016dc:  3d8177ea  str      q10, [sp, #0x5d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016e0:  ad4edbfa  ldp      q26, q22, [sp, #0x1d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016e4:  3dc09fea  ldr      q10, [sp, #0x270]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016e8:  4ebd8699  add      v25.4s, v20.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016ec:  ad4fbffb  ldp      q27, q15, [sp, #0x1f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016f0:  6eb487b4  sub      v20.4s, v29.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016f4:  6e114231  ext      v17.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016f8:  3d813fe0  str      q0, [sp, #0x4f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004016fc:  6e104210  ext      v16.16b, v16.16b, v16.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401700:  4eb8865c  add      v28.4s, v18.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401704:  6eb28712  sub      v18.4s, v24.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401708:  4e600b5a  rev64    v26.8h, v26.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040170c:  4e600b60  rev64    v0.8h, v27.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401710:  4e60094a  rev64    v10.8h, v10.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401714:  9280006e  mov      x14, #-4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401718:  d280040f  mov      x15, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040171c:  d2800c10  mov      x16, #0x60
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401720:  ad15cbf4  stp      q20, q18, [sp, #0x2b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401724:  0e770228  saddl    v8.4s, v17.4h, v23.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401728:  4eaf1df4  mov      v20.16b, v15.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040172c:  4e730218  saddl2   v24.4s, v16.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401730:  0e73021f  saddl    v31.4s, v16.4h, v19.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401734:  6e708670  sub      v16.8h, v19.8h, v16.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401738:  6e1a435b  ext      v27.16b, v26.16b, v26.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040173c:  ad1df3f9  stp      q25, q28, [sp, #0x3b0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401740:  4e770239  saddl2   v25.4s, v17.8h, v23.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401744:  6e00401d  ext      v29.16b, v0.16b, v0.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401748:  6e7186f1  sub      v17.8h, v23.8h, v17.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040174c:  d2801411  mov      x17, #0xa0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401750:  4ea00b12  rev64    v18.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401754:  ad50cff8  ldp      q24, q19, [sp, #0x210]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401758:  4ea00b20  rev64    v0.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040175c:  ad51dffa  ldp      q26, q23, [sp, #0x230]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401760:  4e750379  saddl2   v25.4s, v27.8h, v21.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401764:  3d8187f0  str      q16, [sp, #0x610]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401768:  0e75036c  saddl    v12.4s, v27.4h, v21.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040176c:  4e600b18  rev64    v24.8h, v24.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401770:  4e7603bc  saddl2   v28.4s, v29.8h, v22.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401774:  3d818bf1  str      q17, [sp, #0x620]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401778:  6e124252  ext      v18.16b, v18.16b, v18.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040177c:  4e600b5a  rev64    v26.8h, v26.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401780:  0e7603ad  saddl    v13.4s, v29.4h, v22.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401784:  4ea00b39  rev64    v25.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401788:  6e004000  ext      v0.16b, v0.16b, v0.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040178c:  d2801c12  mov      x18, #0xe0
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401790:  4ea00b8b  rev64    v11.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401794:  d10103be  sub      x30, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401798:  6e18431e  ext      v30.16b, v24.16b, v24.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040179c:  ad52e3e9  ldp      q9, q24, [sp, #0x250]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017a0:  6eb287f0  sub      v16.4s, v31.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017a4:  6e1a435c  ext      v28.16b, v26.16b, v26.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017a8:  e5bf57c1  str      z1, [x30, #-3, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017ac:  6e19432e  ext      v14.16b, v25.16b, v25.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017b0:  6e0a4159  ext      v25.16b, v10.16b, v10.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017b4:  6ea08511  sub      v17.4s, v8.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017b8:  4e600929  rev64    v9.8h, v9.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017bc:  6e0b416b  ext      v11.16b, v11.16b, v11.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017c0:  4ea08500  add      v0.4s, v8.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017c4:  4e6f03cf  saddl2   v15.4s, v30.8h, v15.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017c8:  3d8147f0  str      q16, [sp, #0x510]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017cc:  4eb287f0  add      v16.4s, v31.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017d0:  6e7b86b2  sub      v18.8h, v21.8h, v27.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017d4:  6e7d86d5  sub      v21.8h, v22.8h, v29.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017d8:  3d814bf1  str      q17, [sp, #0x520]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017dc:  4e730391  saddl2   v17.4s, v28.8h, v19.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017e0:  4e780328  saddl2   v8.4s, v25.8h, v24.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017e4:  4eae8596  add      v22.4s, v12.4s, v14.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017e8:  6e09413a  ext      v26.16b, v9.16b, v9.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017ec:  4ea009fd  rev64    v29.4s, v15.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017f0:  4eab85bb  add      v27.4s, v13.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017f4:  ad025ffe  stp      q30, q23, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017f8:  4eb71eef  mov      v15.16b, v23.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004017fc:  4ec07a09  zip2     v9.2d, v16.2d, v0.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401800:  4ea00a31  rev64    v17.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401804:  3d818ff2  str      q18, [sp, #0x630]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401808:  0e73038a  saddl    v10.4s, v28.4h, v19.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040180c:  4edb7ad2  zip2     v18.2d, v22.2d, v27.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401810:  3d8193f5  str      q21, [sp, #0x640]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401814:  0e7403d5  saddl    v21.4s, v30.4h, v20.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401818:  4e77035f  saddl2   v31.4s, v26.8h, v23.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040181c:  6e1d43b7  ext      v23.16b, v29.16b, v29.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401820:  4eb41e9e  mov      v30.16b, v20.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401824:  6eab85ab  sub      v11.4s, v13.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401828:  6e180776  mov      v22.d[1], v27.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040182c:  0e6f034d  saddl    v13.4s, v26.4h, v15.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401830:  6e114234  ext      v20.16b, v17.16b, v17.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401834:  6e180410  mov      v16.d[1], v0.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401838:  e5bf53c2  str      z2, [x30, #-4, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040183c:  4ea00bfd  rev64    v29.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401840:  4ea0091f  rev64    v31.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401844:  4ea00928  rev64    v8.4s, v9.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401848:  6eae8589  sub      v9.4s, v12.4s, v14.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040184c:  4ea00a52  rev64    v18.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401850:  0e78032e  saddl    v14.4s, v25.4h, v24.4h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401854:  4eb786bb  add      v27.4s, v21.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401858:  3d8153eb  str      q11, [sp, #0x540]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040185c:  4eb4854c  add      v12.4s, v10.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401860:  e5bf4fc4  str      z4, [x30, #-5, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401864:  6e1d43bd  ext      v29.16b, v29.16b, v29.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401868:  6e1f43ff  ext      v31.16b, v31.16b, v31.16b, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040186c:  3d814fe9  str      q9, [sp, #0x530]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401870:  4eb68649  add      v9.4s, v18.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401874:  6eb286d2  sub      v18.4s, v22.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401878:  3dc013f6  ldr      q22, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040187c:  4eb0850f  add      v15.4s, v8.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401880:  4ecc7b6b  zip2     v11.2d, v27.2d, v12.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401884:  6ea88610  sub      v16.4s, v16.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401888:  6e7687d6  sub      v22.8h, v30.8h, v22.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040188c:  6e18059b  mov      v27.d[1], v12.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401890:  e5bf4bc3  str      z3, [x30, #-6, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401894:  4ebd85a0  add      v0.4s, v13.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401898:  4ebf85d1  add      v17.4s, v14.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040189c:  ad16cbf0  stp      q16, q18, [sp, #0x2d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018a0:  6eb786b2  sub      v18.4s, v21.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018a4:  6e7c8670  sub      v16.8h, v19.8h, v28.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018a8:  4ea00968  rev64    v8.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018ac:  6eb48553  sub      v19.4s, v10.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018b0:  ad1ea7ef  stp      q15, q9, [sp, #0x3d0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018b4:  4ed1781e  zip2     v30.2d, v0.2d, v17.2d
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018b8:  6e180620  mov      v0.d[1], v17.d[0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018bc:  3d8197f6  str      q22, [sp, #0x650]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018c0:  3d8157f2  str      q18, [sp, #0x550]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018c4:  3dc017f2  ldr      q18, [sp, #0x50]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018c8:  3d819bf0  str      q16, [sp, #0x660]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018cc:  4ebb8510  add      v16.4s, v8.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018d0:  3d815bf3  str      q19, [sp, #0x560]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018d4:  6e7a8652  sub      v18.8h, v18.8h, v26.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018d8:  4ea00bd1  rev64    v17.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018dc:  6ea88774  sub      v20.4s, v27.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018e0:  3d819ff2  str      q18, [sp, #0x670]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018e4:  6ebf85d2  sub      v18.4s, v14.4s, v31.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018e8:  4ea08633  add      v19.4s, v17.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018ec:  6eb18400  sub      v0.4s, v0.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018f0:  6ebd85b1  sub      v17.4s, v13.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018f4:  3d8163f2  str      q18, [sp, #0x580]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018f8:  ad1783f4  stp      q20, q0, [sp, #0x2f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004018fc:  ad1fcff0  stp      q16, q19, [sp, #0x3f0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401900:  6e798710  sub      v16.8h, v24.8h, v25.8h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401904:  3d815ff1  str      q17, [sp, #0x570]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401908:  3d81a3f0  str      q16, [sp, #0x680]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040190c:  6f00e400  movi     v0.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401910:  6f00e410  movi     v16.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401914:  d10103be  sub      x30, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401918:  6f00e411  movi     v17.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040191c:  6f00e412  movi     v18.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401920:  85bf5bd7  ldr      z23, [x30, #-2, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401924:  ad7f5133  ldp      q19, q20, [x9, #-0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401928:  6f00e41a  movi     v26.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040192c:  acc25935  ldp      q21, q22, [x9], #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401930:  6f00e41c  movi     v28.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401934:  6f00e408  movi     v8.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401938:  6f00e409  movi     v9.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040193c:  6f00e40a  movi     v10.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401940:  6f00e40c  movi     v12.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401944:  44d30020  sdot     z0.d, z1.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401948:  44d40030  sdot     z16.d, z1.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040194c:  44d50031  sdot     z17.d, z1.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401950:  44d60032  sdot     z18.d, z1.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401954:  6f00e418  movi     v24.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401958:  44d3005a  sdot     z26.d, z2.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040195c:  44d4005c  sdot     z28.d, z2.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401960:  6f00e419  movi     v25.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401964:  44d50048  sdot     z8.d, z2.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401968:  44d60049  sdot     z9.d, z2.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040196c:  6f00e41d  movi     v29.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401970:  44d3006a  sdot     z10.d, z3.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401974:  44d4006c  sdot     z12.d, z3.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401978:  4e901801  uzp1     v1.4s, v0.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040197c:  4e921a20  uzp1     v0.4s, v17.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401980:  6f00e41e  movi     v30.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401984:  6f00e41f  movi     v31.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401988:  4e9c1b5a  uzp1     v26.4s, v26.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040198c:  6f00e40b  movi     v11.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401990:  6f00e40d  movi     v13.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401994:  4e89191c  uzp1     v28.4s, v8.4s, v9.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401998:  6f00e408  movi     v8.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x0040199c:  6f00e409  movi     v9.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019a0:  4e8c194a  uzp1     v10.4s, v10.4s, v12.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019a4:  6f00e40c  movi     v12.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019a8:  4ea51cbb  mov      v27.16b, v5.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019ac:  6f00e405  movi     v5.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019b0:  6f00e410  movi     v16.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019b4:  6f00e411  movi     v17.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019b8:  6f00e40f  movi     v15.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019bc:  ad0207e0  stp      q0, q1, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019c0:  85bf5fc0  ldr      z0, [x30, #-1, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019c4:  44d50078  sdot     z24.d, z3.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019c8:  44d60079  sdot     z25.d, z3.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019cc:  6f00e412  movi     v18.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019d0:  44d3009d  sdot     z29.d, z4.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019d4:  44d4009e  sdot     z30.d, z4.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019d8:  6f00e40e  movi     v14.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019dc:  44d5009f  sdot     z31.d, z4.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019e0:  44d60088  sdot     z8.d, z4.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019e4:  6f00e401  movi     v1.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019e8:  44d302e9  sdot     z9.d, z23.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019ec:  44d402eb  sdot     z11.d, z23.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019f0:  6f00e402  movi     v2.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019f4:  44d300cc  sdot     z12.d, z6.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019f8:  44d400cd  sdot     z13.d, z6.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x004019fc:  6f00e403  movi     v3.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a00:  44d300e5  sdot     z5.d, z7.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a04:  44d400f0  sdot     z16.d, z7.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a08:  6f00e404  movi     v4.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a0c:  44d30011  sdot     z17.d, z0.h, z19.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a10:  44d4000f  sdot     z15.d, z0.h, z20.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a14:  6f00e413  movi     v19.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a18:  6f00e414  movi     v20.2d, #0000000000000000
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a1c:  4e991b18  uzp1     v24.4s, v24.4s, v25.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a20:  44d502f2  sdot     z18.d, z23.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a24:  44d602ee  sdot     z14.d, z23.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a28:  4e9e1bb9  uzp1     v25.4s, v29.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a2c:  44d500c1  sdot     z1.d, z6.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a30:  44d600c2  sdot     z2.d, z6.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a34:  4e881bfd  uzp1     v29.4s, v31.4s, v8.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a38:  44d500e3  sdot     z3.d, z7.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a3c:  44d600e4  sdot     z4.d, z7.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a40:  44d50013  sdot     z19.d, z0.h, z21.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a44:  4ebcbf55  addp     v21.4s, v26.4s, v28.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a48:  44d60014  sdot     z20.d, z0.h, z22.h
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a4c:  4e8b1936  uzp1     v22.4s, v9.4s, v11.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a50:  4e8d199a  uzp1     v26.4s, v12.4s, v13.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a54:  4e8e1a52  uzp1     v18.4s, v18.4s, v14.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a58:  4e9018a0  uzp1     v0.4s, v5.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a5c:  4eb8bd58  addp     v24.4s, v10.4s, v24.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a60:  4e821821  uzp1     v1.4s, v1.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a64:  4ebdbf22  addp     v2.4s, v25.4s, v29.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a68:  4ebb1f65  mov      v5.16b, v27.16b
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a6c:  4e841863  uzp1     v3.4s, v3.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a70:  4e8f1a24  uzp1     v4.4s, v17.4s, v15.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a74:  910011ce  add      x14, x14, #4
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a78:  4e941a70  uzp1     v16.4s, v19.4s, v20.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a7c:  ad425ffe  ldp      q30, q23, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a80:  0f168c42  rshrn    v2.4h, v2.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a84:  4eb2bed2  addp     v18.4s, v22.4s, v18.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a88:  0f168eb3  rshrn    v19.4h, v21.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a8c:  4ea1bf41  addp     v1.4s, v26.4s, v1.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a90:  0f168f14  rshrn    v20.4h, v24.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a94:  f10031df  cmp      x14, #0xc
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a98:  4ebebef7  addp     v23.4s, v23.4s, v30.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401a9c:  4ea3bc00  addp     v0.4s, v0.4s, v3.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401aa0:  4eb0bc84  addp     v4.4s, v4.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401aa4:  0f168e43  rshrn    v3.4h, v18.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401aa8:  0f168c21  rshrn    v1.4h, v1.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401aac:  fc1e01a2  stur     d2, [x13, #-0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ab0:  0f168ef1  rshrn    v17.4h, v23.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ab4:  0f168c00  rshrn    v0.4h, v0.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ab8:  fc1601b3  stur     d19, [x13, #-0xa0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401abc:  0f168c82  rshrn    v2.4h, v4.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ac0:  fc1a01b4  stur     d20, [x13, #-0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ac4:  fd0011a3  str      d3, [x13, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ac8:  ad435ff6  ldp      q22, q23, [sp, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401acc:  fd0031a1  str      d1, [x13, #0x60]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ad0:  fc1201b1  stur     d17, [x13, #-0xe0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ad4:  fd0051a0  str      d0, [x13, #0xa0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ad8:  fd0071a2  str      d2, [x13, #0xe0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401adc:  ad7f0941  ldp      q1, q2, [x10, #-0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ae0:  a52f4100  ld1sh    {z0.s}, p0/z, [x8, x15, lsl #1]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ae4:  acc21143  ldp      q3, q4, [x10], #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ae8:  4ea19c10  mul      v16.4s, v0.4s, v1.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401aec:  4ea29c11  mul      v17.4s, v0.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401af0:  4ea39c12  mul      v18.4s, v0.4s, v3.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401af4:  4ea49c00  mul      v0.4s, v0.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401af8:  4eb1be10  addp     v16.4s, v16.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401afc:  4ea0be40  addp     v0.4s, v18.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b00:  4ea0be00  addp     v0.4s, v16.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b04:  0f168c00  rshrn    v0.4h, v0.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b08:  fc1401a0  stur     d0, [x13, #-0xc0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b0c:  a5304100  ld1sh    {z0.s}, p0/z, [x8, x16, lsl #1]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b10:  4ea19c10  mul      v16.4s, v0.4s, v1.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b14:  4ea29c11  mul      v17.4s, v0.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b18:  4ea39c12  mul      v18.4s, v0.4s, v3.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b1c:  4ea49c00  mul      v0.4s, v0.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b20:  4eb1be10  addp     v16.4s, v16.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b24:  4ea0be40  addp     v0.4s, v18.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b28:  4ea0be00  addp     v0.4s, v16.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b2c:  0f168c00  rshrn    v0.4h, v0.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b30:  fc1c01a0  stur     d0, [x13, #-0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b34:  a5314100  ld1sh    {z0.s}, p0/z, [x8, x17, lsl #1]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b38:  4ea19c10  mul      v16.4s, v0.4s, v1.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b3c:  4ea29c11  mul      v17.4s, v0.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b40:  4ea39c12  mul      v18.4s, v0.4s, v3.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b44:  4ea49c00  mul      v0.4s, v0.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b48:  4eb1be10  addp     v16.4s, v16.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b4c:  4ea0be40  addp     v0.4s, v18.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b50:  ad7fcd92  ldp      q18, q19, [x12, #-0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b54:  9100818c  add      x12, x12, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b58:  4ea0be00  addp     v0.4s, v16.4s, v0.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b5c:  4ebb9e55  mul      v21.4s, v18.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b60:  4eb69e52  mul      v18.4s, v18.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b64:  0f168c00  rshrn    v0.4h, v0.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b68:  fd0021a0  str      d0, [x13, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b6c:  ad7fc160  ldp      q0, q16, [x11, #-0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b70:  a5324111  ld1sh    {z17.s}, p0/z, [x8, x18, lsl #1]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b74:  9100816b  add      x11, x11, #0x20
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b78:  4eb0bc14  addp     v20.4s, v0.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b7c:  4eb79c00  mul      v0.4s, v0.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b80:  4eb79e10  mul      v16.4s, v16.4s, v23.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b84:  4ea19e21  mul      v1.4s, v17.4s, v1.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b88:  4ea29e22  mul      v2.4s, v17.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b8c:  4ea39e23  mul      v3.4s, v17.4s, v3.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b90:  4ea49e24  mul      v4.4s, v17.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b94:  4ebb9e71  mul      v17.4s, v19.4s, v27.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b98:  4eb69e73  mul      v19.4s, v19.4s, v22.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401b9c:  4f265694  shl      v20.4s, v20.4s, #6
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ba0:  4eb0bc00  addp     v0.4s, v0.4s, v16.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ba4:  4ea2bc21  addp     v1.4s, v1.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401ba8:  4ea4bc62  addp     v2.4s, v3.4s, v4.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bac:  4eb3be43  addp     v3.4s, v18.4s, v19.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bb0:  4eb1beb1  addp     v17.4s, v21.4s, v17.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bb4:  0f168e84  rshrn    v4.4h, v20.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bb8:  0f168c00  rshrn    v0.4h, v0.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bbc:  4ea2bc21  addp     v1.4s, v1.4s, v2.4s
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bc0:  0f168c62  rshrn    v2.4h, v3.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bc4:  0f168e30  rshrn    v16.4h, v17.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bc8:  85bf4bc3  ldr      z3, [x30, #-6, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bcc:  fc1001a4  stur     d4, [x13, #-0x100]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bd0:  85bf4fc4  ldr      z4, [x30, #-5, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bd4:  0f168c21  rshrn    v1.4h, v1.4s, #0xa
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bd8:  fd0001a0  str      d0, [x13]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bdc:  fd0041a2  str      d2, [x13, #0x80]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401be0:  85bf53c2  ldr      z2, [x30, #-4, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401be4:  fc1801b0  stur     d16, [x13, #-0x80]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401be8:  fd0061a1  str      d1, [x13, #0xc0]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bec:  85bf57c1  ldr      z1, [x30, #-3, mul vl]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bf0:  910021ad  add      x13, x13, #8
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bf4:  54ffe8c3  b.lo     #0x40190c
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bf8:  d10103bf  sub      sp, x29, #0x40
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401bfc:  a9447bfd  ldp      x29, x30, [sp, #0x40]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401c00:  6d4323e9  ldp      d9, d8, [sp, #0x30]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401c04:  6d422beb  ldp      d11, d10, [sp, #0x20]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401c08:  6d4133ed  ldp      d13, d12, [sp, #0x10]
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401c0c:  6cc53bef  ldp      d15, d14, [sp], #0x50
+
+----------------
+IN: _ZN4x2659dct16_sveEPKsPsl
+0x00401c10:  d65f03c0  ret      
+
