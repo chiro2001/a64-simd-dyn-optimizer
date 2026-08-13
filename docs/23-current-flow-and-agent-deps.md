@@ -118,6 +118,13 @@ raw 6896**，20k 5300（legacy 签名）、TestBenchLite 5 seed 全 PASS——
 **仅凭 rewrite 序列重发现 ≈6464（best）**，不再依赖任何 plan flag。
 与计划级 6464 差 8 条（调度微差）。
 
+**P0 序列搜索（2026-08-13）**：新增 `tools/search_rewrite_sequences.py`
+（625 序列 → 341 唯一 → 全量编译/20k/trace 排名）。自动搜索 best =
+**`[legacy_k2, legacy_k4, merge_narrow8, tbl2_to_zip]` → 6456**
+（raw 6896，legacy 签名），与手工序列一致——**工具已能仅凭
+“基础 plan + rewrite 序列搜索”自动重发现当前 best**。结果：
+`experiments/m30-dct32-search/layout-search-rwseq/results.json`。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。
