@@ -424,6 +424,21 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
 - 结论：单靠 legacy 合同追不平 v2，**必须把 OpIR 后端 + 调度器
   （zip 化切片、低 spill）做出来**才能逼近内部 4827。
 
+### 5.10 OpIR 后端首个可编译垂直切片（2026-08-13）
+
+- `optimizer/ir/dct32_op_ir.py`：v3.1 plan → 6800 个显式 op（load/rev/
+  unpk/permute/dot_segment/mul_reduce/round/narrow/store），2048 个
+  store lane 全覆盖，provenance 正/负向测试全过。
+- `optimizer/ir/dct32_op_emit.py`：op DAG → ACLE 源码，**不调用任何
+  grouped C++ 块**（仅复用数据表）。20k upstream 差分 **0 mismatch**；
+  full fused_uop：循环恢复版 9044，全展开版 8406（Go 判据 8292，
+  差 +1.4%/+9%）。
+- 差距归因（直方图）：循环版 str/ldr 偏多（寻址/寄存器压力），全展开
+  版 movprfx/fmov 偏多；属于**调度/寻址结构缺口**，不是语义错误。
+- E1-B 状态：**codegen 已从 op DAG 独立生成并正确**；尚未满足
+  “≤8292 重发现” Go 判据，下一步修调度（base 寻址、常量生命周期、
+  循环骨架与 grouped 对齐）。
+
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 
 微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈

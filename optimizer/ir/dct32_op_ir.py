@@ -55,18 +55,22 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     const_layout = lo.get("constant_layout", "derived-replicated")
     ops: List[Op] = []
     n = 0
+    cur = {"g": 0}
 
     def new(kind, tile_id, out="", inputs=(), attrs=None):
         nonlocal n
         n += 1
+        attrs = dict(attrs if attrs is not None else {})
+        attrs.setdefault("g", cur["g"])
         op = Op("op%04d" % n, kind, tile_id, out, tuple(inputs),
-                attrs if attrs is not None else {})
+                attrs)
         ops.append(op)
         return op
 
     for pass_id in (1, 2):
         shift = 4 if pass_id == 1 else 11
         for g in range(8):
+            cur["g"] = g
             rows = tuple(g * 4 + r for r in range(4))
             # ---- leaf per row ----
             o = {}
@@ -152,6 +156,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                 (xs[m],),
                                 attrs={"acc_bits": 64,
                                        "lane_owner": "output",
+                                       "slice": m,
                                        "terms": tuple(
                                            _g(k, 4 * m + j) for j in range(4)),
                                        "const_src": ("CODD[%d][%d]"
@@ -195,10 +200,12 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                     tid = "p%d.k2.k%d" % (pass_id, k)
                     t0 = new("dot_segment", tid, "k2t0_%d" % k, (ex[0],),
                              attrs={"acc_bits": 64, "lane_owner": "output",
+                                    "slice": 0,
                                     "terms": tuple(_g(k, j) for j in range(4)),
                                     "const_src": "K2S[%d][0]" % (k // 4)})
                     t1 = new("dot_segment", tid, "k2t1_%d" % k, (ex[1],),
                              attrs={"acc_bits": 64, "lane_owner": "output",
+                                    "slice": 1,
                                     "terms": tuple(_g(k, 4 + j)
                                                    for j in range(4)),
                                     "const_src": "K2S[%d][1]" % (k // 4)})
@@ -255,8 +262,9 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             for k in K0_K:
                 for r in rows:
                     tid = "p%d.k0.k%d.row%d" % (pass_id, k, r)
+                    src_val = eeee[r] if k in (0, 16) else eeeo[r]
                     t = new("mul_reduce", tid, "k0m_%d_%d" % (k, r),
-                            (eeee[r], eeeo[r]),
+                            (src_val,),
                             attrs={"elem": "s32",
                                    "terms": (_g(k, 0), _g(k, 1)),
                                    "reduce": "scalar",
