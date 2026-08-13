@@ -69,10 +69,18 @@ def main():
         + lower_pass2_odd_quarter(pack_zip=False, store_merge16=False,
                                   k_tile=2)
     for seq in (["tbl2_to_zip"], ["merge_narrow8"],
-                ["tbl2_to_zip", "merge_narrow8"]):
+                ["tbl2_to_zip", "merge_narrow8"],
+                ["legacy_even_sve"],
+                ["tbl2_to_zip", "legacy_even_sve", "merge_narrow8"]):
         rw = apply_rewrites(list(base), seq)
         r = dct16_upstream_provenance(rw)
         assert r["ok"], (seq, r["issues"])
+    rw_legacy = apply_rewrites(list(base), ["legacy_even_sve"])
+    r = dct16_upstream_provenance(rw_legacy)
+    assert r["scatter_stores"] == 4
+    assert all(o.attrs.get("mode") == "qrshrn"
+               for o in rw_legacy if o.kind in
+               ("narrow4", "narrow8", "narrow16", "narrow4_sve"))
     try:
         apply_rewrites(list(base), ["bogus"])
         raise AssertionError("expected ValueError for unknown rewrite")

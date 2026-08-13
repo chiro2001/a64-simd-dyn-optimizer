@@ -195,6 +195,238 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
     return result
 
 
+def rewrite_legacy_even_sve(ops: List[Op]) -> List[Op]:
+    """Replace the pass2 NEON even path with the pure-SVE even_sve block
+    (the 699/704 family): zip quarters q0..q3 -> QO (kept) + QEOW
+    (saddlb/saddlt + zip/revw + uzp1_wide) + EEp/EOp
+    (uzp1d/revw_d64 + s32 add/sub) -> T8E8 mul + addp32 -> qrshrn +
+    uzp1 + st1d_scatter for k=0/4/8/12; legacy QEOW single-const SDOT
+    loop for k=2/6/10/14. Also flips every narrow op to qrshrn (legacy
+    semantics) and marks pass2 odd narrow16 stores qrshrn.
+    """
+    by_out: Dict[str, Op] = {o.out: o for o in ops}
+    # pass1/pass2 narrow ops -> qrshrn (legacy saturation)
+    narrow_kinds = ("narrow4", "narrow8", "narrow16", "narrow4_sve")
+    ops = [Op(o.op_id, o.kind, o.tile_id, o.out, o.inputs,
+              dict(o.attrs, mode="qrshrn")) if o.kind in narrow_kinds
+           else o for o in ops]
+    by_out = {o.out: o for o in ops}
+
+    p2 = [o for o in ops if o.tile_id.startswith("p2.")]
+    even_stores = [o for o in p2 if o.kind == "store"
+                   and re.match(r"^p2\.(?:k2\.k\d+|k\d+\.k\d+)\.g\d+$",
+                                o.tile_id)]
+    if not even_stores:
+        return ops
+    first_even = min(ops.index(o) for o in even_stores)
+    # butterfly chain to remove (feeders of even stores), keeping z/rev/zO
+    remove = set(o.op_id for o in even_stores)
+    for o in p2:
+        if o.tile_id.startswith("p2.leaf."):
+            if o.kind == "load" or (o.kind == "permute"
+                                    and o.attrs.get("kind") == "rev_sve") \
+                    or (o.kind == "sub" and o.attrs.get("elem") == "s16"):
+                continue
+            remove.add(o.op_id)
+        elif o.kind in ("neon_mul", "neon_padd", "neon_narrow") \
+                and re.match(r"^p2\.(?:k2\.k\d+|k\d+\.k\d+)\.g\d+$",
+                             o.tile_id):
+            remove.add(o.op_id)
+        elif o.kind == "load" and o.attrs.get("arch") == "neon-const" \
+                and re.match(r"^p2\.(?:k2\.k\d+|k\d+\.k\d+)\.g\d+$",
+                             o.tile_id):
+            remove.add(o.op_id)
+    # z loads and pack QO names
+    z = {}
+    qo0 = {}
+    qo1 = {}
+    for o in p2:
+        m = re.match(r"^p2\.leaf\.row(\d+)$", o.tile_id)
+        if m and o.kind == "load" and o.attrs.get("arch") == "sve":
+            z[int(m.group(1))] = o.out
+        m = re.match(r"^p2\.pack\.g(\d+)$", o.tile_id)
+        if m and o.kind == "permute":
+            if o.out.startswith("QO0"):
+                qo0[int(m.group(1))] = o.out
+            elif o.out.startswith("QO1"):
+                qo1[int(m.group(1))] = o.out
+    if len(z) != 16 or len(qo0) != 4 or len(qo1) != 4:
+        return ops
+    # The pack section (tbl2 or zip) is replaced by the even_sve block's
+    # own quarters; old QO outputs are rebuilt from q0..q3 with the same
+    # names so the odd dots stay wired (zO/rev become dead and DCE'd).
+    remove |= {o.op_id for o in p2
+               if re.match(r"^p2\.pack\.g\d+$", o.tile_id)}
+
+    counter = [_op_id_base(ops)]
+    new_ops: List[Op] = []
+
+    def fresh(kind, tile_id, ins, attrs, out=None):
+        counter[0] += 1
+        op = Op("rw%04d" % counter[0], kind, tile_id,
+                out or "rw_%s" % counter[0], tuple(ins), dict(attrs))
+        new_ops.append(op)
+        return op
+
+    qeow = {}
+    for g in range(4):
+        tid = "p2.evensve.g%d" % g
+        base = 4 * g
+        a = [fresh("permute", tid, (z[base + m],),
+                   {"kind": "view_s64", "arch": "sve"}) for m in range(4)]
+        t = [fresh("permute", tid, (a[0].out, a[2].out),
+                   {"kind": "zip1d", "arch": "sve"}),
+             fresh("permute", tid, (a[0].out, a[2].out),
+                   {"kind": "zip2d", "arch": "sve"}),
+             fresh("permute", tid, (a[1].out, a[3].out),
+                   {"kind": "zip1d", "arch": "sve"}),
+             fresh("permute", tid, (a[1].out, a[3].out),
+                   {"kind": "zip2d", "arch": "sve"})]
+        p0 = fresh("permute", tid, (t[0].out, t[2].out),
+                   {"kind": "zip1d", "arch": "sve"})
+        p1 = fresh("permute", tid, (t[0].out, t[2].out),
+                   {"kind": "zip2d", "arch": "sve"})
+        p2_ = fresh("permute", tid, (t[1].out, t[3].out),
+                    {"kind": "zip1d", "arch": "sve"})
+        p3 = fresh("permute", tid, (t[1].out, t[3].out),
+                   {"kind": "zip2d", "arch": "sve"})
+        q0 = fresh("permute", tid, (p0.out,),
+                   {"kind": "view_s16", "arch": "sve"})
+        q1 = fresh("permute", tid, (p1.out,),
+                   {"kind": "view_s16", "arch": "sve"})
+        q2 = fresh("permute", tid,
+                   (fresh("permute", tid, (p2_.out,),
+                          {"kind": "view_s16", "arch": "sve"}).out,),
+                   {"kind": "revh_d", "arch": "sve"})
+        q3 = fresh("permute", tid,
+                   (fresh("permute", tid, (p3.out,),
+                          {"kind": "view_s16", "arch": "sve"}).out,),
+                   {"kind": "revh_d", "arch": "sve"})
+        fresh("sub", tid, (q0.out, q3.out),
+              {"elem": "s16", "arch": "sve"}, out=qo0[g])
+        fresh("sub", tid, (q1.out, q2.out),
+              {"elem": "s16", "arch": "sve"}, out=qo1[g])
+        e = [fresh("widen_add_sve", tid, (q0.out, q3.out), {"kind": "lb"}),
+             fresh("widen_add_sve", tid, (q0.out, q3.out), {"kind": "lt"}),
+             fresh("widen_add_sve", tid, (q1.out, q2.out), {"kind": "lb"}),
+             fresh("widen_add_sve", tid, (q1.out, q2.out), {"kind": "lt"})]
+        w0 = fresh("permute", tid, (e[0].out, e[1].out),
+                   {"kind": "zip1s", "arch": "sve"})
+        w1 = fresh("permute", tid, (e[0].out, e[1].out),
+                   {"kind": "zip2s", "arch": "sve"})
+        u2 = fresh("permute", tid, (e[2].out,),
+                   {"kind": "revw_d32", "arch": "sve"})
+        u3 = fresh("permute", tid, (e[3].out,),
+                   {"kind": "revw_d32", "arch": "sve"})
+        w2 = fresh("permute", tid, (u3.out, u2.out),
+                   {"kind": "zip1s", "arch": "sve"})
+        w3 = fresh("permute", tid, (u3.out, u2.out),
+                   {"kind": "zip2s", "arch": "sve"})
+        s0 = fresh("sub", tid, (w0.out, w2.out),
+                   {"elem": "s32", "arch": "sve"})
+        s1 = fresh("sub", tid, (w1.out, w3.out),
+                   {"elem": "s32", "arch": "sve"})
+        s2 = fresh("add", tid, (w0.out, w2.out),
+                   {"elem": "s32", "arch": "sve"})
+        s3 = fresh("add", tid, (w1.out, w3.out),
+                   {"elem": "s32", "arch": "sve"})
+        qeow[g] = fresh("permute", tid, (s0.out, s1.out),
+                        {"kind": "uzp1_wide", "arch": "sve"}).out
+        v0 = fresh("permute", tid, (s2.out, s3.out),
+                   {"kind": "uzp1d", "arch": "sve"})
+        v1 = fresh("permute", tid, (s2.out, s3.out),
+                   {"kind": "uzp2d", "arch": "sve"})
+        v1r = fresh("permute", tid, (v1.out,),
+                    {"kind": "revw_d64", "arch": "sve"})
+        eep = fresh("add", tid, (v0.out, v1r.out),
+                    {"elem": "s32", "arch": "sve", "view": "s64"})
+        eop = fresh("sub", tid, (v0.out, v1r.out),
+                    {"elem": "s32", "arch": "sve", "view": "s64"})
+        m = []
+        for i, (src, cexpr) in enumerate(
+                ((eep, "T8E8[0]"), (eop, "T8E8[1]"),
+                 (eep, "T8E8[2]"), (eop, "T8E8[3]"))):
+            fresh("load", tid, (),
+                  {"arch": "sve-const", "elem": "s32", "const": cexpr})
+            m.append(fresh("mul", tid, (src.out,),
+                           {"elem": "s32", "arch": "sve",
+                            "const_src": cexpr}))
+        pa = fresh("addp32", tid, (m[0].out, m[2].out), {})
+        pb = fresh("addp32", tid, (m[1].out, m[3].out), {})
+        xa = fresh("permute", tid, (pa.out, pb.out),
+                   {"kind": "uzp1s", "arch": "sve"})
+        xb = fresh("permute", tid, (pa.out, pb.out),
+                   {"kind": "uzp2s", "arch": "sve"})
+        na = fresh("narrow4_sve", tid, (xa.out,),
+                   {"shift": 10, "mode": "qrshrn"})
+        nb = fresh("narrow4_sve", tid, (xb.out,),
+                   {"shift": 10, "mode": "qrshrn"})
+        n16 = fresh("permute", tid, (na.out, nb.out),
+                    {"kind": "uzp1_wide", "arch": "sve",
+                     "inputs_s16": True})
+        fresh("store", tid, (n16.out,),
+              {"arch": "sve-scatter", "base": "dst",
+               "index": "scatter 4*g",
+               "lanes": tuple((2, k, 4 * g + j)
+                              for k in (0, 4, 8, 12) for j in range(4)),
+               "topology": "scatter", "n_lanes": 4, "evoffs": "EVEN_OFFS"})
+    # legacy QEOW SDOT loop for k = 2,6,10,14
+    for k in (2, 6, 10, 14):
+        tid = "p2.legacy.k%d" % k
+        clo = "CQ_LO[%d]" % k
+        fresh("load", tid, (),
+              {"arch": "sve-const", "elem": "s16", "const": clo})
+        dots = []
+        for g in range(4):
+            dots.append(fresh(
+                "dot_segment", "p2.legacy.k%d.g%d" % (k, g), (qeow[g],),
+                {"arch": "sve", "acc_bits": 64, "lane_owner": "output",
+                 "terms": tuple("G[%d][%d]" % (k, j) for j in range(8)),
+                 "const_src": clo}))
+        nn = fresh("narrow16", tid, tuple(d.out for d in dots),
+                   {"shift": 10, "mode": "qrshrn"})
+        fresh("store", tid, (nn.out,),
+              {"arch": "sve", "base": "dst", "index": "16*k",
+               "lanes": tuple((2, k, r) for r in range(16)),
+               "topology": "contiguous", "n_lanes": 16})
+
+    # Split new_ops into per-group blocks + trailing QEOW loop, inserted
+    # at each group's first even-store position (closer to the layout's
+    # interleaved order).
+    blocks: Dict[int, List[Op]] = {g: [] for g in range(4)}
+    tail: List[Op] = []
+    for o in new_ops:
+        m = re.match(r"^p2\.evensve\.g(\d+)$", o.tile_id)
+        if m:
+            blocks[int(m.group(1))].append(o)
+        else:
+            tail.append(o)
+    even_pos = {}
+    for g in range(4):
+        pos = [ops.index(o) for o in even_stores
+               if int(re.match(r"^p2\.(?:k2\.k\d+|k\d+\.k\d+)\.g(\d+)$",
+                               o.tile_id).group(1)) == g]
+        if pos:
+            even_pos[g] = min(pos)
+    result = []
+    inserted_g = set()
+    tail_done = False
+    for i, op in enumerate(ops):
+        for g in sorted(even_pos):
+            if even_pos[g] == i and g not in inserted_g:
+                result.extend(blocks[g])
+                inserted_g.add(g)
+        if inserted_g and inserted_g == set(even_pos) and not tail_done:
+            result.extend(tail)
+            tail_done = True
+        if op.op_id in remove:
+            continue
+        result.append(op)
+    if not tail_done:
+        result = ops
+    return result
+
+
 def _store_base(nn: Op, by_out: Dict[str, Op]) -> int:
     st = _store_of(nn, by_out)
     if not st:
@@ -213,10 +445,16 @@ def _store_of(nn: Op, by_out: Dict[str, Op]) -> Optional[Op]:
 REWRITES = {
     "tbl2_to_zip": rewrite_tbl2_to_zip,
     "merge_narrow8": rewrite_merge_narrow8,
+    "legacy_even_sve": rewrite_legacy_even_sve,
 }
 
 
 def apply_rewrites(ops: List[Op], names: List[str]) -> List[Op]:
+    # Lowerings each start their op_id counter at d16%04d; renumber the
+    # combined DAG once so op_ids are globally unique (rewrites keyed by
+    # op_id depend on this).
+    ops = [Op("d16%04d" % (i + 1), o.kind, o.tile_id, o.out, o.inputs,
+              dict(o.attrs)) for i, o in enumerate(ops)]
     for name in names:
         if name == "none":
             continue

@@ -250,9 +250,44 @@ op 后端已完整复现 DCT16 legacy best 704 结构，且全展开后寄存器
 ≤704 的 legacy 路径目前仍是 layout 轴机制（699），要变成原子 rewrite
 （QEOW/even_sve）才能被序列搜索自动重发现——这是下一个显式缺口。
 
+## 12. `legacy_even_sve` 原子 rewrite（2026-08-13 晚，已交付）
+
+- `rewrite_legacy_even_sve`：把 pass2 NEON even 路径整体替换为纯 SVE
+  even_sve 块（zip quarters q0..q3 → QO0/QO1 同名重建 + QEOW
+  saddlb/saddlt/zip/revw/uzp1_wide + EEp/EOp mul/addp32 + qrshrn +
+  st1d_scatter，k=0/4/8/12；QEOW 单常量 SDOT k=2/6/10/14），并删除
+  旧 pack 段使 zO/rev 变死代码；所有 narrow op 翻转为 qrshrn（legacy
+  语义，pass1+pass2）。
+- 顺带修复：两个 lowering 合并后 op_id 冲突（`apply_rewrites` 入口统一
+  重编号）；pass1 narrow8 发射漏用 per-op mode（全局 rshrn）。
+- `search_rewrite_sequences.py`：dct16 rewrites 加入 `legacy_even_sve`，
+  含该 rewrite 的序列按 legacy 门禁（mism ≤ 22528）验收。
+
+### 最终结果（全序列刷新，无内部参考）
+
+| 项 | 值 |
+| --- | --- |
+| base（quarter+odd-quarter+tbl2+sm16=1） | 965 fused_uop |
+| best 序列 | `legacy_even_sve`（tbl2_to_zip/merge 可加可不加） |
+| best fused_uop | **705**（vector 809 / fused 693 / sg 4） |
+| 20k 差分 | 2300（legacy 签名，与 grouped 704 完全一致） |
+| 逐 pass vs grouped legacy 704 | 0 mismatch |
+| TestBenchLite | PASS |
+| MCA | 212 cycles / 991 uops |
+
+与 layout 轴最优 699 的差异只剩 6 条栈调度（stp/ldp/str/ldr 组合），
+全部计算指令（zip/revh/revw/uzp/sdot/qrshrn/mul/addp）逐条同数。
+DCT16 的“kernel→op DAG→原子 rewrite→序列搜索→验证→计数”闭环至此
+完整：rewrite 引擎跨 DCT32/DCT16 复用，序列搜索可自动重发现 legacy
+路径（705 ≈ 704 验收线，误差为编译器 spill 噪声）。
+
 ### 下一步
 
 1. DCT16 `legacy_k2`（QEOW s16 链 + sdot）与 `even_sve`（scatter 纯
-   SVE even 路径）原子 rewrite，使序列搜索能从 965 自动降到 ≤ 704；
+   SVE even 路径）原子 rewrite —— 已完成（合并为一个
+   `legacy_even_sve`），序列搜索自动重发现 705；
 2. DCT32 侧把 `const_prearrange`/k0 向量化做成 rewrite（内部参考
-   4827 → 目标）后，再回填 docs/23 的 Agent 依赖表。
+   4827 → 目标）；DCT16 若需零 scatter 版本，把 scatter 4× 换回普通
+   st1 的 rewrite 作为后续增量；
+3. 回填 docs/23 的 Agent 依赖表（op DAG / rewrite / 序列搜索现在
+   对 DCT16 也是自动化路径）。

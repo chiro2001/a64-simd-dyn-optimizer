@@ -47,7 +47,8 @@ KERNELS = {
     "dct16": {
         "out": os.path.join(ROOT, "experiments", "m30-dct16-search",
                             "layout-search-rwseq"),
-        "rewrites": ["none", "tbl2_to_zip", "merge_narrow8"],
+        "rewrites": ["none", "tbl2_to_zip", "merge_narrow8",
+                     "legacy_even_sve"],
         "manifest": "dct16",
         "range_start": "_ZL9op_pass_4PKsPsl",
         "range_end": "dynopt_dct16_sve2_shared",
@@ -57,7 +58,7 @@ KERNELS = {
         "combo": {"pass1": "quarter", "pass1_k_tile": 4,
                   "pass1_pack_zip": 1, "pass1_even_factor": 1,
                   "pass2": "odd-quarter", "pass2_k_tile": 2,
-                  "pass2_pack_zip": 0, "store_merge16": 0,
+                  "pass2_pack_zip": 0, "store_merge16": 1,
                   "legacy_semantics": 0, "even_sve": 0},
     },
 }
@@ -180,6 +181,10 @@ def main():
             except ValueError:
                 mism = -1
         if kernel == "dct16":
+            legacy_seq = "legacy_even_sve" in key.split("|")
+        else:
+            legacy_seq = False
+        if kernel == "dct16" and not legacy_seq:
             ok_mism = r.returncode == 0 and mism == 0
         else:
             ok_mism = r.returncode in (0, 1) and 0 <= mism <= 22528

@@ -228,22 +228,28 @@ def _emit_pass1(ops: List[Op], legacy: bool = False) -> List[str]:
                         % (out, nm, attrs["shift"]))
             ctype[out] = "int16x4_t"
         elif kind == "narrow4":
+            rsh = "svqrshrnb_n_s32" if (legacy
+                                        or attrs.get("mode") == "qrshrn") \
+                else "svrshrnb_n_s32"
             body.append("    const svint32_t w_%s = svuzp1_s32("
                         "svreinterpret_s32_s64(%s), "
                         "svreinterpret_s32_s64(%s));"
                         % (out, ins[0], ins[0]))
             body.append("    svint16_t %s = %s(w_%s, %d);"
-                        % (out, rshrn, out, attrs["shift"]))
+                        % (out, rsh, out, attrs["shift"]))
             body.append("    %s = svuzp1_s16(%s, %s);" % (out, out, out))
             ctype[out] = "svint16_t"
             used_p4 = True
         elif kind == "narrow8":
+            rsh = "svqrshrnb_n_s32" if (legacy
+                                        or attrs.get("mode") == "qrshrn") \
+                else "svrshrnb_n_s32"
             body.append("    const svint32_t w_%s = svuzp1_s32("
                         "svreinterpret_s32_s64(%s), "
                         "svreinterpret_s32_s64(%s));"
                         % (out, ins[0], ins[1]))
             body.append("    svint16_t %s = %s(w_%s, %d);"
-                        % (out, rshrn, out, attrs["shift"]))
+                        % (out, rsh, out, attrs["shift"]))
             body.append("    %s = svuzp1_s16(%s, %s);" % (out, out, out))
             ctype[out] = "svint16_t"
             used_p8 = True
@@ -525,19 +531,28 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
                         % (out, ins[0], ins[1]))
             ctype[out] = "svint32_t"
         elif kind == "narrow4_sve":
+            rsh = "svqrshrnb_n_s32" if (legacy
+                                        or attrs.get("mode") == "qrshrn") \
+                else "svrshrnb_n_s32"
             body.append("    svint16_t %s = %s(%s, %d);"
-                        % (out, rshrn, ins[0], attrs["shift"]))
+                        % (out, rsh, ins[0], attrs["shift"]))
             ctype[out] = "svint16_t"
         elif kind == "narrow8":
+            rsh = "svqrshrnb_n_s32" if (legacy
+                                        or attrs.get("mode") == "qrshrn") \
+                else "svrshrnb_n_s32"
             body.append("    const svint32_t w_%s = svuzp1_s32("
                         "svreinterpret_s32_s64(%s), "
                         "svreinterpret_s32_s64(%s));" % (out, ins[0], ins[1]))
             body.append("    svint16_t %s = %s(w_%s, %d);"
-                        % (out, rshrn, out, attrs["shift"]))
+                        % (out, rsh, out, attrs["shift"]))
             body.append("    %s = svuzp1_s16(%s, %s);" % (out, out, out))
             ctype[out] = "svint16_t"
             used_p8 = True
         elif kind == "narrow16":
+            rsh = "svqrshrnb_n_s32" if (legacy
+                                        or attrs.get("mode") == "qrshrn") \
+                else "svrshrnb_n_s32"
             body.append("    const svint32_t w01_%s = svuzp1_s32("
                         "svreinterpret_s32_s64(%s), "
                         "svreinterpret_s32_s64(%s));"
@@ -547,10 +562,10 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
                         "svreinterpret_s32_s64(%s));"
                         % (out, ins[2], ins[3]))
             body.append("    const svint16_t nb_%s = "
-                        "%s(w01_%s, %d);" % (out, rshrn, out,
+                        "%s(w01_%s, %d);" % (out, rsh, out,
                                              attrs["shift"]))
             body.append("    const svint16_t nt_%s = "
-                        "%s(w23_%s, %d);" % (out, rshrn, out,
+                        "%s(w23_%s, %d);" % (out, rsh, out,
                                              attrs["shift"]))
             body.append("    svint16_t %s = svuzp1_s16(nb_%s, nt_%s);"
                         % (out, out, out))
