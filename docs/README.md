@@ -33,9 +33,9 @@ interp8 127（-10%，已接入 lite 门禁）；详见
 [22-interp8-assessment.md](22-interp8-assessment.md)。
 
 2026-08-14 状态速览（最新）：工具链闭环（并行搜索/依赖剪枝/两级差分/
-流式 trace 全部可用并验证）；DCT32 op best **4944**（row16 合并存储 +
-k0_merge8，全布局搜索 112 候选确认，TestBenchLite 5 seed PASS，
-距内部 4827 = 1.024×）；
+流式 trace 全部可用并验证）；DCT32 op best **4874**（row16 合并存储 +
+k0_merge8 + k0 先发射，全布局搜索 112 候选确认，TestBenchLite
+5 seed PASS，距内部 4827 = 1.010×）；
 k0_even_sdot 全 s16 方案被探针否决（§6.4）；DCT16 best 705；完整状态
 见 [20-dct32-optimization-assessment.md](20-dct32-optimization-assessment.md) §6 与
 [10-agent-handoff.md](10-agent-handoff.md)。

@@ -885,6 +885,33 @@ movprfx 472 / stack 614，20k 签名 7268，TestBenchLite 5 seed PASS）。
 已固化 `kernels/dct32/candidates/best_op_r16.{cpp,S,o}`
 （-fno-tree-pre 复建计数一致）。
 
+### 6.7 2026-08-14 深夜：k0 先发射（live-range 缩短）→ 4944→4874
+
+row16 的 pass 体巨大，spill（ldr ~328 / stack 614）是最大单项。
+分析发现 k0 E-chain 复用 leaf 段的 lo/hi 向量，其活跃区间一直延伸到
+组内最后（k0 原本在 odd/k2/k4 之后发射），是主要寄存器压力源。
+
+发射器新增 `_k0_first()`：每个 pass 内按
+`leaf → k0 → odd/k2/k4` 顺序发射（DAG 依赖不变，仅源码顺序）。
+实测（row16+merge8 组合，其余不变）：
+
+| 指标 | 4944 | **4874** | 差 |
+| --- | ---: | ---: | ---: |
+| fused_uop | 4944 | **4874** | -70（-1.4%） |
+| vector raw | 5416 | 5350 | -66 |
+| stack | 614 | 530 | -84 |
+| 20k legacy 签名 | 7268 | 7268 | 0 |
+| TestBenchLite | 5 seed PASS | **5 seed PASS** | — |
+
+全布局搜索重跑（112 候选全过）确认空间最优仍为
+`row16 + k0_even_sve + k0_merge8 + k0_shared_mul=0` → **4874**；
+相对上游 12710 = **0.383×**，距内部 fused_uop 4827 = **1.010×**。
+`best_op_r16.{cpp,S}` 已按 k0-first 重新固化（复建计数一致）。
+
+这验证了“发射顺序作为搜索维度”的思路：对 GCC 后端，op DAG 的源码
+顺序（live-range 形状）与指令数直接相关。后续可把顺序做成可枚举轴
+（leaf/k0/odd 等相对次序），或扩展到 k2/k4 的次序。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；

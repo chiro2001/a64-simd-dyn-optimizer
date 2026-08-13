@@ -450,8 +450,20 @@ def emit_acle(plan: Plan, ops: List[Op],
     max_g = max((int(o.attrs.get("g", 0)) for o in ops), default=7)
     n_groups = max_g + 1
     row_group = 32 // n_groups
-    pass1 = [o for o in ops if o.tile_id.startswith("p1.")]
-    pass2 = [o for o in ops if o.tile_id.startswith("p2.")]
+    def _k0_first(pass_ops):
+        """Emit k0 right after the leaf section so the lo/hi leaf vectors
+        die before the odd/k2/k4 chains (register-pressure experiment:
+        the k0 E-chain's pack reuses lo/hi, whose long live range to the
+        end of the group is a major spill source in the row16 body)."""
+        fam = lambda o: o.tile_id.split(".")[1]
+        leaf = [o for o in pass_ops if fam(o) == "leaf"]
+        k0 = [o for o in pass_ops if fam(o).startswith("k0")]
+        rest = [o for o in pass_ops
+                if fam(o) != "leaf" and not fam(o).startswith("k0")]
+        return leaf + k0 + rest
+
+    pass1 = _k0_first([o for o in ops if o.tile_id.startswith("p1.")])
+    pass2 = _k0_first([o for o in ops if o.tile_id.startswith("p2.")])
     b1 = _emit_pass(pass1, 8, row_group)
     b2 = _emit_pass(pass2, 1024, row_group)
     prologue = """\
