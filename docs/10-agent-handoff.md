@@ -5,10 +5,21 @@
 
 ## 0. 2026-08-13 深夜状态速览（M30 之后，最新优先）
 
-- **DCT32 best（full-call fused_uop）**：op 后端 row8+legacy(k2/k4)+zip =
-  **6464**（raw 6904）；纯 rewrite 序列 `[legacy_k2, legacy_k4,
-  merge_narrow8, tbl2_to_zip]` 从基础 plan 自动重发现 **6456**；
-  相对上游 12710 = 0.509×，低于 v2 7190，距内部 4827 = 1.34×。
+- **DCT32 best（full-call fused_uop）**：op 后端 row8+legacy(k2/k4)+zip
+  + **k0_even_sve** = **5814**（raw 6286，MCA 411 cyc/2231 uops，
+  2026-08-13 晚新增，-10.1%）；纯 rewrite 序列 `[legacy_k2,
+  legacy_k4, merge_narrow8, tbl2_to_zip]` 从基础 plan 重发现 6456；
+  相对上游 12710 = 0.457×，距内部 4827 = **1.204×**。
+- **k0_even_sve 机制**（docs/20 §5.12）：数值探针发现
+  EEp=[P0,Q0,...]/EOp=[R0,S0,...]，k0 = addp(EEp/EOp×K0EVEN)；
+  **s16 回绕坑**：E 必须 lo/hi 分 pack 在 s32 域成形
+  （e0=saddlb(lo_q0,revh(hi_q3))+saddlb(lo_q3,hi_q0) 等），否则
+  常量 ±255 输入在 pass2 回绕致 lite FAIL；RSHRNB 结果在偶 lane 需
+  uzp1_s16 压缩。manifest 轴 `k0_even_sve`（要求 k2_slice+legacy_ex+
+  legacy_k4）。
+- **DCT16 全链完成**：op DAG + rewrite（tbl2_to_zip/merge_narrow8/
+  legacy_even_sve）+ 参数化序列搜索（--kernel dct16），best 705
+  fused_uop（超内部 731），零 scatter 895。
 - **E1-B 达成**：`optimizer/ir/dct32_op_ir.py` + `dct32_op_emit.py`
   （-O2 -fno-tree-pre）不调用 grouped 块，8283 ≤ Go 8292，20k=0、lite PASS。
 - **P0 完成**：op 级原子 rewrite 引擎（`dct32_rewrites.py`）：
@@ -22,8 +33,9 @@
 - **实机数据**：920B paired：v2-SVE1 vs 上游 sve +4%（CI 不含 1）、
   v3.1-SVE1 -14%、NEON 仍快；Yitian(Neoverse-N2, VL=128) 基线
   c/neon/sve = 402/118/83；960 未流片。
-- **下一步**：DCT16/interp8 的 op-rewrite 迁移（无参考验证）、960/920G
-  paired 第三代理、常量预排列（ld1h 736）与 k0 向量化。
+- **下一步**：DCT32 rshrnb 8 行合并窄化（512→256 方向，剩余最大差
+  距）、k0_even_sve 做成原子 rewrite（DCT16 legacy_even_sve 同款）、
+  常量预排列（tbl/zip 削减）、960/920G paired 第三代理。
 
 ## 1. 仓库与同步（必须遵守）
 
