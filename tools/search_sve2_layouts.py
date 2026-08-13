@@ -29,6 +29,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 from emit_dct16_sve2_shared import emit  # noqa: E402
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
 from kernel_manifest import layout_combos, load_manifest, repo_path  # noqa: E402
+from gen_verify import generate as gen_verify  # noqa: E402
 
 
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
@@ -93,6 +94,10 @@ def main():
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
     os.makedirs(args.outdir, exist_ok=True)
+    verify_src = os.path.join(args.outdir, "verify_generated.cpp")
+    if not os.path.exists(verify_src):
+        with open(verify_src, "w") as f:
+            f.write(gen_verify(manifest))
 
     combos = layout_combos(manifest)
     if not combos or not manifest.get("layouts"):
@@ -125,8 +130,7 @@ def main():
         verify = os.path.join(args.outdir, tag + "-verify")
         v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
                  "-march=armv8.2-a+sve2",
-                 repo_path(manifest, manifest["candidate"]["verify_src"]),
-                 obj, "-Wl,--start-group",
+                 verify_src, obj, "-Wl,--start-group",
                  repo_path(manifest, manifest["reference"]["lib"]),
                  "-Wl,--end-group",
                  "-lpthread", "-ldl", "-o", verify])
