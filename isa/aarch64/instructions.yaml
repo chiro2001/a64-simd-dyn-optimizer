@@ -106,6 +106,18 @@ instructions:
      pattern: {op: whilelt, pred: true}, status: known}
   - {id: sve-sdot-s32, feature: sve, asm: SDOT, intrinsic: svdot_s32,
      pattern: {op: sdot, pred: false}, status: verify}
+  - {id: sve-addp-s64, feature: sve, asm: ADDP, intrinsic: svaddp_s64_x,
+     pattern: {op: addp, pred: true},
+     semantics: "pairwise within 128-bit segment: [a0+a1, b0+b1, a2+a3, b2+b3]",
+     status: verified}
+  - {id: sve-uzp1-s64, feature: sve, asm: UZP1, intrinsic: svuzp1_s64,
+     pattern: {op: uzp1, pred: false},
+     semantics: "even elements of concatenation: [a0,a2,...,b0,b2,...]",
+     status: verified}
+  - {id: sve-uzp2-s64, feature: sve, asm: UZP2, intrinsic: svuzp2_s64,
+     pattern: {op: uzp2, pred: false},
+     semantics: "odd elements of concatenation: [a1,a3,...,b1,b3,...]",
+     status: verified}
   - {id: sve-udot-u32, feature: sve, asm: UDOT, intrinsic: svdot_u32,
      pattern: {op: udot, pred: false}, status: verify}
   - {id: sve-smmla-s32, feature: sve, asm: SMMLA, intrinsic: svmmla_s32,
@@ -125,6 +137,33 @@ instructions:
      status: verify}
 
   # ---- SVE2 ----
+  - {id: sve2-sdot-s64-s16, feature: sve2, asm: SDOT, intrinsic: svdot_s64,
+     pattern: {op: sdot, bits: [16, 64], pred: false},
+     semantics: "one s64 lane per 4 consecutive s16 elements; at VL=256 16 s16 "
+                "per operand produce 4 s64 lanes: [dot4(0:4), dot4(4:8), "
+                "dot4(8:12), dot4(12:16)]",
+     status: verified}
+  - {id: sve2-rshrnb-s16-s32, feature: sve2, asm: RSHRNB,
+     intrinsic: svrshrnb_n_s32,
+     pattern: {op: rshrnb, bits: [32, 16], pred: false},
+     semantics: "rounding shift right narrow (bottom): each s32 source lane is "
+                "placed in an EVEN-numbered s16 destination lane; odd "
+                "destination lanes are zero. Requires an UZP1 before a "
+                "contiguous store.",
+     status: verified}
+  - {id: sve2-rshrnt-s16-s32, feature: sve2, asm: RSHRNT,
+     intrinsic: svrshrnt_n_s32,
+     pattern: {op: rshrnt, bits: [32, 16], pred: false},
+     semantics: "rounding shift right narrow (top): fills the ODD-numbered "
+                "half-width destination lanes; combines with RSHRNB for a "
+                "full-width narrow. Lane mapping pending dedicated probe.",
+     status: verify}
+  - {id: sve2-addp-s32, feature: sve2, asm: ADDP, intrinsic: svaddp_s32_x,
+     pattern: {op: addp, pred: true}, status: verify}
+  - {id: sve2-uzp1-s16, feature: sve2, asm: UZP1, intrinsic: svuzp1_s16,
+     pattern: {op: uzp1, pred: false}, status: verified}
+  - {id: sve2-uzp2-s16, feature: sve2, asm: UZP2, intrinsic: svuzp2_s16,
+     pattern: {op: uzp2, pred: false}, status: verified}
   - {id: sve2-tbl2-u16, feature: sve2, asm: TBL, intrinsic: svtbl2_u16,
      pattern: {op: tbl2, pred: false}, status: verify}
   - {id: sve2-umaxp-u16, feature: sve2, asm: UMAXP, intrinsic: svmaxp_u16,

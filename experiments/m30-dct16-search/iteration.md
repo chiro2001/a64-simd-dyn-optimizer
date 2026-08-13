@@ -101,24 +101,64 @@ C-exact 差分 + 两机双口径实测。
   叶子，导致 lane 1-3 的合并停在两叶（load + rev16(mirror)）。补上
 ldp 双寄存器分叶后，45 个输出的全量 C' 全部闭合，即可发射。
 
-## SVE256 稠密点积静态证据（2026-08-13）
+## SVE2 稠密点积探针：C-exact + lane 语义修正（2026-08-13）
 
-`sve2_dot_probe.cpp`：把发现的共享常量矩阵形式直接发射为 SVE2（固定
-VL=256）——`out[i] = dot(C, x_i)`，i=0..3，C 为一条 8 系数共享向量，
-x_i 为 8×s16 raw 叶子。`-O2 -march=armv8.2-a+sve2` 编译产物：
+`kernels/dct16/candidates/sve2_dense.cpp`：把 DCT16 整体视为两个稠密
+16×16 矩阵乘（VL 固定 256），每个输出系数行 k 一条 16 系数 SVE2 SDOT
+（s16→s64），修复两个 lane 语义问题后：
 
 ```text
-25 条指令 / 4 输出（其中 4 条 movprfx 可消除，实为 ~21）
+qemu-aarch64 -cpu max,sve-max-vq=2 build/dct16_sve2_verify 300000
+cases=300000 mismatches=0     # stride {16,17,32}
 ```
 
-即 **~5-6 条 SVE2 指令/输出**，对比 NEON 稠密点积的 ~55 条/输出（约
-9-10 倍差距），且整个形式零 tbl 置换。全 DCT16 估算：
+修复中确认的 SVE2 lane 语义（已写入 `isa/aarch64/instructions.yaml`）：
 
-- 奇数路径 16 输出 × ~21 ≈ 340；
-- 偶数路径（splat-1 求和，置换整体删除）≈ 130；
-- load/store ≈ 40；合计 **~500 条 SVE2**，vs 上游 NEON 动态 1553 条
-  向量指令 → **~3.1 倍指令削减**，超过 b/c 档所需的名义 2 倍。
+1. `SDOT .d, .h, .h` 在 VL=256 时：16 个 s16 操作数 → 4 个 s64 lane，
+   每 lane = 连续 4 元素的点积（lane 顺序线性，无跨段混排）；
+2. `RSHRNB .h, .s` 把每个 s32 结果放在**偶数** s16 lane、奇数 lane 置零，
+   连续存储前必须 `UZP1` 压缩一次；
+3. `ADDP .d` 是 128-bit 段内两两相加（`[a0+a1, b0+b1, a2+a3, b2+b3]`），
+   配合 `UZP1/UZP2` 才能把每行两个 8 元素半积合成 16 元素全积。
 
-结论闭环：工具在动态流上发现常量重排结构 → NEON128 稠密发射被搜索
-否决（净 +790）→ SVE256 发射静态 **3.1 倍指令削减**（无需 N+2 即可
-静态验收 b/c 档的指令数口径；实机 cycles 待 N+2 接入）。
+### 口径修正：稠密逐输出形式不是目标形态
+
+早期"~500 条 SVE2 / 3.1x 削减"的估算**作废**：它把 4 输出共享常量组的
+~21 条指令与"NEON 稠密点积 ~55 条/输出"对比，而后者不是上游 DCT16
+的基线。真实基线是上游 butterfly 动态流：全 DCT16（两遍）**1553 条向量
+指令、~3 条/输出**（addp 320 + smull2 256 + smlal 256 + mul 176 + rshrn
+112 + tbl 80 …）。逐输出稠密 SDOT 形式实测 ~6.5 计算 + 1.5 访存/输出，
+两遍约 3300+ 条，**反而约 2.1x 劣于上游**——稠密形式重算每输出的 16
+个 MAC，丢失了 butterfly 跨系数共享的 E/O/EE/EO 部分和。
+
+因此正确的发射形态是**共享叶子的 butterfly + 预置常量点积**：
+
+- 每输入行只算一次 E/O（8 lane）与 EE/EO/EEE/EEO（4/2 lane），16 个
+  系数输出共享；
+- 每个输出系数只做 8/4/2 元素点积，常量 C 预先置换好，运行期 tbl/rev
+  链消失；
+- SVE256 下 4 行一组打包，`SDOT` 一次算 4 个输出的 4 元素部分积 +
+  `ADDP` 合成，预算约 2-3 条/输出（含窄化/存储）→ 与上游 3 条/输出
+  相比才有 +30~60% 空间，与内部 DCT16 结论一致。
+
+### 可复现发现报告（工具增量）
+
+`tools/dct16_shared_discovery.py` 固化发现管线：trace JSON + .rodata
+dump → 常量解析 → lane 追踪 → 共享常量矩阵检测 → 结构化 JSON 报告：
+
+```sh
+python3 tools/dct16_shared_discovery.py \
+  experiments/m30-dct16-search/trace/dct16-dynamic.json \
+  build/dct16.rodata --out experiments/m30-dct16-search/shared-matrix-discovery.json
+```
+
+报告结果：**39 个命中**（奇数输出），16 个跨命中共享的叶子（4 行 ×
+O 高低半），17 组不同常量向量，每个命中 = 4 个输出 lane 共享
+`[C, -rev(C)]`，叶子即 ldp 加载的 raw 行对（行 i 与镜像行 15-i）——
+即常量重排已经折进 C，运行期数据置换可整体删除。该 JSON 是下一步
+发射器（row-hoisted butterfly + SDOT）的输入契约。
+
+结论闭环（修正版）：工具在动态流上发现常量重排结构 ✅ → NEON128 稠密
+发射被否决 ✅ → SVE256 稠密探针 C-exact ✅ → 稠密逐输出形态因丢失共享
+部分和被否决 ✅ → 下一步发射"共享叶子 butterfly + 预置常量 SDOT"，
+静态预算约 2-3 条/输出，等待实机验证。

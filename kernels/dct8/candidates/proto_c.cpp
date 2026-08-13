@@ -67,33 +67,39 @@ static inline void butterfly_rows(const int16x8_t* rows, int16x8_t* out)
     int16x4_t c3 = vld1_s16(g_t8[3]);
     int16x4_t c5 = vld1_s16(g_t8[5]);
     int16x4_t c7 = vld1_s16(g_t8[7]);
+    // Hoist the odd-column coefficient widening out of the loop: the
+    // constants are the same for both j-groups.
+    int32x4_t c1w = vmovl_s16(c1);
+    int32x4_t c3w = vmovl_s16(c3);
+    int32x4_t c5w = vmovl_s16(c5);
+    int32x4_t c7w = vmovl_s16(c7);
 
     int16x4_t res[2][8];
     for (int b = 0, j = 0; b < 2; b++, j += 4)
     {
         // odd columns: tree-shaped s32 reduction (short critical path)
-        int32x4_t t01 = vpaddq_s32(vmulq_s32(vmovl_s16(c1), O[j + 0]),
-                                   vmulq_s32(vmovl_s16(c1), O[j + 1]));
-        int32x4_t t23 = vpaddq_s32(vmulq_s32(vmovl_s16(c1), O[j + 2]),
-                                   vmulq_s32(vmovl_s16(c1), O[j + 3]));
+        int32x4_t t01 = vpaddq_s32(vmulq_s32(c1w, O[j + 0]),
+                                   vmulq_s32(c1w, O[j + 1]));
+        int32x4_t t23 = vpaddq_s32(vmulq_s32(c1w, O[j + 2]),
+                                   vmulq_s32(c1w, O[j + 3]));
         res[b][1] = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
 
-        t01 = vpaddq_s32(vmulq_s32(vmovl_s16(c3), O[j + 0]),
-                         vmulq_s32(vmovl_s16(c3), O[j + 1]));
-        t23 = vpaddq_s32(vmulq_s32(vmovl_s16(c3), O[j + 2]),
-                         vmulq_s32(vmovl_s16(c3), O[j + 3]));
+        t01 = vpaddq_s32(vmulq_s32(c3w, O[j + 0]),
+                         vmulq_s32(c3w, O[j + 1]));
+        t23 = vpaddq_s32(vmulq_s32(c3w, O[j + 2]),
+                         vmulq_s32(c3w, O[j + 3]));
         res[b][3] = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
 
-        t01 = vpaddq_s32(vmulq_s32(vmovl_s16(c5), O[j + 0]),
-                         vmulq_s32(vmovl_s16(c5), O[j + 1]));
-        t23 = vpaddq_s32(vmulq_s32(vmovl_s16(c5), O[j + 2]),
-                         vmulq_s32(vmovl_s16(c5), O[j + 3]));
+        t01 = vpaddq_s32(vmulq_s32(c5w, O[j + 0]),
+                         vmulq_s32(c5w, O[j + 1]));
+        t23 = vpaddq_s32(vmulq_s32(c5w, O[j + 2]),
+                         vmulq_s32(c5w, O[j + 3]));
         res[b][5] = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
 
-        t01 = vpaddq_s32(vmulq_s32(vmovl_s16(c7), O[j + 0]),
-                         vmulq_s32(vmovl_s16(c7), O[j + 1]));
-        t23 = vpaddq_s32(vmulq_s32(vmovl_s16(c7), O[j + 2]),
-                         vmulq_s32(vmovl_s16(c7), O[j + 3]));
+        t01 = vpaddq_s32(vmulq_s32(c7w, O[j + 0]),
+                         vmulq_s32(c7w, O[j + 1]));
+        t23 = vpaddq_s32(vmulq_s32(c7w, O[j + 2]),
+                         vmulq_s32(c7w, O[j + 3]));
         res[b][7] = vrshrn_n_s32(vpaddq_s32(t01, t23), shift);
 
         // even columns (upstream structure)

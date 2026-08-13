@@ -1,0 +1,12495 @@
+{
+ "trace": "experiments/m30-dct16-search/trace/dct16-dynamic.json",
+ "dynamic_insns": 2108,
+ "vector_insns": 2014,
+ "hits": [
+  {
+   "node_id": 329,
+   "mn": "rshrn",
+   "consts": [
+    [
+     90,
+     87,
+     80,
+     70,
+     57,
+     43,
+     25,
+     9
+    ],
+    [
+     -9,
+     -25,
+     -43,
+     -57,
+     -70,
+     -80,
+     -87,
+     -90
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 343,
+   "mn": "rshrn",
+   "consts": [
+    [
+     87,
+     57,
+     9,
+     -43,
+     -80,
+     -90,
+     -70,
+     -25
+    ],
+    [
+     25,
+     70,
+     90,
+     80,
+     43,
+     -9,
+     -57,
+     -87
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 360,
+   "mn": "rshrn",
+   "consts": [
+    [
+     80,
+     9,
+     -70,
+     -87,
+     -25,
+     57,
+     90,
+     43
+    ],
+    [
+     -43,
+     -90,
+     -57,
+     25,
+     87,
+     70,
+     -9,
+     -80
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 377,
+   "mn": "rshrn",
+   "consts": [
+    [
+     70,
+     -43,
+     -87,
+     9,
+     90,
+     25,
+     -80,
+     -57
+    ],
+    [
+     57,
+     80,
+     -25,
+     -90,
+     -9,
+     87,
+     43,
+     -70
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 386,
+   "mn": "rshrn",
+   "consts": [
+    [
+     57,
+     -80,
+     -25,
+     90,
+     -9,
+     -87,
+     43,
+     70
+    ],
+    [
+     -70,
+     -43,
+     87,
+     9,
+     -90,
+     25,
+     80,
+     -57
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 399,
+   "mn": "rshrn",
+   "consts": [
+    [
+     43,
+     -90,
+     57,
+     25,
+     -87,
+     70,
+     9,
+     -80
+    ],
+    [
+     80,
+     -9,
+     -70,
+     87,
+     -25,
+     -57,
+     90,
+     -43
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 413,
+   "mn": "rshrn",
+   "consts": [
+    [
+     25,
+     -70,
+     90,
+     -80,
+     43,
+     9,
+     -57,
+     87
+    ],
+    [
+     -87,
+     57,
+     -9,
+     -43,
+     80,
+     -90,
+     70,
+     -25
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      13,
+      0
+     ],
+     [
+      14,
+      1
+     ]
+    ],
+    [
+     [
+      18,
+      0
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    [
+     [
+      54,
+      0
+     ],
+     [
+      42,
+      1
+     ]
+    ],
+    [
+     [
+      52,
+      0
+     ],
+     [
+      56,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 13,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 13,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 14,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 14,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 18,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 18,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 11,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 11,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 54,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 54,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 42,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 42,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 52,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 52,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 56,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 56,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 529,
+   "mn": "rshrn",
+   "consts": [
+    [
+     90,
+     87,
+     80,
+     70,
+     57,
+     43,
+     25,
+     9
+    ],
+    [
+     -9,
+     -25,
+     -43,
+     -57,
+     -70,
+     -80,
+     -87,
+     -90
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 543,
+   "mn": "rshrn",
+   "consts": [
+    [
+     87,
+     57,
+     9,
+     -43,
+     -80,
+     -90,
+     -70,
+     -25
+    ],
+    [
+     25,
+     70,
+     90,
+     80,
+     43,
+     -9,
+     -57,
+     -87
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 556,
+   "mn": "rshrn",
+   "consts": [
+    [
+     80,
+     9,
+     -70,
+     -87,
+     -25,
+     57,
+     90,
+     43
+    ],
+    [
+     -43,
+     -90,
+     -57,
+     25,
+     87,
+     70,
+     -9,
+     -80
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 573,
+   "mn": "rshrn",
+   "consts": [
+    [
+     70,
+     -43,
+     -87,
+     9,
+     90,
+     25,
+     -80,
+     -57
+    ],
+    [
+     57,
+     80,
+     -25,
+     -90,
+     -9,
+     87,
+     43,
+     -70
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 588,
+   "mn": "rshrn",
+   "consts": [
+    [
+     57,
+     -80,
+     -25,
+     90,
+     -9,
+     -87,
+     43,
+     70
+    ],
+    [
+     -70,
+     -43,
+     87,
+     9,
+     -90,
+     25,
+     80,
+     -57
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 599,
+   "mn": "rshrn",
+   "consts": [
+    [
+     43,
+     -90,
+     57,
+     25,
+     -87,
+     70,
+     9,
+     -80
+    ],
+    [
+     80,
+     -9,
+     -70,
+     87,
+     -25,
+     -57,
+     90,
+     -43
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 612,
+   "mn": "rshrn",
+   "consts": [
+    [
+     25,
+     -70,
+     90,
+     -80,
+     43,
+     9,
+     -57,
+     87
+    ],
+    [
+     -87,
+     57,
+     -9,
+     -43,
+     80,
+     -90,
+     70,
+     -25
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 628,
+   "mn": "rshrn",
+   "consts": [
+    [
+     9,
+     -25,
+     43,
+     -57,
+     70,
+     -80,
+     87,
+     -90
+    ],
+    [
+     90,
+     -87,
+     80,
+     -70,
+     57,
+     -43,
+     25,
+     -9
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      78,
+      0
+     ],
+     [
+      87,
+      1
+     ]
+    ],
+    [
+     [
+      69,
+      0
+     ],
+     [
+      91,
+      1
+     ]
+    ],
+    [
+     [
+      92,
+      0
+     ],
+     [
+      126,
+      1
+     ]
+    ],
+    [
+     [
+      94,
+      0
+     ],
+     [
+      129,
+      1
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 78,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 78,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 87,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 87,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 69,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 69,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 91,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 91,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 92,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 92,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 126,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 126,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 94,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 94,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ],
+     [
+      [
+       {
+        "leaf": 129,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 3,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 4,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 5,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 6,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 129,
+        "lane": 7,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 641,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      634,
+      0
+     ]
+    ],
+    [
+     [
+      633,
+      0
+     ]
+    ],
+    [
+     [
+      636,
+      0
+     ]
+    ],
+    [
+     [
+      631,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 634,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 634,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 634,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 634,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 633,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 633,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 633,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 633,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 636,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 636,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 636,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 636,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 631,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 631,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 631,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 631,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 648,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      642,
+      0
+     ]
+    ],
+    [
+     [
+      640,
+      0
+     ]
+    ],
+    [
+     [
+      644,
+      0
+     ]
+    ],
+    [
+     [
+      638,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 642,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 642,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 642,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 642,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 640,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 640,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 640,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 640,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 644,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 644,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 644,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 644,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 638,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 638,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 638,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 638,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 658,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      649,
+      0
+     ]
+    ],
+    [
+     [
+      651,
+      0
+     ]
+    ],
+    [
+     [
+      653,
+      0
+     ]
+    ],
+    [
+     [
+      646,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 649,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 649,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 649,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 649,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 651,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 651,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 651,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 651,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 653,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 653,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 653,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 653,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 646,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 646,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 646,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 646,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 669,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      660,
+      0
+     ]
+    ],
+    [
+     [
+      657,
+      0
+     ]
+    ],
+    [
+     [
+      664,
+      0
+     ]
+    ],
+    [
+     [
+      655,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 660,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 660,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 660,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 660,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 657,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 657,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 657,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 657,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 664,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 664,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 664,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 664,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 655,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 655,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 655,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 655,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 823,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      815,
+      0
+     ]
+    ],
+    [
+     [
+      816,
+      0
+     ]
+    ],
+    [
+     [
+      818,
+      0
+     ]
+    ],
+    [
+     [
+      813,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 815,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 815,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 815,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 815,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 816,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 816,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 816,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 816,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 818,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 818,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 818,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 818,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 813,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 813,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 813,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 813,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 830,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      824,
+      0
+     ]
+    ],
+    [
+     [
+      822,
+      0
+     ]
+    ],
+    [
+     [
+      826,
+      0
+     ]
+    ],
+    [
+     [
+      820,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 824,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 824,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 824,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 824,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 822,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 822,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 822,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 822,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 826,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 826,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 826,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 826,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 820,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 820,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 820,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 820,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 839,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      831,
+      0
+     ]
+    ],
+    [
+     [
+      833,
+      0
+     ]
+    ],
+    [
+     [
+      835,
+      0
+     ]
+    ],
+    [
+     [
+      828,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 831,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 831,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 831,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 831,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 833,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 833,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 833,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 833,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 835,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 835,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 835,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 835,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 828,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 828,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 828,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 828,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 852,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      840,
+      0
+     ]
+    ],
+    [
+     [
+      842,
+      0
+     ]
+    ],
+    [
+     [
+      845,
+      0
+     ]
+    ],
+    [
+     [
+      837,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 840,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 840,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 840,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 840,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 842,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 842,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 842,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 842,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 845,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 845,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 845,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 845,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 837,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 837,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 837,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 837,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1502,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1495,
+      0
+     ]
+    ],
+    [
+     [
+      1493,
+      0
+     ]
+    ],
+    [
+     [
+      1497,
+      0
+     ]
+    ],
+    [
+     [
+      1488,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1495,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1495,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1495,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1495,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1493,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1493,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1493,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1493,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1497,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1497,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1497,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1497,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1488,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1488,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1488,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1488,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1511,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1504,
+      0
+     ]
+    ],
+    [
+     [
+      1501,
+      0
+     ]
+    ],
+    [
+     [
+      1506,
+      0
+     ]
+    ],
+    [
+     [
+      1499,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1504,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1504,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1504,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1504,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1501,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1501,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1501,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1501,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1506,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1506,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1506,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1506,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1499,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1499,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1499,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1499,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1522,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1513,
+      0
+     ]
+    ],
+    [
+     [
+      1510,
+      0
+     ]
+    ],
+    [
+     [
+      1515,
+      0
+     ]
+    ],
+    [
+     [
+      1508,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1513,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1513,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1513,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1513,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1510,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1510,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1510,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1510,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1515,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1515,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1515,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1515,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1508,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1508,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1508,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1508,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1533,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1524,
+      0
+     ]
+    ],
+    [
+     [
+      1520,
+      0
+     ]
+    ],
+    [
+     [
+      1527,
+      0
+     ]
+    ],
+    [
+     [
+      1517,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1524,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1524,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1524,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1524,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1520,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1520,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1520,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1520,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1527,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1527,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1527,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1527,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1517,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1517,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1517,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1517,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1685,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1678,
+      0
+     ]
+    ],
+    [
+     [
+      1675,
+      0
+     ]
+    ],
+    [
+     [
+      1680,
+      0
+     ]
+    ],
+    [
+     [
+      1669,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1678,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1678,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1678,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1678,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1675,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1675,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1675,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1675,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1680,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1680,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1680,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1680,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1669,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1669,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1669,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1669,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1694,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1687,
+      0
+     ]
+    ],
+    [
+     [
+      1684,
+      0
+     ]
+    ],
+    [
+     [
+      1689,
+      0
+     ]
+    ],
+    [
+     [
+      1682,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1687,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1687,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1687,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1687,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1684,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1684,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1684,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1684,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1689,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1689,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1689,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1689,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1682,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1682,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1682,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1682,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1706,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1696,
+      0
+     ]
+    ],
+    [
+     [
+      1693,
+      0
+     ]
+    ],
+    [
+     [
+      1698,
+      0
+     ]
+    ],
+    [
+     [
+      1691,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1696,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1696,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1696,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1696,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1693,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1693,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1693,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1693,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1698,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1698,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1698,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1698,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1691,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1691,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1691,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1691,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1717,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1708,
+      0
+     ]
+    ],
+    [
+     [
+      1703,
+      0
+     ]
+    ],
+    [
+     [
+      1711,
+      0
+     ]
+    ],
+    [
+     [
+      1700,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1708,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1708,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1708,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1708,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1703,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1703,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1703,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1703,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1711,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1711,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1711,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1711,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1700,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1700,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1700,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1700,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1865,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1858,
+      0
+     ]
+    ],
+    [
+     [
+      1853,
+      0
+     ]
+    ],
+    [
+     [
+      1860,
+      0
+     ]
+    ],
+    [
+     [
+      1851,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1858,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1858,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1858,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1858,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1853,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1853,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1853,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1853,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1860,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1860,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1860,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1860,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1851,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1851,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1851,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1851,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1874,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1867,
+      0
+     ]
+    ],
+    [
+     [
+      1864,
+      0
+     ]
+    ],
+    [
+     [
+      1869,
+      0
+     ]
+    ],
+    [
+     [
+      1862,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1867,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1867,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1867,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1867,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1864,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1864,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1864,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1864,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1869,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1869,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1869,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1869,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1862,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1862,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1862,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1862,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1884,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1876,
+      0
+     ]
+    ],
+    [
+     [
+      1873,
+      0
+     ]
+    ],
+    [
+     [
+      1878,
+      0
+     ]
+    ],
+    [
+     [
+      1871,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1876,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1876,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1876,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1876,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1873,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1873,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1873,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1873,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1878,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1878,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1878,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1878,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1871,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1871,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1871,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1871,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 1895,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      1886,
+      0
+     ]
+    ],
+    [
+     [
+      1882,
+      0
+     ]
+    ],
+    [
+     [
+      1889,
+      0
+     ]
+    ],
+    [
+     [
+      1880,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 1886,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1886,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1886,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1886,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1882,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1882,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1882,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1882,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1889,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1889,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1889,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1889,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 1880,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1880,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1880,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 1880,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 2053,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      2045,
+      0
+     ]
+    ],
+    [
+     [
+      2042,
+      0
+     ]
+    ],
+    [
+     [
+      2047,
+      0
+     ]
+    ],
+    [
+     [
+      2048,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 2045,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2045,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2045,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2045,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2042,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2042,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2042,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2042,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2047,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2047,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2047,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2047,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2048,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2048,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2048,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2048,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 2062,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      2052,
+      0
+     ]
+    ],
+    [
+     [
+      2055,
+      0
+     ]
+    ],
+    [
+     [
+      2057,
+      0
+     ]
+    ],
+    [
+     [
+      2058,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 2052,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2052,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2052,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2052,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2055,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2055,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2055,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2055,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2057,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2057,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2057,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2057,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2058,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2058,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2058,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2058,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 2074,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      2061,
+      0
+     ]
+    ],
+    [
+     [
+      2064,
+      0
+     ]
+    ],
+    [
+     [
+      2066,
+      0
+     ]
+    ],
+    [
+     [
+      2067,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 2061,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2061,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2061,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2061,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2064,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2064,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2064,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2064,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2066,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2066,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2066,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2066,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2067,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2067,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2067,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2067,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  },
+  {
+   "node_id": 2083,
+   "mn": "rshrn",
+   "consts": [
+    [
+     1,
+     1,
+     1,
+     1
+    ]
+   ],
+   "leaves": [
+    [
+     [
+      2071,
+      0
+     ]
+    ],
+    [
+     [
+      2076,
+      0
+     ]
+    ],
+    [
+     [
+      2078,
+      0
+     ]
+    ],
+    [
+     [
+      2079,
+      0
+     ]
+    ]
+   ],
+   "raw": [
+    [
+     [
+      [
+       {
+        "leaf": 2071,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2071,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2071,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2071,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2076,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2076,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2076,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2076,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2078,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2078,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2078,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2078,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       {
+        "leaf": 2079,
+        "lane": 0,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2079,
+        "lane": 1,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2079,
+        "lane": 2,
+        "coeff": 1
+       }
+      ],
+      [
+       {
+        "leaf": 2079,
+        "lane": 3,
+        "coeff": 1
+       }
+      ]
+     ]
+    ]
+   ]
+  }
+ ],
+ "summary": {
+  "hits": 39,
+  "shared_leaf_ids": 16,
+  "const_vecs": [
+   [
+    -87,
+    57,
+    -9,
+    -43,
+    80,
+    -90,
+    70,
+    -25
+   ],
+   [
+    -70,
+    -43,
+    87,
+    9,
+    -90,
+    25,
+    80,
+    -57
+   ],
+   [
+    -43,
+    -90,
+    -57,
+    25,
+    87,
+    70,
+    -9,
+    -80
+   ],
+   [
+    -9,
+    -25,
+    -43,
+    -57,
+    -70,
+    -80,
+    -87,
+    -90
+   ],
+   [
+    1,
+    1,
+    1,
+    1
+   ],
+   [
+    9,
+    -25,
+    43,
+    -57,
+    70,
+    -80,
+    87,
+    -90
+   ],
+   [
+    25,
+    -70,
+    90,
+    -80,
+    43,
+    9,
+    -57,
+    87
+   ],
+   [
+    25,
+    70,
+    90,
+    80,
+    43,
+    -9,
+    -57,
+    -87
+   ],
+   [
+    43,
+    -90,
+    57,
+    25,
+    -87,
+    70,
+    9,
+    -80
+   ],
+   [
+    57,
+    -80,
+    -25,
+    90,
+    -9,
+    -87,
+    43,
+    70
+   ],
+   [
+    57,
+    80,
+    -25,
+    -90,
+    -9,
+    87,
+    43,
+    -70
+   ],
+   [
+    70,
+    -43,
+    -87,
+    9,
+    90,
+    25,
+    -80,
+    -57
+   ],
+   [
+    80,
+    -9,
+    -70,
+    87,
+    -25,
+    -57,
+    90,
+    -43
+   ],
+   [
+    80,
+    9,
+    -70,
+    -87,
+    -25,
+    57,
+    90,
+    43
+   ],
+   [
+    87,
+    57,
+    9,
+    -43,
+    -80,
+    -90,
+    -70,
+    -25
+   ],
+   [
+    90,
+    -87,
+    80,
+    -70,
+    57,
+    -43,
+    25,
+    -9
+   ],
+   [
+    90,
+    87,
+    80,
+    70,
+    57,
+    43,
+    25,
+    9
+   ]
+  ],
+  "leaf_to_hits": {
+   "13": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "14": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "18": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "11": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "54": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "42": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "52": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "56": [
+    329,
+    343,
+    360,
+    377,
+    386,
+    399,
+    413
+   ],
+   "78": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "87": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "69": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "91": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "92": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "126": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "94": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ],
+   "129": [
+    529,
+    543,
+    556,
+    573,
+    588,
+    599,
+    612,
+    628
+   ]
+  }
+ }
+}
