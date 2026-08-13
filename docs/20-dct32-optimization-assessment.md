@@ -734,6 +734,11 @@ short+full 差分，零 scatter，vector 5854 / movprfx 464 / stack 630）。
 下一轮执行顺序：实现 `k0_even_sdot` 轴 → 搜索验证（5390 目标 <5150）
 → TestBenchLite → 视结果再开 store_wide / spill 消除。
 
+**2026-08-14 修订**：`k0_even_sdot` 已被数值探针否决（见 §6.4），
+本项（及 §6.1 的 s16 链设计要点）不再作为执行方向；k0 的实际优化
+改为“mul 共享 + addp→uzp1/add/sub 重构”（§6.5），对齐内部
+32 mul / 0 addp 特征。
+
 ### 6.1 验收与 k0 语义探针（2026-08-14）
 
 - **黄金标准已闭合**：5390 候选（`best_op_r8`，k0_even_sve=1 /
@@ -772,6 +777,68 @@ K0EVEN 常量改为在指令处内联 `svld1_s16/s32(CODD/K0EVEN, ...)`。
 stack 630 / total 7372）。结论：GCC 的 LICM/重载决策对常量加载位置
 不敏感，栈 spill 是寄存器分配的固有结果，不能用源码加载位置消除。
 该轴已从 manifest 移除，发射器改动一并回滚（git stash 保留实验代码）。
+
+### 6.4 阴性实验：k0_even_sdot（2026-08-14，全 s16 回绕否决）
+
+探针：`experiments/m31-dct32-k0-sdot/probe_k0_s16.cpp`（已入库，
+VL=256：`qemu-aarch64 -cpu max,sve-max-vq=2`）。
+
+**探针发现（s16 简化链本身是正确的）**：
+
+- s16 链可大幅简化：`e0all=(L0+H3)+(L3+H0)`、`e1all=(L1+H2)+(L2+H1)`
+  （各 3 条 s16 add，天然就是 s32 链 `zip1s(e0,e1)` 的 16-lane 等价物，
+  无需 lb/lt 分离）；`w2all=revh_d(e1all)`（revh = 64-bit 粒内 4-lane
+  反转，注意不是整段反转）；`s2all=e0all+w2all`；再
+  `tee=s2all+revh(s2all)`、`teo=s2all-revh(s2all)`；
+- 每 4-lane 组 `tee=[P,Q,Q,P]`、`teo=[F,G,-G,-F]`，与掩码
+  `[FFFF,FFFF,0,0]` 相与后即得 sdot.d 原生布局 `[P,Q,0,0]`——
+  **不需要 EEp16 的 uzp1 压缩，也不需要 K0EVEN 零填充**；
+- `sdot.d`（VL=256）每 64-bit lane = 4 个 s16 乘积（lane0=Σh0..h3，
+  lane1=Σh4..h7，……）；`rshrnb`（s32→s16）结果落在偶 s16 lane，
+  需 `uzp1_s16` 压缩；s64 结果必须先 `uzp1_s32` 取低半再 rshrnb
+  （直接对 s64 的 s32 视图 rshrnb 会把高半垃圾也收窄，导致奇行全错）；
+- 探针在 [-255,255] 随机输入（单 pass，shift=4/11）**零失配**
+  （4 k × 2 shift × 20000 case = 16 万组逐行对比全 0）。
+
+**否决依据（两阶段仿真）**：`dct32_pass1_exact`（x265 C 公式，int64）
+生成 pass1 coef，再以 s16 链 + sdot.d 做 pass2（shift=11），20000 个
+随机 [-255,255] 输入：
+
+| k | 分歧 | 说明 |
+| --- | ---: | --- |
+| 0 / 16 | 1.3422% | EEEE0/1 的 pass2 s16 回绕 |
+| 8 / 24 | 1.3373% | EEEO0/1 同上 |
+
+k0 族每 case 128 输出，按 20k 差分口径约 +1.7 mismatch/case →
+20k 全量约 +34k mismatch（0.168%），叠加现有 k2/k4 legacy 签名 7268
+后远超 22528（0.11%）门禁；与 DCT16 `legacy_even_full`（0.045%→
+0.090%，TestBench 首跑失败，docs/18 §6）同一机理：**对称行（k0 族）
+的 E 链在 pass2 频繁超出 ±32767，s16 域必然回绕**。
+
+结论：`k0_even_sdot ∈ {0,1}` 轴不实现；docs/20 §6.1 中“内部全部 k 走
+sdot、0.104% 回绕签名来自 k0”的推断错误——内部 0.104% 签名来自
+k2/k4 反称路径，k0 仍是 s32 域（其 32 mul / 0 addp 是 §6.5 的
+mul 共享形态，不是 sdot）。
+
+顺带修正两个语义笔记（探针实测，VL=256）：
+
+- `svptrue_pat_b16(SV_VL4)` 只激活 **4 个 lane（全向量前 4）**，
+  不是“每 128-bit 段 4 个”；saddlb 的低半选择（lane 0-3 与 8-11）
+  需 `svorr_b_z(whilelt(0,4), whilelt(8,12))` 或等价谓词；
+- SVE `TBL`（16-bit 元素）以**整个向量**为表（索引 0-15），不是
+  每 128-bit 段；`svrev_s16` 是整向量反转，段内反转需 TBL 索引
+  `[7..0,15..8]` 或两步。
+
+### 6.5 k0 mul 共享重构（内部 32 mul / 0 addp 特征，待实现）
+
+k0 与 k16 共享 `mE = EEp×64`，k8 与 k24 共享 `mO = EOp×[83,36]`：
+每 pack 2 条 mul；每对 k 用
+`u=uzp1s(m,m)`、`v=uzp2s(m,m)`、`sum=add(u,v)`、`diff=sub(u,v)`
+同时得到两行族（等价内部 32 mul / 0 addp）。每 pack 链 22 ops
+（2 mul + 2×(uzp1+uzp2+add+sub) + 4×(rshrnb+uzp1+store)）vs 现状
+24（4×(mul+addp+uzp1s+rshrnb+uzp1+store)），预计 fused -32；
+需新增 `k0_shared_mul ∈ {0,1}` 轴（仅 op 后端、要求 k0_even_sve=1），
+搜索验证后跑 TestBenchLite。
 
 ### 6.3 阴性实验：narrow_store_pred（2026-08-14，重要语义教训）
 
