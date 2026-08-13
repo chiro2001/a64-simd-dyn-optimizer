@@ -81,8 +81,9 @@ def gt16_s32_cpp():
     return "\n".join(rows)
 
 
-def pass2_odd_quarter_cpp():
-    """Unrolled 4-row groups: O quarters + odd-k quarter dot + even-k NEON."""
+def pass2_odd_quarter_cpp(k_tile=1):
+    """Unrolled 4-row groups: O quarters + tiled odd-k quarter dot +
+    even-k NEON."""
     parts = []
     parts.append("""\
     // odd k: quarter-interleaved O packs, 2 SDOT + 1 aligned add per k.
@@ -114,7 +115,7 @@ def pass2_odd_quarter_cpp():
 """)
     for g in range(4):
         base = 4 * g
-        parts.append("""\
+        pack = """\
         {
             const svint16_t PO01 = svtbl2_s16(
                 svcreate2_s16(zO%d, zO%d), iloq);
@@ -124,21 +125,37 @@ def pass2_odd_quarter_cpp():
                 svcreate2_s16(PO01, PO23), q0q);
             const svint16_t QO1_%d = svtbl2_s16(
                 svcreate2_s16(PO01, PO23), q1q);
-            for (int k = 1; k < 16; k += 2)
-            {
-                const svint16_t cq_loq = svld1_s16(p16q, CQ_LO[k]);
-                const svint16_t cq_hiq = svld1_s16(p16q, CQ_HI[k]);
-                const svint64_t d0 = svdot_s64(zaccq, QO0_%d, cq_loq);
-                const svint64_t d1 = svdot_s64(zaccq, QO1_%d, cq_hiq);
-                const svint64_t f = svadd_s64_x(p64q, d0, d1);
-                const svint32_t w = svuzp1_s32(svreinterpret_s32_s64(f),
-                                               svreinterpret_s32_s64(f));
-                svint16_t n = svrshrnb_n_s32(w, shift);
-                n = svuzp1_s16(n, n);
-                svst1_s16(p4q, dst + k * line + %d, n);
-            }
-        }
-
+""" % (base, base + 1, base + 2, base + 3, g, g)
+        bodies = []
+        for t in range(k_tile):
+            kexpr = "kb + %d" % (2 * t)
+            lo, hi = "cq_loq%d" % t, "cq_hiq%d" % t
+            bodies.append(
+                "            {\n"
+                "                const svint16_t %s = "
+                "svld1_s16(p16q, CQ_LO[%s]);\n"
+                "                const svint16_t %s = "
+                "svld1_s16(p16q, CQ_HI[%s]);\n"
+                "                const svint64_t d0 = "
+                "svdot_s64(zaccq, QO0_%d, %s);\n"
+                "                const svint64_t d1 = "
+                "svdot_s64(zaccq, QO1_%d, %s);\n"
+                "                const svint64_t f = "
+                "svadd_s64_x(p64q, d0, d1);\n"
+                "                const svint32_t w = "
+                "svuzp1_s32(svreinterpret_s32_s64(f),\n"
+                "                                           "
+                "svreinterpret_s32_s64(f));\n"
+                "                svint16_t n = svrshrnb_n_s32(w, shift);\n"
+                "                n = svuzp1_s16(n, n);\n"
+                "                svst1_s16(p4q, dst + (%s) * line + %d, n);\n"
+                "            }"
+                % (lo, kexpr, hi, kexpr, g, lo, g, hi, kexpr, base))
+        odd_loop = ("        for (int kb = 1; kb < 16; kb += %d)\n"
+                    "        {\n%s\n        }\n"
+                    % (2 * k_tile, "\n".join(bodies)))
+        pack = pack + odd_loop + "        }\n\n"
+        even = """\
         for (int k = 2; k < 16; k += 4)
         {
             const int32x4_t c0 = vld1q_s32(GT16_S32[(k - 2) / 4]);
@@ -173,17 +190,16 @@ def pass2_odd_quarter_cpp():
             const int16x4_t res12 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
             vst1_s16(dst + 12 * line + %d, res12);
         }
-""" % (base, base + 1, base + 2, base + 3,
-       g, g, g, g, base,
-       base, base, base, base, base,
+""" % (base, base, base, base, base,
        2 * g, 2 * g, base,
        2 * g, 2 * g, base,
        2 * g, 2 * g, base,
-       2 * g, 2 * g, base))
-    return "\n".join(parts)
+       2 * g, 2 * g, base)
+        parts.append(pack + even)
+    return "\n".join(parts) + "}\n"
 
 
-def pass2_cpp(pass2_layout="upstream"):
+def pass2_cpp(pass2_layout="upstream", k_tile=1):
     """pass2 body. 'upstream' matches dct16_sve exactly (E s32 vaddl,
     O s16 bridge SDOT, even path vmulq/vpaddq). 'odd-quarter' keeps the
     even-k/E/EO/EEE/EEO NEON path but replaces the odd-k per-row bridge
@@ -296,7 +312,7 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 """
         return prelude + odd_loop + even_tail
     if pass2_layout == "odd-quarter":
-        return prelude + pass2_odd_quarter_cpp() + "}\n"
+        return prelude + pass2_odd_quarter_cpp(k_tile=k_tile)
     raise ValueError("unknown pass2_layout %r" % pass2_layout)
 
 
@@ -437,7 +453,7 @@ def group_block(g):
 
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
          export_pass2=False, pass1_layout="quarter",
-         pass2_layout="upstream", pass1_k_tile=2):
+         pass2_layout="upstream", pass1_k_tile=2, pass2_k_tile=1):
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
@@ -445,7 +461,7 @@ def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
     quarter_src = quarter_pass_cpp(k_tile=pass1_k_tile)
-    pass2_src = pass2_cpp(pass2_layout)
+    pass2_src = pass2_cpp(pass2_layout, k_tile=pass2_k_tile)
     if pass1_layout == "quarter":
         pass1_call = "pass_quarter<3>(src, coef, srcStride)"
         pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"

@@ -113,6 +113,8 @@ def main():
     for combo in combos:
         if combo.get("pass1") != "quarter":
             combo["pass1_k_tile"] = 2   # tile axis only applies to quarter
+        if combo.get("pass2") != "odd-quarter":
+            combo["pass2_k_tile"] = 1   # tile axis only applies to odd-quarter
         tag = "_".join("%s-%s" % (k, v) for k, v in combo.items())
         if tag in seen:
             continue
@@ -121,7 +123,8 @@ def main():
         with open(src, "w") as f:
             f.write(emit(pass1_layout=combo.get("pass1", "quarter"),
                          pass2_layout=combo.get("pass2", "upstream"),
-                         pass1_k_tile=combo.get("pass1_k_tile", 2)))
+                         pass1_k_tile=combo.get("pass1_k_tile", 2),
+                         pass2_k_tile=combo.get("pass2_k_tile", 1)))
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")

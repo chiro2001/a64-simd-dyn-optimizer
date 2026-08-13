@@ -37,3 +37,4 @@ layouts:
   pass1: [quarter, per-row]
   pass1_k_tile: [2, 4]
   pass2: [upstream, odd-quarter]
+  pass2_k_tile: [1, 2]
