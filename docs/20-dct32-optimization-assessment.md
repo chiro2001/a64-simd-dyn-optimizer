@@ -974,7 +974,8 @@ E-pack）。剩余差距集中在 pass2 k0 双 pack（~144 ops）、spill
 ### 6.10 2026-08-14 深夜：indexed sdot 常量共享 → 4682→4514
 
 分析内部参考反汇编（/tmp/dct-sve.s，仅分析不入库）发现其大量使用
-**SVE2 indexed SDOT**（`sdot z4.d, z18.h, z0.h[0]`），常量只加载
+**SVE1 indexed SDOT**（`sdot z4.d, z18.h, z0.h[0]`，FEAT_SVE，
+ARM ISA XML 2026-06 `sdot_z_zzzi.xml`），常量只加载
 ~7 个向量；我们每个 (k, slice) 单独加载全向量常量（ld1h 450）。
 
 探针 `probe_sdot_lane.cpp` 实证（VL=256）：indexed sdot

@@ -1,4 +1,5 @@
-// Probe: SVE2 indexed SDOT (Zda.D, Zn.H, Zm.H[imm]) semantics and GCC
+// Probe: SVE1 indexed SDOT (Zda.D, Zn.H, Zm.H[imm], FEAT_SVE) semantics
+// and GCC
 // intrinsic availability. VL=256: qemu-aarch64 -cpu max,sve-max-vq=2
 #include <arm_sve.h>
 #include <cstdint>

@@ -78,7 +78,8 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     k0_epack = bool(lo.get("k0_epack", 0)) and k0_even_sve
     # sdot_indexed: pack two k-families' 4-coefficient groups into one
     # 16-lane constant vector ([kA c0..3, kB c0..3, kA c0..3, kB c0..3])
-    # and use SVE2 indexed SDOT (Zda.D, Zn.H, Zm.H[0/1]); the index
+    # and use SVE1 indexed SDOT (Zda.D, Zn.H, Zm.H[0/1], FEAT_SVE);
+    # the index
     # selects the same 64-bit group in each 128-bit segment, so one load
     # serves two k rows. Cuts the per-k constant loads ~2x.
     sdot_indexed = bool(lo.get("sdot_indexed", 0))

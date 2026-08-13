@@ -43,7 +43,7 @@
 **4682**（0.368× 上游，fused_uop 口径**低于内部 4827**；lite 5 seed
 PASS；全 pass E-pack 因 pass2 回绕在 lite FAIL，已记录 docs/20 §6.8）。
 
-再后续（2026-08-14 深夜）：**sdot_indexed 轴**（SVE2 indexed SDOT
+再后续（2026-08-14 深夜）：**sdot_indexed 轴**（SVE1 indexed SDOT
 常量对打包共享，探针 probe_sdot_lane.cpp 实证语义）→ **4514**
 （0.355× 上游，距内部 fused_uop 4827 = 0.935×、fused_adj 4251 =
 1.062×）；全布局搜索 288 候选确认 best 含 k0_shared_mul=1（与

@@ -105,7 +105,7 @@ layouts:
   # 单次 pack E（替代 lo/hi 双 pack 36 ops）+ 单 saddlb/lt 四项
   # （替代 8 saddl+4 add），每 pack 减 18 ops；探针两阶段 0 失配。
   k0_epack: [0, 1]
-  # 2026-08-14: sdot_indexed（仅 op backend）：SVE2 indexed SDOT
+  # 2026-08-14: sdot_indexed（仅 op backend）：SVE1 indexed SDOT
   # （Zda.D, Zn.H, Zm.H[0/1]）把两个 k 族的 4 系数组打包进一个
   # 16-lane 常量向量（[kA c0..3, kB c0..3, kA c0..3, kB c0..3]，
   # 索引在每 128-bit 段内选同一 64-bit 组），常量加载减半。
