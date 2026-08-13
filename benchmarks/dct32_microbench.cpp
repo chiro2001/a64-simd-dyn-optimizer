@@ -85,7 +85,10 @@ static int bench(const char* impl, const char* mode, int samples, int batch)
             a[j] = (int16_t)((int)(rng() % 511) - 255);
         ptr[i] = a;
     }
-    int16_t dst[N * N];
+    // Throughput mode must use one dst per call slot: back-to-back calls
+    // writing the same dst serialize on WAW, making "throughput" equal
+    // latency (2026-08-13 fix).
+    std::vector<int16_t> dst((size_t)batch * N * N);
     uint64_t acc = 0;
     std::vector<uint64_t> ticks;
     ticks.reserve(samples);
@@ -98,18 +101,18 @@ static int bench(const char* impl, const char* mode, int samples, int batch)
         {
             t0 = read_cntvct();
             for (int b = 0; b < batch; b++)
-                fn(src, dst, STRIDE);
+                fn(src, &dst[(size_t)b * N * N], STRIDE);
             t1 = read_cntvct();
             ticks.push_back((t1 - t0) / (uint64_t)batch);
         }
         else
         {
             t0 = read_cntvct();
-            fn(src, dst, STRIDE);
+            fn(src, &dst[0], STRIDE);
             t1 = read_cntvct();
             ticks.push_back(t1 - t0);
         }
-        acc += (uint64_t)dst[(s * 7 + 13) % (N * N)];
+        acc += (uint64_t)dst[(size_t)(s * 7 + 13) % ((size_t)batch * N * N)];
     }
     std::sort(ticks.begin(), ticks.end());
     uint64_t sum = 0;

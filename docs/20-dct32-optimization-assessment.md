@@ -335,6 +335,8 @@ v3.1 把每个输出串成 4 条依赖的 `sdot.d` 累加链，指令少了但�
 变长、ILP 变差；而 920B/920G 的 sdot 吞吐/延迟与 Neoverse 不同。
 **下一步工具方向：在搜索排序中加入依赖链深度/MCA cycles 或独立
 accumulator 轴（row_group/双链拆分），而不是只看 fused_uop。**
+（注：本节单次测量已被 §5.8 配对 A/B 取代：v3.1-SVE1 实际慢 ~14%，
+v2-SVE1 快 ~4%。）
 
 ### 5.5 acc_split（独立累加链）消融（2026-08-13）
 
@@ -376,6 +378,7 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
 - v2 本身上 920B（SVE1/VL=256，SVE1 编译直接可跑）：cand p50=197
   vs 上游 sve 193、neon 144；20k 差分 0。**在 ±10% 的运行间噪声内
   无收益**——指令数最优结构（7190/12710）同样不转化 920B 周期。
+  （2026-08-13 配对 A/B 修正：v2 实际 +3~4%，见 §5.8。）
 - 指令族直方图（full-call）：v2 的 uaddv 1024/saddv 768/fmov 1984/
   movprfx 1664 是主要标量开销；v3.1 已去掉 uaddv 但引入 uzp1 896/
   tbl 304/xtn2+shrn+sshr 424/ld1h 1080/str 648。
@@ -395,6 +398,32 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
 > **v2 结构内做 k2-slice 的路径已由证据关闭**；剩余可行动方向：
 > (a) k2/k4 向量化批量窄化存储（消 fmov/saddv 标量开销，预计
 > 数百条）；(b) 与用户确认 legacy-internal-exact 合同族。
+
+### 5.8 配对 A/B 与吞吐修复（2026-08-13）
+
+微基准 throughput 模式之前复用同一 dst（WAW 串行化，throughput≈
+latency），已修复为每 call 独立 dst（`benchmarks/dct32_microbench.cpp`）；
+新增 `scripts/bench-dct32-paired.sh`（随机 A/B + bootstrap CI，
+每次测量取 50 样本 p50）。920B（SVE1/VL=256）配对结果
+（ratio=A/B，>1 表示 A 快）：
+
+| 对比 | mode | median | bootstrap95 |
+| --- | --- | ---: | ---: |
+| v2-SVE1 / 上游 sve | latency | 1.042 | [1.026, 1.060] |
+| v2-SVE1 / 上游 sve | throughput | 1.028 | [1.003, 1.047] |
+| v2-SVE1 / neon | latency | 0.693 | [0.682, 0.719] |
+| v3.1-SVE1 / 上游 sve | latency | 0.878 | [0.859, 0.896] |
+
+修正结论：
+
+- **v2（7190）在 920B 上确实优于上游（+3~4%，CI 不含 1）**，之前的
+  “197 vs 193 无差异”是单次测量噪声；
+- **v3.1-SVE1 实际比上游慢 ~14%**，不是“几乎无差异”；
+- NEON 仍快 44%，920B 中间档 NEON 领先不变；
+- 实机排序与 full-call fused_uop 排序一致（v2 7190 > 上游 12710 >
+  v3.1-SVE1 9042 在 cycles 上表现为 v2 快、v3.1-SVE1 慢）；
+- 单次/少量样本的 CNTVCT 测量在 920B 上噪声 ±10%，**必须用配对 +
+  warmup + p50/CI 才可下结论**（920G 复核也应改用它）。
 
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
