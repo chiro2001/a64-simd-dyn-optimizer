@@ -21,31 +21,31 @@ _Z11pass32_implILi4EEvPKsPsl:
 	stp	d8, d9, [sp]
 	.cfi_escape 0x10,0x48,0x2,0x8f,0
 	.cfi_escape 0x10,0x49,0x2,0x8f,0x8
-	ld1h	z8.h, p7/z, [x4]
+	ld1h	z9.h, p7/z, [x4]
 	add	x4, x3, 64
-	ld1h	z0.h, p7/z, [x4]
-	add	x4, x3, 96
-	ld1h	z1.h, p7/z, [x4]
-	add	x4, x3, 128
-	ld1h	z6.h, p7/z, [x4]
+	ld1w	z8.s, p7/z, [x3]
 	stp	d10, d11, [sp, 16]
-	add	x4, x3, 160
 	.cfi_escape 0x10,0x4a,0x2,0x8f,0x10
 	.cfi_escape 0x10,0x4b,0x2,0x8f,0x18
 	ld1h	z10.h, p7/z, [x4]
-	ld1w	z9.s, p7/z, [x3]
+	add	x4, x3, 96
+	ld1h	z0.h, p7/z, [x4]
+	add	x4, x3, 128
+	ld1h	z1.h, p7/z, [x4]
+	add	x4, x3, 160
+	stp	d14, d15, [sp, 48]
+	.cfi_escape 0x10,0x4e,0x2,0x8f,0x30
+	.cfi_escape 0x10,0x4f,0x2,0x8f,0x38
+	ld1h	z15.h, p7/z, [x4]
 	add	x4, x3, 192
 	stp	d12, d13, [sp, 32]
 	.cfi_escape 0x10,0x4c,0x2,0x8f,0x20
 	.cfi_escape 0x10,0x4d,0x2,0x8f,0x28
-	ld1h	z13.h, p7/z, [x4]
-	add	x4, x3, 224
 	ld1h	z12.h, p7/z, [x4]
+	add	x4, x3, 224
+	ld1h	z11.h, p7/z, [x4]
 	add	x4, x3, 256
-	ld1h	z7.h, p7/z, [x4]
-	stp	d14, d15, [sp, 48]
-	.cfi_escape 0x10,0x4e,0x2,0x8f,0x30
-	.cfi_escape 0x10,0x4f,0x2,0x8f,0x38
+	ld1h	z6.h, p7/z, [x4]
 	add	x4, x3, 288
 	ld1h	z31.h, p7/z, [x4]
 	addvl	x4, sp, #6
@@ -98,7 +98,7 @@ _Z11pass32_implILi4EEvPKsPsl:
 	str	z31, [x4]
 	add	x4, x3, 608
 	ld1h	z31.h, p7/z, [x4]
-	ldr	q11, [x3, 2496]
+	ldr	q7, [x3, 2752]
 	addvl	x4, sp, #16
 	add	x4, x4, 64
 	str	z31, [x4]
@@ -109,632 +109,590 @@ _Z11pass32_implILi4EEvPKsPsl:
 	str	z31, [x4]
 	.p2align 5,,15
 .L2:
-	ld1h	z30.h, p7/z, [x0]
-	ld1h	z28.h, p7/z, [x8]
-	rev	z28.h, z28.h
-	sub	z2.h, z30.h, z28.h
-	sunpklo	z29.s, z28.h
-	sunpkhi	z28.s, z28.h
-	add	x4, sp, 64
-	sunpklo	z31.s, z30.h
+	ld1h	z30.h, p7/z, [x8]
+	rev	z30.h, z30.h
+	sunpklo	z29.s, z30.h
+	ld1h	z14.h, p7/z, [x0]
+	sunpkhi	z28.s, z30.h
+	sunpklo	z31.s, z14.h
+	addvl	x4, sp, #4
 	add	z31.s, z31.s, z29.s
-	sunpkhi	z29.s, z30.h
+	sunpkhi	z29.s, z14.h
 	add	z29.s, z29.s, z28.s
 	rev	z29.s, z29.s
+	sub	z2.h, z14.h, z30.h
+	add	z31.s, z31.s, z29.s
+	add	x4, x4, 64
+	rev	z29.s, z31.s
+	add	z14.h, z14.h, z30.h
+	rev	z30.h, z14.h
+	sub	z14.h, z14.h, z30.h
 	add	z30.s, z31.s, z29.s
-	rev	z28.s, z30.s
 	sub	z31.s, z31.s, z29.s
-	add	z29.s, z30.s, z28.s
-	sub	z30.s, z30.s, z28.s
-	tbl	z28.s, {z29.s}, z9.s
-	add	z27.s, z29.s, z28.s
-	str	z27, [x4]
-	addvl	x4, sp, #1
-	sub	z29.s, z29.s, z28.s
+	tbl	z29.s, {z30.s}, z8.s
+	add	z28.s, z30.s, z29.s
+	str	z28, [x4]
+	addvl	x4, sp, #5
 	add	x4, x4, 64
-	ld1h	z28.h, p7/z, [x8, x2, lsl 1]
-	rev	z28.h, z28.h
-	sunpklo	z27.s, z28.h
-	str	z29, [x4]
-	ld1h	z29.h, p7/z, [x0, x2, lsl 1]
-	addvl	x4, sp, #2
-	sub	z3.h, z29.h, z28.h
-	sunpkhi	z28.s, z28.h
-	add	x4, x4, 64
-	sunpklo	z24.s, z29.h
-	sunpkhi	z29.s, z29.h
-	add	z24.s, z24.s, z27.s
+	ld1h	z16.h, p7/z, [x0, x2, lsl 1]
+	sub	z27.s, z30.s, z29.s
+	ld1h	z30.h, p7/z, [x8, x2, lsl 1]
+	sunpklo	z29.s, z16.h
+	rev	z30.h, z30.h
+	sunpklo	z28.s, z30.h
 	add	z29.s, z29.s, z28.s
-	rev	z29.s, z29.s
-	add	z17.s, z24.s, z29.s
-	rev	z28.s, z17.s
-	sub	z24.s, z24.s, z29.s
-	add	z29.s, z17.s, z28.s
-	sub	z17.s, z17.s, z28.s
-	tbl	z28.s, {z29.s}, z9.s
-	add	z26.s, z29.s, z28.s
+	str	z27, [x4]
+	addvl	x4, sp, #2
+	sub	z3.h, z16.h, z30.h
+	sunpkhi	z28.s, z30.h
+	add	x4, x4, 64
+	sunpkhi	z25.s, z16.h
+	add	z16.h, z16.h, z30.h
+	add	z25.s, z25.s, z28.s
+	rev	z30.h, z16.h
+	rev	z25.s, z25.s
+	add	z25.s, z29.s, z25.s
+	rev	z29.s, z25.s
+	sub	z16.h, z16.h, z30.h
+	add	z30.s, z25.s, z29.s
+	sub	z25.s, z25.s, z29.s
+	tbl	z29.s, {z30.s}, z8.s
+	add	z26.s, z30.s, z29.s
 	str	z26, [x4]
 	addvl	x4, sp, #3
-	sub	z28.s, z29.s, z28.s
-	mov	z21.d, z3.d
 	add	x4, x4, 64
-	str	z28, [x4]
-	mov	z20.d, z2.d
+	sub	z24.s, z30.s, z29.s
+	str	z24, [x4]
 	add	x4, x0, x2, lsl 2
-	ld1h	z29.h, p7/z, [x4]
-	sunpklo	z27.s, z29.h
+	ld1h	z17.h, p7/z, [x4]
+	sunpklo	z28.s, z17.h
 	add	x4, x8, x2, lsl 2
-	ld1h	z28.h, p7/z, [x4]
-	rev	z28.h, z28.h
-	addvl	x4, sp, #4
-	sub	z4.h, z29.h, z28.h
-	sunpklo	z25.s, z28.h
-	sunpkhi	z28.s, z28.h
-	add	z25.s, z27.s, z25.s
-	add	x4, x4, 64
-	sunpkhi	z29.s, z29.h
-	add	z29.s, z29.s, z28.s
-	rev	z29.s, z29.s
-	add	z19.s, z25.s, z29.s
-	rev	z28.s, z19.s
-	sub	z25.s, z25.s, z29.s
-	add	z29.s, z19.s, z28.s
-	sub	z19.s, z19.s, z28.s
-	tbl	z28.s, {z29.s}, z9.s
+	ld1h	z29.h, p7/z, [x4]
+	rev	z29.h, z29.h
+	sunpklo	z30.s, z29.h
+	sub	z4.h, z17.h, z29.h
+	add	z28.s, z28.s, z30.s
+	sunpkhi	z27.s, z29.h
+	sunpkhi	z30.s, z17.h
+	add	z17.h, z17.h, z29.h
+	rev	z29.h, z17.h
+	add	z30.s, z30.s, z27.s
+	sub	z17.h, z17.h, z29.h
+	rev	z30.s, z30.s
+	add	z30.s, z28.s, z30.s
+	rev	z28.s, z30.s
+	add	z29.s, z30.s, z28.s
+	add	x4, sp, 64
+	sub	z30.s, z30.s, z28.s
+	tbl	z28.s, {z29.s}, z8.s
 	add	z23.s, z29.s, z28.s
-	str	z23, [x4]
-	addvl	x4, sp, #5
 	sub	z22.s, z29.s, z28.s
-	add	x4, x4, 64
-	ld1h	z29.h, p7/z, [x0, x9, lsl 1]
-	ld1h	z28.h, p7/z, [x8, x9, lsl 1]
+	ld1h	z29.h, p7/z, [x8, x9, lsl 1]
+	rev	z29.h, z29.h
 	sunpklo	z27.s, z29.h
-	rev	z28.h, z28.h
-	sub	z5.h, z29.h, z28.h
-	sunpklo	z18.s, z28.h
-	sunpkhi	z29.s, z29.h
-	sunpkhi	z28.s, z28.h
-	add	z29.s, z29.s, z28.s
-	rev	z29.s, z29.s
-	add	z18.s, z27.s, z18.s
-	add	z14.s, z18.s, z29.s
-	sub	z18.s, z18.s, z29.s
-	rev	z29.s, z14.s
-	str	z22, [x4]
-	addvl	x4, sp, #6
-	mov	z22.d, z4.d
+	ld1h	z18.h, p7/z, [x0, x9, lsl 1]
+	sub	z5.h, z18.h, z29.h
+	sunpklo	z28.s, z18.h
+	sunpkhi	z24.s, z18.h
+	add	z28.s, z28.s, z27.s
+	add	z18.h, z18.h, z29.h
+	sunpkhi	z27.s, z29.h
+	rev	z29.h, z18.h
+	str	z23, [x4]
+	addvl	x4, sp, #1
+	add	z24.s, z24.s, z27.s
+	sub	z18.h, z18.h, z29.h
+	add	x4, x4, 64
+	rev	z24.s, z24.s
+	add	z24.s, z28.s, z24.s
+	rev	z29.s, z24.s
+	mov	z20.d, z2.d
+	mov	z21.d, z3.d
 	mov	z23.d, z5.d
-	add	z16.s, z14.s, z29.s
-	tbl	z27.h, {z22.h - z23.h}, z8.h
-	sub	z14.s, z14.s, z29.s
+	add	z19.s, z24.s, z29.s
+	tbl	z28.h, {z20.h - z21.h}, z10.h
+	sub	z24.s, z24.s, z29.s
+	tbl	z29.s, {z19.s}, z8.s
+	str	z22, [x4]
+	mov	z22.d, z4.d
+	addvl	x4, sp, #6
+	tbl	z27.h, {z22.h - z23.h}, z9.h
+	add	z13.s, z19.s, z29.s
+	tbl	z4.h, {z20.h - z21.h}, z1.h
+	sub	z19.s, z19.s, z29.s
+	tbl	z26.h, {z20.h - z21.h}, z9.h
+	tbl	z29.h, {z22.h - z23.h}, z10.h
+	tbl	z26.h, {z26.h - z27.h}, z15.h
+	add	x4, x4, 64
+	tbl	z27.h, {z28.h - z29.h}, z15.h
 	tbl	z28.h, {z20.h - z21.h}, z0.h
-	tbl	z29.s, {z16.s}, z9.s
-	add	x4, x4, 64
-	add	z15.s, z16.s, z29.s
-	tbl	z26.h, {z20.h - z21.h}, z8.h
-	sub	z16.s, z16.s, z29.s
-	tbl	z26.h, {z26.h - z27.h}, z10.h
+	mov	z20.d, z17.d
 	tbl	z29.h, {z22.h - z23.h}, z0.h
-	tbl	z4.h, {z20.h - z21.h}, z6.h
-	tbl	z27.h, {z28.h - z29.h}, z10.h
-	tbl	z28.h, {z20.h - z21.h}, z1.h
-	ldr	z21, [x4]
+	tbl	z5.h, {z22.h - z23.h}, z1.h
+	mov	z21.d, z18.d
+	tbl	z23.h, {z20.h - z21.h}, z9.h
+	tbl	z17.h, {z20.h - z21.h}, z10.h
+	ldr	z20, [x4]
 	addvl	x4, sp, #7
-	tbl	z29.h, {z22.h - z23.h}, z1.h
+	tbl	z28.h, {z28.h - z29.h}, z15.h
 	add	x4, x4, 64
-	tbl	z28.h, {z28.h - z29.h}, z10.h
-	tbl	z5.h, {z22.h - z23.h}, z6.h
-	movi	d29, #0
-	tbl	z4.h, {z4.h - z5.h}, z10.h
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z13.h
-	sdot	z23.d, z27.h, z12.h
-	sdot	z23.d, z28.h, z7.h
-	sdot	z23.d, z4.h, z21.h
-	ldr	z21, [x4]
+	tbl	z29.h, {z4.h - z5.h}, z15.h
+	mov	z4.d, z14.d
+	mov	z5.d, z16.d
+	tbl	z22.h, {z4.h - z5.h}, z9.h
+	tbl	z22.h, {z22.h - z23.h}, z15.h
+	movi	d23, #0
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z12.h
+	sdot	z21.d, z27.h, z11.h
+	sdot	z21.d, z28.h, z6.h
+	sdot	z21.d, z29.h, z20.h
+	ldr	z20, [x4]
 	addvl	x4, sp, #8
+	uzp1	z21.s, z21.s, z21.s
+	rshrnb	z21.h, z21.s, #4
 	add	x4, x4, 64
-	uzp1	z23.s, z23.s, z23.s
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 64]
-	ptrue	p6.s, vl4
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z21.h
-	ldr	z21, [x4]
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 64]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ldr	z20, [x4]
 	addvl	x4, sp, #9
 	add	x4, x4, 64
-	sdot	z23.d, z27.h, z21.h
-	ldr	z21, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ldr	z20, [x4]
 	addvl	x4, sp, #10
-	sdot	z23.d, z28.h, z21.h
+	sdot	z21.d, z28.h, z20.h
+	tbl	z16.h, {z4.h - z5.h}, z10.h
+	add	x4, x4, 64
+	ldr	z20, [x4]
+	sdot	z21.d, z29.h, z20.h
+	addvl	x4, sp, #11
+	uzp1	z21.s, z21.s, z21.s
+	rshrnb	z21.h, z21.s, #4
+	add	x4, x4, 64
+	ldr	z20, [x4]
+	uzp1	z21.h, z21.h, z21.h
+	addvl	x4, sp, #12
+	str	d21, [x1, 192]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	add	x4, x4, 64
+	ldr	z20, [x4]
+	sdot	z21.d, z27.h, z20.h
+	addvl	x4, sp, #13
+	tbl	z16.h, {z16.h - z17.h}, z15.h
+	ptrue	p6.s, vl4
+	add	x4, x4, 64
+	ldr	z20, [x4]
+	sdot	z21.d, z28.h, z20.h
+	addvl	x4, sp, #14
 	add	x1, x1, 8
 	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z4.h, z21.h
-	addvl	x4, sp, #11
-	uzp1	z23.s, z23.s, z23.s
-	rshrnb	z23.h, z23.s, #4
+	ldr	z20, [x4]
+	sdot	z21.d, z29.h, z20.h
+	addvl	x4, sp, #15
+	uzp1	z21.s, z21.s, z21.s
+	rshrnb	z21.h, z21.s, #4
 	add	x4, x4, 64
-	ldr	z21, [x4]
-	uzp1	z23.h, z23.h, z23.h
-	addvl	x4, sp, #12
-	str	d23, [x1, 184]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z21.h
+	ldr	z20, [x4]
+	uzp1	z21.h, z21.h, z21.h
+	addvl	x4, sp, #16
+	str	d21, [x1, 312]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
 	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z27.h, z21.h
-	addvl	x4, sp, #13
+	ldr	z20, [x4]
+	sdot	z21.d, z27.h, z20.h
+	addvl	x4, sp, #17
 	add	x0, x0, x2, lsl 3
 	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z28.h, z21.h
-	addvl	x4, sp, #14
-	add	x8, x8, x2, lsl 3
-	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z4.h, z21.h
-	addvl	x4, sp, #15
-	uzp1	z23.s, z23.s, z23.s
-	rshrnb	z23.h, z23.s, #4
-	add	x4, x4, 64
-	ldr	z21, [x4]
-	uzp1	z23.h, z23.h, z23.h
-	addvl	x4, sp, #16
-	str	d23, [x1, 312]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z21.h
-	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z27.h, z21.h
-	addvl	x4, sp, #17
-	add	x4, x4, 64
-	ldr	z21, [x4]
-	sdot	z23.d, z28.h, z21.h
+	ldr	z20, [x4]
+	sdot	z21.d, z28.h, z20.h
 	add	x4, x3, 672
-	ld1h	z22.h, p7/z, [x4]
-	sdot	z23.d, z4.h, z22.h
+	ld1h	z20.h, p7/z, [x4]
+	sdot	z21.d, z29.h, z20.h
 	add	x4, x3, 704
-	uzp1	z23.s, z23.s, z23.s
-	ld1h	z22.h, p7/z, [x4]
-	rshrnb	z23.h, z23.s, #4
+	uzp1	z21.s, z21.s, z21.s
+	ld1h	z20.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
 	add	x4, x3, 736
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 440]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 440]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 768
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 800
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 832
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 864
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 568]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 568]
+	add	x8, x8, x2, lsl 3
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 896
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 928
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 960
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 992
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 696]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 696]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1024
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1056
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1088
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1120
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 824]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 824]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1152
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1184
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1216
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1248
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 952]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 952]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1280
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1312
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1344
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1376
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1080]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1080]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1408
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1440
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1472
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1504
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1208]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1208]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1536
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1568
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1600
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1632
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1336]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1336]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1664
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1696
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1728
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1760
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1464]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1464]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1792
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1824
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1856
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 1888
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1592]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1592]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1920
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1952
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 1984
-	sdot	z23.d, z4.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
-	uzp1	z23.s, z23.s, z23.s
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 2016
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1720]
-	movprfx	z23, z29
-	sdot	z23.d, z26.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1720]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 2048
-	sdot	z23.d, z27.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z27.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 2080
-	sdot	z23.d, z28.h, z22.h
-	ld1h	z22.h, p7/z, [x4]
+	sdot	z21.d, z28.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
 	add	x4, x3, 2112
-	sdot	z23.d, z4.h, z22.h
-	uzp1	z23.s, z23.s, z23.s
-	rshrnb	z23.h, z23.s, #4
-	uzp1	z23.h, z23.h, z23.h
-	str	d23, [x1, 1848]
-	ld1h	z23.h, p7/z, [x4]
+	sdot	z21.d, z29.h, z20.h
+	ld1h	z20.h, p7/z, [x4]
+	uzp1	z21.s, z21.s, z21.s
 	add	x4, x3, 2144
-	sdot	z29.d, z26.h, z23.h
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d21, [x1, 1848]
+	movprfx	z21, z23
+	sdot	z21.d, z26.h, z20.h
 	ld1h	z26.h, p7/z, [x4]
 	add	x4, x3, 2176
-	sdot	z29.d, z27.h, z26.h
+	sdot	z21.d, z27.h, z26.h
 	ld1h	z27.h, p7/z, [x4]
 	add	x4, x3, 2208
-	sdot	z29.d, z28.h, z27.h
+	sdot	z21.d, z28.h, z27.h
 	ld1h	z28.h, p7/z, [x4]
-	sdot	z29.d, z4.h, z28.h
+	add	x4, x3, 2240
+	sdot	z21.d, z29.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2272
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2304
+	sdot	z29.d, z16.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
 	uzp1	z29.s, z29.s, z29.s
 	rshrnb	z29.h, z29.s, #4
 	uzp1	z29.h, z29.h, z29.h
-	add	x4, x3, 2240
-	ld1w	z28.s, p7/z, [x4]
-	movprfx	z27, z24
+	add	x4, x3, 2336
+	uzp1	z21.s, z21.s, z21.s
+	rshrnb	z21.h, z21.s, #4
+	uzp1	z21.h, z21.h, z21.h
+	str	d29, [x1, 120]
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	str	d21, [x1, 1976]
+	add	x4, x3, 2368
+	sdot	z29.d, z16.h, z28.h
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	str	d29, [x1, 376]
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2400
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2432
+	sdot	z29.d, z16.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	add	x4, x3, 2464
+	str	d29, [x1, 632]
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2496
+	sdot	z29.d, z16.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	add	x4, x3, 2528
+	str	d29, [x1, 888]
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2560
+	sdot	z29.d, z16.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	add	x4, x3, 2592
+	str	d29, [x1, 1144]
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	add	x4, x3, 2624
+	sdot	z29.d, z16.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	add	x4, x3, 2656
+	str	d29, [x1, 1400]
+	movprfx	z29, z23
+	sdot	z29.d, z22.h, z28.h
+	ld1h	z28.h, p7/z, [x4]
+	sdot	z29.d, z16.h, z28.h
+	uzp1	z29.s, z29.s, z29.s
+	rshrnb	z29.h, z29.s, #4
+	uzp1	z29.h, z29.h, z29.h
+	add	x4, x3, 2688
+	str	d29, [x1, 1656]
+	ld1h	z29.h, p7/z, [x4]
+	add	x4, x3, 2720
+	sdot	z23.d, z22.h, z29.h
+	ld1h	z29.h, p7/z, [x4]
+	movprfx	z27, z25
+	mul	z27.s, p7/m, z27.s, z7.s
+	movprfx	z26, z30
+	mul	z26.s, p7/m, z26.s, z7.s
+	saddv	d27, p6, z27.s
+	saddv	d26, p6, z26.s
+	movprfx	z28, z24
+	mul	z28.s, p7/m, z28.s, z7.s
+	sdot	z23.d, z16.h, z29.h
+	saddv	d28, p6, z28.s
+	movprfx	z29, z31
+	mul	z29.s, p7/m, z29.s, z7.s
+	uzp1	v28.2d, v26.2d, v28.2d
+	saddv	d29, p6, z29.s
+	uzp1	z23.s, z23.s, z23.s
+	uzp1	v29.2s, v29.2s, v27.2s
+	rshrnb	z23.h, z23.s, #4
+	uzp1	z23.h, z23.h, z23.h
+	movi	v26.4s, 0x8
+	str	d23, [x1, 1912]
+	addvl	x4, sp, #4
+	add	x4, x4, 64
+	xtn2	v29.4s, v28.2d
+	ldr	q28, [x3, 2768]
+	movprfx	z27, z30
 	mul	z27.s, p7/m, z27.s, z28.s
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z28.s
-	saddv	d27, p7, z27.s
-	saddv	d26, p7, z26.s
-	str	d29, [x1, 1976]
+	movprfx	z23, z25
+	mul	z23.s, p7/m, z23.s, z28.s
+	saddv	d27, p6, z27.s
+	saddv	d23, p6, z23.s
+	add	v29.4s, v29.4s, v26.4s
+	shrn	v29.4h, v29.4s, 4
+	str	d29, [x1, 248]
 	movprfx	z29, z31
 	mul	z29.s, p7/m, z29.s, z28.s
-	mul	z28.s, p7/m, z28.s, z18.s
-	saddv	d29, p7, z29.s
-	saddv	d28, p7, z28.s
-	uzp1	v27.2s, v29.2s, v27.2s
-	add	x4, x3, 2272
-	uzp1	v28.2d, v26.2d, v28.2d
-	movi	v29.4s, 0x8
-	xtn2	v27.4s, v28.2d
-	add	v27.4s, v27.4s, v29.4s
-	shrn	v27.4h, v27.4s, 4
-	str	d27, [x1, 120]
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d23, p7, z23.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	saddv	d26, p7, z26.s
-	add	x4, x3, 2304
-	uzp1	v26.2d, v26.2d, v27.2d
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	saddv	d23, p7, z23.s
-	add	x4, x3, 2336
-	xtn2	v28.4s, v26.2d
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d26, p7, z26.s
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 376]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	uzp1	v26.2d, v26.2d, v27.2d
-	xtn2	v28.4s, v26.2d
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 632]
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d23, p7, z23.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	saddv	d26, p7, z26.s
-	add	x4, x3, 2368
-	uzp1	v26.2d, v26.2d, v27.2d
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	saddv	d23, p7, z23.s
-	add	x4, x3, 2400
-	xtn2	v28.4s, v26.2d
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d26, p7, z26.s
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 888]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	uzp1	v26.2d, v26.2d, v27.2d
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	saddv	d23, p7, z23.s
-	add	x4, x3, 2432
-	xtn2	v28.4s, v26.2d
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d26, p7, z26.s
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 1144]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	uzp1	v26.2d, v26.2d, v27.2d
-	ld1w	z27.s, p7/z, [x4]
-	movprfx	z23, z24
-	mul	z23.s, p7/m, z23.s, z27.s
-	saddv	d23, p7, z23.s
-	add	x4, x3, 2464
-	xtn2	v28.4s, v26.2d
-	movprfx	z26, z25
-	mul	z26.s, p7/m, z26.s, z27.s
-	saddv	d26, p7, z26.s
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 1400]
-	movprfx	z28, z31
-	mul	z28.s, p7/m, z28.s, z27.s
-	mul	z27.s, p7/m, z27.s, z18.s
-	saddv	d28, p7, z28.s
-	saddv	d27, p7, z27.s
-	uzp1	v28.2s, v28.2s, v23.2s
-	uzp1	v26.2d, v26.2d, v27.2d
-	movprfx	z27, z17
-	mul	z27.s, p7/m, z27.s, z11.s
-	saddv	d27, p6, z27.s
-	xtn2	v28.4s, v26.2d
-	movprfx	z26, z14
-	mul	z26.s, p7/m, z26.s, z11.s
-	saddv	d26, p6, z26.s
-	add	v28.4s, v28.4s, v29.4s
-	shrn	v28.4h, v28.4s, 4
-	str	d28, [x1, 1656]
-	ld1w	z28.s, p7/z, [x4]
-	mul	z31.s, p7/m, z31.s, z28.s
-	mul	z24.s, p7/m, z24.s, z28.s
-	mul	z25.s, p7/m, z25.s, z28.s
-	saddv	d24, p7, z24.s
-	mul	z28.s, p7/m, z28.s, z18.s
-	saddv	d31, p7, z31.s
-	saddv	d28, p7, z28.s
-	uzp1	v31.2s, v31.2s, v24.2s
-	saddv	d25, p7, z25.s
-	add	x4, sp, 64
-	uzp1	v25.2d, v25.2d, v28.2d
-	movprfx	z28, z19
-	mul	z28.s, p7/m, z28.s, z11.s
+	mul	z28.s, p7/m, z28.s, z24.s
+	saddv	d29, p6, z29.s
 	saddv	d28, p6, z28.s
-	uzp1	v28.2d, v28.2d, v26.2d
-	xtn2	v31.4s, v25.2d
-	add	v31.4s, v31.4s, v29.4s
-	shrn	v31.4h, v31.4s, 4
-	str	d31, [x1, 1912]
-	movprfx	z31, z30
-	mul	z31.s, p7/m, z31.s, z11.s
-	saddv	d31, p6, z31.s
-	uzp1	v31.2s, v31.2s, v27.2s
-	xtn2	v31.4s, v28.2d
-	ldr	q28, [x3, 2512]
-	movprfx	z26, z17
-	mul	z26.s, p7/m, z26.s, z28.s
-	movprfx	z27, z19
-	mul	z27.s, p7/m, z27.s, z28.s
-	saddv	d26, p6, z26.s
-	saddv	d27, p6, z27.s
-	add	v31.4s, v31.4s, v29.4s
-	shrn	v31.4h, v31.4s, 4
-	str	d31, [x1, 248]
-	movprfx	z31, z30
-	mul	z31.s, p7/m, z31.s, z28.s
-	mul	z28.s, p7/m, z28.s, z14.s
-	saddv	d31, p6, z31.s
-	saddv	d28, p6, z28.s
-	uzp1	v31.2s, v31.2s, v26.2s
+	uzp1	v29.2s, v29.2s, v23.2s
 	uzp1	v27.2d, v27.2d, v28.2d
-	ldr	q28, [x3, 2528]
-	movprfx	z26, z17
-	mul	z26.s, p7/m, z26.s, z28.s
-	saddv	d26, p6, z26.s
-	xtn2	v31.4s, v27.2d
-	movprfx	z27, z19
+	ldr	q28, [x3, 2784]
+	movprfx	z23, z25
+	mul	z23.s, p7/m, z23.s, z28.s
+	saddv	d23, p6, z23.s
+	xtn2	v29.4s, v27.2d
+	movprfx	z27, z30
 	mul	z27.s, p7/m, z27.s, z28.s
 	saddv	d27, p6, z27.s
-	add	v31.4s, v31.4s, v29.4s
-	shrn	v31.4h, v31.4s, 4
-	str	d31, [x1, 760]
-	movprfx	z31, z30
-	mul	z31.s, p7/m, z31.s, z28.s
-	mul	z28.s, p7/m, z28.s, z14.s
-	saddv	d31, p6, z31.s
+	add	v29.4s, v29.4s, v26.4s
+	shrn	v29.4h, v29.4s, 4
+	str	d29, [x1, 760]
+	movprfx	z29, z31
+	mul	z29.s, p7/m, z29.s, z28.s
+	mul	z28.s, p7/m, z28.s, z24.s
+	saddv	d29, p6, z29.s
 	saddv	d28, p6, z28.s
-	uzp1	v31.2s, v31.2s, v26.2s
+	uzp1	v29.2s, v29.2s, v23.2s
 	uzp1	v27.2d, v27.2d, v28.2d
-	xtn2	v31.4s, v27.2d
-	add	v31.4s, v31.4s, v29.4s
-	shrn	v31.4h, v31.4s, 4
-	str	d31, [x1, 1272]
-	ldr	q31, [x3, 2544]
-	mul	z30.s, p7/m, z30.s, z31.s
-	mul	z17.s, p7/m, z17.s, z31.s
-	mul	z19.s, p7/m, z19.s, z31.s
+	xtn2	v29.4s, v27.2d
+	add	v29.4s, v29.4s, v26.4s
+	shrn	v29.4h, v29.4s, 4
+	str	d29, [x1, 1272]
+	ldr	q29, [x3, 2800]
+	mul	z31.s, p7/m, z31.s, z29.s
+	mul	z25.s, p7/m, z25.s, z29.s
+	mul	z30.s, p7/m, z30.s, z29.s
+	saddv	d25, p6, z25.s
+	mul	z29.s, p7/m, z29.s, z24.s
+	saddv	d31, p6, z31.s
+	saddv	d29, p6, z29.s
+	uzp1	v31.2s, v31.2s, v25.2s
 	saddv	d30, p6, z30.s
-	mul	z31.s, p7/m, z31.s, z14.s
-	saddv	d17, p6, z17.s
-	saddv	d31, p6, z31.s
-	uzp1	v30.2s, v30.2s, v17.2s
-	saddv	d19, p6, z19.s
-	uzp1	v19.2d, v19.2d, v31.2d
-	xtn2	v30.4s, v19.2d
-	add	v30.4s, v30.4s, v29.4s
-	shrn	v30.4h, v30.4s, 4
-	str	d30, [x1, 1784]
+	uzp1	v30.2d, v30.2d, v29.2d
+	xtn2	v31.4s, v30.2d
 	ldr	z30, [x4]
 	fmov	x4, d30
+	add	v31.4s, v31.4s, v26.4s
 	lsr	x7, x4, 32
-	addvl	x4, sp, #1
+	addvl	x4, sp, #5
 	add	x4, x4, 64
 	ldr	z27, [x4]
 	fmov	x4, d27
+	shrn	v31.4h, v31.4s, 4
 	lsr	x14, x4, 32
 	addvl	x4, sp, #2
 	add	x4, x4, 64
 	ldr	z29, [x4]
-	fmov	x15, d29
+	str	d31, [x1, 1784]
 	fmov	x4, d29
+	fmov	x15, d29
 	lsr	x5, x4, 32
 	addvl	x4, sp, #3
 	add	x4, x4, 64
@@ -743,32 +701,31 @@ _Z11pass32_implILi4EEvPKsPsl:
 	fmov	x4, d26
 	sbfiz	x18, x18, 2, 58
 	lsr	x13, x4, 32
-	addvl	x4, sp, #4
-	add	x4, x4, 64
+	add	x4, sp, 64
 	ldr	z25, [x4]
-	fmov	x15, d25
 	fmov	x4, d25
+	fmov	x15, d25
 	lsr	x16, x4, 32
-	addvl	x4, sp, #5
+	addvl	x4, sp, #1
 	add	x4, x4, 64
 	ldr	z24, [x4]
 	add	x17, x16, x15
 	fmov	x4, d24
-	fmov	x15, d15
+	fmov	x15, d13
 	sbfiz	x17, x17, 2, 58
 	lsr	x12, x4, 32
-	fmov	x4, d15
+	fmov	x4, d13
 	lsr	x6, x4, 32
 	addvl	x4, sp, #18
 	add	x4, x4, 64
 	add	x15, x6, x15
-	str	d15, [x4]
-	fmov	x4, d16
+	str	d13, [x4]
+	fmov	x4, d19
 	sbfiz	x15, x15, 2, 58
 	lsr	x11, x4, 32
 	addvl	x4, sp, #18
 	add	x4, x4, 72
-	str	d16, [x4]
+	str	d19, [x4]
 	fmov	x4, d30
 	add	x4, x7, x4
 	ubfiz	x4, x4, 2, 58
@@ -794,7 +751,7 @@ _Z11pass32_implILi4EEvPKsPsl:
 	sshr	d28, d31, 4
 	smaddl	x5, w5, w7, x16
 	fmov	d31, x5
-	fmov	w5, s15
+	fmov	w5, s13
 	sshr	d29, d31, 4
 	smaddl	x5, w5, w7, x6
 	fmov	w7, s27
@@ -817,7 +774,7 @@ _Z11pass32_implILi4EEvPKsPsl:
 	fmov	d31, x7
 	smull	x7, w12, w6
 	smaddl	x7, w15, w5, x7
-	fmov	w15, s16
+	fmov	w15, s19
 	sshr	d28, d31, 4
 	add	x7, x7, 8
 	fmov	d31, x7
@@ -992,7 +949,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	str	z31, [x3]
 	add	x3, x2, 608
 	ld1h	z31.h, p7/z, [x3]
-	ldr	q11, [x2, 2496]
+	ldr	q11, [x2, 2752]
 	addvl	x3, sp, #16
 	add	x3, x3, 96
 	str	z31, [x3]
@@ -1393,7 +1350,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	uzp1	z29.s, z29.s, z29.s
 	rshrnb	z29.h, z29.s, #11
 	uzp1	z29.h, z29.h, z29.h
-	add	x3, x2, 2240
+	add	x3, x2, 2816
 	ld1w	z28.s, p7/z, [x3]
 	movprfx	z27, z24
 	mul	z27.s, p7/m, z27.s, z28.s
@@ -1408,7 +1365,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	saddv	d29, p7, z29.s
 	saddv	d28, p7, z28.s
 	uzp1	v27.2s, v29.2s, v27.2s
-	add	x3, x2, 2272
+	add	x3, x2, 2848
 	uzp1	v28.2d, v26.2d, v28.2d
 	movi	v29.4s, 0x4, lsl 8
 	xtn2	v27.4s, v28.2d
@@ -1428,13 +1385,13 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	saddv	d27, p7, z27.s
 	uzp1	v28.2s, v28.2s, v21.2s
 	saddv	d26, p7, z26.s
-	add	x3, x2, 2304
+	add	x3, x2, 2880
 	uzp1	v26.2d, v26.2d, v27.2d
 	ld1w	z27.s, p7/z, [x3]
 	movprfx	z21, z24
 	mul	z21.s, p7/m, z21.s, z27.s
 	saddv	d21, p7, z21.s
-	add	x3, x2, 2336
+	add	x3, x2, 2912
 	xtn2	v28.4s, v26.2d
 	movprfx	z26, z25
 	mul	z26.s, p7/m, z26.s, z27.s
@@ -1466,13 +1423,13 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	saddv	d27, p7, z27.s
 	uzp1	v28.2s, v28.2s, v21.2s
 	saddv	d26, p7, z26.s
-	add	x3, x2, 2368
+	add	x3, x2, 2944
 	uzp1	v26.2d, v26.2d, v27.2d
 	ld1w	z27.s, p7/z, [x3]
 	movprfx	z21, z24
 	mul	z21.s, p7/m, z21.s, z27.s
 	saddv	d21, p7, z21.s
-	add	x3, x2, 2400
+	add	x3, x2, 2976
 	xtn2	v28.4s, v26.2d
 	movprfx	z26, z25
 	mul	z26.s, p7/m, z26.s, z27.s
@@ -1491,7 +1448,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	movprfx	z21, z24
 	mul	z21.s, p7/m, z21.s, z27.s
 	saddv	d21, p7, z21.s
-	add	x3, x2, 2432
+	add	x3, x2, 3008
 	xtn2	v28.4s, v26.2d
 	movprfx	z26, z25
 	mul	z26.s, p7/m, z26.s, z27.s
@@ -1510,7 +1467,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	movprfx	z21, z24
 	mul	z21.s, p7/m, z21.s, z27.s
 	saddv	d21, p7, z21.s
-	add	x3, x2, 2464
+	add	x3, x2, 3040
 	xtn2	v28.4s, v26.2d
 	movprfx	z26, z25
 	mul	z26.s, p7/m, z26.s, z27.s
@@ -1560,7 +1517,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	saddv	d31, p6, z31.s
 	uzp1	v31.2s, v31.2s, v27.2s
 	xtn2	v31.4s, v28.2d
-	ldr	q28, [x2, 2512]
+	ldr	q28, [x2, 2768]
 	movprfx	z26, z16
 	mul	z26.s, p7/m, z26.s, z28.s
 	movprfx	z27, z23
@@ -1577,7 +1534,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	saddv	d28, p6, z28.s
 	uzp1	v31.2s, v31.2s, v26.2s
 	uzp1	v27.2d, v27.2d, v28.2d
-	ldr	q28, [x2, 2528]
+	ldr	q28, [x2, 2784]
 	movprfx	z26, z16
 	mul	z26.s, p7/m, z26.s, z28.s
 	saddv	d26, p6, z26.s
@@ -1612,7 +1569,7 @@ _Z11pass32_implILi11EEvPKsPsl.constprop.0:
 	str	d31, [x1, 1272]
 	fmov	x3, d25
 	fmov	x5, d25
-	ldr	q31, [x2, 2544]
+	ldr	q31, [x2, 2800]
 	mul	z30.s, p7/m, z30.s, z31.s
 	mul	z16.s, p7/m, z16.s, z31.s
 	mul	z23.s, p7/m, z23.s, z31.s
@@ -2963,6 +2920,284 @@ _ZL4CODD:
 	.hword	-88
 	.hword	90
 	.hword	-90
+	.type	_ZL3K2S, %object
+	.size	_ZL3K2S, 512
+_ZL3K2S:
+	.hword	90
+	.hword	87
+	.hword	80
+	.hword	70
+	.hword	90
+	.hword	87
+	.hword	80
+	.hword	70
+	.hword	90
+	.hword	87
+	.hword	80
+	.hword	70
+	.hword	90
+	.hword	87
+	.hword	80
+	.hword	70
+	.hword	57
+	.hword	43
+	.hword	25
+	.hword	9
+	.hword	57
+	.hword	43
+	.hword	25
+	.hword	9
+	.hword	57
+	.hword	43
+	.hword	25
+	.hword	9
+	.hword	57
+	.hword	43
+	.hword	25
+	.hword	9
+	.hword	87
+	.hword	57
+	.hword	9
+	.hword	-43
+	.hword	87
+	.hword	57
+	.hword	9
+	.hword	-43
+	.hword	87
+	.hword	57
+	.hword	9
+	.hword	-43
+	.hword	87
+	.hword	57
+	.hword	9
+	.hword	-43
+	.hword	-80
+	.hword	-90
+	.hword	-70
+	.hword	-25
+	.hword	-80
+	.hword	-90
+	.hword	-70
+	.hword	-25
+	.hword	-80
+	.hword	-90
+	.hword	-70
+	.hword	-25
+	.hword	-80
+	.hword	-90
+	.hword	-70
+	.hword	-25
+	.hword	80
+	.hword	9
+	.hword	-70
+	.hword	-87
+	.hword	80
+	.hword	9
+	.hword	-70
+	.hword	-87
+	.hword	80
+	.hword	9
+	.hword	-70
+	.hword	-87
+	.hword	80
+	.hword	9
+	.hword	-70
+	.hword	-87
+	.hword	-25
+	.hword	57
+	.hword	90
+	.hword	43
+	.hword	-25
+	.hword	57
+	.hword	90
+	.hword	43
+	.hword	-25
+	.hword	57
+	.hword	90
+	.hword	43
+	.hword	-25
+	.hword	57
+	.hword	90
+	.hword	43
+	.hword	70
+	.hword	-43
+	.hword	-87
+	.hword	9
+	.hword	70
+	.hword	-43
+	.hword	-87
+	.hword	9
+	.hword	70
+	.hword	-43
+	.hword	-87
+	.hword	9
+	.hword	70
+	.hword	-43
+	.hword	-87
+	.hword	9
+	.hword	90
+	.hword	25
+	.hword	-80
+	.hword	-57
+	.hword	90
+	.hword	25
+	.hword	-80
+	.hword	-57
+	.hword	90
+	.hword	25
+	.hword	-80
+	.hword	-57
+	.hword	90
+	.hword	25
+	.hword	-80
+	.hword	-57
+	.hword	57
+	.hword	-80
+	.hword	-25
+	.hword	90
+	.hword	57
+	.hword	-80
+	.hword	-25
+	.hword	90
+	.hword	57
+	.hword	-80
+	.hword	-25
+	.hword	90
+	.hword	57
+	.hword	-80
+	.hword	-25
+	.hword	90
+	.hword	-9
+	.hword	-87
+	.hword	43
+	.hword	70
+	.hword	-9
+	.hword	-87
+	.hword	43
+	.hword	70
+	.hword	-9
+	.hword	-87
+	.hword	43
+	.hword	70
+	.hword	-9
+	.hword	-87
+	.hword	43
+	.hword	70
+	.hword	43
+	.hword	-90
+	.hword	57
+	.hword	25
+	.hword	43
+	.hword	-90
+	.hword	57
+	.hword	25
+	.hword	43
+	.hword	-90
+	.hword	57
+	.hword	25
+	.hword	43
+	.hword	-90
+	.hword	57
+	.hword	25
+	.hword	-87
+	.hword	70
+	.hword	9
+	.hword	-80
+	.hword	-87
+	.hword	70
+	.hword	9
+	.hword	-80
+	.hword	-87
+	.hword	70
+	.hword	9
+	.hword	-80
+	.hword	-87
+	.hword	70
+	.hword	9
+	.hword	-80
+	.hword	25
+	.hword	-70
+	.hword	90
+	.hword	-80
+	.hword	25
+	.hword	-70
+	.hword	90
+	.hword	-80
+	.hword	25
+	.hword	-70
+	.hword	90
+	.hword	-80
+	.hword	25
+	.hword	-70
+	.hword	90
+	.hword	-80
+	.hword	43
+	.hword	9
+	.hword	-57
+	.hword	87
+	.hword	43
+	.hword	9
+	.hword	-57
+	.hword	87
+	.hword	43
+	.hword	9
+	.hword	-57
+	.hword	87
+	.hword	43
+	.hword	9
+	.hword	-57
+	.hword	87
+	.hword	9
+	.hword	-25
+	.hword	43
+	.hword	-57
+	.hword	9
+	.hword	-25
+	.hword	43
+	.hword	-57
+	.hword	9
+	.hword	-25
+	.hword	43
+	.hword	-57
+	.hword	9
+	.hword	-25
+	.hword	43
+	.hword	-57
+	.hword	70
+	.hword	-80
+	.hword	87
+	.hword	-90
+	.hword	70
+	.hword	-80
+	.hword	87
+	.hword	-90
+	.hword	70
+	.hword	-80
+	.hword	87
+	.hword	-90
+	.hword	70
+	.hword	-80
+	.hword	87
+	.hword	-90
+	.type	_ZL2K4, %object
+	.size	_ZL2K4, 64
+_ZL2K4:
+	.word	89
+	.word	75
+	.word	50
+	.word	18
+	.word	75
+	.word	-18
+	.word	-89
+	.word	-50
+	.word	50
+	.word	-89
+	.word	18
+	.word	75
+	.word	18
+	.word	-50
+	.word	75
+	.word	-89
 	.type	_ZL2K2, %object
 	.size	_ZL2K2, 256
 _ZL2K2:
@@ -3030,25 +3265,6 @@ _ZL2K2:
 	.word	-80
 	.word	87
 	.word	-90
-	.type	_ZL2K4, %object
-	.size	_ZL2K4, 64
-_ZL2K4:
-	.word	89
-	.word	75
-	.word	50
-	.word	18
-	.word	75
-	.word	-18
-	.word	-89
-	.word	-50
-	.word	50
-	.word	-89
-	.word	18
-	.word	75
-	.word	18
-	.word	-50
-	.word	75
-	.word	-89
 	.ident	"GCC: (GNU) 16.1.0"
 	.section	.note.GNU-stack,"",@progbits
 

@@ -7,12 +7,16 @@
 | 上游 x265::dct32_sve（128-bit 风格） | 13362 | 12710 | 0 | 12710 |
 | 工具生成 v1（16-lane SVE2，叶子缓冲） | 21218 | 9974 | 1032 | 8942 |
 | 工具生成 v2（行主序，叶子不落缓冲） | 16768 | 8854 | 1664 | 7190 |
-| **工具生成 v3（4 行切片 + lane-per-output sdot）** | **6129** | **4634** | 368 | **4266** |
+| 工具生成 v3（4 行切片 + lane-per-output sdot） | 6129 | 4634 | 368 | 4266 |
+| **工具生成 v3.1（+ k≡2 pass1 切片）** | **5785** | **4226** | 264 | **3962** |
 
 - v2 相对上游 -43.4%（near-gate）；**v3 相对上游 -66.4%（0.336x，
   HALVED）**，fused_uop=4266 已低于内部参考的 4827（fused_uop 口径），
   与内部 fused_adj=4251 基本持平（4.17 vs 4.15/输出）；零 scatter、
   200k 差分 0（upstream-exact）。
+- **v3.1 相对上游 -68.8%（0.312x）**：fused_uop=3962，per_out=3.87，
+  已**正式超越内部参考**（4251/4827），且保持 upstream-exact、零
+  scatter、200k 差分 0。
 - 正确性：2 万例差分 0（vs `x265::dct32_sve`）；`TestBenchLite --gate dct32`
   PASS（MBDstHarness + C 参照 `dct32_c`）。
 
@@ -64,6 +68,16 @@ v2 改为逐行：叶子留在寄存器里，一行内完成全部 32 个输出
 
 验证：2 万例 + 20 万例差分均 0（upstream-exact），TestBenchLite PASS，
 stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
+
+### v3.1：k≡2 pass1 同构切片（2026-08-13）
+
+- pass1 的 EO 是 s16（上游 pass1 用 sdot）：4 行组再切 EX0/EX1
+  （每行 4-lane 切片），每个 k≡2 用 2×sdot .d（[g[0..3]]×4、
+  [g[4..7]]×4）+ 同一套 uzp1/rshrnb/uzp1_s16 归约（6 条/组/k，
+  替代逐行 mul+saddv+fmov 的 12+）；
+- pass2 的 EO 是 s32（避免回绕），保持 vmul 路径；`if (shift == 4)`
+  由模板常量折叠；
+- 结果 4266 → **3962**；每输出 4.17 → 3.87（内部 4.15）。
 
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 

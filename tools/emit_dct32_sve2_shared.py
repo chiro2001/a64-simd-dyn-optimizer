@@ -58,6 +58,17 @@ def cpp_constants():
                          % (body, body, body, body, m))
         lines.append("    },  // k=%d" % k)
     lines.append("};")
+    # k=2 mod 4 slice constants (pass1, s16 EO): [g[0..3]]x4 / [g[4..7]]x4.
+    lines.append("static const int16_t K2S[8][2][16] = {")
+    for kk in range(8):
+        k = 4 * kk + 2
+        lines.append("    {")
+        for m in range(2):
+            body = ", ".join(str(GT32[k][4 * m + j]) for j in range(4))
+            lines.append("        { %s, %s, %s, %s },  // m=%d"
+                         % (body, body, body, body, m))
+        lines.append("    },  // k=%d" % k)
+    lines.append("};")
     return "\n".join(lines)
 
 
@@ -329,6 +340,8 @@ def pass_grouped_cpp():
             svint32_t Erb%(r)d = svrev_s32(Eb%(r)d);
             svint32_t EE%(r)d = svadd_s32_x(p8s, Ea%(r)d, Erb%(r)d);
             EO%(r)d = svsub_s32_x(p8s, Ea%(r)d, Erb%(r)d);
+            svint16_t E16_%(r)d = svadd_s16_x(p16, lo%(r)d, rv%(r)d);
+            EO16_%(r)d = svsub_s16_x(p16, E16_%(r)d, svrev_s16(E16_%(r)d));
             svint32_t EEr%(r)d = svrev_s32(EE%(r)d);
             svint32_t EEE%(r)d = svadd_s32_x(p8s, EE%(r)d, EEr%(r)d);
             EEO%(r)d = svsub_s32_x(p8s, EE%(r)d, EEr%(r)d);
@@ -362,24 +375,47 @@ def pass_grouped_cpp():
             svint16_t rz = svuzp1_s16(r, r);
             svst1_s16(pg4h, dst + (%d) * 32 + base, rz);
         }""" % (kk, kk, kk, kk, 2 * kk + 1) for kk in range(16))
+    ex = []
+    for m in range(2):
+        ex.append("""\
+        svint16_t e%d = svtbl2_s16(svcreate2_s16(EO16_0, EO16_1), i%d);
+        svint16_t f%d = svtbl2_s16(svcreate2_s16(EO16_2, EO16_3), i%d);
+        svint16_t EX%d = svtbl2_s16(svcreate2_s16(e%d, f%d), ilo);
+""" % (m, m, m, m, m, m, m))
+    ex = "".join(ex)
     k2 = "\n".join(
         """\
         {
-            svint32_t c = svld1_s32(p8s, K2[%d]);
-            svint32_t t0 = svmul_s32_x(p8s, EO0, c);
-            svint32_t t1 = svmul_s32_x(p8s, EO1, c);
-            svint32_t t2 = svmul_s32_x(p8s, EO2, c);
-            svint32_t t3 = svmul_s32_x(p8s, EO3, c);
-            int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
-            int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
-            int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
-            int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
-            dst[(%d) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
-            dst[(%d) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
-            dst[(%d) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
-            dst[(%d) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
-        }""" % (kk, 4 * kk + 2, 4 * kk + 2, 4 * kk + 2, 4 * kk + 2)
-        for kk in range(8))
+            if (shift == 4)
+            {
+                svint16_t cl = svld1_s16(p16, K2S[%d][0]);
+                svint16_t ch = svld1_s16(p16, K2S[%d][1]);
+                svint64_t t = svdot_s64(zero64, EX0, cl);
+                t = svdot_s64(t, EX1, ch);
+                svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                          svreinterpret_s32_s64(t));
+                svint16_t r = svrshrnb_n_s32(lo, shift);
+                svint16_t rz = svuzp1_s16(r, r);
+                svst1_s16(pg4h, dst + (%d) * 32 + base, rz);
+            }
+            else
+            {
+                svint32_t c = svld1_s32(p8s, K2[%d]);
+                svint32_t t0 = svmul_s32_x(p8s, EO0, c);
+                svint32_t t1 = svmul_s32_x(p8s, EO1, c);
+                svint32_t t2 = svmul_s32_x(p8s, EO2, c);
+                svint32_t t3 = svmul_s32_x(p8s, EO3, c);
+                int64_t s0 = (int64_t)svaddv_s32(p8s, t0);
+                int64_t s1 = (int64_t)svaddv_s32(p8s, t1);
+                int64_t s2 = (int64_t)svaddv_s32(p8s, t2);
+                int64_t s3 = (int64_t)svaddv_s32(p8s, t3);
+                dst[(%d) * 32 + base + 0] = (int16_t)((s0 + add) >> shift);
+                dst[(%d) * 32 + base + 1] = (int16_t)((s1 + add) >> shift);
+                dst[(%d) * 32 + base + 2] = (int16_t)((s2 + add) >> shift);
+                dst[(%d) * 32 + base + 3] = (int16_t)((s3 + add) >> shift);
+            }
+        }""" % (kk, kk, 4 * kk + 2, kk, 4 * kk + 2, 4 * kk + 2, 4 * kk + 2,
+                4 * kk + 2) for kk in range(8))
     k4 = "\n".join(
         """\
         {
@@ -434,6 +470,7 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
     {
         const int base = g * 4;
         svint16_t O0, O1, O2, O3;
+        svint16_t EO16_0, EO16_1, EO16_2, EO16_3;
         svint32_t EO0, EO1, EO2, EO3;
         svint32_t EEO0, EEO1, EEO2, EEO3;
         svint32_t EEEE0, EEEE1, EEEE2, EEEE3;
@@ -445,11 +482,12 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 %s
 %s
 %s
+%s
 
 %s
     }
 }
-""" % (leaf, slices, odd, k2, k4, k0)
+""" % (leaf, slices, ex, odd, k2, k4, k0)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1"):
