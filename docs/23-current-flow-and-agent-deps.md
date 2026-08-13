@@ -83,6 +83,8 @@ flowchart LR
 实现 `tbl2_to_zip` 原子 rewrite（按 pass/group 感知的链匹配 + 惰性 prep），
 接入 `emit_from_plan`；rewrite 路径与手工 zip 变体计数完全一致
 （row4 7938、row8-legacy 6464），20k 差分/TestBenchLite 均过。
+`rewrites` 已接入搜索轴（manifest），op 搜索 48 候选 best=6464，
+rewrite 组合同样可达 6464——结构空间搜索的第一维已闭环。
 下一步 rewrite：`merge_narrow8`、`legacy_k2/k4`、`const_prearrange`。
 
 ### P1：跨 kernel OpIR/通用 MachineIR

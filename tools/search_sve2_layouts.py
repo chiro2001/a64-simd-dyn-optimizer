@@ -155,7 +155,9 @@ def make_emitter(kernel, backend="acle"):
                     legacy_ex=combo.get("legacy_ex", 0),
                     legacy_k4=combo.get("legacy_k4", 0),
                     slice_kind=combo.get("slice_kind", "tbl2"),
-                    row_group=combo.get("row_group", 4))
+                    row_group=combo.get("row_group", 4),
+                    rewrites=([] if combo.get("rewrites", "none") == "none"
+                              else [combo["rewrites"]]))
                 return emit_from_plan(
                     replace(dct32_v31_plan(), lowering=lo),
                     func_name="dynopt_dct32_sve2_shared")
