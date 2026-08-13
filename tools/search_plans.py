@@ -22,11 +22,13 @@ from itertools import combinations
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
+sys.path.insert(0, os.path.join(ROOT, "optimizer", "analysis"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from gen_verify import generate as gen_verify  # noqa: E402
 from kernel_manifest import load_manifest, repo_path  # noqa: E402
 from layout_ir import lower, verify_layout  # noqa: E402
+from layout_verify import check_source  # noqa: E402
 from rewrites_dct32 import (  # noqa: E402
     assign_output_lanes,
     batch_round_narrow_store,
@@ -148,6 +150,10 @@ def main():
     by_src = {}
     for tag, plan, rewrites in layout_unique:
         src = lower(plan)
+        ok, rep = check_source(plan, src)
+        if not ok:
+            print("source-proof FAIL %s: %r" % (tag, rep["mismatches"]))
+            return 1
         h = hashlib.sha256(src.encode()).hexdigest()
         if h not in by_src:
             by_src[h] = (tag, plan, src)

@@ -4,9 +4,11 @@
 import hashlib
 import os
 import sys
+from dataclasses import replace
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
+sys.path.insert(0, os.path.join(ROOT, "optimizer", "analysis"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from layout_ir import (  # noqa: E402
@@ -20,6 +22,7 @@ from layout_ir import (  # noqa: E402
     lower,
     verify_layout,
 )
+from layout_verify import check_source  # noqa: E402
 from rewrites_dct32 import (  # noqa: E402
     batch_round_narrow_store,
     dct32_spec_plan,
@@ -102,6 +105,19 @@ def main():
         rc |= fail("lower(rediscovered) != emit(v3.1)")
     if "layout" in found.lowering:
         rc |= fail("rediscovered plan must not carry a layout preset")
+
+    # P1 increment 5: plan<->source static consistency.
+    ok, rep = check_source(plan, want)
+    if not ok:
+        rc |= fail("v3.1 source must match plan: %r" % rep["mismatches"])
+    ok, rep = check_source(spec, lower(spec))
+    if not ok:
+        rc |= fail("spec (row-reduce/canonical) source must match plan: %r"
+                   % rep["mismatches"])
+    broken = replace(plan, lowering={**plan.lowering, "narrow_batch": 1})
+    ok, rep = check_source(broken, want)
+    if ok:
+        rc |= fail("plan/source mismatch (narrow 1 vs 4) must be detected")
 
     if rc == 0:
         print("layout_ir self-test: PASS (key=%s...)" % k1[:16])

@@ -160,6 +160,18 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 - 该搜索路径全程不含 `layout` 预设字符串，分层漏斗可直接用于评估
   新 rewrite 加入后的候选数压缩与耗时预算。
 
+### P1 增量 5：plan↔源码静态一致性证明（2026-08-13）
+
+- 新增 `optimizer/analysis/layout_verify.py::check_source(plan, src)`：
+  对 `pass32_impl` 模板体逐指令族计数（svdot_s64 / svaddv /
+  svst1_s16/s64/s32 / svmul / 标量 dst / 常量运行时 tbl），与 plan
+  tiles/lowering 声明比对，并强制 `st1d/scatter == 0`；
+- `search_plans.py` 在编译前对每个 plan 跑该证明（source-proof 层），
+  12/12 候选全部通过；自测覆盖正例（v3.1、spec）与故意破坏的负例
+  （narrow 1 vs 4 被检出）；
+- 这收窄了“plan tiles 语义未接入 codegen”的口径：块粒度的一致性
+  现在有静态证明；剩余差距仅为逐寄存器/逐 lane 的 op 级后端。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。
