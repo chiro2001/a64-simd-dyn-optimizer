@@ -666,3 +666,19 @@ legacy 产物已固化 `kernels/dct16/candidates/best_legacy_sve2.cpp`。
 upstream-exact 的 s32 k2 路径不存在与 k0/4/8/12 同等的捷径；要省只能
 靠存储/窄化合并，收益有限。二次尝试（s0/s1 直乘、EO1 变换、EOp 直乘）
 均 25% 分歧，已全部撤回。该方向降级为低优先。
+
+### dct8 发射器修复与合同缺口（2026-08-14）
+
+用改进后的搜索驱动跑 dct8：发现 `emit_dct8_sve2_shared.py` 的
+`dot_group` 把“k 奇偶选择表达式”误用在 store 地址（`dst + ((kb&1) ?
+QO : QE) * 8`），已修复为纯 k 表达式。修复后 dct8 候选对固定输入与
+标量 C 参考一致，但随机 2 万例仍有 **0.11% 分歧**（首例 idx=10
+want=5886 got=-3714）——pass2 的 E/O 用 s16 会回绕（coef 可达
+±32640，E/O 超 ±32767）；上游 `dct8_sve` 自身有已知 vsub_s16 回绕
+bug（README：dct8 与 C 分歧 0.868%），因此当前候选既不满足
+upstream-exact 也不满足 C-exact。
+
+合同处置：dct8 的正确性合同未定——选项 a) C-exact：pass2 E/O 全部
+s32（mul/addp 路径，无 sdot）；选项 b) upstream-exact：复刻 dct8_sve
+的 s16 回绕语义（类似 dct16 的 legacy 合同）。两者都需要重写 dct8
+pass2，列为后续任务；搜索门禁如实报 FAIL，不伪报。

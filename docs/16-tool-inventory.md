@@ -94,6 +94,10 @@
   按 `contract|生成源码哈希` 复用已验证的 passed/mismatches/counts，
   仅源码或合同变化才重跑；增量重跑从 ~7.8 分钟降到 ~0.1 秒。另有源码
   哈希规范化去重（相同生成代码只验证一次）。
+- **DCT8 合同缺口（2026-08-14）**：`emit_dct8_sve2_shared.py` 的 store
+  地址表达式 bug 已修复；但 pass2 用 s16 E/O 回绕，候选与 C 有 0.11%
+  分歧，与上游 dct8_sve（已知 0.868% vs C）也不位级一致。dct8 正确性
+  合同待定（C-exact s32 pass2 或 upstream-bug-exact），搜索如实报 FAIL。
 
 ## 3. 现状判定
 

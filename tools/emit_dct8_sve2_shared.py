@@ -59,7 +59,7 @@ def group_block(g):
         }""" % (base, base + 1, base + 2, base + 3, g, g)
 
 
-def dot_group(g, kexpr, lo):
+def dot_group(g, xexpr, kexpr, lo):
     return """\
             const svint64_t d%d = svdot_s64(zacc, %s, %s);
             const svint32_t w%d = svuzp1_s32(
@@ -67,7 +67,7 @@ def dot_group(g, kexpr, lo):
             svint16_t n%d = svrshrnb_n_s32(w%d, shift);
             n%d = svuzp1_s16(n%d, n%d);
             svst1_s16(p4h, dst + (%s) * 8 + %d, n%d);""" % (
-        g, kexpr, lo, g, g, g, g, g, g, g, g, kexpr, 4 * g, g)
+        g, xexpr, lo, g, g, g, g, g, g, g, g, kexpr, 4 * g, g)
 
 
 def emit(func_name="dynopt_dct8_sve2_shared", k_tile=1):
@@ -84,7 +84,7 @@ def emit(func_name="dynopt_dct8_sve2_shared", k_tile=1):
             "            }"
             % (lo, kexpr,
                "\n".join(dot_group(g, "(%s & 1) ? QO0_%d : QE0_%d"
-                                   % (kexpr, g, g), lo)
+                                   % (kexpr, g, g), kexpr, lo)
                          for g in range(2))))
     dot = ("        for (int kb = 0; kb < 8; kb += %d)\n"
            "        {\n%s\n        }\n" % (k_tile, "\n".join(tiles)))
