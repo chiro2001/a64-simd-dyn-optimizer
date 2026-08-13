@@ -477,6 +477,12 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   因其逐行结构每个 sdot/mul 都从 zero/常量起算）；op legacy 448 是
   per-chain 初值。free-movprfx 口径下 v2 占便宜，raw vector 口径下
   op legacy 领先；两个口径都保留到实机裁决。
+- **zip 化切片（2026-08-13）**：odd/k2/k4 的 tbl2 切片换成 4 行
+  d-lane 转置（zip1/zip2/trn1/trn2，QEMU 探针验证 lane 语义）：
+  op legacy 7724 → **7222**（-502），raw vector 7880 → **7654**，
+  **TestBenchLite 5 seed 全 PASS**；与 v2（7190）只差 **+0.4%**
+  （fused），raw vector 领先 v2 1200 条。tbl 464 → 128（仅 leaf
+  rev4s 等剩余）。
 
 ### 5.8 配对 A/B 与吞吐修复（2026-08-13）
 

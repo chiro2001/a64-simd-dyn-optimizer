@@ -238,18 +238,43 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             if (pass_id == 1 and k2_slice) or (pass_id == 2 and legacy_ex):
                 tid = "p%d.k2.slice" % pass_id
                 ex = []
-                for m in range(2):
-                    e = new("permute", tid, "e%d" % m,
-                            (eo16[rows[0]], eo16[rows[1]]),
-                            attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                   "lane_owner": "output"})
-                    f = new("permute", tid, "f%d" % m,
-                            (eo16[rows[2]], eo16[rows[3]]),
-                            attrs={"kind": "tbl2", "idx": "i%d" % m,
-                                   "lane_owner": "output"})
-                    ex.append(new("permute", tid, "EX%d" % m, (e.out, f.out),
-                                  attrs={"kind": "tbl2", "idx": "ilo",
+                if slice_kind == "zip":
+                    z1 = new("permute", tid, "k2z1",
+                             (eo16[rows[0]], eo16[rows[2]]),
+                             attrs={"kind": "zip1d",
+                                    "lane_owner": "output"})
+                    z2 = new("permute", tid, "k2z2",
+                             (eo16[rows[1]], eo16[rows[3]]),
+                             attrs={"kind": "zip1d",
+                                    "lane_owner": "output"})
+                    t1 = new("permute", tid, "k2t1",
+                             (eo16[rows[0]], eo16[rows[2]]),
+                             attrs={"kind": "trn2d",
+                                    "lane_owner": "output"})
+                    t2 = new("permute", tid, "k2t2",
+                             (eo16[rows[1]], eo16[rows[3]]),
+                             attrs={"kind": "trn2d",
+                                    "lane_owner": "output"})
+                    ex.append(new("permute", tid, "EX0", (z1.out, z2.out),
+                                  attrs={"kind": "zip1d",
                                          "lane_owner": "output"}).out)
+                    ex.append(new("permute", tid, "EX1", (t1.out, t2.out),
+                                  attrs={"kind": "zip1d",
+                                         "lane_owner": "output"}).out)
+                else:
+                    for m in range(2):
+                        e = new("permute", tid, "e%d" % m,
+                                (eo16[rows[0]], eo16[rows[1]]),
+                                attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                       "lane_owner": "output"})
+                        f = new("permute", tid, "f%d" % m,
+                                (eo16[rows[2]], eo16[rows[3]]),
+                                attrs={"kind": "tbl2", "idx": "i%d" % m,
+                                       "lane_owner": "output"})
+                        ex.append(new("permute", tid, "EX%d" % m,
+                                      (e.out, f.out),
+                                      attrs={"kind": "tbl2", "idx": "ilo",
+                                             "lane_owner": "output"}).out)
                 for k in K2_K:
                     tid = "p%d.k2.k%d" % (pass_id, k)
                     t0 = new("dot_segment", tid, "k2t0_%d" % k, (ex[0],),
@@ -297,17 +322,30 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
             # ---- k4 ----
             if legacy_k4:
                 tid = "p%d.k4.slice" % pass_id
-                pk4 = new("permute", tid, "pk4",
-                          (eeo16[rows[0]], eeo16[rows[1]]),
-                          attrs={"kind": "tbl2", "idx": "i0",
-                                 "lane_owner": "output"})
-                qk4 = new("permute", tid, "qk4",
-                          (eeo16[rows[2]], eeo16[rows[3]]),
-                          attrs={"kind": "tbl2", "idx": "i0",
-                                 "lane_owner": "output"})
-                xk4 = new("permute", tid, "Xk4", (pk4.out, qk4.out),
-                          attrs={"kind": "tbl2", "idx": "ilo",
-                                 "lane_owner": "output"})
+                if slice_kind == "zip":
+                    kz1 = new("permute", tid, "k4z1",
+                              (eeo16[rows[0]], eeo16[rows[2]]),
+                              attrs={"kind": "zip1d",
+                                     "lane_owner": "output"})
+                    kz2 = new("permute", tid, "k4z2",
+                              (eeo16[rows[1]], eeo16[rows[3]]),
+                              attrs={"kind": "zip1d",
+                                     "lane_owner": "output"})
+                    xk4 = new("permute", tid, "Xk4", (kz1.out, kz2.out),
+                              attrs={"kind": "zip1d",
+                                     "lane_owner": "output"})
+                else:
+                    pk4 = new("permute", tid, "pk4",
+                              (eeo16[rows[0]], eeo16[rows[1]]),
+                              attrs={"kind": "tbl2", "idx": "i0",
+                                     "lane_owner": "output"})
+                    qk4 = new("permute", tid, "qk4",
+                              (eeo16[rows[2]], eeo16[rows[3]]),
+                              attrs={"kind": "tbl2", "idx": "i0",
+                                     "lane_owner": "output"})
+                    xk4 = new("permute", tid, "Xk4", (pk4.out, qk4.out),
+                              attrs={"kind": "tbl2", "idx": "ilo",
+                                     "lane_owner": "output"})
                 for k in K4_K:
                     tid = "p%d.k4.k%d" % (pass_id, k)
                     t = new("dot_segment", tid, "k4t_%d" % k, (xk4.out,),
