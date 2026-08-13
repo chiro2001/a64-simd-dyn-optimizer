@@ -233,3 +233,45 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
 
 按减半口径（12710→6355），v1（8942）还需再压 ~29%；参考内部的方向
 （常量预排列 + 批量窄化 + 全 dot 化）是主要路径。
+
+## 5. 920B 实机复核与 LLVM-MCA（2026-08-13）
+
+用户反馈 920G 上 v3.1 周期与上游几乎无差异，要求 920B 复测 + MCA。
+结论分两部分：
+
+### 5.1 920B（SVE1，VL=256）实测
+
+- 能力探针（`experiments/m30-dct32-search/cap-probe/cap_probe_full`）：
+  `sdot_d`/`uzp1`/`sunpklo`（SVE1）执行 OK；`rshrnb`/双寄存器 `tbl`
+  （SVE2）SIGILL → **best_sve2 候选整体无法在 920B 运行**，因此
+  “920B 复测 v3.1 vs 上游” 不可行，只能复测基线。
+- 基线（静态 binary，CNTVCT latency，20000 samples，taskset 单核）：
+
+| 实现 | min | p50 | p99 |
+| --- | ---: | ---: | ---: |
+| dct32_c | 620 | 632 | 654 |
+| dct32_neon | 148 | 151 | 169 |
+| dct32_sve（上游 SVE1） | 204 | 211 | 229 |
+
+  `verify c/neon/sve 200` 全部 0 分歧（oracle = 上游 dct32_sve）。
+  harness 必须以 `-march=armv8.2-a+sve`（非 +sve2）编译，否则主程序
+  自身带 SVE2 指令在 920B 全 SIGILL（踩坑已记录）。
+
+### 5.2 LLVM-MCA（Neoverse V2/N2，迭代 1，直通静态体）
+
+| 指标 | best_sve2（3962 fused_uop） | 上游 dct32_sve（12710） |
+| --- | ---: | ---: |
+| 静态指令数 | 1681 | 2502 |
+| N2 uOps | 2002 | 3102 |
+| N2 Total Cycles | 667 | 927 |
+| V2 uOps | 2046 | 3101 |
+| V2 Total Cycles | 397 | 560 |
+
+- MCA 预测 best 应快 ~1.4×（N2/V2），与 920G 实机“几乎无差异”矛盾；
+  MCA 没有鲲鹏 920G 型号，只能做端口/依赖链粗估。可能原因：920G 微架构
+  差异、实测候选/协议不一致、或动态循环依赖（sdot 累加链、movprfx
+  融合）未被静态模型捕获。
+- **下一步需要一台真实 SVE2 机器（如阿里云倚天 710）复测 v3.1 vs
+  上游**，并先确认 `svcntb==32`（VL=256）后直接跑同一微基准；若
+  倚天为 VL=128，则需重新生成 128-bit 变体，仅能验证 SVE2 指令语义，
+  不能验证 256-bit 候选周期。

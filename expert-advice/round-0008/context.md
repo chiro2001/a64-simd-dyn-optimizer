@@ -67,3 +67,7 @@ E_lo/E_hi 双 sdot、4×4 矩阵分块），还是应当接受 pass2 现状并�
   布局目前都是 k*16+i，可论证保持）；
 - 920B 无法执行 s16→s64 SDOT（SVE1），实机周期只能等 960；指令数
   口径用 QEMU true-dynamic。
+
+> 2026-08-13 勘误：`sdot z.d, z.h, z.h`（s16→s64）属于 SVE v1，
+> 920B 可执行（cap probe 实测 OK）；920B 无法执行的是候选中的
+> SVE2 指令（`rshrnb`、双寄存器 `tbl`，实测 SIGILL）。

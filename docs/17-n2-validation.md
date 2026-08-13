@@ -1,9 +1,17 @@
 # N+2（鲲鹏 960）SVE2 验证合同（2026-08-13）
 
 状态：**预注册**。当前只有 QEMU（`-cpu max,sve-max-vq=2`）验证与
-true-dynamic 计数；920B 是 SVE1，无法执行本项目的 s16→s64 SDOT
-（SVE2），因此**中间档 920B 只对 NEON 候选有效**，SVE2 候选直接以
-960 为验收目标。
+true-dynamic 计数；920B 是 SVE1。
+
+> **2026-08-13 勘误（sdot 指令归属）**：`sdot z.d, z.h, z.h`
+> （s16→s64 4-way dot）**属于 SVE v1**（ARM DDI0602 编码门
+> `FEAT_SVE || FEAT_SME`；llvm-mc `+sve` 可汇编；920B 实测执行 OK），
+> 不是 SVE2。920B 真正不能执行的是本项目候选中的 SVE2 指令
+> （`rshrnb`、双寄存器 `tbl {z0.h - z1.h}` 等，实测 SIGILL）。
+> 因此**中间档 920B 只对 SVE1/NEON 候选有效**，SVE2 候选直接以
+> 960/920G 为验收目标；若需在 SVE1 上复核 SVE2 候选，必须先用
+> SVE1 等价指令重写（rshrnb→srshr+uzp1、双寄存器 TBL→单寄存器
+> TBL+sel），会牺牲约 2% fused_uop。
 
 > **2026-08-14 硬件现实更新：960 尚未流片**，实机 paired PMU 验收无法
 > 在近期执行。流片前验收口径调整为：**以 QEMU fused_adj（movprfx 融合
