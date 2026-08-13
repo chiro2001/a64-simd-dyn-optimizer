@@ -113,14 +113,16 @@ def verify_layout(plan: Plan) -> Tuple[bool, str]:
 
     seen_lanes = set()
     for t in plan.tiles:
-        if t.row_group not in (1, 4):
+        if t.row_group not in (1, 4, 8):
             return False, "row_group %d not supported by current emitter" \
                 % t.row_group
         if t.lane_owner == "output":
             if t.acc_bits != 64:
                 return False, "output-owner accumulator must be s64"
-            if t.row_group * t.k_tile > 4:
-                return False, "output-owner needs <=4 s64 lanes at VL=256"
+            if t.row_group * t.k_tile > 8:
+                return False, ("output-owner needs <=8 s64 lanes at VL=256 "
+                               "(row_group=8 uses two 4-lane accumulator "
+                               "banks)")
         key = (t.pass_id, t.k_family, t.k_tile, t.row_group)
         if key in seen_lanes:
             return False, "duplicate tile %r" % (key,)
