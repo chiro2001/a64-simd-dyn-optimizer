@@ -49,7 +49,15 @@ PASS；全 pass E-pack 因 pass2 回绕在 lite FAIL，已记录 docs/20 §6.8�
 1.062×）；全布局搜索 288 候选确认 best 含 k0_shared_mul=1（与
 sdot_indexed 交互由负转正）；lite 5 seed PASS、20k 签名 7268 不变。
 
-相对上游 12710 = 0.355×；距内部 fused_uop = 0.935×。
+再再后续：**odd_from_k0packs 轴**（odd 切片复用 k0 的 lo/rv pack，
+pack(rv) 等价配对 + L−R 子，探针 probe_odd_from_packs）→ **4480**；
+**k2k4_from_packs 轴**（k2/k4 切片从 L/R pack 派生，pass2 leaf
+E16 族链 DCE，探针 probe_k2k4_from_packs）→ **4234**（0.333× 上游，
+fused_uop 0.877×、fused_adj 0.996× **均低于内部参考**）；搜索
+608 候选确认；lite 5 seed PASS、20k 签名 7268 不变。
+
+相对上游 12710 = 0.333×；距内部 fused_uop = 0.877× / fused_adj =
+0.996×。
 固化 `kernels/dct32/candidates/best_op_r16.{cpp,S}`。
 
 ## 下一步
