@@ -199,14 +199,16 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                             % (out, redpg, tmp))
             elif attrs["reduce"] == "scalar2":
                 idx = k // 8
-                body.append("    int64_t %s = (int64_t)K0[%d][0] * %s[0] + "
-                            "(int64_t)K0[%d][1] * %s[1];"
+                body.append("    int64_t %s = (int64_t)K0[%d][0] * %s + "
+                            "(int64_t)K0[%d][1] * %s_1;"
                             % (out, idx, ins[0], idx, ins[0]))
             ctype[out] = "int64_t"
         elif kind == "extract2":
-            body.append("    int32_t %s[2];" % out)
-            body.append("    svst1_s32(pg2s, %s, %s);" % (out, ins[0]))
-            ctype[out] = "int32x2"
+            body.append("    int32_t %s = svlastb_s32(pg1s, %s);"
+                        % (out, ins[0]))
+            body.append("    int32_t %s_1 = svlastb_s32(pg2s, %s);"
+                        % (out, ins[0]))
+            ctype[out] = "int32"
         elif kind == "round_shift":
             if ctype.get(ins[0]) == "svint64_t":
                 body.append("    svint16_t %s = svrshrnb_n_s32("
@@ -248,8 +250,8 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
                         % (redpg, mulin, cexpr)
                 else:
                     idx = km // 8
-                    expr = "((int64_t)K0[%d][0] * %s[0] + " \
-                           "(int64_t)K0[%d][1] * %s[1])" \
+                    expr = "((int64_t)K0[%d][0] * %s + " \
+                           "(int64_t)K0[%d][1] * %s_1)" \
                         % (idx, mulin, idx, mulin)
                 rloc = row % row_group
                 body.append("    dst[%d * 32 + g * %d + %d] = (int16_t)"
@@ -288,6 +290,7 @@ def emit_acle(plan: Plan, ops: List[Op],
     const svbool_t pg4s = svwhilelt_b32(0, 4);
     const svbool_t pg4h = svwhilelt_b16(0, 4);
     const svbool_t pg2s = svwhilelt_b32(0, 2);
+    const svbool_t pg1s = svwhilelt_b32(0, 1);
     const svint64_t zero64 = svdup_n_s64(0);
     int add;
     const svuint32_t rev4s = svld1_u32(p8s, IDX_REV4S);
