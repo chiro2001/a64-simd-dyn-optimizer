@@ -324,6 +324,22 @@ k_tile=4 相对 k_tile=2 省约 26-32 条（循环开销减半）。距 +130% �
 （~660）仍有约 2 倍差距，剩余空间主要在 pass2 的结构性重构与 960
 实机验证；搜索耗时 6.4s 远低于 60s 阈值，暂不需要启发式算法。
 
+## v9：pass2 直接 SVE O 视图（2026-08-13）
+
+pass2 行对循环展开为 8 个字面块，O 用 NEON 加载的 SVE bridge 视图
+直接生成（`svset_neonq` + `svsub_s16_x`），删掉 `O[16]` NEON 数组、
+其栈 spill/回读与 16 个寄存器文件 mov。结果（9 个组合全部上游位级
+一致，200k 例 0 分歧）：
+
+```text
+最佳组合 quarter + k_tile=4 + odd-quarter：
+  raw 1388 → 1365，fused 1292 → 1269
+quarter + k_tile=2 + odd-quarter：fused 1301
+```
+
+相对上游 SVE 1911：0.664x；减半回收率 67%。产物已 finalize
+（best_sve2.cpp/.S，200k 验证）。
+
 ## 宽度效率核算（2026-08-13，用户标准：SVE256 应对 128-bit 上游减半）
 
 上游 SVE 是 128-bit 有效（NEON-SVE bridge 只使用低半）；在 SVE256 下

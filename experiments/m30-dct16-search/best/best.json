@@ -7,10 +7,10 @@
   "pass2_k_tile": 1
  },
  "counts": {
-  "total": 1698,
-  "vector": 1388,
+  "total": 1737,
+  "vector": 1365,
   "movprfx": 96,
-  "vector_fused": 1292
+  "vector_fused": 1269
  },
  "artifacts": {
   "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_sve2.cpp",
