@@ -504,9 +504,8 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   vs v2 -9.3%，vs 内部 4827 = **1.35×**；rshrnb 448→384、
   uzp1 640→448。剩余：常量预排列（ld1h 736）与 leaf rev4s。
 - k0 标量路径核查（2026-08-13）：`extract2` 用 `svst1_s32` 落栈再取
-  scalar，产生 ~224 条 NEON `str q`；改 `svlasta` 逐 lane 取数
-  计数持平但减少栈流量（960 实机再评估）；k0 真向量化需 8 行
-  lane 收集，暂不划算。
+  scalar，产生 ~224 条 NEON `str q`；改 `svlastb` 逐 lane 取数后
+  实际 **-56**（见下条）；k0 真向量化需 8 行 lane 收集，暂不划算。
 - **k0 提取改 `svlastb`（2026-08-13）**：`svst1_s32` 落栈 + ldr 改
   为 `svlastb_s32(pg1s/pg2s, vec)` 直接取 lane0/lane1（注意 GCC/QEMU
   下 `svlasta` 语义偏移，`svlastb` 正确）→ **6464 full（raw 6904）**，
