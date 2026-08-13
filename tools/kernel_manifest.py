@@ -8,6 +8,7 @@ Manifest schema v0.1 (kernels/<name>/manifest.yaml):
   baselines: {<name>: {driver, object?, symbol, symbol_mangled?}}
   corpus: {strides, value_range, cases}
   layouts: {<axis>: [<values>]}   # search space axes (cartesian product)
+  layout_prune: [{axis, requires}]  # generic axis dependencies (P2)
 """
 
 import os
@@ -45,6 +46,38 @@ def layout_combos(manifest):
     for vals in product(*(axes[n] for n in names)):
         combos.append(dict(zip(names, vals)))
     return combos
+
+
+def layout_plans(manifest):
+    """Cartesian product filtered by the manifest's generic axis rules.
+
+    Each rule: when `axis` has a non-zero/truthy value, all `requires`
+    entries must hold (scalar equality or membership in a list). This
+    replaces the per-kernel hardcoded `if combo... continue` chains in
+    the search driver (round-0012 P2).
+    """
+    combos = layout_combos(manifest)
+    rules = manifest.get("layout_prune", [])
+    out = []
+    for c in combos:
+        ok = True
+        for rule in rules:
+            if not c.get(rule["axis"], 0):
+                continue
+            for ra, rv in rule.get("requires", {}).items():
+                val = c.get(ra)
+                if isinstance(rv, list):
+                    if val not in rv:
+                        ok = False
+                        break
+                elif val != rv:
+                    ok = False
+                    break
+            if not ok:
+                break
+        if ok:
+            out.append(c)
+    return out
 
 
 def repo_path(manifest, p):

@@ -28,7 +28,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
-from kernel_manifest import layout_combos, load_manifest, repo_path  # noqa: E402
+from kernel_manifest import layout_plans, load_manifest, repo_path  # noqa: E402
 from gen_verify import generate as gen_verify  # noqa: E402
 
 
@@ -192,7 +192,9 @@ def main():
         with open(contract_marker, "w") as f:
             f.write(contract)
 
-    combos = layout_combos(manifest)
+    # P2: the manifest's layout_prune rules replace per-kernel hardcoded
+    # axis-dependency chains; only derived normalization stays here.
+    combos = layout_plans(manifest)
     if not combos or not manifest.get("layouts"):
         print("manifest has no layout axes", file=sys.stderr)
         return 2
@@ -212,30 +214,6 @@ def main():
         if "pass2" in manifest.get("layouts", {}):
             if combo.get("pass2") != "odd-quarter":
                 combo["pass2_k_tile"] = 1   # tile only applies to odd-quarter
-        # Prune axis dependencies: inactive axes must be 0 (the emitter
-        # ignores them, so these combos would be duplicates).
-        if combo.get("pass1_even_factor") and combo.get("pass1") != "quarter":
-            continue
-        if combo.get("pass1_pack_zip") and combo.get("pass1") != "quarter":
-            continue
-        if combo.get("pass2_pack_zip") and not (
-                combo.get("pass2") == "odd-quarter"
-                and combo.get("narrow_merge")):
-            continue
-        if combo.get("even_sve") and not (
-                combo.get("legacy_semantics")
-                and combo.get("pass2") == "odd-quarter"
-                and combo.get("narrow_merge")):
-            continue
-        if combo.get("legacy_even_full") and not (
-                combo.get("legacy_semantics")
-                and combo.get("pass2") == "odd-quarter"
-                and combo.get("narrow_merge")):
-            continue
-        if combo.get("store_merge16") and not (
-                combo.get("pass2") == "odd-quarter"
-                and combo.get("narrow_merge")):
-            continue
         tag = "_".join("%s-%s" % (k, v) for k, v in combo.items())
         if tag in seen:
             continue

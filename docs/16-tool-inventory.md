@@ -71,6 +71,7 @@
 | `tools/pipeline.py finalize` | 固化最优候选：best_sve2.cpp/.S + 20 万例验证 + best.json |
 | `tools/gen_verify.py` | 从 manifest 生成上游差分 harness（参考/corpus/VL） |
 | `kernels/<name>/manifest.yaml` | kernel 接入契约：参考库/符号、driver、corpus、VL、布局域 |
+| `tools/kernel_manifest.py` | manifest 加载 + `layout_plans()`：按 `layout_prune` 规则（requires）过滤轴组合，替代搜索驱动里的 kernel 专属硬编码依赖链（P2） |
 
 ### 验收门禁（x265 TestBench 黄金标准）
 

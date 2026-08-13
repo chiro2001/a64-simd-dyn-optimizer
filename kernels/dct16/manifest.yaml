@@ -46,3 +46,18 @@ layouts:
   pass1_pack_zip: [0, 1]
   pass2_pack_zip: [0, 1]
   even_sve: [0, 1]
+
+# Generic axis dependencies (P2): an active toggle requires its parents.
+layout_prune:
+  - axis: pass1_even_factor
+    requires: {pass1: quarter}
+  - axis: pass1_pack_zip
+    requires: {pass1: quarter}
+  - axis: pass2_pack_zip
+    requires: {pass2: odd-quarter, narrow_merge: 1}
+  - axis: even_sve
+    requires: {legacy_semantics: 1, pass2: odd-quarter, narrow_merge: 1}
+  - axis: legacy_even_full
+    requires: {legacy_semantics: 1, pass2: odd-quarter, narrow_merge: 1}
+  - axis: store_merge16
+    requires: {pass2: odd-quarter, narrow_merge: 1}
