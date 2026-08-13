@@ -5,8 +5,8 @@ Enumerates valid subsets of the atomic rewrites from the canonical spec
 plan, lowers each to source through emit_grouped (NO `layout` preset, no
 composite-template selector), and MEASURES each unique candidate
 end-to-end: compile -> 20k upstream differential -> true-dynamic trace.
-The v3.1 best must reappear at 3962 fused_uop (upstream-exact, zero
-scatter).
+The v3.1 best must reappear at 8292 fused_uop (full-call; pass1-only was
+3962, see docs/20 §1) with upstream-exact, zero scatter.
 
 Layers (P2): semantic (verify_layout) -> layout (canonical-key dedup) ->
 lowering (source-hash dedup) -> measurement (differential + trace).
@@ -115,6 +115,12 @@ def measure(manifest, verify_src, src, workdir, tag):
             break
     if rng is None:
         return False, "no trace range", None
+    end_sym = manifest["candidate"].get("range_end")
+    if end_sym:
+        rng_end = symbol_range(driver, end_sym)
+        if rng_end is None:
+            return False, "no trace range_end", None
+        rng = (rng[0], rng_end[1])
     counts = true_dynamic(driver, rng[0], rng[1],
                           os.path.join(workdir, tag + "-trace.log"))
     if counts is None:
@@ -186,9 +192,9 @@ def main():
         print("%-78s %7s %4s %4s  %s" % (tag, fu, sg, stk, h))
 
     best = rows[0]
-    if best[1] != 3962 or best[2] != 0:
-        print("FAIL: rewrite search best must be 3962 fused_uop, zero "
-              "scatter; got %r" % (best,))
+    if best[1] != 8292 or best[2] != 0:
+        print("FAIL: rewrite search best must be 8292 fused_uop (full-call), "
+              "zero scatter; got %r" % (best,))
         return 1
     print("\nlayers: semantic=%d plans -> layout=%d canonical plans -> "
           "lowering=%d unique sources -> measured=%d"
