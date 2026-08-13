@@ -182,6 +182,12 @@ CLI 参考也建议避免在非专用 sandbox VM 中绕过 sandbox。相关官�
 - <https://developers.openai.com/codex/cli/reference>
 - <https://developers.openai.com/codex/models>
 
+**成本控制（2026-08-13 经验）**：咨询若在 ~150k tokens 内仍未产出
+`summary.md` 等文档（如 round-0011 深入反汇编核查 60+ 分钟未落盘），
+主进程可截断会话（Ctrl-C），从会话输出采集关键结论写入
+`response.md` 并写 `decision.md`；不得让咨询无限消耗预算。截断后如需
+更完整建议，可在下一批次重新发起并收紧 prompt 范围。
+
 ### 5.3 建议处置
 
 执行 Agent 阅读 `response.md` 后写 `decision.md`：
