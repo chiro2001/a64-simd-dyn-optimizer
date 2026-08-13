@@ -352,6 +352,23 @@ accumulator 轴（row_group/双链拆分），而不是只看 fused_uop。**
 优化应回到 v2 结构（或对 v2 做 pass2 切片），并把真实机周期作为
 排名依据，而不是 pass1-only fused_uop。
 
+### 5.6 v2 pass 拆分与下一步（2026-08-13）
+
+v2 的 `pass32_impl`（shift 为运行参数）按 shift=4/11 分别 trace：
+
+| v2 pass | full fused_uop |
+| --- | ---: |
+| pass1（shift=4） | 3595 |
+| pass2（shift=11） | 3595 |
+| 合计 | 7190 |
+
+对照 v3/v3.1：pass1 = 4266/3962、pass2 = 4330（两者同），即 v3
+的两个 pass 都**差于 v2**。结论：v3 的 4 行切片 + lane-per-output
+sdot 在 VL=256 上被 tbl2/uzp/常量重排开销抵消，不是方向。
+**下一步工具轴：把 `odd_lowering=sdot.d` / `narrow_batch=4` 应用到
+v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
+7190 → <6355（半数门）。
+
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
 或足够深的 unroll（后续修复）。
