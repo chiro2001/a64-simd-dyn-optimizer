@@ -19,6 +19,8 @@
   scatter、200k 差分 0。
 - 正确性：2 万例差分 0（vs `x265::dct32_sve`）；`TestBenchLite --gate dct32`
   PASS（MBDstHarness + C 参照 `dct32_c`）。
+- 2026-08-13 全链复验：20 万例差分 0（204.8M lane）、TestBenchLite
+  dct32 5 个 seed 全 PASS（1/2/0x12345678/0xDEADBEEF/987654321）。
 
 ### v2 行主序轴（layout=v2）
 
