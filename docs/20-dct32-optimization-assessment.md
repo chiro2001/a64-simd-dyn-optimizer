@@ -872,8 +872,18 @@ k0 与 k16 共享 `mE = EEp×64`，k8 与 k24 共享 `mO = EOp×[83,36]`：
 | TestBenchLite dct32 | 5 seed PASS | **5 seed PASS** | — |
 
 相对上游 12710 = **0.390×**；相对内部 fused_uop 4827 = **1.028×**；
-已低于 docs/20 §6 的 5150 目标。全布局搜索（含 row16/新轴）运行中，
-最终 best 以 results.json 为准。
+已低于 docs/20 §6 的 5150 目标。
+
+**全布局搜索终态（`--skip-axes layout,odd_lowering,narrow_batch,
+constant_layout`，112 候选全过门禁）**：best =
+`pass1_k2_slice=1, acc_split=1, legacy_ex=1, legacy_k4=1,
+slice_kind=zip(row16 归一化), row_group=16, k0_even_sve=1,
+k0_shared_mul=0, k0_merge8=1` → **fused 4944**（vector 5416 /
+movprfx 472 / stack 614，20k 签名 7268，TestBenchLite 5 seed PASS）。
+搜索还发现：k0_shared_mul 在 row16 下反而 +16（4960 vs 4944，
+依赖链/调度差异），k0_merge8 只在 shared=0 时净收益（-36）。
+已固化 `kernels/dct32/candidates/best_op_r16.{cpp,S,o}`
+（-fno-tree-pre 复建计数一致）。
 
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），

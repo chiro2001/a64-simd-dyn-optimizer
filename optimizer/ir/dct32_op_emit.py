@@ -471,7 +471,7 @@ def emit_acle(plan: Plan, ops: List[Op],
     const svuint16_t i3 = svld1_u16(p16, IDX_CF);
     const svuint16_t ilo = svld1_u16(p16, IDX_LO8);
 """
-    if row_group == 8:
+    if row_group in (8, 16):
         prologue += "    const svbool_t pg8h = svwhilelt_b16(0, 8);\n"
     if row_group == 16:
         prologue += "    const svbool_t pg16h = svptrue_b16();\n"

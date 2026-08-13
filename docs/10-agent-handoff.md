@@ -7,13 +7,14 @@
 
 ### 0.1 当前 best 与验收
 
-- **DCT32 op 后端 best = 4960 fused_uop**（vector 5416 / movprfx 456 /
-  stack 562 / 零 scatter），相对上游 12710 = 0.390×，距内部参考
-  4827（fused_adj 4251）= 1.028×。由 row16 合并存储 +
-  k0_shared_mul 新轴达成（5390→4960，-8.0%），
+- **DCT32 op 后端 best = 4944 fused_uop**（vector 5416 / movprfx 472 /
+  stack 614 / 零 scatter），相对上游 12710 = 0.389×，距内部参考
+  4827（fused_adj 4251）= 1.024×。由 row16 合并存储 + k0_merge8
+  新轴达成（5390→4944，-8.3%），全布局搜索 112 候选确认，
   **TestBenchLite dct32 5 seed 全 PASS（黄金标准已闭合）**；
-  k0_even_sdot 全 s16 方案被探针否决（docs/20 §6.4），
-  k0_merge8 组合后 5352（spill 增长，row16 不组合更优）。
+  k0_even_sdot 全 s16 方案被探针否决（docs/20 §6.4）；
+  k0_shared_mul 在 row16 下反增 16（调度差异），k0_merge8 仅在
+  shared=0 时净收益。
 - DCT16 best 705（含 4 scatter）/ 零 scatter 895（超内部 731）。
 - DCT32 rewrite 序列搜索（剪枝后）：781→219 计划键、31 唯一源，
   best `[legacy_k2, legacy_k4, merge_narrow8, k0_even_sve]` = 6322。

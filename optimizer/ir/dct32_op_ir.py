@@ -70,7 +70,7 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
     # k0_merge8: with row_group=8, merge the two 4-row packs' per-k
     # 4-lane row vectors (svtbl2_s32) before one rshrnb+uzp1+store8.
     k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
-        and row_group == 8
+        and row_group in (8, 16)
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -808,25 +808,30 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                 # narrow/store: per k, merge the packs (row8) or store each
                 for k in K0_K:
                     vecs = kvec[k]
-                    if k0_merge8 and len(vecs) == 2:
-                        ktid = "p%d.k0es.k%d" % (pass_id, k)
-                        mg = new("permute", ktid,
-                                 "k0mg_%d_%d" % (k, pass_id),
-                                 (vecs[0], vecs[1]),
-                                 attrs={"kind": "tbl2s"})
-                        na = new("narrow4_sve", ktid,
-                                 "k0n_%d_%d" % (k, pass_id),
-                                 (mg.out,),
-                                 attrs={"shift": shift, "mode": "rshrn"})
-                        nc = new("narrow", ktid,
-                                 "k0c_%d_%d" % (k, pass_id),
-                                 (na.out, na.out),
-                                 attrs={"from": "s16", "to": "s16"})
-                        new("store", ktid, "", (nc.out,),
-                            attrs={"base": "dst", "index": "k*32+i",
-                                   "lanes": tuple((pass_id, k, r)
-                                                  for r in rows),
-                                   "topology": "contiguous"})
+                    if k0_merge8 and len(vecs) in (2, 4):
+                        for pi in range(len(vecs) // 2):
+                            ktid = "p%d.k0es.k%d" % (pass_id, k)
+                            mg = new("permute", ktid,
+                                     "k0mg_%d_%d_%d" % (k, pass_id, pi),
+                                     (vecs[2 * pi], vecs[2 * pi + 1]),
+                                     attrs={"kind": "tbl2s"})
+                            na = new("narrow4_sve", ktid,
+                                     "k0n_%d_%d_%d" % (k, pass_id, pi),
+                                     (mg.out,),
+                                     attrs={"shift": shift,
+                                            "mode": "rshrn"})
+                            nc = new("narrow", ktid,
+                                     "k0c_%d_%d_%d" % (k, pass_id, pi),
+                                     (na.out, na.out),
+                                     attrs={"from": "s16", "to": "s16"})
+                            pair_rows = packs[2 * pi] + packs[2 * pi + 1]
+                            new("store", ktid, "", (nc.out,),
+                                attrs={"base": "dst", "index": "k*32+i",
+                                       "lanes": tuple(
+                                           (pass_id, k, r)
+                                           for r in pair_rows),
+                                       "topology": "contiguous",
+                                       "base_off": 8 * pi})
                     else:
                         for b, s in enumerate(vecs):
                             ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)

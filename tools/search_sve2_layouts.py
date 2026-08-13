@@ -378,6 +378,11 @@ def main():
     ap.add_argument("--workers", type=int, default=1,
                     help="parallel worker processes (default 1 = serial, "
                          "identical results order)")
+    ap.add_argument("--skip-axes", default=None,
+                    help="comma-separated layout axis names to drop from "
+                         "the cartesian product (e.g. op backend ignores "
+                         "layout/odd_lowering/narrow_batch/"
+                         "constant_layout)")
     ap.add_argument("--short-cases", type=int, default=2000,
                     help="reject-gate case count (default 2000); the harness "
                          "uses the same RNG stream, so 2k is a strict prefix "
@@ -395,6 +400,13 @@ def main():
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
     emit = make_emitter(args.kernel, args.backend)
+    if args.skip_axes:
+        skip = set(x.strip() for x in args.skip_axes.split(",") if x.strip())
+        for ax in skip:
+            if ax not in manifest.get("layouts", {}):
+                print("warning: skip-axis %r not in manifest layouts" % ax,
+                      file=sys.stderr)
+            manifest["layouts"].pop(ax, None)
     os.makedirs(args.outdir, exist_ok=True)
     cache_path = os.path.join(args.outdir, "verify_cache.json")
     cache = {}

@@ -48,12 +48,12 @@ targets:
   halve_gate: 0.5
 
 # 2026-08-14: generic axis dependencies (P2). k0 axes only apply when
-# k0_even_sve is active; k0_merge8 needs row_group=8. row_group=16 is
+# k0_even_sve is active; k0_merge8 needs row_group=8/16. row_group=16 is
 # normalized to slice_kind=zip inside the op lowering (k4 tbl2 slices are
 # tied to even/odd banks, docs/20 §5.13), so no prune rule is needed.
 layout_prune:
   - {axis: k0_shared_mul, requires: {k0_even_sve: 1}}
-  - {axis: k0_merge8, requires: {k0_even_sve: 1, row_group: 8}}
+  - {axis: k0_merge8, requires: {k0_even_sve: 1, row_group: [8, 16]}}
 
 layouts:
   layout: [v1, v2, v2b, v3]
@@ -95,8 +95,9 @@ layouts:
   # 无公因子，保留逐 k mul 路径。
   k0_shared_mul: [0, 1]
   # 2026-08-14: k0_merge8（仅 op backend；要求 k0_even_sve=1 +
-  # row_group=8）：两个 4 行 pack 的逐 k 4-lane 向量用 tbl2_s32 合并，
-  # 一次 rshrnb+uzp1+store8（-32 store / -32 narrow，+32 tbl2）。
+  # row_group=8/16）：每对 4 行 pack 的逐 k 4-lane 向量用 tbl2_s32 合并，
+  # 一次 rshrnb+uzp1+store8（row8：-32 store/-32 narrow，+32 tbl2；
+  # row16 对 4 个 pack 两两合并）。
   k0_merge8: [0, 1]
   # 2026-08-13: op 级原子 rewrite 序列（P0），最多 4 步、按 rw1..rw4
   # 顺序应用。完整序列 [legacy_k2, legacy_k4, merge_narrow8,
