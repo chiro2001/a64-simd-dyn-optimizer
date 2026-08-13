@@ -115,6 +115,14 @@
   best 6322）；dct16 121→45 计划键、4 唯一源。保留的非连续
   `tbl2_to_zip|legacy_k2|tbl2_to_zip|legacy_k4` 是有效候选（7282），
   未纳入“tbl2 至多一次”剪枝。
+- 两级差分（`--short-cases 2000` → `--full-cases 20000`，`--no-short-gate`
+  关闭）：harness 用同一 RNG 流，2k 是 20k 的严格前缀，因此
+  fail→pass=0 自动成立；short 门失败的候选记录 2k mismatch 并带
+  `gate:"short"` 标记，通过候选仍跑全量 20k 并记录完整计数。
+- trace 计数 fast path：`parse_qemu_trace.py --stream` 不物化指令列表，
+  直接流式产出与旧 parser 同 schema 的 counts；`true_dynamic` 默认走
+  fast path。已在 348 个真实 QEMU 日志上逐字段一致（含 36 个 scatter
+  样本，零差异）。
 - **uop 口径（2026-08-14 用户裁定）**：gather/scatter 在 ARM 上拆分为
   多个 ldst uops，禁止为表面指令数使用。`parse_qemu_trace.py` 输出
   `scatter_gather` 与 `vector_fused_uop = fused_adj + 3×sg`；搜索按

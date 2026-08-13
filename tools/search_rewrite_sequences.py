@@ -146,10 +146,11 @@ def measure_rewrite_candidate(task):
     """Measure one rewrite sequence end-to-end. Module-level so it can be
     pickled by ProcessPoolExecutor.
 
-    task = (cfg, verify_src, key, src, kernel, outdir)
+    task = (cfg, verify_src, key, src, kernel, outdir,
+            first_cases, full_cases)
     Returns (row, stage) with the same row schema as the serial loop.
     """
-    cfg, verify_src, key, src, kernel, OUT = task
+    cfg, verify_src, key, src, kernel, OUT, first_cases, full_cases = task
     h = hashlib.sha256(src.encode()).hexdigest()[:12]
     cpp = os.path.join(OUT, "seq_%s.cpp" % h)
     if not os.path.exists(cpp):
@@ -179,25 +180,43 @@ def measure_rewrite_candidate(task):
                 "LINK TIMEOUT"
         if v.returncode != 0:
             return {"seq": key, "_h": h, "build": "LINK_FAIL"}, "LINK FAIL"
-    try:
-        r = run(QEMU + [verify, "20000"], timeout=180)
-    except subprocess.TimeoutExpired:
+    legacy_seq = "legacy_even_sve" in key.split("|")
+    strict = kernel == "dct16" and not legacy_seq
+
+    def _run_verify(cases_arg):
+        try:
+            rr = run(QEMU + [verify, str(cases_arg)], timeout=180)
+        except subprocess.TimeoutExpired:
+            return None, -1, False
+        mm = 0
+        if "mismatches=" in rr.stdout:
+            try:
+                mm = int(rr.stdout.split("mismatches=", 1)[1].split()[0])
+            except ValueError:
+                mm = -1
+        if strict:
+            oo = rr.returncode == 0 and mm == 0
+        else:
+            bound = max(1, round(22528 * cases_arg / 20000))
+            oo = rr.returncode in (0, 1) and 0 <= mm <= bound
+        return rr, mm, oo
+
+    r, mism, ok = _run_verify(first_cases)
+    if r is None:
         return {"seq": key, "_h": h, "passed": False, "mism": -1,
                 "timeout": True}, "VERIFY TIMEOUT"
-    mism = 0
-    if "mismatches=" in r.stdout:
-        try:
-            mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
-        except ValueError:
-            mism = -1
-    legacy_seq = "legacy_even_sve" in key.split("|")
-    if kernel == "dct16" and not legacy_seq:
-        ok_mism = r.returncode == 0 and mism == 0
-    else:
-        ok_mism = r.returncode in (0, 1) and 0 <= mism <= 22528
-    if not ok_mism:
-        return {"seq": key, "_h": h, "passed": False, "mism": mism}, \
-            "VERIFY FAIL"
+    if not ok:
+        gate = "short" if first_cases < full_cases else "full"
+        return {"seq": key, "_h": h, "passed": False, "mism": mism,
+                "gate": gate}, "VERIFY FAIL (%s)" % gate
+    if full_cases != first_cases:
+        r, mism, ok = _run_verify(full_cases)
+        if r is None:
+            return {"seq": key, "_h": h, "passed": False, "mism": -1,
+                    "timeout": True}, "VERIFY TIMEOUT"
+        if not ok:
+            return {"seq": key, "_h": h, "passed": False, "mism": mism,
+                    "gate": "full"}, "VERIFY FAIL (full)"
     driver = os.path.join(OUT, "seq_%s-driver" % h)
     if not os.path.exists(driver):
         try:
@@ -218,7 +237,8 @@ def measure_rewrite_candidate(task):
                 "trace": "NO_RANGE"}, "NO RANGE"
     try:
         counts = true_dynamic(driver, rng[0], rng_end[1],
-                              os.path.join(OUT, "seq_%s-trace.log" % h))
+                              os.path.join(OUT, "seq_%s-trace.log" % h),
+                              timeout=300)
     except subprocess.TimeoutExpired:
         return {"seq": key, "passed": True, "mism": mism, "_h": h,
                 "trace": "TRACE_TIMEOUT"}, "TRACE TIMEOUT"
@@ -243,6 +263,14 @@ def main():
     ap.add_argument("--no-prune", action="store_true",
                     help="disable rewrite dependency pruning and enumerate "
                          "the full up-to-four universe")
+    ap.add_argument("--short-cases", type=int, default=2000,
+                    help="reject-gate case count (default 2000); same RNG "
+                         "stream, so 2k is a strict prefix of the full "
+                         "corpus")
+    ap.add_argument("--full-cases", type=int, default=20000,
+                    help="full differential case count (default 20000)")
+    ap.add_argument("--no-short-gate", action="store_true",
+                    help="run only the full differential (exhaustive mode)")
     args = ap.parse_args()
     kernel = args.kernel
     cfg = KERNELS[kernel]
@@ -290,7 +318,9 @@ def main():
         if key in cached:
             rows.append(dict(cached[key]))
             continue
-        tasks.append((cfg, verify_src, key, src, kernel, OUT))
+        tasks.append((cfg, verify_src, key, src, kernel, OUT,
+                      args.full_cases if args.no_short_gate
+                      else args.short_cases, args.full_cases))
 
     def _measure_all():
         if args.workers <= 1:

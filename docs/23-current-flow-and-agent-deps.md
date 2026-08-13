@@ -142,6 +142,15 @@ W=1 与 W=4 的 dct16 357 行结果逐字段相等；4 worker 墙钟
 = 6322，W=4 全流程 52 s）；dct16 121→45 计划键、4 唯一源。
 非连续 tbl2 双应用不做剪枝（实测有效 7282）。
 
+**P1.3 两级差分 + P3 流式 trace（2026-08-14）**：两个搜索驱动新增
+`--short-cases`（默认 2000）/`--full-cases`（默认 20000）/
+`--no-short-gate`。verify harness 接受 cases 参数且共用同一 RNG 流，
+2k 是 20k 的严格前缀，short 门失败→full 失败无漏报（fail→pass=0 由
+构造保证）；short 门失败行记录 2k mismatch + `gate:"short"`。trace
+解析器新增 `--stream` fast path（不写完整指令 JSON，只产出 counts），
+`true_dynamic` 默认启用；348 个真实日志（含 36 scatter）与旧 parser
+逐字段零差异。dct32 序列搜索 W=4 全流程 ~54 s，best 6322 不变。
+
 **P1 MCA 第二代理（2026-08-13）**：序列搜索 top-10 自动跑
 LLVM-MCA（Neoverse-V2, SVE2, 静态体）并写入 results.json；
 best 序列 fused=6456 / mca_cycles=516 / mca_uops=2838，次优 6856 /

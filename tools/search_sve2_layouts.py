@@ -67,14 +67,15 @@ def symbol_range(binary, sym):
     return start, (nxt if nxt is not None else start + 1)
 
 
-def true_dynamic(binary, start, end, log):
+def true_dynamic(binary, start, end, log, timeout=None, counts_only=True):
     r = run(QEMU + ["-one-insn-per-tb", "-d", "exec,in_asm",
                     "-dfilter", "0x%x..0x%x" % (start, end),
-                    "-D", log, binary])
+                    "-D", log, binary], timeout=timeout)
     if r.returncode != 0:
         return None
     p = run(["python3", os.path.join(ROOT, "tools/parse_qemu_trace.py"),
-             log, hex(start), hex(end), "--exec", "--json", log + ".json"])
+             log, hex(start), hex(end), "--exec", "--json", log + ".json"]
+             + (["--stream"] if counts_only else []), timeout=timeout)
     if p.returncode != 0:
         return None
     d = json.load(open(log + ".json"))
@@ -86,14 +87,19 @@ def true_dynamic(binary, start, end, log):
         c["scatter_gather"] = sg
         c["vector_fused_uop"] = c.get("vector_fused",
                                       len(d["vector"])) + 3 * sg
-    return {"total": len(d["instructions"]),
-            "vector": len(d["vector"]),
+    if isinstance(d.get("vector"), list):
+        n_vec = len(d["vector"])
+    else:
+        n_vec = d.get("vector", 0)
+    n_insns = (len(d["instructions"]) if "instructions" in d
+               else d.get("total", 0))
+    return {"total": d.get("total", n_insns),
+            "vector": n_vec,
             "movprfx": c.get("movprfx", 0),
-            "vector_fused": c.get("vector_fused", len(d["vector"])),
+            "vector_fused": c.get("vector_fused", n_vec),
             "scatter_gather": c.get("scatter_gather", 0),
             "stack_vector": c.get("stack_vector", 0),
-            "vector_fused_uop": c.get("vector_fused_uop",
-                                      len(d["vector"]))}
+            "vector_fused_uop": c.get("vector_fused_uop", n_vec)}
 
 
 def make_emitter(kernel, backend="acle"):
@@ -212,14 +218,14 @@ def measure_layout_candidate(task):
     pickled by ProcessPoolExecutor.
 
     task = (tag, combo, src_text, ckey, outdir, backend, manifest,
-            verify_src, driver_o, kernel, contract)
+            verify_src, driver_o, kernel, contract, first_cases, full_cases)
 
     Returns (row, cache_entry, stage). `row` is None for build/link
     failures (matching the serial results.json schema); verify failures
     return a row and a negative cache entry.
     """
     (tag, combo, src_text, ckey, outdir, backend, manifest,
-     verify_src, driver_o, kernel, contract) = task
+     verify_src, driver_o, kernel, contract, first_cases, full_cases) = task
     src = os.path.join(outdir, tag + ".cpp")
     with open(src, "w") as f:
         f.write(src_text)
@@ -252,33 +258,52 @@ def measure_layout_candidate(task):
         return None, None, "LINK TIMEOUT"
     if v.returncode != 0:
         return None, None, "LINK FAIL"
-    try:
-        r = run(QEMU + [verify, "20000"], timeout=180)
-    except subprocess.TimeoutExpired:
-        return None, None, "VERIFY TIMEOUT"
-    mism = 0
-    if "mismatches=" in r.stdout:
-        try:
-            mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
-        except (ValueError, IndexError):
-            mism = -1
     legacy = bool(combo.get("legacy_semantics") or combo.get("legacy_ex")
                   or combo.get("legacy_k4"))
-    if legacy:
-        # Proxy bound calibrated against the TestBench golden standard:
-        # 0.045078% (k=2/6/10/14 s16 sdot) passes 6/6 runs; 0.090234%
-        # (k=0/4/8/12 also s16 sdot) fails the first run. Accept only
-        # rates near the internal signature (~0.045%), i.e. <= 0.06%.
-        # dct32 internal signature is ~0.104%: use <= 0.11% proxy.
-        ok = r.returncode in (0, 1) and 0 <= mism <= 22528
-    else:
-        ok = r.returncode == 0 and mism == 0
+
+    def _run_verify(cases_arg):
+        try:
+            rr = run(QEMU + [verify, str(cases_arg)], timeout=180)
+        except subprocess.TimeoutExpired:
+            return None, -1, None, "VERIFY TIMEOUT"
+        mm = 0
+        if "mismatches=" in rr.stdout:
+            try:
+                mm = int(rr.stdout.split("mismatches=", 1)[1].split()[0])
+            except (ValueError, IndexError):
+                mm = -1
+        if legacy:
+            # Proxy bound calibrated against the TestBench golden standard;
+            # scales linearly with the case count (same RNG stream).
+            bound = max(1, round(22528 * cases_arg / 20000))
+            oo = rr.returncode in (0, 1) and 0 <= mm <= bound
+        else:
+            oo = rr.returncode == 0 and mm == 0
+        return rr, mm, oo, "OK"
+
+    r, mism, ok, stage = _run_verify(first_cases)
+    if stage != "OK":
+        return None, None, stage
+    gate = "short" if first_cases < full_cases else "full"
     row = {"tag": tag, **combo, "contract": contract,
            "passed": ok, "verify_mismatches": mism, "verify": r.stdout}
     if not ok:
         row["upstream_exact"] = False
+        row["gate"] = gate
         return row, {"passed": False, "verify_mismatches": mism,
-                     "verify": r.stdout, "counts": None}, "VERIFY FAIL"
+                     "verify": r.stdout, "counts": None, "gate": gate}, \
+            "VERIFY FAIL (%s)" % gate
+    if full_cases != first_cases:
+        r, mism, ok, stage = _run_verify(full_cases)
+        if stage != "OK":
+            return None, None, stage
+        if not ok:
+            row.update({"passed": False, "verify_mismatches": mism,
+                        "verify": r.stdout, "gate": "full"})
+            return row, {"passed": False, "verify_mismatches": mism,
+                         "verify": r.stdout, "counts": None,
+                         "gate": "full"}, "VERIFY FAIL (full)"
+        row.update({"verify_mismatches": mism, "verify": r.stdout})
     row["upstream_exact"] = not bool(combo.get("legacy_semantics"))
     driver = os.path.join(outdir, tag + "-trace-driver")
     try:
@@ -325,7 +350,8 @@ def measure_layout_candidate(task):
         rng = (rng[0], rng_end[1])
     try:
         counts = true_dynamic(driver, rng[0], rng[1],
-                              os.path.join(outdir, tag + "-trace.log"))
+                              os.path.join(outdir, tag + "-trace.log"),
+                              timeout=300)
     except subprocess.TimeoutExpired:
         row.update({"passed": False, "counts": None})
         return row, None, "TRACE TIMEOUT"
@@ -350,6 +376,14 @@ def main():
     ap.add_argument("--workers", type=int, default=1,
                     help="parallel worker processes (default 1 = serial, "
                          "identical results order)")
+    ap.add_argument("--short-cases", type=int, default=2000,
+                    help="reject-gate case count (default 2000); the harness "
+                         "uses the same RNG stream, so 2k is a strict prefix "
+                         "of the full corpus")
+    ap.add_argument("--full-cases", type=int, default=20000,
+                    help="full differential case count (default 20000)")
+    ap.add_argument("--no-short-gate", action="store_true",
+                    help="run only the full differential (exhaustive mode)")
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
     if args.contract:
@@ -458,7 +492,9 @@ def main():
         emitted[tag] = src_text
         tasks.append((tag, combo, src_text, ckey, args.outdir, args.backend,
                       manifest, verify_src, driver_o, args.kernel,
-                      c_contract))
+                      c_contract,
+                      args.full_cases if args.no_short_gate
+                      else args.short_cases, args.full_cases))
 
     def _measure_all():
         if args.workers <= 1:

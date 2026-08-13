@@ -111,6 +111,52 @@ def stack_vector_count(insns):
     return n
 
 
+def stream_counts(path, start, end):
+    """Two-pass streaming counts with the same metric schema as the full
+    parser, without materializing the instruction list (P3 fast path).
+
+    Pass 1 builds the per-address disassembly table from IN: blocks; pass 2
+    walks the Trace lines and accumulates counters. Must produce exactly the
+    same counts as parse_exec + fused_adjust/scatter_gather_count/
+    stack_vector_count (verified against full-mode JSON outputs).
+    """
+    disasm = {}
+    for line in open(path):
+        m = INS.match(line)
+        if m:
+            disasm[int(m.group(1), 16)] = (m.group(2), m.group(3).strip())
+    total = vector = movprfx = sg = stack_v = 0
+    for line in open(path):
+        m = TRACE.match(line)
+        if not m:
+            continue
+        addr = int(m.group(1), 16)
+        if not (start <= addr < end):
+            continue
+        d = disasm.get(addr)
+        if d is None:
+            continue
+        total += 1
+        mn, ops = d
+        if is_vector({"mn": mn, "ops": ops}):
+            vector += 1
+            if mn == "movprfx":
+                movprfx += 1
+            if mn.startswith(("ld1", "st1")) and re.search(
+                    r"\[[^\]]*,\s*z\d+", ops):
+                sg += 1
+        if mn in ("ldr", "str", "ldp", "stp") and re.search(
+                r"\b[zq]\d+", ops):
+            stack_v += 1
+    fused_adj = vector - movprfx
+    fused_uop = fused_adj + 3 * sg
+    return {"total": total, "vector": vector,
+            "counts": {"vector_raw": vector, "movprfx": movprfx,
+                       "vector_fused": fused_adj, "scatter_gather": sg,
+                       "stack_vector": stack_v,
+                       "vector_fused_uop": fused_uop}}
+
+
 def main():
     if len(sys.argv) < 4:
         print(__doc__)
@@ -122,9 +168,24 @@ def main():
     out_json = None
     vector_only = "--vector-only" in args
     counts_only = "--counts" in args
+    stream_mode = "--stream" in args
     exec_mode = "--exec" in args
     if "--json" in args:
         out_json = args[args.index("--json") + 1]
+
+    if stream_mode:
+        d = stream_counts(path, start, end)
+        c = d["counts"]
+        print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj "
+              "%d, scatter_gather %d, stack_vector %d, fused_uop %d)"
+              % (d["total"], d["vector"], c["movprfx"], c["vector_fused"],
+                 c["scatter_gather"], c["stack_vector"],
+                 c["vector_fused_uop"]))
+        if out_json:
+            json.dump({"counts": c, "total": d["total"],
+                       "vector": d["vector"]},
+                      open(out_json, "w"), indent=1)
+        return 0
 
     insns = parse_exec(path, start, end) if exec_mode else parse(path, start, end)
     vec = [i for i in insns if is_vector(i)]
