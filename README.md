@@ -4,21 +4,21 @@
 以标量语义、内存来源和现有 SIMD 调度为输入，搜索更好的布局与指令序列，
 生成、验证并注入 x265，最后以实机数据决定接受或淘汰。
 
-规划文档见 [docs/README.md](docs/README.md)。当前进度（M30，2026-08-13）：
+规划文档见 [docs/README.md](docs/README.md)。当前进度（2026-08-14）：
 
-- 工具主链闭环：LLVM IR→MachineIR 导入、值域分析、范围驱动位宽修复、
-  结构级 rewrite（widen / shift64 / wide_load / tree_to_mla）、搜索主循环、
-  C-exact 差分门禁、双机 paired 微基准；
-- 布局搜索主链（QEMU 真实动态 → lane 级 IR → manifest 布局轴 → 差分
-  验证 → TestBenchLite 门禁 → fused_uop 排名）：DCT16 legacy 704（uop
-  口径，低于内部 827）、**DCT32 op 后端 row8+legacy+zip = 6464
-  （0.509x，低于 v2 7190；rewrite 序列可自动重发现 6456）**、sa8d16 189
-  （0.507x，结构地板）、interp8 127（-10%）；
-  （2026-08-13 口径修正：v3.1 的 3962 为 pass1-only，full-call 8292，
-  未过半数门，原“HALVED/超越内部”结论撤销）
-- **P0 op 级原子 rewrite + 序列搜索**：`tbl2_to_zip / legacy_k2 /
-  legacy_k4 / merge_narrow8`；625 序列 → 341 唯一 → 自动重发现 best
-  6456；LLVM-MCA 作为第二代理（best 516 cycles/2838 uops，排名一致）。
+- **工具链闭环（全部验证）**：搜索并行（`--workers`，W=1/W=4 结果一致，
+  dct16 布局搜索 6:21→1:44）、rewrite 依赖剪枝（dct32 781→219 计划键/
+  31 唯一源）、两级差分（2k→20k，fail→pass=0 构造保证）、流式 trace
+  （`--stream`，348 日志与旧 parser 零差异）、LLVM-MCA 第二代理。
+- **DCT32 op 后端 best = 5390 fused_uop**（vector 5854 / 零 scatter，
+  相对上游 12710 = 0.424×，距内部 4827 = 1.117×），
+  **TestBenchLite 5 seed 全 PASS（黄金标准闭合）**；已固化
+  `kernels/dct32/candidates/best_op_r8.{cpp,S}`。
+- DCT16 legacy best 705（零 scatter 895，超内部 731）；sa8d16 189
+  （结构地板）；interp8 127。
+- 下一主项：k0_even_sdot 搜索轴（设计见
+  [docs/20](docs/20-dct32-optimization-assessment.md) §6，交接与完整
+  状态见 [docs/10](docs/10-agent-handoff.md)）。
 - 门禁覆盖 dct16/dct32/sa8d/sa8d16/interp8；interp8 门禁还实证发现并
   修复了一个整宽存储越界写；
 - 关键路径回归在 9 点留一法上为负（M23），逐指令直接延迟也不能排序
@@ -30,8 +30,9 @@
 同算力 NEON→NEON +30%；NEON/SVE128→SVE256 与 SVE256→SVE256 在鲲鹏
 N+2 上 +130%；920B（SVE v1）作为中间验证环境，保留门槛 >10%。
 
-顶级模型困难求助按批次触发：**每完成三个实际优化迭代请求一次**，可写
-沙箱（仅允许写对应 round 目录）后台异步执行，不阻塞主体流水线（见
+顶级模型困难求助按批次触发：**每完成三个实际优化迭代请求一次**，后台
+异步执行（gpt-5.6-sol max，非只读，仅写对应 round 目录），不阻塞主体
+流水线（见
 [docs/06](docs/06-agent-iteration-protocol.md)）。
 
 ## 常用入口
