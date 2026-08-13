@@ -388,6 +388,14 @@ v2 行主序结构（v2-odd-sdot），而不是继续扩展 v3 模板**；目标
   ≈6885），再做 k2/k4 向量化存储；若需追平内部 4827，需与用户确认
   是否放开 legacy-internal-exact 合同族。
 
+> 2026-08-13 追加：上述“混合”其实已存在于搜索空间——v3 的
+> `odd_lowering=row-reduce`（v2 风格逐行 odd + k2 EX slice）full
+> fused_uop = **8796**，比 v2 更差。原因：4 行分组把 EO16 和 EX
+> 常驻寄存器，spill/leaf 开销超过 k2-slice 的 ~304 收益。因此
+> **v2 结构内做 k2-slice 的路径已由证据关闭**；剩余可行动方向：
+> (a) k2/k4 向量化批量窄化存储（消 fmov/saddv 标量开销，预计
+> 数百条）；(b) 与用户确认 legacy-internal-exact 合同族。
+
 注意：微基准 `throughput` 模式目前复用同一 dst，back-to-back 调用被
 WAW 串行化，实测 throughput≈latency；要测真实吞吐需每调用独立 dst
 或足够深的 unroll（后续修复）。
