@@ -1,9 +1,86 @@
-# Agent 交接上下文（2026-08-13，M11~M16 后）
+# Agent 交接上下文（2026-08-14，M30 工具链完成）
 
 本文件供上下文压缩后接手的执行 Agent 使用。开始前按“必读清单”读取下列
 文件，并以仓库当前状态为准；不要凭对话记忆下结论。
 
-## 0. 2026-08-13 深夜状态速览（M30 之后，最新优先）
+## 0. 2026-08-14 交接状态（最新优先，接手先读）
+
+### 0.1 当前 best 与验收
+
+- **DCT32 op 后端 best = 5390 fused_uop**（vector 5854 / movprfx 464 /
+  stack 630 / 零 scatter），相对上游 12710 = 0.424×，距内部参考
+  4827（fused_adj 4251）= 1.117×。已固化
+  `kernels/dct32/candidates/best_op_r8.{cpp,S}`，
+  **TestBenchLite dct32 5 seed 全 PASS（黄金标准已闭合）**。
+- DCT16 best 705（含 4 scatter）/ 零 scatter 895（超内部 731）。
+- DCT32 rewrite 序列搜索（剪枝后）：781→219 计划键、31 唯一源，
+  best `[legacy_k2, legacy_k4, merge_narrow8, k0_even_sve]` = 6322。
+
+### 0.2 工具链（全部完成并验证，均已 push）
+
+- **P0 并行搜索**：`search_sve2_layouts.py` / `search_rewrite_sequences.py`
+  支持 `--workers N`（默认 1）。W=1/W=4 结果逐字段一致；dct16 布局搜索
+  6:21→1:44（3.7×）。W-scan（dct32 31 源）：W=1/2/4/8/12 =
+  118/74.5/53/47.7/45.3 s，~4-5 worker IO 饱和（8 worker 达不到 5×）。
+- **P1.1 rewrite 依赖剪枝**：`prune_sequence()`（k2 必须先于 k4、
+  merge_narrow8 至多一次、k0_even_sve 需 k2/k4 前置；dct16 tbl2/merge
+  至多一次），全宇宙源码哈希覆盖审计 100%。
+- **P1.3 两级差分**：`--short-cases 2000` → `--full-cases 20000`，
+  `--no-short-gate` 关闭；同一 RNG 流前缀 → fail→pass=0 构造保证；
+  short 失败行记 2k mismatch + `gate:"short"`。
+- **P3 流式 trace**：`parse_qemu_trace.py --stream`（不物化指令列表），
+  348 个真实日志（含 36 scatter）与旧 parser 零差异；`true_dynamic`
+  默认 fast path。
+- **专家咨询 round-0014** 已落盘（summary/tooling-roadmap/verification/
+  decision），结论优先级 = 并行 → 剪枝 → 漏斗。
+
+### 0.3 已否定的方向（别再重复）
+
+- **const_inline**（dot/K0EVEN 常量内联到指令处）：GCC 对常量加载位置
+  不敏感，计数完全不变（5390 相同）。
+- **narrow_store_pred**（偶 lane 谓词直接 st1h 省 uzp1_s16）：**SVE
+  连续谓词 ld/st 是 lane 索引映射、不压缩**（VL=256 探针实证：
+  even4h 存储得到 `10,0,12,0,14,0,16,0`）；生成内核 k0 全零 + 全量
+  差分段错误。`rshrnb`+`uzp1_s16` 是必要组合。想压缩只能 vector-offset
+  scatter（用户已禁用）。
+- 两个轴均已回滚；实验代码在 `git stash list`（
+  “narrow_store_pred+const_inline WIP”）可查。
+
+### 0.4 DCT32 差距分解与下一主项（docs/20 §6）
+
+5390 vs 内部 4251（向量 raw）：sdot 1344 vs 1376（持平）；ld1h 736 vs
+864；uzp1 592 vs 480；str 422 vs 192 st1d（+230，scatter 禁）；zip1/2
+336/192 vs 152/152；rshrnb 288 vs 256；ldr 257 vs 0（GCC 常量栈
+spill 重载，const_inline 已证无法消除）；tbl/trn/revh/mov ~+300；
+mul+addp（k0 偶路径）64/64 vs 32/0。
+
+**下一主项 = k0_even_sdot 轴**：s16 域重建 E 链（saddlb/saddlt 是
+128-bit 段低半选择，s16 版用 `pg4h` 谓词等价、只是不加宽），
+EEp/EOp 变 s16 后用 `K0EVEN` s16 双份切片 + sdot.d 同时算 4 行
+2-term dot，替换 mul+addp+uzp1s。k0 语义已用数值探针确认：每行输出
+`(c0*e0+c1*e1)>>4`，EEp 按行交错。
+**重要坑：探针必须 `-cpu max,sve-max-vq=2`（VL=256）**，否则 lane
+布局结论无效（本次在 VL=512 上拿错过数据）。实现顺序：独立数值探针
+验证 s16 链分歧率 ~0.104%（legacy 合同 ≤0.11%）→ 并入 op DAG +
+发射器 → 搜索验证（目标 5390→<5150）→ TestBenchLite。
+
+### 0.5 环境与关键命令
+
+- 本地 x86：交叉 g++ 16.1.0、qemu 11.0.3、`QEMU_LD_PREFIX=/usr/aarch64-linux-gnu`。
+- 差分：`qemu-aarch64 -L /usr/aarch64-linux-gnu -cpu max,sve-max-vq=2 <verify> 20000`
+  （dct32 legacy 接受 mism ≤ 22528，实测 7268 = 0.0355%）。
+- lite：`scripts/build-testbench-lite.sh <obj> build/x265-8-testbench -- --gate dct32 --seed 0x12345678`。
+- 搜索：`python3 tools/search_sve2_layouts.py --backend op --kernel dct32 --workers 8 --outdir <dir>`
+  （72 候选约 3 min）；`python3 tools/search_rewrite_sequences.py --kernel dct32 --workers 4 --outdir <dir>`。
+- 920B：`chiro@124.70.206.229`（SVE1 无 SVE2，rshrnb 等跑不了；可能被
+  用户启停）；N1 origin：`chiro@129.146.162.16`；GitHub 主 remote。
+- 咨询：docs/06，每 3 个实际迭代 1 次，后台 `codex -p sss -c model="gpt-5.6-sol" ...`
+  非阻塞，落盘 expert-advice/round-NNNN；不要用 dsv4pro。
+- 信息安全：**严禁把 /tmp 下内部算子代码/反汇编入库**，只留 docs/18、
+  docs/20 聚合指标。
+- 无后台咨询在跑；你自己就是 codex，不要 kill 自己的进程树。
+
+## 0.9 2026-08-13 历史状态（供追溯，已被 §0 取代）
 
 - **DCT32 best（full-call fused_uop）**：op 后端 row8+legacy(k2/k4)+zip
   + **k0_even_sve** = **5814**（raw 6286，MCA 411 cyc/2231 uops，

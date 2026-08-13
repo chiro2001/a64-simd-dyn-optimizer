@@ -761,3 +761,32 @@ short+full 差分，零 scatter，vector 5854 / movprfx 464 / stack 630）。
   revh/revw 16-bit）。EEp/EOp 变成 s16 后，`K0EVEN` 用 s16 双份
   `[c0,c1,c0,c1]` 切片，每 4-lane 组两行各 2 term，一个 sdot.d 同时
   算 4 行 2-term dot。
+
+### 6.2 阴性实验：const_inline（2026-08-14）
+
+为消除 257 条常量栈 spill 重载（`ldr z,[sp+..]`），加了
+`const_inline ∈ {0,1}` 轴：把 dot_segment 的命名预载常量与 k0 mul 的
+K0EVEN 常量改为在指令处内联 `svld1_s16/s32(CODD/K0EVEN, ...)`。
+结果：20k 差分同签名（7268，0.0355%），但 true-dynamic 计数与
+`const_inline=0` **完全一致**（fused 5390 / vector 5854 / movprfx 464 /
+stack 630 / total 7372）。结论：GCC 的 LICM/重载决策对常量加载位置
+不敏感，栈 spill 是寄存器分配的固有结果，不能用源码加载位置消除。
+该轴已从 manifest 移除，发射器改动一并回滚（git stash 保留实验代码）。
+
+### 6.3 阴性实验：narrow_store_pred（2026-08-14，重要语义教训）
+
+思路：`rshrnb` 把 8 个 s32 结果放到 16 个 s16 lane 的**偶 lane**
+（0,2,...,14），当前每个窄化都跟一条 `uzp1_s16` 压缩（共 ~288 条）。
+尝试用偶 lane 谓词直接 `st1h` 连续存储、跳过 uzp1。
+
+探针实证（VL=256，`-cpu max,sve-max-vq=2`）：
+
+- `even4h` 谓词（lane 0,2,4,6）st1h 结果 = `[10, 0, 12, 0, 14, 0, 16, 0]`；
+- `even4h` ld1h 结果同理 = `[10, 0, 12, 0, 14, 0, 16, 0]`。
+
+结论：**SVE 连续谓词 ld/st 是“按 lane 索引映射、不压缩”**（活跃元素 i
+写到地址 base+i*esize），不是“按活跃元素计数压缩”。因此偶 lane 谓词
+存储无法把 rshrnb 结果连续写入内存；本轴生成的内核 k0 输出全零、
+全量差分段错误。该轴已废弃并回滚（stash: narrow_store_pred+
+const_inline WIP）。`rshrnb`+`uzp1_s16` 是必要组合，不能省。
+（想压缩只能走 vector-offset scatter，但用户已禁用 gather/scatter。）

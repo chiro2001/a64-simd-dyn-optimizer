@@ -32,6 +32,12 @@ interp8 127（-10%，已接入 lite 门禁）；详见
 [11-status-and-decision.md](11-status-and-decision.md) 与
 [22-interp8-assessment.md](22-interp8-assessment.md)。
 
+2026-08-14 状态速览（最新）：工具链闭环（并行搜索/依赖剪枝/两级差分/
+流式 trace 全部可用并验证）；DCT32 op best **5390**（TestBenchLite
+5 seed PASS，距内部 4827 = 1.117×）；DCT16 best 705；下一主项
+k0_even_sdot（设计见 [20-dct32-optimization-assessment.md](20-dct32-optimization-assessment.md) §6，
+交接见 [10-agent-handoff.md](10-agent-handoff.md)）。
+
 ## 一页执行摘要
 
 推荐的 v1 路径是“离线合成 + x265 运行时 ISA dispatch”，不是在编码热路径中 JIT：
