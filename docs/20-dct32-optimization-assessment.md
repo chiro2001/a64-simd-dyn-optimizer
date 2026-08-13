@@ -115,6 +115,20 @@ stack_vector 229（spill 下降）。**半数门与内部参考双达标**。
   （lane_owner 与 odd_lowering 强相关：output↔sdot.d、partial↔
   row-reduce；store_topology 固定 contiguous 且 scatter 硬禁用）。
 
+### P1 第一增量：typed LayoutIR（round-0012，2026-08-13）
+
+- `optimizer/ir/layout_ir.py` 落地：ValueLayout / RoundBarrier /
+  ConstantMap / MemoryMap / Tile / Target / Plan，含
+  `canonical_key()`（逻辑 plan 的有序无关 sha256）、`verify_layout()`
+  （VL/feature/no-scatter/lane-ownership/round-barrier/contiguous
+  硬门）与 `lower(plan)`（回放现有发射器）；
+- `tools/test_layout_ir.py`：v3.1 计划 verify 通过、canonical key 稳定、
+  `lower(plan)` 与 `emit(v3.1)` 源码逐字节一致；故意破坏 scatter/VL/
+  round-shift 的计划全部被拒；
+- 下一步：原子 rewrite（assign_output_lanes / segment_dot /
+  batch_round_narrow_store / derive_constant_map），以“禁用复合 v3
+  模板仍盲搜回 <=3962”为 Go 判据。
+
 ## 2. v1 结构（tools/emit_dct32_sve2_shared.py）
 
 - 每行 32 s16 = 2 个 16-lane 寄存器；E/O = `lo ± rev(hi)`（16-lane）。
