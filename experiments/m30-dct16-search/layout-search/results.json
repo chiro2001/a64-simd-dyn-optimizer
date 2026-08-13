@@ -892,30 +892,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1061,
-   "vector": 901,
-   "movprfx": 118,
-   "vector_fused": 783
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -985,30 +961,6 @@
    "vector": 975,
    "movprfx": 120,
    "vector_fused": 855
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1043,
-   "vector": 874,
-   "movprfx": 118,
-   "vector_fused": 756
   }
  },
  {
@@ -1084,30 +1036,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1026,
-   "vector": 862,
-   "movprfx": 118,
-   "vector_fused": 744
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1177,30 +1105,6 @@
    "vector": 937,
    "movprfx": 120,
    "vector_fused": 817
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1007,
-   "vector": 836,
-   "movprfx": 118,
-   "vector_fused": 718
   }
  },
  {
@@ -1276,30 +1180,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1024,
-   "vector": 877,
-   "movprfx": 118,
-   "vector_fused": 759
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1369,30 +1249,6 @@
    "vector": 951,
    "movprfx": 120,
    "vector_fused": 831
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1002,
-   "vector": 850,
-   "movprfx": 118,
-   "vector_fused": 732
   }
  },
  {
@@ -1468,30 +1324,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 988,
-   "vector": 838,
-   "movprfx": 118,
-   "vector_fused": 720
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1564,30 +1396,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 966,
-   "vector": 812,
-   "movprfx": 118,
-   "vector_fused": 694
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1643,25 +1451,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -1721,25 +1510,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1795,25 +1565,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -1873,25 +1624,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -1947,25 +1679,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -2025,25 +1738,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -2101,25 +1795,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -2175,25 +1850,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -2744,30 +2400,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1032,
-   "vector": 895,
-   "movprfx": 117,
-   "vector_fused": 778
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -2837,30 +2469,6 @@
    "vector": 969,
    "movprfx": 119,
    "vector_fused": 850
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1012,
-   "vector": 868,
-   "movprfx": 117,
-   "vector_fused": 751
   }
  },
  {
@@ -2936,30 +2544,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 998,
-   "vector": 856,
-   "movprfx": 117,
-   "vector_fused": 739
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3029,30 +2613,6 @@
    "vector": 931,
    "movprfx": 119,
    "vector_fused": 812
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 976,
-   "vector": 830,
-   "movprfx": 117,
-   "vector_fused": 713
   }
  },
  {
@@ -3128,30 +2688,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1002,
-   "vector": 875,
-   "movprfx": 117,
-   "vector_fused": 758
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3221,30 +2757,6 @@
    "vector": 949,
    "movprfx": 119,
    "vector_fused": 830
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 982,
-   "vector": 848,
-   "movprfx": 117,
-   "vector_fused": 731
   }
  },
  {
@@ -3320,30 +2832,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 968,
-   "vector": 836,
-   "movprfx": 117,
-   "vector_fused": 719
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3416,30 +2904,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 946,
-   "vector": 810,
-   "movprfx": 117,
-   "vector_fused": 693
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3495,25 +2959,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -3573,25 +3018,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3647,25 +3073,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -3725,25 +3132,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3799,25 +3187,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -3877,25 +3246,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -3953,25 +3303,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 2,
@@ -4027,25 +3358,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -4940,30 +4252,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1036,
-   "vector": 885,
-   "movprfx": 118,
-   "vector_fused": 767
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5033,30 +4321,6 @@
    "vector": 959,
    "movprfx": 120,
    "vector_fused": 839
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1013,
-   "vector": 858,
-   "movprfx": 118,
-   "vector_fused": 740
   }
  },
  {
@@ -5132,30 +4396,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1045,
-   "vector": 892,
-   "movprfx": 132,
-   "vector_fused": 760
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5225,30 +4465,6 @@
    "vector": 942,
    "movprfx": 126,
    "vector_fused": 816
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1006,
-   "vector": 849,
-   "movprfx": 132,
-   "vector_fused": 717
   }
  },
  {
@@ -5324,30 +4540,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 999,
-   "vector": 861,
-   "movprfx": 118,
-   "vector_fused": 743
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5417,30 +4609,6 @@
    "vector": 935,
    "movprfx": 120,
    "vector_fused": 815
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 975,
-   "vector": 834,
-   "movprfx": 118,
-   "vector_fused": 716
   }
  },
  {
@@ -5516,30 +4684,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1008,
-   "vector": 868,
-   "movprfx": 132,
-   "vector_fused": 736
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5612,30 +4756,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 968,
-   "vector": 825,
-   "movprfx": 132,
-   "vector_fused": 693
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5691,25 +4811,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -5769,25 +4870,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5843,25 +4925,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -5921,25 +4984,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -5995,25 +5039,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -6073,25 +5098,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -6149,25 +5155,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -6223,25 +5210,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -6792,30 +5760,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1007,
-   "vector": 879,
-   "movprfx": 117,
-   "vector_fused": 762
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -6885,30 +5829,6 @@
    "vector": 953,
    "movprfx": 119,
    "vector_fused": 834
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 985,
-   "vector": 852,
-   "movprfx": 117,
-   "vector_fused": 735
   }
  },
  {
@@ -6984,30 +5904,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1015,
-   "vector": 886,
-   "movprfx": 131,
-   "vector_fused": 755
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7077,30 +5973,6 @@
    "vector": 936,
    "movprfx": 125,
    "vector_fused": 811
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 977,
-   "vector": 843,
-   "movprfx": 131,
-   "vector_fused": 712
   }
  },
  {
@@ -7176,30 +6048,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 977,
-   "vector": 859,
-   "movprfx": 117,
-   "vector_fused": 742
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7269,30 +6117,6 @@
    "vector": 933,
    "movprfx": 119,
    "vector_fused": 814
-  }
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 955,
-   "vector": 832,
-   "movprfx": 117,
-   "vector_fused": 715
   }
  },
  {
@@ -7368,30 +6192,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 985,
-   "vector": 866,
-   "movprfx": 131,
-   "vector_fused": 735
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7464,30 +6264,6 @@
   }
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 947,
-   "vector": 823,
-   "movprfx": 131,
-   "vector_fused": 692
-  }
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7543,25 +6319,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -7621,25 +6378,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7695,25 +6433,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -7773,25 +6492,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7847,25 +6547,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -7925,25 +6606,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "quarter",
   "pass1_k_tile": 4,
@@ -7999,25 +6661,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-0_even_sve-0",
@@ -8077,25 +6720,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-1_pass2_pack_zip-1_even_sve-1",
-  "pass1": "quarter",
-  "pass1_k_tile": 4,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 1,
-  "pass1_pack_zip": 1,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -8113,73 +6737,6 @@
   "passed": false,
   "verify_mismatches": 8,
   "verify": "cases=20000 lanes=5120000 mismatches=8 rate=0.000156%\n first-diff idx=9 want=1826 got=-2270\n"
- },
- {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "upstream",
-  "pass2_k_tile": 1,
-  "narrow_merge": 0,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 0,
-  "even_sve": 0,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 8,
-  "counts": {
-   "total": 2353,
-   "vector": 1895,
-   "movprfx": 384,
-   "vector_fused": 1511
-  }
- },
- {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "upstream",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 0,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 0,
-  "even_sve": 0,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 8,
-  "verify": "cases=20000 lanes=5120000 mismatches=8 rate=0.000156%\n first-diff idx=9 want=1826 got=-2270\n"
- },
- {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "upstream",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 0,
-  "even_sve": 0,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 8,
-  "counts": {
-   "total": 2353,
-   "vector": 1895,
-   "movprfx": 384,
-   "vector_fused": 1511
-  }
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -8373,30 +6930,6 @@
   }
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1762,
-   "vector": 1418,
-   "movprfx": 310,
-   "vector_fused": 1108
-  }
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -8469,30 +7002,6 @@
   }
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1724,
-   "vector": 1394,
-   "movprfx": 310,
-   "vector_fused": 1084
-  }
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -8550,25 +7059,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -8624,25 +7114,6 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 1,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -8836,30 +7307,6 @@
   }
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1734,
-   "vector": 1412,
-   "movprfx": 309,
-   "vector_fused": 1103
-  }
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -8932,30 +7379,6 @@
   }
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 0,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": true,
-  "verify_mismatches": 2308,
-  "counts": {
-   "total": 1704,
-   "vector": 1392,
-   "movprfx": 309,
-   "vector_fused": 1083
-  }
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -9013,25 +7436,6 @@
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
  },
  {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 0,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
- },
- {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
   "pass1": "per-row",
   "pass1_k_tile": 2,
@@ -9087,24 +7491,5 @@
   "passed": false,
   "verify_mismatches": 4620,
   "verify": "cases=20000 lanes=5120000 mismatches=4620 rate=0.090234%\n first-diff idx=11 want=2442 got=-1654\n"
- },
- {
-  "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-2_narrow_merge-1_legacy_semantics-1_legacy_even_full-1_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-1",
-  "pass1": "per-row",
-  "pass1_k_tile": 2,
-  "pass2": "odd-quarter",
-  "pass2_k_tile": 2,
-  "narrow_merge": 1,
-  "legacy_semantics": 1,
-  "legacy_even_full": 1,
-  "store_merge16": 1,
-  "pass1_even_factor": 0,
-  "pass1_pack_zip": 0,
-  "pass2_pack_zip": 1,
-  "even_sve": 1,
-  "upstream_exact": false,
-  "passed": false,
-  "verify_mismatches": 1281896,
-  "verify": "cases=20000 lanes=5120000 mismatches=1281896 rate=25.037031%\n first-diff idx=0 want=-491 got=0\n"
  }
 ]

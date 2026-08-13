@@ -17,6 +17,7 @@ Exit code 0 only if at least one candidate passes the upstream-exact gate.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -141,6 +142,7 @@ def main():
              "-o", driver_o])
     results = []
     seen = set()
+    src_seen = {}
     for combo in combos:
         if "pass1" in manifest.get("layouts", {}):
             if combo.get("pass1") != "quarter":
@@ -176,9 +178,17 @@ def main():
         if tag in seen:
             continue
         seen.add(tag)
+        src_text = emit(combo)
+        src_hash = hashlib.sha256(src_text.encode()).hexdigest()
+        if src_hash in src_seen:
+            # Canonical dedup: identical generated source -> identical
+            # object/counts; skip the redundant combo.
+            print("%-24s DUP of %s" % (tag, src_seen[src_hash]))
+            continue
+        src_seen[src_hash] = tag
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
-            f.write(emit(combo))
+            f.write(src_text)
         obj = os.path.join(args.outdir, tag + ".o")
         if args.backend == "asm":
             s_path = os.path.join(args.outdir, tag + ".S")

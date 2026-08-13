@@ -109,3 +109,32 @@ latency 正项，但不足以单独立项；作为 N+2 接入后的宽 kernel �
 - 用 920B 家族内模型对这些候选排序，取 top 实机复核；
 - 每完成三个优化迭代按协议发起 round-0007 专家咨询（round-0006 后已
   完成 M14–M20 多个迭代，round-0007 已到期）。
+
+## 5. M30 状态（2026-08-14）：DCT16 SVE2 指令数目标已超额达成
+
+最新数值（fused_adj，VL=256，QEMU true-dynamic）：
+
+| 合同 | 最优 | 相对内部参考 731 |
+| --- | ---: | ---: |
+| upstream-exact | 887 | +156 |
+| legacy-internal-exact | **692** | **-39（已低于内部参考）** |
+
+里程碑链条（本轮）：store_merge16 → pass1_even_factor →
+pass1/pass2 pack_zip（tbl/mov 归零）→ pass2_even_sve（复刻内部 s32
+偶数路径：saddlb/saddlt + mul/addp + 散布 st1d），legacy 791→692，
+首次低于内部参考。验证：legacy 20 万例差分 0.0448%（与基线同签名）、
+TestBench 6/6；upstream 200k 零分歧。
+
+工具侧：manifest 现有 10 个布局轴；搜索驱动新增源码哈希规范化去重
+（本轮 75 个重复组合跳过）；round-0009 顶级模型咨询完成（sss/gpt-5.6-
+sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
+连续/scatter 存储并列、960 PMU 实机口径。
+
+剩余事项：
+1. **实机验证阻塞**：960（SVE2.3 4×256）未接入；920B 是 SVE1 无法运行
+   本 SVE2 候选。scatter st1d 的实机代价、fused_adj→cycles 校准均待
+   960；
+2. 工具进化：typed LayoutIR（lane map/range proof/常量 map/存储地址
+   图）与分层搜索（>60s 预算已触发，当前 ~7.5min）；
+3. upstream 合同仍差 156（k=2/6/10/14 的 s32 位级一致约束下，sdot 化
+   空间有限；可考虑 SVE s32 形式的 k2 路径）。
