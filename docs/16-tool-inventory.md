@@ -90,6 +90,10 @@
   容差，由实测校准：0.045% 通过 6/6、0.090% 首跑失败）并记录实际分歧率；
   upstream-exact 组合仍要求 0 分歧。指标 `fused_adj` 只含 movprfx 融合，
   其他融合对尚未实现。
+- 搜索驱动带**持久验证缓存**（`<outdir>/verify_cache.json`，gitignored）：
+  按 `contract|生成源码哈希` 复用已验证的 passed/mismatches/counts，
+  仅源码或合同变化才重跑；增量重跑从 ~7.8 分钟降到 ~0.1 秒。另有源码
+  哈希规范化去重（相同生成代码只验证一次）。
 
 ## 3. 现状判定
 

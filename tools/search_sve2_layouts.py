@@ -126,6 +126,13 @@ def main():
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
     emit = make_emitter(args.kernel)
     os.makedirs(args.outdir, exist_ok=True)
+    cache_path = os.path.join(args.outdir, "verify_cache.json")
+    cache = {}
+    if os.path.exists(cache_path):
+        try:
+            cache = json.load(open(cache_path))
+        except (ValueError, OSError):
+            cache = {}
     verify_src = os.path.join(args.outdir, "verify_generated.cpp")
     if not os.path.exists(verify_src):
         with open(verify_src, "w") as f:
@@ -186,6 +193,22 @@ def main():
             print("%-24s DUP of %s" % (tag, src_seen[src_hash]))
             continue
         src_seen[src_hash] = tag
+        ckey = "%s|%s" % (args.contract or manifest.get("contract", ""),
+                          src_hash)
+        if ckey in cache:
+            ent = cache[ckey]
+            results.append({
+                "tag": tag, **combo,
+                "upstream_exact": (not combo.get("legacy_semantics")
+                                   if ent.get("passed") else False),
+                "passed": ent["passed"],
+                "verify_mismatches": ent.get("verify_mismatches", 0),
+                "verify": ent.get("verify", ""),
+                "counts": ent.get("counts"),
+                "cached": True})
+            print("%-24s CACHED (fused_adj=%s)"
+                  % (tag, (ent.get("counts") or {}).get("vector_fused")))
+            continue
         src = os.path.join(args.outdir, tag + ".cpp")
         with open(src, "w") as f:
             f.write(src_text)
@@ -235,6 +258,10 @@ def main():
         print("%-24s verify: %s" % (tag, r.stdout.strip().splitlines()[-1]
                                     if r.stdout.strip() else "no output"))
         if not ok:
+            cache[ckey] = {"passed": False,
+                           "verify_mismatches": mism,
+                           "verify": r.stdout,
+                           "counts": None}
             results.append({"tag": tag, **combo,
                             "upstream_exact": False,
                             "passed": False,
@@ -262,6 +289,10 @@ def main():
             continue
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(args.outdir, tag + "-trace.log"))
+        cache[ckey] = {"passed": True,
+                       "verify_mismatches": mism,
+                       "verify": r.stdout,
+                       "counts": counts}
         results.append({"tag": tag, **combo,
                         "upstream_exact": not combo.get("legacy_semantics"),
                         "passed": True,
@@ -274,6 +305,7 @@ def main():
 
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)
+    json.dump(cache, open(cache_path, "w"), indent=1)
     ok = [r for r in results if r.get("passed") and r.get("counts")]
     ok.sort(key=lambda r: r["counts"]["vector_fused"])
     print("rank by fused-adjusted vector count (docs/09 §1.5):")
