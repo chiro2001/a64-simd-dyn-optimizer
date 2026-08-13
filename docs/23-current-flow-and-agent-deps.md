@@ -125,6 +125,11 @@ raw 6896**，20k 5300（legacy 签名）、TestBenchLite 5 seed 全 PASS——
 “基础 plan + rewrite 序列搜索”自动重发现当前 best**。结果：
 `experiments/m30-dct32-search/layout-search-rwseq/results.json`。
 
+**P1 MCA 第二代理（2026-08-13）**：序列搜索 top-10 自动跑
+LLVM-MCA（Neoverse-V2, SVE2, 静态体）并写入 results.json；
+best 序列 fused=6456 / mca_cycles=516 / mca_uops=2838，次优 6856 /
+621 / 3433——MCA 与 fused_uop 排名一致（第二代理确认）。
+
 ### P1：跨 kernel OpIR/通用 MachineIR
 - 把 dct32_op_ir 的 op 集（load/rev/unpk/permute/dot/mul-reduce/round/
   narrow/store）泛化；为 DCT16/interp8/sa8d16 建适配器，复用同一搜索。

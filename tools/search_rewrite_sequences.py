@@ -10,6 +10,7 @@ import hashlib
 import itertools
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -31,6 +32,32 @@ OUT = os.path.join(ROOT, "experiments", "m30-dct32-search",
                    "layout-search-rwseq")
 
 
+def run_mca(obj, workdir):
+    """LLVM-MCA on the object's static body (Neoverse-V2, SVE2)."""
+    s = os.path.join(workdir, os.path.basename(obj) + ".mca.s")
+    txt = subprocess.check_output(["aarch64-linux-gnu-objdump", "-d", obj],
+                                  text=True)
+    lines = [".arch armv8.2-a+sve2", ".text"]
+    for line in txt.splitlines():
+        m = re.match(r"\s*[0-9a-f]+:\s+[0-9a-f]+\s+"
+                     r"([a-z][a-z0-9.]*)\s*(.*)$", line)
+        if m:
+            ops = m.group(2).split("//")[0].strip()
+            lines.append(m.group(1) + (" " + ops if ops else ""))
+    open(s, "w").write("\n".join(lines) + "\n")
+    r = subprocess.run(["llvm-mca", "-mtriple=aarch64", "-mcpu=neoverse-v2",
+                        "-mattr=+sve2", "-iterations=1",
+                        "-skip-unsupported-instructions=parse-failure", s],
+                       capture_output=True, text=True)
+    cycles = uops = None
+    for ln in r.stdout.splitlines():
+        if ln.startswith("Total Cycles:"):
+            cycles = int(ln.split(":")[1].strip())
+        if ln.startswith("Total uOps:"):
+            uops = int(ln.split(":")[1].strip())
+    return cycles, uops
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     base = dct32_v31_plan()
@@ -44,6 +71,13 @@ def main():
     verify_src = os.path.join(OUT, "verify_generated.cpp")
     if not os.path.exists(verify_src):
         open(verify_src, "w").write(gen_verify(manifest))
+
+    old_rows = []
+    old_path = os.path.join(OUT, "results.json")
+    if os.path.exists(old_path):
+        old_rows = json.load(open(old_path)).get("rows", [])
+    cached = {r.get("seq"): r for r in old_rows
+              if r.get("fused_uop") is not None}
 
     seen = {}
     seqs = []
@@ -59,6 +93,9 @@ def main():
 
     rows = []
     for key, src in seqs:
+        if key in cached:
+            rows.append(dict(cached[key]))
+            continue
         h = hashlib.sha256(src.encode()).hexdigest()[:12]
         cpp = os.path.join(OUT, "seq_%s.cpp" % h)
         if not os.path.exists(cpp):
@@ -69,7 +106,7 @@ def main():
                      "-std=c++11", "-march=armv8.2-a+sve2",
                      "-c", cpp, "-o", obj])
             if c.returncode != 0:
-                rows.append({"seq": key, "build": "FAIL"})
+                rows.append({"seq": key, "_h": h, "build": "FAIL"})
                 continue
         verify = os.path.join(OUT, "seq_%s-verify" % h)
         if not os.path.exists(verify):
@@ -82,7 +119,7 @@ def main():
                      "-Wl,--end-group", "-lpthread", "-ldl",
                      "-o", verify])
             if v.returncode != 0:
-                rows.append({"seq": key, "build": "LINK_FAIL"})
+                rows.append({"seq": key, "_h": h, "build": "LINK_FAIL"})
                 continue
         r = run(QEMU + [verify, "20000"])
         mism = 0
@@ -92,7 +129,7 @@ def main():
             except ValueError:
                 mism = -1
         if r.returncode not in (0, 1) or mism > 22528:
-            rows.append({"seq": key, "passed": False, "mism": mism})
+            rows.append({"seq": key, "_h": h, "passed": False, "mism": mism})
             continue
         driver = os.path.join(OUT, "seq_%s-driver" % h)
         if not os.path.exists(driver):
@@ -103,21 +140,21 @@ def main():
                      obj, "-o", driver])
             if d.returncode != 0:
                 rows.append({"seq": key, "passed": True, "mism": mism,
-                             "trace": "LINK_FAIL"})
+                             "_h": h, "trace": "LINK_FAIL"})
                 continue
         rng = symbol_range(driver, "_ZL9op_pass_4PKsPsl")
         end_sym = "dynopt_dct32_sve2_shared"
         rng_end = symbol_range(driver, end_sym)
         if not rng or not rng_end:
             rows.append({"seq": key, "passed": True, "mism": mism,
-                         "trace": "NO_RANGE"})
+                         "_h": h, "trace": "NO_RANGE"})
             continue
         counts = true_dynamic(driver, rng[0], rng_end[1],
                               os.path.join(OUT, "seq_%s-trace.log" % h))
         rows.append({"seq": key, "passed": True, "mism": mism,
                      "fused_uop": counts["vector_fused_uop"],
                      "raw": counts["vector"],
-                     "movprfx": counts["movprfx"]})
+                     "movprfx": counts["movprfx"], "_h": h})
         print("%-60s fused=%s mism=%s" % (key or "(none)", counts[
               "vector_fused_uop"], mism), flush=True)
 
@@ -125,6 +162,24 @@ def main():
     if measured:
         best = min(measured, key=lambda r: r["fused_uop"])
         print("best:", best["seq"], best["fused_uop"])
+        top = sorted(measured, key=lambda r: r["fused_uop"])[:10]
+        for r in top:
+            if r.get("mca_cycles") is not None:
+                continue
+            if r.get("_h"):
+                h = r["_h"]
+            else:
+                rw = [c for c in r["seq"].split("|") if c]
+                src = emit_from_plan(
+                    replace(base, lowering=dict(lo, rewrites=rw)),
+                    func_name="dynopt_dct32_sve2_shared")
+                h = hashlib.sha256(src.encode()).hexdigest()[:12]
+            obj = os.path.join(OUT, "seq_%s.o" % h)
+            cycles, uops = run_mca(obj, OUT)
+            r["mca_cycles"] = cycles
+            r["mca_uops"] = uops
+            print("mca %-52s fused=%s mca_cycles=%s mca_uops=%s"
+                  % (r["seq"], r["fused_uop"], cycles, uops))
     with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump({"rows": rows,
                    "best": min(measured, key=lambda r: r["fused_uop"])
