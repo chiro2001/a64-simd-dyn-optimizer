@@ -9,7 +9,7 @@ provenance, then compare counts against the grouped emitter.
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from op_ir import Op
 
@@ -21,15 +21,56 @@ K4_K = tuple(range(4, 16, 8))
 K0_K = (0, 8)
 
 
-def lower_pass1_quarter(plan) -> List[Op]:
-    """TODO(first slice): lower DCT16 pass1 quarter into an op DAG.
+def lower_pass1_leaf() -> Tuple[List[Op], Dict[int, str]]:
+    """First slice: DCT16 pass1 E/O leaf as an op DAG.
 
-    Acceptance (docs/25 Go #1): provenance_report passes and the emitted
-    full-call fused_uop equals the grouped emitter's count for the same
-    config (start with the upstream pass1 + upstream pass2 baseline, then
-    the legacy best 704 combo).
+    Per row: load 16 s16, rev-segment TBL (reverse within each 8-lane
+    half), then E = add(s, rev8(s)) and O = sub(s, rev8(s)) on the low
+    8 lanes (matches the shared-leaf form in the emitter).
     """
-    raise NotImplementedError("dct16 op IR first slice not yet implemented")
+    ops: List[Op] = []
+    leaves: Dict[int, str] = {}
+    n = 0
+
+    def fresh(kind, tile, out, ins, attrs=None):
+        nonlocal n
+        n += 1
+        op = Op("d16%04d" % n, kind, tile, out, tuple(ins),
+                {"g": 0, **(attrs or {})})
+        ops.append(op)
+        return op
+
+    for r in range(16):
+        tid = "p1.leaf.row%d" % r
+        s = fresh("load", tid, "s_%d" % r, (),
+                  attrs={"base": "src", "index": "i*stride+j",
+                         "elem": "s16"})
+        rev = fresh("permute", tid, "rev_%d" % r, (s.out,),
+                    attrs={"kind": "tbl", "idx": "rev8"})
+        e = fresh("add", tid, "E_%d" % r, (s.out, rev.out),
+                  attrs={"elem": "s16"})
+        o = fresh("sub", tid, "O_%d" % r, (s.out, rev.out),
+                  attrs={"elem": "s16"})
+        leaves[r] = (e.out, o.out)
+    return ops, leaves
+
+
+def dct16_leaf_provenance(ops: List[Op], leaves: Dict[int, Tuple[str, str]]
+                          ) -> Dict:
+    """Minimal first-slice provenance: 16 E/O leaves, no scatter."""
+    issues = []
+    if len(leaves) != 16:
+        issues.append("expected 16 rows of E/O leaves, got %d" % len(leaves))
+    eo = 0
+    for op in ops:
+        if op.kind in ("add", "sub") and op.tile_id.startswith("p1.leaf."):
+            eo += 1
+        if op.kind == "store" and "scatter" in op.attrs.get("index", ""):
+            issues.append("scatter store")
+    if eo != 32:
+        issues.append("expected 32 E/O leaf ops, got %d" % eo)
+    return {"leaf_ops": eo, "rows": len(leaves), "ok": not issues,
+            "issues": issues}
 
 
 def dct16_constants() -> Dict[str, object]:
