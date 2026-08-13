@@ -242,6 +242,20 @@ def main():
     if not combos or not manifest.get("layouts"):
         print("manifest has no layout axes", file=sys.stderr)
         return 2
+    if args.backend == "op" and args.kernel == "dct32":
+        # rewrite sequences are searched separately by
+        # search_rewrite_sequences.py; drop the rw axes before the cartesian
+        # enumeration so the op layout search stays bounded (manifest has
+        # no prune rules for rw, ~3.84M raw combos otherwise).
+        filtered = [{k: v for k, v in c.items()
+                     if not k.startswith("rw")} for c in combos]
+        seen0, combos = set(), []
+        for c in filtered:
+            tag = "_".join("%s-%s" % (k, v) for k, v in c.items())
+            if tag in seen0:
+                continue
+            seen0.add(tag)
+            combos.append(c)
     driver_o = os.path.join(args.outdir, "trace-driver.o")
     if args.backend == "asm" and not os.path.exists(driver_o):
         run(["aarch64-linux-gnu-gcc", "-O2", "-c",
@@ -252,11 +266,6 @@ def main():
     src_seen = {}
     emitted = {}
     for combo in combos:
-        if args.backend == "op" and args.kernel == "dct32":
-            # rewrite sequences are searched separately by
-            # search_rewrite_sequences.py; keep the layout search bounded.
-            combo = {k: v for k, v in combo.items()
-                     if not k.startswith("rw")}
         if combo.get("legacy_k4") and args.backend != "op":
             # grouped emitter has no legacy_k4 lowering yet; only the op
             # backend implements it (dct32, 2026-08-13).
