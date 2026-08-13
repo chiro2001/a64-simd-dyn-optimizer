@@ -326,22 +326,20 @@ def quarter_pass_cpp():
             const svint16_t r1 = svrev_s16(z1);
             const svint16_t r2 = svrev_s16(z2);
             const svint16_t r3 = svrev_s16(z3);
-            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
-            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
-            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
-            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
-            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
-            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
-            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
-            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
-            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
-            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
-            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
-            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
-            QE0_%d = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
-            QE1_%d = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
-            QO0_%d = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
-            QO1_%d = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+            // direct quarter packs: raw and reversed halves are packed
+            // before E/O formation, saving the intermediate leaf stage
+            const svint16_t t01 = svtbl2_s16(svcreate2_s16(z0, z1), ilo);
+            const svint16_t t23 = svtbl2_s16(svcreate2_s16(z2, z3), ilo);
+            const svint16_t rt01 = svtbl2_s16(svcreate2_s16(r0, r1), ilo);
+            const svint16_t rt23 = svtbl2_s16(svcreate2_s16(r2, r3), ilo);
+            const svint16_t P0 = svtbl2_s16(svcreate2_s16(t01, t23), qa);
+            const svint16_t P1 = svtbl2_s16(svcreate2_s16(t01, t23), qb);
+            const svint16_t R0 = svtbl2_s16(svcreate2_s16(rt01, rt23), qa);
+            const svint16_t R1 = svtbl2_s16(svcreate2_s16(rt01, rt23), qb);
+            QE0_%d = svadd_s16_x(p16, P0, R0);
+            QE1_%d = svadd_s16_x(p16, P1, R1);
+            QO0_%d = svsub_s16_x(p16, P0, R0);
+            QO1_%d = svsub_s16_x(p16, P1, R1);
         }""" % (base, base + 1, base + 2, base + 3, g, g, g, g))
     build_src = "\n".join(blocks)
     dots = []
@@ -367,8 +365,8 @@ static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
     const svbool_t p64 = svptrue_b64();
     const svbool_t p4h = svwhilelt_b16(0, 4);
     const svuint16_t ilo = svld1_u16(p16, idx_lo);
-    const svuint16_t q0 = svld1_u16(p16, idx_q0);
-    const svuint16_t q1 = svld1_u16(p16, idx_q1);
+    const svuint16_t qa = svld1_u16(p16, idx_qa);
+    const svuint16_t qb = svld1_u16(p16, idx_qb);
     const svint64_t zacc = svdup_n_s64(0);
 
     svint16_t QE0_0, QE1_0, QO0_0, QO1_0;
@@ -526,6 +524,10 @@ static const uint16_t idx_lo[16] =
 static const uint16_t idx_q0[16] =
     { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
 static const uint16_t idx_q1[16] =
+    { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
+static const uint16_t idx_qa[16] =
+    { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
+static const uint16_t idx_qb[16] =
     { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
 
 template <int shift>

@@ -5,10 +5,10 @@
   "pass2": "upstream",
   "upstream_exact": true,
   "counts": {
-   "total": 1856,
-   "vector": 1524,
+   "total": 1840,
+   "vector": 1510,
    "movprfx": 192,
-   "vector_fused": 1332
+   "vector_fused": 1318
   }
  },
  {
@@ -17,10 +17,10 @@
   "pass2": "odd-quarter",
   "upstream_exact": true,
   "counts": {
-   "total": 1785,
-   "vector": 1422,
+   "total": 1787,
+   "vector": 1420,
    "movprfx": 96,
-   "vector_fused": 1326
+   "vector_fused": 1324
   }
  },
  {

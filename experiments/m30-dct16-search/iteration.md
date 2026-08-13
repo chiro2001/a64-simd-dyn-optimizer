@@ -289,6 +289,22 @@ shared v4 (p2-odd-quarter) : raw 1422 / fused_adj 1326
 主要剩余（~600 条），其 SVE2 重构在 s32×s32→s64 点积无原生指令的
 前提下暂不划算；等待 round-0008 专家建议后再定 v5 方向。
 
+## v6：pass1 直接四分之一打包（2026-08-13）
+
+发射器把 pass1 的 E/O 叶子中间层删掉：raw 行与 rev 行先按四分之一交错
+打包（P0/P1/R0/R1），再加/减直接得到 QE/QO（每 4 行 24→20 条）。修正了
+打包索引顺序（qa/qb 与 idx_q0/q1 一致）。结果（20 万例上游位级一致）：
+
+```text
+布局                          raw   fused_adj
+v6a quarter + upstream pass2  1510   1318   ← fused 口径最优
+v6  quarter + odd-quarter p2  1420   1324
+per-row                       1895   1511
+```
+
+编译器原本已对旧结构做部分 CSE，直接打包净省 ~14 条（v6a 相对 v3
+1524→1510）。两个 quarter 布局差距在 6 条以内，最终由实机裁决。
+
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
 构建命令可完全复现。已实现的搜索参数：
