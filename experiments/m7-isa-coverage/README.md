@@ -9,20 +9,28 @@
 
 ## 数据源
 
-- 官方 ARM A64 ISA XML（A-Profile，2025-12）：
-  `https://developer.arm.com/-/cdn-downloads/permalink/Exploration-Tools-A64-ISA/ISA_A64/ISA_A64_xml_A_profile-2025-12.tar.gz`
-- SHA-256：`845ed227a6692ddb6b602da2ecbbac776620195a9c001ec576ced3a9a53dc26b`
+- 官方 ARM A64 ISA XML（A-Profile，2026-06，2026-08-14 更新）：
+  `https://developer.arm.com/-/cdn-downloads/permalink/Exploration-Tools-A64-ISA/ISA_A64/ISA_A64_xml_A_profile-2026-06.tar.gz`
+- SHA-256：`63a01a1696483bbe2edfef9e0f0cd053d6c1c619ec0587876cb7a60bb344f354`
 - 下载后解压到任意目录（约 34.7 MB / 2299 个 XML），解析脚本不要求固定路径。
+
+> 2026-08-14 从 2025-12 版升级到 2026-06 版：指令总数仍为 2291；SIMD
+> 指令集合与各级别计数完全不变（neon 277 / sve 498 / sve2 229 /
+> sve2p1 110 / sve2p2 9 / sve2p3 16 / bitperm 3），仅一条系统指令
+> 更新（`MLBI_SYS` → `HINTE`）。同时修复了 `isa_catalog.py` 对
+> `||`/`!`/`sz == '0'` 条件表达式与 `isa_coverage_report.py` 的 catalog
+> 读取 bug，并修正 `instructions.yaml` 中 flow-mapping 内多行字符串的
+> YAML 语法错误。
 
 ## 复现
 
 ```sh
-curl -L --fail -o /tmp/ISA_A64_xml_A_profile-2025-12.tar.gz \
-  'https://developer.arm.com/-/cdn-downloads/permalink/Exploration-Tools-A64-ISA/ISA_A64/ISA_A64_xml_A_profile-2025-12.tar.gz'
-mkdir -p /tmp/arm-isa-xml && tar -xzf /tmp/ISA_A64_xml_A_profile-2025-12.tar.gz -C /tmp/arm-isa-xml
+curl -L --fail -o /tmp/ISA_A64_xml_A_profile-2026-06.tar.gz \
+  'https://developer.arm.com/-/cdn-downloads/permalink/Exploration-Tools-A64-ISA/ISA_A64/ISA_A64_xml_A_profile-2026-06.tar.gz'
+mkdir -p /tmp/arm-isa-xml && tar -xzf /tmp/ISA_A64_xml_A_profile-2026-06.tar.gz -C /tmp/arm-isa-xml
 
 python3 tools/isa_catalog.py \
-  --isa-dir /tmp/arm-isa-xml/ISA_A64_xml_A_profile-2025-12 \
+  --isa-dir /tmp/arm-isa-xml/ISA_A64_xml_A_profile-2026-06 \
   --out experiments/m7-isa-coverage/isa-catalog.json
 python3 tools/isa_coverage_report.py \
   --catalog experiments/m7-isa-coverage/isa-catalog.json \

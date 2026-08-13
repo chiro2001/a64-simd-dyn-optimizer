@@ -1,6 +1,6 @@
 # AArch64 SIMD 指令覆盖报告（vs 官方 ISA XML）
 
-数据源：`ISA_A64_xml_A_profile-2025-12`（A64 A-profile，2025-12 版）
+数据源：`ISA_A64_xml_A_profile-2026-06`（A64 A-profile）
 解析范围：`instr-class ∈ advsimd / sve / sve2`，共 1339 条指令。
 
 ## 按特性级别统计
@@ -12,7 +12,7 @@
 | i8mm | 6 | 5 | 5 | 6 | 0 |
 | sve | 498 | 262 | 11 | 21 | 477 |
 | sve_i8mm | 6 | 5 | 5 | 6 | 0 |
-| sve2 | 229 | 197 | 2 | 2 | 227 |
+| sve2 | 229 | 197 | 5 | 5 | 224 |
 | sve2p1 | 110 | 73 | 0 | 0 | 110 |
 | sve2p2 | 9 | 9 | 0 | 0 | 9 |
 | sve2p3 | 16 | 15 | 0 | 0 | 16 |
@@ -499,7 +499,7 @@
 
 无缺口。
 
-### sve2（缺口 227 条）
+### sve2（缺口 224 条）
 
 | 官方 id | 助记符 | 汇编形式 |
 |---|---|---|
@@ -507,7 +507,6 @@
 | `adclt_z_zzz` | ADCLT | `ADCLT  <Zda>.<T>, <Zn>.<T>, <Zm>.<T>` |
 | `addhnb_z_zz` | ADDHNB | `ADDHNB  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
 | `addhnt_z_zz` | ADDHNT | `ADDHNT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
-| `addp_z_p_zz` | ADDP | `ADDP  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
 | `bcax_z_zzz` | BCAX | `BCAX  <Zdn>.D, <Zdn>.D, <Zm>.D, <Zk>.D` |
 | `bsl_z_zzz` | BSL | `BSL  <Zdn>.D, <Zdn>.D, <Zm>.D, <Zk>.D` |
 | `bsl1n_z_zzz` | BSL1N | `BSL1N  <Zdn>.D, <Zdn>.D, <Zm>.D, <Zk>.D` |
@@ -558,8 +557,6 @@
 | `pmullt_z_zz` | PMULLT | `PMULLT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
 | `raddhnb_z_zz` | RADDHNB | `RADDHNB  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
 | `raddhnt_z_zz` | RADDHNT | `RADDHNT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
-| `rshrnb_z_zi` | RSHRNB | `RSHRNB  <Zd>.<T>, <Zn>.<Tb>, #<const>` |
-| `rshrnt_z_zi` | RSHRNT | `RSHRNT  <Zd>.<T>, <Zn>.<Tb>, #<const>` |
 | `rsubhnb_z_zz` | RSUBHNB | `RSUBHNB  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
 | `rsubhnt_z_zz` | RSUBHNT | `RSUBHNT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>` |
 | `saba_z_zzz` | SABA | `SABA  <Zda>.<T>, <Zn>.<T>, <Zm>.<T>` |
@@ -703,6 +700,9 @@
 | `uqshl_z_p_zz` | UQSHL | `UQSHL  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
 | `uqshlr_z_p_zz` | UQSHLR | `UQSHLR  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
 | `uqshrnb_z_zi` | UQSHRNB | `UQSHRNB  <Zd>.<T>, <Zn>.<Tb>, #<const>` |
+| `uqshrnt_z_zi` | UQSHRNT | `UQSHRNT  <Zd>.<T>, <Zn>.<Tb>, #<const>` |
+| `uqsub_z_p_zz` | UQSUB | `UQSUB  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
+| `uqsubr_z_p_zz` | UQSUBR | `UQSUBR  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>` |
 
 ### sve2p1（缺口 110 条）
 

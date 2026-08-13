@@ -1,5 +1,5 @@
 {
- "source": "ISA_A64_xml_A_profile-2025-12",
+ "source": "ISA_A64_xml_A_profile-2026-06",
  "schema_version": 1,
  "feature_levels": [
   "neon",
@@ -185,25 +185,6 @@
    "predicated": null,
    "feature_level": "i8mm",
    "unknown_features": []
-  },
-  {
-   "id": "LDRA",
-   "title": "LDRAA, LDRAB -- A64",
-   "mnemonic": null,
-   "instr_class": null,
-   "iclasses": [
-    "PAC"
-   ],
-   "feature_exprs": [
-    "FEAT_PAuth"
-   ],
-   "encodings": 4,
-   "asm": "LDRAA  <Xt>, [<Xn|SP>{, #<simm>}]",
-   "predicated": null,
-   "feature_level": "needs-other-features",
-   "unknown_features": [
-    "FEAT_PAuth"
-   ]
   },
   {
    "id": "BF12CVTL_advsimd",
@@ -4913,6 +4894,25 @@
    "feature_level": "needs-other-features",
    "unknown_features": [
     "FEAT_LSE"
+   ]
+  },
+  {
+   "id": "LDRA",
+   "title": "LDRAA, LDRAB -- A64",
+   "mnemonic": null,
+   "instr_class": "general",
+   "iclasses": [
+    "PAC"
+   ],
+   "feature_exprs": [
+    "FEAT_PAuth"
+   ],
+   "encodings": 4,
+   "asm": "LDRAA  <Xt>, [<Xn|SP>{, #<simm>}]",
+   "predicated": null,
+   "feature_level": "needs-other-features",
+   "unknown_features": [
+    "FEAT_PAuth"
    ]
   },
   {
@@ -9861,7 +9861,7 @@
   },
   {
    "id": "SDIV",
-   "title": "SDIV -- A64",
+   "title": "SDIV (quotient) -- A64",
    "mnemonic": "SDIV",
    "instr_class": "general",
    "iclasses": [
@@ -9891,7 +9891,7 @@
   },
   {
    "id": "SMULL_SMADDL",
-   "title": "SMULL -- A64",
+   "title": "SMULL (32-bit) -- A64",
    "mnemonic": "SMADDL",
    "instr_class": "general",
    "iclasses": [
@@ -11255,7 +11255,7 @@
   },
   {
    "id": "UDIV",
-   "title": "UDIV -- A64",
+   "title": "UDIV (quotient) -- A64",
    "mnemonic": "UDIV",
    "instr_class": "general",
    "iclasses": [
@@ -11285,7 +11285,7 @@
   },
   {
    "id": "UMULL_UMADDL",
-   "title": "UMULL -- A64",
+   "title": "UMULL (32-bit) -- A64",
    "mnemonic": "UMADDL",
    "instr_class": "general",
    "iclasses": [
@@ -12225,14 +12225,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "ADD  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zm1>.<T>-<Zm2>.<T> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -12245,14 +12246,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "ADD  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<T>-<Zn2>.<T> }, <Zm>.<T>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -12265,14 +12267,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "ADD  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<T>-<Zn2>.<T> }, { <Zm1>.<T>-<Zm2>.<T> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -13186,7 +13189,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16 || FEAT_SME_F8F16"
    ],
    "encodings": 4,
@@ -13196,6 +13199,7 @@
    "unknown_features": [
     "FEAT_SME2",
     "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64",
     "FEAT_SME_F8F16"
    ]
   },
@@ -13817,7 +13821,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16"
    ],
    "encodings": 4,
@@ -13826,7 +13830,8 @@
    "feature_level": "needs-other-features",
    "unknown_features": [
     "FEAT_SME2",
-    "FEAT_SME_F16F16"
+    "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64"
    ]
   },
   {
@@ -13841,7 +13846,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16"
    ],
    "encodings": 4,
@@ -13850,7 +13855,8 @@
    "feature_level": "needs-other-features",
    "unknown_features": [
     "FEAT_SME2",
-    "FEAT_SME_F16F16"
+    "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64"
    ]
   },
   {
@@ -14079,7 +14085,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16"
    ],
    "encodings": 4,
@@ -14088,7 +14094,8 @@
    "feature_level": "needs-other-features",
    "unknown_features": [
     "FEAT_SME2",
-    "FEAT_SME_F16F16"
+    "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64"
    ]
   },
   {
@@ -14103,7 +14110,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16"
    ],
    "encodings": 4,
@@ -14112,7 +14119,8 @@
    "feature_level": "needs-other-features",
    "unknown_features": [
     "FEAT_SME2",
-    "FEAT_SME_F16F16"
+    "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64"
    ]
   },
   {
@@ -14597,7 +14605,7 @@
     "Two ZA single-vectors of half-precision elements"
    ],
    "feature_exprs": [
-    "FEAT_SME2",
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_F64F64)",
     "FEAT_SME_F16F16 || FEAT_SME_F8F16"
    ],
    "encodings": 4,
@@ -14607,6 +14615,7 @@
    "unknown_features": [
     "FEAT_SME2",
     "FEAT_SME_F16F16",
+    "FEAT_SME_F64F64",
     "FEAT_SME_F8F16"
    ]
   },
@@ -15937,14 +15946,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SDOT  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -15957,14 +15967,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SDOT  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -16166,14 +16177,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 3,
    "asm": "SMLALL  ZA.<T>[<Wv>, <offs1>:<offs4>], <Zn>.<Tb>, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -16186,14 +16198,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SMLALL  ZA.<T>[<Wv>, <offs1>:<offs4>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -16295,14 +16308,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 3,
    "asm": "SMLSLL  ZA.<T>[<Wv>, <offs1>:<offs4>], <Zn>.<Tb>, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -16315,14 +16329,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SMLSLL  ZA.<T>[<Wv>, <offs1>:<offs4>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17158,14 +17173,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SUB  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zm1>.<T>-<Zm2>.<T> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17178,14 +17194,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SUB  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<T>-<Zn2>.<T> }, <Zm>.<T>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17198,14 +17215,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "SUB  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<T>-<Zn2>.<T> }, { <Zm1>.<T>-<Zm2>.<T> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17578,14 +17596,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "UDOT  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17598,14 +17617,15 @@
     "Two ZA single-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "UDOT  ZA.<T>[<Wv>, <offs>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17787,14 +17807,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 3,
    "asm": "UMLALL  ZA.<T>[<Wv>, <offs1>:<offs4>], <Zn>.<Tb>, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17807,14 +17828,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "UMLALL  ZA.<T>[<Wv>, <offs1>:<offs4>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17916,14 +17938,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 3,
    "asm": "UMLSLL  ZA.<T>[<Wv>, <offs1>:<offs4>], <Zn>.<Tb>, <Zm>.<Tb>",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -17936,14 +17959,15 @@
     "Two ZA quad-vectors"
    ],
    "feature_exprs": [
-    "FEAT_SME2"
+    "FEAT_SME2 && (sz == '0' || FEAT_SME_I16I64)"
    ],
    "encodings": 2,
    "asm": "UMLSLL  ZA.<T>[<Wv>, <offs1>:<offs4>{, VGx2}], { <Zn1>.<Tb>-<Zn2>.<Tb> }, { <Zm1>.<Tb>-<Zm2>.<Tb> }",
    "predicated": "False",
    "feature_level": "needs-other-features",
    "unknown_features": [
-    "FEAT_SME2"
+    "FEAT_SME2",
+    "FEAT_SME_I16I64"
    ]
   },
   {
@@ -20758,6 +20782,25 @@
    "unknown_features": []
   },
   {
+   "id": "HINTE",
+   "title": "HINTE -- A64",
+   "mnemonic": "HINTE",
+   "instr_class": "system",
+   "iclasses": [
+    "System"
+   ],
+   "feature_exprs": [
+    "FEAT_HINTE"
+   ],
+   "encodings": 1,
+   "asm": "HINTE  #<imm16>",
+   "predicated": null,
+   "feature_level": "needs-other-features",
+   "unknown_features": [
+    "FEAT_HINTE"
+   ]
+  },
+  {
    "id": "HLT",
    "title": "HLT -- A64",
    "mnemonic": "HLT",
@@ -20851,7 +20894,7 @@
     "FEAT_SSBS",
     "FEAT_DIT",
     "FEAT_MTE",
-    "FEAT_EBEP",
+    "FEAT_EBEP || FEAT_SPE_EXC || FEAT_TRBE_EXC",
     "FEAT_SME"
    ],
    "encodings": 1,
@@ -20865,7 +20908,9 @@
     "FEAT_NMI",
     "FEAT_PAN",
     "FEAT_SME",
+    "FEAT_SPE_EXC",
     "FEAT_SSBS",
+    "FEAT_TRBE_EXC",
     "FEAT_UAO"
    ]
   },
@@ -21451,25 +21496,6 @@
    "predicated": null,
    "feature_level": "needs-other-features",
    "unknown_features": []
-  },
-  {
-   "id": "MLBI_SYS",
-   "title": "MLBI -- A64",
-   "mnemonic": "SYS",
-   "instr_class": "system",
-   "iclasses": [
-    "System"
-   ],
-   "feature_exprs": [
-    "FEAT_MPAMv2_VID"
-   ],
-   "encodings": 1,
-   "asm": "MLBI  <mlbi_op>{, <Xt>}",
-   "predicated": null,
-   "feature_level": "needs-other-features",
-   "unknown_features": [
-    "FEAT_MPAMv2_VID"
-   ]
   },
   {
    "id": "SYS",

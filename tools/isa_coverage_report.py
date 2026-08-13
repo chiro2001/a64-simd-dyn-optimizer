@@ -24,7 +24,7 @@ LEVELS = ["neon", "dotprod", "i8mm", "sve", "sve_i8mm", "sve2",
 
 
 def load_catalog(path):
-    return json.loads(Path(path).read_text())["instructions"]
+    return json.loads(Path(path).read_text())
 
 
 def load_db(path):
@@ -60,7 +60,7 @@ def main():
 
     catalog = load_catalog(args.catalog)
     db = load_db(args.db)
-    simd = simd_filtered(catalog)
+    simd = simd_filtered(catalog["instructions"])
 
     # DB index: (feature, mnemonic) -> entries.
     db_index = defaultdict(list)
@@ -116,7 +116,7 @@ def main():
 
     # JSON report.
     report = {
-        "source": "ISA_A64_xml_A_profile-2025-12",
+        "source": catalog.get("source", "unknown"),
         "db": str(args.db),
         "scoped_simd_count": len(simd),
         "by_level": rows,
@@ -136,7 +136,7 @@ def main():
     lines = [
         "# AArch64 SIMD 指令覆盖报告（vs 官方 ISA XML）",
         "",
-        f"数据源：`{report['source']}`（A64 A-profile，2025-12 版）",
+        f"数据源：`{report['source']}`（A64 A-profile）",
         f"解析范围：`instr-class ∈ advsimd / sve / sve2`，共 {len(simd)} 条指令。",
         "",
         "## 按特性级别统计",

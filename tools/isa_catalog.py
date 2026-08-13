@@ -60,7 +60,8 @@ KNOWN_FEATURES = {
 }
 
 
-_TOKEN_RE = re.compile(r"FEAT_[A-Za-z0-9_]+|[&|()]")
+_TOKEN_RE = re.compile(r"FEAT_[A-Za-z0-9_]+|TRUE|[&|()!]")
+_COND_RE = re.compile(r"[A-Za-z0-9_]+ *(?:==|!=) *'[^']*'")
 
 
 class FeatureExpr:
@@ -68,7 +69,10 @@ class FeatureExpr:
 
     def __init__(self, text):
         self.text = text
-        self.ast = self._parse(list(_TOKEN_RE.findall(text)))
+        # Encoding-specific conditions (sz == '0', etc.) do not gate
+        # availability in the A-profile; normalize them to TRUE.
+        norm = _COND_RE.sub("TRUE", text)
+        self.ast = self._parse(list(_TOKEN_RE.findall(norm)))
 
     def _parse(self, tokens):
         pos = 0
@@ -105,9 +109,15 @@ class FeatureExpr:
                     raise ValueError(f"missing ')' in {self.text!r}")
                 pos += 1
                 return node
+            if tok == "!":
+                pos += 1
+                return ("not", parse_atom())
             if tok.startswith("FEAT_"):
                 pos += 1
                 return ("feat", tok)
+            if tok == "TRUE":
+                pos += 1
+                return ("true",)
             raise ValueError(f"unexpected token {tok!r} in {self.text!r}")
 
         node = parse_or()
@@ -120,6 +130,10 @@ class FeatureExpr:
             kind = node[0]
             if kind == "feat":
                 return enabled_features.get(node[1], False)
+            if kind == "true":
+                return True
+            if kind == "not":
+                return not ev(node[1])
             if kind == "and":
                 return ev(node[1]) and ev(node[2])
             if kind == "or":
@@ -238,7 +252,7 @@ def main():
     rows.sort(key=lambda r: (r["feature_level"], r["instr_class"] or "",
                              r["mnemonic"] or "", r["id"] or ""))
     out = {
-        "source": "ISA_A64_xml_A_profile-2025-12",
+        "source": args.isa_dir.rstrip("/").split("/")[-1],
         "schema_version": 1,
         "feature_levels": [name for name, _ in FEATURE_LEVELS],
         "count": len(rows),

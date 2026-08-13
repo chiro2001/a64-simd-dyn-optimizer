@@ -139,24 +139,17 @@ instructions:
   # ---- SVE2 ----
   - {id: sve2-sdot-s64-s16, feature: sve2, asm: SDOT, intrinsic: svdot_s64,
      pattern: {op: sdot, bits: [16, 64], pred: false},
-     semantics: "one s64 lane per 4 consecutive s16 elements; at VL=256 16 s16 "
-                "per operand produce 4 s64 lanes: [dot4(0:4), dot4(4:8), "
-                "dot4(8:12), dot4(12:16)]",
+     semantics: "one s64 lane per 4 consecutive s16 elements; at VL=256 16 s16 per operand produce 4 s64 lanes: [dot4(0:4), dot4(4:8), dot4(8:12), dot4(12:16)]",
      status: verified}
   - {id: sve2-rshrnb-s16-s32, feature: sve2, asm: RSHRNB,
      intrinsic: svrshrnb_n_s32,
      pattern: {op: rshrnb, bits: [32, 16], pred: false},
-     semantics: "rounding shift right narrow (bottom): each s32 source lane is "
-                "placed in an EVEN-numbered s16 destination lane; odd "
-                "destination lanes are zero. Requires an UZP1 before a "
-                "contiguous store.",
+     semantics: "rounding shift right narrow (bottom): each s32 source lane is placed in an EVEN-numbered s16 destination lane; odd destination lanes are zero. Requires an UZP1 before a contiguous store.",
      status: verified}
   - {id: sve2-rshrnt-s16-s32, feature: sve2, asm: RSHRNT,
      intrinsic: svrshrnt_n_s32,
      pattern: {op: rshrnt, bits: [32, 16], pred: false},
-     semantics: "rounding shift right narrow (top): fills the ODD-numbered "
-                "half-width destination lanes; combines with RSHRNB for a "
-                "full-width narrow. Lane mapping pending dedicated probe.",
+     semantics: "rounding shift right narrow (top): fills the ODD-numbered half-width destination lanes; combines with RSHRNB for a full-width narrow. Lane mapping pending dedicated probe.",
      status: verify}
   - {id: sve2-addp-s32, feature: sve2, asm: ADDP, intrinsic: svaddp_s32_x,
      pattern: {op: addp, pred: true}, status: verify}

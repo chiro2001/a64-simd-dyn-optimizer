@@ -1,5 +1,5 @@
 {
- "source": "ISA_A64_xml_A_profile-2025-12",
+ "source": "ISA_A64_xml_A_profile-2026-06",
  "db": "isa/aarch64/instructions.yaml",
  "scoped_simd_count": 1339,
  "by_level": [
@@ -47,9 +47,9 @@
    "level": "sve2",
    "official_instructions": 229,
    "official_mnemonics": 197,
-   "db_mnemonics_covered": 2,
-   "ids_covered": 2,
-   "ids_missing": 227
+   "db_mnemonics_covered": 5,
+   "ids_covered": 5,
+   "ids_missing": 224
   },
   {
    "level": "sve2p1",
@@ -3985,11 +3985,6 @@
     "asm": "ADDHNT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>"
    },
    {
-    "id": "addp_z_p_zz",
-    "mnemonic": "ADDP",
-    "asm": "ADDP  <Zdn>.<T>, <Pg>/M, <Zdn>.<T>, <Zm>.<T>"
-   },
-   {
     "id": "bcax_z_zzz",
     "mnemonic": "BCAX",
     "asm": "BCAX  <Zdn>.D, <Zdn>.D, <Zm>.D, <Zk>.D"
@@ -4238,16 +4233,6 @@
     "id": "raddhnt_z_zz",
     "mnemonic": "RADDHNT",
     "asm": "RADDHNT  <Zd>.<T>, <Zn>.<Tb>, <Zm>.<Tb>"
-   },
-   {
-    "id": "rshrnb_z_zi",
-    "mnemonic": "RSHRNB",
-    "asm": "RSHRNB  <Zd>.<T>, <Zn>.<Tb>, #<const>"
-   },
-   {
-    "id": "rshrnt_z_zi",
-    "mnemonic": "RSHRNT",
-    "asm": "RSHRNT  <Zd>.<T>, <Zn>.<Tb>, #<const>"
    },
    {
     "id": "rsubhnb_z_zz",
