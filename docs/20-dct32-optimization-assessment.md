@@ -946,6 +946,31 @@ k0_shared_mul=0。相对上游 12710 = **0.368×**；相对内部 fused_uop
 s16 中间量（E 或链内和）都必须按结构化输入（常量/极值）复核。探针
 应加常量 ±255/±32767 回归。
 
+### 6.9 2026-08-14 深夜：其余阴性实验（勿重复）
+
+在 4682 基础上尝试的后续方向，全部未达收益：
+
+1. **k4_fold_rev8（常量折叠）**：试图把 k4 的
+   `EEO16 = EE16 - rev8(EE16)` 折进常量（K4SF = K4S − rev8(K4S)）。
+   **数学不成立**：rev8 在 128-bit 段内把 lane i 映射到 7-i，跨过
+   sdot.d 的 4-lane 组边界，逐 lane 常量无法表达（20k 差分 23.4%
+   失配）。已回滚。
+2. **切片级 rev8 替换**：探针 `probe_k4_slice.cpp` 证明
+   `slice(rev8(EE16))` 取的是各行 j4..7（反转）数据，不是切片内
+   的简单置换（revh/revw/uzp 均不成立），rev8 tbl（每行 1 条，
+   共 64）保留。
+3. **GCC 调度标志**：`-fno-schedule-insns/-fno-schedule-insns2/
+   -fno-sched-pressure/-fno-ira-share-spill-slots` 均无变化（4682）。
+4. **clang 22 后端**：同源码 clang 编译 fused 5292（stack 608），
+   比 GCC 4682 差 13%；搜索继续用 GCC。
+5. **g 循环 unroll（#pragma unroll 2）**：4991（stack 796），比
+   循环版更差——GCC 的循环结构对 live-range 更有利。
+
+当前 best 维持 **4682**（row16 + k0_merge8 + k0 先发射 + pass1
+E-pack）。剩余差距集中在 pass2 k0 双 pack（~144 ops）、spill
+（~475）、zip1 打包链（304 vs 152）——需要“转置换位/共享打包”结构
+设计（docs/18 §7/§8），或 pass2 无回绕 E-pack 变体。
+
 已知坑（本轮实测，勿再踩）：
 - `svtbl2_s32` 在 VL=256 以整个 512-bit 双寄存器为表（索引 0-15），
   不是每 128-bit 段；pack 拼接要用 `[0,1,2,3,8,9,10,11]`；
