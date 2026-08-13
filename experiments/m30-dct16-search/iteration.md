@@ -237,6 +237,31 @@ v2.1 是第一个**上游位级一致**的工具生成 SVE2 候选；真实动�
 窄化"仍有冗余，v3 四分之一交错布局（2 sdot + 1 addp 出 4 输出）是下一
 个主假设，目标动态向量数 < 1200。
 
+## v3：四分之一交错 pass1（2026-08-13）
+
+发射器新增 `pass1_layout=quarter`：4 行的 E/O 低/高 4 元素交错打包成
+16-lane 寄存器（QE0/QE1/QO0/QO1，每 4 行 8 个 tbl2，跨 16 个 k 复用），
+常量 `[C0..C3]×4` / `[C4..C7]×4` 预复制，每个 k 每 4 行 =
+2 sdot + 1 add（对齐的部分积直接相加，不需要 addp 树）+ 纯 SVE 窄化
+（uzp1_s32 + rshrnb + uzp1_s16 + 4-lane store，经 20 万例确认与上游
+vrshrn 舍入一致）。结果：
+
+```text
+build/dct16_sve_shared_verify 200000: mismatches=0（上游位级一致）
+
+true-dynamic vector counts:
+dct16_neon : 1553
+dct16_sve  : 1577
+shared v2.1 : 1636   (pass1 912 + pass2 724)
+shared v3   : 1246   (pass1 ~522 + pass2 ~724)   ← -21% vs 上游 SVE
+```
+
+960 周期估算（SVE 4×256 vs NEON 4×128 同 pipe 数）：1246/4=312 vs
+1553/4=388 → 约 +25%。距离 +130% 目标（约 700 向量）的主要缺口在
+**pass2（724 条，仍是上游 NEON/SVE bridge 结构）**：v4 需把 pass2 也
+改成 SVE2 四分之一布局（E 走 s32、O 走 s16 sdot 或 smull 变体），
+静态目标 pass2 < 200。
+
 `tools/emit_dct16_sve2_shared.py` 参数化发射器：由 g_t16 常量与发现结构
 生成 SVE2 VL=256 kernel（`kernels/dct16/candidates/sve2_shared.cpp`），
 构建命令可完全复现。已实现的搜索参数：

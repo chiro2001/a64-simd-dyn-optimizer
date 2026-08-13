@@ -192,6 +192,94 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 """
 
 
+def quarter_consts_cpp():
+    """CQ_LO/CQ_HI: each 4-coefficient quarter quadruplicated (16 lanes)."""
+    lo_rows, hi_rows = [], []
+    for c in GT16_FIRST8:
+        lo = c[:4] * 4
+        hi = c[4:] * 4
+        lo_rows.append("    { %s }," % ", ".join(str(x) for x in lo))
+        hi_rows.append("    { %s }," % ", ".join(str(x) for x in hi))
+    return "\n".join(lo_rows), "\n".join(hi_rows)
+
+
+def quarter_pass_cpp():
+    """pass1 in quarter-interleaved layout (v3)."""
+    blocks = []
+    for g in range(4):
+        base = 4 * g
+        blocks.append("""\
+        {
+            const svint16_t z0 = svld1_s16(p16, src + %d * stride);
+            const svint16_t z1 = svld1_s16(p16, src + %d * stride);
+            const svint16_t z2 = svld1_s16(p16, src + %d * stride);
+            const svint16_t z3 = svld1_s16(p16, src + %d * stride);
+            const svint16_t r0 = svrev_s16(z0);
+            const svint16_t r1 = svrev_s16(z1);
+            const svint16_t r2 = svrev_s16(z2);
+            const svint16_t r3 = svrev_s16(z3);
+            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
+            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
+            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
+            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
+            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
+            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
+            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
+            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
+            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
+            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
+            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
+            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
+            QE0_%d = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
+            QE1_%d = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
+            QO0_%d = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
+            QO1_%d = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+        }""" % (base, base + 1, base + 2, base + 3, g, g, g, g))
+    build_src = "\n".join(blocks)
+    dots = []
+    for g in range(4):
+        dots.append(
+            "            const svint16_t x0_%d = (k & 1) ? QO0_%d : QE0_%d;\n"
+            "            const svint16_t x1_%d = (k & 1) ? QO1_%d : QE1_%d;\n"
+            "            const svint64_t d0_%d = svdot_s64(zacc, x0_%d, cq_lo);\n"
+            "            const svint64_t d1_%d = svdot_s64(zacc, x1_%d, cq_hi);\n"
+            "            const svint64_t f_%d = svadd_s64_x(p64, d0_%d, d1_%d);\n"
+            "            const svint32_t w_%d = svuzp1_s32(\n"
+            "                svreinterpret_s32_s64(f_%d), svreinterpret_s32_s64(f_%d));\n"
+            "            svint16_t n_%d = svrshrnb_n_s32(w_%d, shift);\n"
+            "            n_%d = svuzp1_s16(n_%d, n_%d);\n"
+            "            svst1_s16(p4h, dst + 16 * k + %d, n_%d);"
+            % (g, g, g, g, g, g, g, g, g, g, g, g, g, g, g, g,
+               g, g, g, g, g, 4 * g, g))
+    dot_src = "\n".join(dots)
+    return """\
+template <int shift>
+static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
+{
+    const svbool_t p16 = svptrue_b16();
+    const svbool_t p64 = svptrue_b64();
+    const svbool_t p4h = svwhilelt_b16(0, 4);
+    const svuint16_t ilo = svld1_u16(p16, idx_lo);
+    const svuint16_t q0 = svld1_u16(p16, idx_q0);
+    const svuint16_t q1 = svld1_u16(p16, idx_q1);
+    const svint64_t zacc = svdup_n_s64(0);
+
+    svint16_t QE0_0, QE1_0, QO0_0, QO1_0;
+    svint16_t QE0_1, QE1_1, QO0_1, QO1_1;
+    svint16_t QE0_2, QE1_2, QO0_2, QO1_2;
+    svint16_t QE0_3, QE1_3, QO0_3, QO1_3;
+%s
+
+    for (int k = 0; k < 16; k++)
+    {
+        const svint16_t cq_lo = svld1_s16(p16, CQ_LO[k]);
+        const svint16_t cq_hi = svld1_s16(p16, CQ_HI[k]);
+%s
+    }
+}
+""" % (build_src, dot_src)
+
+
 def build_block(i):
     return """\
         {
@@ -226,21 +314,31 @@ def group_block(g):
 
 
 def emit(func_name="dynopt_dct16_sve2_shared", export_pass1=False,
-         export_pass2=False):
+         export_pass2=False, pass1_layout="quarter"):
     rows = const_rows_cpp()
     t8e = t8_even_cpp()
     g32 = gt16_s32_cpp()
+    cq_lo, cq_hi = quarter_consts_cpp()
     build_src = "\n".join(build_block(i) for i in range(16))
     dot_src = "\n".join(group_block(g) for g in range(4))
+    quarter_src = quarter_pass_cpp()
+    if pass1_layout == "quarter":
+        pass1_call = "pass_quarter<3>(src, coef, srcStride)"
+        pass1_export_call = "pass_quarter<3>(src, dst, srcStride)"
+        pass1_def = quarter_src
+    else:
+        pass1_call = "pass<3>(src, coef, srcStride)"
+        pass1_export_call = "pass<3>(src, dst, srcStride)"
+        pass1_def = ""
     pass1_export = ""
     if export_pass1:
         pass1_export = """
 
 extern "C" void %s_pass1(const int16_t* src, int16_t* dst, intptr_t srcStride)
 {
-    pass<3>(src, dst, srcStride);
+    %s;
 }
-""" % func_name
+""" % (func_name, pass1_export_call)
     if export_pass2:
         pass1_export += """
 
@@ -275,6 +373,14 @@ static const int32_t T8E[4][4] = {
 %s
 };
 
+static const int16_t CQ_LO[16][16] = {
+%s
+};
+
+static const int16_t CQ_HI[16][16] = {
+%s
+};
+
 static const uint8_t rev16_tbl[16] =
     { 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1 };
 static const uint8_t rev32_tbl[16] =
@@ -306,6 +412,12 @@ static inline int64x2_t sdotq_s16(int64x2_t acc, int16x8_t x, int16x8_t y)
 // hi: [z_a[8..15], z_b[8..15]]
 static const uint16_t idx_rev[16] =
     { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+static const uint16_t idx_lo[16] =
+    { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
+static const uint16_t idx_q0[16] =
+    { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
+static const uint16_t idx_q1[16] =
+    { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
 
 template <int shift>
 static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
@@ -330,16 +442,17 @@ static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
 }
 
 %s
+%s
 } // namespace
 
 extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
 {
     int16_t coef[256];
-    pass<3>(src, coef, srcStride);
+    %s;
     pass2_upstream(coef, dst);
 }
-%s""" % (rows, rows, g32, t8e, build_src, dot_src,
-         pass2_cpp(), func_name, pass1_export)
+%s""" % (rows, rows, g32, t8e, cq_lo, cq_hi, build_src, dot_src,
+         pass1_def, pass2_cpp(), func_name, pass1_call, pass1_export)
 
 
 def main():

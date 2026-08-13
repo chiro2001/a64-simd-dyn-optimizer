@@ -59,6 +59,44 @@ static const int32_t T8E[4][4] = {
     { 36, -83, 36, -83 },
 };
 
+static const int16_t CQ_LO[16][16] = {
+    { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 },
+    { 90, 87, 80, 70, 90, 87, 80, 70, 90, 87, 80, 70, 90, 87, 80, 70 },
+    { 89, 75, 50, 18, 89, 75, 50, 18, 89, 75, 50, 18, 89, 75, 50, 18 },
+    { 87, 57, 9, -43, 87, 57, 9, -43, 87, 57, 9, -43, 87, 57, 9, -43 },
+    { 83, 36, -36, -83, 83, 36, -36, -83, 83, 36, -36, -83, 83, 36, -36, -83 },
+    { 80, 9, -70, -87, 80, 9, -70, -87, 80, 9, -70, -87, 80, 9, -70, -87 },
+    { 75, -18, -89, -50, 75, -18, -89, -50, 75, -18, -89, -50, 75, -18, -89, -50 },
+    { 70, -43, -87, 9, 70, -43, -87, 9, 70, -43, -87, 9, 70, -43, -87, 9 },
+    { 64, -64, -64, 64, 64, -64, -64, 64, 64, -64, -64, 64, 64, -64, -64, 64 },
+    { 57, -80, -25, 90, 57, -80, -25, 90, 57, -80, -25, 90, 57, -80, -25, 90 },
+    { 50, -89, 18, 75, 50, -89, 18, 75, 50, -89, 18, 75, 50, -89, 18, 75 },
+    { 43, -90, 57, 25, 43, -90, 57, 25, 43, -90, 57, 25, 43, -90, 57, 25 },
+    { 36, -83, 83, -36, 36, -83, 83, -36, 36, -83, 83, -36, 36, -83, 83, -36 },
+    { 25, -70, 90, -80, 25, -70, 90, -80, 25, -70, 90, -80, 25, -70, 90, -80 },
+    { 18, -50, 75, -89, 18, -50, 75, -89, 18, -50, 75, -89, 18, -50, 75, -89 },
+    { 9, -25, 43, -57, 9, -25, 43, -57, 9, -25, 43, -57, 9, -25, 43, -57 },
+};
+
+static const int16_t CQ_HI[16][16] = {
+    { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64 },
+    { 57, 43, 25, 9, 57, 43, 25, 9, 57, 43, 25, 9, 57, 43, 25, 9 },
+    { -18, -50, -75, -89, -18, -50, -75, -89, -18, -50, -75, -89, -18, -50, -75, -89 },
+    { -80, -90, -70, -25, -80, -90, -70, -25, -80, -90, -70, -25, -80, -90, -70, -25 },
+    { -83, -36, 36, 83, -83, -36, 36, 83, -83, -36, 36, 83, -83, -36, 36, 83 },
+    { -25, 57, 90, 43, -25, 57, 90, 43, -25, 57, 90, 43, -25, 57, 90, 43 },
+    { 50, 89, 18, -75, 50, 89, 18, -75, 50, 89, 18, -75, 50, 89, 18, -75 },
+    { 90, 25, -80, -57, 90, 25, -80, -57, 90, 25, -80, -57, 90, 25, -80, -57 },
+    { 64, -64, -64, 64, 64, -64, -64, 64, 64, -64, -64, 64, 64, -64, -64, 64 },
+    { -9, -87, 43, 70, -9, -87, 43, 70, -9, -87, 43, 70, -9, -87, 43, 70 },
+    { -75, -18, 89, -50, -75, -18, 89, -50, -75, -18, 89, -50, -75, -18, 89, -50 },
+    { -87, 70, 9, -80, -87, 70, 9, -80, -87, 70, 9, -80, -87, 70, 9, -80 },
+    { -36, 83, -83, 36, -36, 83, -83, 36, -36, 83, -83, 36, -36, 83, -83, 36 },
+    { 43, 9, -57, 87, 43, 9, -57, 87, 43, 9, -57, 87, 43, 9, -57, 87 },
+    { 89, -75, 50, -18, 89, -75, 50, -18, 89, -75, 50, -18, 89, -75, 50, -18 },
+    { 70, -80, 87, -90, 70, -80, 87, -90, 70, -80, 87, -90, 70, -80, 87, -90 },
+};
+
 static const uint8_t rev16_tbl[16] =
     { 14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1 };
 static const uint8_t rev32_tbl[16] =
@@ -90,6 +128,12 @@ static inline int64x2_t sdotq_s16(int64x2_t acc, int16x8_t x, int16x8_t y)
 // hi: [z_a[8..15], z_b[8..15]]
 static const uint16_t idx_rev[16] =
     { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+static const uint16_t idx_lo[16] =
+    { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
+static const uint16_t idx_q0[16] =
+    { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27 };
+static const uint16_t idx_q1[16] =
+    { 4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31 };
 
 template <int shift>
 static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
@@ -283,6 +327,173 @@ static void pass(const int16_t* src, int16_t* dst, intptr_t stride)
     }
 }
 
+template <int shift>
+static void pass_quarter(const int16_t* src, int16_t* dst, intptr_t stride)
+{
+    const svbool_t p16 = svptrue_b16();
+    const svbool_t p64 = svptrue_b64();
+    const svbool_t p4h = svwhilelt_b16(0, 4);
+    const svuint16_t ilo = svld1_u16(p16, idx_lo);
+    const svuint16_t q0 = svld1_u16(p16, idx_q0);
+    const svuint16_t q1 = svld1_u16(p16, idx_q1);
+    const svint64_t zacc = svdup_n_s64(0);
+
+    svint16_t QE0_0, QE1_0, QO0_0, QO1_0;
+    svint16_t QE0_1, QE1_1, QO0_1, QO1_1;
+    svint16_t QE0_2, QE1_2, QO0_2, QO1_2;
+    svint16_t QE0_3, QE1_3, QO0_3, QO1_3;
+        {
+            const svint16_t z0 = svld1_s16(p16, src + 0 * stride);
+            const svint16_t z1 = svld1_s16(p16, src + 1 * stride);
+            const svint16_t z2 = svld1_s16(p16, src + 2 * stride);
+            const svint16_t z3 = svld1_s16(p16, src + 3 * stride);
+            const svint16_t r0 = svrev_s16(z0);
+            const svint16_t r1 = svrev_s16(z1);
+            const svint16_t r2 = svrev_s16(z2);
+            const svint16_t r3 = svrev_s16(z3);
+            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
+            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
+            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
+            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
+            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
+            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
+            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
+            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
+            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
+            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
+            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
+            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
+            QE0_0 = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
+            QE1_0 = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
+            QO0_0 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
+            QO1_0 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+        }
+        {
+            const svint16_t z0 = svld1_s16(p16, src + 4 * stride);
+            const svint16_t z1 = svld1_s16(p16, src + 5 * stride);
+            const svint16_t z2 = svld1_s16(p16, src + 6 * stride);
+            const svint16_t z3 = svld1_s16(p16, src + 7 * stride);
+            const svint16_t r0 = svrev_s16(z0);
+            const svint16_t r1 = svrev_s16(z1);
+            const svint16_t r2 = svrev_s16(z2);
+            const svint16_t r3 = svrev_s16(z3);
+            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
+            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
+            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
+            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
+            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
+            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
+            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
+            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
+            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
+            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
+            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
+            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
+            QE0_1 = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
+            QE1_1 = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
+            QO0_1 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
+            QO1_1 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+        }
+        {
+            const svint16_t z0 = svld1_s16(p16, src + 8 * stride);
+            const svint16_t z1 = svld1_s16(p16, src + 9 * stride);
+            const svint16_t z2 = svld1_s16(p16, src + 10 * stride);
+            const svint16_t z3 = svld1_s16(p16, src + 11 * stride);
+            const svint16_t r0 = svrev_s16(z0);
+            const svint16_t r1 = svrev_s16(z1);
+            const svint16_t r2 = svrev_s16(z2);
+            const svint16_t r3 = svrev_s16(z3);
+            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
+            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
+            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
+            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
+            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
+            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
+            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
+            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
+            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
+            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
+            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
+            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
+            QE0_2 = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
+            QE1_2 = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
+            QO0_2 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
+            QO1_2 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+        }
+        {
+            const svint16_t z0 = svld1_s16(p16, src + 12 * stride);
+            const svint16_t z1 = svld1_s16(p16, src + 13 * stride);
+            const svint16_t z2 = svld1_s16(p16, src + 14 * stride);
+            const svint16_t z3 = svld1_s16(p16, src + 15 * stride);
+            const svint16_t r0 = svrev_s16(z0);
+            const svint16_t r1 = svrev_s16(z1);
+            const svint16_t r2 = svrev_s16(z2);
+            const svint16_t r3 = svrev_s16(z3);
+            const svint16_t E0 = svadd_s16_x(p16, z0, r0);
+            const svint16_t E1 = svadd_s16_x(p16, z1, r1);
+            const svint16_t E2 = svadd_s16_x(p16, z2, r2);
+            const svint16_t E3 = svadd_s16_x(p16, z3, r3);
+            const svint16_t O0 = svsub_s16_x(p16, z0, r0);
+            const svint16_t O1 = svsub_s16_x(p16, z1, r1);
+            const svint16_t O2 = svsub_s16_x(p16, z2, r2);
+            const svint16_t O3 = svsub_s16_x(p16, z3, r3);
+            const svint16_t PE01 = svtbl2_s16(svcreate2_s16(E0, E1), ilo);
+            const svint16_t PE23 = svtbl2_s16(svcreate2_s16(E2, E3), ilo);
+            const svint16_t PO01 = svtbl2_s16(svcreate2_s16(O0, O1), ilo);
+            const svint16_t PO23 = svtbl2_s16(svcreate2_s16(O2, O3), ilo);
+            QE0_3 = svtbl2_s16(svcreate2_s16(PE01, PE23), q0);
+            QE1_3 = svtbl2_s16(svcreate2_s16(PE01, PE23), q1);
+            QO0_3 = svtbl2_s16(svcreate2_s16(PO01, PO23), q0);
+            QO1_3 = svtbl2_s16(svcreate2_s16(PO01, PO23), q1);
+        }
+
+    for (int k = 0; k < 16; k++)
+    {
+        const svint16_t cq_lo = svld1_s16(p16, CQ_LO[k]);
+        const svint16_t cq_hi = svld1_s16(p16, CQ_HI[k]);
+            const svint16_t x0_0 = (k & 1) ? QO0_0 : QE0_0;
+            const svint16_t x1_0 = (k & 1) ? QO1_0 : QE1_0;
+            const svint64_t d0_0 = svdot_s64(zacc, x0_0, cq_lo);
+            const svint64_t d1_0 = svdot_s64(zacc, x1_0, cq_hi);
+            const svint64_t f_0 = svadd_s64_x(p64, d0_0, d1_0);
+            const svint32_t w_0 = svuzp1_s32(
+                svreinterpret_s32_s64(f_0), svreinterpret_s32_s64(f_0));
+            svint16_t n_0 = svrshrnb_n_s32(w_0, shift);
+            n_0 = svuzp1_s16(n_0, n_0);
+            svst1_s16(p4h, dst + 16 * k + 0, n_0);
+            const svint16_t x0_1 = (k & 1) ? QO0_1 : QE0_1;
+            const svint16_t x1_1 = (k & 1) ? QO1_1 : QE1_1;
+            const svint64_t d0_1 = svdot_s64(zacc, x0_1, cq_lo);
+            const svint64_t d1_1 = svdot_s64(zacc, x1_1, cq_hi);
+            const svint64_t f_1 = svadd_s64_x(p64, d0_1, d1_1);
+            const svint32_t w_1 = svuzp1_s32(
+                svreinterpret_s32_s64(f_1), svreinterpret_s32_s64(f_1));
+            svint16_t n_1 = svrshrnb_n_s32(w_1, shift);
+            n_1 = svuzp1_s16(n_1, n_1);
+            svst1_s16(p4h, dst + 16 * k + 4, n_1);
+            const svint16_t x0_2 = (k & 1) ? QO0_2 : QE0_2;
+            const svint16_t x1_2 = (k & 1) ? QO1_2 : QE1_2;
+            const svint64_t d0_2 = svdot_s64(zacc, x0_2, cq_lo);
+            const svint64_t d1_2 = svdot_s64(zacc, x1_2, cq_hi);
+            const svint64_t f_2 = svadd_s64_x(p64, d0_2, d1_2);
+            const svint32_t w_2 = svuzp1_s32(
+                svreinterpret_s32_s64(f_2), svreinterpret_s32_s64(f_2));
+            svint16_t n_2 = svrshrnb_n_s32(w_2, shift);
+            n_2 = svuzp1_s16(n_2, n_2);
+            svst1_s16(p4h, dst + 16 * k + 8, n_2);
+            const svint16_t x0_3 = (k & 1) ? QO0_3 : QE0_3;
+            const svint16_t x1_3 = (k & 1) ? QO1_3 : QE1_3;
+            const svint64_t d0_3 = svdot_s64(zacc, x0_3, cq_lo);
+            const svint64_t d1_3 = svdot_s64(zacc, x1_3, cq_hi);
+            const svint64_t f_3 = svadd_s64_x(p64, d0_3, d1_3);
+            const svint32_t w_3 = svuzp1_s32(
+                svreinterpret_s32_s64(f_3), svreinterpret_s32_s64(f_3));
+            svint16_t n_3 = svrshrnb_n_s32(w_3, shift);
+            n_3 = svuzp1_s16(n_3, n_3);
+            svst1_s16(p4h, dst + 16 * k + 12, n_3);
+    }
+}
+
 static void pass2_upstream(const int16_t* src, int16_t* dst)
 {
     const int shift = 10;
@@ -389,6 +600,6 @@ static void pass2_upstream(const int16_t* src, int16_t* dst)
 extern "C" void dynopt_dct16_sve2_shared(const int16_t* src, int16_t* dst, intptr_t srcStride)
 {
     int16_t coef[256];
-    pass<3>(src, coef, srcStride);
+    pass_quarter<3>(src, coef, srcStride);
     pass2_upstream(coef, dst);
 }
