@@ -1,0 +1,20 @@
+{
+ "tag": "pass1-quarter_pass1_k_tile-4_pass2-odd-quarter",
+ "layout": {
+  "pass1": "quarter",
+  "pass1_k_tile": 4,
+  "pass2": "odd-quarter"
+ },
+ "counts": {
+  "total": 1698,
+  "vector": 1388,
+  "movprfx": 96,
+  "vector_fused": 1292
+ },
+ "artifacts": {
+  "cpp": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_sve2.cpp",
+  "asm": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct16/candidates/best_sve2.S"
+ },
+ "verify_200k": true,
+ "verify_output": "cases=200000 lanes=51200000 mismatches=0 rate=0.000000%"
+}

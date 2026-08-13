@@ -130,10 +130,19 @@ def stage_report(outdir):
     print("candidates:")
     ok = [r for r in res if r.get("counts")]
     ok.sort(key=lambda r: r["counts"]["vector_fused"])
+    ref = base.get("upstream_sve") or base.get("sve")
+    ref_fused = ref["vector_fused"] if ref else None
     for r in ok:
-        print("  %-24s vector=%d fused_adj=%d upstream_exact=%s"
-              % (r["tag"], r["counts"]["vector"], r["counts"]["vector_fused"],
-                 r.get("upstream_exact")))
+        extra = ""
+        if ref_fused:
+            half = ref_fused / 2.0
+            rec = (ref_fused - r["counts"]["vector_fused"]) \
+                / (ref_fused - half)
+            extra = " vs_sve=%.3f half_recovery=%.0f%%" % (
+                r["counts"]["vector_fused"] / ref_fused, rec * 100)
+        print("  %-24s vector=%d fused_adj=%d upstream_exact=%s%s"
+              % (r["tag"], r["counts"]["vector"],
+                 r["counts"]["vector_fused"], r.get("upstream_exact"), extra))
     best = ok[0]["tag"] if ok else None
     if best:
         trace = os.path.join(outdir, best + "-trace.log.json")
@@ -152,6 +161,66 @@ def stage_report(outdir):
     return 0
 
 
+def stage_finalize(outdir, manifest):
+    """Fix the best candidate as a stable deliverable (best_sve2.cpp/.S)."""
+    res = json.load(open(os.path.join(outdir, "results.json")))
+    ok = [r for r in res if r.get("counts")]
+    if not ok:
+        print("no candidates to finalize", file=sys.stderr)
+        return 1
+    best = min(ok, key=lambda r: r["counts"]["vector_fused"])
+
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    from emit_dct16_sve2_shared import emit
+    from emit_dct16_sve2_asm import bootstrap_cpp
+
+    cand_dir = os.path.join(ROOT, "kernels", manifest["kernel"],
+                            "candidates")
+    os.makedirs(cand_dir, exist_ok=True)
+    cpp = os.path.join(cand_dir, "best_sve2.cpp")
+    s = os.path.join(cand_dir, "best_sve2.S")
+    with open(cpp, "w") as f:
+        f.write(emit(pass1_layout=best.get("pass1", "quarter"),
+                     pass2_layout=best.get("pass2", "upstream"),
+                     pass1_k_tile=best.get("pass1_k_tile", 2)))
+    bootstrap_cpp(cpp, s)
+
+    # 200k upstream-exact verification of the finalized artifact
+    verify_src = os.path.join(outdir, "verify_generated.cpp")
+    if not os.path.exists(verify_src):
+        with open(verify_src, "w") as f:
+            f.write(gen_verify(manifest))
+    exe = os.path.join(outdir, "best-verify")
+    r = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+             "-march=armv8.2-a+sve2", verify_src, cpp,
+             "-Wl,--start-group",
+             repo_path(manifest, manifest["reference"]["lib"]),
+             "-Wl,--end-group", "-lpthread", "-ldl", "-o", exe])
+    if r.returncode != 0:
+        print("finalize BUILD FAIL:\n%s" % r.stdout[-2000:])
+        return 1
+    r = run(QEMU + [exe, "200000"])
+    ok_verify = r.returncode == 0 and "mismatches=0" in r.stdout
+
+    best_dir = os.path.join(ROOT, "experiments/m30-dct16-search/best")
+    os.makedirs(best_dir, exist_ok=True)
+    record = {
+        "tag": best["tag"],
+        "layout": {k: v for k, v in best.items()
+                   if k.startswith("pass")},
+        "counts": best["counts"],
+        "artifacts": {"cpp": cpp, "asm": s},
+        "verify_200k": ok_verify,
+        "verify_output": r.stdout.strip()[-500:],
+    }
+    json.dump(record, open(os.path.join(best_dir, "best.json"), "w"),
+              indent=1)
+    print("finalized %s -> %s / %s" % (best["tag"], cpp, s))
+    print("200k verify:", r.stdout.strip().splitlines()[-1]
+          if r.stdout.strip() else "no output")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true")
@@ -159,8 +228,8 @@ def main():
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=os.path.join(
         ROOT, "experiments/m30-dct16-search/layout-search"))
-    ap.add_argument("stage", nargs="?", choices=("baseline", "search",
-                                                 "report"))
+    ap.add_argument("stage", nargs="?",
+                    choices=("baseline", "search", "report", "finalize"))
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
 
@@ -172,6 +241,8 @@ def main():
             return 1
     if args.all or args.stage == "report":
         return stage_report(args.outdir)
+    if args.stage == "finalize":
+        return stage_finalize(args.outdir, manifest)
     ap.print_help()
     return 2
 

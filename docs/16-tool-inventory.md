@@ -62,12 +62,14 @@
 | 工具 | 说明 |
 | --- | --- |
 | `tools/pipeline.py` | 一键骨架：baseline → search → report；读取 kernel manifest |
+| `tools/pipeline.py finalize` | 固化最优候选：best_sve2.cpp/.S + 20 万例验证 + best.json |
+| `tools/gen_verify.py` | 从 manifest 生成上游差分 harness（参考/corpus/VL） |
 | `kernels/<name>/manifest.yaml` | kernel 接入契约：参考库/符号、driver、corpus、VL、布局域 |
 
 ## 3. 现状判定
 
 - **DCT16 纵切**：pipeline 一键可跑（~3.4s），优化只改 manifest 布局域 /
-  发射器参数；
+  发射器参数；finalize 输出稳定交付产物（best_sve2.cpp/.S）；
 - **通用化缺口**：manifest 仅 dct16 一份；verify harness、lane 语义、
   发射器仍是 per-kernel；rewrites（MachineIR）未接到 SVE2 流程；
 - **搜索空间**：当前 3 个布局组合穷举，耗时 <60s，暂不需要启发式算法；
@@ -76,9 +78,10 @@
 ## 4. 下一步（按用户优先级：工具进化优先）
 
 1. kernel manifest 成为所有阶段的输入契约（baseline/verify/搜索从
-   manifest 读符号、参考、corpus、布局域）；
+   manifest 读符号、参考、corpus、布局域）——✅ 已完成；
 2. 布局搜索空间参数化：`search_sve2_layouts.py` 从 manifest 布局域自动
-   枚举，新增布局只改 manifest；
+   枚举，新增布局只改 manifest——✅ 已完成（6 组合，~6.4s）；
 3. 评估漏斗参数化：verify 从 manifest 选参考符号/corpus，去掉硬编码；
+   ——✅ 已完成（gen_verify.py）；
 4. LoopIR 接入发射器（docs/15），循环级布局进入搜索域；
 5. rewrites 通用化后接到 SVE2 流程，优化 pass 真正可插拔。
