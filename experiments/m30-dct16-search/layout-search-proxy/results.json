@@ -14,14 +14,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401dc0"
-  ],
   "counts": {
    "total": 1383,
    "vector": 1315,
@@ -32,7 +28,10 @@
    "stack_vector": 111,
    "vector_fused_uop": 1125
   },
-  "fused_uop_per_output": 4.395
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.395,
+  "consensus_rank": 21.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -49,14 +48,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401d30"
-  ],
   "counts": {
    "total": 1347,
    "vector": 1287,
@@ -67,7 +62,10 @@
    "stack_vector": 111,
    "vector_fused_uop": 1097
   },
-  "fused_uop_per_output": 4.285
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.285,
+  "consensus_rank": 19.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -84,14 +82,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401dc0"
-  ],
   "counts": {
    "total": 1383,
    "vector": 1315,
@@ -102,7 +96,10 @@
    "stack_vector": 111,
    "vector_fused_uop": 1125
   },
-  "fused_uop_per_output": 4.395
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.395,
+  "consensus_rank": 22.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -119,14 +116,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401d30"
-  ],
   "counts": {
    "total": 1347,
    "vector": 1287,
@@ -137,7 +130,10 @@
    "stack_vector": 111,
    "vector_fused_uop": 1097
   },
-  "fused_uop_per_output": 4.285
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.285,
+  "consensus_rank": 20.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -154,14 +150,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401c10"
-  ],
   "counts": {
    "total": 1273,
    "vector": 1095,
@@ -172,7 +164,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 993
   },
-  "fused_uop_per_output": 3.879
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.879,
+  "consensus_rank": 16.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -189,14 +184,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401b80"
-  ],
   "counts": {
    "total": 1237,
    "vector": 1067,
@@ -207,7 +198,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 965
   },
-  "fused_uop_per_output": 3.77
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.77,
+  "consensus_rank": 12.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -224,14 +218,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401c10"
-  ],
   "counts": {
    "total": 1273,
    "vector": 1095,
@@ -242,7 +232,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 993
   },
-  "fused_uop_per_output": 3.879
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.879,
+  "consensus_rank": 17.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -259,14 +252,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401b80"
-  ],
   "counts": {
    "total": 1237,
    "vector": 1067,
@@ -277,7 +266,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 965
   },
-  "fused_uop_per_output": 3.77
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.77,
+  "consensus_rank": 13.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -294,14 +286,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401a30"
-  ],
   "counts": {
    "total": 1155,
    "vector": 1032,
@@ -312,11 +300,14 @@
    "stack_vector": 93,
    "vector_fused_uop": 931
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.637,
   "mca_cycles": 268,
   "mca_uops": 1272,
   "est_cycles_NP1": 164.6875,
-  "cp_cycles_NP1": 104
+  "cp_cycles_NP1": 104,
+  "consensus_rank": 7.2
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -333,14 +324,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x4019a0"
-  ],
   "counts": {
    "total": 1119,
    "vector": 1004,
@@ -351,6 +338,8 @@
    "stack_vector": 93,
    "vector_fused_uop": 903
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.527,
   "mca_cycles": 261,
   "mca_uops": 1236,
@@ -358,7 +347,8 @@
   "cp_cycles_NP1": 104,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 3.6
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -375,14 +365,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401c10"
-  ],
   "counts": {
    "total": 1273,
    "vector": 1087,
@@ -393,7 +379,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 985
   },
-  "fused_uop_per_output": 3.848
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.848,
+  "consensus_rank": 14.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -410,14 +399,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401a30"
-  ],
   "counts": {
    "total": 1155,
    "vector": 1024,
@@ -428,11 +413,14 @@
    "stack_vector": 93,
    "vector_fused_uop": 923
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.605,
   "mca_cycles": 264,
   "mca_uops": 1264,
   "est_cycles_NP1": 164.6875,
-  "cp_cycles_NP1": 236
+  "cp_cycles_NP1": 236,
+  "consensus_rank": 6.4
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -449,14 +437,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x401b80"
-  ],
   "counts": {
    "total": 1237,
    "vector": 1059,
@@ -467,7 +451,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 957
   },
-  "fused_uop_per_output": 3.738
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.738,
+  "consensus_rank": 10.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -484,14 +471,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x4019a0"
-  ],
   "counts": {
    "total": 1119,
    "vector": 996,
@@ -502,6 +485,8 @@
    "stack_vector": 93,
    "vector_fused_uop": 895
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.496,
   "mca_cycles": 257,
   "mca_uops": 1228,
@@ -509,7 +494,8 @@
   "cp_cycles_NP1": 236,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 2.8
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-1",
@@ -526,14 +512,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 1,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 2300,
   "verify": "cases=20000 lanes=5120000 mismatches=2300 rate=0.044922%\n first-diff idx=44 want=1579 got=-1621\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401710"
-  ],
   "counts": {
    "total": 955,
    "vector": 831,
@@ -544,6 +526,8 @@
    "stack_vector": 16,
    "vector_fused_uop": 727
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 2.84,
   "mca_cycles": 222,
   "mca_uops": 1008,
@@ -551,7 +535,8 @@
   "cp_cycles_NP1": 42,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 0.8
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -568,14 +553,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401a30"
-  ],
   "counts": {
    "total": 1155,
    "vector": 1032,
@@ -586,11 +567,14 @@
    "stack_vector": 93,
    "vector_fused_uop": 931
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.637,
   "mca_cycles": 268,
   "mca_uops": 1272,
   "est_cycles_NP1": 164.6875,
-  "cp_cycles_NP1": 104
+  "cp_cycles_NP1": 104,
+  "consensus_rank": 8.2
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-1",
@@ -607,14 +591,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 1,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 2300,
   "verify": "cases=20000 lanes=5120000 mismatches=2300 rate=0.044922%\n first-diff idx=44 want=1579 got=-1621\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401680"
-  ],
   "counts": {
    "total": 919,
    "vector": 803,
@@ -625,6 +605,8 @@
    "stack_vector": 16,
    "vector_fused_uop": 699
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 2.73,
   "mca_cycles": 212,
   "mca_uops": 972,
@@ -632,7 +614,8 @@
   "cp_cycles_NP1": 43,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 0.2
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -649,14 +632,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x4019a0"
-  ],
   "counts": {
    "total": 1119,
    "vector": 1004,
@@ -667,11 +646,14 @@
    "stack_vector": 93,
    "vector_fused_uop": 903
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.527,
   "mca_cycles": 261,
   "mca_uops": 1236,
   "est_cycles_NP1": 159.0625,
-  "cp_cycles_NP1": 104
+  "cp_cycles_NP1": 104,
+  "consensus_rank": 4.6
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -688,14 +670,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401c10"
-  ],
   "counts": {
    "total": 1273,
    "vector": 1087,
@@ -706,7 +684,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 985
   },
-  "fused_uop_per_output": 3.848
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.848,
+  "consensus_rank": 15.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -723,14 +704,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401a30"
-  ],
   "counts": {
    "total": 1155,
    "vector": 1024,
@@ -741,11 +718,14 @@
    "stack_vector": 93,
    "vector_fused_uop": 923
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.605,
   "mca_cycles": 264,
   "mca_uops": 1264,
   "est_cycles_NP1": 164.6875,
-  "cp_cycles_NP1": 236
+  "cp_cycles_NP1": 236,
+  "consensus_rank": 7.4
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -762,14 +742,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x401b80"
-  ],
   "counts": {
    "total": 1237,
    "vector": 1059,
@@ -780,7 +756,10 @@
    "stack_vector": 147,
    "vector_fused_uop": 957
   },
-  "fused_uop_per_output": 3.738
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 3.738,
+  "consensus_rank": 11.0
  },
  {
   "tag": "pass1-quarter_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-1_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -797,14 +776,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x4019a0"
-  ],
   "counts": {
    "total": 1119,
    "vector": 996,
@@ -815,6 +790,8 @@
    "stack_vector": 93,
    "vector_fused_uop": 895
   },
+  "range": null,
+  "cached": true,
   "fused_uop_per_output": 3.496,
   "mca_cycles": 257,
   "mca_uops": 1228,
@@ -822,7 +799,8 @@
   "cp_cycles_NP1": 236,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 3.8
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-upstream_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -839,14 +817,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x402770"
-  ],
   "counts": {
    "total": 2002,
    "vector": 1853,
@@ -857,7 +831,10 @@
    "stack_vector": 152,
    "vector_fused_uop": 1471
   },
-  "fused_uop_per_output": 5.746
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.746,
+  "consensus_rank": 31.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -874,14 +851,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x402590"
-  ],
   "counts": {
    "total": 1882,
    "vector": 1633,
@@ -892,7 +865,10 @@
    "stack_vector": 186,
    "vector_fused_uop": 1338
   },
-  "fused_uop_per_output": 5.227
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.227,
+  "consensus_rank": 29.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-0_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -909,14 +885,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x402590"
-  ],
   "counts": {
    "total": 1882,
    "vector": 1633,
@@ -927,7 +899,10 @@
    "stack_vector": 186,
    "vector_fused_uop": 1338
   },
-  "fused_uop_per_output": 5.227
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.227,
+  "consensus_rank": 30.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -944,14 +919,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x402410"
-  ],
   "counts": {
    "total": 1788,
    "vector": 1576,
@@ -962,7 +933,10 @@
    "stack_vector": 140,
    "vector_fused_uop": 1283
   },
-  "fused_uop_per_output": 5.012
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.012,
+  "consensus_rank": 25.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -979,14 +953,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x402590"
-  ],
   "counts": {
    "total": 1882,
    "vector": 1625,
@@ -997,7 +967,10 @@
    "stack_vector": 186,
    "vector_fused_uop": 1330
   },
-  "fused_uop_per_output": 5.195
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.195,
+  "consensus_rank": 27.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-0_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -1014,14 +987,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": true,
-  "range": [
-   "0x400820",
-   "0x402410"
-  ],
   "counts": {
    "total": 1788,
    "vector": 1568,
@@ -1032,7 +1001,10 @@
    "stack_vector": 140,
    "vector_fused_uop": 1275
   },
-  "fused_uop_per_output": 4.98
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.98,
+  "consensus_rank": 23.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-1",
@@ -1049,14 +1021,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 1,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 2300,
   "verify": "cases=20000 lanes=5120000 mismatches=2300 rate=0.044922%\n first-diff idx=44 want=1579 got=-1621\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x4020d0"
-  ],
   "counts": {
    "total": 1580,
    "vector": 1375,
@@ -1067,7 +1035,10 @@
    "stack_vector": 63,
    "vector_fused_uop": 1079
   },
-  "fused_uop_per_output": 4.215
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.215,
+  "consensus_rank": 18.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-0_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -1084,14 +1055,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x402410"
-  ],
   "counts": {
    "total": 1788,
    "vector": 1576,
@@ -1102,7 +1069,10 @@
    "stack_vector": 140,
    "vector_fused_uop": 1283
   },
-  "fused_uop_per_output": 5.012
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.012,
+  "consensus_rank": 26.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-0_even_sve-0",
@@ -1119,14 +1089,10 @@
   "pass2_pack_zip": 0,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x402590"
-  ],
   "counts": {
    "total": 1882,
    "vector": 1625,
@@ -1137,7 +1103,10 @@
    "stack_vector": 186,
    "vector_fused_uop": 1330
   },
-  "fused_uop_per_output": 5.195
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 5.195,
+  "consensus_rank": 28.0
  },
  {
   "tag": "pass1-per-row_pass1_k_tile-2_pass2-odd-quarter_pass2_k_tile-1_narrow_merge-1_legacy_semantics-1_legacy_even_full-0_store_merge16-1_pass1_even_factor-0_pass1_pack_zip-0_pass2_pack_zip-1_even_sve-0",
@@ -1154,14 +1123,10 @@
   "pass2_pack_zip": 1,
   "even_sve": 0,
   "contract": "upstream-exact",
+  "upstream_exact": false,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
-  "upstream_exact": false,
-  "range": [
-   "0x400820",
-   "0x402410"
-  ],
   "counts": {
    "total": 1788,
    "vector": 1568,
@@ -1172,6 +1137,9 @@
    "stack_vector": 140,
    "vector_fused_uop": 1275
   },
-  "fused_uop_per_output": 4.98
+  "range": null,
+  "cached": true,
+  "fused_uop_per_output": 4.98,
+  "consensus_rank": 24.0
  }
 ]

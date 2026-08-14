@@ -89,7 +89,9 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 - 搜索新参数：`--mca-top N`（llvm-mca）、`--cost-top N`
   （表驱动结构成本，`est_cycles_<target>`）、`--cp-top N`
   （critical-path，`cp_cycles_<target>`）、`--lite-top N`
-  （TestBenchLite 黄金门禁），以及 `--rank-by fused_uop|mca|cp|lite`。
+  （TestBenchLite 黄金门禁）、`--require-lite`（固化前强制 lite
+  通过），以及 `--rank-by fused_uop|mca|cp|lite|consensus`
+  （consensus = 各代理归一化排名平均，含 lite）。
 - 单 trace 工具：`tools/estimate_cycles.py`、`tools/critical_path_dynamic.py`。
 - 920B SVE1 指令实测表：`benchmarks/sve-timing-920b/timing-920b.json`
   （仅作参考；target 权重已改为结构口径，不再使用实测值）。

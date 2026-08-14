@@ -121,6 +121,22 @@ def candidate_range(row, outdir, manifest, backend, kernel):
     trace driver and symbols on disk, so we recompute it."""
     if row.get("range"):
         return int(row["range"][0], 16), int(row["range"][1], 16)
+    # Cached rows may lack a stored range. Prefer the actual executed
+    # address extent of the on-disk trace (the -dfilter window), which is
+    # authoritative; the symbol-based recompute below can resolve a
+    # narrower range (e.g. op backend pass symbol vs the full kernel) and
+    # silently truncate the proxy inputs.
+    trace = os.path.join(outdir, row.get("tag", "") + "-trace.log")
+    if os.path.exists(trace):
+        try:
+            from parse_qemu_trace import parse_exec
+            insns = parse_exec(trace, 0, 1 << 63)
+            if insns:
+                lo = min(i["addr"] for i in insns)
+                hi = max(i["addr"] for i in insns) + 4
+                return lo, hi
+        except Exception:
+            pass
     driver = os.path.join(outdir, row.get("tag", "") + "-trace-driver")
     if not os.path.exists(driver):
         return None
@@ -455,7 +471,8 @@ def measure_layout_candidate(task):
     row["range"] = [hex(rng[0]), hex(rng[1])]
     row["counts"] = counts
     return row, {"passed": True, "verify_mismatches": mism,
-                 "verify": r.stdout, "counts": counts}, "OK"
+                 "verify": r.stdout, "counts": counts,
+                 "range": row["range"]}, "OK"
 
 
 def main():
@@ -519,7 +536,7 @@ def main():
                          "candidates and record cp_cycles_<target> "
                          "(default 0 = off)")
     ap.add_argument("--rank-by",
-                    choices=("fused_uop", "mca", "cp", "lite"),
+                    choices=("fused_uop", "mca", "cp", "lite", "consensus"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
@@ -527,7 +544,12 @@ def main():
                          "MCA data; cp requires --cp-top and uses "
                          "cp_cycles as primary key; lite requires "
                          "--lite-top and puts TestBenchLite-passing "
-                         "candidates first)")
+                         "candidates first; consensus averages normalized "
+                         "ranks over all available proxies)")
+    ap.add_argument("--require-lite", action="store_true",
+                    help="when finalizing, skip candidates that did not pass "
+                         "TestBenchLite (requires --lite-top; candidates "
+                         "without lite data are skipped)")
     args = ap.parse_args()
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
@@ -536,6 +558,14 @@ def main():
         args.lite_top = 10
     if args.rank_by == "cp" and args.cp_top == 0:
         args.cp_top = 10
+    if args.rank_by == "consensus":
+        # consensus needs all proxies; default the top-N to the largest
+        # requested window.
+        args.mca_top = max(args.mca_top, 10)
+        args.cost_top = max(args.cost_top, 10)
+        args.cp_top = max(args.cp_top, 10)
+        if args.lite_top == 0:
+            args.lite_top = 10
     manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.mca_mcpu is None:
@@ -649,6 +679,7 @@ def main():
                 "verify_mismatches": ent.get("verify_mismatches", 0),
                 "verify": ent.get("verify", ""),
                 "counts": ent.get("counts"),
+                "range": ent.get("range"),
                 "cached": True})
             print("%-24s CACHED (fused_adj=%s)"
                   % (tag, (ent.get("counts") or {}).get("vector_fused")))
@@ -873,11 +904,62 @@ def main():
                          "PASS" if r["lite_pass"] else "FAIL " + str(fails)))
             if args.rank_by == "lite":
                 ok.sort(key=lambda r: (r.get("lite_pass") is not True, fu(r)))
+    if args.rank_by == "consensus" and ok:
+        tgt = None
+        try:
+            from optimizer.mca_targets import target as mca_target
+            tgt = mca_target(args.mca_target)
+        except Exception:
+            pass
+        ekey = "est_cycles_%s" % (tgt["name"] if tgt else "NP1")
+        ckey = "cp_cycles_%s" % (tgt["name"] if tgt else "NP1")
+        proxies = [("fused_uop", fu),
+                   ("mca_cycles", lambda r: r.get("mca_cycles")),
+                   ("est_cycles", lambda r: r.get(ekey)),
+                   ("cp_cycles", lambda r: r.get(ckey)),
+                   ("lite_pass", lambda r: 0.0 if r.get("lite_pass")
+                    is True else 1.0)]
+        n = len(ok)
+
+        def rank(vals):
+            # ascending rank with missing -> worst (n)
+            order = sorted(range(n),
+                           key=lambda i: (vals[i] is None,
+                                          vals[i] if vals[i] is not None
+                                          else 1e18))
+            rk = [0] * n
+            for pos, i in enumerate(order):
+                rk[i] = pos
+            return rk
+
+        ranks = {}
+        for name, getter in proxies:
+            ranks[name] = rank([getter(r) for r in ok])
+        for i, r in enumerate(ok):
+            r["consensus_rank"] = sum(ranks[name][i]
+                                      for name, _ in proxies) / len(proxies)
+        print("rank by consensus (mean of normalized proxy ranks):")
+        for i, r in enumerate(sorted(ok, key=lambda r: r["consensus_rank"])):
+            print("  %-24s fu=%d mca=%s est=%s cp=%s lite=%s consensus=%.2f"
+                  % (r["tag"], fu(r), r.get("mca_cycles"),
+                     r.get(ekey), r.get(ckey),
+                     "PASS" if r.get("lite_pass") is True else "FAIL",
+                     r["consensus_rank"]))
+        ok.sort(key=lambda r: r["consensus_rank"])
     # persist results after the MCA pass so mca_cycles/mca_uops survive
     # (previously dumped before --mca-top ran and MCA data was lost).
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
               indent=1)
     if args.finalize and ok:
+        if args.require_lite:
+            ok = [r for r in ok if r.get("lite_pass") is True]
+            if not ok:
+                print("require-lite: no lite-passing candidate; "
+                      "refusing to finalize", file=sys.stderr)
+                json.dump(results,
+                          open(os.path.join(args.outdir, "results.json"),
+                               "w"), indent=1)
+                return 1
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")
         os.makedirs(cand_dir, exist_ok=True)
