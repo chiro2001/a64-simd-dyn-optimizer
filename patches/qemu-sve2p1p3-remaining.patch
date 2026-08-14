@@ -1,0 +1,638 @@
+--- a/target/arm/tcg/helper-defs.h
++++ b/target/arm/tcg/helper-defs.h
+@@ -531,6 +531,7 @@
+ DEF_HELPER_FLAGS_5(gvec_sdot_2h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
+ DEF_HELPER_FLAGS_5(gvec_udot_2h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
+ DEF_HELPER_FLAGS_5(gvec_sdot_2b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_udot_2b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
+ 
+ DEF_HELPER_FLAGS_5(gvec_sdot_idx_4b, TCG_CALL_NO_RWG,
+                    void, ptr, ptr, ptr, ptr, i32)
+@@ -549,6 +550,89 @@
+                    void, ptr, ptr, ptr, ptr, i32)
+ DEF_HELPER_FLAGS_5(gvec_udot_idx_2h, TCG_CALL_NO_RWG,
+                    void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_sdot_idx_2b, TCG_CALL_NO_RWG,
++                   void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_udot_idx_2b, TCG_CALL_NO_RWG,
++                   void, ptr, ptr, ptr, ptr, i32)
++
++DEF_HELPER_FLAGS_5(gvec_sabal_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_uabal_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_sabal_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_uabal_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_sabal_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_5(gvec_uabal_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, ptr, i32)
++
++DEF_HELPER_FLAGS_4(sve2p3_sqrshrn_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_sqrshrun_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_sqshrn_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_sqshrun_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_uqrshrn_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_uqshrn_hb, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_sqshrn_sh, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_sqshrun_sh, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p3_uqshrn_sh, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++
++DEF_HELPER_FLAGS_4(sve2p2_cls_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cls_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cls_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cls_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_clz_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_clz_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_clz_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_clz_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnt_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnt_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnt_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnt_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnot_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnot_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnot_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_cnot_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_not_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_not_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_not_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_not_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_abs_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_abs_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_abs_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_abs_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_neg_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_neg_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_neg_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_neg_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxtb_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxtb_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxtb_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxtb_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxtb_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxtb_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxth_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxth_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxth_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxth_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sxtw_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_uxtw_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqabs_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqabs_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqabs_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqabs_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqneg_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqneg_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqneg_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_sqneg_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_urecpe_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_ursqrte_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_rbit_b, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_rbit_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_rbit_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_rbit_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revb_h, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revb_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revb_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revh_s, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revh_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revw_d, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
++DEF_HELPER_FLAGS_4(sve2p2_revd_q, TCG_CALL_NO_RWG, void, ptr, ptr, ptr, i32)
+ 
+ DEF_HELPER_FLAGS_5(gvec_fcaddh, TCG_CALL_NO_RWG,
+                    void, ptr, ptr, ptr, fpst, i32)
+--- a/target/arm/tcg/vec_helper.c
++++ b/target/arm/tcg/vec_helper.c
+@@ -917,10 +917,60 @@
+ DO_DOT(gvec_sdot_2h, int32_t, int16_t, int16_t)
+ DO_DOT(gvec_udot_2h, uint32_t, uint16_t, uint16_t)
+ DO_DOT(gvec_sdot_2b, int16_t, int8_t, int8_t)
++DO_DOT(gvec_udot_2b, uint16_t, uint8_t, uint8_t)
+ 
+ DO_DOT_IDX(gvec_sdot_idx_2h, int32_t, int16_t, int16_t, H4)
+ DO_DOT_IDX(gvec_udot_idx_2h, uint32_t, uint16_t, uint16_t, H4)
+ 
++#define DO_DOT_IDX_2B(NAME, TYPED, TYPEN, TYPEM)                        \
++void HELPER(NAME)(void *vd, void *vn, void *vm, void *va, uint32_t desc) \
++{                                                                       \
++    intptr_t seg, j, opr_sz = simd_oprsz(desc);                         \
++    intptr_t index = simd_data(desc);                                   \
++    TYPED *d = vd, *a = va;                                             \
++    TYPEN *n = vn;                                                      \
++    TYPEM *m = vm;                                                      \
++    for (seg = 0; seg < opr_sz; seg += 16) {                            \
++        TYPEM *mp = m + seg / sizeof(TYPEM) + index * 2;                \
++        for (j = 0; j < 16; j += sizeof(TYPED)) {                       \
++            intptr_t i = (seg + j) / sizeof(TYPED);                     \
++            d[i] = a[i] + (TYPED)n[i * 2 + 0] * (TYPED)mp[0] +          \
++                           (TYPED)n[i * 2 + 1] * (TYPED)mp[1];          \
++        }                                                               \
++    }                                                                   \
++    clear_tail(d, opr_sz, simd_maxsz(desc));                            \
++}
++
++DO_DOT_IDX_2B(gvec_sdot_idx_2b, int16_t, int8_t, int8_t)
++DO_DOT_IDX_2B(gvec_udot_idx_2b, uint16_t, uint8_t, uint8_t)
++
++#undef DO_DOT_IDX_2B
++
++#define DO_2WAY_ABAL(NAME, TYPED, TYPEN)                                \
++void HELPER(NAME)(void *vd, void *vn, void *vm, void *va, uint32_t desc) \
++{                                                                       \
++    intptr_t i, n = simd_oprsz(desc) / sizeof(TYPED);                   \
++    TYPED *d = vd, *a = va;                                             \
++    TYPEN *s0 = vn, *s1 = vm;                                           \
++    for (i = 0; i < n; i++) {                                           \
++        TYPED x0 = s0[2 * i + 0], x1 = s0[2 * i + 1];                   \
++        TYPED y0 = s1[2 * i + 0], y1 = s1[2 * i + 1];                   \
++        TYPED d0 = x0 > y0 ? x0 - y0 : y0 - x0;                         \
++        TYPED d1 = x1 > y1 ? x1 - y1 : y1 - x1;                         \
++        d[i] = a[i] + d0 + d1;                                          \
++    }                                                                   \
++    clear_tail(d, n * sizeof(TYPED), simd_maxsz(desc));                 \
++}
++
++DO_2WAY_ABAL(gvec_sabal_h, int16_t, int8_t)
++DO_2WAY_ABAL(gvec_uabal_h, uint16_t, uint8_t)
++DO_2WAY_ABAL(gvec_sabal_s, int32_t, int16_t)
++DO_2WAY_ABAL(gvec_uabal_s, uint32_t, uint16_t)
++DO_2WAY_ABAL(gvec_sabal_d, int64_t, int32_t)
++DO_2WAY_ABAL(gvec_uabal_d, uint64_t, uint32_t)
++
++#undef DO_2WAY_ABAL
++
+ #undef DO_DOT
+ #undef DO_DOT_IDX
+ 
+--- a/target/arm/tcg/sve_helper.c
++++ b/target/arm/tcg/sve_helper.c
+@@ -1005,6 +1005,123 @@
+ DO_ZPZ(sve2_urecpe_s, uint32_t, H1_4, helper_recpe_u32)
+ DO_ZPZ(sve2_ursqrte_s, uint32_t, H1_4, helper_rsqrte_u32)
+ 
++/* SVE2.2 zeroing forms of the predicated unary operations. */
++#define DO_ZPZ_Z(NAME, TYPE, H, OP)                             \
++void HELPER(NAME)(void *vd, void *vn, void *vg, uint32_t desc)  \
++{                                                               \
++    intptr_t i, opr_sz = simd_oprsz(desc);                      \
++    for (i = 0; i < opr_sz; ) {                                 \
++        uint16_t pg = *(uint16_t *)(vg + H1_2(i >> 3));         \
++        do {                                                    \
++            TYPE nn = *(TYPE *)(vn + H(i));                     \
++            *(TYPE *)(vd + H(i)) = (pg & 1) ? OP(nn) : (TYPE)0; \
++            i += sizeof(TYPE), pg >>= sizeof(TYPE);             \
++        } while (i & 15);                                       \
++    }                                                           \
++}
++
++#define DO_ZPZ_Z_D(NAME, TYPE, OP)                              \
++void HELPER(NAME)(void *vd, void *vn, void *vg, uint32_t desc)  \
++{                                                               \
++    intptr_t i, opr_sz = simd_oprsz(desc) / 8;                  \
++    TYPE *d = vd, *n = vn;                                      \
++    uint8_t *pg = vg;                                           \
++    for (i = 0; i < opr_sz; i++) {                              \
++        TYPE nn = n[i];                                         \
++        d[i] = (pg[H1(i)] & 1) ? OP(nn) : (TYPE)0;              \
++    }                                                           \
++}
++
++DO_ZPZ_Z(sve2p2_cls_b, int8_t, H1, DO_CLS_B)
++DO_ZPZ_Z(sve2p2_cls_h, int16_t, H1_2, DO_CLS_H)
++DO_ZPZ_Z(sve2p2_cls_s, int32_t, H1_4, clrsb32)
++DO_ZPZ_Z_D(sve2p2_cls_d, int64_t, clrsb64)
++
++DO_ZPZ_Z(sve2p2_clz_b, uint8_t, H1, DO_CLZ_B)
++DO_ZPZ_Z(sve2p2_clz_h, uint16_t, H1_2, DO_CLZ_H)
++DO_ZPZ_Z(sve2p2_clz_s, uint32_t, H1_4, clz32)
++DO_ZPZ_Z_D(sve2p2_clz_d, uint64_t, clz64)
++
++DO_ZPZ_Z(sve2p2_cnt_b, uint8_t, H1, ctpop8)
++DO_ZPZ_Z(sve2p2_cnt_h, uint16_t, H1_2, ctpop16)
++DO_ZPZ_Z(sve2p2_cnt_s, uint32_t, H1_4, ctpop32)
++DO_ZPZ_Z_D(sve2p2_cnt_d, uint64_t, ctpop64)
++
++DO_ZPZ_Z(sve2p2_cnot_b, uint8_t, H1, DO_CNOT)
++DO_ZPZ_Z(sve2p2_cnot_h, uint16_t, H1_2, DO_CNOT)
++DO_ZPZ_Z(sve2p2_cnot_s, uint32_t, H1_4, DO_CNOT)
++DO_ZPZ_Z_D(sve2p2_cnot_d, uint64_t, DO_CNOT)
++
++DO_ZPZ_Z(sve2p2_not_b, uint8_t, H1, DO_NOT)
++DO_ZPZ_Z(sve2p2_not_h, uint16_t, H1_2, DO_NOT)
++DO_ZPZ_Z(sve2p2_not_s, uint32_t, H1_4, DO_NOT)
++DO_ZPZ_Z_D(sve2p2_not_d, uint64_t, DO_NOT)
++
++DO_ZPZ_Z(sve2p2_sxtb_h, uint16_t, H1_2, DO_SXTB)
++DO_ZPZ_Z(sve2p2_sxtb_s, uint32_t, H1_4, DO_SXTB)
++DO_ZPZ_Z_D(sve2p2_sxtb_d, uint64_t, DO_SXTB)
++DO_ZPZ_Z(sve2p2_uxtb_h, uint16_t, H1_2, DO_UXTB)
++DO_ZPZ_Z(sve2p2_uxtb_s, uint32_t, H1_4, DO_UXTB)
++DO_ZPZ_Z_D(sve2p2_uxtb_d, uint64_t, DO_UXTB)
++DO_ZPZ_Z(sve2p2_sxth_s, uint32_t, H1_4, DO_SXTH)
++DO_ZPZ_Z_D(sve2p2_sxth_d, uint64_t, DO_SXTH)
++DO_ZPZ_Z(sve2p2_uxth_s, uint32_t, H1_4, DO_UXTH)
++DO_ZPZ_Z_D(sve2p2_uxth_d, uint64_t, DO_UXTH)
++DO_ZPZ_Z_D(sve2p2_sxtw_d, uint64_t, DO_SXTS)
++DO_ZPZ_Z_D(sve2p2_uxtw_d, uint64_t, DO_UXTS)
++
++DO_ZPZ_Z(sve2p2_abs_b, int8_t, H1, DO_ABS)
++DO_ZPZ_Z(sve2p2_abs_h, int16_t, H1_2, DO_ABS)
++DO_ZPZ_Z(sve2p2_abs_s, int32_t, H1_4, DO_ABS)
++DO_ZPZ_Z_D(sve2p2_abs_d, int64_t, DO_ABS)
++DO_ZPZ_Z(sve2p2_neg_b, uint8_t, H1, DO_NEG)
++DO_ZPZ_Z(sve2p2_neg_h, uint16_t, H1_2, DO_NEG)
++DO_ZPZ_Z(sve2p2_neg_s, uint32_t, H1_4, DO_NEG)
++DO_ZPZ_Z_D(sve2p2_neg_d, uint64_t, DO_NEG)
++
++DO_ZPZ_Z(sve2p2_sqabs_b, int8_t, H1, DO_SQABS)
++DO_ZPZ_Z(sve2p2_sqabs_h, int16_t, H1_2, DO_SQABS)
++DO_ZPZ_Z(sve2p2_sqabs_s, int32_t, H1_4, DO_SQABS)
++DO_ZPZ_Z_D(sve2p2_sqabs_d, int64_t, DO_SQABS)
++DO_ZPZ_Z(sve2p2_sqneg_b, uint8_t, H1, DO_SQNEG)
++DO_ZPZ_Z(sve2p2_sqneg_h, uint16_t, H1_2, DO_SQNEG)
++DO_ZPZ_Z(sve2p2_sqneg_s, uint32_t, H1_4, DO_SQNEG)
++DO_ZPZ_Z_D(sve2p2_sqneg_d, uint64_t, DO_SQNEG)
++
++DO_ZPZ_Z(sve2p2_urecpe_s, uint32_t, H1_4, helper_recpe_u32)
++DO_ZPZ_Z(sve2p2_ursqrte_s, uint32_t, H1_4, helper_rsqrte_u32)
++
++DO_ZPZ_Z(sve2p2_rbit_b, uint8_t, H1, revbit8)
++DO_ZPZ_Z(sve2p2_rbit_h, uint16_t, H1_2, revbit16)
++DO_ZPZ_Z(sve2p2_rbit_s, uint32_t, H1_4, revbit32)
++DO_ZPZ_Z_D(sve2p2_rbit_d, uint64_t, revbit64)
++DO_ZPZ_Z(sve2p2_revb_h, uint16_t, H1_2, bswap16)
++DO_ZPZ_Z(sve2p2_revb_s, uint32_t, H1_4, bswap32)
++DO_ZPZ_Z_D(sve2p2_revb_d, uint64_t, bswap64)
++DO_ZPZ_Z(sve2p2_revh_s, uint32_t, H1_4, hswap32)
++DO_ZPZ_Z_D(sve2p2_revh_d, uint64_t, hswap64)
++DO_ZPZ_Z_D(sve2p2_revw_d, uint64_t, wswap64)
++
++void HELPER(sve2p2_revd_q)(void *vd, void *vn, void *vg, uint32_t desc)
++{
++    intptr_t i, opr_sz = simd_oprsz(desc) / 8;
++    uint64_t *d = vd, *n = vn;
++    uint8_t *pg = vg;
++
++    for (i = 0; i < opr_sz; i += 2) {
++        if (pg[H1(i)] & 1) {
++            d[i + 0] = bswap64(n[i + 1]);
++            d[i + 1] = bswap64(n[i + 0]);
++        } else {
++            d[i + 0] = 0;
++            d[i + 1] = 0;
++        }
++    }
++}
++
++#undef DO_ZPZ_Z
++#undef DO_ZPZ_Z_D
++
+ /* Three-operand expander, unpredicated, in which the third operand is "wide".
+  */
+ #define DO_ZZW(NAME, TYPE, TYPEW, H, OP)                       \
+@@ -2322,6 +2439,43 @@
+ #undef DO_SHRNB
+ #undef DO_SHRNT
+ 
++/* SVE2.3 saturating shift right narrow by immediate and interleave.
++ * Two source vectors of element size 2*sizeof(TN) are narrowed,
++ * saturated, and interleaved into the destination.
++ */
++#define DO_SHRN2I(NAME, TW, TN, HW, HN, RSHR, SAT)              \
++void HELPER(NAME)(void *vd, void *vn, void *vm, uint32_t desc)  \
++{                                                               \
++    ARMVectorReg scratch;                                       \
++    size_t oprsz = simd_oprsz(desc);                            \
++    size_t n = oprsz / sizeof(TW);                              \
++    int shift = simd_data(desc);                                \
++    TW *s0 = vn, *s1 = vm;                                      \
++    TN *d = (TN *)&scratch;                                     \
++    for (size_t i = 0; i < n; i++) {                            \
++        d[HN(2 * i + 0)] = (TN)SAT(RSHR(s0[HW(i)], shift));     \
++        d[HN(2 * i + 1)] = (TN)SAT(RSHR(s1[HW(i)], shift));     \
++    }                                                           \
++    memcpy(vd, &scratch, oprsz);                                \
++    clear_tail(vd, oprsz, simd_maxsz(desc));                    \
++}
++
++#define SHR2(x, sh) ((x) >> (sh))
++
++DO_SHRN2I(sve2p3_sqrshrn_hb, int16_t, int8_t, H2, H1, do_srshr, do_ssat_b)
++DO_SHRN2I(sve2p3_sqrshrun_hb, int16_t, uint8_t, H2, H1, do_srshr, do_usat_b)
++DO_SHRN2I(sve2p3_sqshrn_hb, int16_t, int8_t, H2, H1, SHR2, do_ssat_b)
++DO_SHRN2I(sve2p3_sqshrun_hb, int16_t, uint8_t, H2, H1, SHR2, do_usat_b)
++DO_SHRN2I(sve2p3_uqrshrn_hb, uint16_t, uint8_t, H2, H1, do_urshr, do_usat_b)
++DO_SHRN2I(sve2p3_uqshrn_hb, uint16_t, uint8_t, H2, H1, SHR2, do_usat_b)
++
++DO_SHRN2I(sve2p3_sqshrn_sh, int32_t, int16_t, H4, H2, SHR2, do_ssat_h)
++DO_SHRN2I(sve2p3_sqshrun_sh, int32_t, uint16_t, H4, H2, SHR2, do_usat_h)
++DO_SHRN2I(sve2p3_uqshrn_sh, uint32_t, uint16_t, H4, H2, SHR2, do_usat_h)
++
++#undef SHR2
++#undef DO_SHRN2I
++
+ #define DO_BINOPNB(NAME, TYPEW, TYPEN, SHIFT, OP)                           \
+ void HELPER(NAME)(void *vd, void *vn, void *vm, uint32_t desc)              \
+ {                                                                           \
+--- a/target/arm/tcg/sve.decode
++++ b/target/arm/tcg/sve.decode
+@@ -45,6 +45,12 @@
+ %tszimm16_esz   22:2 16:5 !function=tszimm_esz
+ %tszimm16_shr   22:2 16:5 !function=tszimm_shr
+ %tszimm16_shl   22:2 16:5 !function=tszimm_shl
++%tszimm16_esz0  22:1 16:5 !function=tszimm_esz
++%tszimm16_shr0  22:1 16:5 !function=tszimm_shr
++
++# SVE2.3 shift-right-narrow-and-interleave immediates.
++%sve2p3_shr_hb  16:3 !function=rsub_8
++%sve2p3_shr_sh  16:4 !function=rsub_16
+ 
+ # Signed 8-bit immediate, optionally shifted left by 8.
+ %sh8_i8s        5:9 !function=expand_imm_sh8s
+@@ -187,6 +193,14 @@
+                     &rri_esz esz=%tszimm16_esz imm=%tszimm16_shl
+ @rd_rn_tszimm_shr   ........ .. ... ... ...... rn:5 rd:5 \
+                     &rri_esz esz=%tszimm16_esz imm=%tszimm16_shr
++@rd_rn_tszimm_shr0  ........ .. ... ... ...... rn:5 rd:5 \
++                    &rri_esz esz=%tszimm16_esz0 imm=%tszimm16_shr0
++
++&sve2p3_rshr2   zd zn shift
++@sve2p3_rshr2_hb  ........ .. . . . ... .. ... . zn:4 . zd:5 \
++                  &sve2p3_rshr2 shift=%sve2p3_shr_hb
++@sve2p3_rshr2_sh  ........ .. . . .... .. ... . zn:4 . zd:5 \
++                  &sve2p3_rshr2 shift=%sve2p3_shr_sh
+ 
+ # Two register operand, one immediate operand, with 4-bit predicate.
+ # User must fill in imm.
+@@ -407,6 +421,32 @@
+ SXTW            00000100 .. 010 100 101 ... ..... .....         @rd_pg_rn
+ UXTW            00000100 .. 010 101 101 ... ..... .....         @rd_pg_rn
+ 
++# SVE2.2 zeroing forms of the predicated unary operations
++CLS_z           00000100 .. 001 000 101 ... ..... .....         @rd_pg_rn
++CLZ_z           00000100 .. 001 001 101 ... ..... .....         @rd_pg_rn
++CNT_z           00000100 .. 001 010 101 ... ..... .....         @rd_pg_rn
++CNOT_z          00000100 .. 001 011 101 ... ..... .....         @rd_pg_rn
++NOT_z           00000100 .. 001 110 101 ... ..... .....         @rd_pg_rn
++SXTB_z          00000100 .. 000 000 101 ... ..... .....         @rd_pg_rn
++UXTB_z          00000100 .. 000 001 101 ... ..... .....         @rd_pg_rn
++SXTH_z          00000100 .. 000 010 101 ... ..... .....         @rd_pg_rn
++UXTH_z          00000100 .. 000 011 101 ... ..... .....         @rd_pg_rn
++SXTW_z          00000100 .. 000 100 101 ... ..... .....         @rd_pg_rn
++UXTW_z          00000100 .. 000 101 101 ... ..... .....         @rd_pg_rn
++ABS_z           00000100 .. 000 110 101 ... ..... .....         @rd_pg_rn
++NEG_z           00000100 .. 000 111 101 ... ..... .....         @rd_pg_rn
++
++SQABS_z         01000100 .. 001010 101 ... ..... .....          @rd_pg_rn
++SQNEG_z         01000100 .. 001011 101 ... ..... .....          @rd_pg_rn
++URECPE_z        01000100 .. 000010 101 ... ..... .....          @rd_pg_rn
++URSQRTE_z       01000100 .. 000011 101 ... ..... .....          @rd_pg_rn
++
++RBIT_z          00000101 .. 100111 101 ... ..... .....          @rd_pg_rn
++REVB_z          00000101 .. 100100 101 ... ..... .....          @rd_pg_rn
++REVH_z          00000101 .. 100101 101 ... ..... .....          @rd_pg_rn
++REVW_z          00000101 .. 100110 101 ... ..... .....          @rd_pg_rn
++REVD_z          00000101 00 101110 101 ... ..... .....          @rd_pg_rn_e0
++
+ ### SVE Floating Point Compare - Vectors Group
+ 
+ # SVE floating-point compare vectors
+@@ -1686,22 +1726,35 @@
+ ## SVE2 bitwise shift right narrow
+ 
+ # Bit 23 == 0 is handled by esz > 0 in the translator.
+-SQSHRUNB        01000101 .. 1 ..... 00 0000 ..... .....  @rd_rn_tszimm_shr
+-SQSHRUNT        01000101 .. 1 ..... 00 0001 ..... .....  @rd_rn_tszimm_shr
+-SQRSHRUNB       01000101 .. 1 ..... 00 0010 ..... .....  @rd_rn_tszimm_shr
+-SQRSHRUNT       01000101 .. 1 ..... 00 0011 ..... .....  @rd_rn_tszimm_shr
+-SHRNB           01000101 .. 1 ..... 00 0100 ..... .....  @rd_rn_tszimm_shr
+-SHRNT           01000101 .. 1 ..... 00 0101 ..... .....  @rd_rn_tszimm_shr
+-RSHRNB          01000101 .. 1 ..... 00 0110 ..... .....  @rd_rn_tszimm_shr
+-RSHRNT          01000101 .. 1 ..... 00 0111 ..... .....  @rd_rn_tszimm_shr
+-SQSHRNB         01000101 .. 1 ..... 00 1000 ..... .....  @rd_rn_tszimm_shr
+-SQSHRNT         01000101 .. 1 ..... 00 1001 ..... .....  @rd_rn_tszimm_shr
+-SQRSHRNB        01000101 .. 1 ..... 00 1010 ..... .....  @rd_rn_tszimm_shr
+-SQRSHRNT        01000101 .. 1 ..... 00 1011 ..... .....  @rd_rn_tszimm_shr
+-UQSHRNB         01000101 .. 1 ..... 00 1100 ..... .....  @rd_rn_tszimm_shr
+-UQSHRNT         01000101 .. 1 ..... 00 1101 ..... .....  @rd_rn_tszimm_shr
+-UQRSHRNB        01000101 .. 1 ..... 00 1110 ..... .....  @rd_rn_tszimm_shr
+-UQRSHRNT        01000101 .. 1 ..... 00 1111 ..... .....  @rd_rn_tszimm_shr
++SQSHRUNB        01000101 0. 1 ..... 00 0000 ..... .....  @rd_rn_tszimm_shr0
++SQSHRUNT        01000101 0. 1 ..... 00 0001 ..... .....  @rd_rn_tszimm_shr0
++SQRSHRUNB       01000101 0. 1 ..... 00 0010 ..... .....  @rd_rn_tszimm_shr0
++SQRSHRUNT       01000101 0. 1 ..... 00 0011 ..... .....  @rd_rn_tszimm_shr0
++SHRNB           01000101 0. 1 ..... 00 0100 ..... .....  @rd_rn_tszimm_shr0
++SHRNT           01000101 0. 1 ..... 00 0101 ..... .....  @rd_rn_tszimm_shr0
++RSHRNB          01000101 0. 1 ..... 00 0110 ..... .....  @rd_rn_tszimm_shr0
++RSHRNT          01000101 0. 1 ..... 00 0111 ..... .....  @rd_rn_tszimm_shr0
++SQSHRNB         01000101 0. 1 ..... 00 1000 ..... .....  @rd_rn_tszimm_shr0
++SQSHRNT         01000101 0. 1 ..... 00 1001 ..... .....  @rd_rn_tszimm_shr0
++SQRSHRNB        01000101 0. 1 ..... 00 1010 ..... .....  @rd_rn_tszimm_shr0
++SQRSHRNT        01000101 0. 1 ..... 00 1011 ..... .....  @rd_rn_tszimm_shr0
++UQSHRNB         01000101 0. 1 ..... 00 1100 ..... .....  @rd_rn_tszimm_shr0
++UQSHRNT         01000101 0. 1 ..... 00 1101 ..... .....  @rd_rn_tszimm_shr0
++UQRSHRNB        01000101 0. 1 ..... 00 1110 ..... .....  @rd_rn_tszimm_shr0
++UQRSHRNT        01000101 0. 1 ..... 00 1111 ..... .....  @rd_rn_tszimm_shr0
++
++## SVE2.3 saturating shift right narrow by immediate and interleave
++
++SQRSHRN2_hb     01000101 10 1 0 1 ... 00 101 0 ....0 .....  @sve2p3_rshr2_hb
++SQRSHRUN2_hb    01000101 10 1 0 1 ... 00 001 0 ....0 .....  @sve2p3_rshr2_hb
++SQSHRN2_hb      01000101 10 1 0 1 ... 00 000 0 ....0 .....  @sve2p3_rshr2_hb
++SQSHRUN2_hb     01000101 10 1 0 1 ... 00 100 0 ....0 .....  @sve2p3_rshr2_hb
++UQRSHRN2_hb     01000101 10 1 0 1 ... 00 111 0 ....0 .....  @sve2p3_rshr2_hb
++UQSHRN2_hb      01000101 10 1 0 1 ... 00 010 0 ....0 .....  @sve2p3_rshr2_hb
++
++SQSHRN2_sh      01000101 10 1 1 .... 00 000 0 ....0 .....  @sve2p3_rshr2_sh
++SQSHRUN2_sh     01000101 10 1 1 .... 00 100 0 ....0 .....  @sve2p3_rshr2_sh
++UQSHRN2_sh      01000101 10 1 1 .... 00 010 0 ....0 .....  @sve2p3_rshr2_sh
+ 
+ ## SVE2 integer add/subtract narrow high part
+ 
+@@ -1772,9 +1825,20 @@
+ SDOT_zzzz_2s    01000100 00 0 ..... 110 010 ..... .....  @rda_rn_rm_ex esz=2
+ UDOT_zzzz_2s    01000100 00 0 ..... 110 011 ..... .....  @rda_rn_rm_ex esz=2
+ SDOT_zzzz_2h    01000100 01 0 ..... 000000 ..... .....  @rda_rn_rm_ex esz=1
++UDOT_zzzz_2h    01000100 01 0 ..... 000001 ..... .....  @rda_rn_rm_ex esz=1
+ 
+ USDOT_zzzz_4s   01000100 10 0 ..... 011 110 ..... .....  @rda_rn_rm_ex esz=2
+ 
++SDOT_zzxw_2b    01000100 0. 1 ..... 00000 0 ..... .....   @rrxr_3 esz=1
++UDOT_zzxw_2b    01000100 0. 1 ..... 00000 1 ..... .....   @rrxr_3 esz=1
++
++SABAL_zzzw_h    01000100 01 0 ..... 110101 ..... .....     @rda_rn_rm_ex esz=1
++SABAL_zzzw_s    01000100 10 0 ..... 110101 ..... .....     @rda_rn_rm_ex esz=2
++SABAL_zzzw_d    01000100 11 0 ..... 110101 ..... .....     @rda_rn_rm_ex esz=3
++UABAL_zzzw_h    01000100 01 0 ..... 110111 ..... .....     @rda_rn_rm_ex esz=1
++UABAL_zzzw_s    01000100 10 0 ..... 110111 ..... .....     @rda_rn_rm_ex esz=2
++UABAL_zzzw_d    01000100 11 0 ..... 110111 ..... .....     @rda_rn_rm_ex esz=3
++
+ ### SVE2 floating point matrix multiply accumulate
+ BFMMLA          01100100 01 1 ..... 111 001 ..... .....  @rda_rn_rm_ex esz=1
+ FMMLA_s         01100100 10 1 ..... 111 001 ..... .....  @rda_rn_rm_ex esz=2
+--- a/target/arm/tcg/translate-sve.c
++++ b/target/arm/tcg/translate-sve.c
+@@ -330,6 +330,22 @@
+     return gen_gvec_ool_zzp(s, fn, a->rd, a->rn, a->pg, data);
+ }
+ 
++static bool do_sve2p3_rshr2(DisasContext *s, arg_sve2p3_rshr2 *a,
++                            gen_helper_gvec_3 *fn)
++{
++    if (fn == NULL) {
++        return false;
++    }
++    if (sve_access_check(s)) {
++        unsigned vsz = vec_full_reg_size(s);
++        tcg_gen_gvec_3_ool(vec_full_reg_offset(s, a->zd),
++                           vec_full_reg_offset(s, a->zn),
++                           vec_full_reg_offset(s, a->zn + 1),
++                           vsz, vsz, a->shift, fn);
++    }
++    return true;
++}
++
+ static bool gen_gvec_ool_arg_zpzi(DisasContext *s, gen_helper_gvec_3 *fn,
+                                   arg_rpri_esz *a)
+ {
+@@ -793,6 +809,88 @@
+ DO_ZPZ(EORQV, aa64_sme2p1_or_sve2p1, sve2p1_eorqv)
+ DO_ZPZ(ANDQV, aa64_sme2p1_or_sve2p1, sve2p1_andqv)
+ 
++/* SVE2.2 zeroing forms.  The helpers write zero to inactive lanes. */
++#define DO_ZPZ_Z(NAME, FEAT, name) \
++    static gen_helper_gvec_3 * const name##_z_fns[4] = {            \
++        gen_helper_##name##_b, gen_helper_##name##_h,               \
++        gen_helper_##name##_s, gen_helper_##name##_d,               \
++    };                                                              \
++    TRANS_FEAT(NAME, FEAT, gen_gvec_ool_arg_zpz, name##_z_fns[a->esz], a, 0)
++
++DO_ZPZ_Z(CLS_z, aa64_sve2p2, sve2p2_cls)
++DO_ZPZ_Z(CLZ_z, aa64_sve2p2, sve2p2_clz)
++DO_ZPZ_Z(CNT_z, aa64_sve2p2, sve2p2_cnt)
++DO_ZPZ_Z(CNOT_z, aa64_sve2p2, sve2p2_cnot)
++DO_ZPZ_Z(NOT_z, aa64_sve2p2, sve2p2_not)
++DO_ZPZ_Z(ABS_z, aa64_sve2p2, sve2p2_abs)
++DO_ZPZ_Z(NEG_z, aa64_sve2p2, sve2p2_neg)
++DO_ZPZ_Z(SQABS_z, aa64_sve2p2, sve2p2_sqabs)
++DO_ZPZ_Z(SQNEG_z, aa64_sve2p2, sve2p2_sqneg)
++DO_ZPZ_Z(RBIT_z, aa64_sve2p2, sve2p2_rbit)
++
++static gen_helper_gvec_3 * const sxtb_z_fns[4] = {
++    NULL, gen_helper_sve2p2_sxtb_h,
++    gen_helper_sve2p2_sxtb_s, gen_helper_sve2p2_sxtb_d,
++};
++TRANS_FEAT(SXTB_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           sxtb_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const uxtb_z_fns[4] = {
++    NULL, gen_helper_sve2p2_uxtb_h,
++    gen_helper_sve2p2_uxtb_s, gen_helper_sve2p2_uxtb_d,
++};
++TRANS_FEAT(UXTB_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           uxtb_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const sxth_z_fns[4] = {
++    NULL, NULL, gen_helper_sve2p2_sxth_s, gen_helper_sve2p2_sxth_d
++};
++TRANS_FEAT(SXTH_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           sxth_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const uxth_z_fns[4] = {
++    NULL, NULL, gen_helper_sve2p2_uxth_s, gen_helper_sve2p2_uxth_d
++};
++TRANS_FEAT(UXTH_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           uxth_z_fns[a->esz], a, 0)
++
++TRANS_FEAT(SXTW_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           a->esz == 3 ? gen_helper_sve2p2_sxtw_d : NULL, a, 0)
++TRANS_FEAT(UXTW_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           a->esz == 3 ? gen_helper_sve2p2_uxtw_d : NULL, a, 0)
++
++static gen_helper_gvec_3 * const urecpe_z_fns[4] = {
++    NULL, NULL, gen_helper_sve2p2_urecpe_s, NULL
++};
++TRANS_FEAT(URECPE_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           urecpe_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const ursqrte_z_fns[4] = {
++    NULL, NULL, gen_helper_sve2p2_ursqrte_s, NULL
++};
++TRANS_FEAT(URSQRTE_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           ursqrte_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const revb_z_fns[4] = {
++    NULL, gen_helper_sve2p2_revb_h,
++    gen_helper_sve2p2_revb_s, gen_helper_sve2p2_revb_d,
++};
++TRANS_FEAT(REVB_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           revb_z_fns[a->esz], a, 0)
++
++static gen_helper_gvec_3 * const revh_z_fns[4] = {
++    NULL, NULL, gen_helper_sve2p2_revh_s, gen_helper_sve2p2_revh_d
++};
++TRANS_FEAT(REVH_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           revh_z_fns[a->esz], a, 0)
++
++TRANS_FEAT(REVW_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           a->esz == 3 ? gen_helper_sve2p2_revw_d : NULL, a, 0)
++TRANS_FEAT(REVD_z, aa64_sve2p2, gen_gvec_ool_arg_zpz,
++           gen_helper_sve2p2_revd_q, a, 0)
++
++#undef DO_ZPZ_Z
++
+ static gen_helper_gvec_3 * const fabs_fns[4] = {
+     NULL,                  gen_helper_sve_fabs_h,
+     gen_helper_sve_fabs_s, gen_helper_sve_fabs_d,
+@@ -7627,6 +7725,27 @@
+ };
+ TRANS_FEAT(UQRSHRNT, aa64_sme_or_sve2, do_shr_narrow, a, uqrshrnt_ops)
+ 
++/* SVE2.3 saturating shift right narrow by immediate and interleave. */
++TRANS_FEAT(SQRSHRN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqrshrn_hb)
++TRANS_FEAT(SQRSHRUN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqrshrun_hb)
++TRANS_FEAT(SQSHRN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqshrn_hb)
++TRANS_FEAT(SQSHRUN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqshrun_hb)
++TRANS_FEAT(UQRSHRN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_uqrshrn_hb)
++TRANS_FEAT(UQSHRN2_hb, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_uqshrn_hb)
++
++TRANS_FEAT(SQSHRN2_sh, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqshrn_sh)
++TRANS_FEAT(SQSHRUN2_sh, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_sqshrun_sh)
++TRANS_FEAT(UQSHRN2_sh, aa64_sve2p3, do_sve2p3_rshr2,
++           a, gen_helper_sve2p3_uqshrn_sh)
++
+ #define DO_SVE2_ZZZ_NARROW(NAME, name)                                    \
+     static gen_helper_gvec_3 * const name##_fns[4] = {                    \
+         NULL,                       gen_helper_sve2_##name##_h,           \
+@@ -7791,6 +7910,26 @@
+            gen_helper_gvec_udot_2h, a, 0)
+ TRANS_FEAT(SDOT_zzzz_2h, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
+            gen_helper_gvec_sdot_2b, a, 0)
++TRANS_FEAT(UDOT_zzzz_2h, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_udot_2b, a, 0)
++
++TRANS_FEAT(SDOT_zzxw_2b, aa64_sve2p3, gen_gvec_ool_arg_zzxz,
++           gen_helper_gvec_sdot_idx_2b, a)
++TRANS_FEAT(UDOT_zzxw_2b, aa64_sve2p3, gen_gvec_ool_arg_zzxz,
++           gen_helper_gvec_udot_idx_2b, a)
++
++TRANS_FEAT(SABAL_zzzw_h, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_sabal_h, a, 0)
++TRANS_FEAT(SABAL_zzzw_s, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_sabal_s, a, 0)
++TRANS_FEAT(SABAL_zzzw_d, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_sabal_d, a, 0)
++TRANS_FEAT(UABAL_zzzw_h, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_uabal_h, a, 0)
++TRANS_FEAT(UABAL_zzzw_s, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_uabal_s, a, 0)
++TRANS_FEAT(UABAL_zzzw_d, aa64_sve2p3, gen_gvec_ool_arg_zzzz,
++           gen_helper_gvec_uabal_d, a, 0)
+ 
+ TRANS_FEAT_NONSTREAMING(AESMC, aa64_sve2_aes, gen_gvec_ool_zz,
+                         gen_helper_crypto_aesmc, a->rd, a->rd, 0)
