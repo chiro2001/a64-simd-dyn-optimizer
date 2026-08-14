@@ -60,6 +60,17 @@ static inline svint16_t sdot_h_acc(svint16_t acc, svint8_t a, svint8_t b)
     return out;
 }
 
+static inline svint16_t addp_h(svint16_t a, svbool_t pg)
+{
+    // SVE2 ADDP (predicated): even slot i = a[i]+a[i+1], odd slot i =
+    // a[i-1]+a[i]; with vn==vm==a this yields [p0,p0,p1,p1,...] for the
+    // pair-sum t, and uzp1 compacts to [p0..p7] (1 instr saved per unit
+    // vs uzp1+uzp2+add; verified 2026-08-14).
+    asm volatile("addp %0.h, %1/m, %0.h, %0.h"
+                 : "+w"(a) : "Upl"(pg));
+    return a;
+}
+
 static inline void interp8_unit8(
     svint8_t W, svuint8_t ix0, svuint8_t ix1,
     svint8_t c0, svint8_t c1, svint16_t off4096,
@@ -70,11 +81,9 @@ static inline void interp8_unit8(
     svint16_t t = sdot_h_acc(off4096, X0, c0);
     t = sdot_h(t, X1, c1);
     // lane 2p = pixel p taps (0,1)+(4,5); lane 2p+1 = taps (2,3)+(6,7).
-    // Pair-sum via uzp1+uzp2+add (SVE2 ADDP is predicated with odd slots
-    // from the second source, so it cannot pack the pairs; verified
-    // 2026-08-14).
-    svint16_t pixels = svadd_s16_x(
-        svptrue_b16(), svuzp1_s16(t, t), svuzp2_s16(t, t));
+    // Pair-sum: addp(t,t) -> [p0,p0,p1,p1,...] + uzp1 -> [p0..p7].
+    svint16_t d = addp_h(t, svptrue_b16());
+    svint16_t pixels = svuzp1_s16(d, d);
     svuint8_t u = svqrshrunb_n_s16(pixels, 6);
     // SVE2 bottom-narrow writes each result to the low byte of its
     // 16-bit slot (bytes 0,2,4,...); uzp1 compacts to bytes 0..7.
@@ -103,6 +112,7 @@ extern "C" void dynopt_interp8_32x32_sve2_sdoth(const uint8_t* src, intptr_t src
     // restores the full +8192 once (verified 2026-08-14).
     const svint16_t off4096 = svdup_n_s16(4096);
 
+    
     for (int r = 0; r < 32; r++)
     {
         const uint8_t* row = src + r * srcStride - 3;
