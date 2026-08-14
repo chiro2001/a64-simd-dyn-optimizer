@@ -34,3 +34,26 @@ llvm-mca -mtriple=aarch64 -mcpu=neoverse-v2 -mattr=+sve2 -iterations=1 \
 - 内部算子用 scatter store（st1d 向量偏移），MCA 按其 uop 建模，
   未额外加 sg 惩罚（若按用户口径 +3 uops/st1d 会更差）。
 - 本目录 mca.s 已按内核保存，可复跑。
+
+## hip09（920B）/ hip12（920C/G）的 MCA 可行性（2026-08-14）
+
+LLVM 有 `-mcpu=tsv110`（HiSilicon TS-V110，鲲鹏 920 核心），但实测
+**tsv110 调度模型基本没有 SVE 指令条目**：
+
+| kernel | 输入指令 | tsv110 跳过（lack-sched） | 跳过占比 |
+| --- | ---: | ---: | ---: |
+| upstream | 13281 | 5496 | 41% |
+| cand4002 | 5610 | 4491 | 80% |
+
+被跳过的指令不消耗周期，结果（upstream 5810 cyc / cand4002 419 cyc）
+无意义；内部算子还因 `adr #0x...` 绝对偏移无法被 llvm-mc 编码。
+结论：**tsv110 不能用于 SVE 的 MCA 预估**；LLVM 没有鲲鹏 920 的
+SVE 管线模型。可行的替代：
+
+1. 用 neoverse-v1/v2（LLVM 覆盖最全的 SVE 模型）作近似——本报告
+   已用 v2；
+2. hip09（920B）有实机：可对 **SVE1 可运行**的内核（上游
+   dct32_sve、best_sve1）做真实 cycle 测量（CNTVCT paired），
+   比 MCA 可信；
+3. 4002/内部是 SVE2，920B 跑不了；若 hip12（920C/G，SVE2）可提供
+   访问，可直接实机测 4002 与内部算子，这比任何静态模型都准。
