@@ -105,6 +105,7 @@ def _parse_neon_intrinsic(rhs, dst):
     ops = _parse_operands(rhs)
     args = []
     call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
+    call_args = re.sub(r"range\([^)]*\)\s*", "", call_args)
     # split on top-level commas (not inside <> vector constants)
     for a in re.split(r",(?![^<]*>)", call_args):
         a = a.strip()
@@ -287,6 +288,9 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}
+            sm = re.search(r"splat\s+\(i\d+\s+(-?\d+)\)\s*$", rhs)
+            if sm:
+                node["splat"] = int(sm.group(1))
             if node["type"] is None:
                 vt = re.match(
                     r"sub(?:\s+(?:nsw|nuw))*\s+(<\d+\s+x\s+i\d+>|i\d+)", rhs)
@@ -306,10 +310,22 @@ def import_llvm_ir_text(ir_text, function=None):
                         node["const"] = (0 if lm.group(1) is None
                                          else int(lm.group(1)))
                         node["const_first"] = True
+                    else:
+                        # all-zero vector constant lhs (may contain poison)
+                        zm = re.match(
+                            r"sub(?:\s+(?:nsw|nuw))*\s+<\d+\s+x\s+i\d+>"
+                            r"\s*<(?:\s*i\d+\s+(?:0|poison),)*"
+                            r"\s*i\d+\s+(?:0|poison)\s*>,\s*%", rhs)
+                        if zm:
+                            node["const"] = 0
+                            node["const_first"] = True
             ir.add(node)
         elif rhs.startswith("add"):
             ops = _parse_operands(rhs)
             node = {"op": "add", "type": _op_type(rhs), "src": ops, "dst": dst}
+            sm = re.search(r"splat\s+\(i\d+\s+(-?\d+)\)\s*$", rhs)
+            if sm:
+                node["splat"] = int(sm.group(1))
             if len(ops) == 1:
                 cm = re.search(r",\s*(-?\d+)\s*$", rhs)
                 node["const"] = int(cm.group(1)) if cm else None

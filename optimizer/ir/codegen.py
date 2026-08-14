@@ -8,7 +8,7 @@ roundtrip can never silently drop semantics.
 import re
 
 TYPE_MAP = {
-    "<8 x i8>": "uint8x8_t",
+    "<8 x i8>": "int8x8_t",
     "<16 x i8>": "uint8x16_t",
     "<4 x i16>": "int16x4_t",
     "<8 x i16>": "int16x8_t",
@@ -93,6 +93,14 @@ def _vector_suffix(vtype):
     return "s%s" % m.group(2)
 
 
+def _vector_q(vtype):
+    """'q' suffix for 128-bit NEON vectors (absent for 64-bit)."""
+    m = re.match(r"<(\d+) x i(\d+)>", vtype)
+    if not m:
+        return ""
+    return "q" if int(m.group(1)) * int(m.group(2)) == 128 else ""
+
+
 def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                       signature="sa8d"):
     """Flat NEON roundtrip emitter (sa8d/sad family). `signature` selects
@@ -170,6 +178,19 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         lines.append("{")
         env = {"dst": ("dst", 0, 0), "src": ("src", 0, 0),
                "0": ("dst", 0, 0), "1": ("src", 0, 0), "2": 1}
+    elif signature == "sao_e0":
+        lines.append(
+            "extern \"C\" void %s(uint8_t* rec, int8_t* offsetEo,"
+            " int8_t* signLeft, intptr_t stride)" % func_name)
+        lines.append("{")
+        lines.append(
+            "    static const uint8x8_t IDX_SAO_E0 ="
+            " { 8, 0, 1, 2, 3, 4, 5, 6 };")
+        env = {"rec": ("rec", 0, 0),
+               "offsetEo": ("offsetEo", 0, 0),
+               "signLeft": ("signLeft", 0, 0),
+               "0": ("rec", 0, 0), "1": ("offsetEo", 0, 0),
+               "2": ("signLeft", 0, 0), "3": 1}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -184,10 +205,16 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
     types = {}
     cname = {}
     mask_nodes = {}
+    insert_nodes = {}
     base_strides = {"pix1": "stride_pix1", "pix2": "stride_pix2",
                     "p1": "s1", "p2": "s2"}
     if signature == "scale2d":
         base_strides["src"] = "stride"
+    if signature == "sao_e0":
+        base_strides["rec"] = "stride"
+    s8_load_bases = set()
+    if signature == "sao_e0":
+        s8_load_bases = {"offsetEo", "signLeft"}
     if signature == "dequant_normal":
         # scalar ABI args referenced as values (trunc/sub srcs)
         cname.update({"0": "q", "1": "c", "2": "scale", "3": "shift"})
@@ -268,6 +295,22 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 lines.append("    %s %s = vld1q_s32((const int32_t*)"
                              "((const uint8_t*)%s + %s));"
                              % (types[dst], cid(dst), base, offexpr))
+            elif node.get("type") == "<8 x i8>" and base in s8_load_bases:
+                types[dst] = "int8x8_t"
+                lines.append("    %s %s = vld1_s8((const int8_t*)"
+                             "((const uint8_t*)%s + %s));"
+                             % (types[dst], cid(dst), base, offexpr))
+            elif node.get("type") in ("i8", "i16", "i32", "i64"):
+                types[dst] = {"i8": "uint8_t", "i16": "uint16_t",
+                              "i32": "uint32_t",
+                              "i64": "uint64_t"}[node["type"]]
+                lines.append("    %s %s = *(const %s*)"
+                             "((const uint8_t*)%s + %s);"
+                             % (types[dst], cid(dst),
+                                {"i8": "uint8_t", "i16": "uint16_t",
+                                 "i32": "uint32_t",
+                                 "i64": "uint64_t"}[node["type"]],
+                                base, offexpr))
             else:
                 types[dst] = "uint8x8_t"
                 lines.append("    %s %s = vld1_u8((const uint8_t*)%s +"
@@ -293,17 +336,26 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             elif node.get("type") == "<16 x i8>":
                 lines.append("    vst1q_u8((uint8_t*)%s + %s, %s);"
                              % (base, offexpr, cid(node["src"])))
+            elif node.get("type") == "<8 x i8>":
+                lines.append("    vst1_u8((uint8_t*)%s + %s, %s);"
+                             % (base, offexpr, cid(node["src"])))
             else:
                 raise ValueError("codegen store type %r unsupported"
                                  % node.get("type"))
         elif op == "trunc":
             vtype = node["type"]
-            types[dst] = TYPE_MAP.get(vtype, "uint32_t")
-            lines.append("    %s %s = (%s)%s;"
-                         % (types[dst], cid(dst), types[dst],
-                            cid(node["src"][0]
-                                if isinstance(node["src"], list)
-                                else node["src"])))
+            src = node["src"]
+            if isinstance(src, list):
+                src = src[0] if src else None
+            if vtype == "<8 x i8>":
+                types[dst] = "int8x8_t"
+                lines.append("    %s %s = vmovn_s16(%s);"
+                             % (types[dst], cid(dst), cid(src)))
+            else:
+                types[dst] = TYPE_MAP.get(vtype, "uint32_t")
+                lines.append("    %s %s = (%s)%s;"
+                             % (types[dst], cid(dst), types[dst],
+                                cid(src)))
         elif op == "sext":
             vtype = node["type"]
             src = node["src"]
@@ -313,12 +365,24 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 # sext of an icmp mask (0/-1): alias the mask variable
                 cname[dst] = cid(src)
                 types[dst] = types.get(cid(src))
+            elif vtype == "<8 x i16>":
+                types[dst] = "int16x8_t"
+                lines.append("    %s %s = vmovl_s8(%s);"
+                             % (types[dst], cid(dst), cid(src)))
             elif vtype == "<4 x i32>":
                 types[dst] = TYPE_MAP.get(vtype, "int32x4_t")
                 lines.append("    %s %s = vmovl_s16(%s);"
                              % (types[dst], cid(dst), cid(src)))
             else:
                 raise ValueError("codegen sext type %r unsupported" % vtype)
+        elif op == "extractelement":
+            idx = node.get("index", 0)
+            types[dst] = "int8_t"
+            lines.append("    %s %s = vget_lane_s8(%s, %d);"
+                         % (types[dst], cid(dst),
+                            cid(node["src"][0]
+                                if isinstance(node["src"], list)
+                                else node["src"]), idx))
         elif op == "select":
             vtype = node["type"]
             if vtype == "<8 x i16>":
@@ -334,6 +398,7 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             # to the scalar so vdup_n emits directly from the scalar var.
             cname[dst] = cid(node["src"][0])
             types[dst] = node.get("type")
+            insert_nodes[str(dst)] = str(node["src"][0])
         elif op == "zext":
             src = node["src"]
             if node.get("type") in TYPE_MAP and \
@@ -351,7 +416,12 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                     len(node["src"]) == 1:
                 # `sub nsw i32 0, %x` / `sub <8 x i16> zeroinitializer, %x`
                 if vtype and vtype.startswith("<"):
-                    if vtype == "<8 x i16>":
+                    if vtype == "<8 x i8>":
+                        types[dst] = "int8x8_t"
+                        lines.append("    %s %s = vneg_s8(%s);"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0])))
+                    elif vtype == "<8 x i16>":
                         types[dst] = "int16x8_t"
                         lines.append("    %s %s = vnegq_s16(%s);"
                                      % (types[dst], cid(dst),
@@ -388,15 +458,36 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                                  "x%d" % int(re.match(
                                      r"<(\d+) x", vtype).group(1)))
                               if unsigned else TYPE_MAP[vtype])
-                lines.append("    %s %s = v%sq_%s(%s, %s);"
+                lines.append("    %s %s = v%s%s_%s(%s, %s);"
                              % (types[dst], cid(dst), op,
+                                _vector_q(vtype),
                                 ("u" + suffix[1:]) if unsigned else suffix,
                                 cid(node["src"][0]), cid(node["src"][1])))
             else:
-                types[dst] = TYPE_MAP[vtype]
-                lines.append("    %s %s = %s + %d;"
-                             % (types[dst], cid(dst), cid(node["src"][0]),
-                                node.get("const", 0)))
+                if node.get("splat") is not None:
+                    if vtype == "<8 x i8>":
+                        types[dst] = "int8x8_t"
+                        lines.append("    %s %s = vadd_s8(%s,"
+                                     " vdup_n_s8(%d));"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0]),
+                                        node["splat"]))
+                    elif vtype == "<8 x i16>":
+                        types[dst] = "int16x8_t"
+                        lines.append("    %s %s = vaddq_s16(%s,"
+                                     " vdupq_n_s16(%d));"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0]),
+                                        node["splat"]))
+                    else:
+                        raise ValueError("codegen add splat type %r"
+                                         " unsupported" % vtype)
+                else:
+                    types[dst] = TYPE_MAP[vtype]
+                    lines.append("    %s %s = %s + %d;"
+                                 % (types[dst], cid(dst),
+                                    cid(node["src"][0]),
+                                    node.get("const", 0)))
         elif op == "mul" and node.get("type") in ("i8", "i16", "i32", "i64"):
             # scalar address coefficients (row stride * row): folded into
             # env, no C emission (sad seed uses a + r*sa directly).
@@ -451,6 +542,10 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 # splat of lane 0 (vdup_n / vdupq_n from an insertelement)
                 if vtype == "<8 x i16>":
                     lines.append("    %s %s = vdupq_n_s16(%s);"
+                                 % (types[dst], cid(dst), cid(srcs[0])))
+                elif vtype == "<8 x i8>":
+                    types[dst] = "int8x8_t"
+                    lines.append("    %s %s = vdup_n_s8(%s);"
                                  % (types[dst], cid(dst), cid(srcs[0])))
                 elif vtype == "<4 x i16>":
                     lines.append("    %s %s = vdup_n_s16(%s);"
@@ -507,6 +602,32 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             if len(srcs) == 2 and vtype == "<16 x i8>" and \
                     mask == list(range(0, 16)):
                 lines.append("    %s %s = vcombine_u8(%s, %s);"
+                             % (types[dst], cid(dst), cid(srcs[0]),
+                                cid(srcs[1])))
+                continue
+            if len(srcs) == 1 and vtype == "<16 x i8>" and \
+                    mask == list(range(0, 16)):
+                # table extension: concat with an implicit zero vector
+                types[dst] = "int8x16_t"
+                lines.append("    %s %s = vcombine_s8(%s, vdup_n_s8(0));"
+                             % (types[dst], cid(dst), cid(srcs[0])))
+                continue
+            if len(srcs) == 2 and vtype == "<8 x i8>" and \
+                    mask == [8, 0, 1, 2, 3, 4, 5, 6]:
+                # SAO E0 shifter: [signL, signRight[0..6]]
+                types[dst] = "int8x8_t"
+                b = cid(srcs[1])
+                if str(srcs[1]) in insert_nodes:
+                    b = "vdup_n_s8((int8_t)%s)" % cid(insert_nodes[srcs[1]])
+                lines.append("    %s %s = vqtbl1_s8(vcombine_s8(%s, %s),"
+                             " IDX_SAO_E0);" % (types[dst], cid(dst),
+                                                cid(srcs[0]), b))
+                continue
+            if len(srcs) == 2 and vtype == "<8 x i8>" and \
+                    mask == [7, 8, 9, 10, 11, 12, 13, 14]:
+                # shifter carry: [prev[7], cur[0..6]] = vext(prev, cur, 7)
+                types[dst] = "int8x8_t"
+                lines.append("    %s %s = vext_s8(%s, %s, 7);"
                              % (types[dst], cid(dst), cid(srcs[0]),
                                 cid(srcs[1])))
                 continue
@@ -581,6 +702,40 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 lines.append("    %s %s = vqshlq_s16(%s, %s);"
                              % (types[dst], cid(dst), cid(node["src"][0]),
                                 cid(node["src"][1])))
+            elif name == "smax":
+                types[dst] = "int16x8_t"
+                if len(node.get("src") or []) == 2:
+                    b = cid(node["src"][1])
+                else:
+                    imm = next((a.get("imm") for a in node.get("args") or []
+                                if isinstance(a, dict) and "imm" in a), 1)
+                    b = "vdupq_n_s16(%d)" % imm
+                lines.append("    %s %s = vmaxq_s16(%s, %s);"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                b))
+            elif name == "smin":
+                types[dst] = "int16x8_t"
+                if len(node.get("src") or []) == 2:
+                    b = cid(node["src"][1])
+                else:
+                    imm = next((a.get("imm") for a in node.get("args") or []
+                                if isinstance(a, dict) and "imm" in a), 1)
+                    b = "vdupq_n_s16(%d)" % imm
+                lines.append("    %s %s = vminq_s16(%s, %s);"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                b))
+            elif name == "sqxtun":
+                types[dst] = "uint8x8_t"
+                lines.append("    %s %s = vqmovun_s16(%s);"
+                             % (types[dst], cid(dst), cid(node["src"][0])))
+            elif name == "tbl1":
+                types[dst] = "int8x8_t"
+                idx = cid(node["src"][1])
+                if types.get(str(node["src"][1])) == "int8x8_t":
+                    idx = "vreinterpret_u8_s8(%s)" % idx
+                lines.append("    %s %s = vqtbl1_s8(%s, %s);"
+                             % (types[dst], cid(dst),
+                                cid(node["src"][0]), idx))
             elif name == "umull":
                 types[dst] = "uint16x8_t"
                 lines.append("    %s %s = vmull_u8(%s, %s);"
@@ -733,6 +888,14 @@ def emit_scale2d_c_intrinsics(
     """Flat NEON roundtrip emitter for scale2D_64to32 (2x2 -> 1)."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="scale2d")
+
+
+def emit_sao_e0_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_e0_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO edge offset class 0, width 64
+    (two rows, fully unrolled)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_e0")
 
 
 def _sve_flat_indices(node):
