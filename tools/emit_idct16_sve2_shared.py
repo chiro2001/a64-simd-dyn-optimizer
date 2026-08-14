@@ -137,37 +137,52 @@ def half_arithmetic(off, s):
 
 def chunk_arithmetic_sdot(off, s):
     """SVE2p1 sdot z.s,z.h,z.h O/EO/EEE/EEO (docs/27 §8.10 layout,
-    mirror of idct32). 8-lane s16 row loads; vnum constant addressing."""
+    mirror of idct32). 8-lane s16 row loads; vnum constant addressing.
+    2026-08-14：输入行按需装入（每行只属于一个分解族），逐 row-pair
+    load→zip→sdot(active accs)，压低峰值活跃与 spill。"""
     L = []
-    for m in range(16):
-        L.append("    svint16_t r%s%d = svld1_s16(p8h, src + %d + off);"
-                 % (s, m, 16 * m))
-    for p in range(4):
-        L.append("    svint16_t d%sO%d = svzip1_s16(r%s%d, r%s%d);"
-                 % (s, p, s, 4 * p + 1, s, 4 * p + 3))
     for k in range(8):
-        acc = "O%s%d" % (s, k)
-        L.append("    svint32_t %s = z;" % acc)
-        for p in range(4):
-            L.append("    %s = sdot_s32_h(%s, d%sO%d, "
+        L.append("    svint32_t O%s%d = z;" % (s, k))
+    for p in range(4):
+        L.append("    svint16_t a%sO%d = svld1_s16(p8h, src + %d + off);"
+                 % (s, p, 16 * (4 * p + 1)))
+        L.append("    svint16_t b%sO%d = svld1_s16(p8h, src + %d + off);"
+                 % (s, p, 16 * (4 * p + 3)))
+        L.append("    svint16_t d%sO%d = svzip1_s16(a%sO%d, b%sO%d);"
+                 % (s, p, s, p, s, p))
+        for k in range(8):
+            L.append("    O%s%d = sdot_s32_h(O%s%d, d%sO%d, "
                      "load_c(CDOT_O[%d][0], %d));"
-                     % (acc, acc, s, p, k, p))
-    for p in range(2):
-        L.append("    svint16_t d%sEO%d = svzip1_s16(r%s%d, r%s%d);"
-                 % (s, p, s, 8 * p + 2, s, 8 * p + 6))
+                     % (s, k, s, k, s, p, k, p))
     for k in range(4):
-        acc = "EO%s%d" % (s, k)
-        L.append("    svint32_t %s = z;" % acc)
-        for p in range(2):
-            L.append("    %s = sdot_s32_h(%s, d%sEO%d, "
+        L.append("    svint32_t EO%s%d = z;" % (s, k))
+    for p in range(2):
+        L.append("    svint16_t a%sEO%d = svld1_s16(p8h, src + %d + off);"
+                 % (s, p, 16 * (8 * p + 2)))
+        L.append("    svint16_t b%sEO%d = svld1_s16(p8h, src + %d + off);"
+                 % (s, p, 16 * (8 * p + 6)))
+        L.append("    svint16_t d%sEO%d = svzip1_s16(a%sEO%d, b%sEO%d);"
+                 % (s, p, s, p, s, p))
+        for k in range(4):
+            L.append("    EO%s%d = sdot_s32_h(EO%s%d, d%sEO%d, "
                      "load_c(CDOT_EO[%d][0], %d));"
-                     % (acc, acc, s, p, k, p))
-    L.append("    svint16_t d%sEEE = svzip1_s16(r%s0, r%s8);" % (s, s, s))
+                     % (s, k, s, k, s, p, k, p))
+    L.append("    svint16_t a%sEEE = svld1_s16(p8h, src + %d + off);"
+             % (s, 16 * 0))
+    L.append("    svint16_t b%sEEE = svld1_s16(p8h, src + %d + off);"
+             % (s, 16 * 8))
+    L.append("    svint16_t d%sEEE = svzip1_s16(a%sEEE, b%sEEE);"
+             % (s, s, s))
     for k in range(2):
         acc = "EEE%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEE, "
                  "load_c(CDOT_EEE[%d][0], 0));" % (acc, s, k))
-    L.append("    svint16_t d%sEEO = svzip1_s16(r%s4, r%s12);" % (s, s, s))
+    L.append("    svint16_t a%sEEO = svld1_s16(p8h, src + %d + off);"
+             % (s, 16 * 4))
+    L.append("    svint16_t b%sEEO = svld1_s16(p8h, src + %d + off);"
+             % (s, 16 * 12))
+    L.append("    svint16_t d%sEEO = svzip1_s16(a%sEEO, b%sEEO);"
+             % (s, s, s))
     for k in range(2):
         acc = "EEO%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEO, "

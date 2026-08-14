@@ -117,6 +117,10 @@
   `--mca-top N` 不再只取 fused top-N，而是 fused top-N ∪ 低 stack
   top-K ∪ 高 stack top-K（K=N/3），覆盖“fused 改善但 spill 恶化”的
   风险候选与低 spill 黑马；最终仍按修复后动态流 MCA 排名。
+- `tools/peak_live.py`（2026-08-14，round-0017 P1）：动态流峰值活跃
+  Z 寄存器与 live-area（谓词不计），支持 `--fix-driver` 修复 SVE2p1
+  sdot；用于 pressure-budgeted 原型的基线量化（idct32 best 峰值
+  31，docs/27 §8.11）。
 - `search_rewrite_sequences.py` 带 rewrite 依赖剪枝（`--no-prune` 关闭）：
   dct32 规则 = legacy_k2 必须先于 legacy_k4、merge_narrow8 至多一次、
   k0_even_sve 需要 k2/k4 前置；dct16 规则 = tbl2_to_zip/merge_narrow8

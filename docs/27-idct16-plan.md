@@ -491,6 +491,18 @@ idct16 zip16 sdot 基本持平（fused 976→978、MCA 245→247）。已写入
 round-0017 完整结论见 expert-advice/round-0017/
 （summary.md / tooling-roadmap.md / verification.md）。
 
+**输入行按需装入（2026-08-14，round-0017 P1 落地）**：每行输入只
+属于一个分解族（O/EO/EEO/EEEO/EEEE 行集互不相交），sdot 发射器改为
+逐 row-pair `load→zip→sdot(active accs)`，行与 d 立即死亡，峰值活跃
+从 ~40 降到 ~17。`tools/peak_live.py` 实测动态流峰值活跃 Z（P1
+baseline）：idct32 zip32 best **31**（live_area 79181）、scatter 30、
+idct16 zip16 31——GCC 已把峰值压在 32 预算内（咨询对 transpose 区
+48+ 的估计不成立，直接 asm 原型从“压峰值”降级为“压标量/permute
+开销”）。效果（idct32 官方搜索口径）：zip32 sdot fused
+5111→**5085**、stack 455→430、MCA 1171→**1164**（对 NEON
+-64.9%）、uOps 6383→6172；scatter/scalar 也各降 ~1%；idct16 持平
+（噪声内）。两 kernel best 已重新固化。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
