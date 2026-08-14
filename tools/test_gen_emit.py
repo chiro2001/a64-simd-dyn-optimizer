@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Smoke test for the generic MachineIR -> SVE2 emitter (docs/40 §6-20).
+
+For every known kernel: load its seed MachineIR, assert the detected
+recipe, generate the candidate for the best layout combo, and compile it
+with aarch64-linux-gnu-g++ -fsyntax-only. This catches emitter regressions
+like the pg16b batch-replace bug (2026-08-15) without running QEMU.
+
+Usage: python3 tools/test_gen_emit.py [--compile 0|1]
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+
+import gen_sve2_emit as g  # noqa: E402
+
+
+KERNELS = {
+    # kernel: (seed recipe name, expected family, best combo)
+    "sad": ("sad-16x16", "diff-sum", {}),
+    "sad-32": ("sad-32x32", "diff-sum", {}),
+    "sa8d": ("sa8d-8x8", "hadamard", {}),
+    "sa8d16": ("sa8d-16x16", "hadamard", {}),
+    "satd-4": ("satd-4x4", "hadamard", {}),
+    "satd-8": ("satd-8x8", "hadamard", {}),
+    "satd-16": ("satd-16x16", "hadamard", {}),
+    "satd-4x8": ("satd-4x8", "hadamard", {}),
+    "satd-8x4": ("satd-8x4", "hadamard", {}),
+    "satd-8x16": ("satd-8x16", "hadamard", {}),
+    "satd-16x8": ("satd-16x8", "hadamard", {}),
+    "interp8": ("interp8-8x8", "fir", {}),
+    "interp8-16": ("interp8-16x16", "fir", {}),
+    "interp8-32": ("interp8-32x32", "fir", {}),
+    "interp4": ("interp4-16x16", "fir", {}),
+    "interp4-8": ("interp4-8x8", "fir", {}),
+    "interp4-32": ("interp4-32x32", "fir", {}),
+    "interp8vpp-8": ("interp8vpp-8", "vertical-fir", {"sliding": 2}),
+    "interp8vpp-16": ("interp8vpp-16", "vertical-fir", {"sliding": 2}),
+    "interp8vpp-32": ("interp8vpp-32", "vertical-fir", {"sliding": 2}),
+    "interp4vpp-16": ("interp4vpp-16", "vertical-fir", {"sliding": 1}),
+}
+
+
+def machine_ir_path(recipe):
+    try:
+        import yaml
+        r = yaml.safe_load(open(os.path.join(ROOT, "seeds", recipe + ".yaml")))
+        out = r["output"]["json"]
+        return out if os.path.isabs(out) else os.path.join(ROOT, out)
+    except Exception:
+        return None
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--compile", type=int, default=1)
+    args = ap.parse_args()
+    fails = 0
+    for kernel, (recipe, family, combo) in sorted(KERNELS.items()):
+        path = machine_ir_path(recipe)
+        if not path or not os.path.exists(path):
+            print("MISS %s (%s): machine-ir not found" % (kernel, recipe))
+            fails += 1
+            continue
+        mi = json.load(open(path))
+        got = g.detect_family(mi)
+        if got != family:
+            print("FAM %s: expected %r got %r" % (kernel, family, got))
+            fails += 1
+            continue
+        emit = g.make_generic_emitter(kernel)
+        src = emit(combo)
+        if args.compile:
+            fd, tmp = tempfile.mkstemp(suffix=".cpp")
+            os.write(fd, src.encode())
+            os.close(fd)
+            cc = subprocess.run(
+                ["aarch64-linux-gnu-g++", "-O3", "-std=c++11",
+                 "-march=armv8.2-a+sve2", "-fsyntax-only", tmp],
+                capture_output=True, text=True)
+            os.unlink(tmp)
+            if cc.returncode != 0:
+                print("COMPILE %s:\n%s" % (kernel, cc.stderr[:400]))
+                fails += 1
+                continue
+        print("OK   %s (%s, %d bytes)" % (kernel, family, len(src)))
+    print("fails=%d" % fails)
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
