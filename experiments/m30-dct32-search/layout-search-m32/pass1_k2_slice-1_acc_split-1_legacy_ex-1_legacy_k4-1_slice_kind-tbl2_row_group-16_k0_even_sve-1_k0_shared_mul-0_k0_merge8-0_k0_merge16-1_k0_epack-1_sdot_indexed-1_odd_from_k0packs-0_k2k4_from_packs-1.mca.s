@@ -10,7 +10,7 @@ addvl sp, sp, #0xffffffffffffffe2
 adrp x3, #0x457000
 ptrue p7.b
 sub sp, sp, #0x70
-add x3, x3, #0xcb0
+add x3, x3, #0xfb0
 add x11, x3, #0x20
 add x5, x2, x2, lsl #1
 add x7, x2, x2, lsl #2
@@ -2662,1420 +2662,1608 @@ addvl sp, sp, #0x1e
 add sp, sp, #0x70
 mov x1, x19
 add x0, sp, #0x20
-cntb x12, all, mul #9
-adrp x2, #0x457000
+cntb x12
+mov x13, #0x35
 ptrue p7.b
-lsl x12, x12, #2
-add x2, x2, #0xcb0
-sub sp, sp, x12
+adrp x2, #0x457000
+add x2, x2, #0xfb0
+mul x12, x12, x13
 add x3, x2, #0x20
 ld1w {z31.s}, p7/z, [x3]
-sub sp, sp, #0x40
-cntb x6
-addvl x3, sp, #0x1a
-lsl x6, x6, #5
-add x3, x3, #0x40
+cntb x3, all, mul #0xb
 add x5, x0, #0x800
-stp d8, d9, [sp]
+sub sp, sp, x12
+lsl x3, x3, #2
+sub sp, sp, #0x40
 add x4, x2, #0x80
+add x3, sp, x3
+add x3, x3, #0x40
+stp d8, d9, [sp]
 stp d10, d11, [sp, #0x10]
 stp d12, d13, [sp, #0x20]
 stp d14, d15, [sp, #0x30]
 str z31, [x3]
 add x3, x2, #0x40
 ld1w {z31.s}, p7/z, [x3]
-addvl x3, sp, #0x1b
+addvl x3, sp, #0x1a
 add x3, x3, #0x40
 str z31, [x3]
 add x3, x2, #0x60
 ld1w {z31.s}, p7/z, [x3]
-add x3, sp, #0x40
+addvl x3, sp, #0x1b
+add x3, x3, #0x40
 str z31, [x3]
 add x3, x2, #0x180
 ld1h {z31.h}, p7/z, [x3]
-addvl x3, sp, #0x1c
+cntb x3, all, mul #3
+lsl x6, x3, #4
+sub x3, x6, x3
+cntb x6, all, mul #3
 add x3, x3, #0x40
+lsl x6, x6, #4
+add x3, sp, x3
 str z31, [x3]
 add x3, x2, #0x280
 ld1h {z31.h}, p7/z, [x3]
-addvl x3, sp, #0x1d
+rdvl x3, #0x17
+lsl x3, x3, #1
+add x3, sp, x3
 add x3, x3, #0x40
 str z31, [x3]
 add x3, x2, #0x380
 ld1h {z31.h}, p7/z, [x3]
-addvl x3, sp, #0x1e
+addvl x3, x6, #0xffffffffffffffff
+cntb x6, all, mul #3
 add x3, x3, #0x40
+lsl x6, x6, #4
+add x3, sp, x3
 str z31, [x3]
 add x3, x2, #0xa0
 ld1h {z31.h}, p7/z, [x3]
-addvl x3, sp, #0x1f
+cntb x3, all, mul #3
+lsl x3, x3, #4
+add x3, sp, x3
 add x3, x3, #0x40
 str z31, [x3]
 add x3, x2, #0x1a0
 ld1h {z31.h}, p7/z, [x3]
-cntb x3
-lsl x3, x3, #5
-add x3, sp, x3
+addvl x3, x6, #1
 add x3, x3, #0x40
+add x3, sp, x3
 str z31, [x3]
 add x3, x2, #0x2a0
 ld1h {z31.h}, p7/z, [x3]
-addvl x3, x6, #1
-rdvl x6, #0x11
-add x3, x3, #0x40
-lsl x6, x6, #1
+rdvl x3, #0x19
+lsl x3, x3, #1
 add x3, sp, x3
+add x3, x3, #0x40
 str z31, [x3]
 add x3, x2, #0x3a0
 ld1h {z31.h}, p7/z, [x3]
-rdvl x3, #0x11
-lsl x3, x3, #1
-add x3, sp, x3
+cntb x3, all, mul #3
+add x3, x3, x3, lsl #4
 add x3, x3, #0x40
+add x3, sp, x3
 str z31, [x3]
 add x3, x2, #0x100
+ld1h {z0.h}, p7/z, [x3]
+cntb x3, all, mul #0xd
+lsl x3, x3, #2
+add x3, sp, x3
+add x3, x3, #0x40
+str z0, [x3]
+add x3, x0, #0x20
+ld1h {z29.h}, p7/z, [x3]
+ld1h {z0.h}, p7/z, [x0]
+addvl x3, sp, #0x1c
+rev z29.h, z29.h
+sub z27.h, z0.h, z29.h
+add x3, x3, #0x40
+str z27, [x3]
+cntb x6
+add x3, x0, #0x40
+ld1h {z17.h}, p7/z, [x3]
+lsl x6, x6, #5
+add x3, x0, #0x60
+ld1h {z22.h}, p7/z, [x3]
+rev z22.h, z22.h
+addvl x3, sp, #0x1d
+sub z26.h, z17.h, z22.h
+ptrue p6.d
+add x3, x3, #0x40
+str z26, [x3]
+add x3, x0, #0x80
+ld1h {z21.h}, p7/z, [x3]
+add x3, x0, #0xa0
+ld1h {z9.h}, p7/z, [x3]
+rev z9.h, z9.h
+addvl x3, sp, #0x1e
+sub z23.h, z21.h, z9.h
+add x3, x3, #0x40
+str z23, [x3]
+add x3, x0, #0xc0
+ld1h {z2.h}, p7/z, [x3]
+add x3, x0, #0xe0
 ld1h {z10.h}, p7/z, [x3]
+rev z10.h, z10.h
+addvl x3, sp, #0x1f
+sub z31.h, z2.h, z10.h
+add x3, x3, #0x40
+str z31, [x3]
+add x3, x0, #0x100
+ld1h {z23.h}, p7/z, [x3]
+add x3, x0, #0x120
+ld1h {z30.h}, p7/z, [x3]
+rev z30.h, z30.h
+cntb x3
+sub z28.h, z23.h, z30.h
+lsl x3, x3, #5
+add x3, sp, x3
+add x3, x3, #0x40
+str z28, [x3]
+add x3, x0, #0x140
+ld1h {z18.h}, p7/z, [x3]
+add x3, x0, #0x160
+ld1h {z24.h}, p7/z, [x3]
+rev z24.h, z24.h
+addvl x3, x6, #1
+sub z25.h, z18.h, z24.h
+rdvl x6, #0x11
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+str z25, [x3]
+add x3, x0, #0x180
+ld1h {z3.h}, p7/z, [x3]
+add x3, x0, #0x1a0
+ld1h {z11.h}, p7/z, [x3]
+rev z11.h, z11.h
+rdvl x3, #0x11
+sub z19.h, z3.h, z11.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+str z19, [x3]
+add x3, x0, #0x1c0
+ld1h {z4.h}, p7/z, [x3]
+add x3, x0, #0x1e0
+ld1h {z12.h}, p7/z, [x3]
+rev z12.h, z12.h
+addvl x3, x6, #1
+sub z20.h, z4.h, z12.h
+cntb x6, all, mul #9
+add x3, x3, #0x40
+lsl x6, x6, #2
+add x3, sp, x3
+str z20, [x3]
+add x3, x0, #0x200
+ld1h {z25.h}, p7/z, [x3]
+add x3, x0, #0x220
+ld1h {z31.h}, p7/z, [x3]
+rev z31.h, z31.h
+cntb x3, all, mul #9
+sub z16.h, z25.h, z31.h
+lsl x3, x3, #2
+add x3, sp, x3
+add x3, x3, #0x40
+str z16, [x3]
+add x3, x0, #0x240
+ld1h {z19.h}, p7/z, [x3]
+add x3, x0, #0x260
+ld1h {z26.h}, p7/z, [x3]
+rev z26.h, z26.h
+addvl x3, x6, #1
+sub z15.h, z19.h, z26.h
+cntb x6, all, mul #5
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+str z15, [x3]
+add x3, x0, #0x280
+ld1h {z5.h}, p7/z, [x3]
+add x3, x0, #0x2a0
+ld1h {z13.h}, p7/z, [x3]
+rev z13.h, z13.h
+rdvl x3, #0x13
+sub z14.h, z5.h, z13.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+str z14, [x3]
+add x3, x0, #0x2c0
+ld1h {z6.h}, p7/z, [x3]
+add x3, x0, #0x2e0
+ld1h {z14.h}, p7/z, [x3]
+rev z14.h, z14.h
+addvl x3, x6, #0xffffffffffffffff
+sub z8.h, z6.h, z14.h
+cntb x6, all, mul #5
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+str z8, [x3]
+add x3, x0, #0x300
+ld1h {z27.h}, p7/z, [x3]
+add x3, x0, #0x320
+ld1h {z28.h}, p7/z, [x3]
+rev z7.h, z28.h
+addvl x3, sp, #5
+sub z1.h, z27.h, z7.h
+add x3, x3, #0x40
+str z7, [x3]
+cntb x3, all, mul #5
+lsl x3, x3, #3
+add x3, sp, x3
+add x3, x3, #0x40
+str z1, [x3]
+add x3, x0, #0x340
+ld1h {z20.h}, p7/z, [x3]
+add x3, x0, #0x360
+ld1h {z28.h}, p7/z, [x3]
+rev z28.h, z28.h
+addvl x3, x6, #1
+sub z16.h, z20.h, z28.h
+rdvl x6, #0x15
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+str z16, [x3]
+add x3, x0, #0x380
+ld1h {z7.h}, p7/z, [x3]
+add x3, x0, #0x3a0
+ld1h {z15.h}, p7/z, [x3]
+rev z15.h, z15.h
+rdvl x3, #0x15
+sub z8.h, z7.h, z15.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+str z8, [x3]
+add x3, x0, #0x3c0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x0, #0x3e0
+ld1h {z16.h}, p7/z, [x3]
+rev z16.h, z16.h
+addvl x3, x6, #1
+sub z1.h, z8.h, z16.h
+add x3, x3, #0x40
+add x3, sp, x3
+str z1, [x3]
+zip1 z1.d, z0.d, z21.d
+add x3, sp, #0x40
+zip2 z21.d, z0.d, z21.d
+zip1 z0.d, z17.d, z2.d
+zip2 z17.d, z17.d, z2.d
+zip1 z2.d, z1.d, z0.d
+str z2, [x3]
+zip2 z2.d, z1.d, z0.d
+addvl x3, sp, #1
+add x3, x3, #0x40
+str z2, [x3]
+zip1 z2.d, z21.d, z17.d
+revh z0.d, p6/m, z2.d
+zip2 z21.d, z21.d, z17.d
+revh z21.d, p6/m, z21.d
+mov z2.d, z21.d
+zip1 z21.d, z29.d, z9.d
+zip1 z17.d, z22.d, z10.d
+zip2 z29.d, z29.d, z9.d
+zip2 z22.d, z22.d, z10.d
+zip2 z9.d, z21.d, z17.d
+zip1 z10.d, z21.d, z17.d
+zip1 z21.d, z29.d, z22.d
+revh z21.d, p6/m, z21.d
+mov z1.d, z21.d
+zip2 z29.d, z29.d, z22.d
+revh z22.d, p6/m, z29.d
+add x3, sp, #0x40
+saddlb z29.s, z2.h, z22.h
+ldr z21, [x3]
+saddlb z21.s, z21.h, z10.h
+add z21.s, z21.s, z29.s
+ldr z29, [x3]
+addvl x3, sp, #8
+add x3, x3, #0x40
+str z10, [x3]
+ldr z17, [x3]
+addvl x3, sp, #7
+saddlt z10.s, z29.h, z17.h
+saddlt z29.s, z2.h, z22.h
+add x3, x3, #0x40
+str z2, [x3]
+add z10.s, z10.s, z29.s
+addvl x3, sp, #0xb
+saddlb z29.s, z0.h, z1.h
+add x3, x3, #0x40
+str z22, [x3]
+saddlt z22.s, z0.h, z1.h
+addvl x3, sp, #1
+add x3, x3, #0x40
+ldr z2, [x3]
+saddlb z17.s, z2.h, z9.h
+addvl x3, sp, #9
+add z17.s, z17.s, z29.s
+add x3, x3, #0x40
+str z9, [x3]
+ldr z9, [x3]
+addvl x3, sp, #1
+add x3, x3, #0x40
+ldr z2, [x3]
+saddlt z29.s, z2.h, z9.h
+addvl x3, sp, #6
+add z22.s, z29.s, z22.s
+add x3, x3, #0x40
+str z0, [x3]
+addvl x3, sp, #0xa
+add x3, x3, #0x40
+str z1, [x3]
+revw z17.d, p6/m, z17.d
+revw z22.d, p6/m, z22.d
+zip1 z9.s, z22.s, z17.s
+zip1 z29.s, z21.s, z10.s
+zip2 z22.s, z22.s, z17.s
+add z29.s, z29.s, z9.s
+zip2 z21.s, z21.s, z10.s
+add z22.s, z21.s, z22.s
+uzp2 z17.d, z29.d, z22.d
+revw z17.d, p6/m, z17.d
+ptrue p5.s
+uzp1 z29.d, z29.d, z22.d
+ld1w {z22.s}, p7/z, [x2]
+add z21.s, z17.s, z29.s
+sub z29.s, z29.s, z17.s
+movprfx z10, z21
+mul z10.s, p7/m, z10.s, z22.s
+addp z10.s, p5/m, z10.s, z10.s
+cntb x3, all, mul #0xb
+lsl x3, x3, #2
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z1, [x3]
+movprfx z17, z1
+mul z17.s, p7/m, z17.s, z29.s
+addp z17.s, p5/m, z17.s, z17.s
+addvl x3, sp, #0x1a
+add x3, x3, #0x40
+ldr z9, [x3]
+mul z21.s, p7/m, z21.s, z9.s
+mov z9.d, z21.d
+addp z9.s, p5/m, z9.s, z21.s
+addvl x3, sp, #0x1b
+add x3, x3, #0x40
+ldr z21, [x3]
+movprfx z2, z29
+mul z2.s, p7/m, z2.s, z21.s
+addp z2.s, p5/m, z2.s, z2.s
+zip1 z29.d, z23.d, z3.d
+zip1 z21.d, z18.d, z4.d
+zip2 z23.d, z23.d, z3.d
+zip2 z18.d, z18.d, z4.d
+zip1 z3.d, z29.d, z21.d
+zip2 z0.d, z29.d, z21.d
+zip1 z29.d, z23.d, z18.d
+revh z4.d, p6/m, z29.d
+addvl x3, sp, #2
+zip2 z23.d, z23.d, z18.d
+add x3, x3, #0x40
+str z4, [x3]
+revh z21.d, p6/m, z23.d
+zip1 z29.d, z30.d, z11.d
+zip1 z23.d, z24.d, z12.d
+zip2 z30.d, z30.d, z11.d
+zip2 z24.d, z24.d, z12.d
+zip1 z4.d, z29.d, z23.d
+zip2 z18.d, z29.d, z23.d
+zip1 z29.d, z30.d, z24.d
+revh z29.d, p6/m, z29.d
+zip2 z30.d, z30.d, z24.d
+revh z30.d, p6/m, z30.d
+addvl x3, sp, #0xc
+mov z11.d, z30.d
+saddlb z30.s, z21.h, z30.h
+add x3, x3, #0x40
+saddlb z24.s, z3.h, z4.h
+add z24.s, z24.s, z30.s
+str z3, [x3]
+ldr z30, [x3]
+addvl x3, sp, #0xd
+add x3, x3, #0x40
+mov z12.d, z21.d
+str z12, [x3]
+addvl x3, sp, #0x10
+saddlt z21.s, z30.h, z4.h
+saddlt z30.s, z12.h, z11.h
+add x3, x3, #0x40
+str z11, [x3]
+add z21.s, z21.s, z30.s
+addvl x3, sp, #2
+saddlb z23.s, z0.h, z18.h
+add x3, x3, #0x40
+ldr z12, [x3]
+saddlb z30.s, z12.h, z29.h
+addvl x3, sp, #0xe
+add z23.s, z23.s, z30.s
+add x3, x3, #0x40
+str z18, [x3]
+ldr z30, [x3]
+addvl x3, sp, #0xf
+saddlt z30.s, z0.h, z30.h
+add x3, x3, #0x40
+str z29, [x3]
+saddlt z29.s, z12.h, z29.h
+add z29.s, z30.s, z29.s
+revw z23.d, p6/m, z23.d
+revw z29.d, p6/m, z29.d
+zip1 z30.s, z24.s, z21.s
+zip2 z24.s, z24.s, z21.s
+zip1 z18.s, z29.s, z23.s
+zip2 z29.s, z29.s, z23.s
+add z30.s, z30.s, z18.s
+add z29.s, z24.s, z29.s
+uzp2 z24.d, z30.d, z29.d
+revw z24.d, p6/m, z24.d
+uzp1 z30.d, z30.d, z29.d
+add z29.s, z24.s, z30.s
+sub z30.s, z30.s, z24.s
+movprfx z23, z29
+mul z23.s, p7/m, z23.s, z22.s
+addp z23.s, p5/m, z23.s, z23.s
+mov z12.d, z1.d
+movprfx z24, z1
+mul z24.s, p7/m, z24.s, z30.s
+addp z24.s, p5/m, z24.s, z24.s
+addvl x3, sp, #0x1a
+add x3, x3, #0x40
+ldr z11, [x3]
+mul z29.s, p7/m, z29.s, z11.s
+addp z29.s, p5/m, z29.s, z29.s
+addvl x3, sp, #0x1b
+add x3, x3, #0x40
+ldr z1, [x3]
+mul z30.s, p7/m, z30.s, z1.s
+addp z30.s, p5/m, z30.s, z30.s
+zip1 z21.d, z25.d, z5.d
+zip1 z18.d, z19.d, z6.d
+zip2 z25.d, z25.d, z5.d
+zip2 z19.d, z19.d, z6.d
+zip1 z6.d, z21.d, z18.d
+zip2 z18.d, z21.d, z18.d
+zip1 z21.d, z25.d, z19.d
+revh z21.d, p6/m, z21.d
+addvl x3, sp, #3
+zip2 z25.d, z25.d, z19.d
+add x3, x3, #0x40
+str z21, [x3]
+revh z5.d, p6/m, z25.d
+zip1 z25.d, z31.d, z13.d
+zip1 z21.d, z26.d, z14.d
+zip2 z31.d, z31.d, z13.d
+zip2 z26.d, z26.d, z14.d
+mov z19.d, z5.d
+zip2 z14.d, z25.d, z21.d
+zip1 z21.d, z25.d, z21.d
+zip1 z25.d, z31.d, z26.d
+revh z5.d, p6/m, z25.d
+zip2 z31.d, z31.d, z26.d
+revh z3.d, p6/m, z31.d
+addvl x3, sp, #0x11
+saddlb z31.s, z19.h, z3.h
+saddlb z25.s, z6.h, z21.h
+add x3, x3, #0x40
+add z25.s, z25.s, z31.s
+str z6, [x3]
+ldr z31, [x3]
+addvl x3, sp, #0x14
+mov z13.d, z19.d
+add x3, x3, #0x40
+str z21, [x3]
+ldr z21, [x3]
+addvl x3, sp, #0x13
+saddlt z19.s, z31.h, z21.h
+saddlt z31.s, z13.h, z3.h
+add x3, x3, #0x40
+str z13, [x3]
+add z19.s, z19.s, z31.s
+addvl x3, sp, #3
+saddlb z21.s, z18.h, z14.h
+add x3, x3, #0x40
+ldr z6, [x3]
+saddlb z31.s, z6.h, z5.h
+addvl x3, sp, #0x12
+add z21.s, z21.s, z31.s
+saddlt z26.s, z6.h, z5.h
+add x3, x3, #0x40
+str z18, [x3]
+ldr z31, [x3]
+addvl x3, sp, #0x15
+add x3, x3, #0x40
+str z14, [x3]
+ldr z18, [x3]
+saddlt z31.s, z31.h, z18.h
+add z26.s, z31.s, z26.s
+revw z21.d, p6/m, z21.d
+revw z26.d, p6/m, z26.d
+zip1 z31.s, z25.s, z19.s
+zip2 z25.s, z25.s, z19.s
+zip1 z18.s, z26.s, z21.s
+zip2 z26.s, z26.s, z21.s
+add z31.s, z31.s, z18.s
+add z26.s, z25.s, z26.s
+uzp2 z25.d, z31.d, z26.d
+revw z25.d, p6/m, z25.d
+uzp1 z31.d, z31.d, z26.d
+add z26.s, z25.s, z31.s
+sub z31.s, z31.s, z25.s
+movprfx z21, z26
+mul z21.s, p7/m, z21.s, z22.s
+addp z21.s, p5/m, z21.s, z21.s
+mov z14.d, z12.d
+movprfx z25, z12
+mul z25.s, p7/m, z25.s, z31.s
+addp z25.s, p5/m, z25.s, z25.s
+mov z13.d, z11.d
+mul z26.s, p7/m, z26.s, z11.s
+addp z26.s, p5/m, z26.s, z26.s
+mov z12.d, z1.d
+mul z31.s, p7/m, z31.s, z1.s
+addp z31.s, p5/m, z31.s, z31.s
+zip1 z19.d, z27.d, z7.d
+zip1 z18.d, z20.d, z8.d
+zip2 z27.d, z27.d, z7.d
+zip2 z20.d, z20.d, z8.d
+zip2 z1.d, z19.d, z18.d
+zip1 z8.d, z19.d, z18.d
+zip1 z19.d, z27.d, z20.d
+revh z7.d, p6/m, z19.d
+addvl x3, sp, #4
+zip2 z27.d, z27.d, z20.d
+add x3, x3, #0x40
+str z7, [x3]
+revh z7.d, p6/m, z27.d
+addvl x3, sp, #5
+zip1 z19.d, z28.d, z16.d
+zip2 z28.d, z28.d, z16.d
+add x3, x3, #0x40
+ldr z20, [x3]
+zip1 z27.d, z20.d, z15.d
+zip2 z20.d, z20.d, z15.d
+zip1 z16.d, z27.d, z19.d
+zip2 z19.d, z27.d, z19.d
+zip1 z27.d, z20.d, z28.d
+revh z6.d, p6/m, z27.d
+mov z27.d, z6.d
+zip2 z20.d, z20.d, z28.d
+revh z6.d, p6/m, z20.d
+saddlb z28.s, z7.h, z6.h
+saddlb z20.s, z8.h, z16.h
+add z20.s, z20.s, z28.s
+str z8, [x3]
+ldr z28, [x3]
+addvl x3, sp, #0x17
+add x3, x3, #0x40
+str z16, [x3]
+ldr z11, [x3]
+addvl x3, sp, #4
+saddlt z18.s, z28.h, z11.h
+saddlt z28.s, z7.h, z6.h
+add x3, x3, #0x40
+ldr z15, [x3]
+add z18.s, z18.s, z28.s
+addvl x3, sp, #0x16
+saddlb z28.s, z15.h, z27.h
+mov z11.d, z19.d
+add x3, x3, #0x40
+saddlb z19.s, z1.h, z19.h
+add z19.s, z19.s, z28.s
+str z1, [x3]
+ldr z28, [x3]
+addvl x3, sp, #0x18
+add x3, x3, #0x40
+str z11, [x3]
+ldr z11, [x3]
+addvl x3, sp, #0x19
+saddlt z28.s, z28.h, z11.h
+add x3, x3, #0x40
+str z27, [x3]
+saddlt z27.s, z15.h, z27.h
+add z27.s, z28.s, z27.s
+revw z19.d, p6/m, z19.d
+revw z27.d, p6/m, z27.d
+zip1 z28.s, z20.s, z18.s
+zip2 z20.s, z20.s, z18.s
+zip1 z16.s, z27.s, z19.s
+zip2 z27.s, z27.s, z19.s
+add z28.s, z28.s, z16.s
+add z27.s, z20.s, z27.s
+uzp2 z20.d, z28.d, z27.d
+revw z20.d, p6/m, z20.d
+uzp1 z28.d, z28.d, z27.d
+add z27.s, z20.s, z28.s
+sub z28.s, z28.s, z20.s
+mul z22.s, p7/m, z22.s, z27.s
+addp z22.s, p5/m, z22.s, z22.s
+movprfx z20, z14
+mul z20.s, p7/m, z20.s, z28.s
+addp z20.s, p5/m, z20.s, z20.s
+mul z27.s, p7/m, z27.s, z13.s
+addp z27.s, p5/m, z27.s, z27.s
+mul z28.s, p7/m, z28.s, z12.s
+addp z28.s, p5/m, z28.s, z28.s
+addvl x3, sp, #0x1c
+uzp1 z10.s, z10.s, z23.s
+uzp1 z21.s, z21.s, z22.s
+add x3, x3, #0x40
+uzp1 z17.s, z17.s, z24.s
+uzp1 z25.s, z25.s, z20.s
+uzp1 z26.s, z26.s, z27.s
+rshrnb z10.h, z10.s, #0xb
+rshrnb z21.h, z21.s, #0xb
+uzp1 z10.h, z10.h, z10.h
+uzp1 z21.h, z21.h, z21.h
+rshrnb z17.h, z17.s, #0xb
+rshrnb z25.h, z25.s, #0xb
+uzp1 z17.h, z17.h, z17.h
+uzp1 z25.h, z25.h, z25.h
+stp q10, q21, [x1]
+rshrnb z26.h, z26.s, #0xb
+uzp1 z26.h, z26.h, z26.h
+uzp1 z9.s, z9.s, z29.s
+uzp1 z31.s, z31.s, z28.s
+rshrnb z31.h, z31.s, #0xb
+stp q17, q25, [x1, #0x200]
+ldr z27, [x3]
+addvl x3, sp, #0x1e
+add x3, x3, #0x40
+ldr z23, [x3]
+uzp1 z31.h, z31.h, z31.h
+addvl x3, sp, #0x1d
+str q26, [x1, #0x410]
+zip1 z29.d, z27.d, z23.d
+add x3, x3, #0x40
+ldr z26, [x3]
+uzp1 z2.s, z2.s, z30.s
+addvl x3, sp, #0x1f
+str q31, [x1, #0x610]
+trn2 z31.d, z27.d, z23.d
+add x3, x3, #0x40
+ldr z22, [x3]
+zip1 z28.d, z26.d, z22.d
+cntb x3
+zip1 z24.d, z29.d, z28.d
+trn1 z29.d, z27.d, z23.d
+lsl x3, x3, #5
+cntb x6
+trn2 z30.d, z26.d, z22.d
+add x3, sp, x3
+lsl x6, x6, #5
+trn1 z28.d, z26.d, z22.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip2 z23.d, z29.d, z28.d
+rdvl x3, #0x11
+zip1 z25.d, z31.d, z30.d
+zip2 z22.d, z31.d, z30.d
+lsl x3, x3, #1
+rshrnb z9.h, z9.s, #0xb
+uzp1 z9.h, z9.h, z9.h
+add x3, sp, x3
+str q9, [x1, #0x400]
+rshrnb z2.h, z2.s, #0xb
+add x3, x3, #0x40
+ldr z19, [x3]
+zip1 z29.d, z27.d, z19.d
+addvl x3, x6, #1
+rdvl x6, #0x11
+trn2 z31.d, z27.d, z19.d
+add x3, x3, #0x40
+lsl x6, x6, #1
+uzp1 z2.h, z2.h, z2.h
+add x3, sp, x3
+ldr z26, [x3]
+str q2, [x1, #0x600]
+addvl x3, x6, #1
+ld1h {z10.h}, p7/z, [x4]
+add x3, x3, #0x40
+cntb x6, all, mul #9
+add x3, sp, x3
+ldr z18, [x3]
+zip1 z28.d, z26.d, z18.d
+cntb x3, all, mul #9
+zip1 z20.d, z29.d, z28.d
+trn1 z29.d, z27.d, z19.d
+lsl x3, x3, #2
+lsl x6, x6, #2
+trn2 z30.d, z26.d, z18.d
+add x3, sp, x3
+trn1 z28.d, z26.d, z18.d
+zip2 z19.d, z29.d, z28.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip1 z21.d, z31.d, z30.d
+rdvl x3, #0x13
+zip2 z18.d, z31.d, z30.d
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z15, [x3]
+zip1 z29.d, z27.d, z15.d
+addvl x3, x6, #1
+cntb x6, all, mul #5
+trn2 z31.d, z27.d, z15.d
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+ldr z26, [x3]
+addvl x3, x6, #0xffffffffffffffff
+cntb x6, all, mul #5
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+ldr z14, [x3]
+zip1 z28.d, z26.d, z14.d
+cntb x3, all, mul #5
+zip1 z16.d, z29.d, z28.d
+trn1 z29.d, z27.d, z15.d
+lsl x3, x3, #3
+trn2 z30.d, z26.d, z14.d
+trn1 z28.d, z26.d, z14.d
+add x3, sp, x3
+zip2 z8.d, z29.d, z28.d
+zip1 z17.d, z31.d, z30.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip2 z11.d, z31.d, z30.d
+rdvl x3, #0x15
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z15, [x3]
+zip1 z29.d, z27.d, z15.d
+addvl x3, x6, #1
+rdvl x6, #0x15
+trn2 z31.d, z27.d, z15.d
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+ldr z26, [x3]
 addvl x3, x6, #1
 add x3, x3, #0x40
 add x3, sp, x3
-str z10, [x3]
-add x3, x0, #0x20
-ld1h {z30.h}, p7/z, [x3]
-ld1h {z21.h}, p7/z, [x0]
-add x3, x0, #0x60
-ld1h {z24.h}, p7/z, [x3]
-ptrue p6.d
-add x3, x0, #0xa0
-ld1h {z18.h}, p7/z, [x3]
-add x3, x0, #0xe0
-ld1h {z16.h}, p7/z, [x3]
-add x3, x0, #0x120
-ld1h {z26.h}, p7/z, [x3]
-add x3, x0, #0x160
-ld1h {z25.h}, p7/z, [x3]
-add x3, x0, #0x1a0
-ld1h {z17.h}, p7/z, [x3]
-add x3, x0, #0x1e0
-ld1h {z19.h}, p7/z, [x3]
-add x3, x0, #0x220
-ld1h {z28.h}, p7/z, [x3]
-add x3, x0, #0x260
-ld1h {z31.h}, p7/z, [x3]
-add x3, x0, #0x2a0
-ld1h {z20.h}, p7/z, [x3]
-add x3, x0, #0x2e0
-ld1h {z22.h}, p7/z, [x3]
-add x3, x0, #0x320
-ld1h {z29.h}, p7/z, [x3]
-add x3, x0, #0x360
-ld1h {z27.h}, p7/z, [x3]
-add x3, x0, #0x3a0
-ld1h {z12.h}, p7/z, [x3]
-add x3, x0, #0x3e0
-ld1h {z23.h}, p7/z, [x3]
-add x3, x0, #0x40
-ld1h {z15.h}, p7/z, [x3]
-add x3, x0, #0x80
-ld1h {z13.h}, p7/z, [x3]
-zip1 z14.d, z21.d, z13.d
-add x3, x0, #0xc0
-zip2 z21.d, z21.d, z13.d
-ld1h {z11.h}, p7/z, [x3]
-zip1 z13.d, z15.d, z11.d
-zip2 z15.d, z15.d, z11.d
-zip1 z2.d, z14.d, z13.d
-zip2 z13.d, z14.d, z13.d
-zip1 z14.d, z21.d, z15.d
-revh z14.d, p6/m, z14.d
-zip2 z21.d, z21.d, z15.d
-revh z15.d, p6/m, z21.d
-rev z18.h, z18.h
-rev z16.h, z16.h
-rev z30.h, z30.h
-zip1 z21.d, z30.d, z18.d
-rev z24.h, z24.h
-zip2 z30.d, z30.d, z18.d
-zip1 z18.d, z24.d, z16.d
-zip2 z24.d, z24.d, z16.d
-zip1 z16.d, z21.d, z18.d
-zip2 z18.d, z21.d, z18.d
-zip1 z21.d, z30.d, z24.d
-revh z11.d, p6/m, z21.d
-zip2 z30.d, z30.d, z24.d
-revh z24.d, p6/m, z30.d
-addvl x3, sp, #4
-saddlb z21.s, z2.h, z16.h
-saddlb z30.s, z15.h, z24.h
-add x3, x3, #0x40
-str z16, [x3]
-ldr z10, [x3]
-addvl x3, sp, #3
-saddlt z16.s, z2.h, z10.h
-add z21.s, z21.s, z30.s
-add x3, x3, #0x40
-str z15, [x3]
-saddlt z30.s, z15.h, z24.h
-addvl x3, sp, #7
-add z16.s, z16.s, z30.s
-saddlb z30.s, z14.h, z11.h
-add x3, x3, #0x40
-str z24, [x3]
-mov z24.d, z18.d
-addvl x3, sp, #1
-saddlb z18.s, z13.h, z18.h
-add z18.s, z18.s, z30.s
-add x3, x3, #0x40
-str z13, [x3]
-ldr z10, [x3]
-addvl x3, sp, #5
-add x3, x3, #0x40
-str z24, [x3]
-ldr z9, [x3]
-addvl x3, sp, #2
-saddlt z30.s, z10.h, z9.h
-saddlt z24.s, z14.h, z11.h
-add x3, x3, #0x40
-str z14, [x3]
-add z24.s, z30.s, z24.s
-addvl x3, sp, #6
-add x3, x3, #0x40
-str z11, [x3]
-revw z18.d, p6/m, z18.d
-revw z24.d, p6/m, z24.d
-zip1 z30.s, z21.s, z16.s
-zip2 z21.s, z21.s, z16.s
-zip1 z15.s, z24.s, z18.s
-zip2 z24.s, z24.s, z18.s
-add z30.s, z30.s, z15.s
-add z24.s, z21.s, z24.s
-uzp2 z21.d, z30.d, z24.d
-revw z21.d, p6/m, z21.d
-ptrue p5.s
-uzp1 z30.d, z30.d, z24.d
-ld1w {z13.s}, p7/z, [x2]
-add z24.s, z21.s, z30.s
-sub z30.s, z30.s, z21.s
-movprfx z16, z24
-mul z16.s, p7/m, z16.s, z13.s
-addp z16.s, p5/m, z16.s, z16.s
-addvl x3, sp, #0x1a
-add x3, x3, #0x40
-ldr z8, [x3]
-movprfx z18, z8
-mul z18.s, p7/m, z18.s, z30.s
-addp z18.s, p5/m, z18.s, z18.s
-addvl x3, sp, #0x1b
-add x3, x3, #0x40
-ldr z7, [x3]
-mul z24.s, p7/m, z24.s, z7.s
-addp z24.s, p5/m, z24.s, z24.s
-add x3, sp, #0x40
-ldr z4, [x3]
-mul z30.s, p7/m, z30.s, z4.s
-addp z30.s, p5/m, z30.s, z30.s
-add x3, x0, #0x100
-ld1h {z21.h}, p7/z, [x3]
-add x3, x0, #0x140
-ld1h {z15.h}, p7/z, [x3]
-add x3, x0, #0x180
-ld1h {z11.h}, p7/z, [x3]
-zip1 z14.d, z21.d, z11.d
-add x3, x0, #0x1c0
-ld1h {z10.h}, p7/z, [x3]
-zip2 z21.d, z21.d, z11.d
-zip1 z11.d, z15.d, z10.d
-zip2 z15.d, z15.d, z10.d
-zip2 z9.d, z14.d, z11.d
-zip1 z10.d, z14.d, z11.d
-zip1 z14.d, z21.d, z15.d
-revh z6.d, p6/m, z14.d
-zip2 z21.d, z21.d, z15.d
-revh z5.d, p6/m, z21.d
-rev z21.h, z19.h
-rev z17.h, z17.h
-rev z26.h, z26.h
-zip1 z19.d, z26.d, z17.d
-rev z25.h, z25.h
-zip2 z26.d, z26.d, z17.d
-zip1 z17.d, z25.d, z21.d
-zip2 z25.d, z25.d, z21.d
-zip1 z21.d, z19.d, z17.d
-zip2 z17.d, z19.d, z17.d
-zip1 z19.d, z26.d, z25.d
-revh z3.d, p6/m, z19.d
-zip2 z26.d, z26.d, z25.d
-revh z25.d, p6/m, z26.d
-addvl x3, sp, #8
-saddlb z26.s, z5.h, z25.h
-saddlb z19.s, z10.h, z21.h
-add x3, x3, #0x40
-add z19.s, z19.s, z26.s
-str z10, [x3]
-ldr z26, [x3]
-addvl x3, sp, #0xc
-add x3, x3, #0x40
-str z21, [x3]
-ldr z1, [x3]
-addvl x3, sp, #0xb
-saddlt z15.s, z26.h, z1.h
-saddlt z26.s, z5.h, z25.h
-add x3, x3, #0x40
-str z5, [x3]
-add z15.s, z15.s, z26.s
-addvl x3, sp, #0xf
-saddlb z26.s, z6.h, z3.h
-add x3, x3, #0x40
-str z25, [x3]
-mov z25.d, z17.d
-addvl x3, sp, #9
-saddlb z17.s, z9.h, z17.h
-add z17.s, z17.s, z26.s
-add x3, x3, #0x40
-str z9, [x3]
-ldr z1, [x3]
-addvl x3, sp, #0xd
-add x3, x3, #0x40
-str z25, [x3]
-ldr z0, [x3]
-addvl x3, sp, #0xa
-saddlt z26.s, z1.h, z0.h
-saddlt z25.s, z6.h, z3.h
-add x3, x3, #0x40
-str z6, [x3]
-add z25.s, z26.s, z25.s
-addvl x3, sp, #0xe
-add x3, x3, #0x40
-str z3, [x3]
-revw z17.d, p6/m, z17.d
-revw z25.d, p6/m, z25.d
-zip1 z26.s, z19.s, z15.s
-zip2 z19.s, z19.s, z15.s
-zip1 z14.s, z25.s, z17.s
-zip2 z25.s, z25.s, z17.s
-add z26.s, z26.s, z14.s
-add z25.s, z19.s, z25.s
-uzp2 z19.d, z26.d, z25.d
-revw z19.d, p6/m, z19.d
-uzp1 z26.d, z26.d, z25.d
-add z9.s, z19.s, z26.s
-sub z26.s, z26.s, z19.s
-movprfx z5, z9
-mul z5.s, p7/m, z5.s, z13.s
-addp z5.s, p5/m, z5.s, z5.s
-movprfx z6, z8
-mul z6.s, p7/m, z6.s, z26.s
-addp z6.s, p5/m, z6.s, z6.s
-mul z9.s, p7/m, z9.s, z7.s
-addp z9.s, p5/m, z9.s, z9.s
-mul z26.s, p7/m, z26.s, z4.s
-addp z26.s, p5/m, z26.s, z26.s
-add x3, x0, #0x200
-ld1h {z25.h}, p7/z, [x3]
-add x3, x0, #0x240
-ld1h {z19.h}, p7/z, [x3]
-add x3, x0, #0x280
-ld1h {z15.h}, p7/z, [x3]
-zip1 z17.d, z25.d, z15.d
-add x3, x0, #0x2c0
-zip2 z25.d, z25.d, z15.d
-ld1h {z14.h}, p7/z, [x3]
-zip1 z15.d, z19.d, z14.d
-zip2 z19.d, z19.d, z14.d
-zip1 z1.d, z17.d, z15.d
-zip2 z0.d, z17.d, z15.d
-zip1 z17.d, z25.d, z19.d
-revh z21.d, p6/m, z17.d
-zip2 z25.d, z25.d, z19.d
-revh z17.d, p6/m, z25.d
-rev z25.h, z20.h
-rev z22.h, z22.h
-rev z28.h, z28.h
-rev z31.h, z31.h
-zip1 z19.d, z28.d, z25.d
-zip2 z28.d, z28.d, z25.d
-zip1 z25.d, z31.d, z22.d
-zip2 z31.d, z31.d, z22.d
-zip1 z22.d, z19.d, z25.d
-zip1 z10.d, z28.d, z31.d
-zip2 z19.d, z19.d, z25.d
-revh z10.d, p6/m, z10.d
-zip2 z28.d, z28.d, z31.d
-revh z28.d, p6/m, z28.d
-addvl x3, sp, #0x10
-saddlb z31.s, z17.h, z28.h
-saddlb z20.s, z1.h, z22.h
-add x3, x3, #0x40
-add z20.s, z20.s, z31.s
-str z1, [x3]
-ldr z31, [x3]
-addvl x3, sp, #0x14
-saddlt z25.s, z21.h, z10.h
-add x3, x3, #0x40
-str z22, [x3]
-ldr z22, [x3]
-addvl x3, sp, #0x13
-saddlt z15.s, z31.h, z22.h
-saddlt z31.s, z17.h, z28.h
-add x3, x3, #0x40
-str z17, [x3]
-add z15.s, z15.s, z31.s
-addvl x3, sp, #0x11
-saddlb z31.s, z21.h, z10.h
-saddlb z17.s, z0.h, z19.h
-add x3, x3, #0x40
-add z17.s, z17.s, z31.s
-str z0, [x3]
-ldr z31, [x3]
-addvl x3, sp, #0x12
-saddlt z31.s, z31.h, z19.h
-add x3, x3, #0x40
-add z25.s, z31.s, z25.s
-str z21, [x3]
-revw z17.d, p6/m, z17.d
-revw z25.d, p6/m, z25.d
-zip1 z31.s, z20.s, z15.s
-zip2 z20.s, z20.s, z15.s
-zip1 z14.s, z25.s, z17.s
-zip2 z25.s, z25.s, z17.s
-add z31.s, z31.s, z14.s
-add z25.s, z20.s, z25.s
-uzp2 z20.d, z31.d, z25.d
-revw z20.d, p6/m, z20.d
-uzp1 z31.d, z31.d, z25.d
-add z25.s, z20.s, z31.s
-sub z31.s, z31.s, z20.s
-movprfx z15, z25
-mul z15.s, p7/m, z15.s, z13.s
-addp z15.s, p5/m, z15.s, z15.s
-mov z22.d, z8.d
-movprfx z17, z8
-mul z17.s, p7/m, z17.s, z31.s
-addp z17.s, p5/m, z17.s, z17.s
-mov z21.d, z7.d
-mul z25.s, p7/m, z25.s, z7.s
-addp z25.s, p5/m, z25.s, z25.s
-mul z31.s, p7/m, z31.s, z4.s
-addp z31.s, p5/m, z31.s, z31.s
-add x3, x0, #0x300
-ld1h {z14.h}, p7/z, [x3]
-add x3, x0, #0x340
-ld1h {z20.h}, p7/z, [x3]
-add x3, x0, #0x380
-ld1h {z11.h}, p7/z, [x3]
-zip1 z8.d, z14.d, z11.d
-add x3, x0, #0x3c0
-ld1h {z7.h}, p7/z, [x3]
-zip2 z14.d, z14.d, z11.d
-zip1 z11.d, z20.d, z7.d
-zip2 z20.d, z20.d, z7.d
-zip1 z1.d, z8.d, z11.d
-zip2 z0.d, z8.d, z11.d
-zip1 z7.d, z14.d, z20.d
-revh z7.d, p6/m, z7.d
-zip2 z14.d, z14.d, z20.d
-revh z20.d, p6/m, z14.d
-rev z12.h, z12.h
-rev z23.h, z23.h
-mov z14.d, z20.d
-rev z29.h, z29.h
-rev z27.h, z27.h
-zip1 z20.d, z29.d, z12.d
-zip2 z29.d, z29.d, z12.d
-zip1 z12.d, z27.d, z23.d
-zip2 z27.d, z27.d, z23.d
-zip1 z23.d, z20.d, z12.d
-zip1 z11.d, z29.d, z27.d
-zip2 z20.d, z20.d, z12.d
-revh z11.d, p6/m, z11.d
-zip2 z29.d, z29.d, z27.d
-revh z29.d, p6/m, z29.d
-addvl x3, sp, #0x15
-saddlb z27.s, z14.h, z29.h
-saddlb z4.s, z1.h, z23.h
-add x3, x3, #0x40
-add z4.s, z4.s, z27.s
-str z1, [x3]
-ldr z27, [x3]
-addvl x3, sp, #0x18
-saddlb z3.s, z0.h, z20.h
-add x3, x3, #0x40
-str z23, [x3]
-ldr z8, [x3]
-addvl x3, sp, #0x17
-saddlt z1.s, z27.h, z8.h
-saddlt z27.s, z14.h, z29.h
-add x3, x3, #0x40
-add z1.s, z1.s, z27.s
-saddlb z27.s, z7.h, z11.h
-str z14, [x3]
-addvl x3, sp, #0x16
-add z3.s, z3.s, z27.s
-add x3, x3, #0x40
-saddlt z12.s, z7.h, z11.h
-str z0, [x3]
-ldr z27, [x3]
-saddlt z27.s, z27.h, z20.h
-add z12.s, z27.s, z12.s
-revw z3.d, p6/m, z3.d
-revw z12.d, p6/m, z12.d
-zip1 z27.s, z4.s, z1.s
-zip2 z4.s, z4.s, z1.s
-zip1 z0.s, z12.s, z3.s
-zip2 z12.s, z12.s, z3.s
-add z27.s, z27.s, z0.s
-add z12.s, z4.s, z12.s
-uzp2 z4.d, z27.d, z12.d
-revw z4.d, p6/m, z4.d
-uzp1 z27.d, z27.d, z12.d
-add z12.s, z4.s, z27.s
-sub z27.s, z27.s, z4.s
-mul z13.s, p7/m, z13.s, z12.s
-addp z13.s, p5/m, z13.s, z13.s
-movprfx z4, z22
-mul z4.s, p7/m, z4.s, z27.s
-addp z4.s, p5/m, z4.s, z4.s
-mul z12.s, p7/m, z12.s, z21.s
-addp z12.s, p5/m, z12.s, z12.s
-add x3, sp, #0x40
-ldr z23, [x3]
-mul z27.s, p7/m, z27.s, z23.s
-addp z27.s, p5/m, z27.s, z27.s
-addvl x3, sp, #0x19
-uzp1 z16.s, z16.s, z5.s
-uzp1 z15.s, z15.s, z13.s
-add x3, x3, #0x40
-uzp1 z18.s, z18.s, z6.s
-uzp1 z17.s, z17.s, z4.s
-uzp1 z24.s, z24.s, z9.s
-uzp1 z25.s, z25.s, z12.s
-uzp1 z30.s, z30.s, z26.s
-uzp1 z31.s, z31.s, z27.s
-rshrnb z16.h, z16.s, #0xb
-rshrnb z15.h, z15.s, #0xb
-uzp1 z16.h, z16.h, z16.h
-uzp1 z15.h, z15.h, z15.h
-rshrnb z18.h, z18.s, #0xb
-rshrnb z17.h, z17.s, #0xb
-uzp1 z18.h, z18.h, z18.h
-uzp1 z17.h, z17.h, z17.h
-rshrnb z24.h, z24.s, #0xb
-rshrnb z25.h, z25.s, #0xb
-uzp1 z24.h, z24.h, z24.h
-uzp1 z25.h, z25.h, z25.h
-rshrnb z30.h, z30.s, #0xb
-rshrnb z31.h, z31.s, #0xb
-uzp1 z30.h, z30.h, z30.h
-uzp1 z31.h, z31.h, z31.h
-stp q16, q15, [x1]
-stp q18, q17, [x1, #0x200]
-str q24, [x1, #0x400]
-str q25, [x1, #0x410]
-str q30, [x1, #0x600]
-str q31, [x1, #0x610]
-str z2, [x3]
-ldr z4, [x3]
-addvl x3, sp, #4
-add x3, x3, #0x40
-ldr z31, [x3]
-sub z18.h, z4.h, z31.h
-addvl x3, sp, #1
-add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #5
-add x3, x3, #0x40
-ldr z31, [x3]
-sub z24.h, z4.h, z31.h
-addvl x3, sp, #2
-add x3, x3, #0x40
 ldr z14, [x3]
-addvl x3, sp, #6
+zip1 z28.d, z26.d, z14.d
+cntb x3, all, mul #3
+zip1 z13.d, z29.d, z28.d
+trn2 z30.d, z26.d, z14.d
+lsl x6, x3, #4
+trn1 z29.d, z27.d, z15.d
+trn1 z28.d, z26.d, z14.d
+sub x3, x6, x3
+cntb x6, all, mul #3
+zip1 z12.d, z31.d, z30.d
 add x3, x3, #0x40
-ldr z31, [x3]
-sub z31.h, z14.h, z31.h
-revh z17.d, p6/m, z31.d
-addvl x3, sp, #3
-add x3, x3, #0x40
-ldr z15, [x3]
-addvl x3, sp, #7
-add x3, x3, #0x40
-ldr z30, [x3]
-sub z31.h, z15.h, z30.h
-revh z16.d, p6/m, z31.d
-addvl x3, sp, #8
-add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #0xc
-add x3, x3, #0x40
-ldr z27, [x3]
-sub z5.h, z4.h, z27.h
-addvl x3, sp, #9
-add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #0xd
-add x3, x3, #0x40
-ldr z27, [x3]
-sub z6.h, z4.h, z27.h
-addvl x3, sp, #0xa
-add x3, x3, #0x40
-ldr z27, [x3]
-addvl x3, sp, #0xe
-add x3, x3, #0x40
-ldr z3, [x3]
-sub z31.h, z27.h, z3.h
-revh z4.d, p6/m, z31.d
-addvl x3, sp, #0xb
-add x3, x3, #0x40
-ldr z26, [x3]
-addvl x3, sp, #0xf
-add x3, x3, #0x40
-ldr z23, [x3]
-sub z31.h, z26.h, z23.h
-revh z3.d, p6/m, z31.d
-addvl x3, sp, #0x10
-add x3, x3, #0x40
-ldr z13, [x3]
-addvl x3, sp, #0x14
-add x3, x3, #0x40
+lsl x6, x6, #4
+zip2 z14.d, z29.d, z28.d
+add x3, sp, x3
 ldr z9, [x3]
-sub z0.h, z13.h, z9.h
-addvl x3, sp, #0x11
-add x3, x3, #0x40
-ldr z13, [x3]
-sub z1.h, z13.h, z19.h
-addvl x3, sp, #0x12
-add x3, x3, #0x40
-ldr z22, [x3]
-sub z31.h, z22.h, z10.h
-revh z8.d, p6/m, z31.d
-addvl x3, sp, #0x13
-add x3, x3, #0x40
-ldr z12, [x3]
-sub z31.h, z12.h, z28.h
-revh z14.d, p6/m, z31.d
-addvl x3, sp, #0x15
-sub z31.h, z7.h, z11.h
-add x3, x3, #0x40
-ldr z21, [x3]
-addvl x3, sp, #0x18
-add x3, x3, #0x40
-ldr z13, [x3]
-sub z22.h, z21.h, z13.h
-addvl x3, sp, #0x16
-add x3, x3, #0x40
-ldr z21, [x3]
-sub z21.h, z21.h, z20.h
-revh z23.d, p6/m, z31.d
-addvl x3, sp, #0x17
-add x3, x3, #0x40
-ldr z13, [x3]
-sub z31.h, z13.h, z29.h
-revh z2.d, p6/m, z31.d
-addvl x3, sp, #0x1c
+zip2 z15.d, z31.d, z30.d
+rdvl x3, #0x17
 movi d31, #0000000000000000
-ld1h {z15.h}, p7/z, [x4]
-add x3, x3, #0x40
-ldr z13, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z13.h[0]
-addvl x3, sp, #0x1d
-movprfx z25, z31
-sdot z25.d, z6.h, z13.h[0]
+sdot z30.d, z25.h, z9.h[0]
+lsl x3, x3, #1
 movprfx z27, z31
-sdot z27.d, z1.h, z13.h[0]
+sdot z27.d, z21.h, z9.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z9.h[0]
+add x3, sp, x3
+movprfx z28, z31
+sdot z28.d, z12.h, z9.h[0]
+sdot z30.d, z24.h, z10.h[0]
 add x3, x3, #0x40
-ldr z12, [x3]
-movprfx z26, z31
-sdot z26.d, z21.h, z13.h[0]
-addvl x3, sp, #0x1e
-sdot z30.d, z18.h, z15.h[0]
-sdot z25.d, z5.h, z15.h[0]
+ldr z2, [x3]
+sdot z27.d, z20.h, z10.h[0]
+addvl x3, x6, #0xffffffffffffffff
+cntb x6, all, mul #3
+sdot z30.d, z23.h, z2.h[0]
 add x3, x3, #0x40
-ldr z9, [x3]
-sdot z30.d, z17.h, z12.h[0]
+sdot z27.d, z19.h, z2.h[0]
+sdot z29.d, z16.h, z10.h[0]
+add x3, sp, x3
+ldr z1, [x3]
+sdot z29.d, z8.h, z2.h[0]
 add x3, x1, #0x40
-sdot z30.d, z16.h, z9.h[0]
-sdot z25.d, z4.h, z12.h[0]
-sdot z27.d, z0.h, z15.h[0]
-sdot z25.d, z3.h, z9.h[0]
-sdot z27.d, z8.h, z12.h[0]
-sdot z26.d, z22.h, z15.h[0]
-sdot z27.d, z14.h, z9.h[0]
-sdot z26.d, z23.h, z12.h[0]
-uzp1 z30.s, z30.s, z25.s
-sdot z26.d, z2.h, z9.h[0]
+sdot z27.d, z18.h, z1.h[0]
+sdot z30.d, z22.h, z1.h[0]
+sdot z29.d, z11.h, z1.h[0]
+sdot z28.d, z13.h, z10.h[0]
+lsl x6, x6, #4
+sdot z28.d, z14.h, z2.h[0]
+uzp1 z30.s, z30.s, z27.s
+sdot z28.d, z15.h, z1.h[0]
 rshrnb z30.h, z30.s, #0xb
-uzp1 z27.s, z27.s, z26.s
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z28.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0xc0
 movprfx z30, z31
-sdot z30.d, z24.h, z13.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z13.h[1]
+sdot z30.d, z25.h, z9.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z13.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z13.h[1]
-sdot z30.d, z18.h, z15.h[1]
-sdot z25.d, z5.h, z15.h[1]
-sdot z30.d, z17.h, z12.h[1]
-sdot z25.d, z4.h, z12.h[1]
-sdot z30.d, z16.h, z9.h[1]
-sdot z25.d, z3.h, z9.h[1]
-sdot z27.d, z0.h, z15.h[1]
-sdot z26.d, z22.h, z15.h[1]
-sdot z27.d, z8.h, z12.h[1]
-sdot z26.d, z23.h, z12.h[1]
-sdot z27.d, z14.h, z9.h[1]
-sdot z26.d, z2.h, z9.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z9.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z9.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z9.h[1]
+sdot z30.d, z24.h, z10.h[1]
+sdot z27.d, z20.h, z10.h[1]
+sdot z30.d, z23.h, z2.h[1]
+sdot z27.d, z19.h, z2.h[1]
+sdot z30.d, z22.h, z1.h[1]
+sdot z27.d, z18.h, z1.h[1]
+sdot z29.d, z16.h, z10.h[1]
+sdot z28.d, z13.h, z10.h[1]
+sdot z29.d, z8.h, z2.h[1]
+sdot z28.d, z14.h, z2.h[1]
+sdot z29.d, z11.h, z1.h[1]
+sdot z28.d, z15.h, z1.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
-cntb x3
-cntb x6
-add z11.h, z7.h, z11.h
-lsl x3, x3, #5
-lsl x6, x6, #5
-add x3, sp, x3
-add x3, x3, #0x40
-ldr z15, [x3]
-movprfx z30, z31
-sdot z30.d, z24.h, z15.h[0]
-addvl x3, sp, #0x1f
-movprfx z25, z31
-sdot z25.d, z6.h, z15.h[0]
-movprfx z27, z31
-sdot z27.d, z1.h, z15.h[0]
-add x3, x3, #0x40
-ldr z13, [x3]
-movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
 addvl x3, x6, #1
-sdot z30.d, z18.h, z13.h[0]
-sdot z25.d, z5.h, z13.h[0]
 add x3, x3, #0x40
-sdot z27.d, z0.h, z13.h[0]
-sdot z26.d, z22.h, z13.h[0]
 add x3, sp, x3
-ldr z12, [x3]
-sdot z30.d, z17.h, z12.h[0]
-rdvl x3, #0x11
-sdot z25.d, z4.h, z12.h[0]
-sdot z27.d, z8.h, z12.h[0]
-lsl x3, x3, #1
-sdot z26.d, z23.h, z12.h[0]
-rdvl x6, #0x11
+ldr z10, [x3]
+movprfx z30, z31
+sdot z30.d, z25.h, z10.h[0]
+cntb x3, all, mul #3
+movprfx z27, z31
+sdot z27.d, z21.h, z10.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z10.h[0]
+lsl x3, x3, #4
+movprfx z28, z31
+sdot z28.d, z12.h, z10.h[0]
 add x3, sp, x3
-lsl x6, x6, #1
 add x3, x3, #0x40
 ldr z9, [x3]
-sdot z25.d, z3.h, z9.h[0]
+sdot z30.d, z24.h, z9.h[0]
+rdvl x3, #0x19
+sdot z27.d, z20.h, z9.h[0]
+sdot z29.d, z16.h, z9.h[0]
+lsl x3, x3, #1
+sdot z28.d, z13.h, z9.h[0]
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z2, [x3]
+sdot z30.d, z23.h, z2.h[0]
+cntb x3, all, mul #3
+sdot z27.d, z19.h, z2.h[0]
+sdot z29.d, z8.h, z2.h[0]
+add x3, x3, x3, lsl #4
+sdot z28.d, z14.h, z2.h[0]
+add x3, x3, #0x40
+add x3, sp, x3
+ldr z1, [x3]
+sdot z27.d, z18.h, z1.h[0]
 add x3, x1, #0x140
-sdot z26.d, z2.h, z9.h[0]
-sdot z30.d, z16.h, z9.h[0]
-sdot z27.d, z14.h, z9.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z28.d, z15.h, z1.h[0]
+sdot z30.d, z22.h, z1.h[0]
+sdot z29.d, z11.h, z1.h[0]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x1c0
 movprfx z30, z31
-sdot z30.d, z24.h, z15.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z15.h[1]
+sdot z30.d, z25.h, z10.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z15.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z15.h[1]
-sdot z30.d, z18.h, z13.h[1]
-sdot z25.d, z5.h, z13.h[1]
-sdot z30.d, z17.h, z12.h[1]
-sdot z25.d, z4.h, z12.h[1]
-sdot z30.d, z16.h, z9.h[1]
-sdot z25.d, z3.h, z9.h[1]
-sdot z27.d, z0.h, z13.h[1]
-sdot z26.d, z22.h, z13.h[1]
-sdot z27.d, z8.h, z12.h[1]
-sdot z26.d, z23.h, z12.h[1]
-sdot z27.d, z14.h, z9.h[1]
-sdot z26.d, z2.h, z9.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z10.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z10.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z10.h[1]
+sdot z30.d, z24.h, z9.h[1]
+sdot z27.d, z20.h, z9.h[1]
+sdot z30.d, z23.h, z2.h[1]
+sdot z27.d, z19.h, z2.h[1]
+sdot z30.d, z22.h, z1.h[1]
+sdot z27.d, z18.h, z1.h[1]
+sdot z29.d, z16.h, z9.h[1]
+sdot z28.d, z13.h, z9.h[1]
+sdot z29.d, z8.h, z2.h[1]
+sdot z28.d, z14.h, z2.h[1]
+sdot z29.d, z11.h, z1.h[1]
+sdot z28.d, z15.h, z1.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0xc0
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x1c0
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
+add x3, x2, #0x2c0
 ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
-add x3, x2, #0x2c0
-ld1h {z13.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x3c0
-ld1h {z15.h}, p7/z, [x3]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x240
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x2c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0xe0
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x1e0
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
+add x3, x2, #0x2e0
 ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
-add x3, x2, #0x2e0
-ld1h {z13.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x3e0
-ld1h {z15.h}, p7/z, [x3]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x340
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x3c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x200
-ld1h {z12.h}, p7/z, [x3]
-add x3, x2, #0x300
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z12.h[0]
-add x3, x2, #0x400
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z12.h[0]
-addvl x3, x6, #1
+sdot z30.d, z25.h, z2.h[0]
+add x3, x2, #0x300
+ld1h {z9.h}, p7/z, [x3]
 movprfx z27, z31
-sdot z27.d, z1.h, z12.h[0]
-movprfx z26, z31
-sdot z26.d, z21.h, z12.h[0]
-add x3, x3, #0x40
+sdot z27.d, z21.h, z2.h[0]
+add x3, x2, #0x400
+ld1h {z10.h}, p7/z, [x3]
+movprfx z29, z31
+sdot z29.d, z17.h, z2.h[0]
+cntb x3, all, mul #0xd
+movprfx z28, z31
+sdot z28.d, z12.h, z2.h[0]
+lsl x3, x3, #2
 add x3, sp, x3
-ldr z9, [x3]
-sdot z30.d, z18.h, z9.h[0]
+add x3, x3, #0x40
+ldr z1, [x3]
+sdot z30.d, z24.h, z1.h[0]
 add x3, x1, #0x440
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z5.h, z9.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z27.d, z0.h, z9.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z22.h, z9.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z23.h, z13.h[0]
-uzp1 z30.s, z30.s, z25.s
-sdot z26.d, z2.h, z15.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z27.d, z20.h, z1.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z27.d, z19.h, z9.h[0]
+sdot z29.d, z16.h, z1.h[0]
+sdot z27.d, z18.h, z10.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z28.d, z13.h, z1.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z28.d, z14.h, z9.h[0]
+uzp1 z30.s, z30.s, z27.s
+sdot z28.d, z15.h, z10.h[0]
 rshrnb z30.h, z30.s, #0xb
-uzp1 z27.s, z27.s, z26.s
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z28.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x4c0
 movprfx z30, z31
-sdot z30.d, z24.h, z12.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z12.h[1]
+sdot z30.d, z25.h, z2.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z12.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z12.h[1]
-sdot z30.d, z18.h, z9.h[1]
-sdot z25.d, z5.h, z9.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z9.h[1]
-sdot z26.d, z22.h, z9.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z2.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z2.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z2.h[1]
+sdot z30.d, z24.h, z1.h[1]
+sdot z27.d, z20.h, z1.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z27.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z27.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z1.h[1]
+sdot z28.d, z13.h, z1.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z28.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z28.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x120
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x220
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
 add x3, x2, #0x320
-ld1h {z13.h}, p7/z, [x3]
-movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+mov z10.d, z28.d
+ld1h {z9.h}, p7/z, [x3]
 add x3, x2, #0x420
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+movprfx z30, z31
+sdot z30.d, z25.h, z10.h[0]
+ld1h {z10.h}, p7/z, [x3]
 add x3, x1, #0x540
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+mov z1.d, z28.d
+sdot z30.d, z24.h, z2.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z14.h, z9.h[0]
+uzp1 z30.s, z30.s, z26.s
+sdot z27.d, z15.h, z10.h[0]
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z27.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x5c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x140
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x240
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
 add x3, x2, #0x340
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x440
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x640
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x6c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x160
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x260
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
 add x3, x2, #0x360
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x460
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x740
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x7c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
+addvl x3, sp, #8
+add x3, x3, #0x40
+ldr z26, [x3]
+add x3, sp, #0x40
+ldr z25, [x3]
+add z30.h, z26.h, z25.h
+addvl x3, sp, #9
+add x3, x3, #0x40
+ldr z26, [x3]
+addvl x3, sp, #1
+add x3, x3, #0x40
+ldr z25, [x3]
+add z29.h, z26.h, z25.h
+addvl x3, sp, #6
+add x3, x3, #0x40
+ldr z28, [x3]
+addvl x3, sp, #0xa
+add x3, x3, #0x40
+ldr z1, [x3]
+add z27.h, z28.h, z1.h
+addvl x3, sp, #7
+sub z26.h, z29.h, z27.h
+add z29.h, z29.h, z27.h
+add x3, x3, #0x40
+ldr z2, [x3]
+addvl x3, sp, #0xb
+add x3, x3, #0x40
+ldr z22, [x3]
+add z25.h, z2.h, z22.h
+addvl x3, sp, #0xc
+sub z28.h, z30.h, z25.h
+add z30.h, z30.h, z25.h
+add x3, x3, #0x40
+ldr z23, [x3]
+add z23.h, z4.h, z23.h
+addvl x3, sp, #0xe
+add x3, x3, #0x40
+ldr z22, [x3]
+add z21.h, z22.h, z0.h
+addvl x3, sp, #2
+add x3, x3, #0x40
+ldr z12, [x3]
+addvl x3, sp, #0xf
+add x3, x3, #0x40
+ldr z24, [x3]
+add z19.h, z12.h, z24.h
+addvl x3, sp, #0xd
+sub z18.h, z21.h, z19.h
+add x3, x3, #0x40
+ldr z12, [x3]
+addvl x3, sp, #0x10
+add x3, x3, #0x40
+ldr z11, [x3]
+add z17.h, z12.h, z11.h
+addvl x3, sp, #0x14
+add z11.h, z7.h, z6.h
+sub z20.h, z23.h, z17.h
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #0x11
+add x3, x3, #0x40
+ldr z22, [x3]
+add z22.h, z24.h, z22.h
+addvl x3, sp, #0x15
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #0x12
+add x3, x3, #0x40
+ldr z14, [x3]
+add z10.h, z24.h, z14.h
+addvl x3, sp, #3
+add x3, x3, #0x40
+ldr z13, [x3]
+add z5.h, z13.h, z5.h
+addvl x3, sp, #0x13
+sub z4.h, z10.h, z5.h
+add x3, x3, #0x40
+ldr z13, [x3]
+add z3.h, z13.h, z3.h
+addvl x3, sp, #0x17
+sub z9.h, z22.h, z3.h
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #5
+add x3, x3, #0x40
+ldr z14, [x3]
+add z24.h, z24.h, z14.h
+addvl x3, sp, #0x18
+add x3, x3, #0x40
+ldr z14, [x3]
+addvl x3, sp, #0x16
+add x3, x3, #0x40
+ldr z13, [x3]
+add z15.h, z14.h, z13.h
 addvl x3, sp, #4
+sub z14.h, z24.h, z11.h
 add x3, x3, #0x40
 ldr z16, [x3]
 addvl x3, sp, #0x19
 add x3, x3, #0x40
-ldr z4, [x3]
-add z30.h, z16.h, z4.h
-addvl x3, sp, #5
-add x3, x3, #0x40
-ldr z18, [x3]
-addvl x3, sp, #1
-add x3, x3, #0x40
-ldr z16, [x3]
-add z27.h, z18.h, z16.h
-addvl x3, sp, #2
-add x3, x3, #0x40
-ldr z14, [x3]
-addvl x3, sp, #6
-add x3, x3, #0x40
-ldr z26, [x3]
-add z25.h, z14.h, z26.h
-addvl x3, sp, #3
-add x3, x3, #0x40
-ldr z15, [x3]
-addvl x3, sp, #7
-add x3, x3, #0x40
-ldr z24, [x3]
-add z18.h, z15.h, z24.h
-addvl x3, sp, #0xc
-sub z26.h, z30.h, z18.h
-sub z24.h, z27.h, z25.h
-add x3, x3, #0x40
-ldr z21, [x3]
-add z30.h, z30.h, z18.h
-addvl x3, sp, #8
-add z27.h, z27.h, z25.h
-add x3, x3, #0x40
-ldr z16, [x3]
-add z21.h, z21.h, z16.h
-addvl x3, sp, #0xd
-add x3, x3, #0x40
-ldr z16, [x3]
-addvl x3, sp, #9
-add x3, x3, #0x40
-ldr z15, [x3]
-add z17.h, z16.h, z15.h
-addvl x3, sp, #0xa
-add x3, x3, #0x40
-ldr z6, [x3]
-addvl x3, sp, #0xe
-add x3, x3, #0x40
-ldr z3, [x3]
-add z15.h, z6.h, z3.h
-addvl x3, sp, #0xb
-sub z13.h, z17.h, z15.h
-add x3, x3, #0x40
-ldr z5, [x3]
-addvl x3, sp, #0xf
-add x3, x3, #0x40
-ldr z23, [x3]
-add z12.h, z5.h, z23.h
-addvl x3, sp, #0x14
-sub z16.h, z21.h, z12.h
-add x3, x3, #0x40
-ldr z14, [x3]
-addvl x3, sp, #0x10
-add x3, x3, #0x40
-ldr z9, [x3]
-add z22.h, z14.h, z9.h
-addvl x3, sp, #0x11
-add x3, x3, #0x40
-ldr z14, [x3]
-add z19.h, z19.h, z14.h
-addvl x3, sp, #0x12
-add x3, x3, #0x40
-ldr z23, [x3]
-add z10.h, z23.h, z10.h
-addvl x3, sp, #0x13
-sub z6.h, z19.h, z10.h
-add x3, x3, #0x40
-ldr z23, [x3]
-add z28.h, z23.h, z28.h
-addvl x3, sp, #0x18
-sub z9.h, z22.h, z28.h
-add x3, x3, #0x40
-ldr z23, [x3]
-addvl x3, sp, #0x15
-add x3, x3, #0x40
-ldr z14, [x3]
-add z23.h, z23.h, z14.h
-addvl x3, sp, #0x16
-add x3, x3, #0x40
-ldr z14, [x3]
-add z20.h, z20.h, z14.h
-addvl x3, sp, #0x17
-sub z7.h, z20.h, z11.h
-add x3, x3, #0x40
-ldr z14, [x3]
-add z29.h, z14.h, z29.h
+ldr z8, [x3]
+add z13.h, z16.h, z8.h
 add x3, x2, #0x480
-ld1h {z5.h}, p7/z, [x3]
-sub z8.h, z23.h, z29.h
+ld1h {z8.h}, p7/z, [x3]
+sub z12.h, z15.h, z13.h
 add x3, x2, #0x500
-ld1h {z4.h}, p7/z, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-add x3, x1, #0x80
-sdot z14.d, z26.h, z5.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-sdot z1.d, z16.h, z5.h[0]
-sdot z3.d, z9.h, z5.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-uzp1 z14.s, z14.s, z1.s
-sdot z2.d, z8.h, z5.h[0]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z3.s, z3.s, z2.s
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x180
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4a0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x520
-ld1h {z4.h}, p7/z, [x3]
-add x3, x1, #0x280
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-sdot z14.d, z26.h, z5.h[0]
-sdot z1.d, z16.h, z5.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-sdot z3.d, z9.h, z5.h[0]
-sdot z2.d, z8.h, z5.h[0]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x380
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4c0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x540
-ld1h {z4.h}, p7/z, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-add x3, x1, #0x480
-sdot z14.d, z26.h, z5.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-sdot z1.d, z16.h, z5.h[0]
-sdot z3.d, z9.h, z5.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-uzp1 z14.s, z14.s, z1.s
-sdot z2.d, z8.h, z5.h[0]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z3.s, z3.s, z2.s
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x580
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4e0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x560
-ld1h {z4.h}, p7/z, [x3]
-add x3, x1, #0x680
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-sdot z14.d, z26.h, z5.h[0]
-sdot z1.d, z16.h, z5.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-sdot z3.d, z9.h, z5.h[0]
-sdot z2.d, z8.h, z5.h[0]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-add x3, x1, #0x780
-sdot z14.d, z26.h, z5.h[1]
-movprfx z24, z31
-sdot z24.d, z6.h, z4.h[1]
-movprfx z26, z31
-sdot z26.d, z13.h, z4.h[1]
-sdot z24.d, z9.h, z5.h[1]
-sdot z26.d, z16.h, z5.h[1]
+ld1h {z7.h}, p7/z, [x3]
 movprfx z16, z31
-sdot z16.d, z7.h, z4.h[1]
-uzp1 z14.s, z14.s, z26.s
-sdot z16.d, z8.h, z5.h[1]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z24.s, z24.s, z16.s
-rshrnb z24.h, z24.s, #0xb
-uzp1 z14.h, z14.h, z24.h
-st1h {z14.h}, p7, [x3]
-revh z27.d, p6/m, z27.d
-sub z30.h, z30.h, z27.h
-add z21.h, z21.h, z12.h
-add z17.h, z17.h, z15.h
-revh z17.d, p6/m, z17.d
-sub z21.h, z21.h, z17.h
-add z22.h, z22.h, z28.h
-add z19.h, z19.h, z10.h
-revh z19.d, p6/m, z19.d
-sub z22.h, z22.h, z19.h
-add z23.h, z23.h, z29.h
-add z20.h, z20.h, z11.h
-revh z20.d, p6/m, z20.d
+sdot z16.d, z26.h, z7.h[0]
+add x3, x1, #0x80
+sdot z16.d, z28.h, z8.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+sdot z1.d, z20.h, z8.h[0]
+sdot z6.d, z9.h, z8.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+uzp1 z16.s, z16.s, z1.s
+sdot z2.d, z14.h, z8.h[0]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z6.s, z6.s, z2.s
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x180
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4a0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x520
+ld1h {z7.h}, p7/z, [x3]
+add x3, x1, #0x280
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+sdot z16.d, z28.h, z8.h[0]
+sdot z1.d, z20.h, z8.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+sdot z6.d, z9.h, z8.h[0]
+sdot z2.d, z14.h, z8.h[0]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x380
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4c0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x540
+ld1h {z7.h}, p7/z, [x3]
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+add x3, x1, #0x480
+sdot z16.d, z28.h, z8.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+sdot z1.d, z20.h, z8.h[0]
+sdot z6.d, z9.h, z8.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+uzp1 z16.s, z16.s, z1.s
+sdot z2.d, z14.h, z8.h[0]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z6.s, z6.s, z2.s
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x580
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4e0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x560
+ld1h {z7.h}, p7/z, [x3]
+add x3, x1, #0x680
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+sdot z16.d, z28.h, z8.h[0]
+sdot z1.d, z20.h, z8.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+sdot z6.d, z9.h, z8.h[0]
+sdot z2.d, z14.h, z8.h[0]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+add x3, x1, #0x780
+sdot z16.d, z28.h, z8.h[1]
+movprfx z26, z31
+sdot z26.d, z4.h, z7.h[1]
+movprfx z28, z31
+sdot z28.d, z18.h, z7.h[1]
+sdot z26.d, z9.h, z8.h[1]
+sdot z28.d, z20.h, z8.h[1]
+movprfx z20, z31
+sdot z20.d, z12.h, z7.h[1]
+uzp1 z16.s, z16.s, z28.s
+sdot z20.d, z14.h, z8.h[1]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z26.s, z26.s, z20.s
+rshrnb z26.h, z26.s, #0xb
+uzp1 z16.h, z16.h, z26.h
+st1h {z16.h}, p7, [x3]
+revh z29.d, p6/m, z29.d
+sub z30.h, z30.h, z29.h
+add z23.h, z23.h, z17.h
+add z21.h, z21.h, z19.h
+revh z21.d, p6/m, z21.d
+sub z23.h, z23.h, z21.h
+add z22.h, z22.h, z3.h
+add z10.h, z10.h, z5.h
+revh z10.d, p6/m, z10.d
+sub z22.h, z22.h, z10.h
+add z24.h, z24.h, z11.h
+add z15.h, z15.h, z13.h
+revh z15.d, p6/m, z15.d
 add x3, x2, #0x580
+sub z24.h, z24.h, z15.h
 ld1h {z15.h}, p7/z, [x3]
-sub z23.h, z23.h, z20.h
 add x3, x1, #0x100
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
+sdot z26.d, z23.h, z15.h[0]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[0]
+sdot z27.d, z24.h, z15.h[0]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[0]
 uzp1 z29.s, z29.s, z26.s
@@ -4088,9 +4276,9 @@ add x3, x1, #0x300
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[1]
+sdot z26.d, z23.h, z15.h[1]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[1]
+sdot z27.d, z24.h, z15.h[1]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[1]
 uzp1 z29.s, z29.s, z26.s
@@ -4105,11 +4293,11 @@ add x3, x1, #0x500
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
+sdot z26.d, z23.h, z15.h[0]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[0]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[0]
+sdot z27.d, z24.h, z15.h[0]
 uzp1 z29.s, z29.s, z26.s
 uzp1 z28.s, z28.s, z27.s
 rshrnb z29.h, z29.s, #0xb
@@ -4122,9 +4310,9 @@ movprfx z29, z31
 sdot z29.d, z30.h, z15.h[1]
 add x3, x1, #0x700
 movprfx z30, z31
-sdot z30.d, z21.h, z15.h[1]
+sdot z30.d, z23.h, z15.h[1]
 add x0, x0, #0x400
-sdot z31.d, z23.h, z15.h[1]
+sdot z31.d, z24.h, z15.h[1]
 uzp1 z30.s, z29.s, z30.s
 uzp1 z31.s, z28.s, z31.s
 rshrnb z30.h, z30.s, #0xb
@@ -4134,1342 +4322,1517 @@ st1h {z31.h}, p7, [x3]
 add x1, x1, #0x20
 cmp x5, x0
 add x3, x0, #0x20
-ld1h {z30.h}, p7/z, [x3]
-ld1h {z21.h}, p7/z, [x0]
-add x3, x0, #0x60
-ld1h {z24.h}, p7/z, [x3]
-ptrue p6.d
-add x3, x0, #0xa0
-ld1h {z18.h}, p7/z, [x3]
-add x3, x0, #0xe0
-ld1h {z16.h}, p7/z, [x3]
-add x3, x0, #0x120
-ld1h {z26.h}, p7/z, [x3]
-add x3, x0, #0x160
-ld1h {z25.h}, p7/z, [x3]
-add x3, x0, #0x1a0
-ld1h {z17.h}, p7/z, [x3]
-add x3, x0, #0x1e0
-ld1h {z19.h}, p7/z, [x3]
-add x3, x0, #0x220
-ld1h {z28.h}, p7/z, [x3]
-add x3, x0, #0x260
-ld1h {z31.h}, p7/z, [x3]
-add x3, x0, #0x2a0
-ld1h {z20.h}, p7/z, [x3]
-add x3, x0, #0x2e0
-ld1h {z22.h}, p7/z, [x3]
-add x3, x0, #0x320
 ld1h {z29.h}, p7/z, [x3]
-add x3, x0, #0x360
-ld1h {z27.h}, p7/z, [x3]
-add x3, x0, #0x3a0
-ld1h {z12.h}, p7/z, [x3]
-add x3, x0, #0x3e0
-ld1h {z23.h}, p7/z, [x3]
-add x3, x0, #0x40
-ld1h {z15.h}, p7/z, [x3]
-add x3, x0, #0x80
-ld1h {z13.h}, p7/z, [x3]
-zip1 z14.d, z21.d, z13.d
-add x3, x0, #0xc0
-zip2 z21.d, z21.d, z13.d
-ld1h {z11.h}, p7/z, [x3]
-zip1 z13.d, z15.d, z11.d
-zip2 z15.d, z15.d, z11.d
-zip1 z2.d, z14.d, z13.d
-zip2 z13.d, z14.d, z13.d
-zip1 z14.d, z21.d, z15.d
-revh z14.d, p6/m, z14.d
-zip2 z21.d, z21.d, z15.d
-revh z15.d, p6/m, z21.d
-rev z18.h, z18.h
-rev z16.h, z16.h
-rev z30.h, z30.h
-zip1 z21.d, z30.d, z18.d
-rev z24.h, z24.h
-zip2 z30.d, z30.d, z18.d
-zip1 z18.d, z24.d, z16.d
-zip2 z24.d, z24.d, z16.d
-zip1 z16.d, z21.d, z18.d
-zip2 z18.d, z21.d, z18.d
-zip1 z21.d, z30.d, z24.d
-revh z11.d, p6/m, z21.d
-zip2 z30.d, z30.d, z24.d
-revh z24.d, p6/m, z30.d
-addvl x3, sp, #4
-saddlb z21.s, z2.h, z16.h
-saddlb z30.s, z15.h, z24.h
-add x3, x3, #0x40
-str z16, [x3]
-ldr z10, [x3]
-addvl x3, sp, #3
-saddlt z16.s, z2.h, z10.h
-add z21.s, z21.s, z30.s
-add x3, x3, #0x40
-str z15, [x3]
-saddlt z30.s, z15.h, z24.h
-addvl x3, sp, #7
-add z16.s, z16.s, z30.s
-saddlb z30.s, z14.h, z11.h
-add x3, x3, #0x40
-str z24, [x3]
-mov z24.d, z18.d
-addvl x3, sp, #1
-saddlb z18.s, z13.h, z18.h
-add z18.s, z18.s, z30.s
-add x3, x3, #0x40
-str z13, [x3]
-ldr z10, [x3]
-addvl x3, sp, #5
-add x3, x3, #0x40
-str z24, [x3]
-ldr z9, [x3]
-addvl x3, sp, #2
-saddlt z30.s, z10.h, z9.h
-saddlt z24.s, z14.h, z11.h
-add x3, x3, #0x40
-str z14, [x3]
-add z24.s, z30.s, z24.s
-addvl x3, sp, #6
-add x3, x3, #0x40
-str z11, [x3]
-revw z18.d, p6/m, z18.d
-revw z24.d, p6/m, z24.d
-zip1 z30.s, z21.s, z16.s
-zip2 z21.s, z21.s, z16.s
-zip1 z15.s, z24.s, z18.s
-zip2 z24.s, z24.s, z18.s
-add z30.s, z30.s, z15.s
-add z24.s, z21.s, z24.s
-uzp2 z21.d, z30.d, z24.d
-revw z21.d, p6/m, z21.d
-ptrue p5.s
-uzp1 z30.d, z30.d, z24.d
-ld1w {z13.s}, p7/z, [x2]
-add z24.s, z21.s, z30.s
-sub z30.s, z30.s, z21.s
-movprfx z16, z24
-mul z16.s, p7/m, z16.s, z13.s
-addp z16.s, p5/m, z16.s, z16.s
-addvl x3, sp, #0x1a
-add x3, x3, #0x40
-ldr z8, [x3]
-movprfx z18, z8
-mul z18.s, p7/m, z18.s, z30.s
-addp z18.s, p5/m, z18.s, z18.s
-addvl x3, sp, #0x1b
-add x3, x3, #0x40
-ldr z7, [x3]
-mul z24.s, p7/m, z24.s, z7.s
-addp z24.s, p5/m, z24.s, z24.s
-add x3, sp, #0x40
-ldr z4, [x3]
-mul z30.s, p7/m, z30.s, z4.s
-addp z30.s, p5/m, z30.s, z30.s
-add x3, x0, #0x100
-ld1h {z21.h}, p7/z, [x3]
-add x3, x0, #0x140
-ld1h {z15.h}, p7/z, [x3]
-add x3, x0, #0x180
-ld1h {z11.h}, p7/z, [x3]
-zip1 z14.d, z21.d, z11.d
-add x3, x0, #0x1c0
-ld1h {z10.h}, p7/z, [x3]
-zip2 z21.d, z21.d, z11.d
-zip1 z11.d, z15.d, z10.d
-zip2 z15.d, z15.d, z10.d
-zip2 z9.d, z14.d, z11.d
-zip1 z10.d, z14.d, z11.d
-zip1 z14.d, z21.d, z15.d
-revh z6.d, p6/m, z14.d
-zip2 z21.d, z21.d, z15.d
-revh z5.d, p6/m, z21.d
-rev z21.h, z19.h
-rev z17.h, z17.h
-rev z26.h, z26.h
-zip1 z19.d, z26.d, z17.d
-rev z25.h, z25.h
-zip2 z26.d, z26.d, z17.d
-zip1 z17.d, z25.d, z21.d
-zip2 z25.d, z25.d, z21.d
-zip1 z21.d, z19.d, z17.d
-zip2 z17.d, z19.d, z17.d
-zip1 z19.d, z26.d, z25.d
-revh z3.d, p6/m, z19.d
-zip2 z26.d, z26.d, z25.d
-revh z25.d, p6/m, z26.d
-addvl x3, sp, #8
-saddlb z26.s, z5.h, z25.h
-saddlb z19.s, z10.h, z21.h
-add x3, x3, #0x40
-add z19.s, z19.s, z26.s
-str z10, [x3]
-ldr z26, [x3]
-addvl x3, sp, #0xc
-add x3, x3, #0x40
-str z21, [x3]
-ldr z1, [x3]
-addvl x3, sp, #0xb
-saddlt z15.s, z26.h, z1.h
-saddlt z26.s, z5.h, z25.h
-add x3, x3, #0x40
-str z5, [x3]
-add z15.s, z15.s, z26.s
-addvl x3, sp, #0xf
-saddlb z26.s, z6.h, z3.h
-add x3, x3, #0x40
-str z25, [x3]
-mov z25.d, z17.d
-addvl x3, sp, #9
-saddlb z17.s, z9.h, z17.h
-add z17.s, z17.s, z26.s
-add x3, x3, #0x40
-str z9, [x3]
-ldr z1, [x3]
-addvl x3, sp, #0xd
-add x3, x3, #0x40
-str z25, [x3]
-ldr z0, [x3]
-addvl x3, sp, #0xa
-saddlt z26.s, z1.h, z0.h
-saddlt z25.s, z6.h, z3.h
-add x3, x3, #0x40
-str z6, [x3]
-add z25.s, z26.s, z25.s
-addvl x3, sp, #0xe
-add x3, x3, #0x40
-str z3, [x3]
-revw z17.d, p6/m, z17.d
-revw z25.d, p6/m, z25.d
-zip1 z26.s, z19.s, z15.s
-zip2 z19.s, z19.s, z15.s
-zip1 z14.s, z25.s, z17.s
-zip2 z25.s, z25.s, z17.s
-add z26.s, z26.s, z14.s
-add z25.s, z19.s, z25.s
-uzp2 z19.d, z26.d, z25.d
-revw z19.d, p6/m, z19.d
-uzp1 z26.d, z26.d, z25.d
-add z9.s, z19.s, z26.s
-sub z26.s, z26.s, z19.s
-movprfx z5, z9
-mul z5.s, p7/m, z5.s, z13.s
-addp z5.s, p5/m, z5.s, z5.s
-movprfx z6, z8
-mul z6.s, p7/m, z6.s, z26.s
-addp z6.s, p5/m, z6.s, z6.s
-mul z9.s, p7/m, z9.s, z7.s
-addp z9.s, p5/m, z9.s, z9.s
-mul z26.s, p7/m, z26.s, z4.s
-addp z26.s, p5/m, z26.s, z26.s
-add x3, x0, #0x200
-ld1h {z25.h}, p7/z, [x3]
-add x3, x0, #0x240
-ld1h {z19.h}, p7/z, [x3]
-add x3, x0, #0x280
-ld1h {z15.h}, p7/z, [x3]
-zip1 z17.d, z25.d, z15.d
-add x3, x0, #0x2c0
-zip2 z25.d, z25.d, z15.d
-ld1h {z14.h}, p7/z, [x3]
-zip1 z15.d, z19.d, z14.d
-zip2 z19.d, z19.d, z14.d
-zip1 z1.d, z17.d, z15.d
-zip2 z0.d, z17.d, z15.d
-zip1 z17.d, z25.d, z19.d
-revh z21.d, p6/m, z17.d
-zip2 z25.d, z25.d, z19.d
-revh z17.d, p6/m, z25.d
-rev z25.h, z20.h
-rev z22.h, z22.h
-rev z28.h, z28.h
-rev z31.h, z31.h
-zip1 z19.d, z28.d, z25.d
-zip2 z28.d, z28.d, z25.d
-zip1 z25.d, z31.d, z22.d
-zip2 z31.d, z31.d, z22.d
-zip1 z22.d, z19.d, z25.d
-zip1 z10.d, z28.d, z31.d
-zip2 z19.d, z19.d, z25.d
-revh z10.d, p6/m, z10.d
-zip2 z28.d, z28.d, z31.d
-revh z28.d, p6/m, z28.d
-addvl x3, sp, #0x10
-saddlb z31.s, z17.h, z28.h
-saddlb z20.s, z1.h, z22.h
-add x3, x3, #0x40
-add z20.s, z20.s, z31.s
-str z1, [x3]
-ldr z31, [x3]
-addvl x3, sp, #0x14
-saddlt z25.s, z21.h, z10.h
-add x3, x3, #0x40
-str z22, [x3]
-ldr z22, [x3]
-addvl x3, sp, #0x13
-saddlt z15.s, z31.h, z22.h
-saddlt z31.s, z17.h, z28.h
-add x3, x3, #0x40
-str z17, [x3]
-add z15.s, z15.s, z31.s
-addvl x3, sp, #0x11
-saddlb z31.s, z21.h, z10.h
-saddlb z17.s, z0.h, z19.h
-add x3, x3, #0x40
-add z17.s, z17.s, z31.s
-str z0, [x3]
-ldr z31, [x3]
-addvl x3, sp, #0x12
-saddlt z31.s, z31.h, z19.h
-add x3, x3, #0x40
-add z25.s, z31.s, z25.s
-str z21, [x3]
-revw z17.d, p6/m, z17.d
-revw z25.d, p6/m, z25.d
-zip1 z31.s, z20.s, z15.s
-zip2 z20.s, z20.s, z15.s
-zip1 z14.s, z25.s, z17.s
-zip2 z25.s, z25.s, z17.s
-add z31.s, z31.s, z14.s
-add z25.s, z20.s, z25.s
-uzp2 z20.d, z31.d, z25.d
-revw z20.d, p6/m, z20.d
-uzp1 z31.d, z31.d, z25.d
-add z25.s, z20.s, z31.s
-sub z31.s, z31.s, z20.s
-movprfx z15, z25
-mul z15.s, p7/m, z15.s, z13.s
-addp z15.s, p5/m, z15.s, z15.s
-mov z22.d, z8.d
-movprfx z17, z8
-mul z17.s, p7/m, z17.s, z31.s
-addp z17.s, p5/m, z17.s, z17.s
-mov z21.d, z7.d
-mul z25.s, p7/m, z25.s, z7.s
-addp z25.s, p5/m, z25.s, z25.s
-mul z31.s, p7/m, z31.s, z4.s
-addp z31.s, p5/m, z31.s, z31.s
-add x3, x0, #0x300
-ld1h {z14.h}, p7/z, [x3]
-add x3, x0, #0x340
-ld1h {z20.h}, p7/z, [x3]
-add x3, x0, #0x380
-ld1h {z11.h}, p7/z, [x3]
-zip1 z8.d, z14.d, z11.d
-add x3, x0, #0x3c0
-ld1h {z7.h}, p7/z, [x3]
-zip2 z14.d, z14.d, z11.d
-zip1 z11.d, z20.d, z7.d
-zip2 z20.d, z20.d, z7.d
-zip1 z1.d, z8.d, z11.d
-zip2 z0.d, z8.d, z11.d
-zip1 z7.d, z14.d, z20.d
-revh z7.d, p6/m, z7.d
-zip2 z14.d, z14.d, z20.d
-revh z20.d, p6/m, z14.d
-rev z12.h, z12.h
-rev z23.h, z23.h
-mov z14.d, z20.d
+ld1h {z0.h}, p7/z, [x0]
+addvl x3, sp, #0x1c
 rev z29.h, z29.h
-rev z27.h, z27.h
-zip1 z20.d, z29.d, z12.d
-zip2 z29.d, z29.d, z12.d
-zip1 z12.d, z27.d, z23.d
-zip2 z27.d, z27.d, z23.d
-zip1 z23.d, z20.d, z12.d
-zip1 z11.d, z29.d, z27.d
-zip2 z20.d, z20.d, z12.d
-revh z11.d, p6/m, z11.d
-zip2 z29.d, z29.d, z27.d
-revh z29.d, p6/m, z29.d
-addvl x3, sp, #0x15
-saddlb z27.s, z14.h, z29.h
-saddlb z4.s, z1.h, z23.h
+sub z27.h, z0.h, z29.h
 add x3, x3, #0x40
-add z4.s, z4.s, z27.s
-str z1, [x3]
-ldr z27, [x3]
-addvl x3, sp, #0x18
-saddlb z3.s, z0.h, z20.h
+str z27, [x3]
+cntb x6
+add x3, x0, #0x40
+ld1h {z17.h}, p7/z, [x3]
+lsl x6, x6, #5
+add x3, x0, #0x60
+ld1h {z22.h}, p7/z, [x3]
+rev z22.h, z22.h
+addvl x3, sp, #0x1d
+sub z26.h, z17.h, z22.h
+ptrue p6.d
+add x3, x3, #0x40
+str z26, [x3]
+add x3, x0, #0x80
+ld1h {z21.h}, p7/z, [x3]
+add x3, x0, #0xa0
+ld1h {z9.h}, p7/z, [x3]
+rev z9.h, z9.h
+addvl x3, sp, #0x1e
+sub z23.h, z21.h, z9.h
 add x3, x3, #0x40
 str z23, [x3]
-ldr z8, [x3]
-addvl x3, sp, #0x17
-saddlt z1.s, z27.h, z8.h
-saddlt z27.s, z14.h, z29.h
+add x3, x0, #0xc0
+ld1h {z2.h}, p7/z, [x3]
+add x3, x0, #0xe0
+ld1h {z10.h}, p7/z, [x3]
+rev z10.h, z10.h
+addvl x3, sp, #0x1f
+sub z31.h, z2.h, z10.h
 add x3, x3, #0x40
-add z1.s, z1.s, z27.s
-saddlb z27.s, z7.h, z11.h
+str z31, [x3]
+add x3, x0, #0x100
+ld1h {z23.h}, p7/z, [x3]
+add x3, x0, #0x120
+ld1h {z30.h}, p7/z, [x3]
+rev z30.h, z30.h
+cntb x3
+sub z28.h, z23.h, z30.h
+lsl x3, x3, #5
+add x3, sp, x3
+add x3, x3, #0x40
+str z28, [x3]
+add x3, x0, #0x140
+ld1h {z18.h}, p7/z, [x3]
+add x3, x0, #0x160
+ld1h {z24.h}, p7/z, [x3]
+rev z24.h, z24.h
+addvl x3, x6, #1
+sub z25.h, z18.h, z24.h
+rdvl x6, #0x11
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+str z25, [x3]
+add x3, x0, #0x180
+ld1h {z3.h}, p7/z, [x3]
+add x3, x0, #0x1a0
+ld1h {z11.h}, p7/z, [x3]
+rev z11.h, z11.h
+rdvl x3, #0x11
+sub z19.h, z3.h, z11.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+str z19, [x3]
+add x3, x0, #0x1c0
+ld1h {z4.h}, p7/z, [x3]
+add x3, x0, #0x1e0
+ld1h {z12.h}, p7/z, [x3]
+rev z12.h, z12.h
+addvl x3, x6, #1
+sub z20.h, z4.h, z12.h
+cntb x6, all, mul #9
+add x3, x3, #0x40
+lsl x6, x6, #2
+add x3, sp, x3
+str z20, [x3]
+add x3, x0, #0x200
+ld1h {z25.h}, p7/z, [x3]
+add x3, x0, #0x220
+ld1h {z31.h}, p7/z, [x3]
+rev z31.h, z31.h
+cntb x3, all, mul #9
+sub z16.h, z25.h, z31.h
+lsl x3, x3, #2
+add x3, sp, x3
+add x3, x3, #0x40
+str z16, [x3]
+add x3, x0, #0x240
+ld1h {z19.h}, p7/z, [x3]
+add x3, x0, #0x260
+ld1h {z26.h}, p7/z, [x3]
+rev z26.h, z26.h
+addvl x3, x6, #1
+sub z15.h, z19.h, z26.h
+cntb x6, all, mul #5
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+str z15, [x3]
+add x3, x0, #0x280
+ld1h {z5.h}, p7/z, [x3]
+add x3, x0, #0x2a0
+ld1h {z13.h}, p7/z, [x3]
+rev z13.h, z13.h
+rdvl x3, #0x13
+sub z14.h, z5.h, z13.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
 str z14, [x3]
-addvl x3, sp, #0x16
-add z3.s, z3.s, z27.s
+add x3, x0, #0x2c0
+ld1h {z6.h}, p7/z, [x3]
+add x3, x0, #0x2e0
+ld1h {z14.h}, p7/z, [x3]
+rev z14.h, z14.h
+addvl x3, x6, #0xffffffffffffffff
+sub z8.h, z6.h, z14.h
+cntb x6, all, mul #5
 add x3, x3, #0x40
-saddlt z12.s, z7.h, z11.h
-str z0, [x3]
-ldr z27, [x3]
-saddlt z27.s, z27.h, z20.h
-add z12.s, z27.s, z12.s
-revw z3.d, p6/m, z3.d
-revw z12.d, p6/m, z12.d
-zip1 z27.s, z4.s, z1.s
-zip2 z4.s, z4.s, z1.s
-zip1 z0.s, z12.s, z3.s
-zip2 z12.s, z12.s, z3.s
-add z27.s, z27.s, z0.s
-add z12.s, z4.s, z12.s
-uzp2 z4.d, z27.d, z12.d
-revw z4.d, p6/m, z4.d
-uzp1 z27.d, z27.d, z12.d
-add z12.s, z4.s, z27.s
-sub z27.s, z27.s, z4.s
-mul z13.s, p7/m, z13.s, z12.s
-addp z13.s, p5/m, z13.s, z13.s
-movprfx z4, z22
-mul z4.s, p7/m, z4.s, z27.s
-addp z4.s, p5/m, z4.s, z4.s
-mul z12.s, p7/m, z12.s, z21.s
-addp z12.s, p5/m, z12.s, z12.s
+lsl x6, x6, #3
+add x3, sp, x3
+str z8, [x3]
+add x3, x0, #0x300
+ld1h {z27.h}, p7/z, [x3]
+add x3, x0, #0x320
+ld1h {z28.h}, p7/z, [x3]
+rev z7.h, z28.h
+addvl x3, sp, #5
+sub z1.h, z27.h, z7.h
+add x3, x3, #0x40
+str z7, [x3]
+cntb x3, all, mul #5
+lsl x3, x3, #3
+add x3, sp, x3
+add x3, x3, #0x40
+str z1, [x3]
+add x3, x0, #0x340
+ld1h {z20.h}, p7/z, [x3]
+add x3, x0, #0x360
+ld1h {z28.h}, p7/z, [x3]
+rev z28.h, z28.h
+addvl x3, x6, #1
+sub z16.h, z20.h, z28.h
+rdvl x6, #0x15
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+str z16, [x3]
+add x3, x0, #0x380
+ld1h {z7.h}, p7/z, [x3]
+add x3, x0, #0x3a0
+ld1h {z15.h}, p7/z, [x3]
+rev z15.h, z15.h
+rdvl x3, #0x15
+sub z8.h, z7.h, z15.h
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+str z8, [x3]
+add x3, x0, #0x3c0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x0, #0x3e0
+ld1h {z16.h}, p7/z, [x3]
+rev z16.h, z16.h
+addvl x3, x6, #1
+sub z1.h, z8.h, z16.h
+add x3, x3, #0x40
+add x3, sp, x3
+str z1, [x3]
+zip1 z1.d, z0.d, z21.d
 add x3, sp, #0x40
-ldr z23, [x3]
-mul z27.s, p7/m, z27.s, z23.s
-addp z27.s, p5/m, z27.s, z27.s
-addvl x3, sp, #0x19
-uzp1 z16.s, z16.s, z5.s
-uzp1 z15.s, z15.s, z13.s
-add x3, x3, #0x40
-uzp1 z18.s, z18.s, z6.s
-uzp1 z17.s, z17.s, z4.s
-uzp1 z24.s, z24.s, z9.s
-uzp1 z25.s, z25.s, z12.s
-uzp1 z30.s, z30.s, z26.s
-uzp1 z31.s, z31.s, z27.s
-rshrnb z16.h, z16.s, #0xb
-rshrnb z15.h, z15.s, #0xb
-uzp1 z16.h, z16.h, z16.h
-uzp1 z15.h, z15.h, z15.h
-rshrnb z18.h, z18.s, #0xb
-rshrnb z17.h, z17.s, #0xb
-uzp1 z18.h, z18.h, z18.h
-uzp1 z17.h, z17.h, z17.h
-rshrnb z24.h, z24.s, #0xb
-rshrnb z25.h, z25.s, #0xb
-uzp1 z24.h, z24.h, z24.h
-uzp1 z25.h, z25.h, z25.h
-rshrnb z30.h, z30.s, #0xb
-rshrnb z31.h, z31.s, #0xb
-uzp1 z30.h, z30.h, z30.h
-uzp1 z31.h, z31.h, z31.h
-stp q16, q15, [x1]
-stp q18, q17, [x1, #0x200]
-str q24, [x1, #0x400]
-str q25, [x1, #0x410]
-str q30, [x1, #0x600]
-str q31, [x1, #0x610]
+zip2 z21.d, z0.d, z21.d
+zip1 z0.d, z17.d, z2.d
+zip2 z17.d, z17.d, z2.d
+zip1 z2.d, z1.d, z0.d
 str z2, [x3]
-ldr z4, [x3]
-addvl x3, sp, #4
-add x3, x3, #0x40
-ldr z31, [x3]
-sub z18.h, z4.h, z31.h
+zip2 z2.d, z1.d, z0.d
 addvl x3, sp, #1
 add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #5
-add x3, x3, #0x40
-ldr z31, [x3]
-sub z24.h, z4.h, z31.h
-addvl x3, sp, #2
-add x3, x3, #0x40
-ldr z14, [x3]
-addvl x3, sp, #6
-add x3, x3, #0x40
-ldr z31, [x3]
-sub z31.h, z14.h, z31.h
-revh z17.d, p6/m, z31.d
-addvl x3, sp, #3
-add x3, x3, #0x40
-ldr z15, [x3]
-addvl x3, sp, #7
-add x3, x3, #0x40
-ldr z30, [x3]
-sub z31.h, z15.h, z30.h
-revh z16.d, p6/m, z31.d
+str z2, [x3]
+zip1 z2.d, z21.d, z17.d
+revh z0.d, p6/m, z2.d
+zip2 z21.d, z21.d, z17.d
+revh z21.d, p6/m, z21.d
+mov z2.d, z21.d
+zip1 z21.d, z29.d, z9.d
+zip1 z17.d, z22.d, z10.d
+zip2 z29.d, z29.d, z9.d
+zip2 z22.d, z22.d, z10.d
+zip2 z9.d, z21.d, z17.d
+zip1 z10.d, z21.d, z17.d
+zip1 z21.d, z29.d, z22.d
+revh z21.d, p6/m, z21.d
+mov z1.d, z21.d
+zip2 z29.d, z29.d, z22.d
+revh z22.d, p6/m, z29.d
+add x3, sp, #0x40
+saddlb z29.s, z2.h, z22.h
+ldr z21, [x3]
+saddlb z21.s, z21.h, z10.h
+add z21.s, z21.s, z29.s
+ldr z29, [x3]
 addvl x3, sp, #8
 add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #0xc
+str z10, [x3]
+ldr z17, [x3]
+addvl x3, sp, #7
+saddlt z10.s, z29.h, z17.h
+saddlt z29.s, z2.h, z22.h
 add x3, x3, #0x40
-ldr z27, [x3]
-sub z5.h, z4.h, z27.h
+str z2, [x3]
+add z10.s, z10.s, z29.s
+addvl x3, sp, #0xb
+saddlb z29.s, z0.h, z1.h
+add x3, x3, #0x40
+str z22, [x3]
+saddlt z22.s, z0.h, z1.h
+addvl x3, sp, #1
+add x3, x3, #0x40
+ldr z2, [x3]
+saddlb z17.s, z2.h, z9.h
 addvl x3, sp, #9
+add z17.s, z17.s, z29.s
 add x3, x3, #0x40
-ldr z4, [x3]
-addvl x3, sp, #0xd
+str z9, [x3]
+ldr z9, [x3]
+addvl x3, sp, #1
 add x3, x3, #0x40
-ldr z27, [x3]
-sub z6.h, z4.h, z27.h
+ldr z2, [x3]
+saddlt z29.s, z2.h, z9.h
+addvl x3, sp, #6
+add z22.s, z29.s, z22.s
+add x3, x3, #0x40
+str z0, [x3]
 addvl x3, sp, #0xa
 add x3, x3, #0x40
-ldr z27, [x3]
-addvl x3, sp, #0xe
+str z1, [x3]
+revw z17.d, p6/m, z17.d
+revw z22.d, p6/m, z22.d
+zip1 z9.s, z22.s, z17.s
+zip1 z29.s, z21.s, z10.s
+zip2 z22.s, z22.s, z17.s
+add z29.s, z29.s, z9.s
+zip2 z21.s, z21.s, z10.s
+add z22.s, z21.s, z22.s
+uzp2 z17.d, z29.d, z22.d
+revw z17.d, p6/m, z17.d
+ptrue p5.s
+uzp1 z29.d, z29.d, z22.d
+ld1w {z22.s}, p7/z, [x2]
+add z21.s, z17.s, z29.s
+sub z29.s, z29.s, z17.s
+movprfx z10, z21
+mul z10.s, p7/m, z10.s, z22.s
+addp z10.s, p5/m, z10.s, z10.s
+cntb x3, all, mul #0xb
+lsl x3, x3, #2
+add x3, sp, x3
 add x3, x3, #0x40
-ldr z3, [x3]
-sub z31.h, z27.h, z3.h
-revh z4.d, p6/m, z31.d
-addvl x3, sp, #0xb
-add x3, x3, #0x40
-ldr z26, [x3]
-addvl x3, sp, #0xf
-add x3, x3, #0x40
-ldr z23, [x3]
-sub z31.h, z26.h, z23.h
-revh z3.d, p6/m, z31.d
-addvl x3, sp, #0x10
-add x3, x3, #0x40
-ldr z13, [x3]
-addvl x3, sp, #0x14
+ldr z1, [x3]
+movprfx z17, z1
+mul z17.s, p7/m, z17.s, z29.s
+addp z17.s, p5/m, z17.s, z17.s
+addvl x3, sp, #0x1a
 add x3, x3, #0x40
 ldr z9, [x3]
-sub z0.h, z13.h, z9.h
-addvl x3, sp, #0x11
+mul z21.s, p7/m, z21.s, z9.s
+mov z9.d, z21.d
+addp z9.s, p5/m, z9.s, z21.s
+addvl x3, sp, #0x1b
 add x3, x3, #0x40
-ldr z13, [x3]
-sub z1.h, z13.h, z19.h
-addvl x3, sp, #0x12
+ldr z21, [x3]
+movprfx z2, z29
+mul z2.s, p7/m, z2.s, z21.s
+addp z2.s, p5/m, z2.s, z2.s
+zip1 z29.d, z23.d, z3.d
+zip1 z21.d, z18.d, z4.d
+zip2 z23.d, z23.d, z3.d
+zip2 z18.d, z18.d, z4.d
+zip1 z3.d, z29.d, z21.d
+zip2 z0.d, z29.d, z21.d
+zip1 z29.d, z23.d, z18.d
+revh z4.d, p6/m, z29.d
+addvl x3, sp, #2
+zip2 z23.d, z23.d, z18.d
 add x3, x3, #0x40
-ldr z22, [x3]
-sub z31.h, z22.h, z10.h
-revh z8.d, p6/m, z31.d
-addvl x3, sp, #0x13
+str z4, [x3]
+revh z21.d, p6/m, z23.d
+zip1 z29.d, z30.d, z11.d
+zip1 z23.d, z24.d, z12.d
+zip2 z30.d, z30.d, z11.d
+zip2 z24.d, z24.d, z12.d
+zip1 z4.d, z29.d, z23.d
+zip2 z18.d, z29.d, z23.d
+zip1 z29.d, z30.d, z24.d
+revh z29.d, p6/m, z29.d
+zip2 z30.d, z30.d, z24.d
+revh z30.d, p6/m, z30.d
+addvl x3, sp, #0xc
+mov z11.d, z30.d
+saddlb z30.s, z21.h, z30.h
+add x3, x3, #0x40
+saddlb z24.s, z3.h, z4.h
+add z24.s, z24.s, z30.s
+str z3, [x3]
+ldr z30, [x3]
+addvl x3, sp, #0xd
+add x3, x3, #0x40
+mov z12.d, z21.d
+str z12, [x3]
+addvl x3, sp, #0x10
+saddlt z21.s, z30.h, z4.h
+saddlt z30.s, z12.h, z11.h
+add x3, x3, #0x40
+str z11, [x3]
+add z21.s, z21.s, z30.s
+addvl x3, sp, #2
+saddlb z23.s, z0.h, z18.h
 add x3, x3, #0x40
 ldr z12, [x3]
-sub z31.h, z12.h, z28.h
-revh z14.d, p6/m, z31.d
+saddlb z30.s, z12.h, z29.h
+addvl x3, sp, #0xe
+add z23.s, z23.s, z30.s
+add x3, x3, #0x40
+str z18, [x3]
+ldr z30, [x3]
+addvl x3, sp, #0xf
+saddlt z30.s, z0.h, z30.h
+add x3, x3, #0x40
+str z29, [x3]
+saddlt z29.s, z12.h, z29.h
+add z29.s, z30.s, z29.s
+revw z23.d, p6/m, z23.d
+revw z29.d, p6/m, z29.d
+zip1 z30.s, z24.s, z21.s
+zip2 z24.s, z24.s, z21.s
+zip1 z18.s, z29.s, z23.s
+zip2 z29.s, z29.s, z23.s
+add z30.s, z30.s, z18.s
+add z29.s, z24.s, z29.s
+uzp2 z24.d, z30.d, z29.d
+revw z24.d, p6/m, z24.d
+uzp1 z30.d, z30.d, z29.d
+add z29.s, z24.s, z30.s
+sub z30.s, z30.s, z24.s
+movprfx z23, z29
+mul z23.s, p7/m, z23.s, z22.s
+addp z23.s, p5/m, z23.s, z23.s
+mov z12.d, z1.d
+movprfx z24, z1
+mul z24.s, p7/m, z24.s, z30.s
+addp z24.s, p5/m, z24.s, z24.s
+addvl x3, sp, #0x1a
+add x3, x3, #0x40
+ldr z11, [x3]
+mul z29.s, p7/m, z29.s, z11.s
+addp z29.s, p5/m, z29.s, z29.s
+addvl x3, sp, #0x1b
+add x3, x3, #0x40
+ldr z1, [x3]
+mul z30.s, p7/m, z30.s, z1.s
+addp z30.s, p5/m, z30.s, z30.s
+zip1 z21.d, z25.d, z5.d
+zip1 z18.d, z19.d, z6.d
+zip2 z25.d, z25.d, z5.d
+zip2 z19.d, z19.d, z6.d
+zip1 z6.d, z21.d, z18.d
+zip2 z18.d, z21.d, z18.d
+zip1 z21.d, z25.d, z19.d
+revh z21.d, p6/m, z21.d
+addvl x3, sp, #3
+zip2 z25.d, z25.d, z19.d
+add x3, x3, #0x40
+str z21, [x3]
+revh z5.d, p6/m, z25.d
+zip1 z25.d, z31.d, z13.d
+zip1 z21.d, z26.d, z14.d
+zip2 z31.d, z31.d, z13.d
+zip2 z26.d, z26.d, z14.d
+mov z19.d, z5.d
+zip2 z14.d, z25.d, z21.d
+zip1 z21.d, z25.d, z21.d
+zip1 z25.d, z31.d, z26.d
+revh z5.d, p6/m, z25.d
+zip2 z31.d, z31.d, z26.d
+revh z3.d, p6/m, z31.d
+addvl x3, sp, #0x11
+saddlb z31.s, z19.h, z3.h
+saddlb z25.s, z6.h, z21.h
+add x3, x3, #0x40
+add z25.s, z25.s, z31.s
+str z6, [x3]
+ldr z31, [x3]
+addvl x3, sp, #0x14
+mov z13.d, z19.d
+add x3, x3, #0x40
+str z21, [x3]
+ldr z21, [x3]
+addvl x3, sp, #0x13
+saddlt z19.s, z31.h, z21.h
+saddlt z31.s, z13.h, z3.h
+add x3, x3, #0x40
+str z13, [x3]
+add z19.s, z19.s, z31.s
+addvl x3, sp, #3
+saddlb z21.s, z18.h, z14.h
+add x3, x3, #0x40
+ldr z6, [x3]
+saddlb z31.s, z6.h, z5.h
+addvl x3, sp, #0x12
+add z21.s, z21.s, z31.s
+saddlt z26.s, z6.h, z5.h
+add x3, x3, #0x40
+str z18, [x3]
+ldr z31, [x3]
 addvl x3, sp, #0x15
-sub z31.h, z7.h, z11.h
 add x3, x3, #0x40
-ldr z21, [x3]
-addvl x3, sp, #0x18
+str z14, [x3]
+ldr z18, [x3]
+saddlt z31.s, z31.h, z18.h
+add z26.s, z31.s, z26.s
+revw z21.d, p6/m, z21.d
+revw z26.d, p6/m, z26.d
+zip1 z31.s, z25.s, z19.s
+zip2 z25.s, z25.s, z19.s
+zip1 z18.s, z26.s, z21.s
+zip2 z26.s, z26.s, z21.s
+add z31.s, z31.s, z18.s
+add z26.s, z25.s, z26.s
+uzp2 z25.d, z31.d, z26.d
+revw z25.d, p6/m, z25.d
+uzp1 z31.d, z31.d, z26.d
+add z26.s, z25.s, z31.s
+sub z31.s, z31.s, z25.s
+movprfx z21, z26
+mul z21.s, p7/m, z21.s, z22.s
+addp z21.s, p5/m, z21.s, z21.s
+mov z14.d, z12.d
+movprfx z25, z12
+mul z25.s, p7/m, z25.s, z31.s
+addp z25.s, p5/m, z25.s, z25.s
+mov z13.d, z11.d
+mul z26.s, p7/m, z26.s, z11.s
+addp z26.s, p5/m, z26.s, z26.s
+mov z12.d, z1.d
+mul z31.s, p7/m, z31.s, z1.s
+addp z31.s, p5/m, z31.s, z31.s
+zip1 z19.d, z27.d, z7.d
+zip1 z18.d, z20.d, z8.d
+zip2 z27.d, z27.d, z7.d
+zip2 z20.d, z20.d, z8.d
+zip2 z1.d, z19.d, z18.d
+zip1 z8.d, z19.d, z18.d
+zip1 z19.d, z27.d, z20.d
+revh z7.d, p6/m, z19.d
+addvl x3, sp, #4
+zip2 z27.d, z27.d, z20.d
 add x3, x3, #0x40
-ldr z13, [x3]
-sub z22.h, z21.h, z13.h
-addvl x3, sp, #0x16
+str z7, [x3]
+revh z7.d, p6/m, z27.d
+addvl x3, sp, #5
+zip1 z19.d, z28.d, z16.d
+zip2 z28.d, z28.d, z16.d
 add x3, x3, #0x40
-ldr z21, [x3]
-sub z21.h, z21.h, z20.h
-revh z23.d, p6/m, z31.d
+ldr z20, [x3]
+zip1 z27.d, z20.d, z15.d
+zip2 z20.d, z20.d, z15.d
+zip1 z16.d, z27.d, z19.d
+zip2 z19.d, z27.d, z19.d
+zip1 z27.d, z20.d, z28.d
+revh z6.d, p6/m, z27.d
+mov z27.d, z6.d
+zip2 z20.d, z20.d, z28.d
+revh z6.d, p6/m, z20.d
+saddlb z28.s, z7.h, z6.h
+saddlb z20.s, z8.h, z16.h
+add z20.s, z20.s, z28.s
+str z8, [x3]
+ldr z28, [x3]
 addvl x3, sp, #0x17
 add x3, x3, #0x40
-ldr z13, [x3]
-sub z31.h, z13.h, z29.h
-revh z2.d, p6/m, z31.d
+str z16, [x3]
+ldr z11, [x3]
+addvl x3, sp, #4
+saddlt z18.s, z28.h, z11.h
+saddlt z28.s, z7.h, z6.h
+add x3, x3, #0x40
+ldr z15, [x3]
+add z18.s, z18.s, z28.s
+addvl x3, sp, #0x16
+saddlb z28.s, z15.h, z27.h
+mov z11.d, z19.d
+add x3, x3, #0x40
+saddlb z19.s, z1.h, z19.h
+add z19.s, z19.s, z28.s
+str z1, [x3]
+ldr z28, [x3]
+addvl x3, sp, #0x18
+add x3, x3, #0x40
+str z11, [x3]
+ldr z11, [x3]
+addvl x3, sp, #0x19
+saddlt z28.s, z28.h, z11.h
+add x3, x3, #0x40
+str z27, [x3]
+saddlt z27.s, z15.h, z27.h
+add z27.s, z28.s, z27.s
+revw z19.d, p6/m, z19.d
+revw z27.d, p6/m, z27.d
+zip1 z28.s, z20.s, z18.s
+zip2 z20.s, z20.s, z18.s
+zip1 z16.s, z27.s, z19.s
+zip2 z27.s, z27.s, z19.s
+add z28.s, z28.s, z16.s
+add z27.s, z20.s, z27.s
+uzp2 z20.d, z28.d, z27.d
+revw z20.d, p6/m, z20.d
+uzp1 z28.d, z28.d, z27.d
+add z27.s, z20.s, z28.s
+sub z28.s, z28.s, z20.s
+mul z22.s, p7/m, z22.s, z27.s
+addp z22.s, p5/m, z22.s, z22.s
+movprfx z20, z14
+mul z20.s, p7/m, z20.s, z28.s
+addp z20.s, p5/m, z20.s, z20.s
+mul z27.s, p7/m, z27.s, z13.s
+addp z27.s, p5/m, z27.s, z27.s
+mul z28.s, p7/m, z28.s, z12.s
+addp z28.s, p5/m, z28.s, z28.s
 addvl x3, sp, #0x1c
-movi d31, #0000000000000000
-ld1h {z15.h}, p7/z, [x4]
+uzp1 z10.s, z10.s, z23.s
+uzp1 z21.s, z21.s, z22.s
 add x3, x3, #0x40
-ldr z13, [x3]
-movprfx z30, z31
-sdot z30.d, z24.h, z13.h[0]
-addvl x3, sp, #0x1d
-movprfx z25, z31
-sdot z25.d, z6.h, z13.h[0]
-movprfx z27, z31
-sdot z27.d, z1.h, z13.h[0]
-add x3, x3, #0x40
-ldr z12, [x3]
-movprfx z26, z31
-sdot z26.d, z21.h, z13.h[0]
+uzp1 z17.s, z17.s, z24.s
+uzp1 z25.s, z25.s, z20.s
+uzp1 z26.s, z26.s, z27.s
+rshrnb z10.h, z10.s, #0xb
+rshrnb z21.h, z21.s, #0xb
+uzp1 z10.h, z10.h, z10.h
+uzp1 z21.h, z21.h, z21.h
+rshrnb z17.h, z17.s, #0xb
+rshrnb z25.h, z25.s, #0xb
+uzp1 z17.h, z17.h, z17.h
+uzp1 z25.h, z25.h, z25.h
+stp q10, q21, [x1]
+rshrnb z26.h, z26.s, #0xb
+uzp1 z26.h, z26.h, z26.h
+uzp1 z9.s, z9.s, z29.s
+uzp1 z31.s, z31.s, z28.s
+rshrnb z31.h, z31.s, #0xb
+stp q17, q25, [x1, #0x200]
+ldr z27, [x3]
 addvl x3, sp, #0x1e
-sdot z30.d, z18.h, z15.h[0]
-sdot z25.d, z5.h, z15.h[0]
 add x3, x3, #0x40
+ldr z23, [x3]
+uzp1 z31.h, z31.h, z31.h
+addvl x3, sp, #0x1d
+str q26, [x1, #0x410]
+zip1 z29.d, z27.d, z23.d
+add x3, x3, #0x40
+ldr z26, [x3]
+uzp1 z2.s, z2.s, z30.s
+addvl x3, sp, #0x1f
+str q31, [x1, #0x610]
+trn2 z31.d, z27.d, z23.d
+add x3, x3, #0x40
+ldr z22, [x3]
+zip1 z28.d, z26.d, z22.d
+cntb x3
+zip1 z24.d, z29.d, z28.d
+trn1 z29.d, z27.d, z23.d
+lsl x3, x3, #5
+cntb x6
+trn2 z30.d, z26.d, z22.d
+add x3, sp, x3
+lsl x6, x6, #5
+trn1 z28.d, z26.d, z22.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip2 z23.d, z29.d, z28.d
+rdvl x3, #0x11
+zip1 z25.d, z31.d, z30.d
+zip2 z22.d, z31.d, z30.d
+lsl x3, x3, #1
+rshrnb z9.h, z9.s, #0xb
+uzp1 z9.h, z9.h, z9.h
+add x3, sp, x3
+str q9, [x1, #0x400]
+rshrnb z2.h, z2.s, #0xb
+add x3, x3, #0x40
+ldr z19, [x3]
+zip1 z29.d, z27.d, z19.d
+addvl x3, x6, #1
+rdvl x6, #0x11
+trn2 z31.d, z27.d, z19.d
+add x3, x3, #0x40
+lsl x6, x6, #1
+uzp1 z2.h, z2.h, z2.h
+add x3, sp, x3
+ldr z26, [x3]
+str q2, [x1, #0x600]
+addvl x3, x6, #1
+ld1h {z10.h}, p7/z, [x4]
+add x3, x3, #0x40
+cntb x6, all, mul #9
+add x3, sp, x3
+ldr z18, [x3]
+zip1 z28.d, z26.d, z18.d
+cntb x3, all, mul #9
+zip1 z20.d, z29.d, z28.d
+trn1 z29.d, z27.d, z19.d
+lsl x3, x3, #2
+lsl x6, x6, #2
+trn2 z30.d, z26.d, z18.d
+add x3, sp, x3
+trn1 z28.d, z26.d, z18.d
+zip2 z19.d, z29.d, z28.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip1 z21.d, z31.d, z30.d
+rdvl x3, #0x13
+zip2 z18.d, z31.d, z30.d
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z15, [x3]
+zip1 z29.d, z27.d, z15.d
+addvl x3, x6, #1
+cntb x6, all, mul #5
+trn2 z31.d, z27.d, z15.d
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+ldr z26, [x3]
+addvl x3, x6, #0xffffffffffffffff
+cntb x6, all, mul #5
+add x3, x3, #0x40
+lsl x6, x6, #3
+add x3, sp, x3
+ldr z14, [x3]
+zip1 z28.d, z26.d, z14.d
+cntb x3, all, mul #5
+zip1 z16.d, z29.d, z28.d
+trn1 z29.d, z27.d, z15.d
+lsl x3, x3, #3
+trn2 z30.d, z26.d, z14.d
+trn1 z28.d, z26.d, z14.d
+add x3, sp, x3
+zip2 z8.d, z29.d, z28.d
+zip1 z17.d, z31.d, z30.d
+add x3, x3, #0x40
+ldr z27, [x3]
+zip2 z11.d, z31.d, z30.d
+rdvl x3, #0x15
+lsl x3, x3, #1
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z15, [x3]
+zip1 z29.d, z27.d, z15.d
+addvl x3, x6, #1
+rdvl x6, #0x15
+trn2 z31.d, z27.d, z15.d
+add x3, x3, #0x40
+lsl x6, x6, #1
+add x3, sp, x3
+ldr z26, [x3]
+addvl x3, x6, #1
+add x3, x3, #0x40
+add x3, sp, x3
+ldr z14, [x3]
+zip1 z28.d, z26.d, z14.d
+cntb x3, all, mul #3
+zip1 z13.d, z29.d, z28.d
+trn2 z30.d, z26.d, z14.d
+lsl x6, x3, #4
+trn1 z29.d, z27.d, z15.d
+trn1 z28.d, z26.d, z14.d
+sub x3, x6, x3
+cntb x6, all, mul #3
+zip1 z12.d, z31.d, z30.d
+add x3, x3, #0x40
+lsl x6, x6, #4
+zip2 z14.d, z29.d, z28.d
+add x3, sp, x3
 ldr z9, [x3]
-sdot z30.d, z17.h, z12.h[0]
+zip2 z15.d, z31.d, z30.d
+rdvl x3, #0x17
+movi d31, #0000000000000000
+movprfx z30, z31
+sdot z30.d, z25.h, z9.h[0]
+lsl x3, x3, #1
+movprfx z27, z31
+sdot z27.d, z21.h, z9.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z9.h[0]
+add x3, sp, x3
+movprfx z28, z31
+sdot z28.d, z12.h, z9.h[0]
+sdot z30.d, z24.h, z10.h[0]
+add x3, x3, #0x40
+ldr z2, [x3]
+sdot z27.d, z20.h, z10.h[0]
+addvl x3, x6, #0xffffffffffffffff
+cntb x6, all, mul #3
+sdot z30.d, z23.h, z2.h[0]
+add x3, x3, #0x40
+sdot z27.d, z19.h, z2.h[0]
+sdot z29.d, z16.h, z10.h[0]
+add x3, sp, x3
+ldr z1, [x3]
+sdot z29.d, z8.h, z2.h[0]
 add x3, x1, #0x40
-sdot z30.d, z16.h, z9.h[0]
-sdot z25.d, z4.h, z12.h[0]
-sdot z27.d, z0.h, z15.h[0]
-sdot z25.d, z3.h, z9.h[0]
-sdot z27.d, z8.h, z12.h[0]
-sdot z26.d, z22.h, z15.h[0]
-sdot z27.d, z14.h, z9.h[0]
-sdot z26.d, z23.h, z12.h[0]
-uzp1 z30.s, z30.s, z25.s
-sdot z26.d, z2.h, z9.h[0]
+sdot z27.d, z18.h, z1.h[0]
+sdot z30.d, z22.h, z1.h[0]
+sdot z29.d, z11.h, z1.h[0]
+sdot z28.d, z13.h, z10.h[0]
+lsl x6, x6, #4
+sdot z28.d, z14.h, z2.h[0]
+uzp1 z30.s, z30.s, z27.s
+sdot z28.d, z15.h, z1.h[0]
 rshrnb z30.h, z30.s, #0xb
-uzp1 z27.s, z27.s, z26.s
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z28.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0xc0
 movprfx z30, z31
-sdot z30.d, z24.h, z13.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z13.h[1]
+sdot z30.d, z25.h, z9.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z13.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z13.h[1]
-sdot z30.d, z18.h, z15.h[1]
-sdot z25.d, z5.h, z15.h[1]
-sdot z30.d, z17.h, z12.h[1]
-sdot z25.d, z4.h, z12.h[1]
-sdot z30.d, z16.h, z9.h[1]
-sdot z25.d, z3.h, z9.h[1]
-sdot z27.d, z0.h, z15.h[1]
-sdot z26.d, z22.h, z15.h[1]
-sdot z27.d, z8.h, z12.h[1]
-sdot z26.d, z23.h, z12.h[1]
-sdot z27.d, z14.h, z9.h[1]
-sdot z26.d, z2.h, z9.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z9.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z9.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z9.h[1]
+sdot z30.d, z24.h, z10.h[1]
+sdot z27.d, z20.h, z10.h[1]
+sdot z30.d, z23.h, z2.h[1]
+sdot z27.d, z19.h, z2.h[1]
+sdot z30.d, z22.h, z1.h[1]
+sdot z27.d, z18.h, z1.h[1]
+sdot z29.d, z16.h, z10.h[1]
+sdot z28.d, z13.h, z10.h[1]
+sdot z29.d, z8.h, z2.h[1]
+sdot z28.d, z14.h, z2.h[1]
+sdot z29.d, z11.h, z1.h[1]
+sdot z28.d, z15.h, z1.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
-cntb x3
-cntb x6
-add z11.h, z7.h, z11.h
-lsl x3, x3, #5
-lsl x6, x6, #5
-add x3, sp, x3
-add x3, x3, #0x40
-ldr z15, [x3]
-movprfx z30, z31
-sdot z30.d, z24.h, z15.h[0]
-addvl x3, sp, #0x1f
-movprfx z25, z31
-sdot z25.d, z6.h, z15.h[0]
-movprfx z27, z31
-sdot z27.d, z1.h, z15.h[0]
-add x3, x3, #0x40
-ldr z13, [x3]
-movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
 addvl x3, x6, #1
-sdot z30.d, z18.h, z13.h[0]
-sdot z25.d, z5.h, z13.h[0]
 add x3, x3, #0x40
-sdot z27.d, z0.h, z13.h[0]
-sdot z26.d, z22.h, z13.h[0]
 add x3, sp, x3
-ldr z12, [x3]
-sdot z30.d, z17.h, z12.h[0]
-rdvl x3, #0x11
-sdot z25.d, z4.h, z12.h[0]
-sdot z27.d, z8.h, z12.h[0]
-lsl x3, x3, #1
-sdot z26.d, z23.h, z12.h[0]
-rdvl x6, #0x11
+ldr z10, [x3]
+movprfx z30, z31
+sdot z30.d, z25.h, z10.h[0]
+cntb x3, all, mul #3
+movprfx z27, z31
+sdot z27.d, z21.h, z10.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z10.h[0]
+lsl x3, x3, #4
+movprfx z28, z31
+sdot z28.d, z12.h, z10.h[0]
 add x3, sp, x3
-lsl x6, x6, #1
 add x3, x3, #0x40
 ldr z9, [x3]
-sdot z25.d, z3.h, z9.h[0]
+sdot z30.d, z24.h, z9.h[0]
+rdvl x3, #0x19
+sdot z27.d, z20.h, z9.h[0]
+sdot z29.d, z16.h, z9.h[0]
+lsl x3, x3, #1
+sdot z28.d, z13.h, z9.h[0]
+add x3, sp, x3
+add x3, x3, #0x40
+ldr z2, [x3]
+sdot z30.d, z23.h, z2.h[0]
+cntb x3, all, mul #3
+sdot z27.d, z19.h, z2.h[0]
+sdot z29.d, z8.h, z2.h[0]
+add x3, x3, x3, lsl #4
+sdot z28.d, z14.h, z2.h[0]
+add x3, x3, #0x40
+add x3, sp, x3
+ldr z1, [x3]
+sdot z27.d, z18.h, z1.h[0]
 add x3, x1, #0x140
-sdot z26.d, z2.h, z9.h[0]
-sdot z30.d, z16.h, z9.h[0]
-sdot z27.d, z14.h, z9.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z28.d, z15.h, z1.h[0]
+sdot z30.d, z22.h, z1.h[0]
+sdot z29.d, z11.h, z1.h[0]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x1c0
 movprfx z30, z31
-sdot z30.d, z24.h, z15.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z15.h[1]
+sdot z30.d, z25.h, z10.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z15.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z15.h[1]
-sdot z30.d, z18.h, z13.h[1]
-sdot z25.d, z5.h, z13.h[1]
-sdot z30.d, z17.h, z12.h[1]
-sdot z25.d, z4.h, z12.h[1]
-sdot z30.d, z16.h, z9.h[1]
-sdot z25.d, z3.h, z9.h[1]
-sdot z27.d, z0.h, z13.h[1]
-sdot z26.d, z22.h, z13.h[1]
-sdot z27.d, z8.h, z12.h[1]
-sdot z26.d, z23.h, z12.h[1]
-sdot z27.d, z14.h, z9.h[1]
-sdot z26.d, z2.h, z9.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z10.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z10.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z10.h[1]
+sdot z30.d, z24.h, z9.h[1]
+sdot z27.d, z20.h, z9.h[1]
+sdot z30.d, z23.h, z2.h[1]
+sdot z27.d, z19.h, z2.h[1]
+sdot z30.d, z22.h, z1.h[1]
+sdot z27.d, z18.h, z1.h[1]
+sdot z29.d, z16.h, z9.h[1]
+sdot z28.d, z13.h, z9.h[1]
+sdot z29.d, z8.h, z2.h[1]
+sdot z28.d, z14.h, z2.h[1]
+sdot z29.d, z11.h, z1.h[1]
+sdot z28.d, z15.h, z1.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0xc0
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x1c0
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
+add x3, x2, #0x2c0
 ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
-add x3, x2, #0x2c0
-ld1h {z13.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x3c0
-ld1h {z15.h}, p7/z, [x3]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x240
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x2c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0xe0
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x1e0
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
+add x3, x2, #0x2e0
 ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
-add x3, x2, #0x2e0
-ld1h {z13.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x3e0
-ld1h {z15.h}, p7/z, [x3]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x340
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x3c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x200
-ld1h {z12.h}, p7/z, [x3]
-add x3, x2, #0x300
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z12.h[0]
-add x3, x2, #0x400
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z12.h[0]
-addvl x3, x6, #1
+sdot z30.d, z25.h, z2.h[0]
+add x3, x2, #0x300
+ld1h {z9.h}, p7/z, [x3]
 movprfx z27, z31
-sdot z27.d, z1.h, z12.h[0]
-movprfx z26, z31
-sdot z26.d, z21.h, z12.h[0]
-add x3, x3, #0x40
+sdot z27.d, z21.h, z2.h[0]
+add x3, x2, #0x400
+ld1h {z10.h}, p7/z, [x3]
+movprfx z29, z31
+sdot z29.d, z17.h, z2.h[0]
+cntb x3, all, mul #0xd
+movprfx z28, z31
+sdot z28.d, z12.h, z2.h[0]
+lsl x3, x3, #2
 add x3, sp, x3
-ldr z9, [x3]
-sdot z30.d, z18.h, z9.h[0]
+add x3, x3, #0x40
+ldr z1, [x3]
+sdot z30.d, z24.h, z1.h[0]
 add x3, x1, #0x440
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z5.h, z9.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z27.d, z0.h, z9.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z22.h, z9.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z23.h, z13.h[0]
-uzp1 z30.s, z30.s, z25.s
-sdot z26.d, z2.h, z15.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z27.d, z20.h, z1.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z27.d, z19.h, z9.h[0]
+sdot z29.d, z16.h, z1.h[0]
+sdot z27.d, z18.h, z10.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z28.d, z13.h, z1.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z28.d, z14.h, z9.h[0]
+uzp1 z30.s, z30.s, z27.s
+sdot z28.d, z15.h, z10.h[0]
 rshrnb z30.h, z30.s, #0xb
-uzp1 z27.s, z27.s, z26.s
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z28.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x4c0
 movprfx z30, z31
-sdot z30.d, z24.h, z12.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z12.h[1]
+sdot z30.d, z25.h, z2.h[1]
 movprfx z27, z31
-sdot z27.d, z1.h, z12.h[1]
-movprfx z26, z31
-sdot z26.d, z21.h, z12.h[1]
-sdot z30.d, z18.h, z9.h[1]
-sdot z25.d, z5.h, z9.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z9.h[1]
-sdot z26.d, z22.h, z9.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z27.d, z21.h, z2.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z2.h[1]
+movprfx z28, z31
+sdot z28.d, z12.h, z2.h[1]
+sdot z30.d, z24.h, z1.h[1]
+sdot z27.d, z20.h, z1.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z27.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z27.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z1.h[1]
+sdot z28.d, z13.h, z1.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z28.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z28.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z27.s
+uzp1 z29.s, z29.s, z28.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x120
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x220
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
 add x3, x2, #0x320
-ld1h {z13.h}, p7/z, [x3]
-movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+mov z10.d, z28.d
+ld1h {z9.h}, p7/z, [x3]
 add x3, x2, #0x420
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+movprfx z30, z31
+sdot z30.d, z25.h, z10.h[0]
+ld1h {z10.h}, p7/z, [x3]
 add x3, x1, #0x540
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
+mov z1.d, z28.d
+sdot z30.d, z24.h, z2.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z14.h, z9.h[0]
+uzp1 z30.s, z30.s, z26.s
+sdot z27.d, z15.h, z10.h[0]
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+uzp1 z29.s, z29.s, z27.s
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x5c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x140
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x240
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
 add x3, x2, #0x340
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x440
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x640
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x6c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x2, #0x160
-ld1h {z12.h}, p7/z, [x3]
+ld1h {z2.h}, p7/z, [x3]
 add x3, x2, #0x260
-ld1h {z9.h}, p7/z, [x3]
+ld1h {z28.h}, p7/z, [x3]
+mov z10.d, z28.d
 add x3, x2, #0x360
-ld1h {z13.h}, p7/z, [x3]
+ld1h {z9.h}, p7/z, [x3]
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[0]
+sdot z30.d, z25.h, z10.h[0]
 add x3, x2, #0x460
-ld1h {z15.h}, p7/z, [x3]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[0]
+ld1h {z10.h}, p7/z, [x3]
+mov z1.d, z28.d
 add x3, x1, #0x740
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[0]
-sdot z30.d, z18.h, z12.h[0]
-sdot z25.d, z5.h, z12.h[0]
-sdot z30.d, z17.h, z13.h[0]
-sdot z25.d, z4.h, z13.h[0]
-sdot z30.d, z16.h, z15.h[0]
-sdot z25.d, z3.h, z15.h[0]
-sdot z27.d, z0.h, z12.h[0]
-sdot z26.d, z22.h, z12.h[0]
-sdot z27.d, z8.h, z13.h[0]
-sdot z26.d, z23.h, z13.h[0]
-sdot z27.d, z14.h, z15.h[0]
-sdot z26.d, z2.h, z15.h[0]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[0]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[0]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[0]
+sdot z30.d, z24.h, z2.h[0]
+sdot z26.d, z20.h, z2.h[0]
+sdot z30.d, z23.h, z9.h[0]
+sdot z26.d, z19.h, z9.h[0]
+sdot z30.d, z22.h, z10.h[0]
+sdot z26.d, z18.h, z10.h[0]
+sdot z29.d, z16.h, z2.h[0]
+sdot z27.d, z13.h, z2.h[0]
+sdot z29.d, z8.h, z9.h[0]
+sdot z27.d, z14.h, z9.h[0]
+sdot z29.d, z11.h, z10.h[0]
+sdot z27.d, z15.h, z10.h[0]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
 add x3, x1, #0x7c0
 movprfx z30, z31
-sdot z30.d, z24.h, z9.h[1]
-movprfx z25, z31
-sdot z25.d, z6.h, z9.h[1]
-movprfx z27, z31
-sdot z27.d, z1.h, z9.h[1]
+sdot z30.d, z25.h, z1.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z9.h[1]
-sdot z30.d, z18.h, z12.h[1]
-sdot z25.d, z5.h, z12.h[1]
-sdot z30.d, z17.h, z13.h[1]
-sdot z25.d, z4.h, z13.h[1]
-sdot z30.d, z16.h, z15.h[1]
-sdot z25.d, z3.h, z15.h[1]
-sdot z27.d, z0.h, z12.h[1]
-sdot z26.d, z22.h, z12.h[1]
-sdot z27.d, z8.h, z13.h[1]
-sdot z26.d, z23.h, z13.h[1]
-sdot z27.d, z14.h, z15.h[1]
-sdot z26.d, z2.h, z15.h[1]
-uzp1 z30.s, z30.s, z25.s
-uzp1 z27.s, z27.s, z26.s
+sdot z26.d, z21.h, z1.h[1]
+movprfx z29, z31
+sdot z29.d, z17.h, z1.h[1]
+movprfx z27, z31
+sdot z27.d, z12.h, z1.h[1]
+sdot z30.d, z24.h, z2.h[1]
+sdot z26.d, z20.h, z2.h[1]
+sdot z30.d, z23.h, z9.h[1]
+sdot z26.d, z19.h, z9.h[1]
+sdot z30.d, z22.h, z10.h[1]
+sdot z26.d, z18.h, z10.h[1]
+sdot z29.d, z16.h, z2.h[1]
+sdot z27.d, z13.h, z2.h[1]
+sdot z29.d, z8.h, z9.h[1]
+sdot z27.d, z14.h, z9.h[1]
+sdot z29.d, z11.h, z10.h[1]
+sdot z27.d, z15.h, z10.h[1]
+uzp1 z30.s, z30.s, z26.s
+uzp1 z29.s, z29.s, z27.s
 rshrnb z30.h, z30.s, #0xb
-rshrnb z27.h, z27.s, #0xb
-uzp1 z30.h, z30.h, z27.h
+rshrnb z29.h, z29.s, #0xb
+uzp1 z30.h, z30.h, z29.h
 st1h {z30.h}, p7, [x3]
+addvl x3, sp, #8
+add x3, x3, #0x40
+ldr z26, [x3]
+add x3, sp, #0x40
+ldr z25, [x3]
+add z30.h, z26.h, z25.h
+addvl x3, sp, #9
+add x3, x3, #0x40
+ldr z26, [x3]
+addvl x3, sp, #1
+add x3, x3, #0x40
+ldr z25, [x3]
+add z29.h, z26.h, z25.h
+addvl x3, sp, #6
+add x3, x3, #0x40
+ldr z28, [x3]
+addvl x3, sp, #0xa
+add x3, x3, #0x40
+ldr z1, [x3]
+add z27.h, z28.h, z1.h
+addvl x3, sp, #7
+sub z26.h, z29.h, z27.h
+add z29.h, z29.h, z27.h
+add x3, x3, #0x40
+ldr z2, [x3]
+addvl x3, sp, #0xb
+add x3, x3, #0x40
+ldr z22, [x3]
+add z25.h, z2.h, z22.h
+addvl x3, sp, #0xc
+sub z28.h, z30.h, z25.h
+add z30.h, z30.h, z25.h
+add x3, x3, #0x40
+ldr z23, [x3]
+add z23.h, z4.h, z23.h
+addvl x3, sp, #0xe
+add x3, x3, #0x40
+ldr z22, [x3]
+add z21.h, z22.h, z0.h
+addvl x3, sp, #2
+add x3, x3, #0x40
+ldr z12, [x3]
+addvl x3, sp, #0xf
+add x3, x3, #0x40
+ldr z24, [x3]
+add z19.h, z12.h, z24.h
+addvl x3, sp, #0xd
+sub z18.h, z21.h, z19.h
+add x3, x3, #0x40
+ldr z12, [x3]
+addvl x3, sp, #0x10
+add x3, x3, #0x40
+ldr z11, [x3]
+add z17.h, z12.h, z11.h
+addvl x3, sp, #0x14
+add z11.h, z7.h, z6.h
+sub z20.h, z23.h, z17.h
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #0x11
+add x3, x3, #0x40
+ldr z22, [x3]
+add z22.h, z24.h, z22.h
+addvl x3, sp, #0x15
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #0x12
+add x3, x3, #0x40
+ldr z14, [x3]
+add z10.h, z24.h, z14.h
+addvl x3, sp, #3
+add x3, x3, #0x40
+ldr z13, [x3]
+add z5.h, z13.h, z5.h
+addvl x3, sp, #0x13
+sub z4.h, z10.h, z5.h
+add x3, x3, #0x40
+ldr z13, [x3]
+add z3.h, z13.h, z3.h
+addvl x3, sp, #0x17
+sub z9.h, z22.h, z3.h
+add x3, x3, #0x40
+ldr z24, [x3]
+addvl x3, sp, #5
+add x3, x3, #0x40
+ldr z14, [x3]
+add z24.h, z24.h, z14.h
+addvl x3, sp, #0x18
+add x3, x3, #0x40
+ldr z14, [x3]
+addvl x3, sp, #0x16
+add x3, x3, #0x40
+ldr z13, [x3]
+add z15.h, z14.h, z13.h
 addvl x3, sp, #4
+sub z14.h, z24.h, z11.h
 add x3, x3, #0x40
 ldr z16, [x3]
 addvl x3, sp, #0x19
 add x3, x3, #0x40
-ldr z4, [x3]
-add z30.h, z16.h, z4.h
-addvl x3, sp, #5
-add x3, x3, #0x40
-ldr z18, [x3]
-addvl x3, sp, #1
-add x3, x3, #0x40
-ldr z16, [x3]
-add z27.h, z18.h, z16.h
-addvl x3, sp, #2
-add x3, x3, #0x40
-ldr z14, [x3]
-addvl x3, sp, #6
-add x3, x3, #0x40
-ldr z26, [x3]
-add z25.h, z14.h, z26.h
-addvl x3, sp, #3
-add x3, x3, #0x40
-ldr z15, [x3]
-addvl x3, sp, #7
-add x3, x3, #0x40
-ldr z24, [x3]
-add z18.h, z15.h, z24.h
-addvl x3, sp, #0xc
-sub z26.h, z30.h, z18.h
-sub z24.h, z27.h, z25.h
-add x3, x3, #0x40
-ldr z21, [x3]
-add z30.h, z30.h, z18.h
-addvl x3, sp, #8
-add z27.h, z27.h, z25.h
-add x3, x3, #0x40
-ldr z16, [x3]
-add z21.h, z21.h, z16.h
-addvl x3, sp, #0xd
-add x3, x3, #0x40
-ldr z16, [x3]
-addvl x3, sp, #9
-add x3, x3, #0x40
-ldr z15, [x3]
-add z17.h, z16.h, z15.h
-addvl x3, sp, #0xa
-add x3, x3, #0x40
-ldr z6, [x3]
-addvl x3, sp, #0xe
-add x3, x3, #0x40
-ldr z3, [x3]
-add z15.h, z6.h, z3.h
-addvl x3, sp, #0xb
-sub z13.h, z17.h, z15.h
-add x3, x3, #0x40
-ldr z5, [x3]
-addvl x3, sp, #0xf
-add x3, x3, #0x40
-ldr z23, [x3]
-add z12.h, z5.h, z23.h
-addvl x3, sp, #0x14
-sub z16.h, z21.h, z12.h
-add x3, x3, #0x40
-ldr z14, [x3]
-addvl x3, sp, #0x10
-add x3, x3, #0x40
-ldr z9, [x3]
-add z22.h, z14.h, z9.h
-addvl x3, sp, #0x11
-add x3, x3, #0x40
-ldr z14, [x3]
-add z19.h, z19.h, z14.h
-addvl x3, sp, #0x12
-add x3, x3, #0x40
-ldr z23, [x3]
-add z10.h, z23.h, z10.h
-addvl x3, sp, #0x13
-sub z6.h, z19.h, z10.h
-add x3, x3, #0x40
-ldr z23, [x3]
-add z28.h, z23.h, z28.h
-addvl x3, sp, #0x18
-sub z9.h, z22.h, z28.h
-add x3, x3, #0x40
-ldr z23, [x3]
-addvl x3, sp, #0x15
-add x3, x3, #0x40
-ldr z14, [x3]
-add z23.h, z23.h, z14.h
-addvl x3, sp, #0x16
-add x3, x3, #0x40
-ldr z14, [x3]
-add z20.h, z20.h, z14.h
-addvl x3, sp, #0x17
-sub z7.h, z20.h, z11.h
-add x3, x3, #0x40
-ldr z14, [x3]
-add z29.h, z14.h, z29.h
+ldr z8, [x3]
+add z13.h, z16.h, z8.h
 add x3, x2, #0x480
-ld1h {z5.h}, p7/z, [x3]
-sub z8.h, z23.h, z29.h
+ld1h {z8.h}, p7/z, [x3]
+sub z12.h, z15.h, z13.h
 add x3, x2, #0x500
-ld1h {z4.h}, p7/z, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-add x3, x1, #0x80
-sdot z14.d, z26.h, z5.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-sdot z1.d, z16.h, z5.h[0]
-sdot z3.d, z9.h, z5.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-uzp1 z14.s, z14.s, z1.s
-sdot z2.d, z8.h, z5.h[0]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z3.s, z3.s, z2.s
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x180
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4a0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x520
-ld1h {z4.h}, p7/z, [x3]
-add x3, x1, #0x280
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-sdot z14.d, z26.h, z5.h[0]
-sdot z1.d, z16.h, z5.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-sdot z3.d, z9.h, z5.h[0]
-sdot z2.d, z8.h, z5.h[0]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x380
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4c0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x540
-ld1h {z4.h}, p7/z, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-add x3, x1, #0x480
-sdot z14.d, z26.h, z5.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-sdot z1.d, z16.h, z5.h[0]
-sdot z3.d, z9.h, z5.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-uzp1 z14.s, z14.s, z1.s
-sdot z2.d, z8.h, z5.h[0]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z3.s, z3.s, z2.s
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x1, #0x580
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[1]
-sdot z14.d, z26.h, z5.h[1]
-sdot z1.d, z16.h, z5.h[1]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[1]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[1]
-sdot z3.d, z9.h, z5.h[1]
-sdot z2.d, z8.h, z5.h[1]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-add x3, x2, #0x4e0
-ld1h {z5.h}, p7/z, [x3]
-add x3, x2, #0x560
-ld1h {z4.h}, p7/z, [x3]
-add x3, x1, #0x680
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[0]
-movprfx z1, z31
-sdot z1.d, z13.h, z4.h[0]
-sdot z14.d, z26.h, z5.h[0]
-sdot z1.d, z16.h, z5.h[0]
-movprfx z3, z31
-sdot z3.d, z6.h, z4.h[0]
-movprfx z2, z31
-sdot z2.d, z7.h, z4.h[0]
-sdot z3.d, z9.h, z5.h[0]
-sdot z2.d, z8.h, z5.h[0]
-uzp1 z14.s, z14.s, z1.s
-uzp1 z3.s, z3.s, z2.s
-rshrnb z14.h, z14.s, #0xb
-rshrnb z3.h, z3.s, #0xb
-uzp1 z14.h, z14.h, z3.h
-st1h {z14.h}, p7, [x3]
-movprfx z14, z31
-sdot z14.d, z24.h, z4.h[1]
-add x3, x1, #0x780
-sdot z14.d, z26.h, z5.h[1]
-movprfx z24, z31
-sdot z24.d, z6.h, z4.h[1]
-movprfx z26, z31
-sdot z26.d, z13.h, z4.h[1]
-sdot z24.d, z9.h, z5.h[1]
-sdot z26.d, z16.h, z5.h[1]
+ld1h {z7.h}, p7/z, [x3]
 movprfx z16, z31
-sdot z16.d, z7.h, z4.h[1]
-uzp1 z14.s, z14.s, z26.s
-sdot z16.d, z8.h, z5.h[1]
-rshrnb z14.h, z14.s, #0xb
-uzp1 z24.s, z24.s, z16.s
-rshrnb z24.h, z24.s, #0xb
-uzp1 z14.h, z14.h, z24.h
-st1h {z14.h}, p7, [x3]
-revh z27.d, p6/m, z27.d
-sub z30.h, z30.h, z27.h
-add z21.h, z21.h, z12.h
-add z17.h, z17.h, z15.h
-revh z17.d, p6/m, z17.d
-sub z21.h, z21.h, z17.h
-add z22.h, z22.h, z28.h
-add z19.h, z19.h, z10.h
-revh z19.d, p6/m, z19.d
-sub z22.h, z22.h, z19.h
-add z23.h, z23.h, z29.h
-add z20.h, z20.h, z11.h
-revh z20.d, p6/m, z20.d
+sdot z16.d, z26.h, z7.h[0]
+add x3, x1, #0x80
+sdot z16.d, z28.h, z8.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+sdot z1.d, z20.h, z8.h[0]
+sdot z6.d, z9.h, z8.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+uzp1 z16.s, z16.s, z1.s
+sdot z2.d, z14.h, z8.h[0]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z6.s, z6.s, z2.s
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x180
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4a0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x520
+ld1h {z7.h}, p7/z, [x3]
+add x3, x1, #0x280
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+sdot z16.d, z28.h, z8.h[0]
+sdot z1.d, z20.h, z8.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+sdot z6.d, z9.h, z8.h[0]
+sdot z2.d, z14.h, z8.h[0]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x380
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4c0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x540
+ld1h {z7.h}, p7/z, [x3]
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+add x3, x1, #0x480
+sdot z16.d, z28.h, z8.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+sdot z1.d, z20.h, z8.h[0]
+sdot z6.d, z9.h, z8.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+uzp1 z16.s, z16.s, z1.s
+sdot z2.d, z14.h, z8.h[0]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z6.s, z6.s, z2.s
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x1, #0x580
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[1]
+sdot z16.d, z28.h, z8.h[1]
+sdot z1.d, z20.h, z8.h[1]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[1]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[1]
+sdot z6.d, z9.h, z8.h[1]
+sdot z2.d, z14.h, z8.h[1]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+add x3, x2, #0x4e0
+ld1h {z8.h}, p7/z, [x3]
+add x3, x2, #0x560
+ld1h {z7.h}, p7/z, [x3]
+add x3, x1, #0x680
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[0]
+movprfx z1, z31
+sdot z1.d, z18.h, z7.h[0]
+sdot z16.d, z28.h, z8.h[0]
+sdot z1.d, z20.h, z8.h[0]
+movprfx z6, z31
+sdot z6.d, z4.h, z7.h[0]
+movprfx z2, z31
+sdot z2.d, z12.h, z7.h[0]
+sdot z6.d, z9.h, z8.h[0]
+sdot z2.d, z14.h, z8.h[0]
+uzp1 z16.s, z16.s, z1.s
+uzp1 z6.s, z6.s, z2.s
+rshrnb z16.h, z16.s, #0xb
+rshrnb z6.h, z6.s, #0xb
+uzp1 z16.h, z16.h, z6.h
+st1h {z16.h}, p7, [x3]
+movprfx z16, z31
+sdot z16.d, z26.h, z7.h[1]
+add x3, x1, #0x780
+sdot z16.d, z28.h, z8.h[1]
+movprfx z26, z31
+sdot z26.d, z4.h, z7.h[1]
+movprfx z28, z31
+sdot z28.d, z18.h, z7.h[1]
+sdot z26.d, z9.h, z8.h[1]
+sdot z28.d, z20.h, z8.h[1]
+movprfx z20, z31
+sdot z20.d, z12.h, z7.h[1]
+uzp1 z16.s, z16.s, z28.s
+sdot z20.d, z14.h, z8.h[1]
+rshrnb z16.h, z16.s, #0xb
+uzp1 z26.s, z26.s, z20.s
+rshrnb z26.h, z26.s, #0xb
+uzp1 z16.h, z16.h, z26.h
+st1h {z16.h}, p7, [x3]
+revh z29.d, p6/m, z29.d
+sub z30.h, z30.h, z29.h
+add z23.h, z23.h, z17.h
+add z21.h, z21.h, z19.h
+revh z21.d, p6/m, z21.d
+sub z23.h, z23.h, z21.h
+add z22.h, z22.h, z3.h
+add z10.h, z10.h, z5.h
+revh z10.d, p6/m, z10.d
+sub z22.h, z22.h, z10.h
+add z24.h, z24.h, z11.h
+add z15.h, z15.h, z13.h
+revh z15.d, p6/m, z15.d
 add x3, x2, #0x580
+sub z24.h, z24.h, z15.h
 ld1h {z15.h}, p7/z, [x3]
-sub z23.h, z23.h, z20.h
 add x3, x1, #0x100
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
+sdot z26.d, z23.h, z15.h[0]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[0]
+sdot z27.d, z24.h, z15.h[0]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[0]
 uzp1 z29.s, z29.s, z26.s
@@ -5482,9 +5845,9 @@ add x3, x1, #0x300
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[1]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[1]
+sdot z26.d, z23.h, z15.h[1]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[1]
+sdot z27.d, z24.h, z15.h[1]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[1]
 uzp1 z29.s, z29.s, z26.s
@@ -5499,11 +5862,11 @@ add x3, x1, #0x500
 movprfx z29, z31
 sdot z29.d, z30.h, z15.h[0]
 movprfx z26, z31
-sdot z26.d, z21.h, z15.h[0]
+sdot z26.d, z23.h, z15.h[0]
 movprfx z28, z31
 sdot z28.d, z22.h, z15.h[0]
 movprfx z27, z31
-sdot z27.d, z23.h, z15.h[0]
+sdot z27.d, z24.h, z15.h[0]
 uzp1 z29.s, z29.s, z26.s
 uzp1 z28.s, z28.s, z27.s
 rshrnb z29.h, z29.s, #0xb
@@ -5516,9 +5879,9 @@ movprfx z29, z31
 sdot z29.d, z30.h, z15.h[1]
 add x3, x1, #0x700
 movprfx z30, z31
-sdot z30.d, z21.h, z15.h[1]
+sdot z30.d, z23.h, z15.h[1]
 add x0, x0, #0x400
-sdot z31.d, z23.h, z15.h[1]
+sdot z31.d, z24.h, z15.h[1]
 uzp1 z30.s, z29.s, z30.s
 uzp1 z31.s, z28.s, z31.s
 rshrnb z30.h, z30.s, #0xb
@@ -5527,9 +5890,10 @@ uzp1 z31.h, z30.h, z31.h
 st1h {z31.h}, p7, [x3]
 add x1, x1, #0x20
 cmp x5, x0
-cntb x12, all, mul #9
-lsl x12, x12, #2
+mov x13, #0x35
+cntb x12
 ldp d8, d9, [sp]
+mul x12, x12, x13
 ldp d10, d11, [sp, #0x10]
 ldp d12, d13, [sp, #0x20]
 ldp d14, d15, [sp, #0x30]

@@ -5112,3 +5112,4 @@ addvl sp, sp, #0xa
 add sp, sp, #0x60
 ldp x29, x30, [sp]
 add sp, sp, #0x810
+stp x29, x30, [sp, #-0x20]!
