@@ -48,6 +48,21 @@ sdot_indexed=1, odd_from_k0packs=1, k2k4_from_packs=1`；
 
 ### 0.2 LLVM-MCA 三方预估（experiments/m33-mca-dct32/）
 
+### 0.1c IDCT32 / IDCT16（2026-08-14，SVE2p1 制胜配方，docs/27 §8.11）
+
+| kernel | best | fused_uop | 动态 MCA | 相对基线 |
+| --- | --- | ---: | ---: | ---: |
+| idct32 | zip32 + sdot-s32（`best_sve2`） | **5085** | **1164** | NEON 3319 的 **-64.9%**（NP1 减半门已远超） |
+| idct16 | zip16 + sdot-s32（`best_sve2`） | 980 | 246 | 旧 mul 438 的 -44% |
+
+关键配方：SVE2p1 `sdot z.s,z.h,z.h`（-march=armv9.4-a+sve2p1）、
+`load_c` vnum 立即数寻址（adrp 944→94）、zip 写回转置（idct32
+off 地址修复：`((off+r)*stride)`）、sdot 输入行按需装入、编译参数
+`-O3 -frename-registers --param=sched-pressure-algorithm=1`。
+`tools/peak_live.py` P1 baseline：动态流峰值活跃 Z = 31（已在 32
+预算内）。全组合 20k 0 失配 + TestBenchLite 5/5；SVE2p1 候选无法在
+920B（SVE1）实机跑，950/960 paired 待测。
+
 口径：QEMU 完整动态执行流（VL=256）去分支后喂
 `llvm-mca -mcpu=neoverse-v2 -mattr=+sve2 -iterations=1`：
 
