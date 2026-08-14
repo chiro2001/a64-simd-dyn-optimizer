@@ -20,10 +20,15 @@ SRC="$ROOT/kernels/${KERNEL}/candidates/best_sve2.cpp"
 TMP="$ROOT/build/${KERNEL}_sub_${TARGET}"
 mkdir -p "$(dirname "$TMP")"
 
+# Native aarch64 machines (950/920B) may lack the cross prefix; respect
+# CXX/AS env overrides (default cross).
+CXX_BIN="${CXX:-aarch64-linux-gnu-g++}"
+AS_BIN="${AS:-aarch64-linux-gnu-as}"
+
 # 1) C++ -> .S with the full SVE2p1 feature set (inline sdot passes through
 #    unassembled; ACLE intrinsics emit sve2 instructions for sve1 target
 #    and are rewritten in step 2).
-aarch64-linux-gnu-g++ -O3 -frename-registers \
+"$CXX_BIN" -O3 -frename-registers \
   --param=sched-pressure-algorithm=1 -march=armv9.4-a+sve2p1 \
   -std=c++11 -S "$SRC" -o "$TMP.s"
 
@@ -37,10 +42,10 @@ if [ "$TARGET" = sve1 ]; then
 else
   ASMARCH="armv8.2-a+sve2"
 fi
-aarch64-linux-gnu-as -march="$ASMARCH" -o "$TMP.o" "$TMP.sub.s"
+"$AS_BIN" -march="$ASMARCH" -o "$TMP.o" "$TMP.sub.s"
 
 # 4) Link the microbenchmark.
-aarch64-linux-gnu-g++ -O2 -static -std=c++11 -march="$ASMARCH" \
+"$CXX_BIN" -O2 -static -std=c++11 -march="$ASMARCH" \
   "$ROOT/benchmarks/${KERNEL}_microbench.cpp" "$TMP.o" \
   -Wl,--start-group "$ROOT/build/x265-8-clang-sve/libx265.a" \
   -Wl,--end-group -lpthread -ldl -o "$OUT"
