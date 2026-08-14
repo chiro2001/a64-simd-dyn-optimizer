@@ -16,7 +16,7 @@ case "$KERNEL" in
 esac
 
 CC="${CXX:-aarch64-linux-gnu-g++}"
-$CC -O2 -std=c++11 -march=armv9.4-a+sve2p1 \
+$CC -O2 -static -std=c++11 -march=armv9.4-a+sve2p1 \
   "$ROOT/benchmarks/${KERNEL}_microbench.cpp" \
   "$ROOT/kernels/${KERNEL}/candidates/best_sve2.o" \
   -Wl,--start-group "$ROOT/build/x265-8-clang-sve/libx265.a" \
