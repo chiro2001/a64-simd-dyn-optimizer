@@ -93,6 +93,36 @@ def run(cmd, timeout=None, **kw):
                           timeout=timeout, **kw)
 
 
+def build_substituted(kernel, cpp_src, out, target="sve1"):
+    """Build a shape-substituted microbenchmark binary for a candidate
+    source (docs/29): C++ -> .S with the full feature set, rewrite
+    unsupported mnemonics, assemble for target, link the microbench.
+    Values are NOT exact; benchmark-only."""
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="subbench_")
+    s_path = os.path.join(tmp, "k.s")
+    sub_s = os.path.join(tmp, "k.sub.s")
+    o_path = os.path.join(tmp, "k.o")
+    run(["aarch64-linux-gnu-g++", "-O3", "-frename-registers",
+         "--param=sched-pressure-algorithm=1",
+         "-march=armv9.4-a+sve2p1", "-std=c++11", "-S",
+         cpp_src, "-o", s_path], timeout=180)
+    from substitute_unsupported import substitute as sub_pass
+    lines = open(s_path).read().splitlines()
+    with open(sub_s, "w") as f:
+        f.write("\n".join(sub_pass(lines, target)) + "\n")
+    asmarch = "armv8.2-a+sve" if target == "sve1" else "armv8.2-a+sve2"
+    run(["aarch64-linux-gnu-as", "-march=" + asmarch,
+         "-o", o_path, sub_s], timeout=120)
+    mb = os.path.join(ROOT, "benchmarks", kernel + "_microbench.cpp")
+    lib = os.path.join(ROOT, "build", "x265-8-clang-sve", "libx265.a")
+    run(["aarch64-linux-gnu-g++", "-O2", "-static", "-std=c++11",
+         "-march=" + asmarch, mb, o_path,
+         "-Wl,--start-group", lib, "-Wl,--end-group",
+         "-lpthread", "-ldl", "-o", out], timeout=180)
+    return out
+
+
 def symbol_range(binary, sym):
     out = run(["nm", binary, "--defined-only"]).stdout
     addrs = []
@@ -658,6 +688,14 @@ def main():
                     help="when finalizing, skip candidates that did not pass "
                          "TestBenchLite (requires --lite-top; candidates "
                          "without lite data are skipped)")
+    ap.add_argument("--bench-920b", default=None,
+                    help="SSH host (user@host) of a reachable 920B; build a "
+                         "shape-substituted microbenchmark for top candidates "
+                         "and run CNTVCT paired vs NEON as a secondary "
+                         "real-machine reference (MCA remains primary, "
+                         "docs/29 §6)")
+    ap.add_argument("--bench-top", type=int, default=3,
+                    help="candidates benchmarked on 920B (default 3)")
     args = ap.parse_args()
     global _CXX, _OPT_EXTRA
     if args.cxx:
@@ -1090,6 +1128,52 @@ def main():
                          "PASS" if r["lite_pass"] else "FAIL " + str(fails)))
             if args.rank_by == "lite":
                 ok.sort(key=lambda r: (r.get("lite_pass") is not True, fu(r)))
+    if args.bench_920b and ok:
+        import re
+        if args.kernel not in ("idct16", "idct32"):
+            print("bench-920b: kernel %r has no microbenchmark; skipped"
+                  % args.kernel, file=sys.stderr)
+        else:
+            host = args.bench_920b
+            paired_sh = os.path.join(ROOT, "scripts",
+                                     "bench-dct32-paired.sh")
+            print("920B real-machine reference on top-%d candidates (%s, "
+                  "shape-substituted, docs/29 §6; MCA remains primary):"
+                  % (min(args.bench_top, len(ok)), host))
+            for r in ok[:min(args.bench_top, len(ok))]:
+                tag = r["tag"]
+                cpp = os.path.join(args.outdir, tag + ".cpp")
+                if not os.path.exists(cpp):
+                    print("  %-24s no candidate source" % tag)
+                    continue
+                binp = os.path.join(args.outdir, tag + "-sve1-bench")
+                try:
+                    build_substituted(args.kernel, cpp, binp)
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", binp,
+                         host + ":/tmp/sv_" + tag], timeout=180,
+                        capture_output=True)
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", paired_sh,
+                         host + ":/tmp/bench-paired.sh"], timeout=60,
+                        capture_output=True)
+                    rr = run(
+                        ["ssh", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", host,
+                         "bash /tmp/bench-paired.sh /tmp/sv_%s neon cand "
+                         "10 2 /tmp/svpair_%s 2>&1 | tail -1"
+                         % (tag, tag)], timeout=600)
+                    line = (rr.stdout.strip().splitlines()[-1]
+                            if rr.stdout.strip() else "")
+                    m = re.search(r"median=([0-9.]+)", line)
+                    ratio = float(m.group(1)) if m else None
+                    r["bench920_ratio"] = ratio
+                    print("  %-24s bench920 neon/cand ratio=%s"
+                          % (tag, ratio))
+                except Exception as e:
+                    print("  %-24s bench920 skipped: %s" % (tag, e))
     if args.rank_by == "consensus" and ok:
         tgt = None
         try:

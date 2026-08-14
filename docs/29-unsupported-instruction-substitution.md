@@ -90,3 +90,10 @@ bash scripts/bench-dct32-paired.sh /tmp/mb neon cand
   在 mca/lite 之后对 top-N 调 `build-substituted-microbench.sh` +
   `bench-dct32-paired.sh`（920B 侧），结果写入 results.json 的
   `bench920_cycles` 字段。
+
+**已实现（2026-08-14）**：`search_sve2_layouts.py --bench-920b
+<user@host> [--bench-top N]`，对 top-N 候选自动：编译候选 .cpp →
+替换 SVE2p1 指令（sve1 目标）→ 汇编 → 链接 idct 微基准 → scp 到
+920B → CNTVCT paired vs NEON，结果写 `bench920_ratio`。实测（JIT
+时代候选）：zip32 sdot **1.1208**、scalar sdot 0.7597——实机信号与
+MCA 排序一致（zip32 快、scalar 慢），可作为次级指引；MCA 仍为主。
