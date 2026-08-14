@@ -1,0 +1,43 @@
+[
+ {
+  "tag": "reduce-neon_pack-pair",
+  "reduce": "neon",
+  "pack": "pair",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400a00"
+  ],
+  "counts": {
+   "total": 150,
+   "vector": 130,
+   "movprfx": 4,
+   "vector_fused": 126,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 126
+  },
+  "fusion": {
+   "eligible": 2,
+   "hw_supported": 0,
+   "pairs": [
+    "add+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 45,
+    "simd_insns": 84,
+    "fused_pseudo": 4
+   }
+  },
+  "baseline_ratio": 1.2989690721649485,
+  "halve_gate_met": false,
+  "mca_cycles": 67,
+  "mca_uops": 153
+ }
+]

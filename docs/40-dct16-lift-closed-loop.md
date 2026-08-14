@@ -199,3 +199,23 @@ kernels/dct16 上游 NEON（dct16_neon）
 - 新增配方协议：在 `tools/gen_sve2_emit.py` 加 `detect_*` +
   `emit_*` 并注册即可；同配方的新算子（形状/行数/宽度）由
   MachineIR 自动推导，无需写 per-kernel 发射器。
+
+## 8. hadamard 配方落地（2026-08-15，sa8d 8x8）
+
+- `tools/gen_sve2_emit.py` 新增 hadamard 配方：把 sa8d 8x8 的
+  MachineIR DAG（167 节点：8 行 u8 load → zext/sub → 2D Hadamard
+  蝶形 → sabd/abs/umax → uaddlv(+1>>1)）逐节点翻译为 SVE2 ACLE：
+  - load/zext → svld1_u8(pg8) + svunpklo_u16（8-of-16 lane 布局）；
+  - add/sub/sabd/abs/umax → svadd/sub/abd/abs_s16_x(p16) +
+    svmax_u16_x；
+  - **shuffle 映射**：NEON trn1/trn2（奇偶交错）→ SVE
+    svtrn1/svtrn2（s16/s32）；`<2 x i64>` 的 trn = 4×s16 块搬移，
+    用 svsplice(pg4)（trn1）与 rot4+svsplice（trn2）；
+  - reduce → svaddv_u16(pg8h)（**坑：必须用 16 位 8-lane 谓词
+    pg8h，用 b8 谓词只会激活 4 个 16 位 lane**）。
+- 验收（20k 差分 0 失配，experiments/m30-sa8d-search/
+  gen-search-8x8/results.json）：**126 fused / MCA 67 / dyn 150**；
+  对比手写最优 79 fused / MCA 71 —— 指令数更高（pack=1 朴素版），
+  但 MCA 反而更好；pack=2/evenpair 等布局轴留给配方后续版本。
+- 调试记录：trn1/trn2 的 NEON 语义是奇偶交错（曾误映射 zip1/trn2
+  导致 v105 起全错）；splice 的 i64 语义已实测验证。
