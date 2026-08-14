@@ -166,3 +166,14 @@ ipb8(sve2sub)     ...    ...   ...      ...      ...
 3. 每测完一个 kernel 就把 `bench-generic-paired.sh` 的 median 行追加到报告；
 4. 遇到 SIGILL（rc=132）→ 该候选含超出 950 ISA 的指令，改用替换或跳过；
 5. 最后把报告文件内容整段贴回对话。
+
+## 7. 结果回填解析（Agent 拿到 paired CSV 后）
+
+```sh
+# 对每个 kernel 的 paired CSV 出对照/验收表（fused/MCA 可本地填）：
+python3 tools/parse_quick_report.py \
+  ivpp16=/tmp/vpp16.csv sa8d16=/tmp/sa8d16.csv \
+  --fused ivpp16=247 --upstream ivpp16=400 --mca ivpp16=157 \
+  --fused sa8d16=186 --upstream sa8d16=373
+# 输出：pairs/median/bootstrap95/fused降幅/verdict（median>=1.10 为 PASS）
+```
