@@ -37,6 +37,9 @@ SQRHSHRNB = re.compile(
     r"^(\s*)sqrshrnb\s+(z\d+)\.h,\s*(z\d+)\.s,\s*#(\d+)(.*)$")
 SQRHSHRUNB = re.compile(
     r"^(\s*)sqrshrunb\s+(z\d+)\.b,\s*(z\d+)\.h,\s*#(\d+)(.*)$")
+SPLICE = re.compile(
+    r"^(\s*)splice\s+(z\d+)\.([bhsdq]),\s*(p\d+),\s*"
+    r"(z\d+)\.\w+,\s*(z\d+)\.\w+(.*)$")
 ARCH = re.compile(r"^\s*\.arch\s+.*$")
 
 
@@ -78,6 +81,16 @@ def substitute(lines, target):
             ind, zd, zs, imm, tail = m.groups()
             out.append("%sasr %s.h, %s.h, #%s%s" % (ind, zs, zs, imm, tail))
             out.append("%suzp1 %s.b, %s.b, %s.b%s" % (ind, zd, zs, zs, tail))
+            continue
+        m = SPLICE.match(line)
+        if m and target == "sve1":
+            # splice is architecturally SVE1, but some older toolchains on
+            # 920B reject the operand form generated from SVE2p1 builds;
+            # sel keeps the same 2-vector + predicate dependency shape
+            # (values NOT preserved; perf-estimate only, docs/29).
+            ind, zd, elem, pg, za, zb, tail = m.groups()
+            out.append("%ssel %s.%s, %s, %s.%s, %s.%s%s"
+                       % (ind, zd, elem, pg, za, elem, zb, elem, tail))
             continue
         out.append(line)
     return out

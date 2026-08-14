@@ -1,0 +1,40 @@
+=== 920B real machine quick test (intranet) 2026-08-14 ===
+git: f44d0b9 (repo) ; x265 pinned b81f650 (fetched from GitHub mirror; bitbucket unreachable)
+uname: Linux 6.6.0-145.0.10.141.oe2403sp3.aarch64
+nproc: 256 (shared node, 2 sockets x64 core Kunpeng, CPU part 0xd02)
+lscpu: HiSilicon Kunpeng; L1d 8MiB(128) L2 160MiB(128) L3 224MiB(4); RAM 502GiB
+VL: sve_default_vector_length=32 (256-bit)
+ISA (cpuinfo): SVE1 feature list, NO 'sve2' flag.
+  NOTE: direct probes show this silicon EXECUTES SVE2 (svdot_s64 'sdot z.d,z.h,z.h'
+  and 'splice' run without SIGILL), even though /proc/cpuinfo omits sve2.
+  => dct8 (SVE2 svdot candidate) runs natively here; strict-SVE1 assumption does NOT hold.
+  => substituted rows below are SVE1-shape builds; still valid CNTVCT perf estimates here.
+
+Toolchain: clang-22 (conda llamacpp, 22.1.8), gcc-latest (conda, GCC 15.1), system g++ 12.3.1
+x265 reference libs built natively from b81f650 with -march=armv8.2-a+sve:
+  build/x265-8-920b/libx265.a (gcc) and build/x265-8-clang-sve/libx265.a (copy)
+Candidate substitution: tools/substitute_unsupported.py extended with splice->sel
+  (SVE1-shape rule; repo's committed tool did NOT handle splice from zip16 candidates).
+
+[paired] neon/cand median (ratio=neon/cand; >1 => cand faster). CNTVCT, taskset -c 0.
+kernel             sub?   ratio    bootstrap95       cloud(docs/29)   note
+idct16             sve1   0.8462   [0.8181,0.8519]   0.905           cand ~18% slower (vs cloud ~10%)
+idct32             sve1   1.1047   [1.0805,1.1320]   1.129           cand ~10% faster (vs cloud ~13%)
+ipb8  (interp8-B)  sve1   0.5086   geomean 0.5109    0.5425          cand ~1.97x slower
+ipb16 (interp8-B)  sve1   0.6666   geomean 0.6675    0.8715          cand ~1.5x slower (diverges >10%)
+ipb32 (interp8-B)  sve1   0.5335   geomean 0.5280    0.5911          cand ~1.87x slower
+dct8               native 0.07-0.08 (unreliable)     ~0.75          HIGH VARIANCE neon p50 12<->51,
+                                                                    cand 138<->170; not comparable.
+
+[lite gates]
+  build/testbench-lite/TestBenchLite requires ALL candidate .o (dct16/32/sa8d16/...)
+  to be linked; building the full candidate set is still in progress. sa8d gate is
+  SVE2 (cadd) and runs on THIS machine (SVE2-capable) but not on strict SVE1 920B.
+
+[conclusions / open items]
+  1. Substituted (SVE1-shape) idct16/idct32/interp8-B results are reproducible and load
+     close to cloud; ipb16 diverges >10% from cloud sample.
+  2. This intranet host is SVE2-capable at instruction level despite cpuinfo-> no 'sve2':
+     needs to be treated as an SVE2-enabled Kunpeng, not a strict-SVE1 920B.
+  3. dct8 measurement unreliable (extreme latency variance on the shared 256-core node).
+  4. Full lite gate requires building/linking all candidate objects; not completed.

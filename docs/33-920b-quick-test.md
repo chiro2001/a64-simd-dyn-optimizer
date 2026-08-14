@@ -1,7 +1,10 @@
 # 920B 实机快速测试指南（2026-08-14）
 
 > 目的：与“云主机”测试环境对齐真实 920B（鲲鹏 920，**SVE1 2×256 /
-> NEON 4×128，无 SVE2**）。所有 SVE2/SVE2p1/SVE2p3 候选都必须先
+> NEON 4×128，cpuinfo 无 SVE2**）。注意 2026-08-14 内网实机实测：
+> **该节点指令级可执行 SVE2**（sdot.d/splice 不 SIGILL），应视为
+> SVE2 能力的鲲鹏；严格 SVE1 假设不成立，dct8/sa8d16 可能原生可跑。
+> 所有 SVE2p1/SVE2p3 候选仍必须先
 > 替换成 SVE1 形状（docs/29），数值不保真，只用于 CNTVCT cycle 预估；
 > 920B 无 PMU（docs/26），用 cntvct paired。
 
