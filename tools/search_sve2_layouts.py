@@ -488,11 +488,13 @@ def main():
                     help="run LLVM-MCA (complete dynamic stream, Neoverse-V2 "
                          "SVE2 proxy) on the top-N candidates by fused_uop "
                          "and record mca_cycles/mca_uops (default 0 = off)")
-    ap.add_argument("--mca-mcpu", default="neoverse-v2",
-                    help="llvm-mca -mcpu model (default neoverse-v2; "
+    ap.add_argument("--mca-mcpu", default=None,
+                    help="llvm-mca -mcpu model (default: manifest "
+                         "mca_target.llvm_proxy_cpu, i.e. neoverse-v2; "
                          "tsv110 has no SVE coverage)")
-    ap.add_argument("--mca-mattr", default="+sve2",
-                    help="llvm-mca -mattr (default +sve2)")
+    ap.add_argument("--mca-mattr", default=None,
+                    help="llvm-mca -mattr (default: manifest "
+                         "mca_target.llvm_proxy_mattr, i.e. +sve2)")
     ap.add_argument("--rank-by", choices=("fused_uop", "mca"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
@@ -505,6 +507,12 @@ def main():
         args.mca_top = 10
     manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
+    if args.mca_mcpu is None:
+        args.mca_mcpu = manifest.get("mca_target", {}).get(
+            "llvm_proxy_cpu", "neoverse-v2")
+    if args.mca_mattr is None:
+        args.mca_mattr = manifest.get("mca_target", {}).get(
+            "llvm_proxy_mattr", "+sve2")
     if args.contract:
         manifest["contract"] = args.contract
     contract = manifest.get("contract", "upstream-exact")

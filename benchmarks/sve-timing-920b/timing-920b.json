@@ -1,0 +1,15 @@
+{
+ "cntfrq": 100000000,
+ "calib_add_ticks_per_cyc": 0.0345,
+ "freq_hz_est": 2899937651,
+ "empty": {"latency_cyc": 1.00, "throughput_cyc_per_op": 1.00}
+,"add_s32": {"latency_cyc": 2.25, "throughput_cyc_per_op": 0.50}
+,"mul_s64": {"latency_cyc": 3.40, "throughput_cyc_per_op": 1.00}
+,"sdot_indexed_s64": {"latency_cyc": 2.00, "throughput_cyc_per_op": 1.00}
+,"uzp1_s16": {"latency_cyc": 3.00, "throughput_cyc_per_op": 0.50}
+,"tbl_s16": {"latency_cyc": 3.00, "throughput_cyc_per_op": 0.50}
+,"zip1_s16": {"latency_cyc": 3.00, "throughput_cyc_per_op": 0.50}
+,"st1h_s16": {"latency_cyc": 0.00, "throughput_cyc_per_op": 3.00}
+,"ld1h_s16": {"latency_cyc": 0.00, "throughput_cyc_per_op": 0.37}
+,"ld1h_use_add": {"latency_cyc": 3.00, "throughput_cyc_per_op": 0.00}
+}

@@ -6,6 +6,12 @@
 
 ## 1. 结论摘要
 
+**目标口径（用户确认 2026-08-14）**：MCA 目标机 = **SVE 2×256 /
+NEON 4×128**（SVE 2 条 256-bit 执行管道、NEON 4 条 128-bit 管道，
+固定 VL=256）。当前搜索用的 `neoverse-v2 + sve2` 只是 LLVM 代理，
+不是该口径的模型；920B 实测表 + hip09.md 管道结构（4×FSU，SVE 占用
+其中 2 条）才是建自定义模型的基础。
+
 1. **LLVM：tsv110 模型明确把 SVE 标记为 unsupported**
    （`AArch64SchedTSV110.td` 的 `SVEUnsupported.F` / `SVE2p1Unsupported.F`）。
    实测 `llvm-mca -mtriple=aarch64 -mcpu=tsv110 -mattr=+sve2` 对
@@ -109,4 +115,3 @@
   fu=4014（MCA 1041）但 TestBenchLite 5 seed 中 1 seed FAIL，
   说明**搜索阶段必须加 lite 门禁后才能按 MCA 排名**，正在补做
   top-N lite 扫描（见 docs/20 §6.13 更新）。
-
