@@ -93,6 +93,44 @@ def run_clang(recipe, compiler, root, ll_path):
     subprocess.run(cmd, check=True)
 
 
+def opt_unroll_llvm(ll_path, tables=None, opt_bin="opt"):
+    """Strip `!llvm.loop` metadata (x265 pragma disables unrolling), inject
+    source constant tables (g_t16 etc., optional), then run LLVM's full loop
+    unroller + CFG simplification. Returns the path of the processed IR.
+
+    Validated on idct16 (docs/42 §7): self-loops unroll cleanly after the
+    metadata strip; data-dependent diamonds remain for the CFG lowering step.
+    """
+    text = open(ll_path).read()
+    if tables:
+        for name, t in tables.items():
+            rows = t["rows"]
+            row_len = t["row_len"]
+            mangled = "_ZN4x265%d%sE" % (len(name), name)
+            decl = re.search(
+                r"@%s = external[^\n]*\n" % re.escape(mangled), text)
+            if not decl:
+                continue
+            lines = ["@%s = constant [%d x [%d x i16]] [" % (
+                mangled, len(rows), row_len)]
+            for r in rows:
+                body = ", ".join("i16 %d" % v for v in r)
+                lines.append("  [%d x i16] [ %s ]," % (row_len, body))
+            lines[-1] = lines[-1].rstrip(",")
+            lines.append("]")
+            text = text.replace(decl.group(0), "\n".join(lines) + "\n")
+    text = re.sub(r",\s*!llvm\.loop\s*![0-9]+", "", text)
+    work = ll_path + ".unroll.ll"
+    with open(work, "w") as f:
+        f.write(text)
+    subprocess.run([opt_bin, "-passes=loop-unroll-full", "-S", work,
+                    "-o", work], check=True)
+    subprocess.run([opt_bin,
+                    "-passes=function(sccp,instcombine,gvn,simplifycfg)",
+                    "-S", work, "-o", work], check=True)
+    return work
+
+
 def find_function(text, target):
     """Locate the `define` line and balanced body for a target function."""
     mangled = target.get("mangled") or ""
@@ -325,6 +363,15 @@ def main():
     os.makedirs(os.path.dirname(json_path), exist_ok=True)
 
     run_clang(recipe, args.compiler, ROOT, ll_path)
+    if recipe.get("extract", {}).get("opt_unroll"):
+        tables = None
+        if recipe.get("extract", {}).get("inject_constants"):
+            sys.path.insert(0, os.path.join(ROOT, "tools"))
+            from extract_x265_constants import parse_int16_tables  # noqa
+            cpp = os.path.join(
+                ROOT, "third_party/x265/source/common/constants.cpp")
+            tables = parse_int16_tables(open(cpp).read())
+        ll_path = opt_unroll_llvm(ll_path, tables=tables)
     text = open(ll_path).read()
     body = find_function(text, recipe["target_function"])
     if recipe.get("extract", {}).get("strip_uniform_branch"):

@@ -113,6 +113,34 @@
    `vbsl`/三元；**这是 G2b 的核心剩余工作**；
 3. 验收不变（docs/42 §3）。
 
+## 8. 2026-08-14 实现进度
+
+### Step 1 ✅：opt_unroll（已实现并验证）
+
+- `extract_seed.opt_unroll_llvm`：剥离 `!llvm.loop` metadata（可选注入
+  g_t16/g_t8/g_t32 源码常量表）→ `opt -passes="loop-unroll-full"` →
+  `function(sccp,instcombine,gvn,simplifycfg)`；
+- recipe 选项：`extract: {opt_unroll: true, inject_constants: true}`；
+- idct16 实测：自循环清零，剩 **176 br / 88 icmp / 560 phi**（纯数据
+  diamond DAG）。
+
+### Step 2 算法规格（待实现）：diamond → 嵌套 if
+
+1. 拓扑排序块 DAG；识别 `br i1 %c, label %A, label %B` 且 A/B 汇聚于
+   公共 merge M 的 diamond；
+2. lower 为嵌套 MachineIR 节点：
+   `{"op":"if", "cond": %c, "then": [A 的指令], "else": [B 的指令]}`
+   （A/B 内 SSA 重命名，路径内 stores 保留在 if 体内）；
+3. M 的 phi：来自 A/B 的值 → `select(cond, valA, valB)`；只来自单路
+   → 条件赋值；
+4. codegen：`if (c) { ... } else { ... }`（向量条件转
+   `vget_lane_u64(...) != 0` 标量布尔）；
+5. lane_forms 对 `if` 节点输出视为 opaque 叶子（idct16 族识别靠
+   g_t16 引用，不靠 lane 分析）；
+6. 验收：idct16 seed 门禁 10 万例 0 失配 → pipeline 复现手写最优。
+
+风险：diamond 嵌套/非规范汇聚（多出边）先显式失败；不做 qemu 旁路。
+
 ## 5. 关联
 
 - 成功后可顺带覆盖：idct32、dct32_neon（同逆蝶形结构）、quant/sao
