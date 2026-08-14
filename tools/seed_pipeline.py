@@ -11,6 +11,7 @@ independently and the artifacts are reproducible from the recipe.
 """
 
 import argparse
+import copy
 import json
 import os
 import subprocess
@@ -55,6 +56,7 @@ def main():
     mi = os.path.join(outdir, "machine-ir.json")
     seed_json = os.path.join(outdir, "recipe-seed.json")
     search_dir = os.path.join(outdir, "search")
+    constrained_manifest = os.path.join(outdir, "constrained-manifest.yaml")
 
     # 1) extract + roundtrip gate
     cmd = [sys.executable, os.path.join(ROOT, "tools", "extract_seed.py"),
@@ -68,18 +70,48 @@ def main():
          "--machine-ir", mi, "--out", seed_json, "--kernel", args.kernel])
     seed_doc = json.load(open(seed_json))
 
-    # 3) search over the kernel's full axis space (guarded against huge
+    # 3) search over the kernel's axis space (guarded against huge
     # manifest spaces: dct32's raw space is 7.37e8; a search that cannot
-    # finish quickly is skipped, the roundtrip gate stays the acceptance)
+    # finish quickly is skipped, the roundtrip gate stays the acceptance).
+    # Recipe-level search.axis_subset / search.axis_fixed / extra
+    # --skip-axes constrain the space before counting (docs/41 §5).
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     from kernel_manifest import load_manifest, layout_plans  # noqa: E402
     try:
         km = load_manifest(args.kernel)
     except Exception:
         km = None
+    search_cfg = recipe.get("search") or {}
+    constrained = copy.deepcopy(km) if km is not None else None
+    skip_set = set()
+    extra = list(search_cfg.get("extra") or [])
+    if constrained is not None:
+        layouts = constrained.get("layouts") or {}
+        for ax, val in (search_cfg.get("axis_fixed") or {}).items():
+            if ax in layouts:
+                layouts[ax] = [val]
+        # pull --skip-axes out of extra so the merged constraint is passed
+        # once to the search driver
+        i = 0
+        while i < len(extra):
+            if extra[i] == "--skip-axes" and i + 1 < len(extra):
+                skip_set.update(x.strip() for x in
+                                extra[i + 1].split(",") if x.strip())
+                del extra[i:i + 2]
+            else:
+                i += 1
+        subset = search_cfg.get("axis_subset")
+        if subset:
+            fixed = search_cfg.get("axis_fixed") or {}
+            # fixed axes stay in the manifest as single-value axes so the
+            # search driver/emitter actually sees their values; only axes
+            # that are neither varied nor pinned are skipped.
+            skip_set |= set(layouts) - set(subset) - set(fixed)
+        for ax in skip_set:
+            layouts.pop(ax, None)
     n_plans = 0
-    if km is not None and not args.force_search:
-        for _ in layout_plans(km):
+    if constrained is not None and not args.force_search:
+        for _ in layout_plans(constrained):
             n_plans += 1
             if n_plans > 5000:
                 break
@@ -106,11 +138,16 @@ def main():
     cmd = [sys.executable, os.path.join(ROOT, "tools", "search_sve2_layouts.py"),
            "--kernel", args.kernel, "--workers", str(args.workers),
            "--outdir", search_dir]
-    search_cfg = recipe.get("search") or {}
+    if constrained is not None:
+        with open(constrained_manifest, "w") as f:
+            yaml.safe_dump(constrained, f, sort_keys=False)
+        cmd += ["--manifest", constrained_manifest]
     if search_cfg.get("backend"):
         cmd += ["--backend", search_cfg["backend"]]
-    for extra in search_cfg.get("extra", []):
-        cmd += [str(extra)]
+    for e in extra:
+        cmd += [str(e)]
+    if skip_set:
+        cmd += ["--skip-axes", ",".join(sorted(skip_set))]
     if not args.no_mca and os.path.exists(PATCHED_MCA):
         cmd += ["--mca-top", "5", "--mca-bin", PATCHED_MCA]
     run(cmd)

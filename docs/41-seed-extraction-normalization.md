@@ -196,3 +196,46 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   - dct16：**699 / 212**（32 候选，16 s，精确复现）；
   - interp8-8x8：**93 / 53**（轴种子 sdot-h+addp）；
   - sa8d-8x8：**79 / 71**（轴种子 reduce=sve，超过历史手写候选）。
+
+### S2 ✅：配方级搜索轴子集 + dct32 闭环（2026-08-15）
+
+问题：dct32 全轴空间 prune 后仍上亿组合，S1 的空间护栏（>5000 自动
+跳过）让 dct32 永远无法走搜索。新增配方级约束：
+
+```yaml
+search:
+  backend: op
+  axis_subset: [layout, slice_kind, k0_shared_mul, k0_merge8,
+                k0_merge16, acc_split, row_group]
+  axis_fixed:
+    pass1_k2_slice: 1
+    legacy_ex: 1
+    legacy_k4: 1
+    k0_even_sve: 1
+    k0_epack: 1
+    sdot_indexed: 1
+    odd_from_k0packs: 1
+    k2k4_from_packs: 1
+```
+
+- `axis_subset`：只枚举这些轴；`axis_fixed`：其余轴钉为单值（**保留在
+  manifest 中传给搜索驱动器**，不是简单 skip——skip 会让发射器用
+  默认值，曾导致错误地搜出 7866 而非 3930）；
+- `seed_pipeline` 生成 `outdir/constrained-manifest.yaml` 并传给搜索器
+  新增的 `--manifest` 覆盖；空间护栏按约束后空间计数；
+- 结构化导入（G2b）修复：`recipe_seed` 现在把 `block.body` 摊平再做族
+  识别/常量矩阵检测（dct32 单个 block 含 14924 条指令），且 DCT 常量以
+  `smull imm_vec` 内联时以“共享常量矩阵命中”作为 butterfly 证据；
+  `linearize.lane_forms` 支持 `args=[{imm_vec}, {ref}]` 形状；
+- dct32 闭环结果：**fused_uop=3930 / MCA=1094**（28 个去重候选，
+  576 raw → 38 unique，发射+去重 1.02s），复现并超越手工 4002 候选
+  （手写内部参考 4014/1041；fused 已超越，MCA 仍差 ~5%）；
+- 发射+去重并行化：ProcessPool 按相同顺序发射（去重语义不变），
+  288 组合阶段从 ~6.3s 降到 1.02s。
+
+**工具/语言成本结论（2026-08-15 剖析）**：单候选成本 emit 22ms /
+clang 编译 292ms / g++ 链接 250ms / QEMU 验证 204ms（2k）/ objdump
+7ms——子进程占 ~95%，Python 不是瓶颈，**无需换语言**。真正可优化的是
+①发射阶段并行（已完成）、②plan 级剪枝/去重知识（如 layout 对
+pass1_k2_slice=0 无效）、③分段门禁与缓存（已有）。若未来要覆盖
+百万级组合，优先做算法级剪枝（索引/启发式/遗传），而不是 C++ 重写。

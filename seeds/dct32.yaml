@@ -45,6 +45,18 @@ verify:
   cases: 5000
 search:
   backend: op
-  extra:
-    - --skip-axes
-    - layout,odd_lowering,narrow_batch,constant_layout,rw1,rw2,rw3,rw4
+  # 配方级轴子集（docs/41 §5）：搜索只枚举下面 7 个轴，其余轴由
+  # axis_fixed 钉在已知最优邻域（layout-search-m32: 3930 /
+  # p1share: 4002 / best_op_r16 的 exact 组合），让 dct32 搜索闭环且
+  # 空间受控（~576 raw / prune+源码去重后更少）。
+  axis_subset: [layout, slice_kind, k0_shared_mul, k0_merge8,
+                k0_merge16, acc_split, row_group]
+  axis_fixed:
+    pass1_k2_slice: 1
+    legacy_ex: 1
+    legacy_k4: 1
+    k0_even_sve: 1
+    k0_epack: 1
+    sdot_indexed: 1
+    odd_from_k0packs: 1
+    k2k4_from_packs: 1

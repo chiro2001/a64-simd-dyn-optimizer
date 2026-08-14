@@ -78,6 +78,23 @@ def classify_hit(hit):
     return rows, kind, splat
 
 
+def flatten_blocks(nodes):
+    """Structured imports (G2b, docs/42) keep instructions inside
+    block.body; detection helpers iterate a flat instruction list, so
+    expand blocks here. dct32: 1 top-level block with 14924 body insns
+    (previously family_hint=[], axis_seed={} -> search skipped)."""
+    flat = []
+    for n in nodes:
+        if n.get("op") == "block":
+            flat.extend(n.get("body", []))
+            term = n.get("term")
+            if isinstance(term, dict) and term.get("op"):
+                flat.append(term)
+        else:
+            flat.append(n)
+    return flat
+
+
 def family_hint(nodes):
     """Infer the structure family from referenced constants + intrinsics.
 
@@ -201,8 +218,9 @@ def main():
     g16 = tables.get("g_t16", {})
     _ROW_SOURCE = g16.get("rows", [])
     doc = json.load(open(args.machine_ir))
+    nodes = flatten_blocks([dict(n) for n in doc["nodes"]])
     ir = MachineIR(function=doc.get("function"),
-                   nodes=[dict(n) for n in doc["nodes"]])
+                   nodes=nodes)
     fam, intr = family_hint(ir.nodes)
     structure = {}
     if "fir" in fam:
@@ -258,6 +276,12 @@ def main():
             "hits": [c["node_id"] for c in classified
                      if c["kind"] in ("even", "splat")],
         })
+    # Structured imports inline the DCT constants as smull imm_vec instead
+    # of const_name/load nodes, so textual family hints are empty; the
+    # shared-constant-matrix hits themselves are the butterfly evidence
+    # (dct32: 496 hits, rows 1..15 odd + 2..14 even).
+    if not fam and (odd_rows or even_rows or splat_count):
+        fam = ["butterfly"]
     if not axis_seed and fam:
         axis_seed = axis_seed_for(fam[0], structure)
 

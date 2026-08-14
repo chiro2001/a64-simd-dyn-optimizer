@@ -24,6 +24,12 @@ import os
 import re
 import subprocess
 import sys
+import time
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -517,6 +523,20 @@ def make_emitter(kernel, backend="acle"):
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
+_EMIT_WORKER = None
+
+
+def _init_emit_worker(kernel, backend):
+    """ProcessPool initializer: the emitter is a closure created inside the
+    worker, so ProcessPoolExecutor never needs to pickle it."""
+    global _EMIT_WORKER
+    _EMIT_WORKER = make_emitter(kernel, backend)
+
+
+def _emit_worker(combo):
+    return _EMIT_WORKER(combo)
+
+
 def _layout_contract(combo, args_contract, manifest_contract):
     """Per-candidate contract label (deterministic, independent of the
     enumeration order; fixes the old serial loop's order-dependent
@@ -746,6 +766,10 @@ def main():
                          "the cartesian product (e.g. op backend ignores "
                          "layout/odd_lowering/narrow_batch/"
                          "constant_layout)")
+    ap.add_argument("--manifest", default=None,
+                    help="override manifest path (seed_pipeline passes the "
+                         "recipe-constrained manifest: axis_fixed values are "
+                         "single-value axes, non-subset axes are removed)")
     ap.add_argument("--short-cases", type=int, default=2000,
                     help="reject-gate case count (default 2000); the harness "
                          "uses the same RNG stream, so 2k is a strict prefix "
@@ -860,7 +884,16 @@ def main():
         args.cp_top = max(args.cp_top, 10)
         if args.lite_top == 0:
             args.lite_top = 10
-    manifest = load_manifest(args.kernel)
+    if args.manifest:
+        if yaml is None:
+            raise SystemExit("pyyaml required to load --manifest")
+        with open(args.manifest) as f:
+            manifest = yaml.safe_load(f)
+        import os as _os
+        manifest["_path"] = _os.path.abspath(args.manifest)
+        manifest["_root"] = ROOT
+    else:
+        manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.mca_mcpu is None:
         args.mca_mcpu = manifest.get("mca_target", {}).get(
@@ -940,6 +973,7 @@ def main():
     seen = set()
     src_seen = {}
     tasks = []
+    cands = []
     for combo in combos:
         if combo.get("legacy_k4") and args.backend != "op":
             # grouped emitter has no legacy_k4 lowering yet; only the op
@@ -955,7 +989,23 @@ def main():
         if tag in seen:
             continue
         seen.add(tag)
-        src_text = emit(combo)
+        cands.append((tag, combo))
+    # Emit + source-hash dedup used to run serially; with ~500 raw combos
+    # (dct32 axis subset) the emit phase was ~40% of search wall time, so
+    # parallelize it across the same worker pool (map preserves order ->
+    # dedup semantics identical to serial).
+    t_emit0 = time.monotonic()
+    if args.workers > 1 and len(cands) > 1:
+        _pool = concurrent.futures.ProcessPoolExecutor(
+            max_workers=args.workers,
+            initializer=_init_emit_worker,
+            initargs=(args.kernel, args.backend))
+        _iter_src = _pool.map(_emit_worker,
+                              (c for _, c in cands), chunksize=1)
+    else:
+        _pool = None
+        _iter_src = (emit(c) for _, c in cands)
+    for (tag, combo), src_text in zip(cands, _iter_src):
         src_hash = hashlib.sha256(src_text.encode()).hexdigest()
         if src_hash in src_seen:
             # Canonical dedup: identical generated source -> identical
@@ -997,6 +1047,10 @@ def main():
                       c_contract,
                       args.full_cases if args.no_short_gate
                       else args.short_cases, args.full_cases, vl_bytes))
+    if _pool is not None:
+        _pool.shutdown()
+    print("emit+dedup: %d combos -> %d unique sources (%.2fs)"
+          % (len(cands), len(tasks), time.monotonic() - t_emit0))
 
     def _measure_all():
         if args.workers <= 1:

@@ -172,8 +172,24 @@ def lane_forms(ir, const_values=None):
             forms[dst] = [{leaf_key(dst, i): 1.0} for i in range(nl)]
             continue
         if op == "intrinsic" and n.get("intrinsic") == "smull":
-            a = get(n["args"][0]["ref"])
-            b = get(n["args"][1]["ref"])
+            # Structured imports record the constant operand as imm_vec
+            # instead of a const-leaf ref (dct32 body: args = [imm_vec,
+            # ref]); src is authoritative for the data operand(s).
+            imm = next((a["imm_vec"] for a in (n.get("args") or [])
+                        if isinstance(a, dict) and "imm_vec" in a), None)
+            refs = [a["ref"] for a in (n.get("args") or [])
+                    if isinstance(a, dict) and "ref" in a]
+            data = srcs or refs
+            a = get(data[0]) if data else None
+            b = get(data[1]) if len(data) > 1 else None
+            if imm is not None and a not in (None, "opaque"):
+                if len(imm) == len(a):
+                    forms[dst] = [{k: v * imm[i] for k, v in a[i].items()}
+                                  for i in range(len(a))]
+                    continue
+                forms[dst] = [{leaf_key(dst, i): 1.0}
+                              for i in range(nl)]
+                continue
             # widening is 1:1 on lanes. If one side is an identity leaf
             # (a constant table load), the other side's leaf terms survive
             # unchanged (the constant scaling folds into the precomputed
