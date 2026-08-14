@@ -638,7 +638,7 @@ def main():
                           src_hash)
         c_contract = _layout_contract(
             combo, args.contract, manifest.get("contract", "upstream-exact"))
-        if ckey in cache:
+        if ckey in cache and cache[ckey].get("counts"):
             ent = cache[ckey]
             results.append({
                 "tag": tag, **combo,
@@ -695,8 +695,8 @@ def main():
     json.dump(cache, open(cache_path, "w"), indent=1)
     def fu(r):
         """fused_uop count, tolerant of older results schemas."""
-        return r["counts"].get("vector_fused_uop",
-                               r["counts"].get("vector_fused", 0))
+        c = r.get("counts") or {}
+        return c.get("vector_fused_uop", c.get("vector_fused", 0))
 
     ok = [r for r in results if r.get("passed") and r.get("counts")]
     fused_key = fu
