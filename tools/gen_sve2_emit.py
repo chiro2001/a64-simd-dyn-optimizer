@@ -41,7 +41,8 @@ _RECIPE_ALIAS = {
     "satd-4": "satd-4x4",
     "satd-16": "satd-16x16",
     "satd-4x8": "satd-4x8",
-    "satd-8x16": "satd-8x16",
+    "satd-8x4": "satd-8x4",
+    "satd-16x8": "satd-16x8",
     "interp8vpp-16": "interp8vpp-16",
     "interp8vpp-8": "interp8vpp-8",
 }

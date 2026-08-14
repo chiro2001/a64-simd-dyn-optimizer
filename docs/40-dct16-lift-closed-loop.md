@@ -325,6 +325,17 @@ kernels/dct16 上游 NEON（dct16_neon）
   - satd-8x16：**185 fused / MCA 70**。
 - satd 已覆盖 4x4/4x8/8x8/8x16/16x16 五个形状。
 
+## 20. satd 8x4 / 16x8（2026-08-15）
+
+- 同配方继续覆盖：satd-8x4（61 节点）与 satd-16x8（249 节点）均
+  命中 hadamard，零发射器改动；8x4 的 reference mangled 名修正为
+  `10satd8`（`11satd8` 是错误长度，trace/verify 曾受影响）。
+- 验收（各 20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-8x4|16x8/results.json）：
+  - satd-8x4：**47 fused / MCA 43**；
+  - satd-16x8：**183 fused / MCA 69**。
+- satd 共 7 形状覆盖（4x4/4x8/8x4/8x8/8x16/16x8/16x16）。
+
 ## 16. vertical-fir 配方：interp8 vpp 16x16（2026-08-15，第四个族）
 
 - `tools/gen_sve2_emit.py` 新增 vertical-fir 配方：interp8 vpp 的
