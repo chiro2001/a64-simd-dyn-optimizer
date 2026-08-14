@@ -1,0 +1,111 @@
+[
+ {
+  "tag": "block-16",
+  "block": 16,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400820",
+   "0x400b00"
+  ],
+  "counts": {
+   "total": 182,
+   "vector": 169,
+   "movprfx": 4,
+   "vector_fused": 165,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 165
+  },
+  "fusion": {
+   "eligible": 31,
+   "hw_supported": 0,
+   "pairs": [
+    "cmhi+sub",
+    "dup+ext",
+    "ext+sub",
+    "cmhi+sub",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "zip1+zip1",
+    "zip1+zip1",
+    "ext+sub",
+    "zip2+zip1",
+    "zip2+zip1",
+    "cmhi+sub",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "ext+sub",
+    "zip1+cmeq",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip1+cmhi",
+    "zip1+cmeq",
+    "zip2+zip1",
+    "cmhi+sub",
+    "zip2+zip1",
+    "zip1+cmeq",
+    "zip2+zip1",
+    "ext+sub",
+    "add+add",
+    "add+uxtl",
+    "uzp1+addp"
+   ],
+   "counts": {
+    "scalar_insns": 53,
+    "simd_insns": 95,
+    "load_insns": 18,
+    "fused_pseudo": 4,
+    "store_insns": 4
+   }
+  },
+  "mca_cycles": 62,
+  "mca_uops": 204
+ },
+ {
+  "tag": "block-32",
+  "block": 32,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400820",
+   "0x400ac0"
+  ],
+  "counts": {
+   "total": 164,
+   "vector": 111,
+   "movprfx": 10,
+   "vector_fused": 101,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 101
+  },
+  "fusion": {
+   "eligible": 1,
+   "hw_supported": 0,
+   "pairs": [
+    "mov+mov"
+   ],
+   "counts": {
+    "scalar_insns": 101,
+    "simd_insns": 31,
+    "load_insns": 11,
+    "branch_insns": 1,
+    "fused_pseudo": 10,
+    "store_insns": 10
+   }
+  },
+  "mca_cycles": 70,
+  "mca_uops": 196
+ }
+]

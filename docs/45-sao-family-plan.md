@@ -102,3 +102,41 @@ insertelement+shuffle+tbl1）实现 8 像素并行。
 - clip 必须在 **s16 有符号域**（-2→0，不能按 u16 65534→255）；
 - 窄化必须用**无符号** `svqxtnb_u16`（`svqxtnb_s16` 会把 >127
   饱和成 127，破坏 128..255 输出）。
+
+## 8. Stats E0 完成记录（2026-08-15）
+
+- seed：`kernels/sao/seed_stats_e0.cpp`（64x1 全展开，对照
+  `saoCuStatsE0_neon`，sao-prim.cpp 直接编入 harness；include 需追加
+  `source/encoder` 才能找到 sao.h）；roundtrip 门禁 20k 例 0 失配。
+- SVE2 搜索（VL=256，20k 0 失配，experiments/m30-sao-search/
+  layout-search-sao-stats-e0/results.json）：
+  - **block-16**（上游式 NEON-bridge：histseg 计数 + sdot z.d/z.h/z.h）：
+    **165 fused / MCA 62**（rank-by-mca 首选，best_sve2.cpp）；
+  - **block-32**（全宽 SVE256：cmpeq+svcntp 计数 + sdot z.d）：
+    **101 fused / MCA 70**（指令数更少但 MCA 略差，存 block32_sve2.cpp）。
+- 本轮 codegen 新资产（通用）：负偏移 GEP 地址、`vceqq_s8`（splat 与
+  双向量）、icmp mask 的 sext 别名类型键、`vpaddlq_s8/s16` 双档、
+  `vpaddq_s16`、`vecreduce_add`（vaddvq_s16/s32）、`vzip1/2q_s8`（去掉
+  错误的 `.val[0]`）、s16 向量 mul、标量 store 的**字节偏移口径**
+  （load 一直是字节口径，store 曾按元素偏移导致 count[4] 越界）。
+- **重大发现 1（seed 符号反了）**：stats E0 seed 的 `sgn16s` 写成了
+  `vcgt(s0,s1)-vcgt(s1,s0)`，实际是 sign(b-a)。原 roundtrip 门禁“通过”
+  是因为 codegen 的 ucmp 发射恰好反向补偿；修 seed 时必须同时把 codegen
+  向量 ucmp 改为 `vcgt(src1,src0)-vcgt(src0,src1)`（= sign(src0-src1)）。
+  教训：门禁通过 ≠ seed 与 C 语义一致，要警惕“双重错误互相抵消”。
+- **重大发现 2（SPLICE 语义）**：`svsplice(pg, a, b)` = a[0..n-1] ||
+  b[0..]，插入位是活动区后的第一个非活动位；全真谓词下结果就是 a。
+  构造 `[carry, sr0..sr30]` 用 `svsplice(pg1(0..1), dup(carry), sr)`。
+- **重大发现 3（diff 输入范围）**：上游 NEON 的 stats 路径用
+  `vmlaq_s16`，相邻同 edge 两 diff 之和超过 ±32767 会 16 位溢出；
+  x265 testbench 的 diff 范围是 [-4097, 4094]（SMAX=1<<12），harness
+  必须对齐，否则全例失配且“NEON 与 C 不一致”。
+- 其余坑：scalar store 字节偏移、`vceqq_s8` 返回 uint8x16_t 需
+  reinterpret、`svcmpgt_u8` 返回谓词需 sel 成 0/-1 向量、GCC 16 的
+  arm_sve.h 用 `svld1_u8`（无 svld1ub_u8）、SVE 类型不能进数组
+  （st0..st4 展开）、svsplice 依赖 QEMU `-cpu max,sve-max-vq=2`
+  （裸 qemu 默认 VL=512 会双倍计数）。
+- 待办：Stats E1/E2/E3/BO 同族机械扩展（复用本 seed/harness 模板，
+  参考 sao-prim-sve2.cpp 的 SVE2 版）；可继续加 search 轴（count 用
+  histseg2 合并半段、stats 用 sdot32 vs muladd、16 像素块内
+  svtbl 旋转等）。

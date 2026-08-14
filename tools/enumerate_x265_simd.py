@@ -85,14 +85,22 @@ def main():
         fam = next((f for f, kws in FAMILY_KEYWORDS.items()
                     if any(k in name for k in kws)), "other")
         has_aarch64 = name in reg
-        done = any(
-            d in cov for d in (
-                {"dct16", "dct32", "idct16", "idct32"} if fam == "dct" else
-                {"sa8d", "sa8d16"} if fam == "sa8d/satd" else
-                {"interp8", "interp8-16", "interp8-32", "interp8vpp-16",
-                 "interp8vpp-32"} if fam == "interp8" else
-                {"interp4", "interp4-8", "interp4-32", "interp4vpp-16"}
-                if fam == "interp4" else set()))
+        fam_dirs = {
+            "dct": {"dct16", "dct32", "dct8", "idct16", "idct32"},
+            "sa8d/satd": {"sa8d", "sa8d16"},
+            "sad": {"sad", "sad-32"},
+            "interp8": {"interp8", "interp8-16", "interp8-32",
+                        "interp8vpp-16", "interp8vpp-32"},
+            "interp4": {"interp4", "interp4-8", "interp4-32",
+                        "interp4vpp-16"},
+            "quant": {"quant", "nquant", "dequant",
+                      "dequant-scaling-gt", "dequant-scaling-le"},
+            "sao": {"sao", "sao-b0", "sao-e1", "sao-e1-2rows",
+                    "sao-e2", "sao-e3", "sao-stats-e0"},
+            "ssim/psnr": {"ssim"},
+            "pixel-util": {"scale1d", "scale2d"},
+        }
+        done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,
                      "aarch64": has_aarch64, "covered": done})
     by_family = {}

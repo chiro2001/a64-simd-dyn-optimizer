@@ -370,7 +370,11 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("tail call") or rhs.startswith("call"):
             m2 = re.search(r"@llvm\.([a-z0-9_.]+)\(", rhs)
             if m2:
-                name = m2.group(1).split(".", 1)[0]
+                full = m2.group(1)
+                if full.startswith("vector.reduce.add"):
+                    name = "vecreduce_add"
+                else:
+                    name = full.split(".", 1)[0]
                 t = re.sub(r"^\s*(?:tail\s+)?call\s+(?:noundef\s+)?", "",
                            rhs.split("@llvm", 1)[0]).strip()
                 t = re.sub(r"\s+range\([^)]*\)\s*$", "", t).strip()
@@ -428,6 +432,9 @@ def import_llvm_ir_text(ir_text, function=None):
                     node["const"] = int(cm.group(1))
             if re.search(r"zeroinitializer\s*$", rhs):
                 node["cmp_zero"] = True
+            sm = re.search(r"splat\s+\(i\d+\s+(-?\d+)\)\s*$", rhs)
+            if sm:
+                node["splat"] = int(sm.group(1))
             ir.add(node)
         elif rhs.startswith("select"):
             ops = _parse_operands(rhs)

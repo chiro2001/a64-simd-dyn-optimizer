@@ -587,6 +587,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "sao-stats-e0":
+        from emit_sao_stats_e0_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "sao-e1-2rows":
         from emit_sao_e1_2rows_sve2_shared import emit_combo
 
@@ -668,6 +674,8 @@ def measure_layout_candidate(task):
         _inc = ["-I" + os.path.join(ROOT, d) for d in (
             "third_party/x265/source",
             "third_party/x265/source/common",
+            "third_party/x265/source/common/aarch64",
+            "third_party/x265/source/encoder",
             "build/x265-8-cross-make")]
         v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
                  "-march=" + candidate_march(combo)] + _inc + [
