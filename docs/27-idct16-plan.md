@@ -312,12 +312,12 @@ scalar（fused 5932）与 scatter（fused 7329，QEMU 口径均过减半门）
 32 ld1h）。GCC 16.1 无 s16 版 ACLE，用内联 asm 发射；编译
 `-march=armv9.4-a+sve2p1`，QEMU 11.0.3 可执行。
 
-| 指标 | 原 scalar | 原 scatter | sdot scalar (-O3) | sdot scatter (-O3) |
+| 指标 | 原 scalar | 原 scatter | sdot scalar | sdot scatter |
 | --- | ---: | ---: | ---: | ---: |
-| fused_adj（objdump 口径） | 5932 | 6561 | **5462** | **5311** |
-| fused_uop | 5932 | 7329 | 5462 | **6079** |
-| est（920B/NP1 吞吐模型） | 9866 | 1935 | 16401 | 5585 |
-| cp（NV2 延迟模型） | 136 | 4170 | 2256 | 405 |
+| fused_adj（objdump 口径） | 5932 | 6561 | **4704** | **5110** |
+| fused_uop | 5932 | 7329 | 4704 | **5878** |
+| est（920B/NP1 吞吐模型） | 9866 | 1935 | 2738 | 3325 |
+| cp（NV2 延迟模型） | 136 | 4170 | 71（见注） | 128 |
 | 20k 差分 | 0 | 0 | 0 mismatches | 0 mismatches |
 | TestBenchLite idct32 | 5/5 | 5/5 | **5/5 PASS** | **5/5 PASS** |
 
@@ -333,12 +333,44 @@ sdot_z32 调度条目而无法评估**（`-skip-unsupported-instructions=lack-sc
 **编译 flag 实测**：sdot 版必须用 `-O3`（scalar 6146→5462、scatter
 5600→5311，spill 减少）；`-O2` 下 GCC 的部分 CSE 被寄存器压力抵消。
 
-结论：sdot-s32（-O3）在 scatter 上 fused_uop -17%（7329→6079），
-scalar -8%（5932→5462）；**C 常量加载与 spill 仍占大头**（ldr_z ~1800、
-str_z ~700），是下一优化点。这是首个 SVE2p1 指令的 IDCT32 候选，
-作为“960 需要 SVE2p3 系指令”证据链的组成部分。
+**spill 消除（volatile C 加载，2026-08-14）**：把 CDOT 加载改成
+volatile asm `ld1h`，阻断 GCC 跨 chunk CSE（此前 8 个 C 向量跨 chunk
+存活 → ~1650 条 spill ld/str）：scalar fused 5462→**4704**、scatter
+6079→**5878**（spill ldr_z 1854→280/355、str_z 748→280/71）。
+结论：sdot-s32 相对 mul 版 scalar -21%（5932→4704）、scatter -20%
+（fused_uop 7329→5878），相对 NEON 上游 fused 10214 **-54%/-42%**。
+这是首个 SVE2p1 指令的 IDCT32 候选，作为“960 需要 SVE2p3 系指令”
+证据链的组成部分。
+
+> cp 注：sdot scalar cp=71 可疑偏低（依赖图未解析 sdot 的 .s/.h
+> 寄存器 def-use，把 sdot 累加链当作独立节点）；cp 数据仅作参考，
+> 需修复 critical_path 对 sdot 的解析。
 
 候选固化 `kernels/idct32/candidates/sdot_{scalar,scatter}_sve2p1.{cpp,S,o}`。
+
+### 8.12 NEON 基线 vs 当前优化（2026-08-14，对比口径）
+
+NEON 上游 `x265::idct32_neon`（partialButterflyInverse32_neon ×2）在
+QEMU VL=256 下动态 10920 / vector 10214 / fused_uop 10214（无
+scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
+
+| 指标 | NEON 上游 | sdot scalar | sdot scatter |
+| --- | ---: | ---: | ---: |
+| fused_uop（objdump 口径） | 10214 | **4704（-54%）** | **5878（-42%）** |
+| llvm-mca cycles（neoverse-v2） | **3319** | 不可用¹ | 不可用¹ |
+| llvm-mca 跳过 sdot 下限 | - | 3346 | 2876 |
+| est（920B/NP1 吞吐模型） | 5903 | **2738** | **3325** |
+| cp（NV2 延迟模型） | 539 | 71（不可靠） | 128 |
+
+¹ llvm-mca 的所有 AArch64 调度模型（neoverse-v2/v3/512tvb/ampere1a 等，
+generic 亦同）都没有 `sdot z.s,z.h,z.h`（SVE2p1 sdot_z32）的调度条目，
+`lack-sched` 跳过 sdot 得到的是低估下限（真实 ≈ 下限 + ~700 cycles）。
+这是自定义 llvm-mca target 的待补项（docs/26）。
+
+结论：指令数代理下 sdot-s32 已把 idct32 从 NEON 的 10214 压到
+4704/5878（-42%~-54%）；但模型（llvm-mca 下限/est/cp）尚未显示
+周期反超 NEON 的确定性证据——950 实测已证明指令数不直接等于周期，
+960 实机（SVE2.3）paired 仍是最终验收。
 
 ### 8.11 下一步（更新）
 
