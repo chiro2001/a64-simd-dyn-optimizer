@@ -34,3 +34,5 @@ verify:
   harness: kernels/dct16/roundtrip_verify.cpp
   lib: build/x265-8-clang-sve/libx265.a
   cases: 100000
+search:
+  backend: op

@@ -83,3 +83,15 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
     “与上游实现位级一致”通过；
 - 门禁注册表：`emit_c_intrinsics` / `emit_dct16_c_intrinsics`
   （interp8 roundtrip codegen 尚未实现，见 m18 记录，属已知缺口）。
+
+### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
+
+- `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：
+  提取（含 roundtrip 门禁）→ 结构检测/轴种子 → 全轴空间搜索 →
+  summary.json（best fused/MCA + family/axis seed）；
+- 配方可声明 `search: {backend: op, extra: [...]}`（dct16 用 op 后端）；
+  interp8 自动用 patched llvm-mca；
+- 三族验证：
+  - dct16：**699 / 212**（32 候选，16 s，精确复现）；
+  - interp8-8x8：**93 / 53**（轴种子 sdot-h+addp）；
+  - sa8d-8x8：**79 / 71**（轴种子 reduce=sve，超过历史手写候选）。
