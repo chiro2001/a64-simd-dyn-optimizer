@@ -7,6 +7,7 @@ PackIR is the abstraction that removes them.
 
 import json
 import re
+import sys
 
 SCHEMA_VERSION = "0.1"
 
@@ -282,6 +283,212 @@ def import_llvm_ir_text(ir_text, function=None):
             ir.add({"op": "shl", "type": _op_type(rhs),
                     "src": ops, "amt": _parse_imm(rhs.rsplit(",", 1)[1]),
                     "dst": dst})
+        elif rhs.startswith("icmp"):
+            ops = _parse_operands(rhs)
+            pred = re.search(r"icmp\s+(\w+)", rhs).group(1)
+            node = {"op": "icmp", "type": "i1", "pred": pred,
+                    "src": ops, "dst": dst}
+            if len(ops) == 1:
+                cm = re.search(r",\s*(-?\d+)\s*$", rhs)
+                if cm:
+                    node["const"] = int(cm.group(1))
+            ir.add(node)
         else:
             raise ValueError("unhandled RHS: %r" % rhs)
+    return ir
+
+
+def import_llvm_ir_structured(ir_text, function=None):
+    """Structured CFG importer for loop-free block DAGs (post opt_unroll).
+
+    Parses basic blocks, verifies acyclicity, and lowers conditional
+    diamonds (`br i1 %c, label %A, label %B` converging on a common merge)
+    into nested MachineIR nodes:
+
+      {"op": "if", "cond": <ref>, "then": [nodes...], "else": [nodes...],
+       "phi": {dst: (then_value_ref, else_value_ref)}}
+
+    Leaf instruction sequences reuse the flat parser (per-block text), so op
+    coverage stays identical. Loops and non-diamond CFGs raise ValueError.
+    """
+    ir = MachineIR(function=function)
+    lines = [ln.rstrip() for ln in ir_text.splitlines()]
+    blocks = {}
+    order = []
+    cur = None
+    for ln in lines:
+        s = ln.strip()
+        mm = re.match(r"^(\d+):", s)
+        if mm:
+            cur = mm.group(1)
+            blocks[cur] = []
+            order.append(cur)
+        elif cur is not None and s and not s.startswith(";"):
+            blocks[cur].append(ln)
+
+    def succ(b):
+        t = []
+        for s in blocks[b]:
+            if s.strip().startswith("br label %"):
+                t.append(s.split("%")[1])
+            elif s.strip().startswith("br i1"):
+                mm = re.search(r"label %(\d+), label %(\d+)", s)
+                if mm:
+                    t += [mm.group(1), mm.group(2)]
+        return t
+
+    # acyclicity check (Tarjan): loops -> unsupported
+    sys.setrecursionlimit(10000)
+    index, low, stack, on = {}, {}, [], set()
+    idx = [0]
+
+    def strong(v):
+        index[v] = low[v] = idx[0]
+        idx[0] += 1
+        stack.append(v)
+        on.add(v)
+        for w in succ(v):
+            if w not in blocks:
+                continue
+            if w not in index:
+                strong(w)
+                low[v] = min(low[v], low[w])
+            elif w in on:
+                low[v] = min(low[v], index[w])
+        if low[v] == index[v]:
+            scc = []
+            while True:
+                w = stack.pop()
+                on.discard(w)
+                scc.append(w)
+                if w == v:
+                    break
+            if len(scc) > 1 or v in succ(v):
+                raise ValueError("structured import: loop at block %s" % v)
+
+    for v in blocks:
+        if v not in index:
+            strong(v)
+
+    def flat_nodes(ins):
+        text = "\n".join(ins) + "\n"
+        tmp = import_llvm_ir_text(text)
+        return [dict(n) for n in tmp.nodes]
+
+    def phis_of(b):
+        out = {}
+        for s in blocks[b]:
+            s = s.strip()
+            if "= phi" not in s:
+                continue
+            mm = re.match(r"%([\w.]+) = phi (\S+) (.*)", s)
+            dst, typ, pairs = mm.group(1), mm.group(2), mm.group(3)
+            vals = re.findall(r"\[\s*(\S+?)\s*,\s*%(\d+)\s*\]", pairs)
+            out[dst] = {"type": typ,
+                        "by_block": {bl: v for v, bl in vals}}
+        return out
+
+    def edge_values(pred, b):
+        """Values carried into block b over the edge pred->b (phis)."""
+        vals = {}
+        for dst, p in phis_of(b).items():
+            if pred in p["by_block"]:
+                vals[dst] = p["by_block"][pred]
+            else:
+                # single-predecessor context: take any available value
+                vals[dst] = next(iter(p["by_block"].values()))
+        return vals
+
+    def alias_node(dst, typ, src):
+        return {"op": "alias", "dst": dst, "type": typ, "src": src}
+
+    def lower(b, edge_vals, depth=0):
+        """Lower block b into a node list, given values entering via phis."""
+        if depth > 200:
+            raise ValueError("lowering depth exceeded at block %s" % b)
+        nodes = []
+        for dst, p in phis_of(b).items():
+            src = edge_vals.get(dst)
+            if src is None:
+                raise ValueError("phi %s of block %s without edge value"
+                                 % (dst, b))
+            nodes.append(alias_node(dst, p["type"], src))
+        body = [s for s in blocks[b]
+                if "= phi" not in s and "br " not in s]
+        terms = [s for s in blocks[b] if "br " in s]
+        nodes += flat_nodes(body)
+        if not terms:
+            return nodes
+        t = terms[-1].strip()
+        if t.startswith("br label"):
+            return nodes
+        mm = re.search(r"br i1 %([\w.]+), label %(\d+), label %(\d+)", t)
+        if not mm:
+            raise ValueError("unhandled terminator %r" % t)
+        cond, ta, tb = mm.group(1), mm.group(2), mm.group(3)
+        sa, sb = succ(ta), succ(tb)
+        if sa == [tb]:
+            # shared tail: tb executes on both paths (then via ta? no)
+            # handle B -> A sharing: if sb == [ta], A runs in both paths
+            then_nodes = lower(ta, edge_values(b, ta), depth + 1)
+            else_nodes = (lower(tb, edge_values(b, tb), depth + 1)
+                          + lower(ta, edge_values(tb, ta), depth + 1))
+            nodes.append({"op": "if", "cond": cond, "then": then_nodes,
+                          "else": else_nodes, "phi": {}})
+            return nodes
+        if len(sa) == 1 and len(sb) == 1 and sa[0] == sb[0]:
+            merge = sa[0]
+            then_nodes = lower(ta, edge_values(b, ta), depth + 1)
+            else_nodes = lower(tb, edge_values(b, tb), depth + 1)
+            mvals = edge_values(ta, merge)
+            mvals.update(edge_values(tb, merge))
+            phi_map = {}
+            for dst, p in phis_of(merge).items():
+                va = p["by_block"].get(ta)
+                vb = p["by_block"].get(tb)
+                if va is None or vb is None:
+                    raise ValueError("merge phi %s missing branch value"
+                                     % dst)
+                phi_map[dst] = (va, vb)
+                mvals[dst] = "%phi:" + dst  # placeholder consumed below
+            nodes.append({"op": "if", "cond": cond, "then": then_nodes,
+                          "else": else_nodes, "phi": phi_map})
+            # continue at the merge with its non-phi body
+            mbody = [s for s in blocks[merge]
+                     if "= phi" not in s and "br " not in s]
+            mterms = [s for s in blocks[merge] if "br " in s]
+            nodes += flat_nodes(mbody)
+            if not mterms:
+                return nodes
+            mt = mterms[-1].strip()
+            if mt.startswith("br label"):
+                return nodes
+            mm2 = re.search(r"br i1 %([\w.]+), label %(\d+), label %(\d+)",
+                            mt)
+            if not mm2:
+                raise ValueError("unhandled terminator %r" % mt)
+            cond2, ta2, tb2 = mm2.group(1), mm2.group(2), mm2.group(3)
+            sa2, sb2 = succ(ta2), succ(tb2)
+            if len(sa2) == 1 and len(sb2) == 1 and sa2[0] == sb2[0]:
+                merge2 = sa2[0]
+                then2 = lower(ta2, edge_values(merge, ta2), depth + 1)
+                else2 = lower(tb2, edge_values(merge, tb2), depth + 1)
+                phi2 = {}
+                for dst, p in phis_of(merge2).items():
+                    va = p["by_block"].get(ta2)
+                    vb = p["by_block"].get(tb2)
+                    if va is None or vb is None:
+                        raise ValueError("merge phi %s missing branch value"
+                                         % dst)
+                    phi2[dst] = (va, vb)
+                nodes.append({"op": "if", "cond": cond2, "then": then2,
+                              "else": else2, "phi": phi2})
+                return nodes
+            raise ValueError("unhandled continuation CFG at block %s"
+                             % merge)
+        raise ValueError("non-diamond CFG at block %s (succ %s/%s)"
+                         % (b, sa, sb))
+
+    out = lower(order[0], edge_values(None, order[0]))
+    ir.nodes = out
     return ir

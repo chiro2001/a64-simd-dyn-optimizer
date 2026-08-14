@@ -50,6 +50,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from machine_ir import import_llvm_ir_text  # noqa: E402
+from machine_ir import import_llvm_ir_structured  # noqa: E402
 
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from codegen import (  # noqa: E402
@@ -382,7 +383,10 @@ def main():
     fn = recipe["target_function"].get("demangled") or \
         recipe["target_function"].get("mangled")
     try:
-        ir = import_llvm_ir_text(body, function=fn)
+        if recipe.get("extract", {}).get("import_mode") == "structured":
+            ir = import_llvm_ir_structured(body, function=fn)
+        else:
+            ir = import_llvm_ir_text(body, function=fn)
     except ValueError as e:
         print("importer rejected IR: %s" % e, file=sys.stderr)
         return 3

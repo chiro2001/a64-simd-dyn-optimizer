@@ -141,6 +141,20 @@
 
 风险：diamond 嵌套/非规范汇聚（多出边）先显式失败；不做 qemu 旁路。
 
+## 10. 2026-08-14 实现状态（Step 2 初版 WIP）
+
+- `machine_ir.import_llvm_ir_structured` 初版已提交（按边值递归 lower、
+  `if` 节点、`alias`/`icmp` 支持）；`seeds/idct16.yaml` 已建（opt_unroll
+  + structured）；
+- 实测暴露**嵌套/共享尾块**：块 38 `br %52 → %62/%53`，其中
+  `%53 → %62`（共享尾块）且 `%62` 自身又含条件分支——当前 diamond
+  lowerer 在该处失败（`non-diamond CFG at block 38`）；
+- 修正方向（下一专职会话）：**codegen 侧通用递归发射器**——MachineIR
+  保留块 DAG（block/phi/branch 节点），发射 C 时按后序递归 + 尾块
+  复制（tail duplication），不再要求文本层先摊平成 diamond；
+- 当前结构化导入器标记 WIP，不接入任何 pipeline（flat 默认不变）；
+  idct16 正确性仍由既有特化路径覆盖。
+
 ## 9. 2026-08-14 覆盖缺口证据：G2b 是全覆盖的唯一瓶颈
 
 对剩余新算子族的 IR 形态实测（源码线）：
