@@ -107,6 +107,12 @@
   缓存读取，worker 只测新源，按枚举顺序稳定合并，`results.json` schema
   与串行完全一致（2026-08-14 已验：dct16 357 行 W=1/W=4 逐字段相等，
   4 worker 墙钟 6:21→1:44，约 3.7×）。
+- 后端参数扫描（2026-08-14，round-0017 咨询配套）：
+  `search_sve2_layouts.py --cxx <compiler>` 切换候选编译器（默认
+  aarch64-linux-gnu-g++）；`--opt-extra "<flags>"` 在 candidate_opt
+  之后追加任意编译选项（如 `--opt-extra "-frename-registers -fweb"`），
+  用于 regalloc/调度 flag 快速对比；sdot 系默认已含
+  `-frename-registers`（docs/27 §8.11 flag 扫描）。
 - `search_rewrite_sequences.py` 带 rewrite 依赖剪枝（`--no-prune` 关闭）：
   dct32 规则 = legacy_k2 必须先于 legacy_k4、merge_narrow8 至多一次、
   k0_even_sve 需要 k2/k4 前置；dct16 规则 = tbl2_to_zip/merge_narrow8

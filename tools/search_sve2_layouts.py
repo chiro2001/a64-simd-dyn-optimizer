@@ -38,6 +38,9 @@ from parse_qemu_trace import parse_exec  # noqa: E402
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
 
+_CXX = "aarch64-linux-gnu-g++"
+_OPT_EXTRA = ""
+
 BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
              "b.eq", "b.ne", "b.hs", "b.lo", "b.mi", "b.pl", "b.vs",
              "b.vc", "b.hi", "b.ls", "b.ge", "b.lt", "b.gt", "b.le",
@@ -414,7 +417,7 @@ def measure_layout_candidate(task):
                      "-march=" + candidate_march(combo),
                      "-o", obj, s_path], timeout=120)
         else:
-            cc = ["aarch64-linux-gnu-g++", candidate_opt(combo),
+            cc = [_CXX, candidate_opt(combo)] + _OPT_EXTRA.split() + [
                   "-std=c++11", "-march=" + candidate_march(combo),
                   "-c", src, "-o", obj]
             if backend == "op":
@@ -612,6 +615,14 @@ def main():
                     help="run the target-throughput cycle estimator on the "
                          "top-N passed candidates and record "
                          "est_cycles_<target> (default 0 = off)")
+    ap.add_argument("--cxx", default=None,
+                    help="candidate compiler (default aarch64-linux-gnu-g++; "
+                         "use a clang cross build to sweep backend flags, "
+                         "round-0017)")
+    ap.add_argument("--opt-extra", default="",
+                    help="extra flags appended after candidate_opt for "
+                         "backend/regalloc experiments (space-separated, "
+                         "e.g. \"-frename-registers -fweb\")")
     ap.add_argument("--lite-top", type=int, default=0,
                     help="run the TestBenchLite golden gate (dct32/dct16/"
                          "sa8d/sa8d16/interp8) on the top-N passed "
@@ -646,6 +657,10 @@ def main():
                          "TestBenchLite (requires --lite-top; candidates "
                          "without lite data are skipped)")
     args = ap.parse_args()
+    global _CXX, _OPT_EXTRA
+    if args.cxx:
+        _CXX = args.cxx
+    _OPT_EXTRA = args.opt_extra
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
         args.mca_top = 10
