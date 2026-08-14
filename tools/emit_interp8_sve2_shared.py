@@ -103,7 +103,7 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
 """ % (cpp_constants(), func_name)
 
 
-def emit_sdot_h(func_name=None, n=8):
+def emit_sdot_h(func_name=None, n=8, unroll=False):
     """Path B (docs/22 §5, SVE2p3): sdot z.h,z.b,z.b direct 8-tap
     horizontal filter. 16 h-lanes = 8 pixels x 2 tap-pairs
     ((0,1)+(4,5) in lane 2p, (2,3)+(6,7) in lane 2p+1), addp sums
@@ -220,6 +220,7 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
     // restores the full +8192 once (verified 2026-08-14).
     const svint16_t off4096 = svdup_n_s16(4096);
 
+    %(unroll_pragma)s
     for (int r = 0; r < %(n)d; r++)
     {
         const uint8_t* row = src + r * srcStride - 3;
@@ -250,7 +251,9 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
         }
     }
 }
-""" % {"func_name": func_name, "n": n}
+""" % {"func_name": func_name, "n": n,
+       "unroll_pragma": ("#pragma clang loop unroll(full)\n    "
+                         if unroll else "")}
 
 
 def main():

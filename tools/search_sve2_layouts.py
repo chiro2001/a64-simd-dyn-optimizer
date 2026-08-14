@@ -458,7 +458,8 @@ def make_emitter(kernel, backend="acle"):
             # SVE2p3 path-B only (docs/22 §5.5); symbol matches the
             # manifest candidate so the trace driver/verifier bind.
             return emit_sdot_h(
-                func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n)
+                func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n,
+                unroll=combo.get("unroll") == "full")
         return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 

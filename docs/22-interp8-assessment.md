@@ -225,6 +225,11 @@ best_sve2_sdoth_16x16.{cpp,S,o}`、`best_sve2_sdoth_32x32.*`。
   该模型对 SVE permute 的调度较保守；920B/NP1 结构模型（2×256/
   4×256 全 SVE pipe）则给出 -15~-38% LB。与 8x8 一致：指令数收益
   明确，cycle 收益以 950/960 实机为准。
+- **unroll 搜索轴（2026-08-14，interp8-16/32 manifest 已加）**：
+  `#pragma clang loop unroll(full)` 对比：fused 不变（359/1417），
+  16x16 MCA 121→123（uOps 495→499）、32x32 MCA 398→398，但
+  stack spill 大幅下降（16x16 22→6、32x32 40→8）。循环版 MCA
+  略优、全展开版实机 spill 风险更低；两者均可由搜索枚举。
 
 **“s8 直算 + 结果常数偏移”否定结论（2026-08-14，用户提议核查）**：
 原设想“SDOT 直接吃原始字节，把 8192 偏移只加在结果上”不可行。

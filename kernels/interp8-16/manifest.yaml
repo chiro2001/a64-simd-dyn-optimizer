@@ -35,3 +35,4 @@ corpus:
 
 layouts:
   compute: [sdot-h]
+  unroll: [loop, full]
