@@ -35,6 +35,61 @@ def cpp_constants():
     return "static const int16_t GT16[16][16] = {\n%s\n};\n" % rows
 
 
+def cpp_sdot_constants():
+    """SVE2p1 sdot z.s,z.h,z.h constant tables for IDCT16 O/EO/EEE/EEO.
+
+    Same semantics as idct32 (docs/27 §8.10): each 16-lane C row is
+    (g_a[k], g_b[k]) repeated 8 times; sdot lane e = d[2e]*c[2e] +
+    d[2e+1]*c[2e+1] with d = zip1(r_a, r_b) mixes the same column e of
+    two rows. Tables indexed [k][pair][16].
+    """
+    def pair_row(k, a, b):
+        return [GT16[a][k], GT16[b][k]] * 8
+    o = [[pair_row(k, 4 * p + 1, 4 * p + 3) for p in range(4)]
+         for k in range(8)]
+    eo = [[pair_row(k, 8 * p + 2, 8 * p + 6) for p in range(2)]
+          for k in range(4)]
+    eee = [[pair_row(k, 0, 8)] for k in range(2)]
+    eeo = [[pair_row(k, 4, 12)] for k in range(2)]
+    out = []
+    for name, tab in (("CDOT_O", o), ("CDOT_EO", eo),
+                      ("CDOT_EEE", eee), ("CDOT_EEO", eeo)):
+        groups = []
+        for kk in tab:
+            rows = ["        { %s }" % ", ".join(str(v) for v in pp)
+                    for pp in kk]
+            groups.append("    {\n%s\n    }" % ",\n".join(rows))
+        out.append("static const int16_t %s[%d][%d][16] = {\n%s\n};\n"
+                   % (name, len(tab), len(tab[0]), ",\n".join(groups)))
+    return "\n".join(out)
+
+
+def butterfly_s32(s):
+    """Shared EE/E/t/u butterfly after O/EO/EEE/EEO are ready (idct16)."""
+    L = []
+    L.append("    svint32_t EE%s0 = svadd_s32_x(p32, EEE%s0, EEO%s0);"
+             % (s, s, s))
+    L.append("    svint32_t EE%s1 = svadd_s32_x(p32, EEE%s1, EEO%s1);"
+             % (s, s, s))
+    L.append("    svint32_t EE%s2 = svsub_s32_x(p32, EEE%s1, EEO%s1);"
+             % (s, s, s))
+    L.append("    svint32_t EE%s3 = svsub_s32_x(p32, EEE%s0, EEO%s0);"
+             % (s, s, s))
+    for k in range(4):
+        L.append("    svint32_t E%s%d = svadd_s32_x(p32, EE%s%d, EO%s%d);"
+                 % (s, k, s, k, s, k))
+    for k in range(4):
+        L.append("    svint32_t E%s%d = svsub_s32_x(p32, EE%s%d, EO%s%d);"
+                 % (s, k + 4, s, 3 - k, s, 3 - k))
+    for k in range(8):
+        L.append("    svint32_t t%s%d = svadd_s32_x(p32, E%s%d, O%s%d);"
+                 % (s, k, s, k, s, k))
+    for k in range(8):
+        L.append("    svint32_t u%s%d = svsub_s32_x(p32, E%s%d, O%s%d);"
+                 % (s, k, s, 7 - k, s, 7 - k))
+    return L
+
+
 def half_arithmetic(off, s):
     """Compute the s32 t/u vectors for one 8-column half (off=0 or 8).
     Variable names get suffix `s` ("" for scalar/scatter halves, "A"/"B"
@@ -77,27 +132,47 @@ def half_arithmetic(off, s):
              "svdup_n_s32(GT16[4][1]));" % (s, s))
     L.append("    EEO%s1 = svmla_s32_x(p32, EEO%s1, r%s12, "
              "svdup_n_s32(GT16[12][1]));" % (s, s, s))
-    L.append("    svint32_t EE%s0 = svadd_s32_x(p32, EEE%s0, EEO%s0);"
-             % (s, s, s))
-    L.append("    svint32_t EE%s1 = svadd_s32_x(p32, EEE%s1, EEO%s1);"
-             % (s, s, s))
-    L.append("    svint32_t EE%s2 = svsub_s32_x(p32, EEE%s1, EEO%s1);"
-             % (s, s, s))
-    L.append("    svint32_t EE%s3 = svsub_s32_x(p32, EEE%s0, EEO%s0);"
-             % (s, s, s))
-    for k in range(4):
-        L.append("    svint32_t E%s%d = svadd_s32_x(p32, EE%s%d, EO%s%d);"
-                 % (s, k, s, k, s, k))
-    for k in range(4):
-        L.append("    svint32_t E%s%d = svsub_s32_x(p32, EE%s%d, EO%s%d);"
-                 % (s, k + 4, s, 3 - k, s, 3 - k))
+    return L + butterfly_s32(s)
+
+
+def chunk_arithmetic_sdot(off, s):
+    """SVE2p1 sdot z.s,z.h,z.h O/EO/EEE/EEO (docs/27 §8.10 layout,
+    mirror of idct32). 8-lane s16 row loads; vnum constant addressing."""
+    L = []
+    for m in range(16):
+        L.append("    svint16_t r%s%d = svld1_s16(p8h, src + %d + off);"
+                 % (s, m, 16 * m))
+    for p in range(4):
+        L.append("    svint16_t d%sO%d = svzip1_s16(r%s%d, r%s%d);"
+                 % (s, p, s, 4 * p + 1, s, 4 * p + 3))
     for k in range(8):
-        L.append("    svint32_t t%s%d = svadd_s32_x(p32, E%s%d, O%s%d);"
-                 % (s, k, s, k, s, k))
-    for k in range(8):
-        L.append("    svint32_t u%s%d = svsub_s32_x(p32, E%s%d, O%s%d);"
-                 % (s, k, s, 7 - k, s, 7 - k))
-    return L
+        acc = "O%s%d" % (s, k)
+        L.append("    svint32_t %s = z;" % acc)
+        for p in range(4):
+            L.append("    %s = sdot_s32_h(%s, d%sO%d, "
+                     "load_c(CDOT_O[%d][0], %d));"
+                     % (acc, acc, s, p, k, p))
+    for p in range(2):
+        L.append("    svint16_t d%sEO%d = svzip1_s16(r%s%d, r%s%d);"
+                 % (s, p, s, 8 * p + 2, s, 8 * p + 6))
+    for k in range(4):
+        acc = "EO%s%d" % (s, k)
+        L.append("    svint32_t %s = z;" % acc)
+        for p in range(2):
+            L.append("    %s = sdot_s32_h(%s, d%sEO%d, "
+                     "load_c(CDOT_EO[%d][0], %d));"
+                     % (acc, acc, s, p, k, p))
+    L.append("    svint16_t d%sEEE = svzip1_s16(r%s0, r%s8);" % (s, s, s))
+    for k in range(2):
+        acc = "EEE%s%d" % (s, k)
+        L.append("    svint32_t %s = sdot_s32_h(z, d%sEEE, "
+                 "load_c(CDOT_EEE[%d][0], 0));" % (acc, s, k))
+    L.append("    svint16_t d%sEEO = svzip1_s16(r%s4, r%s12);" % (s, s, s))
+    for k in range(2):
+        acc = "EEO%s%d" % (s, k)
+        L.append("    svint32_t %s = sdot_s32_h(z, d%sEEO, "
+                 "load_c(CDOT_EEO[%d][0], 0));" % (acc, s, k))
+    return L + butterfly_s32(s)
 
 
 def _round_s32(var, shift):
@@ -175,7 +250,7 @@ def _zip16_transpose(lines):
                      "%s);" % (i, cur[i]))
 
 
-def stage_src(store, round_mode="rshrnb"):
+def stage_src(store, round_mode="rshrnb", compute="mul"):
     """Generate the per-stage code for store in {scalar, scatter, zip16}.
 
     VL=256: svint32_t has 8 lanes, so the 16 columns run as two 8-column
@@ -191,7 +266,11 @@ def stage_src(store, round_mode="rshrnb"):
         L.append("{")
         L.append("    const svbool_t p32 = svptrue_b32();")
         L.append("    const svbool_t p16 = svptrue_b16();")
-        L.extend(half_arithmetic(0, ""))
+        L.append("    const svbool_t p8h = svwhilelt_b16((uint32_t)0, "
+                 "(uint32_t)8);")
+        L.append("    const svint32_t z = svdup_n_s32(0);")
+        L.extend(chunk_arithmetic_sdot(0, "") if compute == "sdot-s32"
+                 else half_arithmetic(0, ""))
         if store == "scalar":
             for i in range(16):
                 srcv = "t%d" % i if i < 8 else "u%d" % (i - 8)
@@ -225,11 +304,14 @@ def stage_src(store, round_mode="rshrnb"):
         L.append("    const svbool_t p16 = svptrue_b16();")
         L.append("    const svbool_t p8h = svwhilelt_b16((uint32_t)0, "
                  "(uint32_t)8);")
+        L.append("    const svint32_t z = svdup_n_s32(0);")
         # off is baked into the arithmetic (0 then 8)
         L.append("    int off = 0;")
-        L.extend(half_arithmetic(0, "A"))
+        L.extend(chunk_arithmetic_sdot(0, "A") if compute == "sdot-s32"
+                 else half_arithmetic(0, "A"))
         L.append("    off = 8;")
-        L.extend(half_arithmetic(8, "B"))
+        L.extend(chunk_arithmetic_sdot(8, "B") if compute == "sdot-s32"
+                 else half_arithmetic(8, "B"))
         for i in range(16):
             sa = "tA%d" % i if i < 8 else "uA%d" % (i - 8)
             sb = "tB%d" % i if i < 8 else "uB%d" % (i - 8)
@@ -255,11 +337,36 @@ def stage_src(store, round_mode="rshrnb"):
 
 
 def emit(func_name="dynopt_idct16_sve2_shared", store="scalar",
-         round_mode="rshrnb"):
+         round_mode="rshrnb", compute="mul"):
+    consts = (cpp_sdot_constants() if compute == "sdot-s32"
+              else cpp_constants())
+    helper = ""
+    if compute == "sdot-s32":
+        helper = (
+            "static inline __attribute__((always_inline)) svint32_t\n"
+            "sdot_s32_h(svint32_t acc, svint16_t a, svint16_t b)\n"
+            "{\n"
+            "    asm volatile(\"sdot %0.s, %1.h, %2.h\"\n"
+            "                 : \"+w\"(acc) : \"w\"(a), \"w\"(b));\n"
+            "    return acc;\n"
+            "}\n"
+            "\n"
+            "static inline __attribute__((always_inline)) svint16_t\n"
+            "load_c(const int16_t* base, int vnum)\n"
+            "{\n"
+            "    svint16_t v;\n"
+            "    asm volatile(\"ld1h %0.h, %1/z, [%2, #%3, MUL VL]\"\n"
+            "                 : \"=w\"(v)\n"
+            "                 : \"Upl\"(svptrue_b16()), \"r\"(base),\n"
+            "                   \"i\"(vnum));\n"
+            "    return v;\n"
+            "}\n")
     return """\
 // Generated by tools/emit_idct16_sve2_shared.py -- do not edit by hand.
-// IDCT16 SVE2 (VL=256), bit-exact with x265::idct16_c (docs/27).
+// IDCT16 SVE2%s (VL=256), bit-exact with x265::idct16_c (docs/27).
 #include <arm_sve.h>
+
+%s
 
 %s
 
@@ -271,7 +378,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
     idct16_stage<7>(src, coef, 16);
     idct16_stage<12>(coef, dst, dstStride);
 }
-""" % (cpp_constants(), stage_src(store, round_mode), func_name)
+""" % ("/SVE2p1" if compute == "sdot-s32" else "",
+       consts, helper, stage_src(store, round_mode, compute), func_name)
 
 
 def main():
@@ -282,9 +390,12 @@ def main():
                     choices=("scalar", "scatter", "zip16"))
     ap.add_argument("--round", default="rshrnb",
                     choices=("rshrnb", "addasr"))
+    ap.add_argument("--compute", default="mul",
+                    choices=("mul", "sdot-s32"))
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(store=args.store, round_mode=args.round))
+        f.write(emit(store=args.store, round_mode=args.round,
+                     compute=args.compute))
     print("wrote %s" % args.out)
 
 

@@ -312,7 +312,8 @@ def make_emitter(kernel, backend="acle"):
         from emit_idct16_sve2_shared import emit
 
         def emit_fn(combo):
-            return emit(store=combo.get("store", "scalar"))
+            return emit(store=combo.get("store", "scalar"),
+                        compute=combo.get("compute", "mul"))
         return emit_fn
     if kernel == "idct32":
         from emit_idct32_sve2_shared import emit
@@ -781,8 +782,13 @@ def main():
             print("%-24s DUP of %s" % (tag, src_seen[src_hash]))
             continue
         src_seen[src_hash] = tag
-        ckey = "%s|%s" % (args.contract or manifest.get("contract", ""),
-                          src_hash)
+        # Build fingerprint (round-0017 咨询）：编译器/编译参数/后端改变
+        # 后旧计数会误复用，因此并入缓存键；flag 扫描（--cxx/--opt-extra）
+        # 自动得到独立缓存槽。
+        buildfp = "|".join((_CXX, candidate_opt(combo), _OPT_EXTRA,
+                            candidate_march(combo), str(args.backend)))
+        ckey = "%s|%s|%s" % (args.contract or manifest.get("contract", ""),
+                             buildfp, src_hash)
         c_contract = _layout_contract(
             combo, args.contract, manifest.get("contract", "upstream-exact"))
         if ckey in cache and cache[ckey].get("counts"):

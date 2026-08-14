@@ -463,6 +463,23 @@ MCA 1185 / vector_lb NP1 ~1306）。写回路径收益：去掉 256 条
 scatter（1024 uops），换 64 条连续 st1h + 128 splice + 384 uzp，
 总 uOps 8405→6822。
 
+**IDCT16 sdot-s32 轴（2026-08-14，制胜配方推广）**：idct16 emitter
+新增 `compute: [mul, sdot-s32]`（SVE2p1 sdot z.s,z.h,z.h + vnum 常量
+寻址，O 4 对 / EO 2 对 / EEE / EEO 结构，8-lane s16 行加载）。全 6
+组合 20k 0 失配 + lite 5/5：
+
+| 版本 | fused_uop | 动态 MCA |
+| --- | ---: | ---: |
+| zip16 + sdot-s32（新 best） | 976 | **245** |
+| zip16 + mul（旧 best） | 1025 | 438 |
+| scalar + sdot-s32 | 1066 | 258 |
+| scatter + sdot-s32 | 1077 | 312 |
+
+新 best 已固化 `kernels/idct16/candidates/best_sve2.{cpp,S}`（MCA
+245，-44% vs 旧 mul 438）。搜索工具缓存键加入 build fingerprint
+（编译器+编译参数+后端，round-0017 咨询），flag/编译器轴扫描不再
+误复用旧计数。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |

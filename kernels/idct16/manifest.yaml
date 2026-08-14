@@ -40,8 +40,10 @@ targets:
   halve_gate: 0.5
 
 layouts:
-  # 占位单轴：发射器就绪后扩展（docs/27 规划）。
+  # compute 轴（2026-08-14）：sdot-s32=SVE2p1 sdot z.s,z.h,z.h 直算
+  # + vnum 常量寻址（idct32 制胜配方，docs/27 §8.11）。
   # store 轴：scalar=标量转置写回（锚点）；scatter=合并宽度 scatter 写回
   # （fused 几乎不变，MCA/est 大降）；zip16=两半合并+splice+zip 转置+
   # 连续存储（fused +172，MCA/est 最优）。
   store: [scalar, scatter, zip16]
+  compute: [mul, sdot-s32]
