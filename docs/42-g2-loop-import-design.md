@@ -141,6 +141,21 @@
 
 风险：diamond 嵌套/非规范汇聚（多出边）先显式失败；不做 qemu 旁路。
 
+## 9. 2026-08-14 覆盖缺口证据：G2b 是全覆盖的唯一瓶颈
+
+对剩余新算子族的 IR 形态实测（源码线）：
+
+| 族 | 实现形式 | 结论 |
+| --- | --- | --- |
+| sad | 纯汇编（sad-neon-dotprod.S） | 源码线不可导入 → binary lifter 路线 |
+| quant/dequant | 纯汇编（asm-primitives.cpp PFX 符号） | 同上 |
+| sao | C++（saoCuStats*_neon，6 函数） | 复杂 CFG：E0 21 br/116 icmp/45 phi；
+  BO 176 br/157 icmp/8 phi（数据依赖分支+循环）→ 需 G2b |
+
+结论：**G2b（结构化 CFG 导入）是“全自动覆盖剩余算子”的必要条件**，
+sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里程碑；
+当前 seed 线覆盖 11 个 kernel 作为已验证基线。
+
 ## 5. 关联
 
 - 成功后可顺带覆盖：idct32、dct32_neon（同逆蝶形结构）、quant/sao
