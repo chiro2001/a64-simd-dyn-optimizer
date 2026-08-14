@@ -221,6 +221,11 @@ best_sve2_sdoth_16x16.{cpp,S,o}`、`best_sve2_sdoth_32x32.*`。
 | 32x32 | 1829 | **1417（-22.5%）** | 374 → 398 | 491 → 396.75（-19%） | 389 → 247.97（-36%） |
 | 32x32 addp（§5.7） | 1829 | **1289（-29.5%）** | 374 → 369 | — | — |
 
+全搜索确认（2026-08-14，pairsum×unroll 四变体）：16x16 loop+addp
+最优（327/114，stk 22）；32x32 full+addp 为 MCA 最优（1289/367，
+stk 8，spill 远低于 loop 的 40）。结果归档
+`experiments/m30-interp8-{16,32}-search/layout-search/`。
+
 - 指令数显著下降（load 大减：16x16 上游 ldur 112 → 22 ldr；32x32
   448 → 40+32），置换/窄化成为新瓶颈（表 LB 中 permute 项主导）。
 - MCA（neoverse-v2 代理）几乎持平甚至略增（121/398 vs 118/374）：
