@@ -143,6 +143,18 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
 - 全流程：interp8vpp-16 **247 / 157**，精确复现手写最优；族识别新增
   `fir-vertical`（umull+sqrshrun）→ 轴种子 acc_split。
 
+### G4g ✅：vpp 族扩展（interp8vpp-32 / interp4vpp-16）
+
+- `seeds/interp8vpp-32.yaml`（switch case 1，6472 行展开体）：门禁
+  **10000 cases 0 失配**；全流程 **936 / 547**；
+- `seeds/interp4vpp-16.yaml`（uniform branch，N=4 取主滤波路径）：门禁
+  **20000 cases（7 相位）0 失配**；全流程 **171 / 96**；
+- 新增机制：`_resolve_merge_phis` 公共化（uniform branch 与 switch 共用）；
+  codegen 支持 `[4 x i8]` addr、匿名命名空间 `g_chromaFilterAbs8`
+  （内嵌 8×4 表）、`ld4r`（vld4_dup_u8）、extractvalue 按元素类型、
+  `<8 x i8>` identity shuffle、标量 sub 取负；
+- 至此垂直滑窗族（interp8vpp 16/32、interp4vpp 16）全部由 seed 线覆盖。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

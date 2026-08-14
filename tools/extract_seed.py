@@ -172,7 +172,28 @@ def strip_uniform_branch(body):
         if out[i].strip().startswith("br label"):
             del out[i]
             break
-    return "\n".join(out) + "\n"
+    text = "\n".join(out)
+    return _resolve_merge_phis(text, else_label) + "\n"
+
+
+def _resolve_merge_phis(text, keep_block):
+    """Resolve merge-block phis to the kept block's incoming values and
+    substitute them at every later use (SSA dsts defined at the merge)."""
+    phi_repl = {}
+    for m in re.finditer(
+            r"(%[A-Za-z0-9._]+)\s*=\s*phi\s+\S+\s+(.*)$", text, flags=re.M):
+        pairs = re.findall(r"\[\s*(%[A-Za-z0-9._]+)\s*,\s*%(\d+)\s*\]",
+                           m.group(2))
+        val = next((v for v, b in pairs if b == keep_block), None)
+        if val is None:
+            raise SystemExit("merge phi %s no value for block %s"
+                             % (m.group(1), keep_block))
+        phi_repl[m.group(1)] = val
+    text = "\n".join(ln for ln in text.splitlines()
+                     if " = phi " not in ln)
+    for dst, val in phi_repl.items():
+        text = re.sub(re.escape(dst) + r"(?![A-Za-z0-9._])", val, text)
+    return text
 
 
 def strip_switch_take_case(body, case):
@@ -224,22 +245,7 @@ def strip_switch_take_case(body, case):
             continue
         out.append(ln)
     text = "\n".join(out)
-    # resolve phis at the merge: delete each phi and substitute the chosen
-    # case's incoming value at every later use (SSA dst defined at merge).
-    phi_repl = {}
-    for m in re.finditer(
-            r"(%[A-Za-z0-9._]+)\s*=\s*phi\s+\S+\s+(.*)$", text, flags=re.M):
-        pairs = re.findall(r"\[\s*(%[A-Za-z0-9._]+)\s*,\s*%(\d+)\s*\]",
-                           m.group(2))
-        val = next((v for v, b in pairs if b == keep), None)
-        if val is None:
-            raise SystemExit("strip_switch: phi %s no value for block %s"
-                             % (m.group(1), keep))
-        phi_repl[m.group(1)] = val
-    text = "\n".join(ln for ln in text.splitlines()
-                     if " = phi " not in ln)
-    for dst, val in phi_repl.items():
-        text = re.sub(re.escape(dst) + r"(?![A-Za-z0-9._])", val, text)
+    text = _resolve_merge_phis(text, keep)
     # drop the remaining br label lines (case tail + merge tail)
     text = "\n".join(ln for ln in text.splitlines()
                      if not ln.strip().startswith("br label"))

@@ -1334,6 +1334,13 @@ def emit_interp8_c_intrinsics(
         "    8, 9, 10, 11, 9, 10, 11, 12, 10, 11, 12, 13, 11, 12, 13, 14",
         "};",
         "",
+        "static const uint8_t chroma_abs[8][4] = {",
+        "    { 0, 64,  0,  0 }, { 2, 58, 10,  2 },",
+        "    { 4, 54, 16,  2 }, { 6, 46, 28,  4 },",
+        "    { 4, 36, 36,  4 }, { 4, 28, 46,  6 },",
+        "    { 2, 16, 54,  4 }, { 2, 10, 58,  2 }",
+        "};",
+        "",
         'extern "C" void %s(const uint8_t* src, intptr_t srcStride,'
         " uint8_t* dst, intptr_t dstStride, int coeffIdx)" % func_name,
         "{",
@@ -1359,9 +1366,9 @@ def emit_interp8_c_intrinsics(
             rhs = node["rhs"]
             m = re.match(
                 r"getelementptr inbounds (?:nuw )?"
-                r"(?:i8|\[8 x i16\]|\[4 x i16\]), "
+                r"(?:i8|\[8 x i16\]|\[4 x i16\]|\[4 x i8\]), "
                 r"ptr (@_ZN4x26512g_lumaFilterE|@_ZN4x26514g_chromaFilterE|"
-                r"%[\w.]+), "
+                r"@_ZN12_GLOBAL__N_118g_chromaFilterAbs8E|%[\w.]+), "
                 r"i64 ([%@\-\d]+)", rhs)
             if not m:
                 raise ValueError("unhandled addr %r" % rhs)
@@ -1370,6 +1377,8 @@ def emit_interp8_c_intrinsics(
                 env[dst] = "filter"
             elif ptr == "@_ZN4x26514g_chromaFilterE":
                 env[dst] = "chroma"
+            elif ptr == "@_ZN12_GLOBAL__N_118g_chromaFilterAbs8E":
+                env[dst] = "chroma_abs"
             else:
                 off = m.group(2)
                 offs = env[off[1:]] if off.startswith("%") else off
@@ -1394,8 +1403,9 @@ def emit_interp8_c_intrinsics(
                 raise ValueError("unhandled load type %r" % node["type"])
         elif op == "extractvalue":
             idx = node["index"]
-            var(dst, "uint8x16_t",
-                "%s.val[%d]" % (cid(node["src"][0]), idx))
+            st = types.get(node["src"][0], "")
+            et = "uint8x8_t" if st == "uint8x8x4_t" else "uint8x16_t"
+            var(dst, et, "%s.val[%d]" % (cid(node["src"][0]), idx))
         elif op == "sext":
             env[dst] = "((int64_t)(int32_t)%s)" % env[node["src"]]
         elif op == "zext":
@@ -1431,6 +1441,20 @@ def emit_interp8_c_intrinsics(
                 fn = "vaddq_u16" if op == "add" else "vsubq_u16"
                 var(dst, "uint16x8_t", "%s(%s, %s)"
                     % (fn, cid(node["src"][0]), cid(node["src"][1])))
+            elif not str(node.get("type") or "").startswith("<"):
+                if len(node["src"]) == 2:
+                    fn = "+" if op == "add" else "-"
+                    env[dst] = "((%s) %s (%s))" % (
+                        env[node["src"][0]], fn, env[node["src"][1]])
+                elif node.get("const") is not None:
+                    fn = "+" if op == "add" else "-"
+                    env[dst] = "((%s) %s %d)" % (
+                        env[node["src"][0]], fn, node["const"])
+                elif op == "sub" and len(node["src"]) == 1:
+                    env[dst] = "(-(%s))" % env[node["src"][0]]
+                else:
+                    raise ValueError("unhandled scalar %s %r"
+                                     % (op, node))
             else:
                 raise ValueError("unhandled %s type %r"
                                  % (op, node["type"]))
@@ -1473,7 +1497,10 @@ def emit_interp8_c_intrinsics(
                 var(dst, "uint8x16_t",
                     "vcombine_u8(%s, vdup_n_u8(0))" % cid(node["src"][0]))
             elif vtype == "<8 x i8>" and len(node["src"]) == 1:
-                if mask == list(range(8)):
+                st = types.get(node["src"][0], "")
+                if st == "uint8x8_t" and mask == list(range(8)):
+                    var(dst, "uint8x8_t", cid(node["src"][0]))  # identity
+                elif mask == list(range(8)):
                     var(dst, "uint8x8_t", "vget_low_u8(%s)"
                         % cid(node["src"][0]))
                 elif mask == list(range(8, 16)):
@@ -1516,6 +1543,10 @@ def emit_interp8_c_intrinsics(
             elif name == "ld1x2":
                 var(dst, "uint8x16x2_t",
                     "vld1q_u8_x2(dotprod_permute_tbl)")
+            elif name == "ld4r":
+                var(dst, "uint8x8x4_t",
+                    "vld4_dup_u8((const uint8_t*)chroma_abs"
+                    " + ((int64_t)coeffIdx)*4)")
             elif name == "tbl1":
                 a = node["args"][0]["ref"]
                 b = node["args"][1]["ref"]
