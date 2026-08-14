@@ -618,4 +618,10 @@ sdot-s32 轴、搜索缓存 build fingerprint、MCA 短名单并集。
    早期 1.08× 慢于 NEON 的记录，需用新 best 复测）；
 3. **低价值不优先**：Clang C2-C4（PBQP/ilpmin）诊断、dct32/dct16
    mul 系 flag 矩阵（-O2 已最优）、920B SVE1 paired（best_sve1 已
-   测：慢上游 ~16%，记录在 docs/10 §0.3）。
+   测：慢上游 ~16%，记录在 docs/10 §0.3）、dct8 sdot-s32（DCT8 为
+   8×8 小 kernel，当前 NEON SDOT s64 方案已近结构地板，相对收益小；
+   且 emitter 为 NEON intrinsic 风格，迁移成本高于收益——不优先）。
+
+注：dct32 op 候选的 `static_counts` 只统计 .o 内单函数（leaf），与
+动态/MCA 口径（3930/4014、1041）不一致属预期；一切以搜索的动态计数
+与 MCA 为准。
