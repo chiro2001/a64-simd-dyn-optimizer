@@ -1245,16 +1245,53 @@ def main():
                 ok.sort(key=lambda r: (r.get("lite_pass") is not True, fu(r)))
     if args.bench_920b and ok:
         import re
-        if args.kernel not in ("idct16", "idct32"):
-            print("bench-920b: kernel %r has no microbenchmark; skipped"
-                  % args.kernel, file=sys.stderr)
-        else:
-            host = args.bench_920b
-            paired_sh = os.path.join(ROOT, "scripts",
-                                     "bench-dct32-paired.sh")
-            print("920B real-machine reference on top-%d candidates (%s, "
-                  "shape-substituted, docs/29 §6; MCA remains primary):"
-                  % (min(args.bench_top, len(ok)), host))
+        host = args.bench_920b
+        print("920B real-machine reference on top-%d candidates (%s, "
+              "docs/29 §6; MCA remains primary):"
+              % (min(args.bench_top, len(ok)), host))
+        paired_dct = os.path.join(ROOT, "scripts", "bench-dct32-paired.sh")
+        paired_gen = os.path.join(ROOT, "scripts", "bench-generic-paired.sh")
+        if args.kernel in ("interp8", "interp8-16", "interp8-32"):
+            shape_n = {"interp8": 8, "interp8-16": 16,
+                       "interp8-32": 32}[args.kernel]
+            shape = "%dx%d" % (shape_n, shape_n)
+            for r in ok[:min(args.bench_top, len(ok))]:
+                tag = r["tag"]
+                binp = os.path.join(args.outdir, tag + "-sve1-bench")
+                ok_b = run(
+                    ["bash", os.path.join(ROOT, "scripts",
+                                          "build-interp8-substituted-"
+                                          "microbench.sh"),
+                     str(shape_n), "sve1", binp], timeout=300)
+                if ok_b.returncode != 0 or not os.path.exists(binp):
+                    print("  %-24s sve1 build failed" % tag)
+                    r["bench920_ratio"] = None
+                    continue
+                try:
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", binp,
+                         host + ":/tmp/sv_" + tag], timeout=180,
+                        capture_output=True)
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", paired_gen,
+                         host + ":/tmp/bench-generic-paired.sh"],
+                        timeout=60, capture_output=True)
+                    rr = run(
+                        ["ssh", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", host,
+                         "bash /tmp/bench-generic-paired.sh /tmp/sv_%s %s "
+                         "neon cand 20 8 /tmp/svpair_%s 2>&1 | grep 'neon/cand'"
+                         % (tag, shape, tag)], timeout=600)
+                    m = re.search(r"median=([0-9.]+)", rr.stdout)
+                    ratio = float(m.group(1)) if m else None
+                    r["bench920_ratio"] = ratio
+                    print("  %-24s bench920 %s neon/cand ratio=%s"
+                          % (tag, shape, ratio))
+                except Exception as e:  # noqa: BLE001
+                    print("  %-24s bench920 skipped: %s" % (tag, e))
+        elif args.kernel in ("idct16", "idct32"):
             for r in ok[:min(args.bench_top, len(ok))]:
                 tag = r["tag"]
                 cpp = os.path.join(args.outdir, tag + ".cpp")
@@ -1271,7 +1308,7 @@ def main():
                         capture_output=True)
                     subprocess.run(
                         ["scp", "-o", "ConnectTimeout=10",
-                         "-o", "BatchMode=yes", paired_sh,
+                         "-o", "BatchMode=yes", paired_dct,
                          host + ":/tmp/bench-paired.sh"], timeout=60,
                         capture_output=True)
                     rr = run(
@@ -1287,8 +1324,53 @@ def main():
                     r["bench920_ratio"] = ratio
                     print("  %-24s bench920 neon/cand ratio=%s"
                           % (tag, ratio))
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     print("  %-24s bench920 skipped: %s" % (tag, e))
+        elif args.kernel == "dct8":
+            for r in ok[:min(args.bench_top, len(ok))]:
+                tag = r["tag"]
+                cpp = os.path.join(args.outdir, tag + ".cpp")
+                if not os.path.exists(cpp):
+                    print("  %-24s no candidate source" % tag)
+                    continue
+                binp = os.path.join(args.outdir, tag + "-dct8-bench")
+                try:
+                    b = run(
+                        ["bash", os.path.join(ROOT, "scripts",
+                                              "build-dct8-microbench.sh"),
+                         "build/x265-8-clang-sve", binp, cpp], timeout=300)
+                    if b.returncode != 0 or not os.path.exists(binp):
+                        print("  %-24s dct8 microbench build failed" % tag)
+                        r["bench920_ratio"] = None
+                        continue
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", binp,
+                         host + ":/tmp/sv_" + tag], timeout=180,
+                        capture_output=True)
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", paired_dct,
+                         host + ":/tmp/bench-paired.sh"], timeout=60,
+                        capture_output=True)
+                    rr = run(
+                        ["ssh", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", host,
+                         "bash /tmp/bench-paired.sh /tmp/sv_%s neon cand "
+                         "10 2 /tmp/svpair_%s 2>&1 | tail -1"
+                         % (tag, tag)], timeout=600)
+                    line = (rr.stdout.strip().splitlines()[-1]
+                            if rr.stdout.strip() else "")
+                    m = re.search(r"median=([0-9.]+)", line)
+                    ratio = float(m.group(1)) if m else None
+                    r["bench920_ratio"] = ratio
+                    print("  %-24s bench920 neon/cand ratio=%s"
+                          % (tag, ratio))
+                except Exception as e:  # noqa: BLE001
+                    print("  %-24s bench920 skipped: %s" % (tag, e))
+        else:
+            print("bench-920b: kernel %r has no microbenchmark; skipped"
+                  % args.kernel, file=sys.stderr)
     if args.rank_by == "consensus" and ok:
         tgt = None
         try:
