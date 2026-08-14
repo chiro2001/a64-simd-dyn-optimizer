@@ -136,7 +136,7 @@ def stack_vector_count(insns):
     return n
 
 
-def stream_counts(path, start, end, vl_bytes=32):
+def stream_counts(path, start, end, vl_bytes=32, fix_driver=None):
     """Two-pass streaming counts with the same metric schema as the full
     parser, without materializing the instruction list (P3 fast path).
 
@@ -150,6 +150,18 @@ def stream_counts(path, start, end, vl_bytes=32):
         m = INS.match(line)
         if m:
             disasm[int(m.group(1), 16)] = (m.group(2), m.group(3).strip())
+            continue
+        m = INS_RAW.match(line)
+        if m:
+            disasm[int(m.group(1), 16)] = (".byte", "")
+    if fix_driver:
+        # Custom-QEMU OBJD-T entries have no mnemonic; repair from objdump
+        # (knows SVE2p3) so vector counts stay correct (docs/22 §5.3).
+        from fix_dynamic_trace import objdump_map
+        table = objdump_map(fix_driver, start, end)
+        for addr, (mn, ops) in list(disasm.items()):
+            if mn == ".byte" and addr in table:
+                disasm[addr] = table[addr]
     total = vector = movprfx = sg = stack_v = 0
     for line in open(path):
         m = TRACE.match(line)
@@ -197,6 +209,9 @@ def main():
     counts_only = "--counts" in args
     stream_mode = "--stream" in args
     exec_mode = "--exec" in args
+    fix_driver = None
+    if "--fix-driver" in args:
+        fix_driver = args[args.index("--fix-driver") + 1]
     vl_bytes = 32
     if "--vl-bytes" in args:
         vl_bytes = int(args[args.index("--vl-bytes") + 1])
@@ -204,7 +219,7 @@ def main():
         out_json = args[args.index("--json") + 1]
 
     if stream_mode:
-        d = stream_counts(path, start, end, vl_bytes)
+        d = stream_counts(path, start, end, vl_bytes, fix_driver)
         c = d["counts"]
         print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj "
               "%d, scatter_gather %d, sg_uops %d, stack_vector %d, "
@@ -219,7 +234,12 @@ def main():
                       open(out_json, "w"), indent=1)
         return 0
 
-    insns = parse_exec(path, start, end) if exec_mode else parse(path, start, end)
+    if exec_mode and fix_driver:
+        from fix_dynamic_trace import parse_exec_fixed
+        insns, _ = parse_exec_fixed(path, start, end, fix_driver)
+    else:
+        insns = parse_exec(path, start, end) if exec_mode \
+            else parse(path, start, end)
     vec = [i for i in insns if is_vector(i)]
     movprfx, fused_adj = fused_adjust(vec)
     sg = scatter_gather_count(vec)

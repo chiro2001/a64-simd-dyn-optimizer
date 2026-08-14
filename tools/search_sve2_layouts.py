@@ -283,7 +283,7 @@ def candidate_range(row, outdir, manifest, backend, kernel):
 
 
 def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
-                 vl_bytes=32, combo=None):
+                 vl_bytes=32, combo=None, fix_driver=None):
     r = run(qemu_cmd(combo) + ["-one-insn-per-tb", "-d", "exec,in_asm",
                                "-dfilter", "0x%x..0x%x" % (start, end),
                                "-D", log, binary], timeout=timeout)
@@ -292,7 +292,9 @@ def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
     p = run(["python3", os.path.join(ROOT, "tools/parse_qemu_trace.py"),
              log, hex(start), hex(end), "--exec", "--json", log + ".json",
              "--vl-bytes", str(vl_bytes)]
-             + (["--stream"] if counts_only else []), timeout=timeout)
+             + (["--stream"] if counts_only else [])
+             + (["--fix-driver", fix_driver] if fix_driver else []),
+             timeout=timeout)
     if p.returncode != 0:
         return None
     d = json.load(open(log + ".json"))
@@ -446,6 +448,16 @@ def make_emitter(kernel, backend="acle"):
                 # and generated verifier bind (same extern "C" signature).
                 return emit_sdot_h(func_name="dynopt_interp8_8x8_sve2")
             return emit()
+        return emit_fn
+    if kernel in ("interp8-16", "interp8-32"):
+        from emit_interp8_sve2_shared import emit_sdot_h
+        n = 16 if kernel == "interp8-16" else 32
+
+        def emit_fn(combo):
+            # SVE2p3 path-B only (docs/22 §5.5); symbol matches the
+            # manifest candidate so the trace driver/verifier bind.
+            return emit_sdot_h(
+                func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n)
         return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
@@ -603,20 +615,25 @@ def measure_layout_candidate(task):
         # QEMU 11.0.3 disassembles sdot z.s,z.h,z.h as .byte, so dynamic
         # trace counts would miss all 1376 sdots (docs/27 §8.10). These
         # kernels are fully unrolled: objdump static == dynamic.
-        # Still trace for the dynamic-MCA path (docs/26 §5), but count
-        # statically.
+        # Still trace for the dynamic-MCA path (docs/26 §5). sdot-h
+        # (interp8 path B) is looped and needs the repaired dynamic counts
+        # (OBJD-T trace + objdump, docs/22 §5.3); sdot-s32 stays static.
+        fix_driver = driver if combo.get("compute") == "sdot-h" else None
         try:
-            true_dynamic(driver, rng[0], rng[1],
-                         os.path.join(outdir, tag + "-trace.log"),
-                         timeout=300, vl_bytes=vl_bytes, combo=combo)
+            counts = true_dynamic(
+                driver, rng[0], rng[1],
+                os.path.join(outdir, tag + "-trace.log"),
+                timeout=300, vl_bytes=vl_bytes, combo=combo,
+                fix_driver=fix_driver)
         except subprocess.TimeoutExpired:
-            pass
-        try:
-            from static_counts import static_counts
-            counts = static_counts(obj, vl_bytes=vl_bytes)
-        except Exception as exc:  # noqa: BLE001
-            row.update({"passed": False, "counts": None})
-            return row, None, "STATIC COUNT FAIL: %s" % exc
+            counts = None
+        if counts is None or combo.get("compute") != "sdot-h":
+            try:
+                from static_counts import static_counts
+                counts = static_counts(obj, vl_bytes=vl_bytes)
+            except Exception as exc:  # noqa: BLE001
+                row.update({"passed": False, "counts": None})
+                return row, None, "STATIC COUNT FAIL: %s" % exc
     else:
         try:
             counts = true_dynamic(driver, rng[0], rng[1],
@@ -1136,7 +1153,9 @@ def main():
                 "dct16": "dct16", "dct32": "dct32",
                 "idct16": "idct16",
                 "idct32": "idct32",
-                "interp8": "interp8"}.get(args.kernel)
+                "interp8": "interp8",
+                "interp8-16": "interp8",
+                "interp8-32": "interp8"}.get(args.kernel)
         seeds = [s.strip() for s in args.lite_seeds.split(",") if s.strip()]
         if gate is None or not seeds:
             print("lite gate unavailable for kernel %r or empty seeds"
@@ -1313,7 +1332,9 @@ def main():
                     "dct16": "dct16", "dct32": "dct32",
                     "idct16": "idct16",
                     "idct32": "idct32",
-                    "interp8": "interp8"}.get(args.kernel)
+                    "interp8": "interp8",
+                    "interp8-16": "interp8",
+                    "interp8-32": "interp8"}.get(args.kernel)
             if gate:
                 lite = run(["scripts/build-testbench-lite.sh", obj_path,
                             "build/x265-8-testbench", "--", "--gate", gate,

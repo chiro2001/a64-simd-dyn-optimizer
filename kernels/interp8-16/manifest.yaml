@@ -1,0 +1,37 @@
+# 8-bit horizontal 8-tap luma filter (interp8), 16x16, SVE2p3 (VL=256).
+# Reference = upstream x265::interp_horiz_pp_neon<8,16,16>; contract =
+# upstream-exact for all three phases (docs/22 §5.5).
+kernel: interp8-16
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp8
+  n: 16
+
+candidate:
+  symbol: dynopt_interp8_16x16_sve2
+  trace_driver_src: kernels/interp8-16/trace_driver.cpp
+  trace_driver_c: kernels/interp8-16/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp_horiz_pp_neon
+  symbol_mangled: _ZN4x26520interp_horiz_pp_neonILi8ELi16ELi16EEEvPKhlPhli
+  call: x265::interp_horiz_pp_neon<8, 16, 16>
+  decl: |
+    namespace x265 {
+    template <int N, int W, int H> void interp_horiz_pp_neon(
+        const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+    }
+
+baselines:
+  neon:
+    driver: kernels/interp8-16/trace_driver.cpp
+    symbol_mangled: _ZN4x26520interp_horiz_pp_neonILi8ELi16ELi16EEEvPKhlPhli
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sdot-h]
