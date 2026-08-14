@@ -276,7 +276,7 @@ def emit_single(func_name):
                               "sa8d8_sve2 as the baseline")
 
 
-def emit_16xN(func_name, rows=16):
+def emit_16xN(func_name, rows=16, reduce_tail="saddv"):
     """SA8D 16xN (N in {16,32}): each 16-pixel row is one natural 16-lane
     register, so unlike the 8x8 pack variants there is NO row-packing (SEL),
     no high-half extraction, no TBL2 re-pack, and no half-rotation max.
@@ -355,30 +355,41 @@ extern "C" int %s(const uint8_t* pix1, intptr_t sp1,
             lines.append("    svint16_t t%d = svadd_s16_x(p16, m%d, m%d);"
                          % (g * 2 + i, g * 4 + 2 * i, g * 4 + 2 * i + 1))
     lines.append("")
-    lines.append("    // Group totals, then one 16-lane udot + addv.")
+    lines.append("    // Group totals, then one 16-lane across-sum.")
     for g in range(groups):
         lines.append("    svint16_t g%d = svadd_s16_x(p16, t%d, t%d);"
                      % (g, g * 2, g * 2 + 1))
-    # 2026-08-14: replace the add-tree + udot + uaddv tail (groups-1 lane
-    # adds + udot + uaddv) with one saddv per group: lane values are
-    # non-negative, so the signed across-sum is exact.
-    # 16x16: 9 -> 7 vector tail instructions (189 -> 186, passes the
-    # halve gate 186.5). Note: the kernel body uses SVE2 CADD (48x), so
-    # 920B native testing is impossible either way (SVE1 SIGILL), and
-    # saddv is SVE1-legal regardless.
+    # 2026-08-14 search axis: tail reduction. Lane values are
+    # non-negative, so saddv across-sum is exact (189 -> 186, passes the
+    # halve gate 186.5); dot-uaddv keeps the old udot+uaddv shape (189).
     lines.append("")
-    lines.append("    // Per-group 16-lane sums (s32 scalar; lane values")
-    lines.append("    // are non-negative and well below s32 overflow).")
-    lines.append("    int32_t total = svaddv_s16(p16, g0);")
-    for g in range(1, groups):
-        lines.append("    total += svaddv_s16(p16, g%d);" % g)
+    if reduce_tail == "saddv":
+        lines.append("    // Per-group 16-lane sums (s32 scalar; lane values")
+        lines.append("    // are non-negative and well below s32 overflow).")
+        lines.append("    int32_t total = svaddv_s16(p16, g0);")
+        for g in range(1, groups):
+            lines.append("    total += svaddv_s16(p16, g%d);" % g)
+    else:
+        total_expr = "g0"
+        for g in range(1, groups):
+            total_expr = "svadd_s16_x(p16, %s, g%d)" % (total_expr, g)
+        lines.append("    svint16_t s = %s;" % total_expr)
+        lines.append("")
+        lines.append("""\
+    svuint64_t dot = svdot_u64(svdup_n_u64(0),
+                               svreinterpret_u16_s16(s), svdup_n_u16(1));
+    uint64_t total = svaddv_u64(svptrue_b64(), dot);
+    return (int)((total + 1) >> 1);
+}
+""")
+        return "\n".join(lines)
     lines.append("    return (int)((total + 1) >> 1);")
     lines.append("}")
     return "\n".join(lines)
 
 
-def emit_16x16(func_name="dynopt_sa8d_16x16_sve2"):
-    return emit_16xN(func_name, rows=16)
+def emit_16x16(func_name="dynopt_sa8d_16x16_sve2", reduce_tail="saddv"):
+    return emit_16xN(func_name, rows=16, reduce_tail=reduce_tail)
 
 
 def main():

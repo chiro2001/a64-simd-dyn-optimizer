@@ -372,7 +372,8 @@ def make_emitter(kernel, backend="acle"):
         from emit_sa8d_sve2_shared import emit_16x16
 
         def emit_fn(combo):
-            return emit_16x16()
+            return emit_16x16(
+                reduce_tail=combo.get("reduce_tail", "saddv"))
         return emit_fn
     if kernel == "idct16":
         from emit_idct16_sve2_shared import emit
