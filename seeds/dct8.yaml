@@ -1,0 +1,35 @@
+# Normalized seed recipe: dct8 upstream NEON (dct-prim.cpp).
+seed: dct8
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/dct-prim.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O3
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=16
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ibuild/x265-8-cross-make
+target_function:
+  mangled: _ZN4x2659dct8_neonEPKsPsl
+  demangled: x265::dct8_neon
+output:
+  ll: experiments/m12-dct8/llvm-ir/dct8-neon-seed.ll
+  json: experiments/m12-dct8/imported/machine-ir.json
+verify:
+  codegen: emit_dct8_c_intrinsics
+  harness: kernels/dct8/roundtrip_verify_neon.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  cases: 100000

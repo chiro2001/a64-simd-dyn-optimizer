@@ -155,6 +155,15 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   `<8 x i8>` identity shuffle、标量 sub 取负；
 - 至此垂直滑窗族（interp8vpp 16/32、interp4vpp 16）全部由 seed 线覆盖。
 
+### G4h ✅：dct8 seed（380 节点逐节点复现 m12）
+
+- `seeds/dct8.yaml`：门禁对照**上游 dct8_neon**（不用 C oracle——上游有
+  已知 ~0.87% s16 回绕分歧，seed 线验证的是“与导入 kernel 位级一致”）；
+- 门禁：**100000 cases mismatches=0**；全流程 **289 / 77**；
+- 边界记录：**sad 是纯汇编**（sad-neon-dotprod.S），源码线无法导入，
+  属于 docs/02 §6.3 的二进制 lifter 入口案例（当前路线暂不覆盖，后续
+  binary lifter 或 asm 常量表导入再补）。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

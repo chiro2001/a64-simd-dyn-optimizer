@@ -54,6 +54,7 @@ from machine_ir import import_llvm_ir_text  # noqa: E402
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from codegen import (  # noqa: E402
     emit_c_intrinsics,
+    emit_dct8_c_intrinsics,
     emit_dct16_c_intrinsics,
     emit_interp8_c_intrinsics,
 )
@@ -61,6 +62,7 @@ from codegen import (  # noqa: E402
 
 CODEGEN_REGISTRY = {
     "emit_c_intrinsics": emit_c_intrinsics,
+    "emit_dct8_c_intrinsics": emit_dct8_c_intrinsics,
     "emit_dct16_c_intrinsics": emit_dct16_c_intrinsics,
     "emit_interp8_c_intrinsics": emit_interp8_c_intrinsics,
 }
