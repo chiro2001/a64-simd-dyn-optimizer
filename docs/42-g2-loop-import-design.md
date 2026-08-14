@@ -155,6 +155,24 @@
 - 当前结构化导入器标记 WIP，不接入任何 pipeline（flat 默认不变）；
   idct16 正确性仍由既有特化路径覆盖。
 
+## 11. 运行护栏（2026-08-14，防止失控进程拖垮主机）
+
+背景：Step 2 初版的指数级尾块复制在 40s 内吃满 16GB RSS，触发系统
+OOM，杀掉了 codex/Agent 主进程。三层保护已加：
+
+1. **`scripts/bounded-run.sh <mem_mb> <timeout_s> <cmd...>`**：优先
+   systemd-run cgroup `MemoryMax`（只杀本 scope），回退
+   `ulimit -v/-m` + `timeout -k`；峰值/退出码记入
+   `build/bounded-run.log`（gitignored）。验证：512MB 限制下 6GB 分配
+   立即 MemoryError，系统内存不变；
+2. **代码内防御**：`emit_structured_neon_intrinsics` 行数 >200k 直接
+   raise；`extract_seed.verify_roundtrip` 生成文件 >50MB 直接中止；
+3. **监控**：`scripts/monitor-resources.sh` 常驻采样（10s），日志
+   gitignored。
+
+纪律：重型步骤（搜索/门禁/咨询/codegen 实验）一律包
+`bounded-run.sh`；新 emitter/搜索轴先小规模验证内存曲线再全量。
+
 ## 9. 2026-08-14 覆盖缺口证据：G2b 是全覆盖的唯一瓶颈
 
 对剩余新算子族的 IR 形态实测（源码线）：

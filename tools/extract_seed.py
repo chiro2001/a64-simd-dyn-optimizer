@@ -58,6 +58,7 @@ from codegen import (  # noqa: E402
     emit_dct8_c_intrinsics,
     emit_dct16_c_intrinsics,
     emit_interp8_c_intrinsics,
+    emit_structured_neon_intrinsics,
 )
 
 
@@ -69,6 +70,7 @@ CODEGEN_REGISTRY = {
     # emitter (hpp/vpp/interp4 all use it); expose a neutral alias.
     "emit_interp8_c_intrinsics": emit_interp8_c_intrinsics,
     "emit_neon_c_intrinsics": emit_interp8_c_intrinsics,
+    "emit_structured_neon_intrinsics": emit_structured_neon_intrinsics,
 }
 
 DEFAULT_INCLUDES = [
@@ -322,6 +324,9 @@ def verify_roundtrip(recipe, ir):
         if v.get("func_name"):
             kwargs["func_name"] = v["func_name"]
         f.write(CODEGEN_REGISTRY[mode](ir, **kwargs))
+    if os.path.getsize(out_cpp) > 50 * 1024 * 1024:
+        raise SystemExit("roundtrip codegen too large (%d bytes): aborting"
+                         % os.path.getsize(out_cpp))
     includes = " ".join("-I%s" % _resolve(ROOT, d)
                         for d in v.get("include_dirs", DEFAULT_INCLUDES))
     extra_flags = " ".join(v.get("compile_flags", []))
