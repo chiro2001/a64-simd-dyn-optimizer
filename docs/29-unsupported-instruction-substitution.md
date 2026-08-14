@@ -63,6 +63,8 @@ bash scripts/bench-dct32-paired.sh /tmp/mb neon cand
 | idct32 | **1.129**（bootstrap95 1.121-1.130） | 替换版比 NEON 快 ~13% |
 | idct16 | **0.905**（bootstrap95 0.905-0.907） | 替换版比 NEON 慢 ~9.5% |
 | interp8 path-B（BtoH→BtoS） | **0.5425**（60 对，min 0.348/max 0.783） | 替换版比 NEON 慢 ~1.84x，**高估上界**：BtoS 每 lane 4 乘积 vs 真实 BtoH 2 乘积，dot 工作量翻倍；真实 SVE2p3 kernel 应显著更好（指令数 -28%，MCA 与 NEON 持平），需 950/960 确认 |
+| interp8 path-B 16x16（BtoH→BtoS） | **0.8715**（50 对，min 0.587/max 1.150） | 替换版慢 ~1.15x；大形状 load 收益（ldur 112→22）开始显现，扣除 dot 高估后 16x16 实机有望反超 NEON |
+| interp8 path-B 32x32（BtoH→BtoS） | **0.5911**（50 对，min 0.470/max 0.891） | 替换版慢 ~1.69x；置换（tbl/uzp 256/384 条）成为主导，dot 高估只能解释一部分；真实 32x32 仍需 950/960 判断 |
 
 保守性：BtoS 每 lane 的乘积数可能多于 HtoS（byte 4-way vs halfword
 2-way 语义），替换版可能**高估**真实工作量——因此 idct32 的 +13%
