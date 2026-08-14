@@ -41,4 +41,7 @@ targets:
 
 layouts:
   # 占位单轴：发射器就绪后扩展（docs/27 规划）。
-  phase: [a]
+  # store 轴：scalar=标量转置写回（锚点）；scatter=合并宽度 scatter 写回
+  # （fused 几乎不变，MCA/est 大降）；zip16=两半合并+splice+zip 转置+
+  # 连续存储（fused +172，MCA/est 最优）。
+  store: [scalar, scatter, zip16]

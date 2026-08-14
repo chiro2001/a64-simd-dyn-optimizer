@@ -256,7 +256,7 @@ def make_emitter(kernel, backend="acle"):
         from emit_idct16_sve2_shared import emit
 
         def emit_fn(combo):
-            return emit()
+            return emit(store=combo.get("store", "scalar"))
         return emit_fn
     if kernel == "dct32":
         from emit_dct32_sve2_shared import emit

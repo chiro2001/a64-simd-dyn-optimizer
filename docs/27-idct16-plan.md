@@ -73,3 +73,47 @@ qxtnb 饱和窄化；输出转置目前是标量写回（锚点，后续优化�
 
 下一步（优化）：常量表用内存 load 替代 160 次 dup、标量转置改为
 zip 树/连续 st1h、sdot 化 O/EO（当前 mla+mad 288 条）、两趟融合。
+
+## 7. store 轴：scalar / scatter / zip16（2026-08-14）
+
+把“输出转置写回”抽象为可搜索轴（`store`），发射器
+`tools/emit_idct16_sve2_shared.py` 支持三种实现：
+
+- `scalar`：锚点，`o[16][16]` 向量暂存 + 8×16 标量循环写回；
+- `scatter`：保持两半计算，`svst1h_scatter_s32index_s32` 一次指令写回
+  8 个列元素（`svindex_s32(0, stride)` 生成偏移，s32 通道低 16 位即
+  结果，配合 smax/smin 饱和，等价 qxtnb）；
+- `zip16`：两半合并为 16-lane 行向量（`svsplice_s16(p8h, nA, nB)`），
+  再用 `optimizer/ir/permute_search.py` 自动发现并 QEMU 验证的
+  zip 蝴蝶树（距离序 8,4,2,1，64 条 zip1/zip2）做 16×16 转置，
+  最后 16 条连续 st1h 写 16 行。
+
+### 7.1 全代理结果（搜索闭环，experiments/m30-idct16-search/store-axis）
+
+| 候选 | fused_uop | MCA | est NP1 | cp | lite 5 seed | consensus |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| scalar（锚点） | 980 | 925 | 2892 | 181 | PASS | 1.20 |
+| **zip16** | 1152 | **468** | **413** | 158 | PASS | **0.60** |
+| scatter | 1179 | 496 | 448 | **120** | PASS | 1.20 |
+
+结论：fused 口径（scatter 按 4 uop 计）zip16 比锚点多 172 条，但
+MCA/est 分别降 49%/86%；scatter 的 cp 最短。consensus 选 zip16；
+950/960 实机 paired 待测。候选固化
+`kernels/idct16/candidates/{anchor,zip16,scatter}_sve2.{cpp,S}`。
+
+### 7.2 IR 自动匹配能力（本次新增）
+
+`optimizer/ir/permute_search.py` 是可复用的 lane 排列匹配器：编码
+SVE VL=256 的 zip1/zip2/trn1/trn2/uzp1/uzp2 语义，枚举 xor 距离
+蝴蝶网络自动搜索目标排列（例如 16×16 转置），输出指令序列并生成
+QEMU 探针验证。`optimizer/ir/patterns.py` 补了 `<16 x i16>` 的
+trn/zip mask 分类，MachineIR shuffle 可直接映射到 SVE 指令形式。
+后续 sa8d16 H 合并轴、dct32 常量布局、idct32 数据重排均可复用该
+匹配器，而不是手写序列。
+
+### 7.3 下一步
+
+1. sdot 化 O/EO（当前每 half 64 mul/mla 可降至 16 sdot），需要先建立
+   16-lane s16 行数据布局（zip16 的 splice 已铺路）；
+2. 常量表内存 load 替代每项 dup；
+3. 950 实机 paired（zip16 vs scatter vs anchor）。

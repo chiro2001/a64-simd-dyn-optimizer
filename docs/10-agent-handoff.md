@@ -102,12 +102,21 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | sa8d16 | reduce-sve | 189（near-gate 186.5） | 72 | 111 | 35 | PASS |
 | interp8 | path-a | 127（基线 141） | 121 | 46 | 33 | PASS |
+| idct16 | zip16（consensus 最优） | 1152 | 468 | 413 | 158 | PASS |
+| idct16 | scatter（cp 最优） | 1179 | 496 | 448 | 120 | PASS |
+| idct16 | anchor_sve2 | 980 | 925 | 2892 | 181 | PASS |
 
 sa8d16 离减半门还差 ~3 条 fused_uop，是下一个可加轴的候选（emitter
 `emit_sa8d_sve2_shared.emit_16x16` 目前无参数）；interp8 只有 1 条
 路径（phase-1 8x8），可扩展 unroll/regroup 轴。结果分别存
 `experiments/m30-sa8d16-search/layout-search-proxy/` 与
 `experiments/m30-interp8-search/layout-search-proxy/`。
+
+IDCT16 store 轴（docs/27 §7）：scalar/scatter/zip16 三种写回均已
+接入搜索（manifest `store` 轴）并过 TestBenchLite；consensus 选
+zip16，MCA/est 较锚点降 49%/86%。新增 IR 排列匹配器
+`optimizer/ir/permute_search.py`（自动发现 zip 转置序列 + QEMU 探针），
+`patterns.py` 补 `<16 x i16>` trn/zip mask 分类。
 
 **lite 检测修正（2026-08-14）**：搜索里 lite PASS 判定从
 `" <gate> PASS"` 精确匹配改为通用 `"PASS"`（harness 对 sa8d16 输出

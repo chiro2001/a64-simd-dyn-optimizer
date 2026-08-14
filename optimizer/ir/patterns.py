@@ -17,6 +17,17 @@ SHUFFLE_FORMS = {
         (0, 8, 1, 9, 2, 10, 3, 11): ("zip1", 16),
         (4, 12, 5, 13, 6, 14, 7, 15): ("zip2", 16),
     },
+    # SVE VL=256 (16 x i16): zip/trn operate on full 16-lane vectors.
+    "<16 x i16>": {
+        tuple(i // 2 if i % 2 == 0 else 16 + i // 2 for i in range(16)):
+            ("zip1", 16),
+        tuple(8 + i // 2 if i % 2 == 0 else 24 + i // 2 for i in range(16)):
+            ("zip2", 16),
+        tuple(2 * (i // 2) if i % 2 == 0 else 16 + 2 * (i // 2)
+              for i in range(16)): ("trn1", 16),
+        tuple(2 * (i // 2) + 1 if i % 2 == 0 else 16 + 2 * (i // 2) + 1
+              for i in range(16)): ("trn2", 16),
+    },
     "<4 x i32>": {
         (0, 4, 2, 6): ("trn1", 32),
         (1, 5, 3, 7): ("trn2", 32),
