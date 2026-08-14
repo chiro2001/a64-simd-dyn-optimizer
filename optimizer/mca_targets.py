@@ -16,10 +16,12 @@ latency 参数参考 LLVM Neoverse-V2 调度模型
   RSHRN (ASIMD)      4c V13   (SVE2 rshrnb 代理)
   SMULL (ASIMD)      3c V02   (SVE smull 代理)
 
-throughput 权重：920B 用 920B 实测（benchmarks/sve-timing-920b/
-timing-920b.json，VL=256，cycles/op）；NP1 把受 SVE 管道数限制的
-类别按 4/2=2x 缩放（dot/mul/add/permute/narrow/shift），load/store
-暂沿用 920B 实测。movprfx 视为与下一条融合（docs/09）。
+throughput 权重（用户 2026-08-14 口径）：实测 920B 数据可靠性不足，
+直接按目标管道结构计算——920B 全部按 SVE 2×256（2 条管道 →
+0.5 cyc/op/类），NP1 按 SVE 4×256（4 条管道 → 0.25 cyc/op/类）；
+NEON 4×128 的 0.25 只在本项目没有 NEON 主路径时备用。load/store 也
+按 SVE 管道计（全部都是 SVE pipe）。movprfx 视为与下一条融合
+（docs/09）。
 """
 
 
@@ -47,10 +49,10 @@ TARGETS = {
         "vl_bytes": 32,
         "issue_rate": 4.0,
         "latency": dict(NV2_LATENCY),
-        # 920B 实测 throughput (cycles/op, VL=256)
+        # 全部按 SVE 2x256：2 条管道 -> 0.5 cyc/op（不再用 920B 实测）
         "throughput": {
-            "dot": 1.0, "mul": 1.0, "add": 0.5, "permute": 0.5,
-            "narrow": 0.5, "load": 0.37, "store": 3.0, "shift": 0.5,
+            "dot": 0.5, "mul": 0.5, "add": 0.5, "permute": 0.5,
+            "narrow": 0.5, "load": 0.5, "store": 0.5, "shift": 0.5,
             "scalar": 1.0,
         },
         "llvm_proxy_cpu": "neoverse-v2",
@@ -65,11 +67,10 @@ TARGETS = {
         "vl_bytes": 32,
         "issue_rate": 6.4,
         "latency": dict(NV2_LATENCY),
-        # SVE-pipe-bound classes scale 2x vs 920B (4/2 pipes);
-        # load/store 暂沿用 920B 实测。
+        # SVE 4x256：4 条管道 -> 0.25 cyc/op
         "throughput": {
-            "dot": 0.5, "mul": 0.5, "add": 0.25, "permute": 0.25,
-            "narrow": 0.25, "load": 0.37, "store": 3.0, "shift": 0.25,
+            "dot": 0.25, "mul": 0.25, "add": 0.25, "permute": 0.25,
+            "narrow": 0.25, "load": 0.25, "store": 0.25, "shift": 0.25,
             "scalar": 1.0,
         },
         "llvm_proxy_cpu": "neoverse-v2",

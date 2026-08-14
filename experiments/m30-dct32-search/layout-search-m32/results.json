@@ -8264,7 +8264,7 @@
   },
   "mca_cycles": 1131,
   "mca_uops": 6015,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1312.0,
   "est_cycles_NP1": 820.0
  },
  {
@@ -8700,7 +8700,7 @@
   },
   "mca_cycles": 1092,
   "mca_uops": 6073,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1333.5,
   "est_cycles_NP1": 909.0
  },
  {
@@ -8852,7 +8852,7 @@
   },
   "mca_cycles": 1094,
   "mca_uops": 5823,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1270.75,
   "est_cycles_NP1": 794.21875
  },
  {
@@ -9432,7 +9432,7 @@
   },
   "mca_cycles": 1109,
   "mca_uops": 5893,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1288.75,
   "est_cycles_NP1": 805.46875
  },
  {
@@ -10012,7 +10012,7 @@
   },
   "mca_cycles": 1114,
   "mca_uops": 5930,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1294.75,
   "est_cycles_NP1": 809.21875
  },
  {
@@ -10592,7 +10592,7 @@
   },
   "mca_cycles": 1114,
   "mca_uops": 5954,
-  "est_cycles_920B": 1344.0,
+  "est_cycles_920B": 1303.75,
   "est_cycles_NP1": 814.84375
  },
  {
@@ -13044,8 +13044,8 @@
   },
   "mca_cycles": 1041,
   "mca_uops": 5414,
-  "est_cycles_920B": 1344.0,
-  "est_cycles_NP1": 876.0
+  "est_cycles_920B": 1164.25,
+  "est_cycles_NP1": 727.65625
  },
  {
   "tag": "pass1_k2_slice-1_acc_split-1_legacy_ex-1_legacy_k4-1_slice_kind-zip_row_group-8_k0_even_sve-1_k0_shared_mul-0_k0_merge8-1_k0_merge16-0_k0_epack-0_sdot_indexed-0_odd_from_k0packs-0_k2k4_from_packs-0",
@@ -13624,8 +13624,8 @@
   },
   "mca_cycles": 1055,
   "mca_uops": 5518,
-  "est_cycles_920B": 1344.0,
-  "est_cycles_NP1": 882.0
+  "est_cycles_920B": 1190.75,
+  "est_cycles_NP1": 744.21875
  },
  {
   "tag": "pass1_k2_slice-1_acc_split-1_legacy_ex-1_legacy_k4-1_slice_kind-zip_row_group-8_k0_even_sve-1_k0_shared_mul-1_k0_merge8-0_k0_merge16-0_k0_epack-0_sdot_indexed-0_odd_from_k0packs-0_k2k4_from_packs-0",
@@ -14780,8 +14780,8 @@
   },
   "mca_cycles": 1057,
   "mca_uops": 5499,
-  "est_cycles_920B": 1344.0,
-  "est_cycles_NP1": 891.0
+  "est_cycles_920B": 1187.25,
+  "est_cycles_NP1": 742.03125
  },
  {
   "tag": "pass1_k2_slice-1_acc_split-2_legacy_ex-0_legacy_k4-0_slice_kind-tbl2_row_group-4_k0_even_sve-0_k0_shared_mul-0_k0_merge8-0_k0_merge16-0_k0_epack-0_sdot_indexed-0_odd_from_k0packs-0_k2k4_from_packs-0",

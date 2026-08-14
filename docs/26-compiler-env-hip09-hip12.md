@@ -131,10 +131,10 @@ latency 参考（Neoverse-V2，cycles）：
 | RSHRN（ASIMD 代理） | 4 | V13 |
 | SMULL（ASIMD 代理） | 3 | V02 |
 
-throughput 权重：920B 用实测（dot/mul 1.0、add/permute 0.5、
-store 3.0、load 0.37，cycles/op）；NP1 把受 SVE 管道限制的类别
-按 2× 缩放（dot/mul 0.5、add/permute/narrow 0.25），load/store 暂
-沿用 920B 实测。
+throughput 权重（用户 2026-08-14 口径，实测 920B 数据可靠性不足，
+直接按管道结构算）：920B 全部按 SVE 2×256（2 条管道 → 每类
+0.5 cyc/op）；NP1 按 SVE 4×256（4 条管道 → 每类 0.25 cyc/op）；
+load/store 同样按 SVE 管道计。scalar 1.0，movprfx 融合不计。
 
 用法：
 
@@ -145,17 +145,17 @@ python3 tools/estimate_cycles.py <trace.log> <start> <end> --profile NP1
 python3 tools/search_sve2_layouts.py ... --mca-target NP1 --cost-top 10
 ```
 
-初步校准（2 个 950 锚点，2026-08-14）：
+初步校准（2 个 950 锚点，2026-08-14，结构权重）：
 
 | kernel | 950 TestBench | est(920B) | est(NP1) |
 | --- | ---: | ---: | ---: |
-| best_op_r16 | 1019~1077 | 1344 | 794 |
-| 上游 | 2107 | 3341 | 3024 |
+| best_op_r16 | 1019~1077 | 1271 | 794 |
+| 上游 | 2107 | 3341 | 2088 |
 
-NP1 对 best 低估 ~25%（frontend 限），对上游高估 ~44%（store 权重
-3.0 过重）；TestBench 的计时口径（单次调用 vs 整块）未确认前，绝对
-值只作参考，相对排序在同一 kernel 族内可用。下一步：确认 TestBench
-计时口径后用 3+ 锚点重新拟合 store/issue_rate。
+NP1 对上游几乎精确（2088 vs 2107），对 best 低估 ~24%（frontend
+限）；两个 kernel 的 IPC 分别是 ~5.3 与 ~6.3，单一 issue_rate 无法
+同时拟合，疑似 TestBench 计时口径（单次调用 vs 整块）不一致。确认
+计时口径前，绝对值只作参考，相对排序在同一 kernel 族内可用。
 
 ## 4. 工具/流程修正（本轮发现）
 

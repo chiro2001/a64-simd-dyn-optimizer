@@ -504,16 +504,28 @@ def main():
                     help="run the target-throughput cycle estimator on the "
                          "top-N passed candidates and record "
                          "est_cycles_<target> (default 0 = off)")
-    ap.add_argument("--rank-by", choices=("fused_uop", "mca"),
+    ap.add_argument("--lite-top", type=int, default=0,
+                    help="run the TestBenchLite golden gate (dct32/dct16/"
+                         "sa8d/sa8d16/interp8) on the top-N passed "
+                         "candidates and record lite_pass/lite_fails "
+                         "(default 0 = off)")
+    ap.add_argument("--lite-seeds", default="1,2,0x12345678,0xDEADBEEF,"
+                                            "987654321",
+                    help="comma-separated TestBenchLite seeds (default: the "
+                         "project's official 5-seed list)")
+    ap.add_argument("--rank-by", choices=("fused_uop", "mca", "lite"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
                          "falling back to fused_uop for candidates without "
-                         "MCA data)")
+                         "MCA data; lite requires --lite-top and puts "
+                         "TestBenchLite-passing candidates first)")
     args = ap.parse_args()
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
         args.mca_top = 10
+    if args.rank_by == "lite" and args.lite_top == 0:
+        args.lite_top = 10
     manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.mca_mcpu is None:
@@ -772,6 +784,55 @@ def main():
             for r in sorted(withcost, key=lambda r: r[key]):
                 print("  %-24s fused_uop=%d %s=%.1f"
                       % (r["tag"], fu(r), key, r[key]))
+    if args.lite_top and ok:
+        gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
+                "dct16": "dct16", "dct32": "dct32",
+                "interp8": "interp8"}.get(args.kernel)
+        seeds = [s.strip() for s in args.lite_seeds.split(",") if s.strip()]
+        if gate is None or not seeds:
+            print("lite gate unavailable for kernel %r or empty seeds"
+                  % args.kernel, file=sys.stderr)
+        else:
+            lite_sh = os.path.join(ROOT, "scripts", "build-testbench-lite.sh")
+            tb = os.path.join(ROOT, "build", "x265-8-testbench")
+            print("TestBenchLite golden gate on top-%d by fused_uop "
+                  "(%d seeds: %s):"
+                  % (min(args.lite_top, len(ok)), len(seeds),
+                     ",".join(seeds)))
+            for r in ok[:min(args.lite_top, len(ok))]:
+                obj = os.path.join(args.outdir, r["tag"] + ".o")
+                if not os.path.exists(obj):
+                    src = os.path.join(args.outdir, r["tag"] + ".cpp")
+                    cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                          "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
+                    if args.backend == "op":
+                        cc.insert(2, "-fno-tree-pre")
+                    c = run(cc, timeout=120)
+                    if c.returncode != 0:
+                        print("  %-24s lite build FAIL" % r["tag"])
+                        continue
+                passes = 0
+                fails = []
+                for s in seeds:
+                    try:
+                        p = run([lite_sh, obj, tb, "--", "--gate", gate,
+                                 "--seed", s], timeout=180)
+                    except subprocess.TimeoutExpired:
+                        fails.append(s + ":timeout")
+                        continue
+                    tail = (p.stdout or "") + (p.stderr or "")
+                    if " %s PASS" % gate in tail and "FAIL" not in tail:
+                        passes += 1
+                    else:
+                        fails.append(s)
+                r["lite_pass"] = passes == len(seeds)
+                r["lite_passed"] = passes
+                r["lite_fails"] = fails
+                print("  %-24s fused_uop=%d lite=%d/%d %s"
+                      % (r["tag"], fu(r), passes, len(seeds),
+                         "PASS" if r["lite_pass"] else "FAIL " + str(fails)))
+            if args.rank_by == "lite":
+                ok.sort(key=lambda r: (r.get("lite_pass") is not True, fu(r)))
     # persist results after the MCA pass so mca_cycles/mca_uops survive
     # (previously dumped before --mca-top ran and MCA data was lost).
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
