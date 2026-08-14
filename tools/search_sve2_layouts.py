@@ -252,6 +252,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_16x16()
         return emit_fn
+    if kernel == "idct16":
+        from emit_idct16_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit()
+        return emit_fn
     if kernel == "dct32":
         from emit_dct32_sve2_shared import emit
 
