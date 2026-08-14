@@ -303,20 +303,31 @@ scalar（fused 5932）与 scatter（fused 7329，QEMU 口径均过减半门）
 32 ld1h）。GCC 16.1 无 s16 版 ACLE，用内联 asm 发射；编译
 `-march=armv9.4-a+sve2p1`，QEMU 11.0.3 可执行。
 
-| 指标 | 原 scalar | 原 scatter | sdot scalar | sdot scatter |
+| 指标 | 原 scalar | 原 scatter | sdot scalar (-O3) | sdot scatter (-O3) |
 | --- | ---: | ---: | ---: | ---: |
-| fused_adj | 5932 | 6561 | **4770** | **4224** |
-| fused_uop | 5932 | 7329 | 4770 | 4992 |
-| MCA（neoverse-v2+sve2p1） | 5141 | 3456 | 5321 | **2877** |
+| fused_adj（objdump 口径） | 5932 | 6561 | **5462** | **5311** |
+| fused_uop | 5932 | 7329 | 5462 | **6079** |
 | est（920B/NP1 吞吐模型） | 9866 | 1935 | 16401 | 5585 |
 | cp（NV2 延迟模型） | 136 | 4170 | 2256 | 405 |
 | 20k 差分 | 0 | 0 | 0 mismatches | 0 mismatches |
 | TestBenchLite idct32 | 5/5 | 5/5 | **5/5 PASS** | **5/5 PASS** |
 
-结论：sdot-s32 把 fused 压到 4770/4992（-20%/-32%），过减半门 7614；
-这是首个 SVE2p1 指令的 IDCT32 候选，作为“960 需要 SVE2p3 系指令”
-证据链的组成部分。MCA/est/cp 模型对 sdot 链的评估仍需校准（sdot
-scalar 的 cp 2256 高于 mul 版 136，与 fused 降幅相反，需查模型分类）。
+**统计口径勘误（2026-08-14）**：QEMU 11.0.3 的 in_asm 反汇编器不识别
+SVE2p1 `sdot z.s,z.h,z.h`，把 1376 条 sdot 打成 `.byte`，parse_qemu_trace
+的 vector 统计因此漏掉全部 sdot（此前 4770/4224 为错误值）。真实动态
+指令数改用 `aarch64-linux-gnu-objdump` 静态流（kernel 无循环，静态=动态）：
+scalar 6146 / scatter 5600。**llvm-mca 亦因 neoverse-v2 模型缺
+sdot_z32 调度条目而无法评估**（`-skip-unsupported-instructions=lack-sched`
+会跳过 sdot 使结果失真）——这是自定义 mca target 的待补项。est/cp
+自定义模型可分类 sdot→dot，数据有效。
+
+**编译 flag 实测**：sdot 版必须用 `-O3`（scalar 6146→5462、scatter
+5600→5311，spill 减少）；`-O2` 下 GCC 的部分 CSE 被寄存器压力抵消。
+
+结论：sdot-s32（-O3）在 scatter 上 fused_uop -17%（7329→6079），
+scalar -8%（5932→5462）；**C 常量加载与 spill 仍占大头**（ldr_z ~1800、
+str_z ~700），是下一优化点。这是首个 SVE2p1 指令的 IDCT32 候选，
+作为“960 需要 SVE2p3 系指令”证据链的组成部分。
 
 候选固化 `kernels/idct32/candidates/sdot_{scalar,scatter}_sve2p1.{cpp,S,o}`。
 
