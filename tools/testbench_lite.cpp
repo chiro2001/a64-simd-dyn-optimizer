@@ -26,6 +26,7 @@ namespace X265_NS {
 /* C reference for DCT16 (defined in x265 common/dct.cpp, no header decl). */
 void dct16_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
 void dct32_c(const int16_t* src, int16_t* dst, intptr_t srcStride);
+void idct16_c(const int16_t* src, int16_t* dst, intptr_t dstStride);
 /* Upstream assembly reference for the 8-tap luma horizontal interpolation
  * (common/arm/ipfilter8.S). The interp8 contract is upstream-exact (user
  * ruling 2026-08-13: matching the open-source kernel is enough; the C ref
@@ -174,6 +175,10 @@ extern "C" void dynopt_dct32_sve2_shared(
     const int16_t*, int16_t*, intptr_t);
 extern "C" void dynopt_interp8_8x8_sve2(
     const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+/* IDCT16 candidate is optional (weak): the gate refuses to run when the
+ * symbol is absent, so the lite binary still links for other kernels. */
+extern "C" void dynopt_idct16_sve2_shared(
+    const int16_t*, int16_t*, intptr_t) __attribute__((weak));
 
 static int gate_dct16(unsigned int seed)
 {
@@ -305,6 +310,32 @@ static int gate_interp8(unsigned int seed)
     return ok ? 0 : 1;
 }
 
+static int gate_idct16(unsigned int seed)
+{
+    srand(seed);
+
+    EncoderPrimitives ref;
+    memset(&ref, 0, sizeof(ref));
+    ref.cu[BLOCK_16x16].idct = idct16_c;
+
+    EncoderPrimitives opt;
+    memset(&opt, 0, sizeof(opt));
+    opt.cu[BLOCK_16x16].idct = dynopt_idct16_sve2_shared;
+
+    if (!opt.cu[BLOCK_16x16].idct)
+    {
+        fprintf(stderr, "TestBenchLite: idct16 slot is NULL, gate would be "
+                        "a false PASS; refusing to run\n");
+        return 2;
+    }
+
+    MBDstHarness h;
+    const bool ok = h.testCorrectness(ref, opt);
+    printf("TestBenchLite: seed=0x%08X idct16 %s\n",
+           seed, ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(int argc, char* argv[])
 {
     unsigned int seed = (unsigned int)time(NULL);
@@ -319,7 +350,7 @@ int main(int argc, char* argv[])
         else if (!strncmp(argv[i], "--help", 6))
         {
             printf("usage: TestBenchLite [--gate "
-                   "dct16|dct32|sa8d|sa8d16|interp8] "
+                   "dct16|dct32|idct16|sa8d|sa8d16|interp8] "
                    "[--seed N]\n"
                    "reuses x265 MBDstHarness/PixelHarness/IPFilterHarness "
                    "data and C references\n");
@@ -329,6 +360,8 @@ int main(int argc, char* argv[])
 
     if (!strcmp(gate, "interp8"))
         return gate_interp8(seed);
+    if (!strcmp(gate, "idct16"))
+        return gate_idct16(seed);
     if (!strcmp(gate, "sa8d"))
         return gate_sa8d(seed);
     if (!strcmp(gate, "sa8d16"))

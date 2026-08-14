@@ -1,0 +1,44 @@
+# IDCT16 (inverse DCT 16x16) SVE2 kernel manifest.
+# 2026-08-14: x265 上游没有 SVE IDCT（只有 C/NEON），从 C 参考起步。
+kernel: idct16
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: dct
+  n: 16
+
+candidate:
+  symbol: dynopt_idct16_sve2_shared
+  verify_src: kernels/idct16/idct16_verify.cpp
+  trace_driver_src: kernels/idct16/trace_driver.cpp
+  trace_driver_c: kernels/idct16/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: idct16_c
+  symbol_mangled: _ZN4x2658idct16_cEPKsPsl
+  call: x265::idct16_c
+  decl: |
+    namespace x265 {
+    void idct16_c(const int16_t*, int16_t*, intptr_t);
+    }
+
+baselines:
+  c:
+    driver: kernels/idct16/trace_driver_upstream.cpp
+    symbol_mangled: _ZN4x2658idct16_cEPKsPsl
+
+corpus:
+  strides: [16, 17, 32]
+  value_range: [-32768, 32767]
+  cases: 20000
+
+targets:
+  # 2026-08-14 QEMU VL=256 实测：idct16_c(+partialButterflyInverse16 x2)
+  # total 2995 / vector 2830 / fused 2830（docs/27）。
+  baseline_fused_uop: 2830
+  halve_gate: 0.5
+
+layouts:
+  # 占位单轴：发射器就绪后扩展（docs/27 规划）。
+  phase: [a]
