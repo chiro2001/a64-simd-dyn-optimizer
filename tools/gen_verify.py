@@ -34,6 +34,7 @@ def generate(manifest):
     n = manifest.get("shape", {}).get("n", 16)
     n_out = n * n
     strides_c = ", ".join(str(s) for s in strides)
+    maxstride = max(strides)
     nstrides = len(strides)
     kind = manifest.get("shape", {}).get("kind", "dct")
     rows = manifest.get("shape", {}).get("rows", n)
@@ -229,7 +230,7 @@ int main(int argc, char** argv)
         for (int j = 0; j < ${n} * ${n}; j++)
             src[j] = (int16_t)((int)(rng() % (${hi} - ${lo} + 1)) + ${lo});
 
-        int16_t want[${n} * 32 + ${n}], got[${n} * 32 + ${n}];
+        int16_t want[${n} * ${maxstride} + ${n}], got[${n} * ${maxstride} + ${n}];
         memset(want, 0, sizeof(want));
         memset(got, 0, sizeof(got));
         ${ref_call}(src, want, ds);
@@ -259,7 +260,8 @@ int main(int argc, char** argv)
             path=manifest["_path"], contract=contract,
             vl=vl, decl=ref_decl, cand_sym=cand["symbol"],
             cases=cases, nstrides=nstrides, strides_c=strides_c,
-            n=n, n_out=n_out, hi=hi, lo=lo, ref_call=ref_call)
+            n=n, n_out=n_out, hi=hi, lo=lo, ref_call=ref_call,
+            maxstride=maxstride)
     if contract == "legacy-internal-exact":
         # Spec-defined legacy oracle (no internal code): pass2 E/O wrap in
         # s16, narrowing rounds then saturates (sqrshrnb semantics).

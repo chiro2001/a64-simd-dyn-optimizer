@@ -1,0 +1,46 @@
+# IDCT32 (inverse DCT 32x32) SVE2 kernel manifest.
+# 2026-08-14: x265 上游没有 SVE IDCT（只有 C/NEON），从 C 参考起步
+# （与 idct16 相同口径，docs/27 扩展）。
+kernel: idct32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: idct
+  n: 32
+
+candidate:
+  symbol: dynopt_idct32_sve2_shared
+  verify_src: kernels/idct32/idct32_verify.cpp
+  trace_driver_src: kernels/idct32/trace_driver.cpp
+  trace_driver_c: kernels/idct32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: idct32_c
+  symbol_mangled: _ZN4x2658idct32_cEPKsPsl
+  call: x265::idct32_c
+  decl: |
+    namespace x265 {
+    void idct32_c(const int16_t*, int16_t*, intptr_t);
+    }
+
+baselines:
+  c:
+    driver: kernels/idct32/trace_driver_upstream.cpp
+    symbol_mangled: _ZN4x2658idct32_cEPKsPsl
+
+corpus:
+  strides: [32, 33, 64]
+  value_range: [-32768, 32767]
+  cases: 20000
+
+targets:
+  # 2026-08-14 QEMU VL=256 实测：idct32_c(+partialButterflyInverse32 x2)
+  # dynamic 17638 / vector 15228 / fused 15228（docs/27 §8）。
+  baseline_fused_uop: 15228
+  halve_gate: 0.5
+
+layouts:
+  # store 轴同 idct16：scalar=标量转置写回；scatter=合并宽度 scatter
+  # 写回（指令数接近，MCA/est 大降）。zip32 转置待做。
+  store: [scalar, scatter]

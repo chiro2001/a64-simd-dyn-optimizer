@@ -1,0 +1,62 @@
+[
+ {
+  "tag": "store-scalar",
+  "store": "scalar",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=20480000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x408d40"
+  ],
+  "counts": {
+   "total": 17053,
+   "vector": 6229,
+   "movprfx": 297,
+   "vector_fused": 5932,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 904,
+   "vector_fused_uop": 5932
+  },
+  "baseline_ratio": 0.3895455739427371,
+  "halve_gate_met": true,
+  "mca_cycles": 5141,
+  "mca_uops": 21110,
+  "est_cycles_NP1": 9866.0,
+  "cp_cycles_NP1": 136,
+  "consensus_rank": 0.4
+ },
+ {
+  "tag": "store-scatter",
+  "store": "scatter",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=20480000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x409600"
+  ],
+  "counts": {
+   "total": 9095,
+   "vector": 6813,
+   "movprfx": 252,
+   "vector_fused": 6561,
+   "scatter_gather": 256,
+   "scatter_gather_uops": 1024,
+   "stack_vector": 758,
+   "vector_fused_uop": 7329
+  },
+  "baseline_ratio": 0.48128447596532703,
+  "halve_gate_met": true,
+  "mca_cycles": 3456,
+  "mca_uops": 10637,
+  "est_cycles_NP1": 1935.0,
+  "cp_cycles_NP1": 4170,
+  "consensus_rank": 0.6
+ }
+]

@@ -156,3 +156,65 @@ trn/zip mask 分类，MachineIR shuffle 可直接映射到 SVE 指令形式。
    `svdot_lane_s64`，非 indexed s16→s32 是 SVE2p1）；
 2. 常量表内存 load 替代每项 dup；
 3. 950 实机 paired（zip16 vs scatter vs anchor）。
+
+## 8. IDCT32 规划（2026-08-14，scaffold）
+
+### 8.1 C 参考基线（QEMU VL=256）
+
+| 指标 | 值 |
+| --- | ---: |
+| dynamic total | 17638 |
+| vector | 15228 |
+| fused_uop | **15228**（无 movprfx） |
+| 减半门 | 7614 |
+
+范围 = `_ZN4x2658idct32_cEPKsPsl`（0x406130）起 +
+`_ZL25partialButterflyInverse32PKsPsii`（0x4064e8..0x406b08）止。
+结构：O[16]（16 奇行×16 输出）、EO[8]（8 行×8 输出）、
+EEO[4]、EEEE[2]/EEEO[2]，dst[0..15]=E+O、dst[16..31]=E[15-k]-O[15-k]。
+
+### 8.2 脚手架（已完成）
+
+- `kernels/idct32/manifest.yaml`（contract=upstream-exact，ref idct32_c，
+  baseline_fused_uop=15228，halve_gate=0.5）；
+- `kernels/idct32/trace_driver{,_upstream}.cpp`（候选/C 参考单次调用）；
+- gen_verify 的 `kind: idct` 已按 shape.n 参数化，n=32 直接可用；
+- TestBenchLite 尚无 idct32 gate（后续加 weak 符号，或先以 20k 差分为
+  门禁，同 IDCT16 锚点阶段）。
+
+### 8.3 下一步
+
+### 8.4 首个 SVE2 发射器（2026-08-14，已交付）
+
+`tools/emit_idct32_sve2_shared.py`：32 列按 4×8 列 chunk
+（off=0/8/16/24）并行处理；O[16]/EO[8]/EEO[4]/EEEE/EEEO 全向量化；
+SQRSHRNB 舍入；写回支持 scalar（o[][] 标量转置）与 scatter
+（`svst1h_scatter_s32index_s32`）。g_t32 表由发射器从
+`third_party/x265/source/common/constants.cpp` 自动提取。
+
+| 指标 | C 参考 idct32_c | scalar | scatter |
+| --- | ---: | ---: | ---: |
+| dynamic | 17638 | 17053 | 9095 |
+| fused_uop（honest） | 15228 | **5932**（0.39×） | 7329（0.48×） |
+| MCA cycles | - | 5141 | **3456** |
+| est NP1 | - | 9866 | **1935** |
+| cp | - | **136** | 4170 |
+| 20k 差分 | - | 0 mismatches | 0 mismatches |
+
+两者都过减半门 7614。consensus 选 scatter（MCA/est 优），scalar 的
+cp 最短；TestBenchLite idct32 gate 待加（先以 20k 差分为门禁）。
+候选固化 `kernels/idct32/candidates/{scalar,scatter}_sve2.{cpp,S}`，
+搜索结果 `experiments/m30-idct32-search/store-axis/results.json`。
+
+### 8.5 工具修复（2026-08-14）
+
+gen_verify 的 idct 模板缓冲区写死 `${n} * 32 + ${n}`，对
+idct32+stride 64 越界（最大索引 2015 > 1056），导致假失配 15.47%。
+改为按 manifest 最大 stride 分配（`${n} * ${maxstride} + ${n}`）；
+修复后 20k 全零失配（此前的“IDCT32 失配”是 harness bug，非 kernel）。
+
+### 8.6 下一步
+
+1. zip32 转置/合并半块写回（scatter 的 cp 4170 偏高，需实机/模型校准）；
+2. TestBenchLite idct32 gate（weak 符号）；
+3. 950 实机 paired（scalar vs scatter）；sdot 化按 §7.1c 约束评估。
