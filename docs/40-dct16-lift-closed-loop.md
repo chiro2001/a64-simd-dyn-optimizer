@@ -365,4 +365,17 @@ kernels/dct16 上游 NEON（dct16_neon）
   experiments/m30-interp8vpp-search/gen-search-8x8/results.json）。
 - 无手写基线（docs/37 此前缺 vpp 8x8），首次覆盖。
 - interp8 的 hpp 8/16/32 与 vpp 8/16/32 至此全部覆盖。
+
+## 19. vertical-fir 4-tap chroma 变体：interp4vpp 16x16（2026-08-15）
+
+- vertical-fir 配方泛化：taps（4/8）、系数表（g_chromaFilter 8 相位 /
+  g_lumaFilter 1..3）、窗偏移（-1/-3）、store 宽度（8/16 字节 →
+  lane 宽度与列组）全部从 DAG 推导；chroma 的 sliding=2 暂回退 1。
+- 验收（20k 差分 0 失配，experiments/m30-interp4vpp-search/
+  gen-search-16x16/results.json）：
+  - sliding=0：503 fused / MCA 175；
+  - sliding=1：**281 / 168**（best）；
+  - 手写 171/96 —— 正确，指令数待 sdot-h/更优布局轴。
+- 修坑：sliding=0 的 tap 循环与 load 偏移必须参数化（chroma 曾越界
+  读 CTBL[4..7]）；luma 8x16/16x16 回归不受影响。
 - 通用发射器现覆盖 4 个配方族、16 个算子形状。
