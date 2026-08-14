@@ -91,7 +91,9 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
         "{",
     ]
     env = {"pix1": ("pix1", 0), "pix2": ("pix2", 0),
-           "i_pix1": 1, "i_pix2": 1}
+           "i_pix1": 1, "i_pix2": 1,
+           # numbered LLVM args (clang >= 21 uses %0..%3 without names)
+           "0": ("pix1", 0), "1": 1, "2": ("pix2", 0), "3": 1}
     types = {}
     cname = {}
 
@@ -134,10 +136,18 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
         elif op == "shuffle":
             vtype = node["type"]
             types[dst] = TYPE_MAP[vtype]
-            intrinsic = _shuffle_intrinsic(vtype, node["mask"])
-            lines.append("    %s %s = %s(%s, %s);"
-                         % (types[dst], cid(dst), intrinsic,
-                            cid(node["src"][0]), cid(node["src"][1])))
+            if vtype == "<8 x i16>" and \
+                    node["mask"] == [0, 1, 2, 3, 8, 9, 10, 11]:
+                # concat low halves (clang >= 21 emits this directly)
+                lines.append("    %s %s = vcombine_s16(vget_low_s16(%s),"
+                             " vget_low_s16(%s));"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1])))
+            else:
+                intrinsic = _shuffle_intrinsic(vtype, node["mask"])
+                lines.append("    %s %s = %s(%s, %s);"
+                             % (types[dst], cid(dst), intrinsic,
+                                cid(node["src"][0]), cid(node["src"][1])))
         elif op == "bitcast":
             src = node["src"]
             src_type = node.get("src_type")

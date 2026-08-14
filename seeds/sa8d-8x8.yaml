@@ -1,0 +1,28 @@
+# Normalized seed recipe: sa8d 8x8 NEON core (docs/41).
+# Original (m2) used Clang 18.1.3; this recipe records the toolchain in
+# provenance so any regeneration is reproducible.
+seed: sa8d-8x8
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/pixel-prim.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ithird_party/x265/source/encoder
+  - -Ibuild/x265-8-cross-make
+target_function:
+  mangled: _ZN12_GLOBAL__N_110sa8d8_neonILi8ELi8EEEiPKhlS2_l
+  demangled: (anonymous namespace)::sa8d8_neon<8,8>
+output:
+  ll: experiments/m2-seed/llvm-ir/sa8d-8x8.ll
+  json: experiments/m2-seed/imported/machine-ir.json

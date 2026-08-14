@@ -53,3 +53,21 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   按源码布局解析（docs/40 M1a2）；
 - 下一步：为 m18 interp8 / m2 sa8d 建 recipe（从各自编译命令反推），
   统一入口后 interp8/sa8d 的检测扩展直接复用同一 pipeline。
+
+## 5. 执行记录（2026-08-14）
+
+### M3a ✅：interp8 / sa8d seed recipe
+
+- `seeds/interp8-8x8.yaml`：源 `filter-neon-dotprod.cpp`，clang 22.1.8
+  `-O2 -march=armv8.2-a+dotprod`（+encoder include，`slicetype.h`）；
+  **复现 m18 136 节点逐节点相等**；
+- `seeds/sa8d-8x8.yaml`：源 `pixel-prim.cpp`，同参数；原 seed 用 clang
+  18.1.3（167 节点），本机 22.1.8 生成 **163 节点**（bitcast 32→28，
+  IR 形状差异），roundtrip 验证 **100000 cases mismatches=0**；
+- codegen 健壮性修复（clang ≥21 的 IR 形状）：
+  - `emit_c_intrinsics` env 支持编号参数 `%0..%3`（原只认命名参数）；
+  - `<8 x i16>` shuffle 模式 `[0,1,2,3,8,9,10,11]`（concat 低半）新增
+    `vcombine_s16(vget_low_s16..)` 发射；
+  - 交叉链接去掉 `-lnuma`（libx265.a 未引用 numa 符号）。
+- 说明：旧 m2 seed（clang 18）保留未覆盖；recipe 用当前工具链再生即
+  clang-22 变体，provenance 记录编译器版本，语义以 roundtrip 门禁为准。
