@@ -47,19 +47,21 @@ targets:
   baseline_fused_uop: 12710
   halve_gate: 0.5
 
-# 用户确认口径 (2026-08-14): 目标机流水线 = SVE 2x256 / NEON 4x128
-# （SVE 2 条 256-bit 执行管道、NEON 4 条 128-bit 管道，VL=256）。
-# LLVM 暂无该模型，当前用 neoverse-v2 作为 cycle 代理；920B 实测表
-# 接入后替换为自定义模型（docs/26）。
+# 用户确认口径 (2026-08-14): 两个 MCA target（latency 参考 Neoverse-V2，
+# 定义见 optimizer/mca_targets.py）：
+#   920B = SVE 2x256 / NEON 4x128（VL=256）
+#   NP1  = SVE 4x256 / NEON 4x128（VL=256，960）
+# LLVM 暂无对应 CPU，llvm-mca 仍用 neoverse-v2 代理；表驱动 cost 模型
+# 用上面两个 target 的 throughput/latency（docs/26）。
 mca_target:
-  name: kunpeng920-sve2x256
-  sve_pipes: 2
-  sve_vl_bits: 256
-  neon_pipes: 4
-  neon_vl_bits: 128
-  vl_bytes: 32
-  llvm_proxy_cpu: neoverse-v2
-  llvm_proxy_mattr: +sve2
+  default: NP1
+  targets:
+    920B: {sve_pipes: 2, sve_vl_bits: 256, neon_pipes: 4,
+           neon_vl_bits: 128, vl_bytes: 32,
+           llvm_proxy_cpu: neoverse-v2, llvm_proxy_mattr: +sve2}
+    NP1: {sve_pipes: 4, sve_vl_bits: 256, neon_pipes: 4,
+          neon_vl_bits: 128, vl_bytes: 32,
+          llvm_proxy_cpu: neoverse-v2, llvm_proxy_mattr: +sve2}
 
 # 2026-08-14: generic axis dependencies (P2). k0 axes only apply when
 # k0_even_sve is active; k0_merge8 needs row_group=8/16. row_group=16 is

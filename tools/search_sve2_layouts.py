@@ -495,6 +495,15 @@ def main():
     ap.add_argument("--mca-mattr", default=None,
                     help="llvm-mca -mattr (default: manifest "
                          "mca_target.llvm_proxy_mattr, i.e. +sve2)")
+    ap.add_argument("--mca-target", choices=("920B", "NP1"), default=None,
+                    help="target profile for the table-driven cycle "
+                         "estimator (default: manifest mca_target.default, "
+                         "i.e. NP1); llvm-mca itself still uses "
+                         "neoverse-v2 as proxy")
+    ap.add_argument("--cost-top", type=int, default=0,
+                    help="run the target-throughput cycle estimator on the "
+                         "top-N passed candidates and record "
+                         "est_cycles_<target> (default 0 = off)")
     ap.add_argument("--rank-by", choices=("fused_uop", "mca"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
@@ -513,6 +522,9 @@ def main():
     if args.mca_mattr is None:
         args.mca_mattr = manifest.get("mca_target", {}).get(
             "llvm_proxy_mattr", "+sve2")
+    if args.mca_target is None:
+        args.mca_target = manifest.get("mca_target", {}).get(
+            "default", "NP1")
     if args.contract:
         manifest["contract"] = args.contract
     contract = manifest.get("contract", "upstream-exact")
@@ -659,8 +671,13 @@ def main():
                      row.get("verify_mismatches")))
 
     json.dump(cache, open(cache_path, "w"), indent=1)
+    def fu(r):
+        """fused_uop count, tolerant of older results schemas."""
+        return r["counts"].get("vector_fused_uop",
+                               r["counts"].get("vector_fused", 0))
+
     ok = [r for r in results if r.get("passed") and r.get("counts")]
-    fused_key = lambda r: r["counts"]["vector_fused_uop"]
+    fused_key = fu
     ok.sort(key=fused_key)
     baseline = manifest.get("targets", {}).get("baseline_fused_uop")
     gate = manifest.get("targets", {}).get("halve_gate", 0.5)
@@ -673,26 +690,26 @@ def main():
           "VL=%d, docs/17 2026-08-14 口径):"
           % (max(1, vl_bytes // 8), vl_bytes * 8))
     for r in ok:
-        fu = r["counts"]["vector_fused_uop"]
+        fuc = fu(r)
         mca = r.get("mca_cycles")
-        ratio = fu / baseline if baseline else None
+        ratio = fuc / baseline if baseline else None
         gate_mark = ""
         if ratio is not None:
             gate_mark = (" HALVED" if ratio <= gate else
                          " near-gate" if ratio <= gate * 1.25 else " NO")
-        per_out = (" per_out=%.2f" % (fu / n_out)) if n_out else ""
+        per_out = (" per_out=%.2f" % (fuc / n_out)) if n_out else ""
         mca_str = (" mca=%d" % mca) if mca is not None else ""
         print("  %-24s vector=%d fused_adj=%d sg=%d stk=%d fused_uop=%d%s%s%s"
               % (r["tag"], r["counts"]["vector"],
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
                  r["counts"].get("stack_vector", 0),
-                 fu, per_out, gate_mark, mca_str))
+                 fuc, per_out, gate_mark, mca_str))
         if ratio is not None:
             r["baseline_ratio"] = ratio
             r["halve_gate_met"] = ratio <= gate
         if n_out:
-            r["fused_uop_per_output"] = round(fu / n_out, 3)
+            r["fused_uop_per_output"] = round(fuc / n_out, 3)
     if args.mca_top and ok:
         print("llvm-mca second proxy on top-%d by fused_uop "
               "(%s, complete dynamic stream):"
@@ -710,20 +727,51 @@ def main():
             r["mca_cycles"] = cycles
             r["mca_uops"] = uops
             print("  %-24s fused_uop=%d dyn=%d mca_cycles=%s mca_uops=%s"
-                  % (r["tag"], r["counts"]["vector_fused_uop"],
-                     total, cycles, uops))
+                  % (r["tag"], fu(r), total, cycles, uops))
         withmca = [r for r in ok if r.get("mca_cycles") is not None]
         if withmca:
             print("rank by mca_cycles:")
             for r in sorted(withmca, key=lambda r: r["mca_cycles"]):
                 print("  %-24s fused_uop=%d mca_cycles=%d mca_uops=%d"
-                      % (r["tag"], r["counts"]["vector_fused_uop"],
-                         r["mca_cycles"], r["mca_uops"]))
+                      % (r["tag"], fu(r), r["mca_cycles"], r["mca_uops"]))
             if args.rank_by == "mca":
                 # re-rank by the second proxy; finalize picks ok[0].
                 ok.sort(key=lambda r: (r.get("mca_cycles") is None,
                                        r.get("mca_cycles") or 10 ** 9,
-                                       r["counts"]["vector_fused_uop"]))
+                                       fu(r)))
+    if args.cost_top and ok:
+        from optimizer.mca_targets import target as mca_target
+        from optimizer.analysis.cost import TargetProfile, cycles_lb
+        from parse_qemu_trace import parse_exec
+        tgt = mca_target(args.mca_target)
+        prof = TargetProfile(tgt["name"], issue_rate=tgt["issue_rate"],
+                             **tgt["throughput"])
+        print("target-throughput estimator on top-%d by fused_uop (%s, "
+              "SVE %dx%d / NEON %dx%d):"
+              % (min(args.cost_top, len(ok)), tgt["name"],
+                 tgt["sve_pipes"], tgt["sve_vl_bits"],
+                 tgt["neon_pipes"], tgt["neon_vl_bits"]))
+        key = "est_cycles_" + tgt["name"]
+        for r in ok[:min(args.cost_top, len(ok))]:
+            trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
+            rng = candidate_range(r, args.outdir, manifest, args.backend,
+                                  args.kernel)
+            if rng is None or not os.path.exists(trace):
+                print("  %-24s no trace for estimator" % r["tag"])
+                continue
+            hist = {}
+            for insn in parse_exec(trace, rng[0], rng[1]):
+                hist[insn["mn"]] = hist.get(insn["mn"], 0) + 1
+            lb, _ = cycles_lb(hist, prof)
+            r[key] = lb
+            print("  %-24s fused_uop=%d %s=%.1f"
+                  % (r["tag"], fu(r), key, lb))
+        withcost = [r for r in ok if r.get(key) is not None]
+        if withcost:
+            print("rank by %s:" % key)
+            for r in sorted(withcost, key=lambda r: r[key]):
+                print("  %-24s fused_uop=%d %s=%.1f"
+                      % (r["tag"], fu(r), key, r[key]))
     # persist results after the MCA pass so mca_cycles/mca_uops survive
     # (previously dumped before --mca-top ran and MCA data was lost).
     json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
@@ -745,8 +793,7 @@ def main():
         c = run(["aarch64-linux-gnu-g++", "-O2", "-march=armv8.2-a+sve2",
                  "-c", src_path, "-o", obj_path])
         if c.returncode == 0:
-            print("finalized %s (fused_uop=%d)"
-                  % (src_path, best["counts"]["vector_fused_uop"]))
+            print("finalized %s (fused_uop=%d)" % (src_path, fu(best)))
             gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                     "dct16": "dct16", "dct32": "dct32",
                     "interp8": "interp8"}.get(args.kernel)

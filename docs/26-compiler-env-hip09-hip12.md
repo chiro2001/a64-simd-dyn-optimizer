@@ -107,6 +107,56 @@ NEON 4×128**（SVE 2 条 256-bit 执行管道、NEON 4 条 128-bit 管道，
 3. hip12 可用后，用 GCC hip12.md 作为 SVE2 模型的初版（补齐 SVE
    reservation），920G 实机 paired cycles 校准。
 
+## 5. 新建 MCA target：920B / NP1（2026-08-14）
+
+按用户口径新建两个 target（`optimizer/mca_targets.py`，latency 参数
+参考 LLVM Neoverse-V2 调度模型）：
+
+| target | SVE | NEON | 说明 |
+| --- | --- | --- | --- |
+| **920B** | 2×256 | 4×128 | 920B 实测 throughput 权重 |
+| **NP1** | 4×256 | 4×128 | 960；SVE 管道数 4/2 缩放 |
+
+latency 参考（Neoverse-V2，cycles）：
+
+| 类别 | latency | 管道 |
+| --- | ---: | --- |
+| ADD/SUB ZZZ | 2 | 1×V |
+| MUL ZZZ | 4 | V0/V2 |
+| SDOT HtoD | 4 | V0/V2（读推进 3） |
+| TBL/UZP/ZIP/TRN/REV | 2 | 1×V |
+| MOVPRFX | 2 | 1×V（融合） |
+| LD1（SVE） | 6 | 1×L |
+| ST1H | 2 | L01+V01 |
+| RSHRN（ASIMD 代理） | 4 | V13 |
+| SMULL（ASIMD 代理） | 3 | V02 |
+
+throughput 权重：920B 用实测（dot/mul 1.0、add/permute 0.5、
+store 3.0、load 0.37，cycles/op）；NP1 把受 SVE 管道限制的类别
+按 2× 缩放（dot/mul 0.5、add/permute/narrow 0.25），load/store 暂
+沿用 920B 实测。
+
+用法：
+
+```sh
+# 单 trace 估算（默认 NP1）
+python3 tools/estimate_cycles.py <trace.log> <start> <end> --profile NP1
+# 搜索中给 top-N 加 est_cycles_<target> 并参与排序
+python3 tools/search_sve2_layouts.py ... --mca-target NP1 --cost-top 10
+```
+
+初步校准（2 个 950 锚点，2026-08-14）：
+
+| kernel | 950 TestBench | est(920B) | est(NP1) |
+| --- | ---: | ---: | ---: |
+| best_op_r16 | 1019~1077 | 1344 | 794 |
+| 上游 | 2107 | 3341 | 3024 |
+
+NP1 对 best 低估 ~25%（frontend 限），对上游高估 ~44%（store 权重
+3.0 过重）；TestBench 的计时口径（单次调用 vs 整块）未确认前，绝对
+值只作参考，相对排序在同一 kernel 族内可用。下一步：确认 TestBench
+计时口径后用 3+ 锚点重新拟合 store/issue_rate。
+
 ## 4. 工具/流程修正（本轮发现）
 
 - `search_sve2_layouts.py --mca-top` 的 mca_cycles 之前未写回

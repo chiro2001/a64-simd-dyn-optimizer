@@ -28,14 +28,18 @@ import re
 # when it is genuinely ambiguous; here the classes are chosen to be disjoint
 # for the DCT8 op family.
 CLASSES = {
+    "dot": {"sdot", "udot", "sdot_lane", "udot_lane"},
     "mul": {"mul", "mla", "mls", "smull", "umull", "sqdmulh", "sqrdmulh",
             "fmla", "fmls", "fmul", "sqdmull", "sqdmull2"},
     "add": {"add", "sub", "saddl", "ssubl", "saddw", "ssubw", "addp",
-            "sadalp", "uadalp", "addv", "saddv", "uaddv", "addhn", "raddhn"},
+            "sadalp", "uadalp", "addv", "saddv", "uaddv", "addhn", "raddhn",
+            "saddlb", "saddlt", "ssublb", "ssublt", "addpl", "addpv"},
     "permute": {"trn1", "trn2", "zip1", "zip2", "uzp1", "uzp2", "ext", "tbl",
-                "tbx", "rev16", "rev32", "rev64", "dup", "mov"},
+                "tbx", "rev16", "rev32", "rev64", "dup", "mov",
+                "rev", "revh", "revw"},
     "narrow": {"rshrn", "sqrshrn", "uqrshrn", "shrn", "sqshrn", "uqrshl",
-               "sqxtn", "uqxtn", "sxtl", "uxtl"},
+               "sqxtn", "uqxtn", "sxtl", "uxtl",
+               "rshrnb", "rshrn2", "sqrshrnb", "sqrshrn2", "shrnb", "shrn2"},
     "load": {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r"},
     "store": {"st1", "st2", "st3", "st4", "str", "stp", "stur"},
     "shift": {"shl", "sshr", "ushr", "sli", "sri"},
@@ -105,5 +109,22 @@ N1_PROFILE = TargetProfile(
 K920B_PROFILE = TargetProfile(
     "kunpeng-920b",
     issue_rate=4.0,
-    mul=1.0, add=1.0, permute=1.0, narrow=1.0,
-    load=1.0, store=1.0, shift=1.0, scalar=1.0)
+    # 2026-08-14 920B 实测（benchmarks/sve-timing-920b/timing-920b.json，
+    # throughput cyc/op；VL=256）：SVE 2x256 下 add/permute 2/cyc、
+    # mul/sdot 1/cyc、st1h ~1/3cyc、ld1h ~2.7/cyc。rshrnb 为 SVE2，
+    # 920B 未测，暂按 narrow 0.5 估计（hip12.md shift 口径）。
+    dot=1.0, mul=1.0, add=0.5, permute=0.5, narrow=0.5,
+    load=0.37, store=3.0, shift=0.5, scalar=1.0)
+
+# Preliminary 950 (SVE2/256) calibration, 2026-08-14, 2 anchors:
+#   best_op_r16 1019~1077 cyc (use 1050), upstream 2107 cyc (user 950
+#   TestBench data). With k920b class weights the LB overestimates both
+#   (1344 / 3341); the two-point fit gives dot=0.78, store=0.70,
+#   issue_rate=6.4. Caveat: TestBench cycle measurement scope (per-call
+#   vs block) is not confirmed, so treat absolute numbers as preliminary;
+#   the relative ordering within one kernel family is the usable signal.
+K950_PROFILE = TargetProfile(
+    "kunpeng-950-sve2-256",
+    issue_rate=6.4,
+    dot=0.78, mul=1.0, add=0.5, permute=0.5, narrow=0.5,
+    load=0.37, store=0.70, shift=0.5, scalar=1.0)
