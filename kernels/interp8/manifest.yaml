@@ -53,3 +53,6 @@ layouts:
   # DYNOPT_QEMU_SVE2P3 default build/qemu-build/qemu-aarch64, and the
   # patched llvm-mca for MCA; docs/22 §5.3 / docs/29).
   compute: [sdot-d, sdot-h]
+  # pairsum=addp is the SVE2 addp(t,t)+uzp1 trick (docs/22 §5.7); uzp is
+  # the uzp1+uzp2+add baseline. addp needs SVE2 (not for 920B estimates).
+  pairsum: [addp, uzp]

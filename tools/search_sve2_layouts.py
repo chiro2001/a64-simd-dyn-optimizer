@@ -447,7 +447,8 @@ def make_emitter(kernel, backend="acle"):
             if combo.get("compute") == "sdot-h":
                 # Emit under the manifest symbol so the shared trace driver
                 # and generated verifier bind (same extern "C" signature).
-                return emit_sdot_h(func_name="dynopt_interp8_8x8_sve2")
+                return emit_sdot_h(func_name="dynopt_interp8_8x8_sve2",
+                                   pairsum=combo.get("pairsum", "addp"))
             return emit()
         return emit_fn
     if kernel in ("interp8-16", "interp8-32"):
@@ -459,7 +460,8 @@ def make_emitter(kernel, backend="acle"):
             # manifest candidate so the trace driver/verifier bind.
             return emit_sdot_h(
                 func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n,
-                unroll=combo.get("unroll") == "full")
+                unroll=combo.get("unroll") == "full",
+                pairsum=combo.get("pairsum", "addp"))
         return emit_fn
     if kernel == "interp8vpp-16":
         from emit_interp8_sve2_shared import emit_vpp_16x16

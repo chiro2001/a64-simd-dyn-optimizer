@@ -103,7 +103,7 @@ extern "C" void %s(const uint8_t* src, intptr_t srcStride,
 """ % (cpp_constants(), func_name)
 
 
-def emit_sdot_h(func_name=None, n=8, unroll=False):
+def emit_sdot_h(func_name=None, n=8, unroll=False, pairsum="addp"):
     """Path B (docs/22 §5, SVE2p3): sdot z.h,z.b,z.b direct 8-tap
     horizontal filter. 16 h-lanes = 8 pixels x 2 tap-pairs
     ((0,1)+(4,5) in lane 2p, (2,3)+(6,7) in lane 2p+1), addp sums
@@ -111,7 +111,8 @@ def emit_sdot_h(func_name=None, n=8, unroll=False):
     (custom build, patches/qemu-sve2p3-sdot-btoh.patch).
     n: 8/16/32 square shape; each 8-pixel unit uses the same base index
     vectors, with window loads at row+8u and shifted index vectors for
-    units 1/2 (16/32 only)."""
+    units 1/2 (16/32 only).  pairsum: "addp" (SVE2 addp(t,t)+uzp1, docs/22
+    §5.7, 1 instr/unit saved) or "uzp" (uzp1+uzp2+add baseline)."""
     if func_name is None:
         func_name = "dynopt_interp8_%dx%d_sve2_sdoth" % (n, n)
     return """\
@@ -198,9 +199,7 @@ static inline void interp8_unit8(
     svint16_t t = sdot_h_acc(off4096, X0, c0);
     t = sdot_h(t, X1, c1);
     // lane 2p = pixel p taps (0,1)+(4,5); lane 2p+1 = taps (2,3)+(6,7).
-    // Pair-sum: addp(t,t) -> [p0,p0,p1,p1,...] + uzp1 -> [p0..p7].
-    svint16_t d = addp_h(t, svptrue_b16());
-    svint16_t pixels = svuzp1_s16(d, d);
+    %(pairsum)s
     svuint8_t u = svqrshrunb_n_s16(pixels, 6);
     // SVE2 bottom-narrow writes each result to the low byte of its
     // 16-bit slot (bytes 0,2,4,...); uzp1 compacts to bytes 0..7.
@@ -262,7 +261,13 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
 }
 """ % {"func_name": func_name, "n": n,
        "unroll_pragma": ("#pragma clang loop unroll(full)\n    "
-                         if unroll else "")}
+                         if unroll else ""),
+       "pairsum": ("svint16_t d = addp_h(t, svptrue_b16());\n    "
+                   "svint16_t pixels = svuzp1_s16(d, d);"
+                   if pairsum == "addp" else
+                   "svint16_t pixels = svadd_s16_x(\n"
+                   "        svptrue_b16(), svuzp1_s16(t, t), "
+                   "svuzp2_s16(t, t));")}
 
 
 def emit_vpp(func_name, width=16, height=16, acc_split=1):

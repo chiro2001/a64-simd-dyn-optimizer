@@ -36,3 +36,4 @@ corpus:
 layouts:
   compute: [sdot-h]
   unroll: [loop, full]
+  pairsum: [addp, uzp]
