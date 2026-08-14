@@ -173,6 +173,18 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   （= emit_interp8_c_intrinsics，事实上的通用 node-driven NEON roundtrip
   发射器：hpp/vpp/interp4/dct8 共用）。
 
+### G4i ✅：idct16 / idct32（G2b 结构化 CFG 导入，docs/42 §13）
+
+- idct16：opt_unroll（剥离 !llvm.loop）→ structured 导入（diamond DAG）
+  → 线性 goto codegen → 门禁 **20000 cases 0 失配** → 全流程 best
+  **852 fused**（< 手写 980）；
+- idct32：`-inline-threshold=100000` 强制内联两个
+  partialButterflyInverse32 pass（21926 行 IR）→ 同管线 → 门禁
+  **5000 cases 0 失配**（833 blocks）→ 全流程 best **4688 fused**
+  （< 手写 5085）；
+- 根因修复：addr 指针单位（int16_t* 需按字节运算）；调试解释器
+  experiments/m30-idct16-search/interp_structured.py。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

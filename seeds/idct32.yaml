@@ -1,0 +1,46 @@
+# Normalized seed recipe: idct32 upstream NEON (dct-prim.cpp).
+# The two partialButterflyInverse32 passes are force-inlined
+# (-inline-threshold=100000), then opt_unroll strips !llvm.loop and
+# unrolls counted self-loops; the data-dependent diamond DAG is imported
+# with the structured (nested CFG) importer (docs/42 G2b).
+seed: idct32
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/dct-prim.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O3
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=16
+  - -mllvm
+  - -inline-threshold=100000
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ibuild/x265-8-cross-make
+extract:
+  opt_unroll: true
+  inject_constants: true
+  import_mode: structured
+target_function:
+  mangled: _ZN4x26511idct32_neonEPKsPsl
+  demangled: x265::idct32_neon
+output:
+  ll: experiments/m30-idct32-search/llvm-ir/idct32-neon-seed.ll
+  json: experiments/m30-idct32-search/imported/machine-ir.json
+verify:
+  codegen: emit_structured_neon_intrinsics
+  func_name: dynopt_idct32_neon_roundtrip
+  harness: kernels/idct32/roundtrip_verify_neon.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  cases: 5000

@@ -222,3 +222,13 @@ sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里�
   记录；MCA 895 需后续按 consensus 复核）；
 - G2b 里程碑达成：**idct16 成为第 12 个 seed 线覆盖的 kernel**，
   同时解锁 idct32/dct32 同类结构。
+
+## 14. 2026-08-14 idct32 同结构推广完成
+
+- idct32_neon 是薄壳（两个 partialButterflyInverse32 pass + alloca），
+  clang 默认不内联；`-mllvm -inline-threshold=100000` 强制内联后
+  21926 行 IR；opt_unroll + structured 导入 → **833 blocks**；
+- 线性 goto codegen 46203 行 C；门禁 **5000 cases mismatches=0**；
+- 全流程 best **4688 fused**（< 手写 5085；MCA 3161 待 consensus）；
+- 教训：recipe verify 需显式 `func_name`（默认 emit 的 dct16 名），
+  链接错误暴露。
