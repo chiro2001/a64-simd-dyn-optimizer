@@ -17,9 +17,13 @@ fused reduction vs upstream, and a verdict (PASS if median >= threshold).
 
 import argparse
 import csv
+import json
+import os
 import random
 import statistics
 import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_pairs(path):
@@ -50,6 +54,12 @@ def main():
     fused = dict(k.split("=", 1) for k in args.fused)
     up = dict(k.split("=", 1) for k in args.upstream)
     mca = dict(k.split("=", 1) for k in args.mca)
+    known = {}
+    try:
+        known = json.load(open(os.path.join(
+            ROOT, "reports", "known_kernels.json")))
+    except (IOError, ValueError):
+        pass
     rng = random.Random(0xC0FFEE)
 
     print("%-16s %-6s %-9s %-14s %-10s %-9s %-6s" %
@@ -71,6 +81,12 @@ def main():
         lo, hi = bs[int(0.025 * B)], bs[int(0.975 * B)]
         f = fused.get(name, "")
         u = up.get(name, "")
+        if not f and name in known:
+            f = str(known[name].get("fused", ""))
+        if not u and name in known:
+            u = str(known[name].get("upstream", ""))
+        if not mca.get(name, "") and name in known:
+            mca[name] = str(known[name].get("mca", ""))
         red = ""
         if f and u:
             red = "%.0f%%" % ((1 - float(f) / float(u)) * 100)

@@ -189,7 +189,8 @@ ipb8(sve2sub)     ...    ...   ...      ...      ...
 # 对每个 kernel 的 paired CSV 出对照/验收表（fused/MCA 可本地填）：
 python3 tools/parse_quick_report.py \
   ivpp16=/tmp/vpp16.csv sa8d16=/tmp/sa8d16.csv \
-  --fused ivpp16=247 --upstream ivpp16=400 --mca ivpp16=157 \
-  --fused sa8d16=186 --upstream sa8d16=373
+  # 已内置 known_kernels.json 对照表（ivpp16/sa8d16/ipb8|16|32_sub/
+  #  idct16|32_sub/dct8/dct16/dct32），也可用 --fused/--upstream/--mca
+  #  覆盖
 # 输出：pairs/median/bootstrap95/fused降幅/verdict（median>=1.10 为 PASS）
 ```
