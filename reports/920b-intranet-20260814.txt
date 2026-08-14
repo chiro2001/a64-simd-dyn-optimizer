@@ -5,10 +5,15 @@ nproc: 256 (shared node, 2 sockets x64 core Kunpeng, CPU part 0xd02)
 lscpu: HiSilicon Kunpeng; L1d 8MiB(128) L2 160MiB(128) L3 224MiB(4); RAM 502GiB
 VL: sve_default_vector_length=32 (256-bit)
 ISA (cpuinfo): SVE1 feature list, NO 'sve2' flag.
-  NOTE: direct probes show this silicon EXECUTES SVE2 (svdot_s64 'sdot z.d,z.h,z.h'
-  and 'splice' run without SIGILL), even though /proc/cpuinfo omits sve2.
-  => dct8 (SVE2 svdot candidate) runs natively here; strict-SVE1 assumption does NOT hold.
-  => substituted rows below are SVE1-shape builds; still valid CNTVCT perf estimates here.
+  NOTE (2026-08-14 修正): sdot z.d,z.h,z.h (HtoD) and splice are BOTH SVE1
+  instructions, so these probes do NOT prove SVE2 capability. The node is
+  still treated as strict SVE1 (no SVE2 evidence).
+  => dct8 runs natively here because the candidate is SVE1+NEON bridge
+  (svdot_s64 = SVE1 HtoD; rshrn = ASIMD), NOT because the node has SVE2.
+  => sa8d16 (cadd, SVE2) / interp8 vpp / hpp path-A (SVE2 rshrnb/sdot.h)
+  still cannot run natively on this node.
+  => substituted rows below are SVE1-shape builds; still valid CNTVCT perf
+  estimates here.
 
 Toolchain: clang-22 (conda llamacpp, 22.1.8), gcc-latest (conda, GCC 15.1), system g++ 12.3.1
 x265 reference libs built natively from b81f650 with -march=armv8.2-a+sve:
@@ -34,7 +39,8 @@ dct8               native 0.07-0.08 (unreliable)     ~0.75          HIGH VARIANC
 [conclusions / open items]
   1. Substituted (SVE1-shape) idct16/idct32/interp8-B results are reproducible and load
      close to cloud; ipb16 diverges >10% from cloud sample.
-  2. This intranet host is SVE2-capable at instruction level despite cpuinfo-> no 'sve2':
-     needs to be treated as an SVE2-enabled Kunpeng, not a strict-SVE1 920B.
+  2. (修正) The probes used (sdot z.d,z.h,z.h and splice) are SVE1, so this
+     intranet host gives NO SVE2 evidence; treat it as strict-SVE1 920B.
+     dct8's native run is explained by its SVE1+NEON instruction set.
   3. dct8 measurement unreliable (extreme latency variance on the shared 256-core node).
   4. Full lite gate requires building/linking all candidate objects; not completed.
