@@ -22,6 +22,9 @@ uname -m && lscpu | grep -E 'Model name|CPU max'
 # x265 参考库：与 docs/32 §2 相同，但 CFLAGS 用 -march=armv8.2-a+sve
 ```
 
+编译器要求同 docs/32 §2.1：sve2p3 源码只在开发机用交叉 clang 22.1.8 /
+GCC 16.1.0 生成 .S；920B 只汇编替换后的 sve1 代码 + 链接。
+
 ## 3. 门禁
 
 920B 上只有 SVE1 兼容候选能跑 lite gate：

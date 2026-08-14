@@ -29,9 +29,20 @@ else
     exit 2
 fi
 
-# Native aarch64 prefers g++/as; keep cross for non-aarch64 hosts.
+# Native aarch64 prefers g++/as, but sve2p3 source generation needs a
+# modern compiler (clang >= 19 or GCC >= 16). Probe the native compiler;
+# if it cannot assemble `sdot z.h,z.b,z.b`, fall back to the cross
+# toolchain (docs/32 §2 compiler requirements).
 if [ "$(uname -m)" = aarch64 ]; then
-    export CXX="${CXX:-g++}"
+    if printf 'sdot z0.h, z1.b, z2.b\n' | \
+            g++ -march=armv9.5-a+sve2p3 -x assembler -c - -o /tmp/ccprobe.o \
+            >/dev/null 2>&1; then
+        export CXX="${CXX:-g++}"
+    else
+        say "  WARN: native g++ lacks SVE2p3; falling back to cross"
+        say "  CXX=${CXX:-aarch64-linux-gnu-g++} (or build .S locally, docs/32 §2)"
+        export CXX="${CXX:-aarch64-linux-gnu-g++}"
+    fi
     export AS="${AS:-as}"
     NATIVE_CC=g++
     NATIVE_AS=as

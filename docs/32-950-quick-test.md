@@ -34,6 +34,22 @@ cmake --build build/x265-8-950 -j$(nproc)
 # 之后所有脚本用 BUILD=build/x265-8-950
 ```
 
+### 2.1 编译器要求（2026-08-14，950/920B 实测常见坑）
+
+生成 interp8 path-B 的 .S 需要支持 **SVE2p3** 的编译器：
+
+- 本地交叉工具链（开发机）：**clang 22.1.8**（`-march=armv9.4-a+sve2p3`）
+  与 **GCC 16.1.0**（`-march=armv9.5-a+sve2p3`），均支持；
+- 实机系统 gcc/g++ 通常太旧（≤GCC 14 无 sve2p3，个别连 sve2 都缺）。
+  **不要让实机原生编译 sve2p3 源码**；
+- 正确姿势：.S 生成/替换在**开发机（本地交叉）完成**，实机只负责
+  `as`（替换后代码只需 sve1/sve2，binutils 2.47 即可）+ 链接微基准；
+- `quick-test-real-machine.sh` 已加编译器探测：aarch64 上若原生 g++
+  无法汇编 `sdot z.h,z.b,z.b`，自动回退交叉工具链并打印警告；
+- 若实机连交叉工具链也没有：在开发机跑
+  `build-interp8-substituted-microbench.sh <shape> sve2 build/ipb16_mb`
+  后用 `scp` 把二进制传过去直接 paired（二进制的运行不需要新编译器）。
+
 ## 3. 门禁（正确性，必须 PASS）
 
 ```sh
