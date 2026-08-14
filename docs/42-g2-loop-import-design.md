@@ -86,6 +86,33 @@
 （G2b），工作量 ~1 个专职会话；在此之前的正确性/优化均由既有特化
 路径（op 后端 + 分组发射器）覆盖，不阻塞主目标验收。
 
+## 7. 2026-08-14 二次实测：结构已精确拆解（G2b 路径已验证）
+
+用 Tarjan SCC 分析 idct16_neon 的真实 CFG：
+
+- **无多块循环**；只有 **8 个单块自循环**（do-while，iv 0→4→8，
+  2 次迭代，块内处理 4 行）；
+- 自循环**可以被 LLVM 解决**：把 br 上的 `!llvm.loop` metadata
+  剥离（x265 源码 pragma 禁用了 unroll）后，
+  `opt -passes="loop-unroll-full"` 成功展开（br 192→184，
+  self-loop 引用归零）；再跑
+  `function(sccp,instcombine,gvn,simplifycfg)` → 176 br / 88 icmp；
+- 剩余 88 个 `icmp eq i64 <bitcast <4 x i16> 中间值>, 0` 来自源码
+  `partialButterflyInverse16_neon` 的
+  `if (vget_lane_u64(butterfly_sum) != 0) 跳过计算`——**输入数据
+  依赖**，常量折叠不可解。
+
+### G2b 落地路径（已验证前提）
+
+1. **自循环**：extract_seed 增加 `opt_unroll: true`——剥离
+   `!llvm.loop`、注入源码常量表（g_t16/g_t8，可选）、
+   `loop-unroll-full` + `function(sccp,instcombine,gvn,simplifycfg)`；
+2. **数据依赖 diamond**：展开后 CFG 是 DAG；对每个
+   `br i1 %c, label %A, label %B` + merge phi，lower 为
+   MachineIR `select`（条件 + 两路值），codegen 发射
+   `vbsl`/三元；**这是 G2b 的核心剩余工作**；
+3. 验收不变（docs/42 §3）。
+
 ## 5. 关联
 
 - 成功后可顺带覆盖：idct32、dct32_neon（同逆蝶形结构）、quant/sao
