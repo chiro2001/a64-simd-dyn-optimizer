@@ -94,6 +94,24 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 - 920B SVE1 指令实测表：`benchmarks/sve-timing-920b/timing-920b.json`
   （仅作参考；target 权重已改为结构口径，不再使用实测值）。
 
+### 0.6 其他算子全代理基线（2026-08-14）
+
+| kernel | 候选 | fused_uop | MCA | NP1 est | cp | lite 5 seed |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| sa8d16 | reduce-sve | 189（near-gate 186.5） | 72 | 111 | 35 | PASS |
+| interp8 | path-a | 127（基线 141） | 121 | 46 | 33 | PASS |
+
+sa8d16 离减半门还差 ~3 条 fused_uop，是下一个可加轴的候选（emitter
+`emit_sa8d_sve2_shared.emit_16x16` 目前无参数）；interp8 只有 1 条
+路径（phase-1 8x8），可扩展 unroll/regroup 轴。结果分别存
+`experiments/m30-sa8d16-search/layout-search-proxy/` 与
+`experiments/m30-interp8-search/layout-search-proxy/`。
+
+**lite 检测修正（2026-08-14）**：搜索里 lite PASS 判定从
+`" <gate> PASS"` 精确匹配改为通用 `"PASS"`（harness 对 sa8d16 输出
+`sa8d[16x16] PASS`、interp8 输出 `interp8[8x8 luma_hpp] PASS`，
+之前会被误判 FAIL）。
+
 ## 1. 实际工作流（docs/23 是权威描述，这里给执行速记）
 
 ```text

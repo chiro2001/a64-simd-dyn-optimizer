@@ -1,0 +1,34 @@
+[
+ {
+  "tag": "path-a",
+  "path": "a",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x4008c0"
+  ],
+  "counts": {
+   "total": 193,
+   "vector": 143,
+   "movprfx": 16,
+   "vector_fused": 127,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 127
+  },
+  "baseline_ratio": 0.900709219858156,
+  "halve_gate_met": false,
+  "mca_cycles": 121,
+  "mca_uops": 191,
+  "est_cycles_NP1": 46.0,
+  "cp_cycles_NP1": 33,
+  "lite_pass": true,
+  "lite_passed": 5,
+  "lite_fails": []
+ }
+]

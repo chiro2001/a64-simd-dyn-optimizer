@@ -859,7 +859,9 @@ def main():
                         fails.append(s + ":timeout")
                         continue
                     tail = (p.stdout or "") + (p.stderr or "")
-                    if " %s PASS" % gate in tail and "FAIL" not in tail:
+                    # harness prints e.g. "dct32 PASS", "sa8d[16x16] PASS",
+                    # "interp8[8x8 luma_hpp] PASS" -- use the generic marker.
+                    if "PASS" in tail and "FAIL" not in tail:
                         passes += 1
                     else:
                         fails.append(s)
