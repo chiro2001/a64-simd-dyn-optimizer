@@ -1201,6 +1201,12 @@ const_inline WIP）。`rshrnb`+`uzp1_s16` 是必要组合，不能省。
   Spearman(cp, fused)=-0.255、top-10 内 Spearman(cp, MCA)=0.428。
   因此 cycle 主代理仍是 llvm-mca + 结构成本，cp 只作为“同族内
   依赖链是否更短”的补充信号。
+- **consensus 重排（2026-08-14，修复缓存 range 后）**：
+  `--rank-by consensus`（fused/MCA/est/cp/lite 归一化排名平均）在
+  688 候选中把 **4014 排第一（cons 1.00）**，其次 4002（2.60）、
+  3930（3.00）；4014 是唯一在全部代理 + lite 上都靠前的候选，
+  与 best_op_mca 一致。结果落
+  `experiments/m30-dct32-search/layout-search-m32/results.json`。
 - 机器口径提醒：950 实测只与 920B 结构（SVE 2×256）对照，NP1/960
   （SVE 4×256）无实机数据；4014 的实机优势需在 950 上 paired 验证
   （MCA 预测 1041 vs 1094，约 -5%）。
