@@ -566,6 +566,11 @@ bash scripts/build-testbench-lite.sh kernels/idct32/candidates/best_sve2.o \
   build/x265-8-testbench -- --gate idct32 --seed 1
 # 950/960 实机 paired：CNTVCT 微基准（同 dct32_microbench 模式）对比
 # 上游 NEON idct32 vs best_sve2；NP1(960) 口径 vector_lb ≤1276.75。
+# 微基准（2026-08-14 新增，本地 QEMU 已验证 0 失配）：
+bash scripts/build-idct-microbench.sh idct32 build/idct32_microbench
+bash scripts/bench-dct32-paired.sh build/idct32_microbench neon cand
+bash scripts/build-idct-microbench.sh idct16 build/idct16_microbench
+bash scripts/bench-dct32-paired.sh build/idct16_microbench neon cand
 ```
 
 注意：950（920G）实测早期 sdot 候选曾 1.08× 慢于 NEON，需用当前
