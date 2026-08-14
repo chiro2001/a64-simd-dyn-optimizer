@@ -1,17 +1,78 @@
 {
-  "_comment": "Expected local metrics per quick-test kernel label (docs/10, docs/22, docs/34). fused = candidate fused_uop, upstream = upstream NEON fused, mca = candidate MCA cycles (NV2 proxy). Updated 2026-08-14.",
-  "ivpp16":       {"fused": 247, "upstream": 400,  "mca": 157},
-  "ivpp32":       {"fused": 936, "upstream": 1572, "mca": 547},
-  "sa8d16":       {"fused": 186, "upstream": 373,  "mca": 73},
-  "ipb8_sub":     {"fused": 93,  "upstream": 141,  "mca": 53},
-  "ipb16_sub":    {"fused": 327, "upstream": 467,  "mca": 114},
-  "ipb32_sub":    {"fused": 1289,"upstream": 1829, "mca": 369},
-  "ipb8":         {"fused": 93,  "upstream": 141,  "mca": 53},
-  "ipb16":        {"fused": 327, "upstream": 467,  "mca": 114},
-  "ipb32":        {"fused": 1289,"upstream": 1829, "mca": 369},
-  "idct16_sub":   {"fused": 980, "upstream": 1487, "mca": 246},
-  "idct32_sub":   {"fused": 5085,"upstream": 10214,"mca": 1164},
-  "dct8":         {"fused": 289, "upstream": 146,  "mca": 77},
-  "dct16":        {"fused": 847, "upstream": 1808, "mca": 220},
-  "dct32":        {"fused": 4014,"upstream": 12710,"mca": 1041}
+ "_comment": "Expected local metrics per quick-test kernel label (docs/10, docs/22, docs/34). fused = candidate fused_uop, upstream = upstream NEON fused, mca = candidate MCA cycles (NV2 proxy). Updated 2026-08-14.",
+ "ivpp16": {
+  "fused": 247,
+  "upstream": 400,
+  "mca": 157
+ },
+ "ivpp32": {
+  "fused": 936,
+  "upstream": 1572,
+  "mca": 547
+ },
+ "sa8d16": {
+  "fused": 186,
+  "upstream": 373,
+  "mca": 73
+ },
+ "ipb8_sub": {
+  "fused": 93,
+  "upstream": 141,
+  "mca": 53
+ },
+ "ipb16_sub": {
+  "fused": 327,
+  "upstream": 467,
+  "mca": 114
+ },
+ "ipb32_sub": {
+  "fused": 1289,
+  "upstream": 1829,
+  "mca": 369
+ },
+ "ipb8": {
+  "fused": 93,
+  "upstream": 141,
+  "mca": 53
+ },
+ "ipb16": {
+  "fused": 327,
+  "upstream": 467,
+  "mca": 114
+ },
+ "ipb32": {
+  "fused": 1289,
+  "upstream": 1829,
+  "mca": 369
+ },
+ "idct16_sub": {
+  "fused": 980,
+  "upstream": 1487,
+  "mca": 246
+ },
+ "idct32_sub": {
+  "fused": 5085,
+  "upstream": 10214,
+  "mca": 1164
+ },
+ "dct8": {
+  "fused": 289,
+  "upstream": 146,
+  "mca": 77
+ },
+ "dct16": {
+  "fused": 847,
+  "upstream": 1808,
+  "mca": 220
+ },
+ "dct32": {
+  "fused": 4014,
+  "upstream": 12710,
+  "mca": 1041
+ },
+ "interp4_16x16": {
+  "fused": 165,
+  "upstream": 345,
+  "mca": 70
+ }
 }

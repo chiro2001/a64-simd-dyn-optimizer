@@ -287,3 +287,21 @@ TestBenchLite（hpp 8/16/32 + vpp 16/32）PASS；fused 与 MCA 双降：
 
 注：addp 为 SVE2-only，920B（SVE1）替换预估仍沿用旧变体（docs/29
 数字不变）；addp 变体面向 950/960。
+
+### 5.8 interp4（chroma 4-tap hpp）16x16（2026-08-14）
+
+新算子族：chroma 4-tap 水平插值，参考
+`interp4_horiz_pp_dotprod<16,16>`（NEON dotprod，g_chromaFilter 8 相位）。
+SVE2p3 结构：每行 16 像素 = 一个 z.h 向量；1 次 TBL 建滑动字节对 +
+2 次 SDOT BtoH（4 乘积/ lane，s16 内安全，先不加 8192）+ 收窄前补
+8192。每行 9 条（ld1b/sub/tbl/sdot×2/add/sqrshrunb/uzp1/st1b）。
+
+| 实现 | fused | MCA | uOps | 20k×7 相位 |
+| --- | ---: | ---: | ---: | ---: |
+| 上游 dotprod 16x16 | 345 | 79 | 354 | — |
+| **SVE2p3 候选** | **165（-52%，过减半门 172.5）** | **70（-11%）** | 258 | 0 失配 |
+
+- 少数 **MCA 也赢** 的 SVE 内核（vpp/dct8 曾 MCA 判慢但实机反超）；
+- 已接入搜索（manifest `interp4` + gen_verify interp4 模板，7 相位）；
+  候选固化 `kernels/interp4/candidates/best_sve2.*`；
+- SVE2p3-only：950 不原生，等 960 实机验收（可走 sve2 替换预估）。

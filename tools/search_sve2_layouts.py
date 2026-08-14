@@ -477,6 +477,12 @@ def make_emitter(kernel, backend="acle"):
             return emit_vpp_32x32(
                 acc_split=combo.get("acc_split", 1))
         return emit_fn
+    if kernel == "interp4":
+        from emit_interp4_sve2_shared import emit_16x16
+
+        def emit_fn(combo):
+            return emit_16x16()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
