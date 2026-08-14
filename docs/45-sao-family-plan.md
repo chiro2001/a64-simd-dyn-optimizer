@@ -10,12 +10,17 @@
   （`kernels/sao/seed_e0.cpp`），门禁 20k 例 0 失配，对照
   **开源 NEON `processSaoCUE0_neon`（harness 直接编译
   loopfilter-prim.cpp）** + C 基线；
+- saoCuOrgE0 **SVE2 搜索 ✅（305 fused / MCA 133，20k 0 失配）**：
+  svld1sb 符号扩展 offset 表 + svtbl_u16 查表 + splice/tbl 构造
+  per-lane signLeft（[signL, -sr0..-sr6]）+ 有符号 s16 clip +
+  svqxtnb_u16 无符号窄化；
 - 新 codegen 资产：sao_e0 ABI、`smax/smin/sqxtun/tbl1`、
   `vext_s8(a,b,7)`/`vqtbl1_s8(vcombine_s8(...))` shifter、
   <8 x i8> splat/vneg/vadd、标量 load、add/sub 的 128-bit `q` 判定、
   intrinsic arg 剥 `range(...)` 注解、splat 常量 add；
-- 待办：saoCuOrgE0 的 **SVE2 搜索层**（svtbl 结构）、E1/E2/E3/B0、
-  Stats 族（sao-prim-sve2.cpp 已有上游 SVE2 统计可对照）。
+- 待办：E1/E2/E3/B0、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
+  统计可对照）；E0 若追求更优可试 16 像素/块（降低 splice/tbl
+  每块开销，当前 305 vs NEON ~230）。
 
 ## 2. E0 语义（已实测）
 
@@ -40,3 +45,13 @@ insertelement+shuffle+tbl1）实现 8 像素并行。
   `svlastb`/提取语义正确（E0 的 NEON carry 是 -sign[7]）；
 - 门禁依赖 harness 直接编译 loopfilter-prim.cpp（静态函数），
   注意 HIGH_BIT_DEPTH=0 的宏分支。
+
+## 5. E0 SVE2 语义实测记录
+
+- offset 表必须**符号扩展**（svld1sb_u16），零扩展会把 -4 变成 252；
+- per-lane signLeft = [signL, -sr0..-sr6]，用
+  `svsplice(pg8, nsr, dup(signL))` 把 signL 放到表 lane8，再
+  `svtbl_s16(table, [8,0..6])` 取出；
+- clip 必须在 **s16 有符号域**（-2→0，不能按 u16 65534→255）；
+- 窄化必须用**无符号** `svqxtnb_u16`（`svqxtnb_s16` 会把 >127
+  饱和成 127，破坏 128..255 输出）。

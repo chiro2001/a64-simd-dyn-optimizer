@@ -15,7 +15,7 @@
 | interp8 | （嵌套 luma_*） | hpp 8/16/32、vpp 16/32 | 缺 vpp 8x8、hps/vps/sp/ss |
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
 | **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | **全部 ✅**：dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、quant 508/169、nquant 329/131 | 纯汇编，走 C/ACLE seed 模式（docs/44） |
-| **sao** | 10（saoCuOrg*/Stats*） | **saoCuOrgE0 ✅（seed+门禁，width64）**；搜索层待做 | 有 ACLE NEON 源码可做 seed（docs/45） |
+| **sao** | 10（saoCuOrg*/Stats*） | **saoCuOrgE0 ✅（305 fused / MCA 133，width64）** | E1/E2/E3/B0/Stats 待做（docs/45） |
 | pixel-util | 2（scale1D/2D） | **scale1D_128to64 ✅（24/21）；scale2D_64to32 ✅（1664/378，正确但结构劣于 NEON uaddlp）** | pixel-util 收齐（2026-08-15） |
 | ssim | 1（ssim_4x4x2_core） | **ssim ✅（45 fused / MCA 47）** | 简单（2026-08-15） |
 | misc | findPosFirstLast/costCoeffNxN/scanPosLast/weight_pp/planecopy | 无 | 小算子，收益低 |

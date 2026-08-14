@@ -557,6 +557,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "sao":
+        from emit_sao_e0_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "sad-32":
         from emit_sad_sve2_shared import emit_32x32
 
@@ -629,8 +635,12 @@ def measure_layout_candidate(task):
         return None, None, "BUILD FAIL"
     verify = os.path.join(outdir, tag + "-verify")
     try:
+        _inc = ["-I" + os.path.join(ROOT, d) for d in (
+            "third_party/x265/source",
+            "third_party/x265/source/common",
+            "build/x265-8-cross-make")]
         v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                 "-march=" + candidate_march(combo),
+                 "-march=" + candidate_march(combo)] + _inc + [
                  verify_src, obj, "-Wl,--start-group",
                  repo_path(manifest, manifest["reference"]["lib"]),
                  "-Wl,--end-group",
