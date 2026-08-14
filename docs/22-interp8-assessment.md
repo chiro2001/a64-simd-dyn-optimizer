@@ -253,9 +253,15 @@ TestBenchLite（`+16x16 vpp`）PASS。候选固化
 | 上游 vpp 16x16 | 400 | 112 | 476 | NEON 基线 |
 | vpp acc_split=1（GCC） | **257（-36%）** | 168 | 344 | 2×4 乘积累加器 |
 | vpp acc_split=2（GCC） | 293 | 171 | 422 | 4×2 乘积累加器（链更短但模型不奖励） |
+| 上游 vpp 32x32 | 1572 | 388 | 1834 | NEON 基线 |
+| vpp32 acc_split=1（GCC） | **936（-40%）** | 547 | 1279 | 软件流水（逐行惰性加载，峰值 9 行活跃） |
+| vpp32 acc_split=2（GCC） | 1066 | 577 | 1535 | 4 累加器变体 |
 
 - 指令数 -36%；MCA 反而 +50%（MLA 4 连依赖链 + NV2 模型保守），
   与水平方向结论一致：指令收益明确，cycle 以 950/960 实机为准。
 - 已接入搜索工具：manifest `interp8vpp-16`（gen_verify 新增
   interp8vpp 模板，带行上边距），`acc_split: [1,2]` 轴可自动枚举；
   acc_split=1 双指标最优。
+- **vpp32 注意**：32 列宽块要求 dstStride ≥ 32；生成验证的 corpus
+  strides 用 [32,64]（ds=16 是非法配置，上游自身在该配置下行为
+  依赖 ds，实测 2026-08-14）。
