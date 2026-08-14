@@ -1,46 +1,41 @@
-=== 920B real machine quick test (intranet) 2026-08-14 ===
-git: f44d0b9 (repo) ; x265 pinned b81f650 (fetched from GitHub mirror; bitbucket unreachable)
-uname: Linux 6.6.0-145.0.10.141.oe2403sp3.aarch64
-nproc: 256 (shared node, 2 sockets x64 core Kunpeng, CPU part 0xd02)
-lscpu: HiSilicon Kunpeng; L1d 8MiB(128) L2 160MiB(128) L3 224MiB(4); RAM 502GiB
+=== 920B real machine quick test (intranet) 2026-08-14 (final, post-pull becc57b) ===
+git: becc57b (repo); x265 pinned b81f650 (fetched from GitHub mirror; bitbucket unreachable)
+uname: Linux 6.6.0-145.0.10.141.oe2403sp3.aarch64; nproc 256 (shared Kunpeng node, part 0xd02)
 VL: sve_default_vector_length=32 (256-bit)
-ISA (cpuinfo): SVE1 feature list, NO 'sve2' flag.
-  NOTE (2026-08-14 修正): sdot z.d,z.h,z.h (HtoD) and splice are BOTH SVE1
-  instructions, so these probes do NOT prove SVE2 capability. The node is
-  still treated as strict SVE1 (no SVE2 evidence).
-  => dct8 runs natively here because the candidate is SVE1+NEON bridge
-  (svdot_s64 = SVE1 HtoD; rshrn = ASIMD), NOT because the node has SVE2.
-  => sa8d16 (cadd, SVE2) / interp8 vpp / hpp path-A (SVE2 rshrnb/sdot.h)
-  still cannot run natively on this node.
-  => substituted rows below are SVE1-shape builds; still valid CNTVCT perf
-  estimates here.
+ISA: cpuinfo = SVE1 feature list (NO 'sve2' flag).
+  Verified directly: sa8d best candidate (svtbl2 + cadd, SVE2-only) -> SIGILL (exit 132).
+  => node is STRICT SVE1. (Earlier splice/sdot.d probes: these are SVE1 forms on this
+     silicon, NOT evidence of SVE2.) sve2p1/sve2p3 kernels cannot run natively.
 
-Toolchain: clang-22 (conda llamacpp, 22.1.8), gcc-latest (conda, GCC 15.1), system g++ 12.3.1
-x265 reference libs built natively from b81f650 with -march=armv8.2-a+sve:
-  build/x265-8-920b/libx265.a (gcc) and build/x265-8-clang-sve/libx265.a (copy)
-Candidate substitution: tools/substitute_unsupported.py extended with splice->sel
-  (SVE1-shape rule; repo's committed tool did NOT handle splice from zip16 candidates).
+Toolchain: clang-22 (conda llamacpp 22.1.8) + gcc-latest (GCC 15.1) + system g++ 12.3.1
+Reference libs: build/x265-8-920b & build/x265-8-clang-sve (both = b81f650, -march=armv8.2-a+sve)
+Substitution: official tools/substitute_unsupported.py now handles splice->sel (sve1);
+  plus sdot H->B and sqrshrnb -> asr+uzp1. Values NOT exact; CNTVCT perf estimate only.
 
-[paired] neon/cand median (ratio=neon/cand; >1 => cand faster). CNTVCT, taskset -c 0.
-kernel             sub?   ratio    bootstrap95       cloud(docs/29)   note
-idct16             sve1   0.8462   [0.8181,0.8519]   0.905           cand ~18% slower (vs cloud ~10%)
-idct32             sve1   1.1047   [1.0805,1.1320]   1.129           cand ~10% faster (vs cloud ~13%)
-ipb8  (interp8-B)  sve1   0.5086   geomean 0.5109    0.5425          cand ~1.97x slower
-ipb16 (interp8-B)  sve1   0.6666   geomean 0.6675    0.8715          cand ~1.5x slower (diverges >10%)
-ipb32 (interp8-B)  sve1   0.5335   geomean 0.5280    0.5911          cand ~1.87x slower
-dct8               native 0.07-0.08 (unreliable)     ~0.75          HIGH VARIANCE neon p50 12<->51,
-                                                                    cand 138<->170; not comparable.
+[paired] ratio = neon/cand median (>1 => candidate faster). CNTVCT, taskset -c 0.
+kernel            build   ratio    cloud(docs/29)  note
+idct16 (sve1sub)  gcc15   0.8462   ~0.905          cand ~18% slower
+idct32 (sve1sub)  gcc15   1.1047   ~1.129          cand ~10% faster
+ipb8  (sve1sub)   clang   0.5086   ~0.543          cand ~1.97x slower
+ipb16 (sve1sub)   clang   0.6666   ~0.872          cand ~1.5x slower (diverges >10% vs cloud)
+ipb32 (sve1sub)   clang   0.5335   ~0.591          cand ~1.87x slower
+dct8   (native)   clang   neon p50=3  cand p50=4 (ratio 0.75)  == docs/31 (3 / 4)
+                     reliability fix: samples=1 caused earlier 138-170 noise; with samples=50
+                     and the intended clang build the median is stable and matches cloud.
 
 [lite gates]
-  build/testbench-lite/TestBenchLite requires ALL candidate .o (dct16/32/sa8d16/...)
-  to be linked; building the full candidate set is still in progress. sa8d gate is
-  SVE2 (cadd) and runs on THIS machine (SVE2-capable) but not on strict SVE1 920B.
+  sa8d gate: NOT POSSIBLE on 920B. Candidate kernels/sa8d/candidates/best_sve2.cpp uses
+  svtbl2_s16 (SVE2) + cadd; native run SIGILLs (verified exit 132). No SVE1 substitute
+  exists for these (docs/29 table covers sdot/sqrshrnb/splice only). Correctness must be
+  gated via QEMU (VL=256) instead.
+  Other gates: dct16/dct32/idct16/idct32 need SVE2p1, interp8 path-B needs SVE2p3 - also
+  not natively gateable on 920B.
 
-[conclusions / open items]
-  1. Substituted (SVE1-shape) idct16/idct32/interp8-B results are reproducible and load
-     close to cloud; ipb16 diverges >10% from cloud sample.
-  2. (修正) The probes used (sdot z.d,z.h,z.h and splice) are SVE1, so this
-     intranet host gives NO SVE2 evidence; treat it as strict-SVE1 920B.
-     dct8's native run is explained by its SVE1+NEON instruction set.
-  3. dct8 measurement unreliable (extreme latency variance on the shared 256-core node).
-  4. Full lite gate requires building/linking all candidate objects; not completed.
+[conclusions]
+  1. Substituted SVE1-shape estimates reproduce cloud direction for idct32/ipb8; ipb16
+     diverges >10%; dct8 native (clang) exactly matches docs/31 (NEON 3 / cand 4).
+  2. Node is strict SVE1 (SVE2 tofu cadd/tbl2 SIGILL confirmed).
+  3. On 920B the only native-perf-measurable kernels are the SVE1-shape substituted ones
+     and dct8; all SVE2/SVE2p1/SVE2p3 correctness stays on QEMU.
+  4. dct8 cross-machine: 920B native ratio 0.75 (cand slower) vs 950 native 1.483
+     (cand faster) - SVE/NEON pipe balance differs by silicon (docs/34 §2.3).

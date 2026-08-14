@@ -8,6 +8,11 @@
 > 替换成 SVE1 形状（docs/29），数值不保真，只用于 CNTVCT cycle 预估；
 > 920B 无 PMU（docs/26），用 cntvct paired。
 
+实测修正（2026-08-14 最终版）：节点经 sa8d（svtbl2+cadd）SIGILL 证实
+为**严格 SVE1**；920B 上唯一可原生测的是 SVE1 形状替换版与 dct8
+（SVE1+NEON，samples≥50 才稳定：NEON p50=3 / cand p50=4）。
+sa8d16/vpp 等 SVE2 候选在 920B 上不可原生运行，正确性靠 QEMU。
+
 ## 1. 测试矩阵
 
 | 内核 | 920B 原生? | 方式 |
