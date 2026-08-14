@@ -242,6 +242,11 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}
+            if node["type"] is None:
+                vt = re.match(
+                    r"sub(?:\s+(?:nsw|nuw))*\s+(<\d+\s+x\s+i\d+>|i\d+)", rhs)
+                if vt:
+                    node["type"] = vt.group(1)
             if len(ops) == 1:
                 cm = re.search(r",\s*(-?\d+)\s*$", rhs)
                 if cm:
@@ -250,9 +255,11 @@ def import_llvm_ir_text(ir_text, function=None):
                     # `sub nsw i32 0, %x` (negation): constant is the
                     # FIRST operand.
                     lm = re.match(
-                        r"sub(?:\s+(?:nsw|nuw))*\s+i\d+\s+(-?\d+),\s*%", rhs)
+                        r"sub(?:\s+(?:nsw|nuw))*\s+(?:i\d+|<\d+\s+x\s+i\d+>)"
+                        r"\s+(?:zeroinitializer|(-?\d+)),\s*%", rhs)
                     if lm:
-                        node["const"] = int(lm.group(1))
+                        node["const"] = (0 if lm.group(1) is None
+                                         else int(lm.group(1)))
                         node["const_first"] = True
             ir.add(node)
         elif rhs.startswith("add"):
@@ -355,13 +362,25 @@ def import_llvm_ir_text(ir_text, function=None):
         elif rhs.startswith("icmp"):
             ops = _parse_operands(rhs)
             pred = re.search(r"icmp\s+(\w+)", rhs).group(1)
+            vt = re.search(r"icmp\s+\w+\s+(<\d+\s+x\s+i\d+>)", rhs)
             node = {"op": "icmp", "type": "i1", "pred": pred,
+                    "vec_type": vt.group(1) if vt else None,
                     "src": ops, "dst": dst}
             if len(ops) == 1:
                 cm = re.search(r",\s*(-?\d+)\s*$", rhs)
                 if cm:
                     node["const"] = int(cm.group(1))
+            if re.search(r"zeroinitializer\s*$", rhs):
+                node["cmp_zero"] = True
             ir.add(node)
+        elif rhs.startswith("select"):
+            ops = _parse_operands(rhs)
+            mt = re.search(r"select\s+(<\d+\s+x\s+i1>)\s+%", rhs)
+            ot = re.search(r"select\s+<\d+\s+x\s+i1>\s+%[A-Za-z0-9._]+,\s*"
+                           r"(<\d+\s+x\s+i\d+>|i\d+)\s+%", rhs)
+            ir.add({"op": "select", "type": ot.group(1) if ot else None,
+                    "mask_type": mt.group(1) if mt else None,
+                    "src": ops, "dst": dst})
         else:
             raise ValueError("unhandled RHS: %r" % rhs)
     return ir

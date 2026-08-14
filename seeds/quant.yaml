@@ -1,0 +1,24 @@
+# Normalized seed recipe: quant 256 NEON core (docs/44).
+# Constrained ranges (quantCoeff<=2^14, qBits 14..22) keep level in s16 so
+# the NEON asm semantics (16-bit nonzero test) are exact.
+seed: quant
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/quant/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O1
+  - -std=c++11
+target_function:
+  mangled: dynopt_quant_256
+  demangled: dynopt_quant_256
+output:
+  ll: experiments/m30-quant-search/llvm-ir/quant-256-seed.ll
+  json: experiments/m30-quant-search/imported/machine-ir.json
+verify:
+  codegen: emit_quant_c_intrinsics
+  func_name: dynopt_quant_256_roundtrip
+  harness: kernels/quant/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

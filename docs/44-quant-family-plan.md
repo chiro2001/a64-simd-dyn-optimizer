@@ -70,6 +70,24 @@ harness），过 lite 前先 20k 差分 0 失配。
   负数）；`do` 是 C++ 关键字；
 - 待办：quant / nquant。
 
+### 执行记录 2026-08-15：quant ✅
+
+- seed：`kernels/quant/seed.cpp`（ACLE，abs→mul→add→ssh→mls→
+  deltaU + 符号还原 + numSig），-O1 避免 clang 折叠；门禁 20k 例
+  0 失配（对照 `x265_quant_neon`，约束 quantCoeff≤2^14、qBits 14..22
+  使 level 落在 s16）；
+- codegen 新通用资产：quant ABI、`select`（vbslq）、icmp→
+  vceqzq/vcltzq mask + sext alias、`saddlv`（vaddlvq_s32）、
+  abs 按源类型分派、sub 零向量（vneg）、s32 store、sub 向量类型
+  解析修复；
+- 搜索层 `kernels/quant`：widen 两结构均 20k 0 失配：
+  - **unpk**（先加宽再 s32 abs + svmul）：**508 fused / MCA 169**；
+  - smull-ones（svmullb/t + zip1/zip2 交织 deltaU）：573 / 192；
+- 语义实测：`svmsb(a,b,c)=c-a*b`（参数顺序！）；SVE s16 ABS 对
+  INT_MIN 回绕，必须先加宽到 s32 再 abs（参考用 SABDL 是精确的）；
+  zip1/zip2 在 VL=256 各产出 8 lanes，交织偶/奇向量需要两次 store；
+- 待办：nquant（quant 之上加代价表 + 绝对值输出）。
+
 ## 3. 搜索层需求（新结构族，需一次配方设计）
 
 - `kernels/quant/manifest.yaml` 族：reference = 4 个 NEON 汇编符号，

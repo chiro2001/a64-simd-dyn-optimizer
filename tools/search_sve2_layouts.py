@@ -527,6 +527,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return _emit_dqs(dict(combo, branch=_dqs_branch))
         return emit_fn
+    if kernel == "quant":
+        from emit_quant_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit(combo)
+        return emit_fn
     if kernel == "sad-32":
         from emit_sad_sve2_shared import emit_32x32
 

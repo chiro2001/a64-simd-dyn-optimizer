@@ -1,0 +1,34 @@
+# quant (256 elems) SVE2 manifest (docs/44).
+kernel: quant
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: quant
+  n: 256
+
+candidate:
+  symbol: dynopt_quant_256_sve2
+  trace_driver_src: kernels/quant/trace_driver.cpp
+  trace_driver_c: kernels/quant/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: quant_neon
+  symbol_mangled: x265_quant_neon
+  call: x265_quant_neon
+  decl: |
+    extern "C" uint32_t x265_quant_neon(
+        const int16_t*, const int32_t*, int32_t*, int16_t*, int, int, int);
+
+baselines:
+  neon:
+    driver: kernels/quant/trace_driver.cpp
+    symbol_mangled: x265_quant_neon
+
+corpus:
+  strides: [1]
+  value_range: [-32768, 32767]
+  cases: 20000
+
+layouts:
+  widen: [unpk, smull-ones]

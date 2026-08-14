@@ -123,6 +123,18 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         env = {"q": ("q", 0, 0), "dq": ("dq", 0, 0), "c": ("c", 0, 0),
                "0": ("q", 0, 0), "1": ("dq", 0, 0), "2": ("c", 0, 0),
                "3": 1, "4": 1}
+    elif signature == "quant":
+        lines.append(
+            "extern \"C\" uint32_t %s(const int16_t* coef,"
+            " const int32_t* quantCoeff, int32_t* deltaU, int16_t* qCoef,"
+            " int qBits, int add)" % func_name)
+        lines.append("{")
+        env = {"coef": ("coef", 0, 0),
+               "quantCoeff": ("quantCoeff", 0, 0),
+               "deltaU": ("deltaU", 0, 0), "qCoef": ("qCoef", 0, 0),
+               "0": ("coef", 0, 0), "1": ("quantCoeff", 0, 0),
+               "2": ("deltaU", 0, 0), "3": ("qCoef", 0, 0),
+               "4": 1, "5": 1}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -136,12 +148,16 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                "2": ("pix2", 0, 0), "3": 1}
     types = {}
     cname = {}
+    mask_nodes = {}
     if signature == "dequant_normal":
         # scalar ABI args referenced as values (trunc/sub srcs)
         cname.update({"0": "q", "1": "c", "2": "scale", "3": "shift"})
     elif signature == "dequant_scaling":
         cname.update({"0": "q", "1": "dq", "2": "c",
                       "3": "shift", "4": "per"})
+    elif signature == "quant":
+        cname.update({"0": "coef", "1": "quantCoeff", "2": "deltaU",
+                      "3": "qCoef", "4": "qBits", "5": "add"})
 
     def cid(name):
         if name not in cname:
@@ -151,7 +167,23 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
     for node in machine_ir.nodes:
         op = node["op"]
         dst = node.get("dst")
-        if op == "shl":
+        if op == "icmp":
+            vtype = node.get("vec_type")
+            if node.get("cmp_zero") and node["pred"] == "eq" and \
+                    vtype == "<4 x i32>":
+                types[dst] = "uint32x4_t"
+                lines.append("    %s %s = vceqzq_s32(%s);"
+                             % (types[dst], cid(dst), cid(node["src"][0])))
+                mask_nodes[str(dst)] = vtype
+            elif node.get("cmp_zero") and node["pred"] == "slt" and \
+                    vtype == "<8 x i16>":
+                types[dst] = "uint16x8_t"
+                lines.append("    %s %s = vcltzq_s16(%s);"
+                             % (types[dst], cid(dst), cid(node["src"][0])))
+                mask_nodes[str(dst)] = vtype
+            else:
+                raise ValueError("codegen icmp %r unsupported" % node)
+        elif op == "shl":
             if node.get("amt") is not None and \
                     isinstance(env.get(node["src"][0]), int):
                 env[dst] = env[node["src"][0]] << node["amt"]
@@ -211,6 +243,10 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 lines.append("    vst1q_s16((int16_t*)((uint8_t*)%s + %s),"
                              " %s);"
                              % (base, offexpr, cid(node["src"])))
+            elif node.get("type") == "<4 x i32>":
+                lines.append("    vst1q_s32((int32_t*)((uint8_t*)%s + %s),"
+                             " %s);"
+                             % (base, offexpr, cid(node["src"])))
             else:
                 raise ValueError("codegen store type %r unsupported"
                                  % node.get("type"))
@@ -219,18 +255,34 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             types[dst] = TYPE_MAP.get(vtype, "uint32_t")
             lines.append("    %s %s = (%s)%s;"
                          % (types[dst], cid(dst), types[dst],
-                            cid(node["src"][0])))
+                            cid(node["src"][0]
+                                if isinstance(node["src"], list)
+                                else node["src"])))
         elif op == "sext":
             vtype = node["type"]
-            types[dst] = TYPE_MAP.get(vtype, "int32x4_t")
-            if vtype == "<4 x i32>":
-                src = node["src"]
-                if isinstance(src, list):
-                    src = src[0] if src else None
+            src = node["src"]
+            if isinstance(src, list):
+                src = src[0] if src else None
+            if src is not None and str(src) in mask_nodes:
+                # sext of an icmp mask (0/-1): alias the mask variable
+                cname[dst] = cid(src)
+                types[dst] = types.get(cid(src))
+            elif vtype == "<4 x i32>":
+                types[dst] = TYPE_MAP.get(vtype, "int32x4_t")
                 lines.append("    %s %s = vmovl_s16(%s);"
                              % (types[dst], cid(dst), cid(src)))
             else:
                 raise ValueError("codegen sext type %r unsupported" % vtype)
+        elif op == "select":
+            vtype = node["type"]
+            if vtype == "<8 x i16>":
+                types[dst] = "int16x8_t"
+                lines.append("    %s %s = vbslq_s16(%s, %s, %s);"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1]), cid(node["src"][2])))
+            else:
+                raise ValueError("codegen select type %r unsupported"
+                                 % vtype)
         elif op == "insertelement":
             # consumed by the splat shuffle; alias the vector-build value
             # to the scalar so vdup_n emits directly from the scalar var.
@@ -251,12 +303,27 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             vtype = node["type"]
             if node.get("const_first") is not None and \
                     len(node["src"]) == 1:
-                # `sub nsw i32 0, %x` (negation)
-                types[dst] = TYPE_MAP.get(vtype, "uint32_t")
-                lines.append("    %s %s = %d %s %s;"
-                             % (types[dst], cid(dst), node["const"],
-                                "-" if op == "sub" else "+",
-                                cid(node["src"][0])))
+                # `sub nsw i32 0, %x` / `sub <8 x i16> zeroinitializer, %x`
+                if vtype and vtype.startswith("<"):
+                    if vtype == "<8 x i16>":
+                        types[dst] = "int16x8_t"
+                        lines.append("    %s %s = vnegq_s16(%s);"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0])))
+                    elif vtype == "<4 x i32>":
+                        types[dst] = "int32x4_t"
+                        lines.append("    %s %s = vnegq_s32(%s);"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0])))
+                    else:
+                        raise ValueError("codegen vneg type %r unsupported"
+                                         % vtype)
+                else:
+                    types[dst] = TYPE_MAP.get(vtype, "uint32_t")
+                    lines.append("    %s %s = %d %s %s;"
+                                 % (types[dst], cid(dst), node["const"],
+                                    "-" if op == "sub" else "+",
+                                    cid(node["src"][0])))
                 continue
             if len(node["src"]) == 2:
                 if vtype in TYPE_MAP and vtype in ("i8", "i16", "i32", "i64"):
@@ -388,8 +455,20 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         elif op == "intrinsic":
             name = node["intrinsic"]
             if name == "abs":
-                types[dst] = "int16x8_t"
-                lines.append("    %s %s = vabsq_s16(%s);"
+                if types.get(str(node["src"][0])) == "int32x4_t":
+                    types[dst] = "int32x4_t"
+                    lines.append("    %s %s = vabsq_s32(%s);"
+                                 % (types[dst], cid(dst),
+                                    cid(node["src"][0])))
+                else:
+                    types[dst] = "int16x8_t"
+                    lines.append("    %s %s = vabsq_s16(%s);"
+                                 % (types[dst], cid(dst),
+                                    cid(node["src"][0])))
+            elif name == "saddlv":
+                types[dst] = "uint64_t"
+                lines.append("    %s %s = (uint64_t)vaddlvq_s32("
+                             "vreinterpretq_s32_u32(%s));"
                              % (types[dst], cid(dst), cid(node["src"][0])))
             elif name == "sabd":
                 types[dst] = "int16x8_t"
@@ -475,6 +554,14 @@ def emit_dequant_scaling_c_intrinsics(
     (q/dq/c/shift/per ABI, s16/s32 loads, sext+mul+sshl/sqshl+sqxtn)."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="dequant_scaling")
+
+
+def emit_quant_c_intrinsics(
+        machine_ir, func_name="dynopt_quant_256_roundtrip"):
+    """Flat NEON roundtrip emitter for quant (coef/quantCoeff/deltaU/
+    qCoef/qBits/add ABI; abs+mul+sshl+mls+numsig via saddlv)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="quant")
 
 
 def _sve_flat_indices(node):
@@ -604,6 +691,7 @@ def emit_dct8_c_intrinsics(machine_ir,
            "2": "srcStride"}
     types = {}
     cname = {}
+    mask_nodes = {}
     const_pool = {}   # tuple const -> ("cN", int32_t)
 
     def cid(name):
