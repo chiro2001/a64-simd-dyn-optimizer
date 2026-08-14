@@ -57,3 +57,21 @@ SVE 管线模型。可行的替代：
    比 MCA 可信；
 3. 4002/内部是 SVE2，920B 跑不了；若 hip12（920C/G，SVE2）可提供
    访问，可直接实机测 4002 与内部算子，这比任何静态模型都准。
+
+## 920B（hip09）实机配对：上游 SVE1 vs best_sve1（2026-08-14）
+
+环境：920B（SVE1/VL=256，CNTVCT，无 PMU），微基准
+`dct32_microbench`（仅 sve/cand），上游对象取自本地
+`build/x265-8-clang-sve`（`dct-prim-sve.cpp.o`），候选
+`best_sve1.o`；配对 150 对（30×5），`taskset -c 0`，随机 A/B。
+原始数据见 `paired-920b/{latency,throughput}/paired-raw.csv`。
+
+| mode | sve/cand median | geomean | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| latency | 0.8625 | 0.8757 | [0.8533, 0.8805] |
+| throughput | 0.8509 | 0.8706 | [0.8444, 0.8756] |
+
+ratio = sve/cand，<1 表示上游更快：**best_sve1 在 920B 上比上游
+SVE1 慢约 16%（latency）/ 17.5%（throughput）**——该 SVE1 变体
+是早期 v2 量级实现，未含本轮 SVE2 优化（SVE2 指令 920B 不可跑）。
+验证：`verify sve/cand 2000` 均 0 mismatch。
