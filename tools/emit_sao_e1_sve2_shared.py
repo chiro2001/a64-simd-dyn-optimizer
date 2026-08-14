@@ -6,7 +6,7 @@ upBuff1[i] = -signDown. No intra-row carry (unlike E0).
 """
 
 
-def emit_64x4(func_name="dynopt_sao_e1_64x4_sve2"):
+def emit_64x4(func_name="dynopt_sao_e1_64x4_sve2", rows=4):
     lines = [
         "#include <arm_sve.h>",
         "#include <stdint.h>",
@@ -20,7 +20,7 @@ def emit_64x4(func_name="dynopt_sao_e1_64x4_sve2"):
         "    svint16_t off16 = svld1sb_s16("
         "svwhilelt_b16_u64(0, 5), offsetEo);",
     ]
-    for y in range(4):
+    for y in range(rows):
         for x in range(0, 64, 8):
             lines.extend([
                 "    {",

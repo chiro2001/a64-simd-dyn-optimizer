@@ -30,11 +30,14 @@
   有符号算术（修复无符号 et 导致动态索引越界）、动态 GEP +
   标量 load/store（s8 基有符号）、`llvm.ucmp/smax/umin` 标量
   intrinsic、通用 llvm intrinsic 导入（剥 range 注解）；
+- saoCuOrgE1_2Rows ✅（2026-08-15）：E1 两行变体（复用 sao_e1
+  ABI/发射器，rows=2），门禁 20k 0 失配；SVE2 搜索
+  **306 fused / MCA 103**；**saoCuOrg 六个成员至此全部闭环**；
 - 新 codegen 资产：sao_e0 ABI、`smax/smin/sqxtun/tbl1`、
   `vext_s8(a,b,7)`/`vqtbl1_s8(vcombine_s8(...))` shifter、
   <8 x i8> splat/vneg/vadd、标量 load、add/sub 的 128-bit `q` 判定、
   intrinsic arg 剥 `range(...)` 注解、splat 常量 add；
-- 待办：E1_2Rows、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
+- 待办：Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
   统计可对照）；E0 若追求更优可试 16 像素/块（降低 splice/tbl
   每块开销，当前 305 vs NEON ~230）。
 
