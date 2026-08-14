@@ -344,5 +344,17 @@ kernels/dct16 上游 NEON（dct16_neon）
   - sliding=2（4 行分组 + 11 寄存器旋转窗口，新行按组补载）：
     **387 fused / MCA 161 / dyn 1024**（best，MCA 距手写 157 仅
     2.5%）；
-  - 手写 247/157。
+- 手写 247/157。
+
+## 17. vertical-fir 跨宽度：interp8 vpp 32x32（2026-08-15）
+
+- vpp-32（2191 节点，64 个 16 字节 store）通过 store 地址链推导
+  行数（32）与列组（2）；发射器按列组循环（每列组 16 列）复用全部
+  sliding 变体。
+- 验收（20k 差分 0 失配，experiments/m30-interp8vpp-search/
+  gen-search-32x32/results.json）：
+  - sliding=0：2369 fused / MCA 965；
+  - sliding=1：1625 / 645；
+  - sliding=2：**1501 / 583**（best）；
+  - 手写 936/547 —— MCA 差 6.6%。
 - 通用发射器现覆盖 4 个配方族、16 个算子形状。

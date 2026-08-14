@@ -1,6 +1,4 @@
-# Normalized seed recipe: interp8 vertical 32x32 NEON (filter-prim.cpp).
-# switch(coeffIdx) over three tap patterns; case 1 taken via
-# strip_switch_case (no loops).
+# Normalized seed recipe: interp8 vpp 32x32 upstream NEON (filter-prim.cpp).
 seed: interp8vpp-32
 compiler: clang
 target: aarch64-linux-gnu
@@ -32,11 +30,11 @@ target_function:
   demangled: x265::interp_vert_pp_neon<8,32,32>
 output:
   ll: experiments/m30-interp8vpp-search/llvm-ir/interp8vpp-32-case1.ll
-  json: experiments/m30-interp8vpp-search/imported/machine-ir-32-case1.json
+  json: experiments/m30-interp8vpp-search/imported/machine-ir-32x32-case1.json
 verify:
-  codegen: emit_interp8_c_intrinsics
-  func_name: dynopt_interp8vpp_32x32_case1_neon_roundtrip
-  harness: kernels/interp8vpp-32/roundtrip_verify_case1.cpp
+  codegen: emit_c_intrinsics
+  func_name: dynopt_interp8_32x32_neon_roundtrip
+  harness: kernels/interp8vpp-32/roundtrip_verify.cpp
   lib: build/x265-8-clang-sve/libx265.a
   compile_flags: ["-march=armv8.2-a+dotprod"]
-  cases: 10000
+  cases: 20000
