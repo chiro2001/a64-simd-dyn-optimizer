@@ -76,6 +76,33 @@ TARGETS = {
         "llvm_proxy_cpu": "neoverse-v2",
         "llvm_proxy_mattr": "+sve2",
     },
+    # 950 (920G) first-round fit from real paired ratios (docs/34 §2.4,
+    # tools/calibrate_mca_950.py): NV2 latency base x fitted factors
+    # compute 3.16 / permute 0.316 / mem 3.16. WARNING: dct8 residual
+    # remains large (model direction flip); vpp residuals ~13-23%.
+    # Use only as a rough SVE-vs-NEON balance proxy for 950-like silicon.
+    "950": {
+        "name": "950",
+        "sve_pipes": 2,
+        "sve_vl_bits": 256,
+        "neon_pipes": 4,
+        "neon_vl_bits": 128,
+        "vl_bytes": 32,
+        "issue_rate": 4.0,
+        "latency": {
+            "dot": 12.648, "mul": 12.648, "add": 6.324,
+            "permute": 0.632, "narrow": 12.648, "load": 18.972,
+            "store": 6.324, "shift": 6.324, "movprfx": 2.0,
+            "scalar": 1.0,
+        },
+        "throughput": {
+            "dot": 12.648, "mul": 12.648, "add": 6.324,
+            "permute": 0.632, "narrow": 12.648, "load": 18.972,
+            "store": 6.324, "shift": 6.324, "scalar": 1.0,
+        },
+        "llvm_proxy_cpu": "neoverse-v2",
+        "llvm_proxy_mattr": "+sve2",
+    },
 }
 
 

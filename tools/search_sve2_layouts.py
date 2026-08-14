@@ -760,7 +760,7 @@ def main():
                     help="llvm-mca binary (default llvm-mca; use the "
                          "patched build from scripts/build-custom-llvm-mca.sh "
                          "for sdot_z32 support, docs/26 §5)")
-    ap.add_argument("--mca-target", choices=("920B", "NP1"), default=None,
+    ap.add_argument("--mca-target", choices=("920B", "NP1", "950"), default=None,
                     help="target profile for the table-driven cycle "
                          "estimator (default: manifest mca_target.default, "
                          "i.e. NP1); llvm-mca itself still uses "
