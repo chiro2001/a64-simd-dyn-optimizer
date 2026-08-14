@@ -313,7 +313,7 @@ def emit_fir(machine_ir, func_name, combo=None):
         " uint8_t* dst, intptr_t dstStride, int coeffIdx)" % func_name,
         "{",
         "    const svbool_t p16 = svptrue_b16();",
-        "    const svbool_t pg = svwhilelt_b8((uint32_t)0, (uint32_t)%d);" % lanes,
+        "    const svbool_t pg16b = svwhilelt_b8((uint32_t)0, (uint32_t)16);",
         "    const svbool_t pg8 = svwhilelt_b8((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg8h = svwhilelt_b16((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg4 = svwhilelt_b16((uint32_t)0, (uint32_t)4);",
@@ -352,10 +352,10 @@ def emit_fir(machine_ir, func_name, combo=None):
         "    {",
         "        for (int g = 0; g < %d; g++)" % groups,
         "        {",
-        "            svuint8_t s = svld1_u8(pg,"
+        "            svuint8_t s = svld1_u8(pg16b,"
         " src + r * srcStride %s + g * 8);" % load_off,
         "            svint8_t s8 = svreinterpret_s8_u8(",
-        "                svsub_u8_x(pg, s, svdup_n_u8(128)));",
+        "                svsub_u8_x(pg16b, s, svdup_n_u8(128)));",
         "            svint8_t p0 = svtbl_s8(s8, ix0);",
         "            svint8_t p1 = svtbl_s8(s8, ix1);",
         "            svint32_t lo = svdot_s32(c8192, p0, b0);",
@@ -407,7 +407,7 @@ def emit_hadamard(machine_ir, func_name, combo=None):
         " const uint8_t* pix2, intptr_t sb)" % func_name,
         "{",
         "    const svbool_t pg8 = svwhilelt_b8((uint32_t)0, (uint32_t)8);",
-        "    const svbool_t pg = svwhilelt_b8((uint32_t)0, (uint32_t)%d);" % lanes,
+        "    const svbool_t pg16b = svwhilelt_b8((uint32_t)0, (uint32_t)16);",
         "    const svbool_t pg8h = svwhilelt_b16((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg4w = svwhilelt_b32((uint32_t)0, (uint32_t)4);",
         "    const svbool_t p16 = svptrue_b16();",
@@ -867,11 +867,17 @@ def emit_vertical_fir(machine_ir, func_name, combo=None):
                     " svdup_n_s16(-c%d));" % (r + t, t),
                 ])
             lines.extend([
-                ind + "    uint8x8_t out = vqrshrun_n_s16("
-                "svget_neonq_s16(sum), 6);",
+                ind + "    %s" % (
+                    "uint8x16_t out = vcombine_u8("
+                    "vqrshrun_n_s16(svget_neonq_s16(sum), 6),"
+                    " vqrshrun_n_s16(svget_neonq_s16("
+                    "svtbl_s16(sum, hi8)), 6));" if lanes == 16 else
+                    "uint8x8_t out = vqrshrun_n_s16("
+                    "svget_neonq_s16(sum), 6);"),
                 ind + "    svst1_u8(pg, dst + %d * dstStride%s,"
-                " svset_neonq_u8(svundef_u8(), vcombine_u8(out,"
-                " vdup_n_u8(0))));" % (r, col),
+                " svset_neonq_u8(svundef_u8(), %s));"
+                % (r, col, "out" if lanes == 16 else
+                   "vcombine_u8(out, vdup_n_u8(0))"),
                 ind + "}",
             ])
     else:
@@ -893,11 +899,17 @@ def emit_vertical_fir(machine_ir, func_name, combo=None):
         lines.append(ind + "                svdup_n_s16(-c));")
         lines.append(ind + "    }")
         lines.extend([
-            ind + "    uint8x8_t out = vqrshrun_n_s16("
-            "svget_neonq_s16(sum), 6);",
+            ind + "    %s" % (
+                "uint8x16_t out = vcombine_u8("
+                "vqrshrun_n_s16(svget_neonq_s16(sum), 6),"
+                " vqrshrun_n_s16(svget_neonq_s16("
+                "svtbl_s16(sum, hi8)), 6));" if lanes == 16 else
+                "uint8x8_t out = vqrshrun_n_s16("
+                "svget_neonq_s16(sum), 6);"),
             ind + "    svst1_u8(pg, dst + r * dstStride%s,"
-            " svset_neonq_u8(svundef_u8(), vcombine_u8(out,"
-            " vdup_n_u8(0))));" % col,
+            " svset_neonq_u8(svundef_u8(), %s));"
+            % (col, "out" if lanes == 16 else
+               "vcombine_u8(out, vdup_n_u8(0))"),
             ind + "}",
         ])
     if groups > 1:
