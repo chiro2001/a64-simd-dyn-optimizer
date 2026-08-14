@@ -234,3 +234,30 @@ sol，见 expert-advice/round-0009），建议 typed LayoutIR、分层搜索、
 - round-0013 咨询（每 3 阶段一次，2026-08-13）已后台启动，聚焦
   E1 验收充分性、op 级后端与 row_group=8 优先级、search_plans 与
   主驱动合并路线。
+
+## 12. IDCT32/IDCT16 SVE2p1 制胜配方（2026-08-14）
+
+- **zip32 根因**：写回地址把 `off` 当元素偏移而非行乘数
+  （`(off + r*stride)` 应为 `((off + r)*stride)`）；UB 假设
+  （round-0017 咨询）被实验否定。修复后 idct32 20k/lite 全过。
+- **配方链**：SVE2p1 `sdot z.s,z.h,z.h` 直算 → C 常量
+  `[base,#vnum,MUL VL]` 立即数寻址（adrp 944→94）→
+  `-frename-registers` → `--param=sched-pressure-algorithm=1` →
+  输入行按需装入（round-0017 P1）→ zip 写回转置。
+- **结果**：idct32 zip32+sdot fused **5085** / 动态 MCA **1164**
+  （NEON 3319 的 -64.9%，远超 NP1 减半门）；idct16 zip16+sdot
+  fused 980 / MCA 246（旧 mul 438 的 -44%）。两 kernel 20k 0 失配
+  + TestBenchLite 5/5，已固化 `kernels/*/candidates/best_sve2.*`。
+- **阴性/中性**：sdot-s32-split、sdot-s32-pair、O k_block=8、
+  Clang C1-C3、zip-fuse、-msve-vector-bits=256、
+  -flive-range-shrinkage（docs/27 §8.11）。
+- **工具**：验证缓存键加 build fingerprint；MCA 短名单 =
+  fused top ∪ 低/高 stack top；`--cxx`/`--opt-extra`；
+  `tools/peak_live.py`（P1 基线：idct32 峰值活跃 31，已在预算内）；
+  转置最小性确认（64 permute/chunk）。
+- **round-0017 咨询**（regspill 专题）三文档+decision 落盘
+  `expert-advice/round-0017/`；UB 假设拒绝、build fingerprint 与
+  G3 采纳。
+- **剩余**：950/960 实机 paired 验收（SVE2p1 无法在 920B 跑；
+  950 早期 sdot 候选曾 1.08× 慢于 NEON，需用新 best 复测）；直接
+  asm 原型按峰值 31 实测重定位为压标量/permute 开销（收益不确定）。
