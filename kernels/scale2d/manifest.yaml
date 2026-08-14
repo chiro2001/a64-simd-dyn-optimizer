@@ -1,0 +1,33 @@
+# scale2D_64to32 SVE2 manifest (docs/37).
+kernel: scale2d
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: scale2d
+
+candidate:
+  symbol: dynopt_scale2d_64to32_sve2
+  trace_driver_src: kernels/scale2d/trace_driver.cpp
+  trace_driver_c: kernels/scale2d/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: scale2D_64to32_neon
+  symbol_mangled: x265_scale2D_64to32_neon
+  call: x265_scale2D_64to32_neon
+  decl: |
+    extern "C" void x265_scale2D_64to32_neon(
+        uint8_t*, const uint8_t*, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/scale2d/trace_driver.cpp
+    symbol_mangled: x265_scale2D_64to32_neon
+
+corpus:
+  strides: [64, 65, 96, 128]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  impl: [addp-rshr]

@@ -1,0 +1,22 @@
+# Normalized seed recipe: scale2D_64to32 NEON core (docs/37).
+seed: scale2d-64to32
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/scale2d/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_scale2d_64to32
+  demangled: dynopt_scale2d_64to32
+output:
+  ll: experiments/m30-scale2d-search/llvm-ir/scale2d-64to32-seed.ll
+  json: experiments/m30-scale2d-search/imported/machine-ir.json
+verify:
+  codegen: emit_scale2d_c_intrinsics
+  func_name: dynopt_scale2d_64to32_roundtrip
+  harness: kernels/scale2d/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

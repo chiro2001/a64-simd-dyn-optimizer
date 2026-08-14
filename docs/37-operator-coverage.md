@@ -16,7 +16,7 @@
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
 | **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | **全部 ✅**：dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、quant 508/169、nquant 329/131 | 纯汇编，走 C/ACLE seed 模式（docs/44） |
 | **sao** | 10（saoCuOrg*/Stats*） | 无 | 次选 |
-| pixel-util | 2（scale1D/2D） | **scale1D_128to64 ✅（24 fused / MCA 21）** | scale2D 待做（2026-08-15） |
+| pixel-util | 2（scale1D/2D） | **scale1D_128to64 ✅（24/21）；scale2D_64to32 ✅（1664/378，正确但结构劣于 NEON uaddlp）** | pixel-util 收齐（2026-08-15） |
 | ssim | 1（ssim_4x4x2_core） | **ssim ✅（45 fused / MCA 47）** | 简单（2026-08-15） |
 | misc | findPosFirstLast/costCoeffNxN/scanPosLast/weight_pp/planecopy | 无 | 小算子，收益低 |
 | sad | （嵌套，aa64 有 dotprod 实现） | **sad 16x16/32x32 ✅**（80/160 fused，MCA 69/118） | 无优化空间，纯覆盖（2026-08-15） |
