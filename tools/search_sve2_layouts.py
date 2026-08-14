@@ -888,10 +888,22 @@ def main():
         if n_out:
             r["fused_uop_per_output"] = round(fuc / n_out, 3)
     if args.mca_top and ok:
-        print("llvm-mca second proxy on top-%d by fused_uop "
-              "(%s, complete dynamic stream):"
-              % (min(args.mca_top, len(ok)), args.mca_mcpu))
-        for r in ok[:min(args.mca_top, len(ok))]:
+        # 短名单 = top-N by fused ∪ top-K by low stack ∪ top-K by high
+        # stack（round-0017 tooling-roadmap：MCA 需覆盖“fused 改善但
+        # spill 恶化”的风险候选与低 spill 黑马，不能只取 fused top-N）。
+        def stk(r):
+            return (r.get("counts") or {}).get("stack_vector", 0)
+        k = max(1, min(args.mca_top // 3, len(ok)))
+        shortlist = set(id(r) for r in ok[:min(args.mca_top, len(ok))])
+        shortlist |= set(id(r) for r in sorted(ok, key=stk)[:k])
+        shortlist |= set(id(r)
+                         for r in sorted(ok, key=stk, reverse=True)[:k])
+        sel = [r for r in ok if id(r) in shortlist]
+        print("llvm-mca second proxy on %d candidates (fused top-%d ∪ "
+              "stack low/high top-%d, %s, complete dynamic stream):"
+              % (len(sel), min(args.mca_top, len(ok)), k,
+                 args.mca_mcpu))
+        for r in sel:
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
                                   args.kernel)
