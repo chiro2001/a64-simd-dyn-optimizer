@@ -93,6 +93,46 @@ def _parse_imm(text):
     return int(text)
 
 
+def _parse_neon_intrinsic(rhs, dst):
+    """Parse an llvm.aarch64.neon.* call line into an intrinsic node.
+    Works for both assigned (`%x = tail call <...> @llvm...`) and void
+    (`tail call void @llvm...`) forms (dst=None for the latter)."""
+    name = re.search(r"@llvm\.aarch64\.neon\.([a-z0-9_]+)", rhs).group(1)
+    t = re.sub(r"^\s*(?:tail\s+)?call\s+(?:noundef\s+)?", "",
+               rhs.split("@llvm", 1)[0]).strip()
+    if not (t.startswith("<") or t.startswith("{")):
+        t = None
+    ops = _parse_operands(rhs)
+    args = []
+    call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
+    # split on top-level commas (not inside <> vector constants)
+    for a in re.split(r",(?![^<]*>)", call_args):
+        a = a.strip()
+        vm = re.match(r"<(\d+) x i(\d+)>\s*<(.+)>", a)
+        if vm:
+            vals = []
+            for part in vm.group(3).split(","):
+                part = part.strip()
+                mm = re.match(r"i\d+\s+(-?\d+)", part)
+                if mm:
+                    vals.append(int(mm.group(1)))
+            args.append({"imm_vec": vals})
+            continue
+        ref = re.search(r"%([A-Za-z0-9._]+)", a)
+        if ref:
+            args.append({"ref": ref.group(1)})
+            continue
+        imm = re.search(r"i\d+\s+(-?\d+)", a)
+        if imm:
+            args.append({"imm": int(imm.group(1))})
+            continue
+        args.append({"raw": a})
+    return {"op": "intrinsic", "intrinsic": name,
+            "type": t if t and (t.startswith("<") or t.startswith("{"))
+            else None,
+            "src": ops, "args": args, "dst": dst}
+
+
 def _parse_vector_const(rhs):
     """Parse a trailing `<i32 a, i32 b, ...>` vector constant operand."""
     m = re.search(r",\s*<\s*i\d+\s+(.+?)>\s*$", rhs)
@@ -146,6 +186,11 @@ def import_llvm_ir_text(ir_text, function=None):
                 if m2:
                     ir.add({"op": "ret", "type": m2.group(1),
                             "operand": m2.group(2)})
+                continue
+            if (line.startswith("tail call") or line.startswith("call")) \
+                    and "llvm.aarch64.neon." in line:
+                # void intrinsic calls (e.g. st4) have no dst assignment
+                ir.add(_parse_neon_intrinsic(line, None))
                 continue
             raise ValueError("unhandled IR line: %r" % line)
         dst, rhs = m.group(1), m.group(2)
@@ -305,40 +350,7 @@ def import_llvm_ir_text(ir_text, function=None):
                     "src_type": sm.group(1) if sm else None,
                     "src": ops[0] if ops else None, "dst": dst})
         elif "llvm.aarch64.neon." in rhs:
-            name = re.search(r"@llvm\.aarch64\.neon\.([a-z0-9_]+)", rhs).group(1)
-            t = re.sub(r"^\s*(?:tail\s+)?call\s+(?:noundef\s+)?", "",
-                       rhs.split("@llvm", 1)[0]).strip()
-            if not (t.startswith("<") or t.startswith("{")):
-                t = None
-            ops = _parse_operands(rhs)
-            args = []
-            call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
-            # split on top-level commas (not inside <> vector constants)
-            for a in re.split(r",(?![^<]*>)", call_args):
-                a = a.strip()
-                vm = re.match(r"<(\d+) x i(\d+)>\s*<(.+)>", a)
-                if vm:
-                    vals = []
-                    for part in vm.group(3).split(","):
-                        part = part.strip()
-                        mm = re.match(r"i\d+\s+(-?\d+)", part)
-                        if mm:
-                            vals.append(int(mm.group(1)))
-                    args.append({"imm_vec": vals})
-                    continue
-                ref = re.search(r"%([A-Za-z0-9._]+)", a)
-                if ref:
-                    args.append({"ref": ref.group(1)})
-                    continue
-                imm = re.search(r"i\d+\s+(-?\d+)", a)
-                if imm:
-                    args.append({"imm": int(imm.group(1))})
-                    continue
-                args.append({"raw": a})
-            ir.add({"op": "intrinsic", "intrinsic": name,
-                    "type": t if t and (t.startswith("<") or
-                                        t.startswith("{")) else None,
-                    "src": ops, "args": args, "dst": dst})
+            ir.add(_parse_neon_intrinsic(rhs, dst))
         elif rhs.startswith("lshr"):
             ops = _parse_operands(rhs)
             ir.add({"op": "lshr", "type": _op_type(rhs),

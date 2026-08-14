@@ -1,0 +1,37 @@
+# ssim_4x4x2_core (two 4x4 blocks) SVE2 manifest (docs/37).
+kernel: ssim
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: ssim
+  n: 4
+
+candidate:
+  symbol: dynopt_ssim_4x4x2_sve2
+  trace_driver_src: kernels/ssim/trace_driver.cpp
+  trace_driver_c: kernels/ssim/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: ssim_4x4x2_core_neon
+  symbol_mangled: x265_ssim_4x4x2_core_neon
+  call: x265_ssim_4x4x2_core_neon
+  decl: |
+    extern "C" void x265_ssim_4x4x2_core_neon(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t, int32_t*);
+
+baselines:
+  neon:
+    driver: kernels/ssim/trace_driver.cpp
+    symbol_mangled: x265_ssim_4x4x2_core_neon
+  sve2:
+    driver: kernels/ssim/trace_driver.cpp
+    symbol_mangled: x265_ssim_4x4x2_core_sve2
+
+corpus:
+  strides: [8, 16, 17, 32, 64]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  acc: [u32]

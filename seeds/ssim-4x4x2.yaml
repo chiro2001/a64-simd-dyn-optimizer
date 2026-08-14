@@ -1,0 +1,23 @@
+# Normalized seed recipe: ssim_4x4x2_core (two 4x4 blocks) NEON core
+# (docs/37). Upstream aarch64 is assembly; seed is the ACLE semantics.
+seed: ssim-4x4x2
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/ssim/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_ssim_4x4x2
+  demangled: dynopt_ssim_4x4x2
+output:
+  ll: experiments/m30-ssim-search/llvm-ir/ssim-4x4x2-seed.ll
+  json: experiments/m30-ssim-search/imported/machine-ir.json
+verify:
+  codegen: emit_ssim_c_intrinsics
+  func_name: dynopt_ssim_4x4x2_roundtrip
+  harness: kernels/ssim/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000
