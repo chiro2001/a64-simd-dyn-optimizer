@@ -386,6 +386,14 @@ NEON -43%（1900 vs 3319），scalar 仍 +6%（3518）——写回方式决定
    O 累加器同时存活而 spill 增加，暂不实施。
 3. s64 打包轴按 §8.7 核算勘误降级。
 
+**chunk 对共享 C 阴性（2026-08-14，emitter `sdot-s32-pair`）**：
+把 CDOT 常量改为每 k 加载一次、两个 chunk 共享（ld1h 1376→704）：
+pair_scalar fused 4704→**5660（+20%，spill 大增）**；pair_scatter
+fused_uop 5878→5583（-5%）但动态 MCA **1900→1940（+2%）**。
+指令数收益被 2 倍累加器存活的寄存器压力抵消，且 MCA 更差——**不
+采用**，保持每 sdot 一条 volatile ld1h 的单 chunk 方案（这也是一次
+“fused 更优但 MCA 更差 → 拒绝”的 MCA 指导决策）。
+
 **下一步**：
 1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
    O/E 峰值存活；或把 CDOT 表按 chunk 对只加载一次（-O3 已部分做到）；

@@ -194,7 +194,7 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(8):
             L.append("    %s = sdot_s32_h(%s, d%sO%d, "
-                     "svld1_s16(p16, CDOT_O[%d][%d]));"
+                     "load_c(CDOT_O[%d][%d]));"
                      % (acc, acc, s, p, k, p))
     # EO: 4 row pairs (2,6),(10,14),(18,22),(26,30)
     for p in range(4):
@@ -205,7 +205,7 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(4):
             L.append("    %s = sdot_s32_h(%s, d%sEO%d, "
-                     "svld1_s16(p16, CDOT_EO[%d][%d]));"
+                     "load_c(CDOT_EO[%d][%d]));"
                      % (acc, acc, s, p, k, p))
     # EEO: 2 row pairs (4,12),(20,28)
     for p in range(2):
@@ -216,25 +216,100 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(2):
             L.append("    %s = sdot_s32_h(%s, d%sEEO%d, "
-                     "svld1_s16(p16, CDOT_EEO[%d][%d]));"
+                     "load_c(CDOT_EEO[%d][%d]));"
                      % (acc, acc, s, p, k, p))
     # EEEO: rows 8,24 (k=0,1); EEEE: rows 0,16 (k=0,1)
     L.append("    svint16_t d%sEEEO = svzip1_s16(r%s8, r%s24);" % (s, s, s))
     for k in range(2):
         acc = "EEEO%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEO, "
-                 "svld1_s16(p16, CDOT_EEEO[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEO[%d][0]));" % (acc, s, k))
     L.append("    svint16_t d%sEEEE = svzip1_s16(r%s0, r%s16);" % (s, s, s))
     for k in range(2):
         acc = "EEEE%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEE, "
-                 "svld1_s16(p16, CDOT_EEEE[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEE[%d][0]));" % (acc, s, k))
     # Butterfly (identical to the mul version: same 8-lane column layout)
     for name, n in (("EEEE", 2), ("EEEO", 2)):
         pass
     for k in range(4):
         pass
     return L + _butterfly_s32(s)
+
+
+def chunk_arithmetic_sdot_pair(off, s):
+    """SVE2p1 sdot z.s,z.h,z.h over a chunk PAIR (16 columns), sharing the
+    CDOT constant vectors across both chunks: 8 ld1h per k instead of 16
+    (docs/27 §8.11 experiment; constant reuse halves load count at the cost
+    of 2x accumulator liveness)."""
+    L = []
+    L.append("    const svbool_t p16 = svptrue_b16();")
+    L.append("    const svint32_t z = svdup_n_s32(0);")
+    for c in (0, 1):
+        for m in range(32):
+            L.append("    svint16_t r%s%d_%d = svld1_s16(p16, src + %d + off);"
+                     % (s, m, c, 32 * m + 8 * c))
+    # D vectors per chunk
+    for c in (0, 1):
+        for p in range(8):
+            L.append("    svint16_t d%sO%d_%d = svzip1_s16(r%s%d_%d, r%s%d_%d);"
+                     % (s, p, c, s, 4 * p + 1, c, s, 4 * p + 3, c))
+        for p in range(4):
+            L.append("    svint16_t d%sEO%d_%d = svzip1_s16(r%s%d_%d, r%s%d_%d);"
+                     % (s, p, c, s, 8 * p + 2, c, s, 8 * p + 6, c))
+        for p in range(2):
+            L.append("    svint16_t d%sEEO%d_%d = "
+                     "svzip1_s16(r%s%d_%d, r%s%d_%d);"
+                     % (s, p, c, s, 16 * p + 4, c, s, 16 * p + 12, c))
+        L.append("    svint16_t d%sEEEO_%d = svzip1_s16(r%s8_%d, r%s24_%d);"
+                 % (s, c, s, c, s, c))
+        L.append("    svint16_t d%sEEEE_%d = svzip1_s16(r%s0_%d, r%s16_%d);"
+                 % (s, c, s, c, s, c))
+    # O: 16 k, C loaded once per k, both chunks share it
+    for k in range(16):
+        for p in range(8):
+            L.append("    svint16_t C%sO%d_%d = load_c(CDOT_O[%d][%d]);"
+                     % (s, k, p, k, p))
+        for c in (0, 1):
+            acc = "O%s%d" % ("_%d" % c, k)
+            L.append("    svint32_t %s = z;" % acc)
+            for p in range(8):
+                L.append("    %s = sdot_s32_h(%s, d%sO%d_%d, C%sO%d_%d);"
+                         % (acc, acc, s, p, c, s, k, p))
+    # EO
+    for k in range(8):
+        for p in range(4):
+            L.append("    svint16_t C%sEO%d_%d = load_c(CDOT_EO[%d][%d]);"
+                     % (s, k, p, k, p))
+        for c in (0, 1):
+            acc = "EO%s%d" % ("_%d" % c, k)
+            L.append("    svint32_t %s = z;" % acc)
+            for p in range(4):
+                L.append("    %s = sdot_s32_h(%s, d%sEO%d_%d, C%sEO%d_%d);"
+                         % (acc, acc, s, p, c, s, k, p))
+    # EEO
+    for k in range(4):
+        for p in range(2):
+            L.append("    svint16_t C%sEEO%d_%d = load_c(CDOT_EEO[%d][%d]);"
+                     % (s, k, p, k, p))
+        for c in (0, 1):
+            acc = "EEO%s%d" % ("_%d" % c, k)
+            L.append("    svint32_t %s = z;" % acc)
+            for p in range(2):
+                L.append("    %s = sdot_s32_h(%s, d%sEEO%d_%d, C%sEEO%d_%d);"
+                         % (acc, acc, s, p, c, s, k, p))
+    # EEEO / EEEE (no reuse, only 2 k)
+    for k in range(2):
+        for c in (0, 1):
+            L.append("    svint32_t EEEO%s%d = sdot_s32_h(z, d%sEEEO_%d, "
+                     "load_c(CDOT_EEEO[%d][0]));"
+                     % ("_%d" % c, k, s, c, k))
+            L.append("    svint32_t EEEE%s%d = sdot_s32_h(z, d%sEEEE_%d, "
+                     "load_c(CDOT_EEEE[%d][0]));"
+                     % ("_%d" % c, k, s, c, k))
+    L.extend(_butterfly_s32("_0"))
+    L.extend(_butterfly_s32("_1"))
+    return L
 
 
 def _butterfly_s32(s):
@@ -269,28 +344,31 @@ def _butterfly_s32(s):
     return L
 
 
-def chunk_store_scalar(L):
-    L.append("    int16_t o[32][16];")
+def chunk_store_scalar(L, pref="", off_expr="off"):
+    L.append("    int16_t o%s[32][16];" % pref)
     for i in range(32):
-        srcv = "t%d" % i if i < 16 else "u%d" % (i - 16)
-        L.extend(_round_s16("out%d" % i, srcv))
-        L.append("    svst1_s16(p8h, o[%d], out%d);" % (i, i))
+        srcv = "t%s%d" % (pref, i) if i < 16 else "u%s%d" % (pref, i - 16)
+        L.extend(_round_s16("out%s%d" % (pref, i), srcv))
+        L.append("    svst1_s16(p8h, o%s[%d], out%s%d);" % (pref, i, pref, i))
     L.append("    for (int j = 0; j < 8; j++)")
     L.append("        for (int k = 0; k < 32; k++)")
-    L.append("            dst[(off + j) * stride + k] = o[k][j];")
+    L.append("            dst[(%s + j) * stride + k] = o%s[k][j];"
+             % (off_expr, pref))
 
 
-def chunk_store_scatter(L):
-    L.append("    const svbool_t p8s = svwhilelt_b32((uint32_t)0, "
-             "(uint32_t)8);")
-    L.append("    const svint32_t offs = svindex_s32(0, (int32_t)stride);")
+def chunk_store_scatter(L, pref="", off_expr="off"):
+    L.append("    const svbool_t p8s%s = svwhilelt_b32((uint32_t)0, "
+             "(uint32_t)8);" % pref)
+    L.append("    const svint32_t offs%s = svindex_s32(0, (int32_t)stride);"
+             % pref)
     for i in range(32):
-        srcv = "t%d" % i if i < 16 else "u%d" % (i - 16)
-        L.extend(_round_s16("n%d" % i, srcv))
-        L.append("    svint32_t d%d = svunpklo_s32(n%d);" % (i, i))
-        L.append("    svst1h_scatter_s32index_s32(p8s, "
-                 "dst + (intptr_t)(%d + off * stride), offs, d%d);"
-                 % (i, i))
+        srcv = "t%s%d" % (pref, i) if i < 16 else "u%s%d" % (pref, i - 16)
+        L.extend(_round_s16("n%s%d" % (pref, i), srcv))
+        L.append("    svint32_t d%s%d = svunpklo_s32(n%s%d);"
+                 % (pref, i, pref, i))
+        L.append("    svst1h_scatter_s32index_s32(p8s%s, "
+                 "dst + (intptr_t)(%d + (%s) * stride), offs%s, d%s%d);"
+                 % (pref, i, off_expr, pref, pref, i))
 
 
 def stage_src(store, compute):
@@ -307,6 +385,27 @@ def stage_src(store, compute):
         L.extend(chunk_arithmetic(0, ""))
     elif compute == "sdot-s32":
         L.extend(chunk_arithmetic_sdot(0, ""))
+    elif compute == "sdot-s32-pair":
+        L.extend(chunk_arithmetic_sdot_pair(0, ""))
+        if store == "scalar":
+            chunk_store_scalar(L, "_0", "off")
+            chunk_store_scalar(L, "_1", "off + 8")
+        elif store == "scatter":
+            chunk_store_scatter(L, "_0", "off")
+            chunk_store_scatter(L, "_1", "off + 8")
+        else:
+            raise ValueError("unknown store %r" % store)
+        L.append("}")
+        L.append("")
+        L.append("template <int SHIFT>")
+        L.append("static inline __attribute__((always_inline)) void "
+                 "idct32_stage(const int16_t* src, int16_t* dst, "
+                 "intptr_t stride)")
+        L.append("{")
+        L.append("    idct32_chunk<SHIFT>(src, dst, stride, 0);")
+        L.append("    idct32_chunk<SHIFT>(src, dst, stride, 16);")
+        L.append("}")
+        return "\n".join(L)
     else:
         raise ValueError("unknown compute %r" % compute)
     if store == "scalar":
@@ -332,9 +431,10 @@ def stage_src(store, compute):
 
 def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
          compute="mul"):
-    consts = (cpp_sdot_constants() if compute == "sdot-s32"
+    consts = (cpp_sdot_constants()
+              if compute in ("sdot-s32", "sdot-s32-pair")
               else cpp_constants())
-    if compute == "sdot-s32":
+    if compute in ("sdot-s32", "sdot-s32-pair"):
         helper = (
             "static inline __attribute__((always_inline)) svint32_t\n"
             "sdot_s32_h(svint32_t acc, svint16_t a, svint16_t b)\n"
@@ -342,6 +442,19 @@ def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
             "    asm volatile(\"sdot %0.s, %1.h, %2.h\"\n"
             "                 : \"+w\"(acc) : \"w\"(a), \"w\"(b));\n"
             "    return acc;\n"
+            "}\n"
+            "\n"
+            "// volatile: prevents cross-chunk CSE of constant vectors,\n"
+            "// which kept 8 C regs alive across chunks and caused ~1650\n"
+            "// spill ld/str (docs/27 §8.11). One ld1h per sdot wins.\n"
+            "static inline __attribute__((always_inline)) svint16_t\n"
+            "load_c(const int16_t* p)\n"
+            "{\n"
+            "    svint16_t v;\n"
+            "    asm volatile(\"ld1h %0.h, %1/z, [%2]\"\n"
+            "                 : \"=w\"(v)\n"
+            "                 : \"Upl\"(svptrue_b16()), \"r\"(p));\n"
+            "    return v;\n"
             "}\n")
     else:
         helper = ""
@@ -362,8 +475,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
     idct32_stage<7>(src, coef, 32);
     idct32_stage<12>(coef, dst, dstStride);
 }
-""" % ("/SVE2p1" if compute == "sdot-s32" else "",
-       consts, helper, stage_src(store, compute), func_name)
+    """ % ("/SVE2p1" if compute in ("sdot-s32", "sdot-s32-pair") else "",
+           consts, helper, stage_src(store, compute), func_name)
 
 
 def main():
@@ -373,7 +486,7 @@ def main():
     ap.add_argument("--store", default="scatter",
                     choices=("scalar", "scatter"))
     ap.add_argument("--compute", default="mul",
-                    choices=("mul", "sdot-s32"))
+                    choices=("mul", "sdot-s32", "sdot-s32-pair"))
     args = ap.parse_args()
     with open(args.out, "w") as f:
         f.write(emit(store=args.store, compute=args.compute))
