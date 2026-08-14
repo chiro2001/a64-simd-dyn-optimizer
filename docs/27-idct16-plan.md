@@ -425,6 +425,25 @@ fused_uop 5878→5583（-5%）但动态 MCA **1900→1940（+2%）**。
 采用**，保持每 sdot 一条 volatile ld1h 的单 chunk 方案（这也是一次
 “fused 更优但 MCA 更差 → 拒绝”的 MCA 指导决策）。
 
+**累加器拆分阴性（2026-08-14，emitter `sdot-s32-split`）**：O 8 链
+→2×4、EO 4 链→2×2（链深减半，+192 adds/chunk×4×2）：scalar fused
+4704→**5136（+432）**、MCA 3518→3586（+2%）；scatter fused
+5878→6252（+374）、MCA 1900→1957（+3%）、vector_lb NP1
+1255→1367（+9%）。依赖链不是瓶颈（16 条独立 O 链已交错），拆分只
+增加指令与寄存器压力——**不采用**（4 组合均过 20k/lite，仅作阴性
+记录，emitter 保留该轴，manifest 不启用）。
+
+**zip32 写回转置暂停（2026-08-14）**：emitter `--store zip32` 实现
+32×8 寄存器转置（splice 列对 + uzp 蝶形 order 1,2,4 + 连续 st1h，
+写回地址与 scatter 相同）。转置模式已用独立 QEMU 探针验证正确
+（synthetic n 与 kernel 同构 n 均 bad=0），但**集成到 kernel 后
+20k 差分 ~89% 失配**（GCC 16 与 Clang 22 均错）；现象：前 8 行
+0-7 列正确、其余全错，且错值来自后续 chunk 的 n 向量。coef 加
+padding 未修复。疑似大函数寄存器压力/调度与 chunk3 越界 16-lane
+读（`src+992+24` 读越 1024 元素缓冲 8 个元素）的交互。**已暂停**，
+根因诊断与 regspill 收敛策略转交 round-0017 专题咨询
+（expert-advice/round-0017），后续按建议恢复。
+
 **下一步**：
 1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
    O/E 峰值存活；或把 CDOT 表按 chunk 对只加载一次（-O3 已部分做到）；

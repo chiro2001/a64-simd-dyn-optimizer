@@ -43,6 +43,12 @@ BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
              "b.vc", "b.hi", "b.ls", "b.ge", "b.lt", "b.gt", "b.le",
              "b.al", "b.nv"}
 
+SDOT_COMPUTES = ("sdot-s32", "sdot-s32-split")
+
+
+def is_sdot_compute(v):
+    return v in SDOT_COMPUTES
+
 
 def candidate_march(combo):
     """GNU-as/-g++ -march for a candidate combo.
@@ -50,13 +56,13 @@ def candidate_march(combo):
     sdot-s32 (SVE2p1 `sdot z.s, z.h, z.h`) needs armv9.4-a+sve2p1 and -O3
     (docs/27 §8.10: -O2 spills more); everything else stays armv8.2-a+sve2.
     """
-    if combo.get("compute") == "sdot-s32":
+    if is_sdot_compute(combo.get("compute")):
         return "armv9.4-a+sve2p1"
     return "armv8.2-a+sve2"
 
 
 def candidate_opt(combo):
-    return "-O3" if combo.get("compute") == "sdot-s32" else "-O2"
+    return "-O3" if is_sdot_compute(combo.get("compute")) else "-O2"
 
 
 def vector_width_counts(insns):
@@ -515,7 +521,7 @@ def measure_layout_candidate(task):
             row.update({"passed": False, "counts": None})
             return row, None, "NO RANGE_END"
         rng = (rng[0], rng_end[1])
-    if combo.get("compute") == "sdot-s32":
+    if is_sdot_compute(combo.get("compute")):
         # QEMU 11.0.3 disassembles sdot z.s,z.h,z.h as .byte, so dynamic
         # trace counts would miss all 1376 sdots (docs/27 §8.10). These
         # kernels are fully unrolled: objdump static == dynamic.
@@ -660,7 +666,8 @@ def main():
     if args.mca_mattr is None:
         args.mca_mattr = manifest.get("mca_target", {}).get(
             "llvm_proxy_mattr", "+sve2")
-    if "sdot-s32" in manifest.get("layouts", {}).get("compute", []):
+    if any(is_sdot_compute(c)
+           for c in manifest.get("layouts", {}).get("compute", [])):
         # sdot_z32 is SVE2p1; the patched llvm-mca needs +sve2p1 to
         # accept the asm stream (docs/26 §5).
         args.mca_mattr = "+sve2p1"
@@ -866,7 +873,7 @@ def main():
                 continue
             mca_s = os.path.join(args.outdir, r["tag"] + ".mca.s")
             fix_driver = None
-            if r.get("compute") == "sdot-s32":
+            if is_sdot_compute(r.get("compute")):
                 # repaired dynamic stream + patched llvm-mca (docs/26 §5)
                 fix_driver = os.path.join(args.outdir,
                                           r["tag"] + "-trace-driver")
@@ -907,13 +914,13 @@ def main():
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
                                   args.kernel)
-            is_sdot = r.get("compute") == "sdot-s32"
+            is_sdot = is_sdot_compute(r.get("compute"))
             if rng is None or (not is_sdot and not os.path.exists(trace)):
                 print("  %-24s no trace for estimator" % r["tag"])
                 continue
             hist = {}
             insns = None
-            if r.get("compute") == "sdot-s32":
+            if is_sdot_compute(r.get("compute")):
                 from static_counts import static_hist
                 hist = static_hist(os.path.join(args.outdir,
                                                 r["tag"] + ".o"))
@@ -960,11 +967,11 @@ def main():
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
                                   args.kernel)
-            is_sdot = r.get("compute") == "sdot-s32"
+            is_sdot = is_sdot_compute(r.get("compute"))
             if rng is None or (not is_sdot and not os.path.exists(trace)):
                 print("  %-24s no trace for cp estimator" % r["tag"])
                 continue
-            if r.get("compute") == "sdot-s32":
+            if is_sdot_compute(r.get("compute")):
                 # static stream: objdump disassembles sdot correctly;
                 # estimate_critical_path consumes the same fmt_insns form.
                 from critical_path_dynamic import fmt_insns, latency_table
