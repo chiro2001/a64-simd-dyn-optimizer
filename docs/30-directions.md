@@ -82,6 +82,13 @@ CNTVCT paired）：当前 dct8（SVE HtoD 移植版）**比上游 NEON 慢
 动态 492 中 str/ldr 占比高），可用 920B 直接实测迭代（dct8 全为
 SVE1/NEON，无需替换）。
 
+**勘误（2026-08-14）**：单块 8×8 用 HtoS（sdot z.s,z.h,z.h）**不减少
+指令数**——8 列数据只有 8 个 h 输入，4-way sdot 只用到 2/8 个 s-lane，
+每输出行仍是 1 条 sdot（与 HtoD 相同）。HtoS 的减半收益只在
+每向量 ≥16 列时出现（如 dct8x2/批处理）。真正杠杆是**寄存器驻留
+中间量**（两趟 pass 间的 O/EE/EO 内存往返，clang 版约 24-43 条），
+设计见 docs/31。
+
 **2026-08-14 追加定位**：我们的 dct8 移植版比**上游 dct8_sve 还差**
 （动态 492 vs 310，MCA 118 vs 77，920B p50 5 vs 4）——所谓
 “op-for-op 移植”实际多了 ~180 条指令（NEON bridge 的 8-lane 存取/
