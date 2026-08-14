@@ -465,8 +465,11 @@ def chunk_store_zip32(L, pref, off_expr):
         cur = nxt
     for half in range(2):
         for r in range(8):
-            L.append("    svst1_s16(p16, dst + (intptr_t)(%d + %d * stride)"
-                     " + %d, %s);"
+            # off 是行组下标：地址 = ((off + r) * stride) + 16*half。
+            # 早期写成 (off + r*stride)，chunk1-3 会覆盖第 0-7 行的
+            # 8-31 列（docs/27 §8.11 zip32 修复，2026-08-14）。
+            L.append("    svst1_s16(p16, dst + (intptr_t)((%d + %d) * "
+                     "stride) + %d, %s);"
                      % (off_expr, r, 16 * half, cur[r + 8 * half]))
 
 
