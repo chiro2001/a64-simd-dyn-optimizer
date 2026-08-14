@@ -1,0 +1,22 @@
+# Normalized seed recipe: scale1D_128to64 NEON core (docs/37).
+seed: scale1d-128to64
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/scale1d/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_scale1d_128to64
+  demangled: dynopt_scale1d_128to64
+output:
+  ll: experiments/m30-scale1d-search/llvm-ir/scale1d-128to64-seed.ll
+  json: experiments/m30-scale1d-search/imported/machine-ir.json
+verify:
+  codegen: emit_scale1d_c_intrinsics
+  func_name: dynopt_scale1d_128to64_roundtrip
+  harness: kernels/scale1d/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

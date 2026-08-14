@@ -156,6 +156,13 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                "sums": ("sums", 0, 0),
                "0": ("p1", 0, 0), "1": 1, "2": ("p2", 0, 0),
                "3": 1, "4": ("sums", 0, 0)}
+    elif signature == "scale1d":
+        lines.append(
+            "extern \"C\" void %s(uint8_t* dst, const uint8_t* src)"
+            % func_name)
+        lines.append("{")
+        env = {"dst": ("dst", 0, 0), "src": ("src", 0, 0),
+               "0": ("dst", 0, 0), "1": ("src", 0, 0)}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -273,6 +280,9 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             elif node.get("type") == "<4 x i32>":
                 lines.append("    vst1q_s32((int32_t*)((uint8_t*)%s + %s),"
                              " %s);"
+                             % (base, offexpr, cid(node["src"])))
+            elif node.get("type") == "<16 x i8>":
+                lines.append("    vst1q_u8((uint8_t*)%s + %s, %s);"
                              % (base, offexpr, cid(node["src"])))
             else:
                 raise ValueError("codegen store type %r unsupported"
@@ -473,6 +483,18 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                              % (types[dst], cid(dst), cid(srcs[0]),
                                 cid(srcs[1])))
                 continue
+            if len(srcs) == 2 and vtype == "<16 x i8>" and \
+                    mask == list(range(0, 32, 2)):
+                lines.append("    %s %s = vuzp1q_u8(%s, %s);"
+                             % (types[dst], cid(dst), cid(srcs[0]),
+                                cid(srcs[1])))
+                continue
+            if len(srcs) == 2 and vtype == "<16 x i8>" and \
+                    mask == list(range(1, 32, 2)):
+                lines.append("    %s %s = vuzp2q_u8(%s, %s);"
+                             % (types[dst], cid(dst), cid(srcs[0]),
+                                cid(srcs[1])))
+                continue
             if vtype == "<8 x i16>" and \
                     node["mask"] == [0, 1, 2, 3, 8, 9, 10, 11]:
                 # concat low halves (clang >= 21 emits this directly)
@@ -587,6 +609,11 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                                 parts[3]))
                 lines.append("    vst4_s32((int32_t*)%s, %s);"
                              % (cid(node["src"][4]), rname))
+            elif name == "urhadd":
+                types[dst] = "uint8x16_t"
+                lines.append("    %s %s = vrhaddq_u8(%s, %s);"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1])))
             elif name == "uabd":
                 if node.get("type") == "<16 x i8>":
                     types[dst] = "uint8x16_t"
@@ -664,6 +691,13 @@ def emit_ssim_c_intrinsics(
     """Flat NEON roundtrip emitter for ssim_4x4x2_core (two 4x4 blocks)."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="ssim")
+
+
+def emit_scale1d_c_intrinsics(
+        machine_ir, func_name="dynopt_scale1d_128to64_roundtrip"):
+    """Flat NEON roundtrip emitter for scale1D_128to64 (two 128->64 rows)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="scale1d")
 
 
 def _sve_flat_indices(node):

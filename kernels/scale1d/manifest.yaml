@@ -1,0 +1,35 @@
+# scale1D_128to64 SVE2 manifest (docs/37).
+kernel: scale1d
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: scale1d
+
+candidate:
+  symbol: dynopt_scale1d_128to64_sve2
+  trace_driver_src: kernels/scale1d/trace_driver.cpp
+  trace_driver_c: kernels/scale1d/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: scale1D_128to64_neon
+  symbol_mangled: x265_scale1D_128to64_neon
+  call: x265_scale1D_128to64_neon
+  decl: |
+    extern "C" void x265_scale1D_128to64_neon(uint8_t*, const uint8_t*);
+
+baselines:
+  neon:
+    driver: kernels/scale1d/trace_driver.cpp
+    symbol_mangled: x265_scale1D_128to64_neon
+  sve2:
+    driver: kernels/scale1d/trace_driver.cpp
+    symbol_mangled: x265_scale1D_128to64_sve2
+
+corpus:
+  strides: [1]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  impl: [uzp-rhadd]
