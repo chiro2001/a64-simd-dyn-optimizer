@@ -1,0 +1,40 @@
+[
+ {
+  "tag": "acc_split-1",
+  "acc_split": 1,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x4008c0"
+  ],
+  "counts": {
+   "total": 1761,
+   "vector": 593,
+   "movprfx": 0,
+   "vector_fused": 593,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 144,
+   "vector_fused_uop": 593
+  },
+  "fusion": {
+   "eligible": 1,
+   "hw_supported": 0,
+   "pairs": [
+    "mla+mls"
+   ],
+   "counts": {
+    "scalar_insns": 33,
+    "simd_insns": 5,
+    "load_insns": 2,
+    "store_insns": 1
+   }
+  },
+  "mca_cycles": 259,
+  "mca_uops": 1424
+ }
+]

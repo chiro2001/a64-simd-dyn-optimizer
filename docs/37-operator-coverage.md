@@ -12,7 +12,7 @@
 | --- | ---: | ---: | ---: |
 | dct/idct | 2（dct/idct 数组 + dst/idst4x4） | dct8/16/32、idct16/32 | 缺 idct8、dst4x4/idst4x4 |
 | sa8d/satd | （嵌套） | sa8d 8/16；**satd 全 5 形状 ✅（通用 hadamard 配方：4x4 37/57、4x8 63/62、8x8 93/51、8x16 185/70、16x16 441/133）** | satd 8x4 等剩余混合形状（docs/40 §15） |
-| interp8 | （嵌套 luma_*） | hpp 8/16/32、vpp 16/32 | 缺 vpp 8x8、hps/vps/sp/ss |
+| interp8 | （嵌套 luma_*） | hpp 8/16/32、vpp 16/32；**vpp16 已加入通用 vertical-fir 配方（593/259）** | 缺 vpp 8x8、hps/vps/sp/ss |
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
 | **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | **全部 ✅**：dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、quant 508/169、nquant 329/131 | 纯汇编，走 C/ACLE seed 模式（docs/44） |
 | **sao** | 10（saoCuOrg*/Stats*） | **全族 ✅（10/10）**：saoCuOrg E0 305/133、B0 386/126、E1 610/171、E1_2Rows 306/103、E2 154/74、E3 135/73；Stats E0 block16 165/62（block32 101/70）、E1 block16 180/64（112/71）、E2 block16 181/65（112/71）、E3 block16 180/65（112/71）、BO 0vector/137（无优化空间） | docs/45 §10 |

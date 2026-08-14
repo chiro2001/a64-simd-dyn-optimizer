@@ -324,3 +324,20 @@ kernels/dct16 上游 NEON（dct16_neon）
   - satd-4x8：**63 fused / MCA 62**；
   - satd-8x16：**185 fused / MCA 70**。
 - satd 已覆盖 4x4/4x8/8x8/8x16/16x16 五个形状。
+
+## 16. vertical-fir 配方：interp8 vpp 16x16（2026-08-15，第四个族）
+
+- `tools/gen_sve2_emit.py` 新增 vertical-fir 配方：interp8 vpp 的
+  MachineIR（571 节点，umull+sqrshrun 结构）→ SVE2 ACLE：
+  - 垂直滤波是 lane-wise（列共享同一组 tap），16 宽行用**一个**
+    16-lane s16 累加器（svunpklo_u16 整行加宽）即可；
+  - 每 tap：svld1_u8(pg16b) + svmul_s16(dup(|c|))，符号用
+    svadd/svsub 区分；
+  - 窄化走 NEON-bridge（svget_neonq 低 8 + svtbl 高 8 + 两次
+    vqrshrun + vcombine），QEMU qxtnb 错位规避；
+  - 系数来自 g_lumaFilter 相位 1..3，运行时 coeffIdx 分发。
+- 验收（20k 差分 0 失配，experiments/m30-interp8vpp-search/
+  gen-search-16x16/results.json）：**593 fused / MCA 259 / dyn 1761**；
+  对比手写 247/157 —— 正确但未用滑动行复用（16 行 × 8 次加载 +
+  144 stack），滑动行/宽加载是下一轮布局轴。
+- 通用发射器现覆盖 4 个配方族、16 个算子形状。
