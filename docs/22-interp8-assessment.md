@@ -193,3 +193,14 @@ mod 2^16），16-bit 累加结果并不等价，因此不能免掉每行 `sub #1
   端到端实测：sdot-d 127 / MCA 121，sdot-h 101 / MCA 55，20k PASS。
 - `optimizer/analysis/cost.py`：CLASSES 补 `sqrshrunb/sqrshrun`、
   `movi/mvni`、`uaddl/umlal` 等（此前这些向量指令被误计为 scalar）。
+
+### 5.4 小形状（8x8）SVE256 收益评估（2026-08-14）
+
+interp8 8x8 每行只有 8 字节有用输出，SVE256 的 32 字节向量 3/4 lane
+闲置：指令数 -28%（141→101）但 MCA（55 vs 54）打平，920B 替换预估
+（docs/29 §4）反而 1.84x 慢（BtoS 替换高估 dot 工作量，但方向一致）。
+结论：**8x8 小形状在 SVE256 上实机大概率打平或落后 NEON**，与
+sa8d 8x8 的既有判断一致；本项目 cycle 收益应聚焦 16x16/32x32 等
+宽度可充分使用的形状（dct/idct/sa8d16 已验证）。interp8 的
+指令数优化保留为工具能力的证据与 960 大形状（16x16/32x32）移植
+基础。
