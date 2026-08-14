@@ -604,7 +604,9 @@ sdot-s32 轴、搜索缓存 build fingerprint、MCA 短名单并集。
 1. **直接 asm pressure-budgeted 原型**（咨询实验 3）：k_block=4/8、
    in-place 蝶形（EEEE/EEEO→EEE→EE→E 覆盖已死输入）、round+splice
    融合、linear scan（K=24/32）后嵌回两 stage；目标动态 MCA 低于
-   当前 1171（idct32）且 peak-live ≤24~32；
+   当前 1164（idct32）且 peak-live ≤24~32；设计蓝图见
+   docs/28-direct-asm-prototype.md（M1-M5 里程碑，收益预期 ≤10%，
+   M3 起无改善即停）；
 2. **950/960 实机 paired**（SVE2p1 候选无法在 920B 跑；920G 内部已有
    早期 1.08× 慢于 NEON 的记录，需用新 best 复测）；
 3. **低价值不优先**：Clang C2-C4（PBQP/ilpmin）诊断、dct32/dct16
