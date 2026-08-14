@@ -493,7 +493,16 @@ def main():
                          "tsv110 has no SVE coverage)")
     ap.add_argument("--mca-mattr", default="+sve2",
                     help="llvm-mca -mattr (default +sve2)")
+    ap.add_argument("--rank-by", choices=("fused_uop", "mca"),
+                    default="fused_uop",
+                    help="final ranking key (default fused_uop; mca requires "
+                         "--mca-top and uses mca_cycles as primary key, "
+                         "falling back to fused_uop for candidates without "
+                         "MCA data)")
     args = ap.parse_args()
+    if args.rank_by == "mca" and args.mca_top == 0:
+        # ranking by MCA implies running the second proxy; default to top-10.
+        args.mca_top = 10
     manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.contract:
@@ -641,11 +650,10 @@ def main():
                   % (tag, stage, row.get("passed"),
                      row.get("verify_mismatches")))
 
-    json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
-              indent=1)
     json.dump(cache, open(cache_path, "w"), indent=1)
     ok = [r for r in results if r.get("passed") and r.get("counts")]
-    ok.sort(key=lambda r: r["counts"]["vector_fused_uop"])
+    fused_key = lambda r: r["counts"]["vector_fused_uop"]
+    ok.sort(key=fused_key)
     baseline = manifest.get("targets", {}).get("baseline_fused_uop")
     gate = manifest.get("targets", {}).get("halve_gate", 0.5)
     shape = manifest.get("shape", {})
@@ -658,18 +666,20 @@ def main():
           % (max(1, vl_bytes // 8), vl_bytes * 8))
     for r in ok:
         fu = r["counts"]["vector_fused_uop"]
+        mca = r.get("mca_cycles")
         ratio = fu / baseline if baseline else None
         gate_mark = ""
         if ratio is not None:
             gate_mark = (" HALVED" if ratio <= gate else
                          " near-gate" if ratio <= gate * 1.25 else " NO")
         per_out = (" per_out=%.2f" % (fu / n_out)) if n_out else ""
-        print("  %-24s vector=%d fused_adj=%d sg=%d stk=%d fused_uop=%d%s%s"
+        mca_str = (" mca=%d" % mca) if mca is not None else ""
+        print("  %-24s vector=%d fused_adj=%d sg=%d stk=%d fused_uop=%d%s%s%s"
               % (r["tag"], r["counts"]["vector"],
                  r["counts"]["vector_fused"],
                  r["counts"].get("scatter_gather", 0),
                  r["counts"].get("stack_vector", 0),
-                 fu, per_out, gate_mark))
+                 fu, per_out, gate_mark, mca_str))
         if ratio is not None:
             r["baseline_ratio"] = ratio
             r["halve_gate_met"] = ratio <= gate
@@ -701,6 +711,15 @@ def main():
                 print("  %-24s fused_uop=%d mca_cycles=%d mca_uops=%d"
                       % (r["tag"], r["counts"]["vector_fused_uop"],
                          r["mca_cycles"], r["mca_uops"]))
+            if args.rank_by == "mca":
+                # re-rank by the second proxy; finalize picks ok[0].
+                ok.sort(key=lambda r: (r.get("mca_cycles") is None,
+                                       r.get("mca_cycles") or 10 ** 9,
+                                       r["counts"]["vector_fused_uop"]))
+    # persist results after the MCA pass so mca_cycles/mca_uops survive
+    # (previously dumped before --mca-top ran and MCA data was lost).
+    json.dump(results, open(os.path.join(args.outdir, "results.json"), "w"),
+              indent=1)
     if args.finalize and ok:
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")

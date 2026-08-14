@@ -1123,3 +1123,34 @@ EEO16 = EE16 − rev8(EE16)（k4 输入）可线性展开，pass1 的 k2/k4
 全量差分段错误。该轴已废弃并回滚（stash: narrow_store_pred+
 const_inline WIP）。`rshrnb`+`uzp1_s16` 是必要组合，不能省。
 （想压缩只能走 vector-offset scatter，但用户已禁用 gather/scatter。）
+
+### 6.14 2026-08-14：k0_merge16 全布局搜索 + MCA 入搜索
+
+**k0_merge16 轴**：k0 store 去掉 tbl2，改用
+`uzp1_s32(k0p_a,k0p_b)` 拼接 + `rshrnb` + `uzp1_s16`（m32 探针，
+见 `experiments/m31-dct32-k0-sdot/probe_scatter_k0.cpp` 的 2-input
+8-lane 变体；4-input 16-lane 变体 GCC 溢出为负结果）。
+
+全布局搜索（`experiments/m30-dct32-search/layout-search-m32`，
+768 候选 / 688 passed，含 k0_merge16 轴）：
+
+| 排名 | 候选要点 | fused_uop | vector raw | MCA cycles | MCA uops |
+| --- | --- | ---: | ---: | ---: | ---: |
+| fused 1 | tbl2/row16/k0_merge16 | **3930** | 4394 | 1094 | 5823 |
+| MCA 1 | zip/row8/k0_merge16 | 4014 | 4482 | **1041** | 5414 |
+| MCA 2 | zip/row8/merge8 | 4088 | 4552 | 1055 | 5518 |
+
+- MCA 与 fused_uop 排名不一致：MCA 最优（4014，zip/row8）比 fused 最优
+  （3930，tbl2/row16）少 ~5% cycle（Neoverse-V2 代理口径）。
+- 4014 与 3930 均通过 TestBenchLite 正式 5 seed
+  （1/2/0x12345678/0xDEADBEEF/987654321）dct32 门禁。
+- 额外压力 seed 0x44444444 会让所有 top 候选的 dct32x32 失败
+  （legacy 合同的容忍失配在结构化输入下超阈值，非个别候选问题；
+  需要更强的输入分布时才作为新门禁加入）。
+- **工具修正**：`--mca-top` 之前把 results.json dump 在 MCA 之前，
+  mca_cycles/mca_uops 全部丢失；已改为 MCA 后再 dump，并用已有
+  trace 回填 m32 结果。新增 `--rank-by {fused_uop,mca}`，
+  `--rank-by mca` 时 finalize 按 MCA 取 best。
+
+待办：920G/hip12 实机 paired（4014 vs 3930）验证 MCA 预测；
+自定义 MCA target 见 docs/26。
