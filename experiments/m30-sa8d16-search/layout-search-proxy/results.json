@@ -17,15 +17,17 @@
    "stack_vector": 0,
    "vector_fused_uop": 189
   },
+  "range": null,
   "cached": true,
   "baseline_ratio": 0.5067024128686327,
   "halve_gate_met": false,
   "mca_cycles": 72,
-  "mca_uops": 228,
+  "mca_uops": 231,
   "est_cycles_NP1": 111.0,
   "cp_cycles_NP1": 35,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 0.0
  }
 ]

@@ -3,14 +3,10 @@
   "tag": "path-a",
   "path": "a",
   "contract": "upstream-exact",
+  "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 mismatches=0\n",
-  "upstream_exact": true,
-  "range": [
-   "0x4007e0",
-   "0x4008c0"
-  ],
   "counts": {
    "total": 193,
    "vector": 143,
@@ -21,14 +17,17 @@
    "stack_vector": 0,
    "vector_fused_uop": 127
   },
+  "range": null,
+  "cached": true,
   "baseline_ratio": 0.900709219858156,
   "halve_gate_met": false,
   "mca_cycles": 121,
-  "mca_uops": 191,
+  "mca_uops": 194,
   "est_cycles_NP1": 46.0,
   "cp_cycles_NP1": 33,
   "lite_pass": true,
   "lite_passed": 5,
-  "lite_fails": []
+  "lite_fails": [],
+  "consensus_rank": 0.0
  }
 ]
