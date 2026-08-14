@@ -27,7 +27,7 @@ kernels/dct16 上游 NEON（dct16_neon）
 
 - 输入：`experiments/m30-dct16-search/imported/machine-ir.json`；
 - 常量源：load 节点已带 `const_name/const_off`（g_t16 + 字节偏移）；
-  试点用配方库 G16 表解析（通用版后续改 ELF/rodata 符号解析）；
+  由 x265 源码常量提取器解析（M1a2），不再依赖配方 G16 硬编码；
 - 验收：检测命中数与 asm 线报告
   `shared-matrix-discovery.json`（39 个）一致或超集；
   命中常量逐值匹配 G16 行。
@@ -63,7 +63,7 @@ kernels/dct16 上游 NEON（dct16_neon）
 
 - `optimizer/analysis/linearize.py` 新增：
   - `resolve_const_loads()`：读 load 节点的 `const_name/const_off`
-    （试点常量源 = 配方库 G16 表）；
+    （常量源见 M1a2）；
   - `lane_forms(ir, const_values)`：smull 遇常量叶子时按**叶子 lane
     映射**缩放系数（首版按 slot i 取值，shuffle 后错位；修复后
     consts 变为完整 G16 行）；
@@ -77,6 +77,27 @@ kernels/dct16 上游 NEON（dct16_neon）
   - asm 独有的 `[1,1,1,1]` 是 k0 偶路径的归一化形式（asm 线折叠系数），
     MachineIR 线用原始值匹配到 G16 行 8，覆盖面更完整；
   - 奇数行 1/3/5/7/9/11/13/15 全部精确匹配 G16（含 revneg 变体）。
+
+### M1a2 ✅：通用源码常量提取（替代配方 G16 硬编码）
+
+- 新工具 `tools/extract_x265_constants.py`：解析
+  `third_party/x265/source/common/constants.cpp` 的 int16 表
+  （g_t4/8/16/32、g_lumaFilter、g_chromaFilter），输出
+  {符号: {字节偏移: 行值}}；
+- 修复记录：花括号计数起点错误（regex 已消费开括号，只解析到第一行）；
+  行宽正则灾难性回溯（g_t32 大块）→ 改从声明第二维度取行宽，宏维度
+  （NTAPS_*）才解析首行；常量表键需用 x265 mangled 名
+  （`_ZN4x2655g_t16E`）匹配 seed 的 const_name；
+- `tools/dct16_recipe_seed.py` 自动提取常量（`--const-tables` 可指定
+  JSON），不再 import dct16 专属 G16；
+- 结果与 M1a 完全一致（44 命中、odd 1/3/5/7/9/11/13/15、
+  even [4,8,12]、轴种子不变）——常量源已通用化。
+
+> 为什么不用 ELF/rodata：MachineIR 的 const_off 是源码数组布局，而链接
+> 后二进制（GCC 构建的 libx265）会重排常量表（dct16.rodata 中 g_t16
+> 行被拆成低半+零填充/高半重复的 16 字节块），直接按符号+偏移解析会
+> 错位。源码定义才是 LLVM IR 全局引用的布局，因此源码提取是该线路的
+> 正确常量源。
 
 ### M1b ✅：配方匹配 + 轴种子
 

@@ -2,8 +2,9 @@
 """M1a/M1b: MachineIR 线共享常量矩阵检测 + 蝶形配方轴种子（dct16 试点）。
 
 输入：m30 seed（experiments/m30-dct16-search/imported/machine-ir.json）。
-常量源：配方库 G16（load 节点 const_name/const_off -> G16 行；试点实现，
-通用版后续改 ELF/rodata 符号解析，见 docs/40 M1a2）。
+常量源（M1a2）：x265 源码 constants.cpp 解析出的 int16 常量表
+（tools/extract_x265_constants.py），按 load 节点 const_name/const_off
+取行并切片到 lane 数；不再依赖 dct16 专属 G16 硬编码。
 
 输出：recipe-seed.json
   - hits：共享常量矩阵命中（consts/leaves）
@@ -30,19 +31,23 @@ from linearize import (  # noqa: E402
     shared_constant_matrix_outputs,
 )
 from machine_ir import MachineIR  # noqa: E402
-from dct16_op_ir import G16  # noqa: E402
+from extract_x265_constants import parse_int16_tables  # noqa: E402
 
 
-def build_g16_tables():
-    """g_t16 row k starts at byte offset 32*k; first half is G16[k]."""
-    return {"_ZN4x2655g_t16E": {32 * k: list(G16[k]) for k in range(16)}}
+def build_tables(tables):
+    """{symbol: {byte_offset: [values]}} with x265 mangled symbol names."""
+    out = {}
+    for name, t in tables.items():
+        mangled = "_ZN4x265%d%sE" % (len(name), name)
+        out[mangled] = t["offsets"]
+    return out
 
 
-def row_matches(c):
-    """Return (row_k, variant) if c matches G16 row k."""
+def row_matches(c, rows):
+    """Return (row_k, variant) if c matches a row (prefix/reverse/neg)."""
     n = len(c)
-    for k in range(16):
-        row = G16[k][:n]
+    for k, row in enumerate(rows):
+        row = row[:n]
         if c == row:
             return k, "exact"
         if c == [-x for x in reversed(row)]:
@@ -57,7 +62,7 @@ def row_matches(c):
 def classify_hit(hit):
     rows = []
     for c in hit["consts"]:
-        k, var = row_matches(c)
+        k, var = row_matches(c, _ROW_SOURCE)
         if k is not None:
             rows.append({"row": k, "variant": var, "const": c})
     splat = all(len(set(v)) == 1 for v in hit["consts"])
@@ -73,12 +78,26 @@ def main():
     ap.add_argument("--out", required=True, help="recipe-seed.json path")
     ap.add_argument("--asm-report", default=None,
                     help="optional asm-line discovery report for comparison")
+    ap.add_argument("--const-tables", default=None,
+                    help="JSON from tools/extract_x265_constants.py; "
+                         "default: auto-parse x265 constants.cpp")
+    ap.add_argument("--x265-cpp", default=None,
+                    help="path to x265 constants.cpp (auto-detected)")
     args = ap.parse_args()
 
+    global _ROW_SOURCE
+    if args.const_tables:
+        tables = json.load(open(args.const_tables))
+    else:
+        cpp = args.x265_cpp or os.path.join(
+            ROOT, "third_party/x265/source/common/constants.cpp")
+        tables = parse_int16_tables(open(cpp).read())
+    g16 = tables.get("g_t16", {})
+    _ROW_SOURCE = g16.get("rows", [])
     doc = json.load(open(args.machine_ir))
     ir = MachineIR(function=doc.get("function"),
                    nodes=[dict(n) for n in doc["nodes"]])
-    const_values = resolve_const_loads(ir, build_g16_tables())
+    const_values = resolve_const_loads(ir, build_tables(tables))
     forms, symbolic = lane_forms(ir, const_values)
     hits = shared_constant_matrix_outputs(ir.nodes, forms)
 
