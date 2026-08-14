@@ -106,6 +106,12 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 | idct16 | scatter（cp 最优） | 1179 | 496 | 448 | 120 | PASS |
 | idct16 | anchor_sve2 | 980 | 925 | 2892 | 181 | PASS |
 
+（2026-08-14 rshrnb 后：zip16 fused 1025 / MCA 438 / est 286 / cp 99；
+scatter fused 1090 / MCA 483 / est 312 / cp 82；scalar 852 / 895 /
+2746 / 180。舍入由 add+asr+qxtnb 换为 `svqrshrnb_n_s32`（SQRSHRNB，
+RSHRNB 不饱和会 81% 失配）。SVE1 无 s16→s32 非 indexed SDOT，sdot 化
+只能用 `svdot_lane_s64`（dct32 布局）。）
+
 sa8d16 离减半门还差 ~3 条 fused_uop，是下一个可加轴的候选（emitter
 `emit_sa8d_sve2_shared.emit_16x16` 目前无参数）；interp8 只有 1 条
 路径（phase-1 8x8），可扩展 unroll/regroup 轴。结果分别存

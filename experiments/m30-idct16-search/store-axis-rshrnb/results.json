@@ -1,0 +1,101 @@
+[
+ {
+  "tag": "store-scalar",
+  "store": "scalar",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x401b40"
+  ],
+  "counts": {
+   "total": 3962,
+   "vector": 896,
+   "movprfx": 44,
+   "vector_fused": 852,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 24,
+   "vector_fused_uop": 852
+  },
+  "baseline_ratio": 0.3010600706713781,
+  "halve_gate_met": true,
+  "mca_cycles": 895,
+  "mca_uops": 4477,
+  "est_cycles_NP1": 2746.0,
+  "cp_cycles_NP1": 180,
+  "lite_pass": true,
+  "lite_passed": 5,
+  "lite_fails": [],
+  "consensus_rank": 1.2
+ },
+ {
+  "tag": "store-scatter",
+  "store": "scatter",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x401a20"
+  ],
+  "counts": {
+   "total": 1164,
+   "vector": 948,
+   "movprfx": 50,
+   "vector_fused": 898,
+   "scatter_gather": 64,
+   "scatter_gather_uops": 256,
+   "stack_vector": 3,
+   "vector_fused_uop": 1090
+  },
+  "baseline_ratio": 0.38515901060070673,
+  "halve_gate_met": true,
+  "mca_cycles": 483,
+  "mca_uops": 1574,
+  "est_cycles_NP1": 312.0,
+  "cp_cycles_NP1": 82,
+  "lite_pass": true,
+  "lite_passed": 5,
+  "lite_fails": [],
+  "consensus_rank": 1.2
+ },
+ {
+  "tag": "store-zip16",
+  "store": "zip16",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x401ce0"
+  ],
+  "counts": {
+   "total": 1337,
+   "vector": 1071,
+   "movprfx": 46,
+   "vector_fused": 1025,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 66,
+   "vector_fused_uop": 1025
+  },
+  "baseline_ratio": 0.3621908127208481,
+  "halve_gate_met": true,
+  "mca_cycles": 438,
+  "mca_uops": 1366,
+  "est_cycles_NP1": 286.0,
+  "cp_cycles_NP1": 99,
+  "lite_pass": true,
+  "lite_passed": 5,
+  "lite_fails": [],
+  "consensus_rank": 0.6
+ }
+]

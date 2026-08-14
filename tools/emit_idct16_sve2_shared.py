@@ -101,10 +101,21 @@ def half_arithmetic(off, s):
 
 
 def _round_s32(var, shift):
+    """Legacy rounding: add(1<<(SHIFT-1)) + asr + (caller narrows)."""
     return [
         "    %s = svadd_s32_x(p32, %s, svdup_n_s32(1 << (SHIFT - 1)));"
         % (var, var),
         "    %s = svasr_n_s32_x(p32, %s, SHIFT);" % (var, var),
+    ]
+
+
+def _round_s16(var, src):
+    """SVE2 saturating rounding shift-right narrow (SQRSHRNB): equivalent to
+    add(2^(SHIFT-1)) + asr + saturating narrow, then deinterleave the
+    even-lane results."""
+    return [
+        "    svint16_t %s = svuzp1_s16(svqrshrnb_n_s32(%s, SHIFT), "
+        "svqrshrnb_n_s32(%s, SHIFT));" % (var, src, src),
     ]
 
 
@@ -117,21 +128,28 @@ def _scalar_store(lines):
     lines.append("            dst[(off + j) * stride + k] = o[k][j];")
 
 
-def _scatter_store(lines):
+def _scatter_store(lines, round_mode):
     lines.append("    const svbool_t p8s = svwhilelt_b32((uint32_t)0, "
                  "(uint32_t)8);")
     lines.append("    const svint32_t offs = svindex_s32(0, (int32_t)stride);")
     for i in range(16):
         srcv = "t%d" % i if i < 8 else "u%d" % (i - 8)
-        lines.append("    svint32_t d%d = %s;" % (i, srcv))
-        lines.extend(_round_s32("d%d" % i, "SHIFT"))
-        lines.append("    d%d = svmax_s32_x(p32, d%d, "
-                     "svdup_n_s32(-32768));" % (i, i))
-        lines.append("    d%d = svmin_s32_x(p32, d%d, "
-                     "svdup_n_s32(32767));" % (i, i))
-        lines.append("    svst1h_scatter_s32index_s32(p8s, "
-                     "dst + (intptr_t)(%d + off * stride), offs, d%d);"
-                     % (i, i))
+        if round_mode == "rshrnb":
+            lines.extend(_round_s16("n%d" % i, srcv))
+            lines.append("    svint32_t d%d = svunpklo_s32(n%d);" % (i, i))
+            lines.append("    svst1h_scatter_s32index_s32(p8s, "
+                         "dst + (intptr_t)(%d + off * stride), offs, d%d);"
+                         % (i, i))
+        else:
+            lines.append("    svint32_t d%d = %s;" % (i, srcv))
+            lines.extend(_round_s32("d%d" % i, "SHIFT"))
+            lines.append("    d%d = svmax_s32_x(p32, d%d, "
+                         "svdup_n_s32(-32768));" % (i, i))
+            lines.append("    d%d = svmin_s32_x(p32, d%d, "
+                         "svdup_n_s32(32767));" % (i, i))
+            lines.append("    svst1h_scatter_s32index_s32(p8s, "
+                         "dst + (intptr_t)(%d + off * stride), offs, d%d);"
+                         % (i, i))
 
 
 def _zip16_transpose(lines):
@@ -157,7 +175,7 @@ def _zip16_transpose(lines):
                      "%s);" % (i, cur[i]))
 
 
-def stage_src(store):
+def stage_src(store, round_mode="rshrnb"):
     """Generate the per-stage code for store in {scalar, scatter, zip16}.
 
     VL=256: svint32_t has 8 lanes, so the 16 columns run as two 8-column
@@ -177,13 +195,16 @@ def stage_src(store):
         if store == "scalar":
             for i in range(16):
                 srcv = "t%d" % i if i < 8 else "u%d" % (i - 8)
-                L.extend(_round_s32(srcv, "SHIFT"))
-                L.append("    svint16_t out%d = "
-                         "svuzp1_s16(svqxtnb_s32(%s), "
-                         "svqxtnb_s32(%s));" % (i, srcv, srcv))
+                if round_mode == "rshrnb":
+                    L.extend(_round_s16("out%d" % i, srcv))
+                else:
+                    L.extend(_round_s32(srcv, "SHIFT"))
+                    L.append("    svint16_t out%d = "
+                             "svuzp1_s16(svqxtnb_s32(%s), "
+                             "svqxtnb_s32(%s));" % (i, srcv, srcv))
             _scalar_store(L)
         else:
-            _scatter_store(L)
+            _scatter_store(L, round_mode)
         L.append("}")
         L.append("")
         L.append("template <int SHIFT>")
@@ -212,14 +233,18 @@ def stage_src(store):
         for i in range(16):
             sa = "tA%d" % i if i < 8 else "uA%d" % (i - 8)
             sb = "tB%d" % i if i < 8 else "uB%d" % (i - 8)
-            for var in (sa, sb):
-                L.extend(_round_s32(var, "SHIFT"))
-            L.append("    svint16_t nA%d = "
-                     "svuzp1_s16(svqxtnb_s32(%s), svqxtnb_s32(%s));"
-                     % (i, sa, sa))
-            L.append("    svint16_t nB%d = "
-                     "svuzp1_s16(svqxtnb_s32(%s), svqxtnb_s32(%s));"
-                     % (i, sb, sb))
+            if round_mode == "rshrnb":
+                L.extend(_round_s16("nA%d" % i, sa))
+                L.extend(_round_s16("nB%d" % i, sb))
+            else:
+                for var in (sa, sb):
+                    L.extend(_round_s32(var, "SHIFT"))
+                L.append("    svint16_t nA%d = "
+                         "svuzp1_s16(svqxtnb_s32(%s), svqxtnb_s32(%s));"
+                         % (i, sa, sa))
+                L.append("    svint16_t nB%d = "
+                         "svuzp1_s16(svqxtnb_s32(%s), svqxtnb_s32(%s));"
+                         % (i, sb, sb))
             L.append("    svint16_t out%d = svsplice_s16(p8h, nA%d, nB%d);"
                      % (i, i, i))
         _zip16_transpose(L)
@@ -229,7 +254,8 @@ def stage_src(store):
     return "\n".join(L)
 
 
-def emit(func_name="dynopt_idct16_sve2_shared", store="scalar"):
+def emit(func_name="dynopt_idct16_sve2_shared", store="scalar",
+         round_mode="rshrnb"):
     return """\
 // Generated by tools/emit_idct16_sve2_shared.py -- do not edit by hand.
 // IDCT16 SVE2 (VL=256), bit-exact with x265::idct16_c (docs/27).
@@ -245,7 +271,7 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
     idct16_stage<7>(src, coef, 16);
     idct16_stage<12>(coef, dst, dstStride);
 }
-""" % (cpp_constants(), stage_src(store), func_name)
+""" % (cpp_constants(), stage_src(store, round_mode), func_name)
 
 
 def main():
@@ -254,9 +280,11 @@ def main():
     ap.add_argument("out", default="generated/idct16/sve2.cpp")
     ap.add_argument("--store", default="scalar",
                     choices=("scalar", "scatter", "zip16"))
+    ap.add_argument("--round", default="rshrnb",
+                    choices=("rshrnb", "addasr"))
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(store=args.store))
+        f.write(emit(store=args.store, round_mode=args.round))
     print("wrote %s" % args.out)
 
 
