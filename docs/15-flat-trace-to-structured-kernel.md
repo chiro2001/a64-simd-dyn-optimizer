@@ -12,7 +12,16 @@
 各自 trip=2，period 1281/1395，深度 1）。op 后端的 pass 循环被完整
 识别；循环体内是展开的计算块（sdot/permute/narrow/store）。
 
-步骤 4-6（归纳/访存分析 → 结构化 IR → 发射器消费 LoopIR）仍是下一步。
+**步骤 4（归纳 + 访存分析，2026-08-14 原型）**：
+`analyze_loops()` 识别循环携带的标量计数器（dst==src 的 add/sub，
+支持 hex 立即数）与访存 base/offset 分布：
+- pass1：归纳 `x1 += 32`（k 计数器）、`x11 += 112`（地址）；访存
+  base 覆盖 x1/x3/x5/x7/x10..x17/x21（ld1h/ld1w/stp）；
+- pass2：归纳 `x0 += 1024`、`x1 += 32`、`x3 += 64`；访存 base x0..x4。
+
+输出已落 `experiments/m33-loop-recovery/loops-3930.json`（含
+induction/mem 字段）。步骤 5-6（LoopIR 结构化 + 发射器消费）仍是
+下一步。
 
 ## 1. 语义缺口（用户提出）
 

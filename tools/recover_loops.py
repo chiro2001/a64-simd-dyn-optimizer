@@ -11,7 +11,8 @@ Usage:
   python3 tools/recover_loops.py <trace.json> [--json out.json]
 
 Output: for each detected loop: period (body length in instructions), trip
-count, body address range, and nesting depth. Straight-line (non-loop)
+count, body address range, nesting depth, plus induction-variable and
+memory-access pattern analysis (docs/15 step 4). Straight-line (non-loop)
 code is the remaining sequence.
 """
 
@@ -93,6 +94,61 @@ def detect_loops(insns):
     return merged
 
 
+def analyze_loops(insns, loops):
+    """Step 4 (prototype): per-loop induction variables and memory patterns.
+
+    Induction: scalar add/sub with dst == src (e.g. `add x8, x8, #8`,
+    `addvl x9, x9, #2`) -- the loop-carried counter. Memory: gather
+    [base, #off] operands of ld/st instructions in the body, grouped by
+    base register.
+    """
+    import re
+
+    ADD = re.compile(
+        r"^(?:add|sub|addvl|subvl|addv|subv)\s+([xw]\d+)\s*,\s*"
+        r"([xw]\d+)\s*,\s*#(-?(?:0x[0-9a-f]+|\d+))")
+    MEM = re.compile(r"\[([xw]\d+)(?:,\s*#(-?\d+))?\]")
+    LD_ST = {"ldr", "str", "ldp", "stp", "ldur", "stur",
+             "ld1b", "ld1h", "ld1w", "ld1d", "ld1ub", "ld1uh", "ld1uw",
+             "st1b", "st1h", "st1w", "st1d", "ld1r"}
+
+    out = []
+    for l in loops:
+        body = insns[l["start"]:l["end"]]
+        ind = {}
+        for n in body:
+            m = ADD.match(n["mn"] + " " + n["ops"])
+            if not m:
+                continue
+            dst, src, imm = m.group(1), m.group(2), int(m.group(3), 0)
+            if dst != src:
+                continue
+            cur = ind.get(dst)
+            if cur is None or abs(imm) > abs(cur["step"]):
+                ind[dst] = {"reg": dst, "op": n["mn"], "step": imm}
+        mem = {}
+        for n in body:
+            if n["mn"] not in LD_ST:
+                continue
+            for m in MEM.finditer(n["ops"]):
+                base = m.group(1)
+                off = int(m.group(2)) if m.group(2) else 0
+                e = mem.setdefault(base, {"kind": n["mn"], "offsets": set(),
+                                          "count": 0})
+                e["offsets"].add(off)
+                e["count"] += 1
+        out.append({
+            "branch": hex(l["branch"]), "trip": l["trip"],
+            "period": l["period"], "depth": l["depth"],
+            "induction": sorted(ind.values(), key=lambda e: e["reg"]),
+            "mem": {k: {"kind": v["kind"],
+                        "offsets": sorted(v["offsets"]),
+                        "count": v["count"]}
+                    for k, v in sorted(mem.items())},
+        })
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("trace_json", nargs="?",
@@ -122,6 +178,7 @@ def main():
         d = json.load(open(args.trace_json))
         insns = d["instructions"]
     loops = detect_loops(insns)
+    analysis = analyze_loops(insns, loops)
 
     total_loop = sum(l["period"] * l["trip"] for l in loops
                      if l["depth"] == 1)
@@ -133,9 +190,17 @@ def main():
               % (l["branch"], l["mn"], l["trip"], l["period"], l["depth"],
                  insns[l["start"]]["addr"],
                  insns[l["end"] - 1]["addr"]))
+    for a in analysis:
+        inds = ",".join("%s%s%+d" % (i["op"], i["reg"], i["step"])
+                        for i in a["induction"]) or "-"
+        mems = ",".join("%s[%s]" % (m["kind"], k)
+                        for k, m in a["mem"].items()) or "-"
+        print("  analysis@0x%s: induction=%s mem=%s"
+              % (a["branch"][2:], inds, mems))
 
     if args.out_json:
-        json.dump({"instructions": len(insns), "loops": loops},
+        json.dump({"instructions": len(insns), "loops": loops,
+                   "analysis": analysis},
                   open(args.out_json, "w"), indent=1)
     return 0
 
