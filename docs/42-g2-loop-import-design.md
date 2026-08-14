@@ -207,3 +207,18 @@ sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里�
 - 成功后可顺带覆盖：idct32、dct32_neon（同逆蝶形结构）、quant/sao
   的循环 kernel；
 - docs/41 G4 系列保持直线导入；本文是 G2 的正式实现入口。
+
+## 13. 2026-08-14 Step 2 完成：idct16 全链路打通
+
+- **根因**：结构化发射器的 addr 用 `int16_t* + 256`（元素步进=512 字节），
+  而 IR 的 i8 GEP 是 256 字节。统一改为 uint8_t* 字节运算后
+  确定性输入逐位一致 → **门禁 20000 cases mismatches=0 PASS**；
+- 调试方法论：写块 DAG 的 Python 解释器
+  （experiments/m30-idct16-search/interp_structured.py）证明模型正确、
+  定位 C 翻译 bug；教训：调试时必须严格链式编译，避免旧二进制误导
+  （曾因 stderr 未声明导致编译失败却跑了旧 .o，出现“不可能的值”）；
+- seed 线全流程：opt_unroll（自循环）→ structured 导入（diamond）→
+  线性 goto codegen → 门禁 → 搜索（idct16 best 852 fused < 980 手写
+  记录；MCA 895 需后续按 consensus 复核）；
+- G2b 里程碑达成：**idct16 成为第 12 个 seed 线覆盖的 kernel**，
+  同时解锁 idct32/dct32 同类结构。

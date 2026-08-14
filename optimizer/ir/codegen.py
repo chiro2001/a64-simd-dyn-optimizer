@@ -1718,6 +1718,7 @@ def emit_structured_neon_intrinsics(
                 base = env[m.group(2)[1:]]
                 off = m.group(3)
                 offs = env[off[1:]] if off.startswith("%") else off
+                base = "((const uint8_t*)%s)" % env[m.group(2)[1:]]
                 if off.startswith("%"):
                     env[dst] = "(%s + (%s) * %d)" % (base, offs, mult)
                 else:
