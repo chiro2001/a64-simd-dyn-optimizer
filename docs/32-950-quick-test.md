@@ -112,6 +112,11 @@ bash scripts/bench-generic-paired.sh build/ivpp16_mb 16x16v neon vcand 30 8 /tmp
 
 ### 4.5 interp8 hpp path-B（替换 sve2 目标，仅 cycle 预估）
 
+> 已验证（2026-08-14）：当前候选是 addp 对和版本（docs/22 §5.7），
+> `addp` 为 SVE2，950 原生支持、**无需替换**；只需替换 `sdot.h`→
+> `sdot.s`（`--target sve2` 同时保留 `sqrshrunb`）。以下命令已本地
+> 验证可汇编、可运行。
+
 ```sh
 # 1) C++ -> .S（sve2p3 全集）
 aarch64-linux-gnu-g++ -O3 -march=armv9.5-a+sve2p3 -std=c++11 -S \
