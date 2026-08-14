@@ -115,7 +115,21 @@ kernels/dct16 上游 NEON（dct16_neon）
   lift-search`（32 候选全过差分）：
   - **fused 699 / MCA 212 / est NP1 125.5 / cp 43 / lite 5/5 PASS**，
     与 layout-search-proxy 完全一致；
-  - 胜出组合正是轴种子指向的角落。
+- 胜出组合正是轴种子指向的角落。
+
+### M3a ✅：interp8 / sa8d seed recipe（docs/41 §5）
+
+### M3b ✅：FIR / diff-sum 检测 + 族→轴种子
+
+- `tools/dct16_recipe_seed.py` 新增 `detect_fir` / `detect_diff_sum` 与
+  `axis_seed_for`（知识层映射：结构事实 → 搜索轴）：
+  - **interp8（fir）**：filter=g_lumaFilter、phases=4、taps=8、
+    sdot=32、tbl=24、narrow=sqrshrun → 轴种子
+    `compute=[sdot-h], pairsum=[addp]`（即手写最优 93 fused 的组合）；
+  - **sa8d（diff-sum）**：sabd=4、abs=4、umax=4、reduce=uaddlv →
+    轴种子 `reduce=[sve], reduce_tail=[saddv,dot-uaddv]`
+    （saddv 即 186 最优）；
+  - dct16（butterfly）行为不变（44 命中 + 原轴种子）。
 
 ### 结论
 
