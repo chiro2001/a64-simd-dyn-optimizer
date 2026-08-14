@@ -281,3 +281,13 @@ kernel（全直线 + alloca/ld1x4/addp/rshrn 等新形态）。
 ——该 kernel 的搜索覆盖由既有特化路径承担（best 4014/1041），
 seed 线验收 = roundtrip 门禁 PASS；真正的修复是 **prune-aware
 枚举**（按轴依赖条件生成而非全笛卡尔后过滤），列入后续工具项。
+
+## 18. prune-aware 枚举（OOM 修复的长期项，已实现生成器版）
+
+- `layout_plans` 改为**规则感知的递归生成器**：依赖轴先序、逐值检查
+  已决规则后剪枝；`layout_combos` 保持惰性。其他 kernel 组合数不变
+  （dct16 520/interp8 4/sa8d16 2/idct16 6/dct8 2）；
+- dct32 全空间（7.37e8）prune 后仍达上亿（15+ 无规则轴相乘）——搜索
+  组合数本质问题是 manifest 轴空间膨胀（rw1-4、layout 等），需
+  **配方级轴子集**（按 kernel 声明搜索用轴）或专门的有界搜索；
+  dct32 的 seed 线验收 = roundtrip 门禁 PASS，搜索由特化路径承担。

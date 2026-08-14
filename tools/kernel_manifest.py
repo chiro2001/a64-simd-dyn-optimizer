@@ -54,29 +54,63 @@ def layout_plans(manifest):
     entries must hold (scalar equality or membership in a list). This
     replaces the per-kernel hardcoded `if combo... continue` chains in
     the search driver (round-0012 P2).
+
+    Prune-aware generation: axes required by other axes are ordered first,
+    and each value is checked against already-decided rules before
+    descending, so a huge cartesian space is not materialized (dct32's raw
+    space is 7.37e8; the generator prunes it to the plans actually usable).
     """
-    combos = layout_combos(manifest)
+    axes = manifest.get("layouts", {})
+    names = list(axes.keys())
     rules = manifest.get("layout_prune", [])
-    out = []
-    for c in combos:
-        ok = True
+    if not names:
+        yield {}
+        return
+
+    # order required axes before their dependents (stable topological sort)
+    def needed_by(axis):
+        return {ra for rule in rules if rule.get("axis") == axis
+                for ra in rule.get("requires", {})}
+
+    ordered = []
+    remaining = set(names)
+    while remaining:
+        for n in list(remaining):
+            if needed_by(n) - set(ordered) - {n} == set():
+                ordered.append(n)
+                remaining.discard(n)
+                break
+        else:
+            ordered.extend(sorted(remaining))
+            break
+
+    def matches(val, rv):
+        if isinstance(rv, list):
+            return val in rv
+        return val == rv
+
+    def conflicts(c):
         for rule in rules:
-            if not c.get(rule["axis"], 0):
+            ax = rule["axis"]
+            if not c.get(ax, 0):
                 continue
             for ra, rv in rule.get("requires", {}).items():
-                val = c.get(ra)
-                if isinstance(rv, list):
-                    if val not in rv:
-                        ok = False
-                        break
-                elif val != rv:
-                    ok = False
-                    break
-            if not ok:
-                break
-        if ok:
-            out.append(c)
-    return out
+                if ra in c and not matches(c[ra], rv):
+                    return True
+        return False
+
+    def gen(chosen, idx):
+        if idx == len(ordered):
+            yield dict(chosen)
+            return
+        name = ordered[idx]
+        for v in axes[name]:
+            chosen[name] = v
+            if not conflicts(chosen):
+                yield from gen(chosen, idx + 1)
+        del chosen[name]
+
+    yield from gen({}, 0)
 
 
 def repo_path(manifest, p):
