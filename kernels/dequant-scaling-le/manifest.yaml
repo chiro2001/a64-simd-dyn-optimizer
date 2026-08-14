@@ -1,0 +1,35 @@
+# dequant_scaling (256 elems), shift+4 <= per branch (docs/44).
+kernel: dequant-scaling-le
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: dequant_scaling
+  n: 256
+  branch: le
+
+candidate:
+  symbol: dynopt_dequant_scaling_256_sve2
+  trace_driver_src: kernels/dequant-scaling-le/trace_driver.cpp
+  trace_driver_c: kernels/dequant-scaling-le/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: dequant_scaling_neon
+  symbol_mangled: x265_dequant_scaling_neon
+  call: x265_dequant_scaling_neon
+  decl: |
+    extern "C" void x265_dequant_scaling_neon(
+        const int16_t*, const int32_t*, int16_t*, int, int, int);
+
+baselines:
+  neon:
+    driver: kernels/dequant-scaling-le/trace_driver.cpp
+    symbol_mangled: x265_dequant_scaling_neon
+
+corpus:
+  strides: [1]
+  value_range: [-32768, 32767]
+  cases: 20000
+
+layouts:
+  widen: [unpk, smull-ones]

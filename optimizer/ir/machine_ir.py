@@ -223,6 +223,9 @@ def import_llvm_ir_text(ir_text, function=None):
             ops = _parse_operands(rhs)
             node = {"op": "xor", "type": _op_type(rhs), "src": ops,
                     "dst": dst}
+            cm = re.search(r",\s*(-?\d+)\s*$", rhs)
+            if cm:
+                node["const"] = int(cm.group(1))
             imm = _parse_imm(rhs.rsplit(",", 1)[1]) \
                 if "," in rhs and "splat" in rhs else None
             if imm is not None:
@@ -336,9 +339,19 @@ def import_llvm_ir_text(ir_text, function=None):
                     "dst": dst})
         elif rhs.startswith("shl"):
             ops = _parse_operands(rhs)
-            ir.add({"op": "shl", "type": _op_type(rhs),
-                    "src": ops, "amt": _parse_imm(rhs.rsplit(",", 1)[1]),
-                    "dst": dst})
+            tail = rhs.rsplit(",", 1)[1].strip()
+            node = {"op": "shl", "type": _op_type(rhs), "src": ops,
+                    "dst": dst}
+            if tail.startswith("%"):
+                # variable shift count: `shl nuw i32 1, %count`
+                bm = re.match(
+                    r"shl(?:\s+(?:nuw|nsw))*\s+i\d+\s+(-?\d+),\s*%", rhs)
+                if bm:
+                    node["const"] = int(bm.group(1))
+                node["amt"] = None
+            else:
+                node["amt"] = _parse_imm(tail)
+            ir.add(node)
         elif rhs.startswith("icmp"):
             ops = _parse_operands(rhs)
             pred = re.search(r"icmp\s+(\w+)", rhs).group(1)

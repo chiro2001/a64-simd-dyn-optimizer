@@ -51,6 +51,25 @@ harness），过 lite 前先 20k 差分 0 失配。
   compute-ld1sh-mul 162 / 63（正确但更差）；20k 差分均 0 失配；
 - 下一步：dequant_scaling（per/num 双循环）。
 
+### 执行记录 2026-08-15：dequant_scaling ✅（双分支）
+
+- 运行时分支 `shift+4 > per`（gt：加半舍入后算术右移）与
+  `shift+4 <= per`（le：饱和窄化后饱和左移）拆成两个无分支 seed
+  （`seed_scaling_gt/le.cpp`），各自 20k 例 0 失配（对照
+  `x265_dequant_scaling_neon`，按分支约束 per/shift 取值）；
+- codegen 新通用资产：scaling ABI（q/dq/c/shift/per）、s32 load、
+  sext（vmovl）、vector mul（vmulq_s32）、sshl（vshlq_s32）、
+  sqshl（vqshlq_s16）、变量移位 `shl 1, %cnt`、xor 常量；
+- 搜索层两个 kernel（`dequant-scaling-gt/le`），widen 两结构：
+  - **unpk**（svunpklo/hi + uzp1 恢复顺序）：gt **210 fused / 75
+    MCA**，le **193 / 72**；
+  - smull-ones（svmullb/t × ones + dq 偶/奇 uzp1/uzp2 配对）：gt
+    227 / 82，le 210 / 77；
+- 语义实测：SVE UNPKLO/HI 是连续半宽（非交错），qxtnb/qxtnt 是
+  交错填充，svuzp1 可还原；SVE ASR 需正数位移量（NEON 的 sshl 用
+  负数）；`do` 是 C++ 关键字；
+- 待办：quant / nquant。
+
 ## 3. 搜索层需求（新结构族，需一次配方设计）
 
 - `kernels/quant/manifest.yaml` 族：reference = 4 个 NEON 汇编符号，

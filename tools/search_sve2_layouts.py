@@ -520,6 +520,13 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit(combo)
         return emit_fn
+    if kernel in ("dequant-scaling-gt", "dequant-scaling-le"):
+        from emit_dequant_scaling_sve2_shared import emit as _emit_dqs
+        _dqs_branch = "le" if kernel.endswith("-le") else "gt"
+
+        def emit_fn(combo):
+            return _emit_dqs(dict(combo, branch=_dqs_branch))
+        return emit_fn
     if kernel == "sad-32":
         from emit_sad_sve2_shared import emit_32x32
 

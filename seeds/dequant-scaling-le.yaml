@@ -1,0 +1,22 @@
+# dequant_scaling 256 NEON seed, shift+4 <= per branch (docs/44).
+seed: dequant-scaling-le
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/dequant/seed_scaling_le.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_dequant_scaling_256_le
+  demangled: dynopt_dequant_scaling_256_le
+output:
+  ll: experiments/m30-dequant-search/llvm-ir/dequant-scaling-le-seed.ll
+  json: experiments/m30-dequant-search/imported/machine-ir-scaling-le.json
+verify:
+  codegen: emit_dequant_scaling_c_intrinsics
+  func_name: dynopt_dequant_scaling_256_roundtrip
+  harness: kernels/dequant/roundtrip_verify_scaling.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod", "-DDQS_BRANCH=0"]
+  cases: 20000
