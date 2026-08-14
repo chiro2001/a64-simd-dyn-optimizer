@@ -515,6 +515,18 @@ split-spill-mode=speed + eviction-cutoff=1000）在 JIT zip32 上
 fused 5358（GCC 5085）、stack 298 更少但向量指令更多——不敌 GCC，
 按 round-0017 路线图停止枚举编译器隐藏 flag。
 
+**DCT32 压力诊断（2026-08-14，peak_live 复测）**：
+
+| kernel | 峰值活跃 Z | live-area |
+| --- | ---: | ---: |
+| dct32 cand4002（本项目） | 30 | 53497 |
+| dct32 内部手写 | 21 | 41734 |
+| dct32 上游 | 31 | 303845 |
+
+本项目 dct32 峰值已在预算内，live-area 比内部高 ~28%（调度/寿命略
+长），但 MCA 已持平内部（1041 vs 1048，docs/20 §6.17 950 实机
+985~995 最快）；无明显 spill 大头，维持 -O2/op 后端现状。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
