@@ -16,7 +16,10 @@ SYM="${2:?usage: trace_kernel.sh <kernel.o> <symbol> [out.log] [driver.cpp]}"
 LOG="${3:-$ROOT/build/kernel-trace.log}"
 DRIVER="${4:-$ROOT/kernels/dct16/trace_driver.cpp}"
 
-bin="$ROOT/build/trace-driver-$(basename "$OBJ" .o)"
+# Multiple kernels use identically named candidate files (best_sve2.o),
+# which would collide in build/; include the parent directory name.
+tag="$(basename "$(dirname "$OBJ")")-$(basename "$OBJ" .o)"
+bin="$ROOT/build/trace-driver-$tag"
 aarch64-linux-gnu-g++ -O2 -no-pie -static -std=c++11 \
   "$DRIVER" "$OBJ" -o "$bin"
 
