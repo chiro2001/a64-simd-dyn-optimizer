@@ -1,6 +1,18 @@
 # 从平坦动态 trace 恢复带控制结构的 kernel（Loop Recovery）
 
-状态：**设计 + 原型工具**（2026-08-13）。
+状态：**设计 + 原型工具（2026-08-13）+ 直连 trace 日志（2026-08-14）**。
+
+## 1b. 2026-08-14 增量：直接吃 QEMU `-trace.log`
+
+`tools/recover_loops.py` 新增 `--trace-log <log> --start <hex> --end <hex>`
+（内部走 parse_exec），不再要求先导出中间 JSON。
+
+在当前 dct32 best（3930，`experiments/m33-loop-recovery/loops-3930.json`）
+上的恢复结果：5548 条动态指令 → **2 个顶层循环**（pass1/pass2，
+各自 trip=2，period 1281/1395，深度 1）。op 后端的 pass 循环被完整
+识别；循环体内是展开的计算块（sdot/permute/narrow/store）。
+
+步骤 4-6（归纳/访存分析 → 结构化 IR → 发射器消费 LoopIR）仍是下一步。
 
 ## 1. 语义缺口（用户提出）
 

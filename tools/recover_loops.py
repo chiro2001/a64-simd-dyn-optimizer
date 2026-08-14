@@ -17,6 +17,7 @@ code is the remaining sequence.
 
 import argparse
 import json
+import os
 import sys
 
 
@@ -94,12 +95,32 @@ def detect_loops(insns):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("trace_json")
+    ap.add_argument("trace_json", nargs="?",
+                    help="trace instructions JSON (from parse_qemu_trace "
+                         "--json); omit when using --trace-log")
+    ap.add_argument("--trace-log", default=None,
+                    help="QEMU exec+in_asm log (parse with --exec); requires "
+                         "--start/--end")
+    ap.add_argument("--start", default=None, help="symbol range start (hex)")
+    ap.add_argument("--end", default=None, help="symbol range end (hex)")
     ap.add_argument("--json", dest="out_json", default=None)
     args = ap.parse_args()
 
-    d = json.load(open(args.trace_json))
-    insns = d["instructions"]
+    if args.trace_log:
+        if not args.start or not args.end:
+            print("--trace-log requires --start and --end", file=sys.stderr)
+            return 2
+        sys.path.insert(0, os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        from parse_qemu_trace import parse_exec
+        insns = parse_exec(args.trace_log,
+                           int(args.start, 16), int(args.end, 16))
+    else:
+        if not args.trace_json:
+            print("need trace_json or --trace-log", file=sys.stderr)
+            return 2
+        d = json.load(open(args.trace_json))
+        insns = d["instructions"]
     loops = detect_loops(insns)
 
     total_loop = sum(l["period"] * l["trip"] for l in loops

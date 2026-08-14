@@ -1,0 +1,31 @@
+{
+ "kernel": "dct32 3930 (best_op_r16)",
+ "source_trace": "experiments/m30-dct32-search/layout-search-m32/pass1_...k2k4_from_packs-1-trace.log",
+ "total_insns": 5548,
+ "loops": [
+  {
+   "branch": "0x401d74",
+   "mn": "b.ne",
+   "trip": 2,
+   "period": 1281,
+   "depth": 1,
+   "body_addr": [
+    "0x400974",
+    "0x401d74"
+   ],
+   "body_insns": 1281
+  },
+  {
+   "branch": "0x40349c",
+   "mn": "b.ne",
+   "trip": 2,
+   "period": 1395,
+   "depth": 1,
+   "body_addr": [
+    "0x401ed4",
+    "0x40349c"
+   ],
+   "body_insns": 1395
+  }
+ ]
+}
