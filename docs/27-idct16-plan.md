@@ -545,8 +545,25 @@ k_block/直接 asm 组合可再评估）。
 | -O3 -fno-sched-pressure | — | 5941 | 更差 |
 | -O2 | 5000 | 6077 | spill 更多（stk 848/611），已弃 |
 
-结论：sdot 系搜索编译参数改为 `-O3 -frename-registers`（搜索工具
-`candidate_opt` 已更新）；其余 flag 待 round-0017 咨询给出更多方向。
+结论：sdot 系搜索编译参数最终为
+`-O3 -frename-registers --param=sched-pressure-algorithm=1`（搜索工具
+`candidate_opt` 已更新；G3 见上文）；其余 flag 已按 round-0017
+结论停止深挖（Clang C1-C3 阴性、-msve-vector-bits=256 阴性）。
+
+**950/960 验收命令（SVE2p1 候选，等实机）**：
+
+```sh
+# 20k 差分（QEMU VL=256，本地即可）
+python3 tools/gen_verify.py --manifest kernels/idct32/manifest.yaml --out /tmp/v.cpp
+# TestBenchLite 5 seed（实机/本地均可）
+bash scripts/build-testbench-lite.sh kernels/idct32/candidates/best_sve2.o \
+  build/x265-8-testbench -- --gate idct32 --seed 1
+# 950/960 实机 paired：CNTVCT 微基准（同 dct32_microbench 模式）对比
+# 上游 NEON idct32 vs best_sve2；NP1(960) 口径 vector_lb ≤1276.75。
+```
+
+注意：950（920G）实测早期 sdot 候选曾 1.08× 慢于 NEON，需用当前
+best（MCA 1164）复测；960（SVE2.3，NP1 4×256）为最终验收机。
 
 **C 常量 vnum 立即数寻址（2026-08-14，正收益）**：`load_c` 改为
 `asm volatile("ld1h %0.h, %1/z, [%2, #%3, MUL VL]")`，base =
