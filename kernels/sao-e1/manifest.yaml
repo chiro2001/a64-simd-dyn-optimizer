@@ -1,0 +1,34 @@
+# SAO edge offset class 1 (vertical), 64x4 SVE2 manifest (docs/45).
+kernel: sao-e1
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sao_e1
+  n: 64
+
+candidate:
+  symbol: dynopt_sao_e1_64x4_sve2
+  trace_driver_src: kernels/sao-e1/trace_driver.cpp
+  trace_driver_c: kernels/sao-e1/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: processSaoCUE1_neon
+  symbol_mangled: processSaoCUE1_neon
+  call: processSaoCUE1_neon
+  decl: |
+    extern "C" void processSaoCUE1_neon(
+        uint8_t*, int8_t*, int8_t*, intptr_t, int);
+
+baselines:
+  neon:
+    driver: kernels/sao-e1/trace_driver.cpp
+    symbol_mangled: processSaoCUE1_neon
+
+corpus:
+  strides: [64, 65, 96, 128]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  impl: [tbl-s16]
