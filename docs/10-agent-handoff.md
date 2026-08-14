@@ -111,6 +111,19 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 - 920B SVE1 指令实测表：`benchmarks/sve-timing-920b/timing-920b.json`
   （仅作参考；target 权重已改为结构口径，不再使用实测值）。
 
+**SVE2p3 工具链（2026-08-14，interp8 path B 验证后新增）**：
+- 自定义 QEMU（round-0018/0019 补丁）：`build/qemu-build/qemu-aarch64`，
+  系统 qemu-aarch64 无 sve2p3 会 SIGILL；搜索工具用
+  `DYNOPT_QEMU_SVE2P3` 覆盖（默认该路径），interp8 manifest 的
+  `compute=sdot-h` 轴自动选择。
+- 自定义 QEMU 的 `-d in_asm` 是 OBJD-T 格式（无 mnemonic）：
+  `parse_qemu_trace.py` 已支持（按 `.byte` 进表），动态 MCA 必须走
+  `run_dynamic_mca(fix_driver=..., mca_arch=armv9.4-a+sve2p3)`；
+  `--mca-arch` 参数已加。
+- sdot-h 候选默认 clang 编译（101 fused/0-4 spill；GCC 103/14），
+  MCA 自动 `+sve2p3`，需 patched llvm-mca
+  （/home/chiro/llvm-src/build-mca/bin/llvm-mca）。
+
 ### 0.6 其他算子全代理基线（2026-08-14）
 
 | kernel | 候选 | fused_uop | MCA | NP1 est | cp | lite 5 seed |
