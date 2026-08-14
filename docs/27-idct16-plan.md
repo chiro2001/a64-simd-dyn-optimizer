@@ -533,6 +533,12 @@ fused 5358（GCC 5085）、stack 298 更少但向量指令更多——不敌 GCC
 调度已等效实现该融合。**不单独采用**，作为搜索轴保留（后续如与
 k_block/直接 asm 组合可再评估）。
 
+**转置最小性（2026-08-14，permute 模拟）**：32×8 拆成两个 16×8 块
+（8 个 splice 后 8 向量）同样需要 uzp 3 层 (1,2,4)——每 chunk 仍 64
+permute；8×8 分块（16 uzp + 16 splice 合并）更差。当前 zip32 写回
+（16 splice + 48 uzp + 16 st1h/chunk）在 splice/zip/trn/uzp 方案族
+中已最小，640 permute 属算法固有，不再搜索该方向。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
