@@ -232,3 +232,19 @@ sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里�
 - 全流程 best **4688 fused**（< 手写 5085；MCA 3161 待 consensus）；
 - 教训：recipe verify 需显式 `func_name`（默认 emit 的 dct16 名），
   链接错误暴露。
+
+## 15. 2026-08-14 dct32 WIP：结构化发射器大扩展 + 语义 bug 调试中
+
+- dct32_neon 内联后是**全直线**（0 br），flat 导入即可；但含 alloca
+  中间缓冲、ld1x4 连续加载、addp/rshrn、smull 常量向量等新形态；
+- 发射器扩展（已提交）：alloca 数组、ld1x4（vld1q_s16_x4/vld1_s16_x4，
+  注意不是交织 vld4！）、addp 按返回类型（vpadd_s16/q）、rshrn
+  （vrshrn 舍入）、mul const_vec、smull imm_vec 池、extractvalue 按
+  元素宽度、新 shuffle（rev64/zip1q/zip2q）与 <8 x i16>/<4 x i16>
+  add/sub；
+- importer：intrinsic 返回类型记录（含 noundef/花括号结构）；
+- **未解决**：门禁 5000/5000 失配。调试解释器
+  experiments/m30-dct32-search/interp_dct32.py 显示模型 row1 与参考
+  基本一致（仅舍入位），row0 仍差——C 与解释器各自还有残余 bug；
+  下一步：先修解释器（对齐 row0），再逐 op 对照 C；
+- 该 kernel 已由特化路径覆盖（best 4014/1041），seed 线为覆盖性补充。

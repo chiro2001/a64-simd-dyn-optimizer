@@ -263,11 +263,26 @@ def import_llvm_ir_text(ir_text, function=None):
                     "src": ops[0] if ops else None, "dst": dst})
         elif "llvm.aarch64.neon." in rhs:
             name = re.search(r"@llvm\.aarch64\.neon\.([a-z0-9_]+)", rhs).group(1)
+            t = re.sub(r"^\s*(?:tail\s+)?call\s+(?:noundef\s+)?", "",
+                       rhs.split("@llvm", 1)[0]).strip()
+            if not (t.startswith("<") or t.startswith("{")):
+                t = None
             ops = _parse_operands(rhs)
             args = []
             call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
-            for a in call_args.split(","):
+            # split on top-level commas (not inside <> vector constants)
+            for a in re.split(r",(?![^<]*>)", call_args):
                 a = a.strip()
+                vm = re.match(r"<(\d+) x i(\d+)>\s*<(.+)>", a)
+                if vm:
+                    vals = []
+                    for part in vm.group(3).split(","):
+                        part = part.strip()
+                        mm = re.match(r"i\d+\s+(-?\d+)", part)
+                        if mm:
+                            vals.append(int(mm.group(1)))
+                    args.append({"imm_vec": vals})
+                    continue
                 ref = re.search(r"%([A-Za-z0-9._]+)", a)
                 if ref:
                     args.append({"ref": ref.group(1)})
@@ -278,6 +293,8 @@ def import_llvm_ir_text(ir_text, function=None):
                     continue
                 args.append({"raw": a})
             ir.add({"op": "intrinsic", "intrinsic": name,
+                    "type": t if t and (t.startswith("<") or
+                                        t.startswith("{")) else None,
                     "src": ops, "args": args, "dst": dst})
         elif rhs.startswith("lshr"):
             ops = _parse_operands(rhs)
