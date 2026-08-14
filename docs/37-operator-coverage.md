@@ -19,7 +19,7 @@
 | pixel-util | 2（scale1D/2D） | 无 | 简单、收益看形状 |
 | ssim | 1（ssim_4x4x2_core） | 无 | 简单 |
 | misc | findPosFirstLast/costCoeffNxN/scanPosLast/weight_pp/planecopy | 无 | 小算子，收益低 |
-| sad | （嵌套，aa64 有 dotprod 实现） | 无 | 16/32 宽收益可能好 |
+| sad | （嵌套，aa64 有 dotprod 实现） | **sad 16x16/32x32 ✅**（80/160 fused，MCA 69/118） | 无优化空间，纯覆盖（2026-08-15） |
 | intra | （嵌套，aa64 有实现） | 无 | 复杂，收益不确定 |
 
 ## 2. 快速覆盖方法（让每个新算子 30-60 分钟进搜索）
@@ -40,6 +40,22 @@
    known_kernels.json + docs/10 表。
 
 这套流程已用 interp4（hpp/vpp）验证：从零到固化约 1-2 个会话。
+
+### sad 覆盖记录（2026-08-15）
+
+- 上游 aarch64 sad 是纯汇编（sad-neon-dotprod.S），抽取层按 docs/41
+  的“C/ACLE 语义 seed + 对照汇编参考”模式：`kernels/sad/seed.cpp` /
+  `kernels/sad-32/seed.cpp`（u8 绝对值差分 + uaddlv 行内归约，全直线），
+  roundtrip 门禁 20k 例 0 失配（对照 `x265_pixel_sad_16x16/32x32_
+  neon_dotprod`）；
+- codegen 扩展（通用，非 sad 专属）：`uabd`（u8x16）、`uaddlv`
+  （按源类型 u8x16→uint16 / s16x8→uint32）、标量 add/and/zext、
+  GEP `nuw/nusw` 标志、**GEP 常量偏移按字节而非 stride 倍数**（sad-32
+  的 `+16` 半行偏移暴露了 sa8d 时代 coef-only 模型的错误）；`and`
+  导入支持（ACLE uint16 返回类型产生的 `and i32, 65535` 掩码）；
+- 流水线：sad-16x16 best **80 fused / 69 MCA**；sad-32x32 best
+  **160 fused / 118 MCA**（1 候选，diff-sum 族，axis_seed
+  reduce=sve）。预期无优化空间，列为覆盖项。
 
 ## 3. 优先级建议（按“收益/成本”）
 

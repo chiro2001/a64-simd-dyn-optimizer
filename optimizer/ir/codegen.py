@@ -9,17 +9,21 @@ import re
 
 TYPE_MAP = {
     "<8 x i8>": "uint8x8_t",
+    "<16 x i8>": "uint8x16_t",
     "<8 x i16>": "int16x8_t",
     "<4 x i32>": "int32x4_t",
     "<2 x i64>": "int64x2_t",
     "i32": "uint32_t",
+    "i16": "uint16_t",
+    "i64": "uint64_t",
 }
 
 
 def _resolve_addr(env, node):
     rhs = node["rhs"]
     m = re.match(
-        r"getelementptr\s+inbounds\s+i8,\s*ptr\s+%([A-Za-z0-9._]+),\s*"
+        r"getelementptr\s+inbounds(?:\s+(?:nuw|nusw))*\s+i8,\s*"
+        r"ptr\s+%([A-Za-z0-9._]+),\s*"
         r"i64\s+(%[A-Za-z0-9._]+|\d+)", rhs)
     if not m:
         raise ValueError("unsupported addr form: %r" % rhs)
@@ -28,12 +32,19 @@ def _resolve_addr(env, node):
         off = env[off[1:]]
         if not isinstance(off, int):
             raise ValueError("non-coefficient offset")
+        mode = "coef"
     else:
         off = int(off)
+        mode = "byte"
     if ptr in ("pix1", "pix2"):
-        return ptr, off
-    base, coef = env[ptr]
-    return base, coef + off
+        base, coef, byte = (ptr, 0, 0)
+    else:
+        base, coef, byte = env[ptr]
+    if mode == "coef":
+        return base, coef + off, byte
+    # GEP byte offsets are absolute bytes, NOT multiples of the row
+    # stride (sad-32 within-row +16 broke the old coef-only model).
+    return base, coef, byte + off
 
 
 def _shuffle_intrinsic(vtype, mask):
@@ -90,10 +101,10 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
         " const uint8_t* pix2, intptr_t stride_pix2)" % func_name,
         "{",
     ]
-    env = {"pix1": ("pix1", 0), "pix2": ("pix2", 0),
+    env = {"pix1": ("pix1", 0, 0), "pix2": ("pix2", 0, 0),
            "i_pix1": 1, "i_pix2": 1,
            # numbered LLVM args (clang >= 21 uses %0..%3 without names)
-           "0": ("pix1", 0), "1": 1, "2": ("pix2", 0), "3": 1}
+           "0": ("pix1", 0, 0), "1": 1, "2": ("pix2", 0, 0), "3": 1}
     types = {}
     cname = {}
 
@@ -110,29 +121,76 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
         elif op == "addr":
             env[dst] = _resolve_addr(env, node)
         elif op == "load":
-            base, coef = env[node["ptr"]]
-            types[dst] = "uint8x8_t"
+            base, coef, byte = env[node["ptr"]]
             stride = "stride_pix1" if base == "pix1" else "stride_pix2"
-            lines.append("    %s %s = vld1_u8((const uint8_t*)%s +"
-                         " (size_t)(%d) * %s);"
-                         % (types[dst], cid(dst), base, coef, stride))
+            if byte:
+                offexpr = "(size_t)(%d) * %s + %d" % (coef, stride, byte)
+            else:
+                offexpr = "(size_t)(%d) * %s" % (coef, stride)
+            if node.get("type") == "<16 x i8>":
+                types[dst] = "uint8x16_t"
+                lines.append("    %s %s = vld1q_u8((const uint8_t*)%s +"
+                             " %s);" % (types[dst], cid(dst), base, offexpr))
+            else:
+                types[dst] = "uint8x8_t"
+                lines.append("    %s %s = vld1_u8((const uint8_t*)%s +"
+                             " %s);" % (types[dst], cid(dst), base, offexpr))
         elif op == "zext":
             src = node["src"]
-            types[dst] = "int16x8_t"
-            lines.append("    %s %s = vreinterpretq_s16_u16(vmovl_u8(%s));"
-                         % (types[dst], cid(dst), cid(src)))
+            if node.get("type") in TYPE_MAP and \
+                    node.get("type") in ("i16", "i32", "i64"):
+                types[dst] = TYPE_MAP[node["type"]]
+                lines.append("    %s %s = %s;"
+                             % (types[dst], cid(dst), cid(src)))
+            else:
+                types[dst] = "int16x8_t"
+                lines.append("    %s %s = vreinterpretq_s16_u16(vmovl_u8(%s));"
+                             % (types[dst], cid(dst), cid(src)))
         elif op in ("add", "sub"):
             vtype = node["type"]
-            types[dst] = TYPE_MAP[vtype]
             if len(node["src"]) == 2:
+                if vtype in TYPE_MAP and vtype in ("i8", "i16", "i32", "i64"):
+                    # scalar add/sub (sad row accumulator etc.)
+                    types[dst] = TYPE_MAP[vtype]
+                    lines.append("    %s %s = %s %s %s;"
+                                 % (types[dst], cid(dst), cid(node["src"][0]),
+                                    "+" if op == "add" else "-",
+                                    cid(node["src"][1])))
+                    continue
+                types[dst] = TYPE_MAP[vtype]
                 lines.append("    %s %s = v%sq_%s(%s, %s);"
                              % (types[dst], cid(dst), op,
                                 _vector_suffix(vtype),
                                 cid(node["src"][0]), cid(node["src"][1])))
             else:
+                types[dst] = TYPE_MAP[vtype]
                 lines.append("    %s %s = %s + %d;"
                              % (types[dst], cid(dst), cid(node["src"][0]),
                                 node.get("const", 0)))
+        elif op == "mul" and node.get("type") in ("i8", "i16", "i32", "i64"):
+            # scalar address coefficients (row stride * row): folded into
+            # env, no C emission (sad seed uses a + r*sa directly).
+            if node.get("const") is not None and \
+                    isinstance(env.get(node["src"][0]), int):
+                env[dst] = env[node["src"][0]] * node["const"]
+                continue
+            if len(node.get("src") or []) == 2 and \
+                    isinstance(env.get(node["src"][0]), int) and \
+                    isinstance(env.get(node["src"][1]), int):
+                env[dst] = env[node["src"][0]] * env[node["src"][1]]
+                continue
+            raise ValueError("codegen scalar mul %r unsupported" % node)
+        elif op == "and":
+            vtype = node["type"]
+            types[dst] = TYPE_MAP.get(vtype, "uint32_t")
+            if node.get("const") is not None:
+                lines.append("    %s %s = %s & %d;"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                node["const"]))
+            else:
+                lines.append("    %s %s = %s & %s;"
+                             % (types[dst], cid(dst), cid(node["src"][0]),
+                                cid(node["src"][1])))
         elif op == "shuffle":
             vtype = node["type"]
             types[dst] = TYPE_MAP[vtype]
@@ -171,6 +229,15 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
                 lines.append("    %s %s = vabdq_s16(%s, %s);"
                              % (types[dst], cid(dst), cid(node["src"][0]),
                                 cid(node["src"][1])))
+            elif name == "uabd":
+                if node.get("type") == "<16 x i8>":
+                    types[dst] = "uint8x16_t"
+                    lines.append("    %s %s = vabdq_u8(%s, %s);"
+                                 % (types[dst], cid(dst),
+                                    cid(node["src"][0]), cid(node["src"][1])))
+                else:
+                    raise ValueError("codegen uabd type %r unsupported"
+                                     % node.get("type"))
             elif name == "umax":
                 types[dst] = "int16x8_t"
                 lines.append("    %s %s = vreinterpretq_s16_u16(vmaxq_u16("
@@ -179,10 +246,15 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip"):
                              % (types[dst], cid(dst), cid(node["src"][0]),
                                 cid(node["src"][1])))
             elif name == "uaddlv":
-                types[dst] = "uint32_t"
-                lines.append("    %s %s = vaddlvq_u16("
-                             "vreinterpretq_u16_s16(%s));"
-                             % (types[dst], cid(dst), cid(node["src"][0])))
+                if types.get(str(node["src"][0])) == "uint8x16_t":
+                    types[dst] = "uint16_t"
+                    lines.append("    %s %s = vaddlvq_u8(%s);"
+                                 % (types[dst], cid(dst), cid(node["src"][0])))
+                else:
+                    types[dst] = "uint32_t"
+                    lines.append("    %s %s = vaddlvq_u16("
+                                 "vreinterpretq_u16_s16(%s));"
+                                 % (types[dst], cid(dst), cid(node["src"][0])))
             else:
                 raise ValueError("codegen unknown intrinsic %r" % name)
         elif op == "lshr":

@@ -1,0 +1,25 @@
+# Normalized seed recipe: sad 16x16 NEON core (docs/41).
+# Upstream aarch64 sad is assembly (sad-neon-dotprod.S), so the seed is
+# the ACLE semantics in kernels/sad/seed.cpp; the roundtrip gate checks it
+# bit-exactly against x265_pixel_sad_16x16_neon_dotprod.
+seed: sad-16x16
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/sad/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_sad_16x16_neon
+  demangled: dynopt_sad_16x16_neon
+output:
+  ll: experiments/m30-sad-search/llvm-ir/sad-16x16-seed.ll
+  json: experiments/m30-sad-search/imported/machine-ir.json
+verify:
+  codegen: emit_c_intrinsics
+  func_name: dynopt_sad_16x16_neon_roundtrip
+  harness: kernels/sad/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

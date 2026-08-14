@@ -212,6 +212,14 @@ def import_llvm_ir_text(ir_text, function=None):
             if imm is not None:
                 node["imm"] = imm
             ir.add(node)
+        elif rhs.startswith("and"):
+            ops = _parse_operands(rhs)
+            node = {"op": "and", "type": _op_type(rhs), "src": ops,
+                    "dst": dst}
+            cm = re.search(r",\s*(-?\d+)\s*$", rhs)
+            if cm:
+                node["const"] = int(cm.group(1))
+            ir.add(node)
         elif rhs.startswith("sub"):
             ops = _parse_operands(rhs)
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}

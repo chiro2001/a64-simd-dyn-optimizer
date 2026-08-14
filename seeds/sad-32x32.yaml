@@ -1,0 +1,22 @@
+# Normalized seed recipe: sad 32x32 NEON core (docs/41).
+seed: sad-32x32
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/sad-32/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_sad_32x32_neon
+  demangled: dynopt_sad_32x32_neon
+output:
+  ll: experiments/m30-sad-search/llvm-ir/sad-32x32-seed.ll
+  json: experiments/m30-sad-search/imported/machine-ir-32x32.json
+verify:
+  codegen: emit_c_intrinsics
+  func_name: dynopt_sad_32x32_neon_roundtrip
+  harness: kernels/sad-32/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000
