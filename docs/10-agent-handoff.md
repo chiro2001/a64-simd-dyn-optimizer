@@ -128,7 +128,7 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 
 | kernel | 候选 | fused_uop | MCA | NP1 est | cp | lite 5 seed |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
-| sa8d16 | reduce-sve | 189（near-gate 186.5） | 72 | 111 | 35 | PASS |
+| sa8d16 | reduce-sve | **186（< 减半门 186.5，2026-08-14）** | 73 | 111 | 35 | PASS |
 | interp8 | path-a | 127（基线 141） | 121 | 46 | 33 | PASS |
 | interp8 | path-b sdot.h（SVE2p3，docs/22 §5.3） | **101**（clang）/100（GCC） | 55 | 22.8* | — | PASS |
 | interp8-16 | path-b sdot.h（docs/22 §5.5） | **359**（基线 467） | 121 | 114.25 | — | PASS |
@@ -143,8 +143,9 @@ scatter fused 1090 / MCA 483 / est 312 / cp 82；scalar 852 / 895 /
 RSHRNB 不饱和会 81% 失配）。SVE1 无 s16→s32 非 indexed SDOT，sdot 化
 只能用 `svdot_lane_s64`（dct32 布局）。）
 
-sa8d16 离减半门还差 ~3 条 fused_uop，是下一个可加轴的候选（emitter
-`emit_sa8d_sve2_shared.emit_16x16` 目前无参数）；interp8 只有 1 条
+sa8d16 已过减半门（186 vs 186.5）：尾部归约从
+add-tree+udot+uaddv（9 条）改为每组合计 `svaddv_s16`（4 条），
+emitter `emit_sa8d_sve2_shared.emit_16x16` 已固化；interp8 只有 1 条
 路径（phase-1 8x8），可扩展 unroll/regroup 轴。结果分别存
 `experiments/m30-sa8d16-search/layout-search-proxy/` 与
 `experiments/m30-interp8-search/layout-search-proxy/`。
