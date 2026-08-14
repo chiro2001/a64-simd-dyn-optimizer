@@ -1398,11 +1398,42 @@ def emit_interp8_c_intrinsics(
                 "%s.val[%d]" % (cid(node["src"][0]), idx))
         elif op == "sext":
             env[dst] = "((int64_t)(int32_t)%s)" % env[node["src"]]
+        elif op == "zext":
+            src = node["src"]
+            if node["type"] == "<8 x i16>":
+                var(dst, "uint16x8_t", "vmovl_u8(%s)" % cid(src))
+            else:
+                raise ValueError("unhandled zext type %r" % node["type"])
         elif op == "shl":
-            env[dst] = "((%s) << %d)" % (env[node["src"][0]], node["amt"])
+            if str(node.get("type", "")).startswith("<"):
+                var(dst, "uint16x8_t", "vshlq_n_u16(%s, %d)"
+                    % (cid(node["src"][0]), node["amt"]))
+            else:
+                env[dst] = "((%s) << %d)" % (env[node["src"][0]],
+                                             node["amt"])
         elif op == "mul":
-            env[dst] = "((%s) * %d)" % (env[node["src"][0]],
-                                        node.get("const", 1))
+            if str(node.get("type", "")).startswith("<"):
+                src = node["src"][0]
+                c = node.get("const")
+                if c is not None:
+                    var(dst, "uint16x8_t", "vmulq_n_u16(%s, %d)"
+                        % (cid(src), c))
+                elif len(node["src"]) == 2:
+                    var(dst, "uint16x8_t", "vmulq_u16(%s, %s)"
+                        % (cid(node["src"][0]), cid(node["src"][1])))
+                else:
+                    raise ValueError("unhandled vector mul %r" % node)
+            else:
+                env[dst] = "((%s) * %d)" % (env[node["src"][0]],
+                                            node.get("const", 1))
+        elif op in ("add", "sub"):
+            if node["type"] == "<8 x i16>":
+                fn = "vaddq_u16" if op == "add" else "vsubq_u16"
+                var(dst, "uint16x8_t", "%s(%s, %s)"
+                    % (fn, cid(node["src"][0]), cid(node["src"][1])))
+            else:
+                raise ValueError("unhandled %s type %r"
+                                 % (op, node["type"]))
         elif op == "trunc":
             src = node["src"]
             if node["type"] == "<8 x i8>":
@@ -1441,6 +1472,15 @@ def emit_interp8_c_intrinsics(
                 # the IR but never selected by the tbl masks -> zero fill.
                 var(dst, "uint8x16_t",
                     "vcombine_u8(%s, vdup_n_u8(0))" % cid(node["src"][0]))
+            elif vtype == "<8 x i8>" and len(node["src"]) == 1:
+                if mask == list(range(8)):
+                    var(dst, "uint8x8_t", "vget_low_u8(%s)"
+                        % cid(node["src"][0]))
+                elif mask == list(range(8, 16)):
+                    var(dst, "uint8x8_t", "vget_high_u8(%s)"
+                        % cid(node["src"][0]))
+                else:
+                    raise ValueError("unhandled <8 x i8> shuffle %r" % mask)
             elif vtype == "<16 x i8>" and len(node["src"]) == 2 and \
                     mask == list(range(16)):
                 # concat two 8-byte halves into the 16-byte row store
@@ -1481,6 +1521,15 @@ def emit_interp8_c_intrinsics(
                 b = node["args"][1]["ref"]
                 var(dst, "uint8x16_t",
                     "vqtbl1q_u8(%s, %s)" % (cid(a), cid(b)))
+            elif name == "umull":
+                a = node["args"][0]["ref"]
+                b = node["args"][1]
+                if "imm" in b:
+                    var(dst, "uint16x8_t", "vmull_u8(%s, vdup_n_u8(%d))"
+                        % (cid(a), b["imm"]))
+                else:
+                    var(dst, "uint16x8_t", "vmull_u8(%s, %s)"
+                        % (cid(a), cid(b["ref"])))
             elif name == "sdot":
                 a0 = node["args"][0]
                 a = node["args"][1]["ref"]
@@ -1493,8 +1542,11 @@ def emit_interp8_c_intrinsics(
             elif name == "sqrshrun":
                 a = node["args"][0]["ref"]
                 imm = node["args"][1]["imm"]
+                src_t = types.get(a, "")
+                aexpr = ("vreinterpretq_s16_u16(%s)" % cid(a)
+                         if src_t == "uint16x8_t" else cid(a))
                 var(dst, "uint8x8_t", "vqrshrun_n_s16(%s, %d)"
-                    % (cid(a), imm))
+                    % (aexpr, imm))
             else:
                 raise ValueError("codegen unknown intrinsic %r" % name)
         elif op == "store":

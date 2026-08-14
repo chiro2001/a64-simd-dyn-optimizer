@@ -93,6 +93,9 @@ def family_hint(nodes):
         families.append("butterfly")
     if any(s in all_text for s in ("g_lumaFilter", "g_chromaFilter")):
         families.append("fir")
+    if intr.get("umull") and intr.get("sqrshrun") and \
+            not any(i in intr for i in ("sabd", "abs", "uaddlv")):
+        families.append("fir-vertical")
     if any(i in intr for i in ("sabd", "abs", "uaddlv", "saddlv", "umax")):
         families.append("diff-sum")
     if intr.get("sdot") and intr.get("sqrshrun"):
@@ -159,6 +162,8 @@ def axis_seed_for(family, structure):
         if structure.get("taps") == 4:
             seed["compute"] = ["sdot-h"]
         return seed
+    if family == "fir-vertical":
+        return {"acc_split": [1, 2]}
     if family == "diff-sum":
         if structure.get("sve_reduce"):
             return {"reduce": ["sve"], "reduce_tail": ["saddv"]}

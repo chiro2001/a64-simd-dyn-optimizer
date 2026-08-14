@@ -209,14 +209,14 @@ def import_llvm_ir_text(ir_text, function=None):
             ops = _parse_operands(rhs)
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}
             if len(ops) == 1:
-                cm = re.search(r",\s*(\d+)\s*$", rhs)
+                cm = re.search(r",\s*(-?\d+)\s*$", rhs)
                 node["const"] = int(cm.group(1)) if cm else None
             ir.add(node)
         elif rhs.startswith("add"):
             ops = _parse_operands(rhs)
             node = {"op": "add", "type": _op_type(rhs), "src": ops, "dst": dst}
             if len(ops) == 1:
-                cm = re.search(r",\s*(\d+)\s*$", rhs)
+                cm = re.search(r",\s*(-?\d+)\s*$", rhs)
                 node["const"] = int(cm.group(1)) if cm else None
             ir.add(node)
         elif rhs.startswith("mul"):
@@ -226,8 +226,21 @@ def import_llvm_ir_text(ir_text, function=None):
             if cv is not None:
                 node["const_vec"] = cv
             elif len(ops) == 1:
-                cm = re.search(r",\s*(\d+)\s*$", rhs)
-                node["const"] = int(cm.group(1)) if cm else None
+                cm = re.search(r",\s*(-?\d+)\s*$", rhs)
+                if cm:
+                    node["const"] = int(cm.group(1))
+                else:
+                    # splat constants and `<>` vector constants (x265 coeff
+                    # vectors, possibly with poison lanes): take the first
+                    # valid value as an all-lane splat. Safe for roundtrip
+                    # because poison lanes are never observable here.
+                    sm = re.search(r"splat\s+\(i\d+\s+(-?\d+)\)", rhs)
+                    if sm:
+                        node["const"] = int(sm.group(1))
+                    else:
+                        vm = re.search(r"<i\d+\s+(-?\d+)", rhs)
+                        if vm:
+                            node["const"] = int(vm.group(1))
             ir.add(node)
         elif rhs.startswith("shufflevector"):
             ops = _parse_operands(rhs)

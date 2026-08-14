@@ -175,6 +175,77 @@ def strip_uniform_branch(body):
     return "\n".join(out) + "\n"
 
 
+def strip_switch_take_case(body, case):
+    """Take one case of a `switch i32 %arg, label %default [...]` where every
+    case is a straight-line block ending in `br label %merge` and the merge
+    block only contains phis + the tail stores (no loops).
+
+    The phis are resolved to the chosen case's incoming values and the merge
+    tail is kept; all remaining `br label` lines are dropped.
+    """
+    lines = body.splitlines()
+    sw = next((i for i, ln in enumerate(lines)
+               if ln.strip().startswith("switch i32")), None)
+    if sw is None:
+        return body
+    # parse the switch block: switch line, cases..., ']'
+    j = sw + 1
+    cases = {}
+    while j < len(lines) and "]" not in lines[j]:
+        m = re.search(r"i32\s+(-?\d+),\s*label\s+%(\d+)", lines[j])
+        if m:
+            cases[int(m.group(1))] = m.group(2)
+        j += 1
+    if case not in cases:
+        raise SystemExit("strip_switch: case %r not in %r" % (case, cases))
+    keep = cases[case]
+    drop = [lb for c, lb in cases.items() if c != case]
+    # locate the merge block (target of each case's tail br)
+    merge = None
+    for i, ln in enumerate(lines):
+        if ln.strip().startswith("br label") and i > sw:
+            m = re.search(r"label\s+%(\d+)", ln)
+            if m:
+                merge = m.group(1)
+            break
+    # build the kept text
+    out = []
+    skip = False
+    for i, ln in enumerate(lines):
+        s = ln.strip()
+        if sw <= i <= j:
+            continue  # drop the whole switch statement
+        if any(s.startswith(d + ":") for d in drop):
+            skip = True
+            continue
+        if skip:
+            if s.startswith("br label"):
+                skip = False
+            continue
+        out.append(ln)
+    text = "\n".join(out)
+    # resolve phis at the merge: delete each phi and substitute the chosen
+    # case's incoming value at every later use (SSA dst defined at merge).
+    phi_repl = {}
+    for m in re.finditer(
+            r"(%[A-Za-z0-9._]+)\s*=\s*phi\s+\S+\s+(.*)$", text, flags=re.M):
+        pairs = re.findall(r"\[\s*(%[A-Za-z0-9._]+)\s*,\s*%(\d+)\s*\]",
+                           m.group(2))
+        val = next((v for v, b in pairs if b == keep), None)
+        if val is None:
+            raise SystemExit("strip_switch: phi %s no value for block %s"
+                             % (m.group(1), keep))
+        phi_repl[m.group(1)] = val
+    text = "\n".join(ln for ln in text.splitlines()
+                     if " = phi " not in ln)
+    for dst, val in phi_repl.items():
+        text = re.sub(re.escape(dst) + r"(?![A-Za-z0-9._])", val, text)
+    # drop the remaining br label lines (case tail + merge tail)
+    text = "\n".join(ln for ln in text.splitlines()
+                     if not ln.strip().startswith("br label"))
+    return text + "\n"
+
+
 def sha256(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -247,6 +318,9 @@ def main():
     body = find_function(text, recipe["target_function"])
     if recipe.get("extract", {}).get("strip_uniform_branch"):
         body = strip_uniform_branch(body)
+    if recipe.get("extract", {}).get("strip_switch_case") is not None:
+        body = strip_switch_take_case(
+            body, recipe["extract"]["strip_switch_case"])
     fn = recipe["target_function"].get("demangled") or \
         recipe["target_function"].get("mangled")
     try:

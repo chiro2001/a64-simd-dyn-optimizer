@@ -129,6 +129,20 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   特化一致；
 - interp4 族（8/16/32）全部由 seed 线覆盖。
 
+### G4f ✅：interp8 vpp 16x16（垂直滑窗，switch+phi）
+
+- vpp 的控制流是 `switch(coeffIdx)`（三个 tap 形态）+ phi 合并，
+  **无循环**；新增 `extract.strip_switch_case`：剥离 switch、删除
+  非选 case 块、按选中 case 解析 merge phi（SSA 符号替换）；
+- importer 修复：带注释标签行、标量 mul/add/sub **负常数**、
+  `<>` 向量常量（含 poison lane，取首值作 splat）；
+- codegen 新增垂直滑窗所需 op：zext（vmovl_u8）、向量
+  mul/add/sub/shl、umull（vmull_u8）、vget_low/high、sqrshrun 的
+  u16→s16 转换；harness 修正 vpp 需 `src-3*stride` 前垫 3 行缓冲；
+- 门禁：case-1 **20000 cases mismatches=0**；
+- 全流程：interp8vpp-16 **247 / 157**，精确复现手写最优；族识别新增
+  `fir-vertical`（umull+sqrshrun）→ 轴种子 acc_split。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：
