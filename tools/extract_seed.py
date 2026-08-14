@@ -22,8 +22,14 @@ mangled/demangled name, imports it with the restricted LLVM-IR parser
 (import_llvm_ir_text), and writes the project MachineIR JSON with
 reproducibility provenance (compiler version + source/IR hashes).
 
+When the recipe declares a `verify:` section, the imported MachineIR is
+round-tripped (codegen -> compile -> QEMU differential harness) as an
+out-of-the-box semantic gate (docs/41): extraction fails if the generated
+candidate does not match the project's reference bit-exactly.
+
 Usage:
   python3 tools/extract_seed.py --recipe seeds/dct16.yaml [--compiler clang]
+      [--no-verify]
 """
 
 import argparse
@@ -44,6 +50,24 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from machine_ir import import_llvm_ir_text  # noqa: E402
+
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from codegen import (  # noqa: E402
+    emit_c_intrinsics,
+    emit_dct16_c_intrinsics,
+)
+
+
+CODEGEN_REGISTRY = {
+    "emit_c_intrinsics": emit_c_intrinsics,
+    "emit_dct16_c_intrinsics": emit_dct16_c_intrinsics,
+}
+
+DEFAULT_INCLUDES = [
+    "third_party/x265/source",
+    "third_party/x265/source/common",
+    "build/x265-8-cross-make",
+]
 
 
 def _resolve(root, p):
@@ -106,12 +130,50 @@ def sha256(path):
     return h.hexdigest()
 
 
+def verify_roundtrip(recipe, ir):
+    """Codegen the imported MachineIR, compile against the project lib and
+    run the differential harness under QEMU; fail loudly on any mismatch."""
+    v = recipe.get("verify") or {}
+    mode = v.get("codegen")
+    if mode not in CODEGEN_REGISTRY:
+        raise SystemExit("verify.codegen %r not in registry %s"
+                         % (mode, sorted(CODEGEN_REGISTRY)))
+    harness = _resolve(ROOT, v.get("harness", ""))
+    lib = _resolve(ROOT, v.get("lib", "build/x265-8-clang-sve/libx265.a"))
+    cases = v.get("cases", 100000)
+    out_cpp = os.path.join(ROOT, "build", "seed-roundtrip-%s.cpp" % recipe["seed"])
+    out_bin = os.path.join(ROOT, "build", "seed-roundtrip-%s" % recipe["seed"])
+    with open(out_cpp, "w") as f:
+        f.write(CODEGEN_REGISTRY[mode](ir))
+    includes = " ".join("-I%s" % _resolve(ROOT, d)
+                        for d in v.get("include_dirs", DEFAULT_INCLUDES))
+    compile_cmd = ("aarch64-linux-gnu-g++ -O3 -DNDEBUG -std=c++11 "
+                   "-DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 -DX265_NS=x265 "
+                   "%s %s %s %s -lpthread -ldl -o %s"
+                   % (includes, harness, out_cpp, lib, out_bin))
+    print("+ %s" % compile_cmd)
+    subprocess.run(compile_cmd, shell=True, check=True)
+    run = subprocess.run(
+        ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu", out_bin,
+         str(cases)],
+        capture_output=True, text=True)
+    print(run.stdout.strip())
+    exact = "mismatches=0" in run.stdout
+    neon_exact = "candidate_vs_neon_mismatches=0" in run.stdout
+    if not (exact or neon_exact) or (run.returncode != 0 and not neon_exact):
+        raise SystemExit("roundtrip gate FAILED (rc=%d): %s"
+                         % (run.returncode, run.stderr.strip()[-400:]))
+    print("roundtrip gate PASS (%d cases)" % cases)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--recipe", required=True)
     ap.add_argument("--compiler", default="clang")
     ap.add_argument("--out", default=None,
                     help="override machine-ir.json output path")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="skip the recipe-declared roundtrip gate")
     args = ap.parse_args()
     if yaml is None:
         raise SystemExit("pyyaml required")
@@ -154,6 +216,8 @@ def main():
     hist = Counter(n.get("op") for n in ir.nodes)
     print("imported %d nodes -> %s" % (len(ir.nodes), json_path))
     print("ops: %s" % dict(hist.most_common(10)))
+    if not args.no_verify and recipe.get("verify"):
+        verify_roundtrip(recipe, ir)
     return 0
 
 

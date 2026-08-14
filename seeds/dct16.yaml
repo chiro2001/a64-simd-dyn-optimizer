@@ -29,3 +29,8 @@ target_function:
 output:
   ll: experiments/m30-dct16-search/llvm-ir/dct16-unroll.ll
   json: experiments/m30-dct16-search/imported/machine-ir.json
+verify:
+  codegen: emit_dct16_c_intrinsics
+  harness: kernels/dct16/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  cases: 100000

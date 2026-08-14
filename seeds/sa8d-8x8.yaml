@@ -26,3 +26,8 @@ target_function:
 output:
   ll: experiments/m2-seed/llvm-ir/sa8d-8x8.ll
   json: experiments/m2-seed/imported/machine-ir.json
+verify:
+  codegen: emit_c_intrinsics
+  harness: kernels/sa8d/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  cases: 100000

@@ -71,3 +71,15 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   - 交叉链接去掉 `-lnuma`（libx265.a 未引用 numa 符号）。
 - 说明：旧 m2 seed（clang 18）保留未覆盖；recipe 用当前工具链再生即
   clang-22 变体，provenance 记录编译器版本，语义以 roundtrip 门禁为准。
+
+### G4 ✅：roundtrip 出厂门禁（extract_seed --verify）
+
+- `tools/extract_seed.py` 新增 `verify:` 支持：导入后自动
+  codegen → 交叉编译 → QEMU 差分 harness，失败即提取失败；
+- `seeds/dct16.yaml` / `seeds/sa8d-8x8.yaml` 已声明门禁：
+  - sa8d：100000 cases **mismatches=0** PASS；
+  - dct16：100000 cases，candidate vs 上游 NEON **0 失配**
+    （vs C 的 6 例是上游 dct16_neon 自身已知分歧）→ 门禁按
+    “与上游实现位级一致”通过；
+- 门禁注册表：`emit_c_intrinsics` / `emit_dct16_c_intrinsics`
+  （interp8 roundtrip codegen 尚未实现，见 m18 记录，属已知缺口）。
