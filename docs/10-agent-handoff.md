@@ -136,7 +136,9 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 | interp8-32 | path-b sdot.h+addp（docs/22 §5.7） | **1289**（基线 1829） | 369 | 396.75 | — | PASS |
 | interp8vpp-16 | 滑动行管线（docs/22 §5.6） | **257**（基线 400） | 168 | — | — | PASS |
 | interp8vpp-32 | 滑动行管线（docs/22 §5.6） | **936**（基线 1572） | 547 | — | — | PASS |
-| interp4-16 | chroma 4-tap hpp（docs/22 §5.8） | **165**（基线 345，过减半门） | 70 | — | — | 20k×7相位 |
+| interp4-16 | chroma 4-tap hpp（docs/22 §5.8/5.9） | **165**（基线 345，过减半门） | 70 | — | — | 20k×7相位 |
+| interp4-32 | chroma 4-tap hpp（docs/22 §5.9） | **645**（基线 1353，过减半门） | 189 | — | — | 20k×7相位 |
+| interp4-8 | chroma 4-tap hpp（docs/22 §5.9） | 85（基线 63） | 47 | — | — | 不采用 |
 | idct16 | zip16（consensus 最优） | 1152 | 468 | 413 | 158 | PASS |
 | idct16 | scatter（cp 最优） | 1179 | 496 | 448 | 120 | PASS |
 | idct16 | anchor_sve2 | 980 | 925 | 2892 | 181 | PASS |

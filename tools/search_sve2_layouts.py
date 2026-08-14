@@ -483,6 +483,18 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_16x16()
         return emit_fn
+    if kernel == "interp4-8":
+        from emit_interp4_sve2_shared import emit_8x8
+
+        def emit_fn(combo):
+            return emit_8x8()
+        return emit_fn
+    if kernel == "interp4-32":
+        from emit_interp4_sve2_shared import emit_32x32
+
+        def emit_fn(combo):
+            return emit_32x32()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 

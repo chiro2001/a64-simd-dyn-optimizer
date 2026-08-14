@@ -305,3 +305,20 @@ SVE2p3 结构：每行 16 像素 = 一个 z.h 向量；1 次 TBL 建滑动字节
 - 已接入搜索（manifest `interp4` + gen_verify interp4 模板，7 相位）；
   候选固化 `kernels/interp4/candidates/best_sve2.*`；
 - SVE2p3-only：950 不原生，等 960 实机验收（可走 sve2 替换预估）。
+
+### 5.9 interp4 三形状（2026-08-14）
+
+参数化到 8x8/16x16/32x32（n=32 每行两个 16 像素 unit，窗口在
+row/row+16）。注意：32 宽块的 corpus strides 必须 ≥32（ss=16 会
+行重叠，属非法配置；本次先用手写 harness 假失败定位，再由
+gen_verify 正确缓冲确认）。
+
+| shape | 上游 fused/MCA | 候选 fused/MCA | 结论 |
+| --- | ---: | ---: | ---: |
+| 8x8 | 63 / 23 | 85 / 47 | ❌ 小形状不划算（不采用） |
+| 16x16 | 345 / 79 | **165 / 70（-52%/-11%）** | ✅ 过减半门 172.5 |
+| 32x32 | 1353 / 260 | **645 / 189（-52%/-27%）** | ✅ 过减半门 676.5 |
+
+- 16/32 均为少数 MCA 也赢的 SVE 内核；20k × 7 相位 0 失配（gen_verify
+  interp4 模板）；候选固化 kernels/interp4{-8,-32}/candidates/；
+- 950 不可原生（SVE2p3），等 960。

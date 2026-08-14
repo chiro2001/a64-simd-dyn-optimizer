@@ -74,5 +74,16 @@
   "fused": 165,
   "upstream": 345,
   "mca": 70
+ },
+ "interp4_8x8": {
+  "fused": 85,
+  "upstream": 63,
+  "mca": 47,
+  "note": "not adopted (small shape)"
+ },
+ "interp4_32x32": {
+  "fused": 645,
+  "upstream": 1353,
+  "mca": 189
  }
 }
