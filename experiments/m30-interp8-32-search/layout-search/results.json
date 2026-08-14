@@ -1,0 +1,110 @@
+[
+ {
+  "tag": "compute-sdot-h_unroll-loop_pairsum-addp",
+  "compute": "sdot-h",
+  "unroll": "loop",
+  "pairsum": "addp",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400980"
+  ],
+  "counts": {
+   "total": 1589,
+   "vector": 1417,
+   "movprfx": 128,
+   "vector_fused": 1289,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 40,
+   "vector_fused_uop": 1289
+  },
+  "mca_cycles": 369,
+  "mca_uops": 1672
+ },
+ {
+  "tag": "compute-sdot-h_unroll-loop_pairsum-uzp",
+  "compute": "sdot-h",
+  "unroll": "loop",
+  "pairsum": "uzp",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400980"
+  ],
+  "counts": {
+   "total": 1716,
+   "vector": 1545,
+   "movprfx": 128,
+   "vector_fused": 1417,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 40,
+   "vector_fused_uop": 1417
+  },
+  "mca_cycles": 398,
+  "mca_uops": 1799
+ },
+ {
+  "tag": "compute-sdot-h_unroll-full_pairsum-addp",
+  "compute": "sdot-h",
+  "unroll": "full",
+  "pairsum": "addp",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x402080"
+  ],
+  "counts": {
+   "total": 1577,
+   "vector": 1417,
+   "movprfx": 128,
+   "vector_fused": 1289,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 8,
+   "vector_fused_uop": 1289
+  },
+  "mca_cycles": 367,
+  "mca_uops": 1692
+ },
+ {
+  "tag": "compute-sdot-h_unroll-full_pairsum-uzp",
+  "compute": "sdot-h",
+  "unroll": "full",
+  "pairsum": "uzp",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x402280"
+  ],
+  "counts": {
+   "total": 1704,
+   "vector": 1545,
+   "movprfx": 128,
+   "vector_fused": 1417,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 8,
+   "vector_fused_uop": 1417
+  },
+  "mca_cycles": 398,
+  "mca_uops": 1819
+ }
+]
