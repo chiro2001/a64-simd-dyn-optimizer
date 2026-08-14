@@ -869,6 +869,7 @@ def main():
         gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                 "dct16": "dct16", "dct32": "dct32",
                 "idct16": "idct16",
+                "idct32": "idct32",
                 "interp8": "interp8"}.get(args.kernel)
         seeds = [s.strip() for s in args.lite_seeds.split(",") if s.strip()]
         if gate is None or not seeds:
@@ -993,6 +994,7 @@ def main():
             gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                     "dct16": "dct16", "dct32": "dct32",
                     "idct16": "idct16",
+                    "idct32": "idct32",
                     "interp8": "interp8"}.get(args.kernel)
             if gate:
                 lite = run(["scripts/build-testbench-lite.sh", obj_path,

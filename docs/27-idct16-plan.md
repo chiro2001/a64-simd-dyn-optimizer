@@ -200,9 +200,11 @@ SQRSHRNB 舍入；写回支持 scalar（o[][] 标量转置）与 scatter
 | est NP1 | - | 9866 | **1935** |
 | cp | - | **136** | 4170 |
 | 20k 差分 | - | 0 mismatches | 0 mismatches |
+| TestBenchLite idct32 | - | **5/5 PASS** | **5/5 PASS** |
 
 两者都过减半门 7614。consensus 选 scatter（MCA/est 优），scalar 的
-cp 最短；TestBenchLite idct32 gate 待加（先以 20k 差分为门禁）。
+cp 最短；TestBenchLite idct32 gate 已加（tools/testbench_lite.cpp，
+weak 符号同 idct16），两个候选 5 seed 全 PASS。
 候选固化 `kernels/idct32/candidates/{scalar,scatter}_sve2.{cpp,S}`，
 搜索结果 `experiments/m30-idct32-search/store-axis/results.json`。
 
@@ -216,5 +218,4 @@ idct32+stride 64 越界（最大索引 2015 > 1056），导致假失配 15.47%�
 ### 8.6 下一步
 
 1. zip32 转置/合并半块写回（scatter 的 cp 4170 偏高，需实机/模型校准）；
-2. TestBenchLite idct32 gate（weak 符号）；
-3. 950 实机 paired（scalar vs scatter）；sdot 化按 §7.1c 约束评估。
+2. 950 实机 paired（scalar vs scatter）；sdot 化按 §7.1c 约束评估。
