@@ -314,3 +314,13 @@ kernels/dct16 上游 NEON（dct16_neon）
   - （satd-8x8 此前 93/51）。
 - satd 三个形状全部由 hadamard 配方覆盖；无手写基线（首次覆盖），
   对照上游 satd4/satd8_sve2 差分通过。
+
+## 15. satd 4x8 / 8x16（2026-08-15）
+
+- 同配方继续覆盖：satd-4x8（107 节点，insertelement 双行打包）与
+  satd-8x16（251 节点）均命中 hadamard，零发射器改动。
+- 验收（各 20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-4x8|8x16/results.json）：
+  - satd-4x8：**63 fused / MCA 62**；
+  - satd-8x16：**185 fused / MCA 70**。
+- satd 已覆盖 4x4/4x8/8x8/8x16/16x16 五个形状。
