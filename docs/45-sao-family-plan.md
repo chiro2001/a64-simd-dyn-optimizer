@@ -49,6 +49,26 @@
   uint 会让动态索引变成 2^64-2）、s8 基标量 load 必须带符号
   （-8 不能读成 248）。
 
+## 7. Stats 族侦察（2026-08-15，待实施）
+
+- 函数：`saoCuStatsE0..E3_sve2`（上游 SVE2 已有，可对照）；
+  NEON 版在 sao-prim.cpp（saoCuStatsE0_neon 等），ACLE 可作 seed；
+  另有 `saoCuStatsBO_neon`（band offset 统计）。
+- E0 结构：signOf（行内 carry，vextq 旋转 15）+ edge_type =
+  sign_right - neg_sign_left + 每个 edge 类 5 组 count/stats
+  （vceq 掩码 + vpadal 累加 + vmul/vmla 加权 + 尾部 reduce）。
+- 探针 IR op 清单（固定 64x4 全展开后无 phi/icmp）：
+  - `llvm.ucmp`（**向量** v16i8 —— codegen 需识别为
+    vcgtq_u8(a,b) - vcgtq_u8(b,a)，现有标量版不够）；
+  - `llvm.vector.reduce.add`（vaddvq_s16/s32 被泛化）；
+  - `saddlp`（v16i8→v8i16 与 v8i16→v4i32 两档：vpaddlq_s8/
+    vpaddlq_s16）；
+  - `addp` v8i16（现有 s32 版需扩展）；
+  - 向量 `mul` <8 x i16>（现有只支持 <4 x i32>）；
+  - vzip1/2q_s8 shuffle、vextq_s8、icmp→vceqq 模式。
+- 建议先做 saoCuStatsE0（64x4），复用 sao 家族的全部既有资产；
+  这是 sao 族最后一块。
+
 ## 2. E0 语义（已实测）
 
 每像素：`signRight = clamp(rec[i]-rec[i+1], -1, 1)`；
