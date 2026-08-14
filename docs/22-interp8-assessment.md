@@ -185,5 +185,11 @@ mod 2^16），16-bit 累加结果并不等价，因此不能免掉每行 `sub #1
   `fix_dynamic_trace.py` objdump 修复（SVE2p3 内核追踪必须走此路径）。
 - `tools/search_sve2_layouts.py`：新增 `--mca-arch`；修复动态流 MCA
   的 `.arch` 硬编码 sve2p1 导致 sdot.h 被 llvm-mc 静默跳过的问题。
+- **interp8 path B 已接入搜索工具**（2026-08-14）：manifest 增加
+  `compute: [sdot-d, sdot-h]` 轴；sdot-h 自动选 `armv9.4-a+sve2p3`
+  编译、自定义 QEMU（`DYNOPT_QEMU_SVE2P3`，默认
+  `build/qemu-build/qemu-aarch64`）验证/追踪、clang 默认编译器
+  （101 fused / 4 stk，GCC 103/14）、MCA 自动 `+sve2p3` + `--mca-arch`。
+  端到端实测：sdot-d 127 / MCA 121，sdot-h 101 / MCA 55，20k PASS。
 - `optimizer/analysis/cost.py`：CLASSES 补 `sqrshrunb/sqrshrun`、
   `movi/mvni`、`uaddl/umlal` 等（此前这些向量指令被误计为 scalar）。

@@ -37,8 +37,12 @@ from parse_qemu_trace import parse_exec  # noqa: E402
 
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
+QEMU_SVE2P3 = os.path.join(
+    ROOT, os.environ.get("DYNOPT_QEMU_SVE2P3",
+                         "build/qemu-build/qemu-aarch64"))
 
 _CXX = "aarch64-linux-gnu-g++"
+_CXX_OVERRIDE = None
 _OPT_EXTRA = ""
 
 BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
@@ -46,11 +50,21 @@ BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
              "b.vc", "b.hi", "b.ls", "b.ge", "b.lt", "b.gt", "b.le",
              "b.al", "b.nv"}
 
-SDOT_COMPUTES = ("sdot-s32", "sdot-s32-split")
+SDOT_COMPUTES = ("sdot-s32", "sdot-s32-split", "sdot-h")
 
 
 def is_sdot_compute(v):
     return v in SDOT_COMPUTES
+
+
+def qemu_cmd(combo=None):
+    """QEMU command prefix. SVE2p3 kernels (interp8 path B) need the custom
+    build with the round-0018/0019 patches; the stock qemu-aarch64 SIGILLs
+    on sdot.h. Override the binary with DYNOPT_QEMU_SVE2P3."""
+    if combo and combo.get("compute") == "sdot-h":
+        return [QEMU_SVE2P3, "-L", "/usr/aarch64-linux-gnu",
+                "-cpu", "max,sve-max-vq=2"]
+    return list(QEMU)
 
 
 def candidate_march(combo):
@@ -59,12 +73,18 @@ def candidate_march(combo):
     sdot-s32 (SVE2p1 `sdot z.s, z.h, z.h`) needs armv9.4-a+sve2p1 and -O3
     (docs/27 §8.10: -O2 spills more); everything else stays armv8.2-a+sve2.
     """
+    if combo.get("compute") == "sdot-h":
+        return "armv9.4-a+sve2p3"
     if is_sdot_compute(combo.get("compute")):
         return "armv9.4-a+sve2p1"
     return "armv8.2-a+sve2"
 
 
 def candidate_opt(combo):
+    if combo.get("compute") == "sdot-h":
+        # clang -O3 gives 101 fused / 0 stack spills (GCC extra flags give
+        # 103 fused / 14 spills); keep plain -O3 and let --cxx choose.
+        return "-O3"
     if is_sdot_compute(combo.get("compute")):
         # 2026-08-14（round-0017 咨询实验 2）：-frename-registers 小赢；
         # --param=sched-pressure-algorithm=1 再赢（zip32 sdot fused
@@ -72,6 +92,14 @@ def candidate_opt(combo):
         # PASS）。-msve-vector-bits=256/-flive-range-shrinkage 无改善。
         return "-O3 -frename-registers --param=sched-pressure-algorithm=1"
     return "-O2"
+
+
+def cxx_for(combo):
+    """Compiler for a candidate. SVE2p3 interp8 path B defaults to clang
+    (101 fused, no spills; docs/22 §5.3), like dct8; --cxx overrides."""
+    if combo.get("compute") == "sdot-h" and _CXX_OVERRIDE is None:
+        return "clang --target=aarch64-linux-gnu"
+    return _CXX
 
 
 def vector_width_counts(insns):
@@ -255,10 +283,10 @@ def candidate_range(row, outdir, manifest, backend, kernel):
 
 
 def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
-                 vl_bytes=32):
-    r = run(QEMU + ["-one-insn-per-tb", "-d", "exec,in_asm",
-                    "-dfilter", "0x%x..0x%x" % (start, end),
-                    "-D", log, binary], timeout=timeout)
+                 vl_bytes=32, combo=None):
+    r = run(qemu_cmd(combo) + ["-one-insn-per-tb", "-d", "exec,in_asm",
+                               "-dfilter", "0x%x..0x%x" % (start, end),
+                               "-D", log, binary], timeout=timeout)
     if r.returncode != 0:
         return None
     p = run(["python3", os.path.join(ROOT, "tools/parse_qemu_trace.py"),
@@ -410,9 +438,13 @@ def make_emitter(kernel, backend="acle"):
                         legacy_ex=combo.get("legacy_ex", 0))
         return emit_fn
     if kernel == "interp8":
-        from emit_interp8_sve2_shared import emit
+        from emit_interp8_sve2_shared import emit, emit_sdot_h
 
         def emit_fn(combo):
+            if combo.get("compute") == "sdot-h":
+                # Emit under the manifest symbol so the shared trace driver
+                # and generated verifier bind (same extern "C" signature).
+                return emit_sdot_h(func_name="dynopt_interp8_8x8_sve2")
             return emit()
         return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
@@ -454,7 +486,8 @@ def measure_layout_candidate(task):
                      "-march=" + candidate_march(combo),
                      "-o", obj, s_path], timeout=120)
         else:
-            cc = _CXX.split() + candidate_opt(combo).split() + _OPT_EXTRA.split() + [
+            cc = cxx_for(combo).split() + candidate_opt(combo).split() + \
+                _OPT_EXTRA.split() + [
                   "-std=c++11", "-march=" + candidate_march(combo),
                   "-c", src, "-o", obj]
             if backend == "op":
@@ -481,7 +514,7 @@ def measure_layout_candidate(task):
 
     def _run_verify(cases_arg):
         try:
-            rr = run(QEMU + [verify, str(cases_arg)], timeout=180)
+            rr = run(qemu_cmd(combo) + [verify, str(cases_arg)], timeout=180)
         except subprocess.TimeoutExpired:
             return None, -1, None, "VERIFY TIMEOUT"
         mm = 0
@@ -575,7 +608,7 @@ def measure_layout_candidate(task):
         try:
             true_dynamic(driver, rng[0], rng[1],
                          os.path.join(outdir, tag + "-trace.log"),
-                         timeout=300, vl_bytes=vl_bytes)
+                         timeout=300, vl_bytes=vl_bytes, combo=combo)
         except subprocess.TimeoutExpired:
             pass
         try:
@@ -588,7 +621,8 @@ def measure_layout_candidate(task):
         try:
             counts = true_dynamic(driver, rng[0], rng[1],
                                   os.path.join(outdir, tag + "-trace.log"),
-                                  timeout=300, vl_bytes=vl_bytes)
+                                  timeout=300, vl_bytes=vl_bytes,
+                                  combo=combo)
         except subprocess.TimeoutExpired:
             row.update({"passed": False, "counts": None})
             return row, None, "TRACE TIMEOUT"
@@ -707,9 +741,10 @@ def main():
     ap.add_argument("--bench-top", type=int, default=3,
                     help="candidates benchmarked on 920B (default 3)")
     args = ap.parse_args()
-    global _CXX, _OPT_EXTRA
+    global _CXX, _CXX_OVERRIDE, _OPT_EXTRA
     if args.cxx:
         _CXX = args.cxx
+        _CXX_OVERRIDE = args.cxx
     elif args.kernel == "dct8":
         # 2026-08-14：dct8 同一 NEON-bridge 源码，GCC 编出 492 dyn /
         # MCA 118 / 920B p50 5；clang 编出 310 dyn / MCA 77 / p50 4
@@ -839,7 +874,8 @@ def main():
         # Build fingerprint (round-0017 咨询）：编译器/编译参数/后端改变
         # 后旧计数会误复用，因此并入缓存键；flag 扫描（--cxx/--opt-extra）
         # 自动得到独立缓存槽。
-        buildfp = "|".join((_CXX, candidate_opt(combo), _OPT_EXTRA,
+        buildfp = "|".join((cxx_for(combo), candidate_opt(combo),
+                            _OPT_EXTRA,
                             candidate_march(combo), str(args.backend)))
         ckey = "%s|%s|%s" % (args.contract or manifest.get("contract", ""),
                              buildfp, src_hash)
@@ -969,10 +1005,17 @@ def main():
                 # repaired dynamic stream + patched llvm-mca (docs/26 §5)
                 fix_driver = os.path.join(args.outdir,
                                           r["tag"] + "-trace-driver")
+            mca_mattr = args.mca_mattr
+            mca_arch = args.mca_arch
+            if r.get("compute") == "sdot-h":
+                # SVE2p3 (sdot.h): llvm-mc must know sve2p3 or it silently
+                # skips sdot.h (docs/22 §5.3); custom llvm-mca needed.
+                mca_mattr = "+sve2p3"
+                mca_arch = mca_arch or "armv9.4-a+sve2p3"
             cycles, uops, total = run_dynamic_mca(
                 trace, rng[0], rng[1], mca_s, args.mca_mcpu,
-                args.mca_mattr, fix_driver=fix_driver,
-                mca_bin=args.mca_bin, mca_arch=args.mca_arch)
+                mca_mattr, fix_driver=fix_driver,
+                mca_bin=args.mca_bin, mca_arch=mca_arch)
             r["mca_cycles"] = cycles
             r["mca_uops"] = uops
             print("  %-24s fused_uop=%d dyn=%d mca_cycles=%s mca_uops=%s"
@@ -1258,10 +1301,10 @@ def main():
                     "verify_mismatches", "verify", "counts", "cached"}
             combo = {k: v for k, v in best.items() if k not in meta}
             f.write(emit(combo))
-        run(_CXX.split() + candidate_opt(best).split() + [
+        run(cxx_for(best).split() + candidate_opt(best).split() + [
              "-march=" + candidate_march(best),
              "-S", src_path, "-o", s_path])
-        c = run(_CXX.split() + candidate_opt(best).split() + [
+        c = run(cxx_for(best).split() + candidate_opt(best).split() + [
                  "-march=" + candidate_march(best),
                  "-c", src_path, "-o", obj_path])
         if c.returncode == 0:
