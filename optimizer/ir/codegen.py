@@ -207,6 +207,16 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                "offsetEo": ("offsetEo", 0, 0),
                "0": ("rec", 0, 0), "1": ("upBuff1", 0, 0),
                "2": ("offsetEo", 0, 0), "3": 1}
+    elif signature == "sao_e2":
+        lines.append(
+            "extern \"C\" void %s(uint8_t* rec, int8_t* bufft,"
+            " int8_t* buff1, int8_t* offsetEo, intptr_t stride)"
+            % func_name)
+        lines.append("{")
+        env = {"rec": ("rec", 0, 0), "bufft": ("bufft", 0, 0),
+               "buff1": ("buff1", 0, 0), "offsetEo": ("offsetEo", 0, 0),
+               "0": ("rec", 0, 0), "1": ("bufft", 0, 0),
+               "2": ("buff1", 0, 0), "3": ("offsetEo", 0, 0), "4": 1}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -232,12 +242,17 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         base_strides["rec"] = "stride"
     if signature == "sao_e1":
         base_strides["rec"] = "stride"
+    if signature == "sao_e2":
+        base_strides["rec"] = "stride"
     s8_load_bases = set()
     if signature == "sao_e0":
         s8_load_bases = {"offsetEo", "signLeft"}
     if signature == "sao_e1":
         s8_load_bases = {"offsetEo", "upBuff1"}
         cname.update({"1": "upBuff1", "2": "offsetEo"})
+    if signature == "sao_e2":
+        s8_load_bases = {"offsetEo", "buff1", "bufft"}
+        cname.update({"1": "bufft", "2": "buff1", "3": "offsetEo"})
     if signature == "dequant_normal":
         # scalar ABI args referenced as values (trunc/sub srcs)
         cname.update({"0": "q", "1": "c", "2": "scale", "3": "shift"})
@@ -976,6 +991,13 @@ def emit_sao_e1_c_intrinsics(
     """Flat NEON roundtrip emitter for SAO edge offset class 1, 64x4."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="sao_e1")
+
+
+def emit_sao_e2_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_e2_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO edge offset class 2, 64x1."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_e2")
 
 
 def _sve_flat_indices(node):
