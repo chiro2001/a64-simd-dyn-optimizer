@@ -1,0 +1,35 @@
+# SAD 32x32/32x32 (SVE2, VL=256), upstream-exact vs
+# x265_pixel_sad_<W>x<H>_neon_dotprod. Expected: no optimization space
+# (docs/22 §5.11); covered for completeness (docs/37).
+kernel: sad-32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sad
+  n: 32
+
+candidate:
+  symbol: dynopt_sad_32x32_sve2
+  trace_driver_src: kernels/sad-32/trace_driver.cpp
+  trace_driver_c: kernels/sad-32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pixel_sad_32x32_neon_dotprod
+  symbol_mangled: x265_pixel_sad_32x32_neon_dotprod
+  call: x265_pixel_sad_32x32_neon_dotprod
+  decl: |
+    extern "C" int x265_pixel_sad_32x32_neon_dotprod(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/sad-32/trace_driver.cpp
+    symbol_mangled: x265_pixel_sad_32x32_neon_dotprod
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]

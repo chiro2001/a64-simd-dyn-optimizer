@@ -90,5 +90,17 @@
   "fused": 171,
   "upstream": 231,
   "mca": 96
+ },
+ "sad_16x16": {
+  "fused": 80,
+  "upstream": 68,
+  "mca": 69,
+  "note": "no optimization space"
+ },
+ "sad_32x32": {
+  "fused": 160,
+  "upstream": 197,
+  "mca": 118,
+  "note": "no optimization space"
  }
 }

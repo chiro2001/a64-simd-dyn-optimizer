@@ -501,6 +501,18 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_vpp_16x16()
         return emit_fn
+    if kernel == "sad":
+        from emit_sad_sve2_shared import emit_16x16
+
+        def emit_fn(combo):
+            return emit_16x16()
+        return emit_fn
+    if kernel == "sad-32":
+        from emit_sad_sve2_shared import emit_32x32
+
+        def emit_fn(combo):
+            return emit_32x32()
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 

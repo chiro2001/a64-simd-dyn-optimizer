@@ -339,3 +339,18 @@ gen_verify 正确缓冲确认）。
   （SVE2），实机表现待验证；
 - 已接入搜索（manifest `interp4vpp-16` + gen_verify interp4vpp 模板）；
   候选固化 `kernels/interp4vpp-16/candidates/`。
+### 5.11 SAD 16x16/32x32（2026-08-14，覆盖性验证）
+
+按 docs/37 覆盖计划收编 SAD（简单、预期无优化空间，数据确认）：
+
+| shape | 上游 NEON dotprod fused/MCA | SVE2 候选 fused/MCA | 结论 |
+| --- | ---: | ---: | ---: |
+| 16x16 | 68 / 26 | 80 / 69 | ❌ MCA 2.6x 差 |
+| 32x32 | 197 / 59 | 160 / 118 | ❌ MCA 2x 差 |
+
+- 候选 = 每行 2×ld1b + abd + uaddv（逐行归约）；uaddv 串行归约是
+  MCA 瓶颈，SVE ACLE 缺 u8→u16 向量宽化累加（svaddl_u8 无），
+  u16 向量累加方案指令数反而更高；
+- 20k 差分 0 失配（upstream-exact）；已接入搜索（manifest `sad`/
+  `sad-32` + gen_verify sad 模板），候选固化；
+- **结论：SAD 无优化空间**（与预期一致），覆盖项关闭。
