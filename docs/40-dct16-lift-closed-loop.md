@@ -271,3 +271,18 @@ kernels/dct16 上游 NEON（dct16_neon）
   - interp8-32x32：**1801 fused / MCA 441**（手写 1289/369）。
 - 推导坑：行数必须解析 shl/mul 的 stride 倍数（否则 16x16 只推出
   4 行 × 8 组）。
+
+## 12. fir 配方 4-tap 变体：interp4 8x8/16x16/32x32（2026-08-15）
+
+- `_fir_derived` 泛化：taps（4/8 从系数 load 类型）、窗偏移
+  （src-1 / src-3 从首 addr 常量）、滤波器表（g_chromaFilter /
+  g_lumaFilter 从全局名）、相位（chroma 0..7 / luma 1..3）；
+  idx 模式按 taps 生成（4-tap 2 组 perm、8-tap 3 组）；
+  groups = store 宽度组数 × 每行 store 数（16 字节 store 覆盖 2 组）。
+- 验收（各 20k 差分 0 失配，experiments/m30-interp4-search/
+  gen-search-*）：
+  - interp4-8x8：**94 fused / MCA 44**（手写 85/47，MCA 更好）；
+  - interp4-16x16：**358 fused / MCA 103**（手写 165/70）；
+  - interp4-32x32：**1414 fused / MCA 344**（手写 645/189）。
+- **fir 配方共覆盖 6 个形状**（interp8 8/16/32 + interp4 8/16/32），
+  全部 MachineIR 自动生成；8x8 两形状 MCA 均优于手写。

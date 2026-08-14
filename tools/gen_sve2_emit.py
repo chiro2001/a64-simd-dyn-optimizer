@@ -34,6 +34,9 @@ _RECIPE_ALIAS = {
     "interp8": "interp8-8x8",
     "interp8-16": "interp8-16x16",
     "interp8-32": "interp8-32x32",
+    "interp4": "interp4-16x16",
+    "interp4-8": "interp4-8x8",
+    "interp4-32": "interp4-32x32",
 }
 
 
@@ -155,11 +158,13 @@ def emit_diff_sum(machine_ir, func_name):
 
 
 def _fir_derived(machine_ir):
-    """Derive (rows, groups, prec) from the FIR MachineIR.
+    """Derive (rows, groups, prec, taps, load_off, filter_name) from the
+    FIR MachineIR.
 
     rows = max dst row-stride multiplier + 1 (from store addr chains);
     groups = stores / rows (each store is one 8-output group); prec from
-    the sqrshrun immediate."""
+    the sqrshrun immediate; taps from the coefficient load type;
+    load_off from the first src addr constant; filter from the global."""
     nodes = machine_ir["nodes"]
     stores = [n for n in nodes if n.get("op") == "store"]
     addrs = {n["dst"]: n for n in nodes if n.get("op") == "addr"}
@@ -196,14 +201,31 @@ def _fir_derived(machine_ir):
         if base in ("2", "dst"):
             maxrow = max(maxrow, coef)
     rows = maxrow + 1 if maxrow >= 0 else len(stores)
-    groups = len(stores) // rows if rows else 1
+    store_lanes = 8
+    for s in stores:
+        m = re.match(r"<(\d+) x i\d+>", s.get("type", ""))
+        if m:
+            store_lanes = max(store_lanes, int(m.group(1)))
+    groups = (store_lanes // 8) * (len(stores) // rows if rows else 1)
     prec = 6
+    taps = 8
+    load_off = -3
+    filter_name = "g_lumaFilter"
     for n in nodes:
         if n.get("op") == "intrinsic" and n.get("intrinsic") == "sqrshrun":
             imm = next((a.get("imm") for a in n.get("args", [])
                         if isinstance(a, dict) and "imm" in a), prec)
             prec = int(imm)
-    return rows, groups, prec
+        if n.get("op") == "load" and n.get("type") == "<4 x i16>":
+            taps = 4
+        if n.get("op") == "addr" and "g_chromaFilter" in n.get("rhs", ""):
+            filter_name = "g_chromaFilter"
+        if n.get("op") == "addr":
+            moff = re.search(r"i8,\s*ptr\s+%[0-9A-Za-z._]+,\s*i64\s+(-?\d+)",
+                             n["rhs"])
+            if moff and n.get("id", 0) < 8:
+                load_off = int(moff.group(1))
+    return rows, groups, prec, taps, load_off, filter_name
 
 
 def emit_fir(machine_ir, func_name):
@@ -215,23 +237,35 @@ def emit_fir(machine_ir, func_name):
     via the shared sliding-window permute + 4-way svdot_s32 structure.
     Coefficients come from the x265 source constant tables (generic).
     """
-    rows, groups, prec = _fir_derived(machine_ir)
+    rows, groups, prec, taps, load_off, filter_name = _fir_derived(
+        machine_ir)
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     from extract_x265_constants import parse_int16_tables  # noqa: E402
     cpp = os.path.join(ROOT, "third_party/x265/source/common/constants.cpp")
     tables = parse_int16_tables(open(cpp).read())
-    gf = tables["g_lumaFilter"]["rows"]
-    phases = gf[1:4]
+    gf = tables[filter_name]["rows"]
+    if filter_name == "g_chromaFilter":
+        phases = gf
+    else:
+        phases = gf[1:4]
     ctable = ",\n".join(
         "        { %s }" % ", ".join(str(v) for v in row) for row in phases)
 
-    # sliding-window index patterns for the 4-output groups (taps=8):
-    # group o=0 (outputs 0-3): taps 0-3 -> samples o..o+6
-    idx0 = [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6]
-    idx1 = [4, 5, 6, 7, 5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10]
-    idx2 = [8, 9, 10, 11, 9, 10, 11, 12, 10, 11, 12, 13, 11, 12, 13, 14]
-    b0 = [0, 1, 2, 3] * 4
-    b1 = [4, 5, 6, 7] * 4
+    # sliding-window index patterns for 4-output groups:
+    # taps=8 -> 3 perm vectors (X0/X1/X2); taps=4 -> 2 (X0/X1).
+    if taps == 8:
+        idx = [
+            [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6],
+            [4, 5, 6, 7, 5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10],
+            [8, 9, 10, 11, 9, 10, 11, 12, 10, 11, 12, 13, 11, 12, 13, 14],
+        ]
+        bs = [[0, 1, 2, 3] * 4, [4, 5, 6, 7] * 4]
+    else:
+        idx = [
+            [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6],
+            [4, 5, 6, 7, 5, 6, 7, 8, 6, 7, 8, 9, 7, 8, 9, 10],
+        ]
+        bs = [[0, 1, 2, 3] * 4]
 
     def c16(name, vals):
         return ("static const uint8_t %s[16] = { %s };" %
@@ -244,14 +278,20 @@ def emit_fir(machine_ir, func_name):
         "#include <arm_neon_sve_bridge.h>",
         "#include <stdint.h>",
         "",
-        "static const int16_t CTBL[3][8] = {",
+        "static const int16_t CTBL[%d][%d] = {" % (len(phases), taps),
         ctable,
         "};",
-        c16("IDX0", idx0),
-        c16("IDX1", idx1),
-        c16("IDX2", idx2),
-        c16("IDX_B0", b0),
-        c16("IDX_B1", b1),
+        c16("IDX0", idx[0]),
+        c16("IDX1", idx[1]),
+    ]
+    if taps == 8:
+        lines.append(c16("IDX2", idx[2]))
+    lines.extend([
+        c16("IDX_B0", bs[0]),
+    ])
+    if taps == 8:
+        lines.append(c16("IDX_B1", bs[1]))
+    lines.extend([
         "",
         "extern \"C\" void %s(const uint8_t* src, intptr_t srcStride,"
         " uint8_t* dst, intptr_t dstStride, int coeffIdx)" % func_name,
@@ -261,35 +301,57 @@ def emit_fir(machine_ir, func_name):
         "    const svbool_t pg8 = svwhilelt_b8((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg8h = svwhilelt_b16((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg4 = svwhilelt_b16((uint32_t)0, (uint32_t)4);",
-        "    const int ph = (coeffIdx >= 1 && coeffIdx <= 3) ?"
-        " coeffIdx : 2;",
-        "    const svint16_t f16 = svld1_s16(pg8h, CTBL[ph - 1]);",
+    ])
+    if filter_name == "g_chromaFilter":
+        lines.append(
+            "    const int ph = (coeffIdx >= 0 && coeffIdx <= 7) ?"
+            " coeffIdx : 0;")
+    else:
+        lines.append(
+            "    const int ph = (coeffIdx >= 1 && coeffIdx <= 3) ?"
+            " coeffIdx : 2;")
+    if filter_name == "g_chromaFilter":
+        lines.append("    const svint16_t f16 = svld1_s16(pg8h, CTBL[ph]);")
+    else:
+        lines.append(
+            "    const svint16_t f16 = svld1_s16(pg8h, CTBL[ph - 1]);")
+    lines.extend([
         "    const svint8_t f8 = svset_neonq_s8(svundef_s8(),",
         "        vcombine_s8(vmovn_s16(svget_neonq_s16(f16)),"
         " vdup_n_s8(0)));",
         "    const svint8_t b0 = svtbl_s8(f8,"
         " svld1_u8(svptrue_b8(), IDX_B0));",
-        "    const svint8_t b1 = svtbl_s8(f8,"
-        " svld1_u8(svptrue_b8(), IDX_B1));",
         "    const svuint8_t ix0 = svld1_u8(svptrue_b8(), IDX0);",
         "    const svuint8_t ix1 = svld1_u8(svptrue_b8(), IDX1);",
-        "    const svuint8_t ix2 = svld1_u8(svptrue_b8(), IDX2);",
         "    const svint32_t c8192 = svdup_n_s32(64 * 128);",
+    ])
+    if taps == 8:
+        lines.extend([
+            "    const svint8_t b1 = svtbl_s8(f8,"
+            " svld1_u8(svptrue_b8(), IDX_B1));",
+            "    const svuint8_t ix2 = svld1_u8(svptrue_b8(), IDX2);",
+        ])
+    lines.extend([
         "    for (int r = 0; r < %d; r++)" % rows,
         "    {",
         "        for (int g = 0; g < %d; g++)" % groups,
         "        {",
         "            svuint8_t s = svld1_u8(pg16b,"
-        " src + r * srcStride - 3 + g * 8);",
+        " src + r * srcStride %s + g * 8);" % load_off,
         "            svint8_t s8 = svreinterpret_s8_u8(",
         "                svsub_u8_x(pg16b, s, svdup_n_u8(128)));",
         "            svint8_t p0 = svtbl_s8(s8, ix0);",
         "            svint8_t p1 = svtbl_s8(s8, ix1);",
-        "            svint8_t p2 = svtbl_s8(s8, ix2);",
         "            svint32_t lo = svdot_s32(c8192, p0, b0);",
         "            svint32_t hi = svdot_s32(c8192, p1, b0);",
-        "            lo = svdot_s32(lo, p1, b1);",
-        "            hi = svdot_s32(hi, p2, b1);",
+    ])
+    if taps == 8:
+        lines.extend([
+            "            svint8_t p2 = svtbl_s8(s8, ix2);",
+            "            lo = svdot_s32(lo, p1, b1);",
+            "            hi = svdot_s32(hi, p2, b1);",
+        ])
+    lines.extend([
         "            int16x8_t dot = vcombine_s16(",
         "                vmovn_s32(svget_neonq_s32(lo)),",
         "                vmovn_s32(svget_neonq_s32(hi)));",
@@ -300,7 +362,7 @@ def emit_fir(machine_ir, func_name):
         "        }",
         "    }",
         "}",
-    ]
+    ])
     return "\n".join(lines) + "\n"
 
 
