@@ -87,7 +87,8 @@ def main():
         has_aarch64 = name in reg
         fam_dirs = {
             "dct": {"dct16", "dct32", "dct8", "idct16", "idct32"},
-            "sa8d/satd": {"sa8d", "sa8d16", "satd-8"},
+            "sa8d/satd": {"sa8d", "sa8d16", "satd-4", "satd-8",
+                          "satd-16"},
             "sad": {"sad", "sad-32"},
             "interp8": {"interp8", "interp8-16", "interp8-32",
                         "interp8vpp-16", "interp8vpp-32"},

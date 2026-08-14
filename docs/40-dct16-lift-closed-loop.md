@@ -299,3 +299,18 @@ kernels/dct16 上游 NEON（dct16_neon）
   无手写基线（首次覆盖），对照上游 satd8_sve2 差分通过。
 - 意义：这是“新算子免手写特化发射器”最直接的一例——算子从未
   覆盖过，仅凭 MachineIR 命中配方即完成优化候选生成与验证。
+
+## 14. satd 4x4 / 16x16：hadamard 配方补 3 个 op 形态（2026-08-15）
+
+- 4x4（57 节点）：新增 `insertelement <2 x i32>`（NEON-bridge
+  vsetq_lane 链）、标量 i32 load、`<2 x i32>→<8 x i8>` bitcast；
+  uaddlv 的 src 若已是 u16 不再 reinterprete（修 as_u16）。
+- 16x16（507 节点）：新增 `<16 x i8>` 行 load（pg16b）、u8 低/高
+  8 提取（[0..7]/[8..15] → svget_neonq + vget_low/high + vcombine）。
+- 验收（各 20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-4x4|16x16/results.json）：
+  - satd-4x4：**37 fused / MCA 57**；
+  - satd-16x16：**441 fused / MCA 133**；
+  - （satd-8x8 此前 93/51）。
+- satd 三个形状全部由 hadamard 配方覆盖；无手写基线（首次覆盖），
+  对照上游 satd4/satd8_sve2 差分通过。

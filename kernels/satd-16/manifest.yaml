@@ -1,0 +1,40 @@
+# SATD 16x16 SVE2 manifest (docs/37: satd 16x16).
+kernel: satd-16
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sa8d
+  n: 16
+
+candidate:
+  symbol: dynopt_satd_16x16_sve2
+  trace_driver_src: kernels/satd-16/trace_driver.cpp
+  trace_driver_c: kernels/satd-16/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: satd8_sve2
+  symbol_mangled: _ZN4x26511satd8_sve2ILi16ELi16EEEiPKhlS2_l
+  call: x265::satd8_sve2<16, 16>
+  decl: |
+    namespace x265 {
+    template <int W, int H> int satd8_sve2(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+    }
+
+baselines:
+  neon:
+    driver: kernels/satd-16/trace_driver.cpp
+    symbol_mangled: _ZN4x26511satd8_sve2ILi16ELi16EEEiPKhlS2_l
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
+
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"

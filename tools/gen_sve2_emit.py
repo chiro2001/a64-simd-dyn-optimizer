@@ -38,6 +38,8 @@ _RECIPE_ALIAS = {
     "interp4-8": "interp4-8x8",
     "interp4-32": "interp4-32x32",
     "satd-8": "satd-8x8",
+    "satd-4": "satd-4x4",
+    "satd-16": "satd-16x16",
 }
 
 
@@ -392,6 +394,7 @@ def emit_hadamard(machine_ir, func_name):
         " const uint8_t* pix2, intptr_t sb)" % func_name,
         "{",
         "    const svbool_t pg8 = svwhilelt_b8((uint32_t)0, (uint32_t)8);",
+        "    const svbool_t pg16b = svwhilelt_b8((uint32_t)0, (uint32_t)16);",
         "    const svbool_t pg8h = svwhilelt_b16((uint32_t)0, (uint32_t)8);",
         "    const svbool_t pg4w = svwhilelt_b32((uint32_t)0, (uint32_t)4);",
         "    const svbool_t p16 = svptrue_b16();",
@@ -416,6 +419,10 @@ def emit_hadamard(machine_ir, func_name):
     def as_s16(v):
         return v if vtypes.get(v) == "svint16_t" \
             else "svreinterpret_s16_u16(%s)" % v
+
+    def as_u16(v):
+        return v if vtypes.get(v) == "svuint16_t" \
+            else "svreinterpret_u16_s16(%s)" % v
 
     def as_s32(v):
         return v if vtypes.get(v) == "svint32_t" \
@@ -453,13 +460,23 @@ def emit_hadamard(machine_ir, func_name):
                     "hadamard: unknown load base %r" % base)
             abi = "pix1" if base in ("pix1", "0") else "pix2"
             stride = "sa" if abi == "pix1" else "sb"
+            if n.get("type") in ("i8", "i16", "i32", "i64"):
+                ctyp = {"i8": "uint8_t", "i16": "uint16_t",
+                        "i32": "uint32_t",
+                        "i64": "uint64_t"}[n["type"]]
+                emit(n, "%s %s = *(const %s*)((const uint8_t*)%s +"
+                     " %d * %s + %d);"
+                     % (ctyp, var(dst), ctyp, abi, coef, stride, byte))
+                setvar(dst, ctyp)
+                continue
             t = "svuint8_t"
+            pg = "pg8" if n.get("type") == "<8 x i8>" else "pg16b"
             if byte:
-                emit(n, "%s %s = svld1_u8(pg8, %s + %d * %s + %d);"
-                     % (t, var(dst), abi, coef, stride, byte))
+                emit(n, "%s %s = svld1_u8(%s, %s + %d * %s + %d);"
+                     % (t, var(dst), pg, abi, coef, stride, byte))
             else:
-                emit(n, "%s %s = svld1_u8(pg8, %s + %d * %s);"
-                     % (t, var(dst), abi, coef, stride))
+                emit(n, "%s %s = svld1_u8(%s, %s + %d * %s);"
+                     % (t, var(dst), pg, abi, coef, stride))
             setvar(dst, t)
         elif op == "addr":
             mi = re.search(r"i64\s+%([A-Za-z0-9._]+)", n["rhs"])
@@ -496,6 +513,20 @@ def emit_hadamard(machine_ir, func_name):
             emit(n, "svuint16_t %s = svunpklo_u16(%s);"
                  % (var(dst), var(n["src"])))
             setvar(dst, "svuint16_t")
+        elif op == "insertelement":
+            srcs = n.get("src") or []
+            idx = n.get("index", 0)
+            if not srcs:
+                raise ValueError("hadamard: empty insertelement")
+            val = var(srcs[-1])
+            if len(srcs) == 1:
+                prev = "vdupq_n_u32(0)"
+            else:
+                prev = "svget_neonq_u32(%s)" % var(srcs[0])
+            emit(n, "svuint32_t %s = svset_neonq_u32(svundef_u32(),"
+                 " vsetq_lane_u32((uint32_t)%s, %s, %d));"
+                 % (var(dst), val, prev, idx))
+            setvar(dst, "svuint32_t")
         elif op in ("add", "sub") and str(n.get("type", "")).startswith("<"):
             vtype = n["type"]
             if vtype == "<8 x i16>":
@@ -518,6 +549,20 @@ def emit_hadamard(machine_ir, func_name):
         elif op == "shuffle":
             vtype = n["type"]
             mask = n["mask"]
+            if vtype == "<8 x i8>" and len(n.get("src") or []) == 1:
+                src = var(n["src"][0])
+                if tuple(mask) == (0, 1, 2, 3, 4, 5, 6, 7):
+                    emit(n, "svuint8_t %s = svset_neonq_u8(svundef_u8(),"
+                         " vcombine_u8(vget_low_u8(svget_neonq_u8(%s)),"
+                         " vdup_n_u8(0)));" % (var(dst), src))
+                    setvar(dst, "svuint8_t")
+                    continue
+                if tuple(mask) == (8, 9, 10, 11, 12, 13, 14, 15):
+                    emit(n, "svuint8_t %s = svset_neonq_u8(svundef_u8(),"
+                         " vcombine_u8(vget_high_u8(svget_neonq_u8(%s)),"
+                         " vdup_n_u8(0)));" % (var(dst), src))
+                    setvar(dst, "svuint8_t")
+                    continue
             a, b = var(n["src"][0]), var(n["src"][1])
             fn = {
                 "<8 x i16>": {
@@ -581,6 +626,10 @@ def emit_hadamard(machine_ir, func_name):
                 emit(n, "svint16_t %s = svreinterpret_s16_s32(%s);"
                      % (var(dst), src))
                 setvar(dst, "svint16_t")
+            elif (st, dt) == ("<2 x i32>", "<8 x i8>"):
+                emit(n, "svuint8_t %s = svreinterpret_u8_u32(%s);"
+                     % (var(dst), src))
+                setvar(dst, "svuint8_t")
             else:
                 raise ValueError("hadamard: unhandled bitcast %s -> %s"
                                  % (st, dt))
@@ -602,7 +651,7 @@ def emit_hadamard(machine_ir, func_name):
                 setvar(dst, "svuint16_t")
             elif name == "uaddlv":
                 emit(n, "uint16_t %s = svaddv_u16(pg8h,"
-                     " svreinterpret_u16_s16(%s));" % (var(dst), src[0]))
+                     " %s);" % (var(dst), as_u16(src[0])))
                 setvar(dst, "uint16_t")
             elif name == "uaddlp":
                 emit(n, "svuint32_t %s = svset_neonq_u32(svundef_u32(),"

@@ -11,7 +11,7 @@
 | family | aa64 字段 | 本项目覆盖 | 说明 |
 | --- | ---: | ---: | ---: |
 | dct/idct | 2（dct/idct 数组 + dst/idst4x4） | dct8/16/32、idct16/32 | 缺 idct8、dst4x4/idst4x4 |
-| sa8d/satd | （嵌套） | sa8d 8/16；**satd 8x8 ✅（通用 hadamard 配方，93 fused / MCA 51）** | satd 其它形状待覆盖（docs/40 §13） |
+| sa8d/satd | （嵌套） | sa8d 8/16；**satd 全三形状 ✅（通用 hadamard 配方：4x4 37/57、8x8 93/51、16x16 441/133）** | satd 4x8/8x4/8x16 等混合形状待覆盖（docs/40 §13） |
 | interp8 | （嵌套 luma_*） | hpp 8/16/32、vpp 16/32 | 缺 vpp 8x8、hps/vps/sp/ss |
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
 | **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | **全部 ✅**：dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、quant 508/169、nquant 329/131 | 纯汇编，走 C/ACLE seed 模式（docs/44） |
