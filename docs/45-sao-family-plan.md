@@ -14,11 +14,15 @@
   svld1sb 符号扩展 offset 表 + svtbl_u16 查表 + splice/tbl 构造
   per-lane signLeft（[signL, -sr0..-sr6]）+ 有符号 s16 clip +
   svqxtnb_u16 无符号窄化；
+- saoCuOrgB0 ✅（2026-08-15）：seed（vld1_s8_x4 + vtbl4，64x4）门禁
+  20k 0 失配；SVE2 搜索 **386 fused / MCA 126**（u16 域索引 +
+  svtbl_s8 + 有符号 clip + 无符号窄化；略重于 NEON 的 u8 直查，诚实
+  记录）；codegen 新增 ld1x4/extractvalue/tbl2/vshr 向量/vcombine_s8；
 - 新 codegen 资产：sao_e0 ABI、`smax/smin/sqxtun/tbl1`、
   `vext_s8(a,b,7)`/`vqtbl1_s8(vcombine_s8(...))` shifter、
   <8 x i8> splat/vneg/vadd、标量 load、add/sub 的 128-bit `q` 判定、
   intrinsic arg 剥 `range(...)` 注解、splat 常量 add；
-- 待办：E1/E2/E3/B0、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
+- 待办：E1/E2/E3、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
   统计可对照）；E0 若追求更优可试 16 像素/块（降低 splice/tbl
   每块开销，当前 305 vs NEON ~230）。
 

@@ -1,0 +1,34 @@
+# SAO band offset (64x4) SVE2 manifest (docs/45).
+kernel: sao-b0
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sao_b0
+  n: 64
+
+candidate:
+  symbol: dynopt_sao_b0_64x4_sve2
+  trace_driver_src: kernels/sao-b0/trace_driver.cpp
+  trace_driver_c: kernels/sao-b0/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: processSaoCUB0_neon
+  symbol_mangled: processSaoCUB0_neon
+  call: processSaoCUB0_neon
+  decl: |
+    extern "C" void processSaoCUB0_neon(
+        uint8_t*, const int8_t*, int, int, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/sao-b0/trace_driver.cpp
+    symbol_mangled: processSaoCUB0_neon
+
+corpus:
+  strides: [64, 65, 96, 128]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  impl: [tbl-s8]

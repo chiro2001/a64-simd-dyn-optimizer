@@ -1,0 +1,22 @@
+# Normalized seed recipe: SAO band offset, 64x4 (docs/45).
+seed: sao-b0-64x4
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/sao/seed_b0.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_sao_b0_64x4
+  demangled: dynopt_sao_b0_64x4
+output:
+  ll: experiments/m30-sao-search/llvm-ir/sao-b0-64x4-seed.ll
+  json: experiments/m30-sao-search/imported/machine-ir-b0.json
+verify:
+  codegen: emit_sao_b0_c_intrinsics
+  func_name: dynopt_sao_b0_64x4_roundtrip
+  harness: kernels/sao/roundtrip_verify_b0.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000
