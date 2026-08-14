@@ -22,6 +22,12 @@ best_op_r16 **1019~1077**、内部手写算子 1167、上游 2107 ——
 工具生成算子首次在 SVE2 实机上超过内部参考（约 1.08×~1.15×），
 较上游约 2×。详见 docs/20 §6.15。
 
+**cycle 代理双第一候选（2026-08-14）**：4014（zip/row8/k0_merge16，
+fused 4014）在 llvm-mca（1041 cyc）与 NP1 结构成本（727.7）下均
+最优，TestBenchLite 官方 5 seed 全 PASS；已固化
+`kernels/dct32/candidates/best_op_mca.{cpp,S,o}`。fused 最优 3930
+（1094/794）保持为 best_op_r16。950 实机 paired（4014 vs 3930）待测。
+
 生成组合（`layout_ir.dct32_v31_plan` + lowering）：
 `legacy_ex=1, legacy_k4=1, slice_kind=zip, row_group=16,
 k0_even_sve=1, k0_shared_mul=0, k0_merge8=1, k0_epack=1,

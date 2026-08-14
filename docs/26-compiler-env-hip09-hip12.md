@@ -145,17 +145,19 @@ python3 tools/estimate_cycles.py <trace.log> <start> <end> --profile NP1
 python3 tools/search_sve2_layouts.py ... --mca-target NP1 --cost-top 10
 ```
 
-初步校准（2 个 950 锚点，2026-08-14，结构权重）：
+初步对照（**注意机器口径，2026-08-14**）：实测锚点是 **950**
+（SVE2，SVE 2×256 / NEON 4×128），不是 960/NP1（SVE 4×256）。
+因此 950 数据只与 **920B 结构模型**（同为 SVE 2×256）对照：
 
-| kernel | 950 TestBench | est(920B) | est(NP1) |
+| kernel | 950 TestBench | est(920B 结构) | est(NP1/960，无实机) |
 | --- | ---: | ---: | ---: |
-| best_op_r16 | 1019~1077 | 1271 | 794 |
-| 上游 | 2107 | 3341 | 2088 |
+| best_op_r16 | 1019~1077 | 1271 | 794（前瞻估计） |
+| 上游 | 2107 | 3341 | 2088（前瞻估计） |
 
-NP1 对上游几乎精确（2088 vs 2107），对 best 低估 ~24%（frontend
-限）；两个 kernel 的 IPC 分别是 ~5.3 与 ~6.3，单一 issue_rate 无法
-同时拟合，疑似 TestBench 计时口径（单次调用 vs 整块）不一致。确认
-计时口径前，绝对值只作参考，相对排序在同一 kernel 族内可用。
+950 与 920B 结构模型：best 高估 ~21%，上游高估 ~59%；两个 kernel 的
+IPC 分别是 ~5.3 与 ~6.3，单一 issue_rate 无法同时拟合，疑似 TestBench
+计时口径（单次调用 vs 整块）不一致。**NP1/960 暂无实机数据，其估值
+不能当作校准结论**；等 960 实机（或用户提供 NP1 数据）后再拟合。
 
 ## 4. 工具/流程修正（本轮发现）
 
