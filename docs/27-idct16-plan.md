@@ -357,7 +357,8 @@ scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
 | 指标 | NEON 上游 | sdot scalar | sdot scatter |
 | --- | ---: | ---: | ---: |
 | fused_uop（objdump 口径） | 10214 | **4704（-54%）** | **5878（-42%）** |
-| llvm-mca cycles（动态流，neoverse-v2+sve2p1 补丁²） | 3319 | 3518 | **1900（-43%）** |
+| llvm-mca cycles（静态流²，全函数 objdump） | 3319 | 3404 | 3065（失真 +61%） |
+| llvm-mca cycles（动态流²，QEMU 修复 trace） | 3319 | 3518 | **1900（-43%）** |
 | est（920B/NP1 吞吐模型） | 5903 | **2738** | **3325** |
 | cp（NV2 延迟模型） | 539 | 71（不可靠） | 128 |
 
@@ -365,7 +366,8 @@ scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
 （BtoH）调度条目（4c V02，同 HtoD 口径），补丁+构建脚本见
 `patches/llvm-22.1.8-aarch64-sdot-z32-sched.patch` 与
 `scripts/build-custom-llvm-mca.sh`（docs/26 §5）。动态流经
-`tools/fix_dynamic_trace.py` 修复 QEMU 的 .byte 反汇编。
+`tools/fix_dynamic_trace.py` 修复 QEMU 的 .byte 反汇编；静态流仅作
+粗筛（scalar 差 ~3%，scatter 高估 +61%，见 docs/26 §5 实测对比）。
 
 结论：动态流 MCA（当前 NP1 最强代理）下 sdot-s32 scatter 已相对
 NEON -43%（1900 vs 3319），scalar 仍 +6%（3518）——写回方式决定

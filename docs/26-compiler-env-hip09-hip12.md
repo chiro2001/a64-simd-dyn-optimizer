@@ -204,6 +204,19 @@ SDOT HtoD）。构建脚本 `scripts/build-custom-llvm-mca.sh`（LLVM
 无循环 kernel 的 objdump 静态流近似动态流（scalar 差 ~3%；
 scatter 静态流明显偏高，以动态流为准）。
 
+**静态 vs 动态实测对比（idct32，neoverse-v2 + sve2p1 补丁）**：
+
+| 版本 | 静态 MCA（objdump 全函数） | 动态 MCA（QEMU 修复 trace） | 静态偏差 |
+| --- | ---: | ---: | ---: |
+| NEON 上游 | 3319 / 12296 uOps | 3319 / 12296 uOps | 0% |
+| sdot-s32 scalar | 3404 / 19987 | 3518 / 20960 | -3.2% |
+| sdot-s32 scatter | 3065 / 17402 | **1900 / 10415** | +61% |
+
+scalar 的静态流略低估（~3%，动态多出的主要是实际执行中的栈/spill
+调整）；scatter 的静态流明显高估（+61%），因为全函数 objdump 包含
+未在测量区间执行的序言/收尾与静态展开序，而动态 trace 反映真实
+执行序。结论：MCA 一律以修复后的动态流为口径，静态只作快速粗筛。
+
 **评估结果（neoverse-v2 + sve2p1，动态流，idct32）**：
 
 | 版本 | MCA cycles | uOps |
