@@ -248,3 +248,16 @@ sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里�
   基本一致（仅舍入位），row0 仍差——C 与解释器各自还有残余 bug；
   下一步：先修解释器（对齐 row0），再逐 op 对照 C；
 - 该 kernel 已由特化路径覆盖（best 4014/1041），seed 线为覆盖性补充。
+
+## 16. 2026-08-14 dct32 调试进展（rev 修复后 C==解释器）
+
+- 修复：全反转 shuffle 不能用 vrev64q（那是半反转）——AArch64 无单指令
+  128 位全反转；<4 x i32> [3,2,1,0] = vcombine(vrev64(vget_high),
+  vrev64(vget_low))，<8 x i16> [7..0] 同理；4-lane 源用 vrev64_s16；
+- 修复后 C 与解释器在 coef 和输出上**逐位一致**（模型层同错，排除
+  C 翻译差异）；
+- 残余：row1 多数 lane 与参考差 1~5（舍入类），lane8 差 58，row0 全差
+  ——指向 dct32 独有的 op 语义（rshrn 舍入 / addp / smull imm_vec /
+  ld1x4 分块 / mul const_vec 中某一种），需逐 op 与 LLVM 语义核对；
+- 下一步建议：用 llvm-mca 无关的纯语义探针（对单一 op 生成 C 并对照
+  参考函数）逐个确认。

@@ -1908,16 +1908,22 @@ def emit_structured_neon_intrinsics(
                         lines.append("%s    %s = vdup_n_s16(0);"
                                      % (indent, cid(dst)))
                 elif vtype == "<4 x i32>" and mask == [3, 2, 1, 0]:
-                    lines.append("%s    %s = vrev64q_s32(%s);"
-                                 % (indent, cid(dst), cid(n["src"][0])))
+                    lines.append("%s    %s = vcombine_s32(vrev64_s32("
+                                 "vget_high_s32(%s)), vrev64_s32("
+                                 "vget_low_s32(%s)));"
+                                 % (indent, cid(dst), cid(n["src"][0]),
+                                    cid(n["src"][0])))
                 elif vtype == "<4 x i32>" and mask == [1, 0, 3, 2]:
                     lines.append("%s    %s = vrev64q_s32(%s);"
                                  % (indent, cid(dst), cid(n["src"][0])))
                 elif vtype == "<8 x i16>" and mask == [7, 6, 5, 4, 3, 2,
                                                        1, 0]:
                     if vtypes.get(n["src"][0]) == "int16x8_t":
-                        lines.append("%s    %s = vrev64q_s16(%s);"
-                                     % (indent, cid(dst), cid(n["src"][0])))
+                        lines.append("%s    %s = vcombine_s16(vrev64_s16("
+                                     "vget_high_s16(%s)), vrev64_s16("
+                                     "vget_low_s16(%s)));"
+                                     % (indent, cid(dst), cid(n["src"][0]),
+                                        cid(n["src"][0])))
                     else:
                         # 4-lane src reversed into low half; high = undef
                         lines.append("%s    %s = vcombine_s16(vrev64_s16(%s),"
