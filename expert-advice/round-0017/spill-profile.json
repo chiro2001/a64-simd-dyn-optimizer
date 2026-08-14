@@ -1,0 +1,175 @@
+{
+ "sdot-s32 scatter": {
+  "total": 8500,
+  "ldr_z": 0,
+  "str_z": 0,
+  "ld1h": 1376,
+  "st1h": 256,
+  "top": [
+   [
+    "add",
+    2292
+   ],
+   [
+    "ld1h",
+    1376
+   ],
+   [
+    "sdot",
+    1376
+   ],
+   [
+    "adrp",
+    944
+   ],
+   [
+    "addvl",
+    400
+   ],
+   [
+    "ldr",
+    356
+   ],
+   [
+    "sqrshrnb",
+    256
+   ],
+   [
+    "uzp1",
+    256
+   ]
+  ]
+ },
+ "sdot-s32 scalar": {
+  "total": 8056,
+  "ldr_z": 0,
+  "str_z": 0,
+  "ld1h": 1376,
+  "st1h": 0,
+  "top": [
+   [
+    "add",
+    2213
+   ],
+   [
+    "ld1h",
+    1376
+   ],
+   [
+    "sdot",
+    1376
+   ],
+   [
+    "adrp",
+    871
+   ],
+   [
+    "addvl",
+    423
+   ],
+   [
+    "ldr",
+    284
+   ],
+   [
+    "str",
+    281
+   ],
+   [
+    "mov",
+    259
+   ]
+  ]
+ },
+ "mul scatter": {
+  "total": 9094,
+  "ldr_z": 0,
+  "str_z": 0,
+  "ld1h": 0,
+  "st1h": 256,
+  "top": [
+   [
+    "mla",
+    2280
+   ],
+   [
+    "add",
+    1586
+   ],
+   [
+    "mov",
+    1299
+   ],
+   [
+    "addvl",
+    925
+   ],
+   [
+    "ldr",
+    465
+   ],
+   [
+    "str",
+    293
+   ],
+   [
+    "ld1sh",
+    256
+   ],
+   [
+    "sqrshrnb",
+    256
+   ]
+  ]
+ },
+ "mul scalar": {
+  "total": 8524,
+  "ldr_z": 0,
+  "str_z": 0,
+  "ld1h": 0,
+  "st1h": 0,
+  "top": [
+   [
+    "mla",
+    2256
+   ],
+   [
+    "add",
+    1439
+   ],
+   [
+    "mov",
+    1046
+   ],
+   [
+    "addvl",
+    1021
+   ],
+   [
+    "str",
+    520
+   ],
+   [
+    "ldr",
+    384
+   ],
+   [
+    "movprfx",
+    297
+   ],
+   [
+    "ld1sh",
+    256
+   ]
+  ]
+ },
+ "sdot-s32 scatter vnum (2026-08-14)": {
+  "total_static": 6520,
+  "adrp": 95,
+  "addvl": 402,
+  "ld1h": 1376,
+  "fused_uop": 5847,
+  "mca_cycles": 1688,
+  "note": "MUL VL immediate addressing, -49.1% vs NEON 3319"
+ }
+}

@@ -194,7 +194,7 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(8):
             L.append("    %s = sdot_s32_h(%s, d%sO%d, "
-                     "load_c(CDOT_O[%d][%d]));"
+                     "load_c(CDOT_O[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
     # EO: 4 row pairs (2,6),(10,14),(18,22),(26,30)
     for p in range(4):
@@ -205,7 +205,7 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(4):
             L.append("    %s = sdot_s32_h(%s, d%sEO%d, "
-                     "load_c(CDOT_EO[%d][%d]));"
+                     "load_c(CDOT_EO[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
     # EEO: 2 row pairs (4,12),(20,28)
     for p in range(2):
@@ -216,19 +216,19 @@ def chunk_arithmetic_sdot(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(2):
             L.append("    %s = sdot_s32_h(%s, d%sEEO%d, "
-                     "load_c(CDOT_EEO[%d][%d]));"
+                     "load_c(CDOT_EEO[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
     # EEEO: rows 8,24 (k=0,1); EEEE: rows 0,16 (k=0,1)
     L.append("    svint16_t d%sEEEO = svzip1_s16(r%s8, r%s24);" % (s, s, s))
     for k in range(2):
         acc = "EEEO%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEO, "
-                 "load_c(CDOT_EEEO[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEO[%d][0], 0));" % (acc, s, k))
     L.append("    svint16_t d%sEEEE = svzip1_s16(r%s0, r%s16);" % (s, s, s))
     for k in range(2):
         acc = "EEEE%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEE, "
-                 "load_c(CDOT_EEEE[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEE[%d][0], 0));" % (acc, s, k))
     # Butterfly (identical to the mul version: same 8-lane column layout)
     for name, n in (("EEEE", 2), ("EEEO", 2)):
         pass
@@ -256,12 +256,12 @@ def chunk_arithmetic_sdot_split(off, s):
         L.append("    svint32_t %s_a = z;" % acc)
         for p in range(4):
             L.append("    %s_a = sdot_s32_h(%s_a, d%sO%d, "
-                     "load_c(CDOT_O[%d][%d]));"
+                     "load_c(CDOT_O[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
         L.append("    svint32_t %s_b = z;" % acc)
         for p in range(4, 8):
             L.append("    %s_b = sdot_s32_h(%s_b, d%sO%d, "
-                     "load_c(CDOT_O[%d][%d]));"
+                     "load_c(CDOT_O[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
         L.append("    svint32_t %s = svadd_s32_x(p32, %s_a, %s_b);"
                  % (acc, acc, acc))
@@ -273,12 +273,12 @@ def chunk_arithmetic_sdot_split(off, s):
         L.append("    svint32_t %s_a = z;" % acc)
         for p in range(2):
             L.append("    %s_a = sdot_s32_h(%s_a, d%sEO%d, "
-                     "load_c(CDOT_EO[%d][%d]));"
+                     "load_c(CDOT_EO[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
         L.append("    svint32_t %s_b = z;" % acc)
         for p in range(2, 4):
             L.append("    %s_b = sdot_s32_h(%s_b, d%sEO%d, "
-                     "load_c(CDOT_EO[%d][%d]));"
+                     "load_c(CDOT_EO[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
         L.append("    svint32_t %s = svadd_s32_x(p32, %s_a, %s_b);"
                  % (acc, acc, acc))
@@ -290,18 +290,18 @@ def chunk_arithmetic_sdot_split(off, s):
         L.append("    svint32_t %s = z;" % acc)
         for p in range(2):
             L.append("    %s = sdot_s32_h(%s, d%sEEO%d, "
-                     "load_c(CDOT_EEO[%d][%d]));"
+                     "load_c(CDOT_EEO[%d][0], %d));"
                      % (acc, acc, s, p, k, p))
     L.append("    svint16_t d%sEEEO = svzip1_s16(r%s8, r%s24);" % (s, s, s))
     for k in range(2):
         acc = "EEEO%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEO, "
-                 "load_c(CDOT_EEEO[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEO[%d][0], 0));" % (acc, s, k))
     L.append("    svint16_t d%sEEEE = svzip1_s16(r%s0, r%s16);" % (s, s, s))
     for k in range(2):
         acc = "EEEE%s%d" % (s, k)
         L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEE, "
-                 "load_c(CDOT_EEEE[%d][0]));" % (acc, s, k))
+                 "load_c(CDOT_EEEE[%d][0], 0));" % (acc, s, k))
     return L + _butterfly_s32(s)
 
 
@@ -336,7 +336,7 @@ def chunk_arithmetic_sdot_pair(off, s):
     # O: 16 k, C loaded once per k, both chunks share it
     for k in range(16):
         for p in range(8):
-            L.append("    svint16_t C%sO%d_%d = load_c(CDOT_O[%d][%d]);"
+            L.append("    svint16_t C%sO%d_%d = load_c(CDOT_O[%d][0], %d);"
                      % (s, k, p, k, p))
         for c in (0, 1):
             acc = "O%s%d" % ("_%d" % c, k)
@@ -347,7 +347,7 @@ def chunk_arithmetic_sdot_pair(off, s):
     # EO
     for k in range(8):
         for p in range(4):
-            L.append("    svint16_t C%sEO%d_%d = load_c(CDOT_EO[%d][%d]);"
+            L.append("    svint16_t C%sEO%d_%d = load_c(CDOT_EO[%d][0], %d);"
                      % (s, k, p, k, p))
         for c in (0, 1):
             acc = "EO%s%d" % ("_%d" % c, k)
@@ -358,7 +358,7 @@ def chunk_arithmetic_sdot_pair(off, s):
     # EEO
     for k in range(4):
         for p in range(2):
-            L.append("    svint16_t C%sEEO%d_%d = load_c(CDOT_EEO[%d][%d]);"
+            L.append("    svint16_t C%sEEO%d_%d = load_c(CDOT_EEO[%d][0], %d);"
                      % (s, k, p, k, p))
         for c in (0, 1):
             acc = "EEO%s%d" % ("_%d" % c, k)
@@ -370,10 +370,10 @@ def chunk_arithmetic_sdot_pair(off, s):
     for k in range(2):
         for c in (0, 1):
             L.append("    svint32_t EEEO%s%d = sdot_s32_h(z, d%sEEEO_%d, "
-                     "load_c(CDOT_EEEO[%d][0]));"
+                     "load_c(CDOT_EEEO[%d][0], 0));"
                      % ("_%d" % c, k, s, c, k))
             L.append("    svint32_t EEEE%s%d = sdot_s32_h(z, d%sEEEE_%d, "
-                     "load_c(CDOT_EEEE[%d][0]));"
+                     "load_c(CDOT_EEEE[%d][0], 0));"
                      % ("_%d" % c, k, s, c, k))
     L.extend(_butterfly_s32("_0"))
     L.extend(_butterfly_s32("_1"))
@@ -578,13 +578,16 @@ def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
             "// volatile: prevents cross-chunk CSE of constant vectors,\n"
             "// which kept 8 C regs alive across chunks and caused ~1650\n"
             "// spill ld/str (docs/27 §8.11). One ld1h per sdot wins.\n"
+            "// [base, #vnum, MUL VL] immediate addressing kills the\n"
+            "// per-load adrp/add (was ~944 adrp + ~400 addvl, round-0017).\n"
             "static inline __attribute__((always_inline)) svint16_t\n"
-            "load_c(const int16_t* p)\n"
+            "load_c(const int16_t* base, int vnum)\n"
             "{\n"
             "    svint16_t v;\n"
-            "    asm volatile(\"ld1h %0.h, %1/z, [%2]\"\n"
+            "    asm volatile(\"ld1h %0.h, %1/z, [%2, #%3, MUL VL]\"\n"
             "                 : \"=w\"(v)\n"
-            "                 : \"Upl\"(svptrue_b16()), \"r\"(p));\n"
+            "                 : \"Upl\"(svptrue_b16()), \"r\"(base),\n"
+            "                   \"i\"(vnum));\n"
             "    return v;\n"
             "}\n")
     else:
