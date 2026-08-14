@@ -529,10 +529,19 @@ fused 5847 / MCA 1550 / vector_lb NP1 1266 / lite 5/5，scalar
 （`.split()`）。
 
 **下一步**：
-1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
-   O/E 峰值存活；或把 CDOT 表按 chunk 对只加载一次（-O3 已部分做到）；
-2. 修正 QEMU trace 统计（sdot→.byte）使搜索 fused 排名可信：给
-   parse_qemu_trace 增加 SVE2p1 反汇编补丁或 objdump 静态流口径；
-3. 自定义 llvm-mca target 补 sdot_z32 调度条目（neoverse-v2 缺，
-   当前 MCA 对 sdot 候选不可用）；
-4. 960 实机（SVE2.3）paired（scalar vs scatter vs sdot-s32）。
+
+已完成（2026-08-14，§8.11 更新）：QEMU trace 修复（fix_dynamic_trace
++ .byte 补丁）、自定义 llvm-mca sdot_z32 调度、vnum 常量寻址、
+zip32 写回（off 地址修复）、sdot 系 G3/rename 编译参数、idct16
+sdot-s32 轴、搜索缓存 build fingerprint、MCA 短名单并集。
+
+**下一步（按 round-0017 路线图重排）**：
+1. **直接 asm pressure-budgeted 原型**（咨询实验 3）：k_block=4/8、
+   in-place 蝶形（EEEE/EEEO→EEE→EE→E 覆盖已死输入）、round+splice
+   融合、linear scan（K=24/32）后嵌回两 stage；目标动态 MCA 低于
+   当前 1171（idct32）且 peak-live ≤24~32；
+2. **950/960 实机 paired**（SVE2p1 候选无法在 920B 跑；920G 内部已有
+   早期 1.08× 慢于 NEON 的记录，需用新 best 复测）；
+3. **低价值不优先**：Clang C2-C4（PBQP/ilpmin）诊断、dct32/dct16
+   mul 系 flag 矩阵（-O2 已最优）、920B SVE1 paired（best_sve1 已
+   测：慢上游 ~16%，记录在 docs/10 §0.3）。
