@@ -32,6 +32,10 @@
   结果回填；替换流程（docs/29）一键化。
 - **模型校准**：docs/34 六样本 MCA vs 920B 替换比率结论（方向/幅度
   有界性）；融合分析 v0.1 已接入搜索（只记录不排序）。
+- **950 实机首轮结果（2026-08-14，docs/35）**：sa8d16 +28%、ivpp16
+  +12%、ivpp32 +13%、dct8 +48%（均超保留线 1.10）；idct16/32 替换
+  下界 1.09/1.03；interp8 hpp path-B 在 950 不采用（等 960）；NV2
+  MCA 对 SVE256 系统性低估（“判慢”的 vpp/dct8 实机全快）。
 - 工具：搜索缓存键含 build fingerprint（编译器+参数）、MCA 短名单
   = fused top ∪ 低/高 stack top、`--cxx`/`--opt-extra` 参数扫描、
   `tools/peak_live.py` 压力基线、自定义 llvm-mca（sdot_z32 调度补丁）。

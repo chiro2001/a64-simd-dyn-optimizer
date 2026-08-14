@@ -1,0 +1,39 @@
+=== 950 (920G) quick test 2026-08-14 17:05 ===
+date: 2026-08-14 (Asia/Shanghai)
+git: ba573ba (a64-simd-dyn-optimizer, after latest pull at test time)
+uname: Linux 6.6.0-145.3.22.153.oe2403sp3.aarch64 aarch64
+nproc: 384
+ISA: SVE2 2x256 / NEON 4x128 (no SVE2p1/SVE2p3)
+ref x265: b81f650 (third_party/x265 submodule), build/x265-8-950
+compiler: conda env gcc-16 (GCC 15.3.0 + binutils 2.46.1); clang-22 (22.1.8) validated
+          ipb flow; march armv8.2-a+sve2
+
+[gates]
+  sa8d16: PASS   (TestBenchLite native, --gate sa8d16 --seed 1)
+  interp8: N/A on 950 - hpp 8/16/32 path-B relies on SVE2p3 sdot.h (SIGILL native)
+  dct16/dct32/idct16/idct32: N/A on 950 - best candidates contain SVE2p1 sdot.s/h,
+      no native gate possible (substitution does NOT validate correctness)
+
+[paired]  (CNTVCT, latency, median; neon/cand ratio >1 => candidate faster)
+kernel            p50_neon  p50_cand  ratio   note
+sa8d16            81.0      63.0      1.283   native SVE2 (neon/cand)
+ivpp16(16x16 vpp) 92.0      83.0      1.123   native SVE2
+ivpp32(32x32 vpp) 247.0     218.5     1.132   native SVE2
+dct8              43.0      29.0      1.483   native SVE1+NEON bridge (correctness not re-gated)
+idct16(sve2sub)   24.0      22.0      1.091   BtoS substitute, upper bound
+idct32(sve2sub)   125.0     123.0     1.025   BtoS substitute, upper bound, noisy
+ipb8(BtoS sub)    30.5      54.0      0.545   interp8 hpp 8x8, estimate overstates dot work
+ipb16(BtoS sub)   68.0      115.0     0.585   interp8 hpp 16x16, estimate overstates dot work
+ipb32(BtoS sub)   150.5     339.5     0.444   interp8 hpp 32x32, estimate overstates dot work
+
+[结论]
+- 950 原生(SVE2)确有收益的 kernel: sa8d16 (+28%), interp8 vpp16 (+12%),
+  interp8 vpp32 (+13%), dct8 (+48%).
+- idct16/idct32 走 SVE2p1 sdot 替换预估: idct16 约 +9%, idct32 约 +2.5%(波动大),
+  均高于 NEON 但属 BtoS 高估口径。
+- interp8 hpp path-B(sdot.h,SVE2p3) 即使按高估上界仍全面慢于 NEON
+  (0.44-0.58), 与 920B 预估相反；950 上建议不采用。
+
+[补充]
+- dct16/dct32/idct16/idct32 的正确性门禁在 950 上无法原生完成(缺 SVE2p1/p3),
+  需在支持该 ISA 的主机或 qemu -cpu max 上跑（本地 QEMU 已全过）。
