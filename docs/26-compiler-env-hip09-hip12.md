@@ -246,6 +246,9 @@ NEON 的 **2 倍**）。因此：
 `tools/estimate_cycles.py --profile 920B|NP1` 新增
 `vector_lb_cycles`（宽度感知向量吞吐下界：sve/neon 向量指令数分别
 除以各自 pipe 数；SVE2p1 sdot 需 `--fix-driver` 修复 `.byte` 后统计）。
+搜索工具 `search_sve2_layouts.py` 的 `--cost-top` 同步输出
+`vector_lb_<target>`，并新增 `--rank-by vector-lb`（要求 `--cost-top`
+且默认 NP1）；`--rank-by consensus` 也把 vector_lb 纳入归一化排名。
 idct32 实测（动态流，修复后）：
 
 | 版本 | vector 指令 | vector_lb 920B | vector_lb NP1 |

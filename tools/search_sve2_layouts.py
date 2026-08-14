@@ -59,6 +59,19 @@ def candidate_opt(combo):
     return "-O3" if combo.get("compute") == "sdot-s32" else "-O2"
 
 
+def vector_width_counts(insns):
+    """Split vector instructions by width: SVE zN (VL=256) vs NEON
+    qN/dN (128-bit). Returns (sve, neon)."""
+    sve = neon = 0
+    for i in insns:
+        ops = i.get("ops", "")
+        if re.search(r"\b[z]\d+", ops):
+            sve += 1
+        elif re.search(r"\b[qd]\d+", ops):
+            neon += 1
+    return sve, neon
+
+
 def run(cmd, timeout=None, **kw):
     return subprocess.run(cmd, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT, text=True,
@@ -603,13 +616,17 @@ def main():
                          "candidates and record cp_cycles_<target> "
                          "(default 0 = off)")
     ap.add_argument("--rank-by",
-                    choices=("fused_uop", "mca", "cp", "lite", "consensus"),
+                    choices=("fused_uop", "mca", "cp", "lite", "vector-lb",
+                             "consensus"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
                          "falling back to fused_uop for candidates without "
                          "MCA data; cp requires --cp-top and uses "
-                         "cp_cycles as primary key; lite requires "
+                         "cp_cycles as primary key; vector-lb requires "
+                         "--cost-top and uses the NP1/920B width-aware "
+                         "vector-throughput lower bound as primary key "
+                         "(docs/26 §5); lite requires "
                          "--lite-top and puts TestBenchLite-passing "
                          "candidates first; consensus averages normalized "
                          "ranks over all available proxies)")
@@ -625,6 +642,8 @@ def main():
         args.lite_top = 10
     if args.rank_by == "cp" and args.cp_top == 0:
         args.cp_top = 10
+    if args.rank_by == "vector-lb" and args.cost_top == 0:
+        args.cost_top = 10
     if args.rank_by == "consensus":
         # consensus needs all proxies; default the top-N to the largest
         # requested window.
@@ -883,6 +902,7 @@ def main():
                  tgt["sve_pipes"], tgt["sve_vl_bits"],
                  tgt["neon_pipes"], tgt["neon_vl_bits"]))
         key = "est_cycles_" + tgt["name"]
+        vkey = "vector_lb_" + tgt["name"]
         for r in ok[:min(args.cost_top, len(ok))]:
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
@@ -892,23 +912,42 @@ def main():
                 print("  %-24s no trace for estimator" % r["tag"])
                 continue
             hist = {}
+            insns = None
             if r.get("compute") == "sdot-s32":
                 from static_counts import static_hist
                 hist = static_hist(os.path.join(args.outdir,
                                                 r["tag"] + ".o"))
+                from static_counts import static_insns
+                insns = static_insns(os.path.join(args.outdir,
+                                                  r["tag"] + ".o"))
             else:
-                for insn in parse_exec(trace, rng[0], rng[1]):
+                insns = parse_exec(trace, rng[0], rng[1])
+                for insn in insns:
                     hist[insn["mn"]] = hist.get(insn["mn"], 0) + 1
             lb, _ = cycles_lb(hist, prof)
             r[key] = lb
-            print("  %-24s fused_uop=%d %s=%.1f"
-                  % (r["tag"], fu(r), key, lb))
+            sve, neon = vector_width_counts(insns or [])
+            vlb = 0.0
+            if sve:
+                vlb = max(vlb, sve / tgt["sve_pipes"])
+            if neon:
+                vlb = max(vlb, neon / tgt["neon_pipes"])
+            r[vkey] = vlb
+            r["vector_sve_" + tgt["name"]] = sve
+            r["vector_neon_" + tgt["name"]] = neon
+            print("  %-24s fused_uop=%d %s=%.1f %s=%.1f (sve=%d neon=%d)"
+                  % (r["tag"], fu(r), key, lb, vkey, vlb, sve, neon))
         withcost = [r for r in ok if r.get(key) is not None]
         if withcost:
             print("rank by %s:" % key)
             for r in sorted(withcost, key=lambda r: r[key]):
                 print("  %-24s fused_uop=%d %s=%.1f"
                       % (r["tag"], fu(r), key, r[key]))
+            if args.rank_by == "vector-lb":
+                # NP1/920B 宽度口径：sve/neon 向量指令数 ÷ 各自 pipe 数
+                # （docs/26 §5）。与 NV2 代理 MCA 并行对照。
+                ok.sort(key=lambda r: (r.get(vkey) is None,
+                                       r.get(vkey) or 10 ** 9, fu(r)))
     if args.cp_top and ok:
         from critical_path_dynamic import critical_path as cp_fn
         from optimizer.mca_targets import target as mca_target
@@ -1014,9 +1053,11 @@ def main():
             pass
         ekey = "est_cycles_%s" % (tgt["name"] if tgt else "NP1")
         ckey = "cp_cycles_%s" % (tgt["name"] if tgt else "NP1")
+        vkey = "vector_lb_%s" % (tgt["name"] if tgt else "NP1")
         proxies = [("fused_uop", fu),
                    ("mca_cycles", lambda r: r.get("mca_cycles")),
                    ("est_cycles", lambda r: r.get(ekey)),
+                   ("vector_lb", lambda r: r.get(vkey)),
                    ("cp_cycles", lambda r: r.get(ckey)),
                    ("lite_pass", lambda r: 0.0 if r.get("lite_pass")
                     is True else 1.0)]
