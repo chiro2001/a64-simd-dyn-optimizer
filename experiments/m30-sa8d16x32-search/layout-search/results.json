@@ -1,0 +1,11 @@
+[
+ {
+  "tag": "reduce-sve",
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": false,
+  "passed": false,
+  "verify_mismatches": 4812,
+  "verify": "cases=20000 mismatches=4812\n first-diff want=85532 got=85533\n"
+ }
+]

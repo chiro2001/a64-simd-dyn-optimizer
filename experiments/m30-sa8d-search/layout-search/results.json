@@ -1,0 +1,78 @@
+[
+ {
+  "tag": "pack-pair_reduce-neon",
+  "pack": "pair",
+  "reduce": "neon",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 129,
+   "vector": 98,
+   "movprfx": 12,
+   "vector_fused": 86,
+   "scatter_gather": 0,
+   "vector_fused_uop": 86
+  },
+  "cached": true
+ },
+ {
+  "tag": "pack-pair_reduce-sve",
+  "pack": "pair",
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 131,
+   "vector": 96,
+   "movprfx": 12,
+   "vector_fused": 84,
+   "scatter_gather": 0,
+   "vector_fused_uop": 84
+  },
+  "cached": true
+ },
+ {
+  "tag": "pack-evenpair_reduce-neon",
+  "pack": "evenpair",
+  "reduce": "neon",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 129,
+   "vector": 98,
+   "movprfx": 12,
+   "vector_fused": 86,
+   "scatter_gather": 0,
+   "vector_fused_uop": 86
+  },
+  "cached": true
+ },
+ {
+  "tag": "pack-evenpair_reduce-sve",
+  "pack": "evenpair",
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 126,
+   "vector": 91,
+   "movprfx": 12,
+   "vector_fused": 79,
+   "scatter_gather": 0,
+   "vector_fused_uop": 79
+  },
+  "cached": true
+ }
+]

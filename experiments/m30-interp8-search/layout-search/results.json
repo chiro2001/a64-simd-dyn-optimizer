@@ -1,0 +1,21 @@
+[
+ {
+  "tag": "path-a",
+  "path": "a",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 193,
+   "vector": 143,
+   "movprfx": 16,
+   "vector_fused": 127,
+   "scatter_gather": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 127
+  },
+  "cached": true
+ }
+]

@@ -1,0 +1,20 @@
+[
+ {
+  "tag": "reduce-sve",
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 227,
+   "vector": 193,
+   "movprfx": 4,
+   "vector_fused": 189,
+   "scatter_gather": 0,
+   "vector_fused_uop": 189
+  },
+  "cached": true
+ }
+]
