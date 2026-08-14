@@ -1378,6 +1378,9 @@ def emit_interp8_c_intrinsics(
             elif node["type"] == "<16 x i8>":
                 var(dst, "uint8x16_t",
                     "vld1q_u8((const uint8_t*)%s)" % ptr)
+            elif node["type"] == "<8 x i8>":
+                var(dst, "uint8x8_t",
+                    "vld1_u8((const uint8_t*)%s)" % ptr)
             else:
                 raise ValueError("unhandled load type %r" % node["type"])
         elif op == "extractvalue":
@@ -1407,8 +1410,14 @@ def emit_interp8_c_intrinsics(
             else:
                 raise ValueError("unhandled trunc type %r" % node["type"])
         elif op == "xor":
-            var(dst, "uint8x16_t",
-                "veorq_u8(%s, vdupq_n_u8(0x80))" % cid(node["src"][0]))
+            if node["type"] == "<16 x i8>":
+                var(dst, "uint8x16_t",
+                    "veorq_u8(%s, vdupq_n_u8(0x80))" % cid(node["src"][0]))
+            elif node["type"] == "<8 x i8>":
+                var(dst, "uint8x8_t",
+                    "veor_u8(%s, vdup_n_u8(0x80))" % cid(node["src"][0]))
+            else:
+                raise ValueError("unhandled xor type %r" % node["type"])
         elif op == "shuffle":
             vtype = node["type"]
             mask = node["mask"]
@@ -1417,6 +1426,12 @@ def emit_interp8_c_intrinsics(
                 var(dst, "int32x4_t",
                     "vdupq_n_s32(vget_lane_s32(%s, %d))"
                     % (cid(src), mask[0]))
+            elif vtype == "<16 x i8>" and len(node["src"]) == 1 and \
+                    mask == list(range(16)):
+                # 8-byte load extended to 16 bytes; high lanes are undef in
+                # the IR but never selected by the tbl masks -> zero fill.
+                var(dst, "uint8x16_t",
+                    "vcombine_u8(%s, vdup_n_u8(0))" % cid(node["src"][0]))
             elif vtype == "<8 x i32>" and mask == list(range(8)):
                 types[dst] = (node["src"][0], node["src"][1])  # pair
             else:

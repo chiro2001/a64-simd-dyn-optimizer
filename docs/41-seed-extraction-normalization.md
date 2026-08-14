@@ -96,6 +96,19 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
 - 门禁结果：**100000 cases mismatches=0 PASS**（seed 语义保真闭环）；
 - 至此三个 seed（dct16/interp8/sa8d）全部纳入出厂 roundtrip 门禁。
 
+### G4c ✅：interp8 16x16 / 32x32 seed 打通
+
+- `seeds/interp8-16x16.yaml`：加 `-funroll-loops -unroll-count=16`
+  后模板完全展开（**496 节点**，0 br/icmp），roundtrip 门禁
+  **50000 cases mismatches=0**；codegen 新增 `inbounds nuw` addr 形态；
+- `seeds/interp8-32x32.yaml`：**1952 节点**，roundtrip 门禁
+  **20000 cases mismatches=0**；codegen 新增 8 字节 load/xor/
+  identity-extend（`vcombine_u8`+zero），lane_forms 对 undef/poison
+  越界 lane 改为独立叶子（不崩溃、不误归因）；
+- 完整流水线（seed→检测→搜索）两形状均精确复现手写最优：
+  interp8-16 **327 / 114**、interp8-32 **1289 / 369**；
+- 至此 interp8 hpp 8/16/32 三形状全部由 seed 线自动覆盖。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

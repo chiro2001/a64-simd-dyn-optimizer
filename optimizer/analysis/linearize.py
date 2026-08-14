@@ -128,7 +128,17 @@ def lane_forms(ir, const_values=None):
             if len(srcs) == 1 and mask is not None and a not in (None,
                                                                  "opaque"):
                 # result lane i <- source lane mask[i]
-                forms[dst] = [a[m] for m in mask]
+                n_a = len(a)
+                out = []
+                for m in mask:
+                    if m < n_a:
+                        out.append(a[m])
+                    else:
+                        # out-of-range (undef/poison) lanes become their
+                        # own leaf so analysis never crashes and never
+                        # attributes wrong data to them.
+                        out.append({leaf_key(dst, len(out)): 1.0})
+                forms[dst] = out
                 continue
             if len(srcs) == 2 and mask is not None:
                 a = get(srcs[0])
