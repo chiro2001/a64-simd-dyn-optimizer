@@ -62,3 +62,21 @@ ACLE）再压下去。基线事实（`tools/peak_live.py`）：当前 best 峰�
   记录阴性并停止（避免 1-2 天投入换 0）；
 - k_block=8 重载行在 asm 中可能同样不划算；
 - 直接 asm 维护成本高，仅在显著优于 ACLE 时才作为默认路径。
+
+## 7. 进展记录
+
+### M1 完成（2026-08-14）：O 阶段直接汇编
+
+`tools/emit_idct32_o_asm.py` 生成 `dynopt_o_phase(src, cbase, off,
+out)`：16 个 O 累加器（k_block=8 两组，z16-z23 / z24-z31）、行/d/C
+scratch z0-z3、k-base 只用调用者保存 GPR x9-x16（无 callee-saved
+clobber）。验证：QEMU 随机输入下与 C 参考逐位一致（bad=0）。
+
+- 峰值 Z 活跃 = 12（≤24，零 spill 可能）；406 条指令（128 sdot +
+  160 ld1h + 其余地址/zip/dup）；
+- 关键修正：k-base 最初用 x9-x24（含 callee-saved x19-x24）导致
+  main 崩溃，改为 k_block=8 + x9-x16 后通过；
+- 行地址按 **64 字节/行**（int16 元素 ×2），初版误用 32 字节/行。
+
+下一步：M2（蝶形 + round+splice 融合，z0-z15 中间量 in-place），
+M3（uzp 转置 + 连续 st1h），M4（4 chunk × 2 stage 集成对比 MCA）。
