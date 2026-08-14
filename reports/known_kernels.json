@@ -85,5 +85,10 @@
   "fused": 645,
   "upstream": 1353,
   "mca": 189
+ },
+ "interp4vpp_16x16": {
+  "fused": 171,
+  "upstream": 231,
+  "mca": 96
  }
 }

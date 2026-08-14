@@ -322,3 +322,20 @@ gen_verify 正确缓冲确认）。
 - 16/32 均为少数 MCA 也赢的 SVE 内核；20k × 7 相位 0 失配（gen_verify
   interp4 模板）；候选固化 kernels/interp4{-8,-32}/candidates/；
 - 950 不可原生（SVE2p3），等 960。
+
+### 5.10 interp4 vpp（chroma 垂直 4-tap）16x16（2026-08-14）
+
+滑动行管线（4 行驻留 + 逐行惰性加载，19 行向量）+ 4×MLA 单累加器
+（4 乘积 s16 安全）+ 8192 + sqrshrunb+uzp1。参考
+`interp_vert_pp_neon<4,16,16>`（7 相位）。
+
+| 实现 | fused | MCA | uOps | 20k×7 相位 |
+| --- | ---: | ---: | ---: | ---: |
+| 上游 NEON vpp | 231 | 93 | 349 | — |
+| **SVE2 候选** | **171（-26%）** | 96（+3%） | 239（-32%） | 0 失配 |
+
+- 指令数 -26%（未过减半门 115.5），MCA 与上游基本持平；参照 luma
+  vpp 的 950 经验（MCA 判慢但实机 +12%），此 kernel **950 原生可测**
+  （SVE2），实机表现待验证；
+- 已接入搜索（manifest `interp4vpp-16` + gen_verify interp4vpp 模板）；
+  候选固化 `kernels/interp4vpp-16/candidates/`。
