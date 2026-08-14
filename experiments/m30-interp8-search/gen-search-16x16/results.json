@@ -1,0 +1,39 @@
+[
+ {
+  "tag": "pairsum-addp_unroll-loop_compute-sdot-h",
+  "pairsum": "addp",
+  "unroll": "loop",
+  "compute": "sdot-h",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x4008e0"
+  ],
+  "counts": {
+   "total": 545,
+   "vector": 457,
+   "movprfx": 0,
+   "vector_fused": 457,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 457
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 42,
+    "load_insns": 5,
+    "simd_insns": 16
+   }
+  },
+  "mca_cycles": 130,
+  "mca_uops": 554
+ }
+]

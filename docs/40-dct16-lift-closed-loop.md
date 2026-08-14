@@ -259,3 +259,15 @@ kernels/dct16 上游 NEON（dct16_neon）
 - **通用发射器现状**：diff-sum（sad 16/32）、hadamard（sa8d 8x8/
   16x16）、fir（interp8 8x8）三个族全部由 MachineIR 自动生成并过
   20k 差分；除 sa8d 16x16 外，MCA 均不差于手写最优。
+
+## 11. fir 配方跨形状推广：interp8 16x16 / 32x32（2026-08-15）
+
+- 同配方覆盖全部三个 hpp 形状：`_fir_derived` 从 store 地址链推导
+  行数（rows=stores/groups）、从 sqrshrun 取精度；发射器按
+  `for r / for g` 双层循环（每组 8 输出、16 样本滑窗，组偏移 g*8）。
+- 验收（各 20k 差分 0 失配，experiments/m30-interp8-search/
+  gen-search-16x16|32x32/results.json）：
+  - interp8-16x16：**457 fused / MCA 130**（手写 327/114）；
+  - interp8-32x32：**1801 fused / MCA 441**（手写 1289/369）。
+- 推导坑：行数必须解析 shl/mul 的 stride 倍数（否则 16x16 只推出
+  4 行 × 8 组）。

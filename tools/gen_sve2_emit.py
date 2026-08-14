@@ -32,6 +32,8 @@ _RECIPE_ALIAS = {
     "sa8d": "sa8d-8x8",
     "sa8d16": "sa8d-16x16",
     "interp8": "interp8-8x8",
+    "interp8-16": "interp8-16x16",
+    "interp8-32": "interp8-32x32",
 }
 
 
@@ -153,19 +155,55 @@ def emit_diff_sum(machine_ir, func_name):
 
 
 def _fir_derived(machine_ir):
-    """Derive (rows, prec, taps) from the FIR MachineIR."""
-    rows = sum(1 for n in machine_ir["nodes"]
-               if n.get("op") == "store")
+    """Derive (rows, groups, prec) from the FIR MachineIR.
+
+    rows = max dst row-stride multiplier + 1 (from store addr chains);
+    groups = stores / rows (each store is one 8-output group); prec from
+    the sqrshrun immediate."""
+    nodes = machine_ir["nodes"]
+    stores = [n for n in nodes if n.get("op") == "store"]
+    addrs = {n["dst"]: n for n in nodes if n.get("op") == "addr"}
+    env = {"1": ("sa", 1), "3": ("sb", 1),
+           "i_pix1": ("sa", 1), "i_pix2": ("sb", 1)}
+    ptr_off = {}
+    for n in nodes:
+        if n.get("op") in ("shl", "mul"):
+            src = n["src"][0]
+            if src in env:
+                sym, coef = env[src]
+                amt = n.get("amt") if n.get("op") == "shl" \
+                    else n.get("const")
+                if amt is not None:
+                    env[n["dst"]] = (sym, coef * (1 << amt)
+                                     if n.get("op") == "shl"
+                                     else coef * amt)
+        elif n.get("op") == "addr":
+            mb = re.search(r"ptr\s+%([A-Za-z0-9._]+),", n["rhs"])
+            mi = re.search(r"i64\s+%([A-Za-z0-9._]+)", n["rhs"])
+            mc = re.search(r"i64\s+(-?\d+)\s*$", n["rhs"])
+            if not mb:
+                continue
+            base = mb.group(1)
+            root, prev, prevb = ptr_off.get(base, (base, 0, 0))
+            if mc:
+                ptr_off[n["dst"]] = (root, prev, prevb + int(mc.group(1)))
+            elif mi and mi.group(1) in env:
+                ptr_off[n["dst"]] = (root, prev + env[mi.group(1)][1],
+                                     prevb)
+    maxrow = -1
+    for s in stores:
+        base, coef, byte = ptr_off.get(s["ptr"], (s["ptr"], 0, 0))
+        if base in ("2", "dst"):
+            maxrow = max(maxrow, coef)
+    rows = maxrow + 1 if maxrow >= 0 else len(stores)
+    groups = len(stores) // rows if rows else 1
     prec = 6
-    taps = 8
-    for n in machine_ir["nodes"]:
+    for n in nodes:
         if n.get("op") == "intrinsic" and n.get("intrinsic") == "sqrshrun":
             imm = next((a.get("imm") for a in n.get("args", [])
                         if isinstance(a, dict) and "imm" in a), prec)
             prec = int(imm)
-        if n.get("op") == "load" and n.get("type") == "<8 x i16>":
-            taps = 8
-    return rows, prec, taps
+    return rows, groups, prec
 
 
 def emit_fir(machine_ir, func_name):
@@ -177,7 +215,7 @@ def emit_fir(machine_ir, func_name):
     via the shared sliding-window permute + 4-way svdot_s32 structure.
     Coefficients come from the x265 source constant tables (generic).
     """
-    rows, prec, taps = _fir_derived(machine_ir)
+    rows, groups, prec = _fir_derived(machine_ir)
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     from extract_x265_constants import parse_int16_tables  # noqa: E402
     cpp = os.path.join(ROOT, "third_party/x265/source/common/constants.cpp")
@@ -239,23 +277,27 @@ def emit_fir(machine_ir, func_name):
         "    const svint32_t c8192 = svdup_n_s32(64 * 128);",
         "    for (int r = 0; r < %d; r++)" % rows,
         "    {",
-        "        svuint8_t s = svld1_u8(pg16b, src + r * srcStride - 3);",
-        "        svint8_t s8 = svreinterpret_s8_u8(",
-        "            svsub_u8_x(pg16b, s, svdup_n_u8(128)));",
-        "        svint8_t p0 = svtbl_s8(s8, ix0);",
-        "        svint8_t p1 = svtbl_s8(s8, ix1);",
-        "        svint8_t p2 = svtbl_s8(s8, ix2);",
-        "        svint32_t lo = svdot_s32(c8192, p0, b0);",
-        "        svint32_t hi = svdot_s32(c8192, p1, b0);",
-        "        lo = svdot_s32(lo, p1, b1);",
-        "        hi = svdot_s32(hi, p2, b1);",
-        "        int16x8_t dot = vcombine_s16(",
-        "            vmovn_s32(svget_neonq_s32(lo)),",
-        "            vmovn_s32(svget_neonq_s32(hi)));",
-        "        uint8x8_t out = vqrshrun_n_s16(dot, %d);" % prec,
-        "        svuint8_t outv = svset_neonq_u8(svundef_u8(),"
+        "        for (int g = 0; g < %d; g++)" % groups,
+        "        {",
+        "            svuint8_t s = svld1_u8(pg16b,"
+        " src + r * srcStride - 3 + g * 8);",
+        "            svint8_t s8 = svreinterpret_s8_u8(",
+        "                svsub_u8_x(pg16b, s, svdup_n_u8(128)));",
+        "            svint8_t p0 = svtbl_s8(s8, ix0);",
+        "            svint8_t p1 = svtbl_s8(s8, ix1);",
+        "            svint8_t p2 = svtbl_s8(s8, ix2);",
+        "            svint32_t lo = svdot_s32(c8192, p0, b0);",
+        "            svint32_t hi = svdot_s32(c8192, p1, b0);",
+        "            lo = svdot_s32(lo, p1, b1);",
+        "            hi = svdot_s32(hi, p2, b1);",
+        "            int16x8_t dot = vcombine_s16(",
+        "                vmovn_s32(svget_neonq_s32(lo)),",
+        "                vmovn_s32(svget_neonq_s32(hi)));",
+        "            uint8x8_t out = vqrshrun_n_s16(dot, %d);" % prec,
+        "            svuint8_t outv = svset_neonq_u8(svundef_u8(),"
         " vcombine_u8(out, vdup_n_u8(0)));",
-        "        svst1_u8(pg8, dst + r * dstStride, outv);",
+        "            svst1_u8(pg8, dst + r * dstStride + g * 8, outv);",
+        "        }",
         "    }",
         "}",
     ]
