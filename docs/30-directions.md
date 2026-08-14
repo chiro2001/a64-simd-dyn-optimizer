@@ -94,6 +94,15 @@ vpadd/rshrn 与 sdot 的 movprfx 零初始化）。上游 SVE 本身也比 NEON
    sdot z.s,z.h,z.h（SVE2p1，920B 用替换预估流验证）。
 设计见 docs/31（待写）。
 
+**2026-08-14 快速落地（编译器修复）**：同一 NEON-bridge 源码用
+**clang** 编译即达上游水平（动态 310 / MCA 77 / 920B p50 4，原 GCC
+492/118/5）——所谓“移植差”主要是 GCC 对 bridge intrinsic 的 codegen
+问题。已把 dct8 搜索默认编译器设为 clang（`search_sve2_layouts.py`
+按 kernel 默认，`--cxx` 可覆盖），并修复 finalize 用测量同款编译器
+（此前 finalize 硬编码 g++ 会固化出不同对象）。dct8 best 已重新固化
+（fused 289，20k 0 失配）。剩余追赶 NEON（p50 3）仍需寄存器驻留/
+HtoS。
+
 ### 1.8 interp8 优化现状
 
 方案 A（SVE2-safe sdot.d + NEON bridge）已落地：**fused 127**（基线

@@ -449,7 +449,7 @@ def measure_layout_candidate(task):
                      "-march=" + candidate_march(combo),
                      "-o", obj, s_path], timeout=120)
         else:
-            cc = [_CXX] + candidate_opt(combo).split() + _OPT_EXTRA.split() + [
+            cc = _CXX.split() + candidate_opt(combo).split() + _OPT_EXTRA.split() + [
                   "-std=c++11", "-march=" + candidate_march(combo),
                   "-c", src, "-o", obj]
             if backend == "op":
@@ -700,6 +700,11 @@ def main():
     global _CXX, _OPT_EXTRA
     if args.cxx:
         _CXX = args.cxx
+    elif args.kernel == "dct8":
+        # 2026-08-14：dct8 同一 NEON-bridge 源码，GCC 编出 492 dyn /
+        # MCA 118 / 920B p50 5；clang 编出 310 dyn / MCA 77 / p50 4
+        # （= 上游 dct8_sve）。默认 dct8 用 clang（docs/30 §1.7）。
+        _CXX = "clang --target=aarch64-linux-gnu"
     _OPT_EXTRA = args.opt_extra
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
@@ -1243,10 +1248,10 @@ def main():
                     "verify_mismatches", "verify", "counts", "cached"}
             combo = {k: v for k, v in best.items() if k not in meta}
             f.write(emit(combo))
-        run(["aarch64-linux-gnu-g++"] + candidate_opt(best).split() + [
+        run(_CXX.split() + candidate_opt(best).split() + [
              "-march=" + candidate_march(best),
              "-S", src_path, "-o", s_path])
-        c = run(["aarch64-linux-gnu-g++"] + candidate_opt(best).split() + [
+        c = run(_CXX.split() + candidate_opt(best).split() + [
                  "-march=" + candidate_march(best),
                  "-c", src_path, "-o", obj_path])
         if c.returncode == 0:
