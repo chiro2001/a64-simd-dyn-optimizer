@@ -622,6 +622,11 @@ sdot-s32 轴、搜索缓存 build fingerprint、MCA 短名单并集。
    8×8 小 kernel，当前 NEON SDOT s64 方案已近结构地板，相对收益小；
    且 emitter 为 NEON intrinsic 风格，迁移成本高于收益——不优先）。
 
+**方向更新（2026-08-14，docs/30-directions.md 为准）**：dct8 的
+“低价值”结论修正——当前 dct8 已用 SVE sdot.d（HtoD），可再评估
+SVE2p1 HtoS（dot 减半，920B 替换预估先行）；P0 为 QEMU SVE2p3
+补丁 → interp8 方案 B；NEON→NEON 与算子融合明确不做。
+
 注：dct32 op 候选的 `static_counts` 只统计 .o 内单函数（leaf），与
 动态/MCA 口径（3930/4014、1041）不一致属预期；一切以搜索的动态计数
 与 MCA 为准。
