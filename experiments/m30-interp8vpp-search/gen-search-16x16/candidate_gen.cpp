@@ -62,852 +62,762 @@ extern "C" void dynopt_interp8_16x16_sve2_vpp(const uint8_t* src, intptr_t srcSt
         src + (7) * srcStride);
     svint16_t w10 = svreinterpret_s16_u16(
         svunpklo_u16(rr10));
-    svuint8_t rr11 = svld1_u8(pg16b,
-        src + (8) * srcStride);
-    svint16_t w11 = svreinterpret_s16_u16(
-        svunpklo_u16(rr11));
-    svuint8_t rr12 = svld1_u8(pg16b,
-        src + (9) * srcStride);
-    svint16_t w12 = svreinterpret_s16_u16(
-        svunpklo_u16(rr12));
-    svuint8_t rr13 = svld1_u8(pg16b,
-        src + (10) * srcStride);
-    svint16_t w13 = svreinterpret_s16_u16(
-        svunpklo_u16(rr13));
-    svuint8_t rr14 = svld1_u8(pg16b,
-        src + (11) * srcStride);
-    svint16_t w14 = svreinterpret_s16_u16(
-        svunpklo_u16(rr14));
-    svuint8_t rr15 = svld1_u8(pg16b,
-        src + (12) * srcStride);
-    svint16_t w15 = svreinterpret_s16_u16(
-        svunpklo_u16(rr15));
-    svuint8_t rr16 = svld1_u8(pg16b,
-        src + (13) * srcStride);
-    svint16_t w16 = svreinterpret_s16_u16(
-        svunpklo_u16(rr16));
-    svuint8_t rr17 = svld1_u8(pg16b,
-        src + (14) * srcStride);
-    svint16_t w17 = svreinterpret_s16_u16(
-        svunpklo_u16(rr17));
-    svuint8_t rr18 = svld1_u8(pg16b,
-        src + (15) * srcStride);
-    svint16_t w18 = svreinterpret_s16_u16(
-        svunpklo_u16(rr18));
-    svuint8_t rr19 = svld1_u8(pg16b,
-        src + (16) * srcStride);
-    svint16_t w19 = svreinterpret_s16_u16(
-        svunpklo_u16(rr19));
-    svuint8_t rr20 = svld1_u8(pg16b,
-        src + (17) * srcStride);
-    svint16_t w20 = svreinterpret_s16_u16(
-        svunpklo_u16(rr20));
-    svuint8_t rr21 = svld1_u8(pg16b,
-        src + (18) * srcStride);
-    svint16_t w21 = svreinterpret_s16_u16(
-        svunpklo_u16(rr21));
-    svuint8_t rr22 = svld1_u8(pg16b,
-        src + (19) * srcStride);
-    svint16_t w22 = svreinterpret_s16_u16(
-        svunpklo_u16(rr22));
     {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w0, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w0, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w1, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w1, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w2, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w2, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w3, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w3, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w4, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w4, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 0 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
+        svint16_t sum0 = svdup_n_s16(0);
+        int c0_0 = cf[0];
+        if (c0_0 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w0, svdup_n_s16(c0_0));
+        else if (c0_0 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w0, svdup_n_s16(-c0_0));
+        int c0_1 = cf[1];
+        if (c0_1 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w1, svdup_n_s16(c0_1));
+        else if (c0_1 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w1, svdup_n_s16(-c0_1));
+        int c0_2 = cf[2];
+        if (c0_2 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w2, svdup_n_s16(c0_2));
+        else if (c0_2 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w2, svdup_n_s16(-c0_2));
+        int c0_3 = cf[3];
+        if (c0_3 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w3, svdup_n_s16(c0_3));
+        else if (c0_3 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w3, svdup_n_s16(-c0_3));
+        int c0_4 = cf[4];
+        if (c0_4 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w4, svdup_n_s16(c0_4));
+        else if (c0_4 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w4, svdup_n_s16(-c0_4));
+        int c0_5 = cf[5];
+        if (c0_5 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w5, svdup_n_s16(c0_5));
+        else if (c0_5 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w5, svdup_n_s16(-c0_5));
+        int c0_6 = cf[6];
+        if (c0_6 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w6, svdup_n_s16(c0_6));
+        else if (c0_6 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w6, svdup_n_s16(-c0_6));
+        int c0_7 = cf[7];
+        if (c0_7 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w7, svdup_n_s16(c0_7));
+        else if (c0_7 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w7, svdup_n_s16(-c0_7));
+        svint16_t sum1 = svdup_n_s16(0);
+        int c1_0 = cf[0];
+        if (c1_0 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w1, svdup_n_s16(c1_0));
+        else if (c1_0 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w1, svdup_n_s16(-c1_0));
+        int c1_1 = cf[1];
+        if (c1_1 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w2, svdup_n_s16(c1_1));
+        else if (c1_1 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w2, svdup_n_s16(-c1_1));
+        int c1_2 = cf[2];
+        if (c1_2 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w3, svdup_n_s16(c1_2));
+        else if (c1_2 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w3, svdup_n_s16(-c1_2));
+        int c1_3 = cf[3];
+        if (c1_3 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w4, svdup_n_s16(c1_3));
+        else if (c1_3 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w4, svdup_n_s16(-c1_3));
+        int c1_4 = cf[4];
+        if (c1_4 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w5, svdup_n_s16(c1_4));
+        else if (c1_4 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w5, svdup_n_s16(-c1_4));
+        int c1_5 = cf[5];
+        if (c1_5 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w6, svdup_n_s16(c1_5));
+        else if (c1_5 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w6, svdup_n_s16(-c1_5));
+        int c1_6 = cf[6];
+        if (c1_6 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w7, svdup_n_s16(c1_6));
+        else if (c1_6 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w7, svdup_n_s16(-c1_6));
+        int c1_7 = cf[7];
+        if (c1_7 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w8, svdup_n_s16(c1_7));
+        else if (c1_7 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w8, svdup_n_s16(-c1_7));
+        svint16_t sum2 = svdup_n_s16(0);
+        int c2_0 = cf[0];
+        if (c2_0 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w2, svdup_n_s16(c2_0));
+        else if (c2_0 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w2, svdup_n_s16(-c2_0));
+        int c2_1 = cf[1];
+        if (c2_1 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w3, svdup_n_s16(c2_1));
+        else if (c2_1 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w3, svdup_n_s16(-c2_1));
+        int c2_2 = cf[2];
+        if (c2_2 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w4, svdup_n_s16(c2_2));
+        else if (c2_2 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w4, svdup_n_s16(-c2_2));
+        int c2_3 = cf[3];
+        if (c2_3 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w5, svdup_n_s16(c2_3));
+        else if (c2_3 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w5, svdup_n_s16(-c2_3));
+        int c2_4 = cf[4];
+        if (c2_4 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w6, svdup_n_s16(c2_4));
+        else if (c2_4 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w6, svdup_n_s16(-c2_4));
+        int c2_5 = cf[5];
+        if (c2_5 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w7, svdup_n_s16(c2_5));
+        else if (c2_5 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w7, svdup_n_s16(-c2_5));
+        int c2_6 = cf[6];
+        if (c2_6 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w8, svdup_n_s16(c2_6));
+        else if (c2_6 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w8, svdup_n_s16(-c2_6));
+        int c2_7 = cf[7];
+        if (c2_7 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w9, svdup_n_s16(c2_7));
+        else if (c2_7 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w9, svdup_n_s16(-c2_7));
+        svint16_t sum3 = svdup_n_s16(0);
+        int c3_0 = cf[0];
+        if (c3_0 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w3, svdup_n_s16(c3_0));
+        else if (c3_0 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w3, svdup_n_s16(-c3_0));
+        int c3_1 = cf[1];
+        if (c3_1 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w4, svdup_n_s16(c3_1));
+        else if (c3_1 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w4, svdup_n_s16(-c3_1));
+        int c3_2 = cf[2];
+        if (c3_2 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w5, svdup_n_s16(c3_2));
+        else if (c3_2 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w5, svdup_n_s16(-c3_2));
+        int c3_3 = cf[3];
+        if (c3_3 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w6, svdup_n_s16(c3_3));
+        else if (c3_3 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w6, svdup_n_s16(-c3_3));
+        int c3_4 = cf[4];
+        if (c3_4 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w7, svdup_n_s16(c3_4));
+        else if (c3_4 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w7, svdup_n_s16(-c3_4));
+        int c3_5 = cf[5];
+        if (c3_5 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w8, svdup_n_s16(c3_5));
+        else if (c3_5 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w8, svdup_n_s16(-c3_5));
+        int c3_6 = cf[6];
+        if (c3_6 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w9, svdup_n_s16(c3_6));
+        else if (c3_6 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w9, svdup_n_s16(-c3_6));
+        int c3_7 = cf[7];
+        if (c3_7 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w10, svdup_n_s16(c3_7));
+        else if (c3_7 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w10, svdup_n_s16(-c3_7));
+        int16x8_t lo0 = svget_neonq_s16(sum0);
+        int16x8_t hi0 = svget_neonq_s16(svtbl_s16(sum0, hi8));
+        uint8x16_t out0 = vcombine_u8(vqrshrun_n_s16(lo0, 6), vqrshrun_n_s16(hi0, 6));
+        svst1_u8(pg16b, dst + 0 * dstStride, svset_neonq_u8(svundef_u8(), out0));
+        int16x8_t lo1 = svget_neonq_s16(sum1);
+        int16x8_t hi1 = svget_neonq_s16(svtbl_s16(sum1, hi8));
+        uint8x16_t out1 = vcombine_u8(vqrshrun_n_s16(lo1, 6), vqrshrun_n_s16(hi1, 6));
+        svst1_u8(pg16b, dst + 1 * dstStride, svset_neonq_u8(svundef_u8(), out1));
+        int16x8_t lo2 = svget_neonq_s16(sum2);
+        int16x8_t hi2 = svget_neonq_s16(svtbl_s16(sum2, hi8));
+        uint8x16_t out2 = vcombine_u8(vqrshrun_n_s16(lo2, 6), vqrshrun_n_s16(hi2, 6));
+        svst1_u8(pg16b, dst + 2 * dstStride, svset_neonq_u8(svundef_u8(), out2));
+        int16x8_t lo3 = svget_neonq_s16(sum3);
+        int16x8_t hi3 = svget_neonq_s16(svtbl_s16(sum3, hi8));
+        uint8x16_t out3 = vcombine_u8(vqrshrun_n_s16(lo3, 6), vqrshrun_n_s16(hi3, 6));
+        svst1_u8(pg16b, dst + 3 * dstStride, svset_neonq_u8(svundef_u8(), out3));
+        rr0 = rr4; rr1 = rr5; rr2 = rr6; rr3 = rr7; rr4 = rr8; rr5 = rr9; rr6 = rr10;
+        w0 = w4; w1 = w5; w2 = w6; w3 = w7; w4 = w8; w5 = w9; w6 = w10;
+        rr7 = svld1_u8(pg16b, src + (8) * srcStride);
+        w7 = svreinterpret_s16_u16(svunpklo_u16(rr7));
+        rr8 = svld1_u8(pg16b, src + (9) * srcStride);
+        w8 = svreinterpret_s16_u16(svunpklo_u16(rr8));
+        rr9 = svld1_u8(pg16b, src + (10) * srcStride);
+        w9 = svreinterpret_s16_u16(svunpklo_u16(rr9));
+        rr10 = svld1_u8(pg16b, src + (11) * srcStride);
+        w10 = svreinterpret_s16_u16(svunpklo_u16(rr10));
     }
     {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w1, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w1, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w2, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w2, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w3, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w3, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w4, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w4, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 1 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
+        svint16_t sum0 = svdup_n_s16(0);
+        int c0_0 = cf[0];
+        if (c0_0 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w0, svdup_n_s16(c0_0));
+        else if (c0_0 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w0, svdup_n_s16(-c0_0));
+        int c0_1 = cf[1];
+        if (c0_1 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w1, svdup_n_s16(c0_1));
+        else if (c0_1 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w1, svdup_n_s16(-c0_1));
+        int c0_2 = cf[2];
+        if (c0_2 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w2, svdup_n_s16(c0_2));
+        else if (c0_2 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w2, svdup_n_s16(-c0_2));
+        int c0_3 = cf[3];
+        if (c0_3 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w3, svdup_n_s16(c0_3));
+        else if (c0_3 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w3, svdup_n_s16(-c0_3));
+        int c0_4 = cf[4];
+        if (c0_4 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w4, svdup_n_s16(c0_4));
+        else if (c0_4 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w4, svdup_n_s16(-c0_4));
+        int c0_5 = cf[5];
+        if (c0_5 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w5, svdup_n_s16(c0_5));
+        else if (c0_5 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w5, svdup_n_s16(-c0_5));
+        int c0_6 = cf[6];
+        if (c0_6 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w6, svdup_n_s16(c0_6));
+        else if (c0_6 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w6, svdup_n_s16(-c0_6));
+        int c0_7 = cf[7];
+        if (c0_7 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w7, svdup_n_s16(c0_7));
+        else if (c0_7 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w7, svdup_n_s16(-c0_7));
+        svint16_t sum1 = svdup_n_s16(0);
+        int c1_0 = cf[0];
+        if (c1_0 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w1, svdup_n_s16(c1_0));
+        else if (c1_0 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w1, svdup_n_s16(-c1_0));
+        int c1_1 = cf[1];
+        if (c1_1 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w2, svdup_n_s16(c1_1));
+        else if (c1_1 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w2, svdup_n_s16(-c1_1));
+        int c1_2 = cf[2];
+        if (c1_2 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w3, svdup_n_s16(c1_2));
+        else if (c1_2 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w3, svdup_n_s16(-c1_2));
+        int c1_3 = cf[3];
+        if (c1_3 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w4, svdup_n_s16(c1_3));
+        else if (c1_3 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w4, svdup_n_s16(-c1_3));
+        int c1_4 = cf[4];
+        if (c1_4 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w5, svdup_n_s16(c1_4));
+        else if (c1_4 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w5, svdup_n_s16(-c1_4));
+        int c1_5 = cf[5];
+        if (c1_5 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w6, svdup_n_s16(c1_5));
+        else if (c1_5 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w6, svdup_n_s16(-c1_5));
+        int c1_6 = cf[6];
+        if (c1_6 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w7, svdup_n_s16(c1_6));
+        else if (c1_6 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w7, svdup_n_s16(-c1_6));
+        int c1_7 = cf[7];
+        if (c1_7 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w8, svdup_n_s16(c1_7));
+        else if (c1_7 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w8, svdup_n_s16(-c1_7));
+        svint16_t sum2 = svdup_n_s16(0);
+        int c2_0 = cf[0];
+        if (c2_0 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w2, svdup_n_s16(c2_0));
+        else if (c2_0 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w2, svdup_n_s16(-c2_0));
+        int c2_1 = cf[1];
+        if (c2_1 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w3, svdup_n_s16(c2_1));
+        else if (c2_1 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w3, svdup_n_s16(-c2_1));
+        int c2_2 = cf[2];
+        if (c2_2 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w4, svdup_n_s16(c2_2));
+        else if (c2_2 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w4, svdup_n_s16(-c2_2));
+        int c2_3 = cf[3];
+        if (c2_3 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w5, svdup_n_s16(c2_3));
+        else if (c2_3 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w5, svdup_n_s16(-c2_3));
+        int c2_4 = cf[4];
+        if (c2_4 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w6, svdup_n_s16(c2_4));
+        else if (c2_4 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w6, svdup_n_s16(-c2_4));
+        int c2_5 = cf[5];
+        if (c2_5 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w7, svdup_n_s16(c2_5));
+        else if (c2_5 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w7, svdup_n_s16(-c2_5));
+        int c2_6 = cf[6];
+        if (c2_6 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w8, svdup_n_s16(c2_6));
+        else if (c2_6 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w8, svdup_n_s16(-c2_6));
+        int c2_7 = cf[7];
+        if (c2_7 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w9, svdup_n_s16(c2_7));
+        else if (c2_7 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w9, svdup_n_s16(-c2_7));
+        svint16_t sum3 = svdup_n_s16(0);
+        int c3_0 = cf[0];
+        if (c3_0 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w3, svdup_n_s16(c3_0));
+        else if (c3_0 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w3, svdup_n_s16(-c3_0));
+        int c3_1 = cf[1];
+        if (c3_1 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w4, svdup_n_s16(c3_1));
+        else if (c3_1 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w4, svdup_n_s16(-c3_1));
+        int c3_2 = cf[2];
+        if (c3_2 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w5, svdup_n_s16(c3_2));
+        else if (c3_2 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w5, svdup_n_s16(-c3_2));
+        int c3_3 = cf[3];
+        if (c3_3 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w6, svdup_n_s16(c3_3));
+        else if (c3_3 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w6, svdup_n_s16(-c3_3));
+        int c3_4 = cf[4];
+        if (c3_4 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w7, svdup_n_s16(c3_4));
+        else if (c3_4 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w7, svdup_n_s16(-c3_4));
+        int c3_5 = cf[5];
+        if (c3_5 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w8, svdup_n_s16(c3_5));
+        else if (c3_5 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w8, svdup_n_s16(-c3_5));
+        int c3_6 = cf[6];
+        if (c3_6 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w9, svdup_n_s16(c3_6));
+        else if (c3_6 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w9, svdup_n_s16(-c3_6));
+        int c3_7 = cf[7];
+        if (c3_7 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w10, svdup_n_s16(c3_7));
+        else if (c3_7 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w10, svdup_n_s16(-c3_7));
+        int16x8_t lo0 = svget_neonq_s16(sum0);
+        int16x8_t hi0 = svget_neonq_s16(svtbl_s16(sum0, hi8));
+        uint8x16_t out0 = vcombine_u8(vqrshrun_n_s16(lo0, 6), vqrshrun_n_s16(hi0, 6));
+        svst1_u8(pg16b, dst + 4 * dstStride, svset_neonq_u8(svundef_u8(), out0));
+        int16x8_t lo1 = svget_neonq_s16(sum1);
+        int16x8_t hi1 = svget_neonq_s16(svtbl_s16(sum1, hi8));
+        uint8x16_t out1 = vcombine_u8(vqrshrun_n_s16(lo1, 6), vqrshrun_n_s16(hi1, 6));
+        svst1_u8(pg16b, dst + 5 * dstStride, svset_neonq_u8(svundef_u8(), out1));
+        int16x8_t lo2 = svget_neonq_s16(sum2);
+        int16x8_t hi2 = svget_neonq_s16(svtbl_s16(sum2, hi8));
+        uint8x16_t out2 = vcombine_u8(vqrshrun_n_s16(lo2, 6), vqrshrun_n_s16(hi2, 6));
+        svst1_u8(pg16b, dst + 6 * dstStride, svset_neonq_u8(svundef_u8(), out2));
+        int16x8_t lo3 = svget_neonq_s16(sum3);
+        int16x8_t hi3 = svget_neonq_s16(svtbl_s16(sum3, hi8));
+        uint8x16_t out3 = vcombine_u8(vqrshrun_n_s16(lo3, 6), vqrshrun_n_s16(hi3, 6));
+        svst1_u8(pg16b, dst + 7 * dstStride, svset_neonq_u8(svundef_u8(), out3));
+        rr0 = rr4; rr1 = rr5; rr2 = rr6; rr3 = rr7; rr4 = rr8; rr5 = rr9; rr6 = rr10;
+        w0 = w4; w1 = w5; w2 = w6; w3 = w7; w4 = w8; w5 = w9; w6 = w10;
+        rr7 = svld1_u8(pg16b, src + (12) * srcStride);
+        w7 = svreinterpret_s16_u16(svunpklo_u16(rr7));
+        rr8 = svld1_u8(pg16b, src + (13) * srcStride);
+        w8 = svreinterpret_s16_u16(svunpklo_u16(rr8));
+        rr9 = svld1_u8(pg16b, src + (14) * srcStride);
+        w9 = svreinterpret_s16_u16(svunpklo_u16(rr9));
+        rr10 = svld1_u8(pg16b, src + (15) * srcStride);
+        w10 = svreinterpret_s16_u16(svunpklo_u16(rr10));
     }
     {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w2, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w2, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w3, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w3, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w4, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w4, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 2 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
+        svint16_t sum0 = svdup_n_s16(0);
+        int c0_0 = cf[0];
+        if (c0_0 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w0, svdup_n_s16(c0_0));
+        else if (c0_0 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w0, svdup_n_s16(-c0_0));
+        int c0_1 = cf[1];
+        if (c0_1 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w1, svdup_n_s16(c0_1));
+        else if (c0_1 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w1, svdup_n_s16(-c0_1));
+        int c0_2 = cf[2];
+        if (c0_2 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w2, svdup_n_s16(c0_2));
+        else if (c0_2 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w2, svdup_n_s16(-c0_2));
+        int c0_3 = cf[3];
+        if (c0_3 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w3, svdup_n_s16(c0_3));
+        else if (c0_3 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w3, svdup_n_s16(-c0_3));
+        int c0_4 = cf[4];
+        if (c0_4 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w4, svdup_n_s16(c0_4));
+        else if (c0_4 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w4, svdup_n_s16(-c0_4));
+        int c0_5 = cf[5];
+        if (c0_5 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w5, svdup_n_s16(c0_5));
+        else if (c0_5 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w5, svdup_n_s16(-c0_5));
+        int c0_6 = cf[6];
+        if (c0_6 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w6, svdup_n_s16(c0_6));
+        else if (c0_6 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w6, svdup_n_s16(-c0_6));
+        int c0_7 = cf[7];
+        if (c0_7 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w7, svdup_n_s16(c0_7));
+        else if (c0_7 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w7, svdup_n_s16(-c0_7));
+        svint16_t sum1 = svdup_n_s16(0);
+        int c1_0 = cf[0];
+        if (c1_0 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w1, svdup_n_s16(c1_0));
+        else if (c1_0 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w1, svdup_n_s16(-c1_0));
+        int c1_1 = cf[1];
+        if (c1_1 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w2, svdup_n_s16(c1_1));
+        else if (c1_1 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w2, svdup_n_s16(-c1_1));
+        int c1_2 = cf[2];
+        if (c1_2 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w3, svdup_n_s16(c1_2));
+        else if (c1_2 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w3, svdup_n_s16(-c1_2));
+        int c1_3 = cf[3];
+        if (c1_3 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w4, svdup_n_s16(c1_3));
+        else if (c1_3 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w4, svdup_n_s16(-c1_3));
+        int c1_4 = cf[4];
+        if (c1_4 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w5, svdup_n_s16(c1_4));
+        else if (c1_4 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w5, svdup_n_s16(-c1_4));
+        int c1_5 = cf[5];
+        if (c1_5 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w6, svdup_n_s16(c1_5));
+        else if (c1_5 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w6, svdup_n_s16(-c1_5));
+        int c1_6 = cf[6];
+        if (c1_6 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w7, svdup_n_s16(c1_6));
+        else if (c1_6 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w7, svdup_n_s16(-c1_6));
+        int c1_7 = cf[7];
+        if (c1_7 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w8, svdup_n_s16(c1_7));
+        else if (c1_7 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w8, svdup_n_s16(-c1_7));
+        svint16_t sum2 = svdup_n_s16(0);
+        int c2_0 = cf[0];
+        if (c2_0 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w2, svdup_n_s16(c2_0));
+        else if (c2_0 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w2, svdup_n_s16(-c2_0));
+        int c2_1 = cf[1];
+        if (c2_1 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w3, svdup_n_s16(c2_1));
+        else if (c2_1 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w3, svdup_n_s16(-c2_1));
+        int c2_2 = cf[2];
+        if (c2_2 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w4, svdup_n_s16(c2_2));
+        else if (c2_2 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w4, svdup_n_s16(-c2_2));
+        int c2_3 = cf[3];
+        if (c2_3 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w5, svdup_n_s16(c2_3));
+        else if (c2_3 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w5, svdup_n_s16(-c2_3));
+        int c2_4 = cf[4];
+        if (c2_4 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w6, svdup_n_s16(c2_4));
+        else if (c2_4 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w6, svdup_n_s16(-c2_4));
+        int c2_5 = cf[5];
+        if (c2_5 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w7, svdup_n_s16(c2_5));
+        else if (c2_5 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w7, svdup_n_s16(-c2_5));
+        int c2_6 = cf[6];
+        if (c2_6 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w8, svdup_n_s16(c2_6));
+        else if (c2_6 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w8, svdup_n_s16(-c2_6));
+        int c2_7 = cf[7];
+        if (c2_7 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w9, svdup_n_s16(c2_7));
+        else if (c2_7 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w9, svdup_n_s16(-c2_7));
+        svint16_t sum3 = svdup_n_s16(0);
+        int c3_0 = cf[0];
+        if (c3_0 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w3, svdup_n_s16(c3_0));
+        else if (c3_0 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w3, svdup_n_s16(-c3_0));
+        int c3_1 = cf[1];
+        if (c3_1 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w4, svdup_n_s16(c3_1));
+        else if (c3_1 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w4, svdup_n_s16(-c3_1));
+        int c3_2 = cf[2];
+        if (c3_2 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w5, svdup_n_s16(c3_2));
+        else if (c3_2 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w5, svdup_n_s16(-c3_2));
+        int c3_3 = cf[3];
+        if (c3_3 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w6, svdup_n_s16(c3_3));
+        else if (c3_3 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w6, svdup_n_s16(-c3_3));
+        int c3_4 = cf[4];
+        if (c3_4 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w7, svdup_n_s16(c3_4));
+        else if (c3_4 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w7, svdup_n_s16(-c3_4));
+        int c3_5 = cf[5];
+        if (c3_5 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w8, svdup_n_s16(c3_5));
+        else if (c3_5 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w8, svdup_n_s16(-c3_5));
+        int c3_6 = cf[6];
+        if (c3_6 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w9, svdup_n_s16(c3_6));
+        else if (c3_6 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w9, svdup_n_s16(-c3_6));
+        int c3_7 = cf[7];
+        if (c3_7 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w10, svdup_n_s16(c3_7));
+        else if (c3_7 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w10, svdup_n_s16(-c3_7));
+        int16x8_t lo0 = svget_neonq_s16(sum0);
+        int16x8_t hi0 = svget_neonq_s16(svtbl_s16(sum0, hi8));
+        uint8x16_t out0 = vcombine_u8(vqrshrun_n_s16(lo0, 6), vqrshrun_n_s16(hi0, 6));
+        svst1_u8(pg16b, dst + 8 * dstStride, svset_neonq_u8(svundef_u8(), out0));
+        int16x8_t lo1 = svget_neonq_s16(sum1);
+        int16x8_t hi1 = svget_neonq_s16(svtbl_s16(sum1, hi8));
+        uint8x16_t out1 = vcombine_u8(vqrshrun_n_s16(lo1, 6), vqrshrun_n_s16(hi1, 6));
+        svst1_u8(pg16b, dst + 9 * dstStride, svset_neonq_u8(svundef_u8(), out1));
+        int16x8_t lo2 = svget_neonq_s16(sum2);
+        int16x8_t hi2 = svget_neonq_s16(svtbl_s16(sum2, hi8));
+        uint8x16_t out2 = vcombine_u8(vqrshrun_n_s16(lo2, 6), vqrshrun_n_s16(hi2, 6));
+        svst1_u8(pg16b, dst + 10 * dstStride, svset_neonq_u8(svundef_u8(), out2));
+        int16x8_t lo3 = svget_neonq_s16(sum3);
+        int16x8_t hi3 = svget_neonq_s16(svtbl_s16(sum3, hi8));
+        uint8x16_t out3 = vcombine_u8(vqrshrun_n_s16(lo3, 6), vqrshrun_n_s16(hi3, 6));
+        svst1_u8(pg16b, dst + 11 * dstStride, svset_neonq_u8(svundef_u8(), out3));
+        rr0 = rr4; rr1 = rr5; rr2 = rr6; rr3 = rr7; rr4 = rr8; rr5 = rr9; rr6 = rr10;
+        w0 = w4; w1 = w5; w2 = w6; w3 = w7; w4 = w8; w5 = w9; w6 = w10;
+        rr7 = svld1_u8(pg16b, src + (16) * srcStride);
+        w7 = svreinterpret_s16_u16(svunpklo_u16(rr7));
+        rr8 = svld1_u8(pg16b, src + (17) * srcStride);
+        w8 = svreinterpret_s16_u16(svunpklo_u16(rr8));
+        rr9 = svld1_u8(pg16b, src + (18) * srcStride);
+        w9 = svreinterpret_s16_u16(svunpklo_u16(rr9));
+        rr10 = svld1_u8(pg16b, src + (19) * srcStride);
+        w10 = svreinterpret_s16_u16(svunpklo_u16(rr10));
     }
     {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w3, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w3, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w4, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w4, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 3 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w4, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w4, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 4 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w5, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w5, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 5 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w6, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w6, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 6 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w7, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w7, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 7 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w8, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w8, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 8 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w9, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w9, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 9 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w10, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w10, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 10 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w11, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w11, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w18, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w18, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 11 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w12, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w12, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w18, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w18, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w19, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w19, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 12 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w13, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w13, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w18, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w18, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w19, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w19, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w20, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w20, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 13 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w14, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w14, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w18, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w18, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w19, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w19, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w20, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w20, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w21, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w21, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 14 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
-    }
-    {
-        svint16_t sum = svdup_n_s16(0);
-        int c0 = cf[0];
-        if (c0 > 0)
-            sum = svmla_s16_x(p16, sum, w15, svdup_n_s16(c0));
-        else if (c0 < 0)
-            sum = svmls_s16_x(p16, sum, w15, svdup_n_s16(-c0));
-        int c1 = cf[1];
-        if (c1 > 0)
-            sum = svmla_s16_x(p16, sum, w16, svdup_n_s16(c1));
-        else if (c1 < 0)
-            sum = svmls_s16_x(p16, sum, w16, svdup_n_s16(-c1));
-        int c2 = cf[2];
-        if (c2 > 0)
-            sum = svmla_s16_x(p16, sum, w17, svdup_n_s16(c2));
-        else if (c2 < 0)
-            sum = svmls_s16_x(p16, sum, w17, svdup_n_s16(-c2));
-        int c3 = cf[3];
-        if (c3 > 0)
-            sum = svmla_s16_x(p16, sum, w18, svdup_n_s16(c3));
-        else if (c3 < 0)
-            sum = svmls_s16_x(p16, sum, w18, svdup_n_s16(-c3));
-        int c4 = cf[4];
-        if (c4 > 0)
-            sum = svmla_s16_x(p16, sum, w19, svdup_n_s16(c4));
-        else if (c4 < 0)
-            sum = svmls_s16_x(p16, sum, w19, svdup_n_s16(-c4));
-        int c5 = cf[5];
-        if (c5 > 0)
-            sum = svmla_s16_x(p16, sum, w20, svdup_n_s16(c5));
-        else if (c5 < 0)
-            sum = svmls_s16_x(p16, sum, w20, svdup_n_s16(-c5));
-        int c6 = cf[6];
-        if (c6 > 0)
-            sum = svmla_s16_x(p16, sum, w21, svdup_n_s16(c6));
-        else if (c6 < 0)
-            sum = svmls_s16_x(p16, sum, w21, svdup_n_s16(-c6));
-        int c7 = cf[7];
-        if (c7 > 0)
-            sum = svmla_s16_x(p16, sum, w22, svdup_n_s16(c7));
-        else if (c7 < 0)
-            sum = svmls_s16_x(p16, sum, w22, svdup_n_s16(-c7));
-        int16x8_t lo = svget_neonq_s16(sum);
-        int16x8_t hi = svget_neonq_s16(
-            svtbl_s16(sum, hi8));
-        uint8x16_t out = vcombine_u8(
-            vqrshrun_n_s16(lo, 6), vqrshrun_n_s16(hi, 6));
-        svst1_u8(pg16b, dst + 15 * dstStride,
-            svset_neonq_u8(svundef_u8(), out));
+        svint16_t sum0 = svdup_n_s16(0);
+        int c0_0 = cf[0];
+        if (c0_0 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w0, svdup_n_s16(c0_0));
+        else if (c0_0 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w0, svdup_n_s16(-c0_0));
+        int c0_1 = cf[1];
+        if (c0_1 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w1, svdup_n_s16(c0_1));
+        else if (c0_1 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w1, svdup_n_s16(-c0_1));
+        int c0_2 = cf[2];
+        if (c0_2 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w2, svdup_n_s16(c0_2));
+        else if (c0_2 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w2, svdup_n_s16(-c0_2));
+        int c0_3 = cf[3];
+        if (c0_3 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w3, svdup_n_s16(c0_3));
+        else if (c0_3 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w3, svdup_n_s16(-c0_3));
+        int c0_4 = cf[4];
+        if (c0_4 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w4, svdup_n_s16(c0_4));
+        else if (c0_4 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w4, svdup_n_s16(-c0_4));
+        int c0_5 = cf[5];
+        if (c0_5 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w5, svdup_n_s16(c0_5));
+        else if (c0_5 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w5, svdup_n_s16(-c0_5));
+        int c0_6 = cf[6];
+        if (c0_6 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w6, svdup_n_s16(c0_6));
+        else if (c0_6 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w6, svdup_n_s16(-c0_6));
+        int c0_7 = cf[7];
+        if (c0_7 > 0)
+            sum0 = svmla_s16_x(p16, sum0, w7, svdup_n_s16(c0_7));
+        else if (c0_7 < 0)
+            sum0 = svmls_s16_x(p16, sum0, w7, svdup_n_s16(-c0_7));
+        svint16_t sum1 = svdup_n_s16(0);
+        int c1_0 = cf[0];
+        if (c1_0 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w1, svdup_n_s16(c1_0));
+        else if (c1_0 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w1, svdup_n_s16(-c1_0));
+        int c1_1 = cf[1];
+        if (c1_1 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w2, svdup_n_s16(c1_1));
+        else if (c1_1 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w2, svdup_n_s16(-c1_1));
+        int c1_2 = cf[2];
+        if (c1_2 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w3, svdup_n_s16(c1_2));
+        else if (c1_2 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w3, svdup_n_s16(-c1_2));
+        int c1_3 = cf[3];
+        if (c1_3 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w4, svdup_n_s16(c1_3));
+        else if (c1_3 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w4, svdup_n_s16(-c1_3));
+        int c1_4 = cf[4];
+        if (c1_4 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w5, svdup_n_s16(c1_4));
+        else if (c1_4 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w5, svdup_n_s16(-c1_4));
+        int c1_5 = cf[5];
+        if (c1_5 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w6, svdup_n_s16(c1_5));
+        else if (c1_5 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w6, svdup_n_s16(-c1_5));
+        int c1_6 = cf[6];
+        if (c1_6 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w7, svdup_n_s16(c1_6));
+        else if (c1_6 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w7, svdup_n_s16(-c1_6));
+        int c1_7 = cf[7];
+        if (c1_7 > 0)
+            sum1 = svmla_s16_x(p16, sum1, w8, svdup_n_s16(c1_7));
+        else if (c1_7 < 0)
+            sum1 = svmls_s16_x(p16, sum1, w8, svdup_n_s16(-c1_7));
+        svint16_t sum2 = svdup_n_s16(0);
+        int c2_0 = cf[0];
+        if (c2_0 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w2, svdup_n_s16(c2_0));
+        else if (c2_0 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w2, svdup_n_s16(-c2_0));
+        int c2_1 = cf[1];
+        if (c2_1 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w3, svdup_n_s16(c2_1));
+        else if (c2_1 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w3, svdup_n_s16(-c2_1));
+        int c2_2 = cf[2];
+        if (c2_2 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w4, svdup_n_s16(c2_2));
+        else if (c2_2 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w4, svdup_n_s16(-c2_2));
+        int c2_3 = cf[3];
+        if (c2_3 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w5, svdup_n_s16(c2_3));
+        else if (c2_3 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w5, svdup_n_s16(-c2_3));
+        int c2_4 = cf[4];
+        if (c2_4 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w6, svdup_n_s16(c2_4));
+        else if (c2_4 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w6, svdup_n_s16(-c2_4));
+        int c2_5 = cf[5];
+        if (c2_5 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w7, svdup_n_s16(c2_5));
+        else if (c2_5 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w7, svdup_n_s16(-c2_5));
+        int c2_6 = cf[6];
+        if (c2_6 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w8, svdup_n_s16(c2_6));
+        else if (c2_6 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w8, svdup_n_s16(-c2_6));
+        int c2_7 = cf[7];
+        if (c2_7 > 0)
+            sum2 = svmla_s16_x(p16, sum2, w9, svdup_n_s16(c2_7));
+        else if (c2_7 < 0)
+            sum2 = svmls_s16_x(p16, sum2, w9, svdup_n_s16(-c2_7));
+        svint16_t sum3 = svdup_n_s16(0);
+        int c3_0 = cf[0];
+        if (c3_0 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w3, svdup_n_s16(c3_0));
+        else if (c3_0 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w3, svdup_n_s16(-c3_0));
+        int c3_1 = cf[1];
+        if (c3_1 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w4, svdup_n_s16(c3_1));
+        else if (c3_1 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w4, svdup_n_s16(-c3_1));
+        int c3_2 = cf[2];
+        if (c3_2 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w5, svdup_n_s16(c3_2));
+        else if (c3_2 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w5, svdup_n_s16(-c3_2));
+        int c3_3 = cf[3];
+        if (c3_3 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w6, svdup_n_s16(c3_3));
+        else if (c3_3 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w6, svdup_n_s16(-c3_3));
+        int c3_4 = cf[4];
+        if (c3_4 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w7, svdup_n_s16(c3_4));
+        else if (c3_4 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w7, svdup_n_s16(-c3_4));
+        int c3_5 = cf[5];
+        if (c3_5 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w8, svdup_n_s16(c3_5));
+        else if (c3_5 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w8, svdup_n_s16(-c3_5));
+        int c3_6 = cf[6];
+        if (c3_6 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w9, svdup_n_s16(c3_6));
+        else if (c3_6 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w9, svdup_n_s16(-c3_6));
+        int c3_7 = cf[7];
+        if (c3_7 > 0)
+            sum3 = svmla_s16_x(p16, sum3, w10, svdup_n_s16(c3_7));
+        else if (c3_7 < 0)
+            sum3 = svmls_s16_x(p16, sum3, w10, svdup_n_s16(-c3_7));
+        int16x8_t lo0 = svget_neonq_s16(sum0);
+        int16x8_t hi0 = svget_neonq_s16(svtbl_s16(sum0, hi8));
+        uint8x16_t out0 = vcombine_u8(vqrshrun_n_s16(lo0, 6), vqrshrun_n_s16(hi0, 6));
+        svst1_u8(pg16b, dst + 12 * dstStride, svset_neonq_u8(svundef_u8(), out0));
+        int16x8_t lo1 = svget_neonq_s16(sum1);
+        int16x8_t hi1 = svget_neonq_s16(svtbl_s16(sum1, hi8));
+        uint8x16_t out1 = vcombine_u8(vqrshrun_n_s16(lo1, 6), vqrshrun_n_s16(hi1, 6));
+        svst1_u8(pg16b, dst + 13 * dstStride, svset_neonq_u8(svundef_u8(), out1));
+        int16x8_t lo2 = svget_neonq_s16(sum2);
+        int16x8_t hi2 = svget_neonq_s16(svtbl_s16(sum2, hi8));
+        uint8x16_t out2 = vcombine_u8(vqrshrun_n_s16(lo2, 6), vqrshrun_n_s16(hi2, 6));
+        svst1_u8(pg16b, dst + 14 * dstStride, svset_neonq_u8(svundef_u8(), out2));
+        int16x8_t lo3 = svget_neonq_s16(sum3);
+        int16x8_t hi3 = svget_neonq_s16(svtbl_s16(sum3, hi8));
+        uint8x16_t out3 = vcombine_u8(vqrshrun_n_s16(lo3, 6), vqrshrun_n_s16(hi3, 6));
+        svst1_u8(pg16b, dst + 15 * dstStride, svset_neonq_u8(svundef_u8(), out3));
     }
 }

@@ -341,6 +341,8 @@ kernels/dct16 上游 NEON（dct16_neon）
   - sliding=0（逐 tap 加载）：**593 fused / MCA 259 / dyn 1761**；
   - sliding=1（11 行→23 行全部预加载 + 加宽外提 + svmla/svmls
     融合）：**385 fused / MCA 171 / dyn 1057**（-35%/-34%）；
-  - 手写 247/157 —— sliding 版 MCA 差距缩到 ~9%；旋转窗口/4 行分
-    组是下一轮布局轴。
+  - sliding=2（4 行分组 + 11 寄存器旋转窗口，新行按组补载）：
+    **387 fused / MCA 161 / dyn 1024**（best，MCA 距手写 157 仅
+    2.5%）；
+  - 手写 247/157。
 - 通用发射器现覆盖 4 个配方族、16 个算子形状。

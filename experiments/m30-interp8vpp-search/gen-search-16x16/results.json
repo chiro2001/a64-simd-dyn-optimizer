@@ -1,8 +1,8 @@
 [
  {
-  "tag": "acc_split-1_sliding-0",
-  "acc_split": 1,
+  "tag": "sliding-0_acc_split-1",
   "sliding": 0,
+  "acc_split": 1,
   "contract": "upstream-exact",
   "passed": true,
   "verify_mismatches": 0,
@@ -39,9 +39,9 @@
   "mca_uops": 1424
  },
  {
-  "tag": "acc_split-1_sliding-1",
-  "acc_split": 1,
+  "tag": "sliding-1_acc_split-1",
   "sliding": 1,
+  "acc_split": 1,
   "contract": "upstream-exact",
   "passed": true,
   "verify_mismatches": 0,
@@ -298,5 +298,82 @@
   },
   "mca_cycles": 171,
   "mca_uops": 886
+ },
+ {
+  "tag": "sliding-2_acc_split-1",
+  "sliding": 2,
+  "acc_split": 1,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x4021c0"
+  ],
+  "counts": {
+   "total": 1024,
+   "vector": 387,
+   "movprfx": 0,
+   "vector_fused": 387,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 39,
+   "vector_fused_uop": 387
+  },
+  "fusion": {
+   "eligible": 39,
+   "hw_supported": 0,
+   "pairs": [
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls",
+    "mls+mls"
+   ],
+   "counts": {
+    "scalar_insns": 644,
+    "load_insns": 59,
+    "simd_insns": 528,
+    "store_insns": 16
+   }
+  },
+  "mca_cycles": 161,
+  "mca_uops": 806
  }
 ]
