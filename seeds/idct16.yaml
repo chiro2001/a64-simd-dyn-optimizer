@@ -35,3 +35,8 @@ target_function:
 output:
   ll: experiments/m30-idct16-search/llvm-ir/idct16-neon-seed.ll
   json: experiments/m30-idct16-search/imported/machine-ir.json
+verify:
+  codegen: emit_structured_neon_intrinsics
+  harness: kernels/idct16/roundtrip_verify_neon.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  cases: 20000

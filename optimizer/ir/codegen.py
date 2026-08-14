@@ -1618,6 +1618,7 @@ def emit_structured_neon_intrinsics(
     ]
     counter = [0]
     cname = {}
+    vtypes = {}
 
     def cid(dst):
         if dst not in cname:
@@ -1714,15 +1715,15 @@ def emit_structured_neon_intrinsics(
                 mult = {"i8": 1, "i16": 2, "i32": 4, "i64": 8}.get(
                     et) or (int(re.search(r"\[(\d+) x", et).group(1)) *
                             int(re.search(r"x i(\d+)", et).group(1)) // 8)
-                off = m.group(2)
+                base = env[m.group(2)[1:]]
+                off = m.group(3)
                 offs = env[off[1:]] if off.startswith("%") else off
                 if off.startswith("%"):
-                    env[dst] = "(%s + (%s) * %d)" % (
-                        env[m.group(2)[1:]], offs, mult)
+                    env[dst] = "(%s + (%s) * %d)" % (base, offs, mult)
                 else:
-                    env[dst] = "(%s + %d)" % (env[m.group(2)[1:]],
-                                              int(offs) * mult)
+                    env[dst] = "(%s + %d)" % (base, int(offs) * mult)
             elif op == "load":
+                vtypes[dst] = type_of(n["type"])
                 if n["type"] == "<4 x i16>":
                     expr = "vld1_s16((const int16_t*)%s)" % env[n["ptr"]]
                 elif n["type"] == "<16 x i8>":
@@ -1745,11 +1746,13 @@ def emit_structured_neon_intrinsics(
                 else:
                     raise ValueError("unhandled store %r" % t)
             elif op == "sext":
+                vtypes[dst] = "int32x4_t"
                 env[dst] = cid(dst)
                 lines.append("%s    %s = vmovl_s16(%s);"
                              % (indent, cid(dst), cid(n["src"])))
             elif op == "shl":
                 if str(n.get("type", "")).startswith("<"):
+                    vtypes[dst] = type_of(n["type"])
                     env[dst] = cid(dst)
                     lines.append("%s    %s = vshlq_n_s32(%s, %d);"
                                  % (indent, cid(dst), cid(n["src"][0]),
@@ -1760,6 +1763,7 @@ def emit_structured_neon_intrinsics(
                 env[dst] = "((%s) * %d)" % (env[n["src"][0]],
                                             n.get("const", 1))
             elif op in ("add", "sub"):
+                vtypes[dst] = "int32x4_t"
                 fn = "vaddq_s32" if op == "add" else "vsubq_s32"
                 env[dst] = cid(dst)
                 lines.append("%s    %s = %s(%s, %s);"
@@ -1769,8 +1773,16 @@ def emit_structured_neon_intrinsics(
                 vtype = n["type"]
                 mask = n["mask"]
                 env[dst] = cid(dst)
-                if vtype == "<8 x i16>" and mask == [0, 8, 1, 9, 2, 10,
-                                                     3, 11]:
+                src_t = vtypes.get(n["src"][0], "")
+                if vtype == "<8 x i16>" and src_t == "int16x4_t" and \
+                        mask == [0, 4, 1, 5, 2, 6, 3, 7]:
+                    lines.append("%s    %s = vcombine_s16(vzip1_s16(%s, %s),"
+                                 " vzip2_s16(%s, %s));"
+                                 % (indent, cid(dst), cid(n["src"][0]),
+                                    cid(n["src"][1]), cid(n["src"][0]),
+                                    cid(n["src"][1])))
+                elif vtype == "<8 x i16>" and mask == [0, 8, 1, 9, 2, 10,
+                                                       3, 11]:
                     lines.append("%s    %s = vzip1q_s16(%s, %s);"
                                  % (indent, cid(dst), cid(n["src"][0]),
                                     cid(n["src"][1])))
@@ -1794,6 +1806,8 @@ def emit_structured_neon_intrinsics(
                     raise ValueError("unhandled shuffle %r %r"
                                      % (vtype, mask))
             elif op == "bitcast":
+                vtypes[dst] = "uint64_t" if n["type"] == "i64" \
+                    else "uint64x2_t"
                 env[dst] = cid(dst)
                 if n.get("src_type") == "<4 x i16>" and n["type"] == "i64":
                     lines.append("%s    %s = vget_lane_u64("
@@ -1807,11 +1821,13 @@ def emit_structured_neon_intrinsics(
                     raise ValueError("unhandled bitcast %r -> %r"
                                      % (n.get("src_type"), n["type"]))
             elif op == "extractelement":
+                vtypes[dst] = "uint64_t"
                 env[dst] = cid(dst)
                 lines.append("%s    %s = vgetq_lane_u64(%s, %d);"
                              % (indent, cid(dst), cid(n["src"][0]),
                                 n["index"]))
             elif op == "icmp":
+                vtypes[dst] = "bool"
                 env[dst] = cid(dst)
                 a = cid(n["src"][0])
                 b = str(n.get("const", 0)) if len(n["src"]) == 1 \
@@ -1824,6 +1840,7 @@ def emit_structured_neon_intrinsics(
                 name = n["intrinsic"]
                 env[dst] = cid(dst)
                 if name == "smull":
+                    vtypes[dst] = "int32x4_t"
                     a = n["args"][0]["ref"]
                     b = n["args"][1]
                     if "imm" in b:
@@ -1835,6 +1852,7 @@ def emit_structured_neon_intrinsics(
                                      % (indent, cid(dst), cid(a),
                                         cid(b["ref"])))
                 elif name == "sqrshrn":
+                    vtypes[dst] = "int16x4_t"
                     a = n["args"][0]["ref"]
                     imm = n["args"][1]["imm"]
                     lines.append("%s    %s = vqrshrn_n_s32(%s, %d);"
@@ -1843,6 +1861,7 @@ def emit_structured_neon_intrinsics(
                     raise ValueError("unhandled intrinsic %r" % name)
             elif op == "alias":
                 env[dst] = cid(dst)
+                vtypes[dst] = type_of(n.get("type"))
                 lines.append("%s    %s = %s;" % (
                     indent, cid(dst),
                     resolve_value(n["src"], n.get("type"))))
