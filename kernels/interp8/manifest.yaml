@@ -14,6 +14,15 @@ candidate:
   trace_driver_src: kernels/interp8/trace_driver.cpp
   trace_driver_c: kernels/interp8/trace_driver.cpp
 
+# SVE2p3 path-B (sdot.h, needs custom QEMU with patches/qemu-sve2p3-sdot-btoh.patch).
+# docs/22 §5.3: fused 101 (clang) / 100 (GCC) vs upstream 141, lite PASS,
+# 20k upstream-exact. Same function signature as `candidate`.
+candidate_sve2p3:
+  symbol: dynopt_interp8_8x8_sve2_sdoth
+  march: armv9.4-a+sve2p3
+  trace_driver_src: kernels/interp8/trace_driver.cpp
+  sources: [candidates/best_sve2_sdoth.cpp, candidates/best_sve2_sdoth.o]
+
 reference:
   lib: build/x265-8-clang-sve/libx265.a
   symbol: interp_horiz_pp_neon

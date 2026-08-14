@@ -166,14 +166,19 @@ def trace_to_mca(trace_log, start, end, out_s):
 
 
 def run_dynamic_mca(trace_log, start, end, out_s, mcpu="neoverse-v2",
-                    mattr="+sve2", fix_driver=None, mca_bin="llvm-mca"):
+                    mattr="+sve2", fix_driver=None, mca_bin="llvm-mca",
+                    mca_arch=None):
     """LLVM-MCA on the complete dynamic execution stream. Returns
     (cycles, uops) or (None, None) if MCA fails. fix_driver: trace driver
     binary for objdump repair of QEMU's .byte (SVE2p1 sdot, docs/26 §5)."""
     if fix_driver:
         from fix_dynamic_trace import parse_exec_fixed
         insns, _ = parse_exec_fixed(trace_log, start, end, fix_driver)
-        arch = ".arch armv9.4-a+sve2p1\n"
+        # Default arch matches the SVE2p1 sdot case that motivated the
+        # repair path; SVE2p3 kernels (sdot.h) must pass the arch that the
+        # candidate was assembled with, otherwise llvm-mc silently skips
+        # the unsupported instructions (docs/22 §5.3).
+        arch = ".arch %s\n" % (mca_arch or "armv9.4-a+sve2p1")
         with open(out_s, "w") as f:
             f.write(arch + ".text\n")
             for i in insns:
@@ -634,6 +639,11 @@ def main():
     ap.add_argument("--mca-mattr", default=None,
                     help="llvm-mca -mattr (default: manifest "
                          "mca_target.llvm_proxy_mattr, i.e. +sve2)")
+    ap.add_argument("--mca-arch", default=None,
+                    help="`.arch` directive for the repaired dynamic-stream "
+                         ".mca.s (default armv9.4-a+sve2p1; SVE2p3 kernels "
+                         "must pass e.g. armv9.4-a+sve2p3 so sdot.h is not "
+                         "silently skipped, docs/22 §5.3)")
     ap.add_argument("--mca-bin", default="llvm-mca",
                     help="llvm-mca binary (default llvm-mca; use the "
                          "patched build from scripts/build-custom-llvm-mca.sh "
@@ -962,7 +972,7 @@ def main():
             cycles, uops, total = run_dynamic_mca(
                 trace, rng[0], rng[1], mca_s, args.mca_mcpu,
                 args.mca_mattr, fix_driver=fix_driver,
-                mca_bin=args.mca_bin)
+                mca_bin=args.mca_bin, mca_arch=args.mca_arch)
             r["mca_cycles"] = cycles
             r["mca_uops"] = uops
             print("  %-24s fused_uop=%d dyn=%d mca_cycles=%s mca_uops=%s"

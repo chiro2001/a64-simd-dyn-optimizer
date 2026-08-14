@@ -114,8 +114,12 @@ HtoS。
 
 方案 A（SVE2-safe sdot.d + NEON bridge）已落地：**fused 127**（基线
 141，-10%），TestBenchLite gate + 20k 全过；方案 B（SVE2p3 sdot.h）
-预估 ~100（-35%）此前被 QEMU/960 阻塞——QEMU 补丁将解除本地验证
-阻塞。
+预估 ~100（-35%）此前被 QEMU/960 阻塞——QEMU 补丁解除后已于
+2026-08-14 落地：**fused 101（clang）/100（GCC），-28%**，20k 差分 +
+常量输入 + TestBenchLite `--gate interp8` 全过（自定义 QEMU）。MCA
+与上游持平（55 vs 54 cycles）；瓶颈从上游的 load 转到 tbl/uzp 置换。
+细节与三个语义结论（bottom-narrow 需 uzp1、movprfx 偏移拆 4096、
+ADDP 谓词对和形态）见 docs/22 §5.3。
 
 ## 2. 方向整理（优先级）
 
@@ -126,8 +130,9 @@ HtoS。
   max CPU SVEver=4，ARM 2-way 语义）；官方 canary
   （tools/sve2p3_canary）在自定义 QEMU 下 **PASS**，SVE2p1 回归 PASS；
   构建产物 `build/qemu-build/qemu-aarch64`（磁盘路径，不占内存）。
-- 下一步：实现 interp8 方案 B（sdot.h，预估 fused ~100/-35%），
-  用自定义 QEMU 验证 20k/lite + MCA + 920B 替换预估。
+- **interp8 方案 B 已落地并固化**（docs/22 §5.3）：fused 101/100，
+  lite/20k 全过，MCA 55；后续轴 = UDOT BtoH 去掉 -128（→93）+
+  置换/布局再降 tbl/uzp。
 
 **P1：dct8 提一提**
 - 评估 HtoS（SVE2p1）变体：先 920B 替换预估 + MCA，显著再实现；

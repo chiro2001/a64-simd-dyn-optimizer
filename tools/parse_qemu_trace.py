@@ -24,6 +24,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 INS = re.compile(r"^\s*0x([0-9a-f]+):\s+[0-9a-f]+\s+([.a-z][a-z0-9.]*)\s*(.*)$")
+# Custom QEMU builds (disas/objdump.c, e.g. our SVE2p3 build) print each
+# instruction as `0xADDR:` with no mnemonic and the encoding on the next
+# `OBJD-T:` line.  Treat those entries as `.byte` so the existing
+# fix_dynamic_trace objdump repair (which knows SVE2p3) can restore them.
+INS_RAW = re.compile(r"^\s*0x([0-9a-f]+):\s*$")
 TRACE = re.compile(r"^Trace \d+: .*\[[^\]/]*/([0-9a-f]+)/")
 
 
@@ -32,6 +37,12 @@ def parse(path, start, end):
     for line in open(path):
         m = INS.match(line)
         if not m:
+            m = INS_RAW.match(line)
+            if not m:
+                continue
+            addr = int(m.group(1), 16)
+            if start <= addr < end:
+                insns.append({"addr": addr, "mn": ".byte", "ops": ""})
             continue
         addr = int(m.group(1), 16)
         if start <= addr < end:
@@ -48,6 +59,10 @@ def parse_exec(path, start, end):
         if m:
             disasm[int(m.group(1), 16)] = {
                 "mn": m.group(2), "ops": m.group(3).strip()}
+            continue
+        m = INS_RAW.match(line)
+        if m:
+            disasm[int(m.group(1), 16)] = {"mn": ".byte", "ops": ""}
     insns = []
     for line in open(path):
         m = TRACE.match(line)

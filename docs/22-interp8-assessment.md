@@ -126,3 +126,62 @@ fused_uop 仍 127。这是“lite 门禁比窄差分强”的实证：差分应�
 - 未来任一支持 SVE2p3 的执行器（新 QEMU/architectural model/960
   硅片）出现时，先跑 canary 再决定是否接入 interp8 path-B；canary
   不过则 path-B 只能标 `semantic-only`，不得称 upstream-exact。
+
+### 5.3 方案 B 落地（2026-08-14，本地 QEMU SVE2p3 + 差分/门禁全过）
+
+round-0018 交付 SVE2p3 SDOT BtoH（patches/qemu-sve2p3-sdot-btoh.patch，
+canary PASS）后，方案 B 得以完整验证。候选已固化：
+`kernels/interp8/candidates/best_sve2_sdoth.{cpp,S,o}`
+（clang -O3 -march=armv9.4-a+sve2p3；GCC 16.1 同源码可编译且少 1 条）。
+
+**结果（VL=256，单次调用）**
+
+| 实现 | dynamic | vector | movprfx | fused_uop | MCA cycles | 920B LB | NP1 LB |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 上游 interp_horiz_pp_neon<8,8,8> | 172 | 141 | 0 | 141 | 54 | 43.0 | 26.9 |
+| 工具 path-a（sdot.d，SVE2） | 193 | 143 | 16 | 127 | 121 | — | — |
+| **方案 B sdot.h（clang）** | 156 | 109 | 8 | **101** | 55 | 40.0 | 22.8* |
+| 方案 B sdot.h（GCC 16.1） | 146 | 108 | 8 | **100** | 56 | 34.75 | 21.7 |
+
+- 20k 差分 × 3 相位 0 失配（upstream-exact）；常量输入（全 100）全过；
+  TestBenchLite `--gate interp8` PASS（自定义 QEMU）。
+- fused_uop **-28.4%**（vs 上游 141）；MCA（neoverse-v2 代理 +sve2p3）
+  与上游几乎持平（55 vs 54）；表驱动 LB（optimizer/mca_targets.py）
+  920B 口径 40~34.75 vs 43（-7%~-19%，GCC 结构更优）。
+  NP1 LB 上游以 load（64）为界 26.9，方案 B 前端界 21.7~22.8；标
+  `*` 的 clang 版 scalar 项（adrp/csel 探活路径）把 LB 抬到 40，属
+  预估器对一次性标量的口径噪声，GCC 分支式相位选择在实机无此问题。
+- 结论：方案 B 是首个 **SVE2p3 且通过黄金门禁** 的 interp8 候选，
+  指令数显著优于上游；cycle 收益需 960 实机确认（模型口径下收益有限，
+  瓶颈已从上游的 load 转到本方案的 tbl/uzp 置换）。
+
+**调试中沉淀的三个语义结论（对工具/后端很重要）**
+
+1. SVE2 “bottom narrow”（`sqrshrunb`/`rshrnb` 等）**把每个结果写进
+   16-bit 槽的低字节、高字节清零**（bytes 0,2,4,…），不是紧凑写底半；
+   要得到连续字节必须再接 `uzp1`。QEMU 与 LLVM 行为一致；已验收的
+   dct32/idct32 内核正是 `rshrnb + uzp1` 组合。首版方案 B 少了这步，
+   表现为输出 [p0,0,p1,0,…]。
+2. `movprfx Zd, Zn`（无谓词形式）可把累加器初值（含 DC 偏移）折进
+   sdot：inline asm 需 `"=&w"` 早截断约束强制 Zd≠Zn 且 sdot 不得复用
+   Zd 作非破坏源。8192 偏移**必须拆成每 lane 4096**——对和会把两个
+   lane 的偏移相加，直接折 8192 会双计（输出整体偏 8192/64=128）。
+3. SVE2 `ADDP`（整数对和）只有**谓词形式** `addp Zd, Pg/m, Zd, Zm`，
+   且偶槽取 Zn 对、奇槽取 Zm 对；`addp(t,t)` 产生 [p0,p0,p1,p1,…]，
+   `addp(t,zero)` 产生 [p0,0,p1,0,…]，都不能替代 uzp1+uzp2+add 的
+   紧凑对和（本 repo 已把该结论留在 emitter 注释里）。
+
+**下一步（UDOT BtoH）**：round-0019 正在补 UDOT BtoH（以及 SVE2p2/p3
+其余指令）。若落地，方案 B 可改为无符号数据直算 + 累加器 -8192
+（模 2^16 数学等价），去掉每行 `sub #128`，预计 fused 101→93。
+发射器已预留 `--compute sdot-h` 单变体，UDOT 版待执行器就绪后验证。
+
+**工具链同步修复（2026-08-14）**
+
+- `tools/parse_qemu_trace.py`：支持自定义 QEMU（disas/objdump.c）的
+  `OBJD-T` 无 mnemonic 追踪格式，条目按 `.byte` 进表，交由
+  `fix_dynamic_trace.py` objdump 修复（SVE2p3 内核追踪必须走此路径）。
+- `tools/search_sve2_layouts.py`：新增 `--mca-arch`；修复动态流 MCA
+  的 `.arch` 硬编码 sve2p1 导致 sdot.h 被 llvm-mc 静默跳过的问题。
+- `optimizer/analysis/cost.py`：CLASSES 补 `sqrshrunb/sqrshrun`、
+  `movi/mvni`、`uaddl/umlal` 等（此前这些向量指令被误计为 scalar）。
