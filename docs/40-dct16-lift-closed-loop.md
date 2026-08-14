@@ -131,6 +131,23 @@ kernels/dct16 上游 NEON（dct16_neon）
     （saddv 即 186 最优）；
   - dct16（butterfly）行为不变（44 命中 + 原轴种子）。
 
+### M3c ✅：interp8 / sa8d 端到端搜索复现（M3 验收）
+
+- **interp8 8x8**：全轴空间搜索，轴种子指向 `compute=sdot-h,
+  pairsum=addp` → **fused 93 / MCA 53**，与手写最优完全一致；
+- **sa8d 16x16**：`reduce_tail=saddv` → **fused 186（过减半门）/ MCA 73**，
+  与手写最优一致；`dot-uaddv` 189/72 次之；
+- **sa8d 8x8**：修复 8x8 发射器遗留 `%s` 占位符 bug（`emit_pair`
+  `_PAIR_PRE` 未替换前言占位，导致 sa8d 8x8 全部 BUILD FAIL）后搜索
+  跑通：**evenpair+sve fused 79 / MCA 71**（基线 97，-18%；此前
+  8x8 候选 116-125 反而更差，修复后为更好候选）；
+- MCA 注意：interp8 sdot-h 需 patched llvm-mca +
+  `--mca-bin /home/chiro/llvm-src/build-mca/bin/llvm-mca`
+  （系统 llvm-mca 无 sdot.h 支持，默认会 WARN）。
+
+**M3 验收达成**：三个族（butterfly/fir/diff-sum）都从 seed 出发，经
+检测→轴种子→搜索，达到或超过手写特化水平。
+
 ### 结论
 
 对 dct16，**抽取（M1a）+ 配方匹配/轴种子（M1b）+ 通用搜索（M2）的闭环

@@ -265,6 +265,7 @@ def emit_pair(func_name, pack="pair", reduce="neon", unroll=1):
         tail = extract + _REDUCE_NEON_TAIL
     src = _PAIR_PRE + row + tail
     return (src
+            .replace("%s", "")   # legacy preamble placeholder (8x8)
             .replace("${func}", func_name)
             .replace("${pack}", pack)
             .replace("${reduce}", reduce))
