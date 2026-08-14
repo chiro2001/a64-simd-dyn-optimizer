@@ -135,6 +135,18 @@ else
     say "  idct32_sub: SKIP (build failed)"
 fi
 
+# interp8 path-B substituted (sve2 on 950 keeps addp; sve1 on 920B
+# regenerates the uzp pair-sum source, docs/22 §5.7)
+for shape in 8 16 32; do
+    if scripts/build-interp8-substituted-microbench.sh "$shape" "$TARGET" \
+            "build/qt_ipb${shape}" >/dev/null 2>&1; then
+        bench_row "ipb${shape}_sub" "build/qt_ipb${shape}" \
+            "${shape}x${shape}" neon cand 20 8
+    else
+        say "  ipb${shape}_sub: SKIP (build failed)"
+    fi
+done
+
 # dct8 native (SVE1+NEON bridge; runs on both)
 if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
         -DX265_DEPTH=8 -DX265_NS=x265 \

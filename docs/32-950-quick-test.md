@@ -118,15 +118,11 @@ bash scripts/bench-generic-paired.sh build/ivpp16_mb 16x16v neon vcand 30 8 /tmp
 > 验证可汇编、可运行。
 
 ```sh
-# 1) C++ -> .S（sve2p3 全集）
-aarch64-linux-gnu-g++ -O3 -march=armv9.5-a+sve2p3 -std=c++11 -S \
-  kernels/interp8/candidates/best_sve2_sdoth_16x16.cpp -o /tmp/k.s
-# 2) 替换（sdot.h -> sdot.s；sqrshrunb 保留，950 SVE2 原生）
-python3 tools/substitute_unsupported.py /tmp/k.s /tmp/k.sub.s --target sve2
-# 3) 汇编 + 链接微基准（CANDIDATE=dynopt_interp8_16x16_sve2_sdoth）
-aarch64-linux-gnu-as -march=armv8.2-a+sve2 -o /tmp/k.o /tmp/k.sub.s
-g++ ... benchmarks/interp8_microbench.cpp /tmp/k.o ... -o build/ipb16_mb
+# 一键构建（CXX/AS 自动用原生 g++/as；BUILD 指向 950 的 x265 库）
+BUILD=build/x265-8-950 bash scripts/build-interp8-substituted-microbench.sh \
+  16 sve2 build/ipb16_mb
 bash scripts/bench-generic-paired.sh build/ipb16_mb 16x16 neon cand 30 8 /tmp/ipb16.csv
+# 32x32：shape 参数改 32；8x8 同理
 ```
 
 ## 5. 报告格式（复制粘贴）

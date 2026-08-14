@@ -384,10 +384,13 @@ def main():
                     choices=("sdot-d", "sdot-h"))
     ap.add_argument("--n", type=int, default=8, choices=(8, 16, 32),
                     help="square shape (8/16/32; sdot-h only, docs/22 §5.5)")
+    ap.add_argument("--pairsum", default="addp", choices=("addp", "uzp"),
+                    help="pair-sum scheme (addp=docs/22 §5.7, uzp=baseline; "
+                         "sve1 substitution must use uzp)")
     args = ap.parse_args()
     with open(args.out, "w") as f:
         if args.compute == "sdot-h":
-            f.write(emit_sdot_h(n=args.n))
+            f.write(emit_sdot_h(n=args.n, pairsum=args.pairsum))
         else:
             f.write(emit())
     print("wrote %s" % args.out)

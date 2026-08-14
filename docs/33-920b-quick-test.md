@@ -56,16 +56,10 @@ taskset -c 0 build/dct8_mb cand latency 1 64 --noverify 2>/dev/null | tail -1
 ### 4.3 interp8 hpp path-B（sve1 替换，2026-08-14 云端已测 8x8）
 
 ```sh
-aarch64-linux-gnu-g++ -O3 -march=armv9.5-a+sve2p3 -std=c++11 -S \
-  kernels/interp8/candidates/best_sve2_sdoth_16x16.cpp -o /tmp/k.s
-python3 tools/substitute_unsupported.py /tmp/k.s /tmp/k.sub.s --target sve1
-aarch64-linux-gnu-as -march=armv8.2-a+sve -o /tmp/k.o /tmp/k.sub.s
-g++ -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 \
-  -DX265_NS=x265 -DDYNOPT_CANDIDATE=dynopt_interp8_16x16_sve2_sdoth \
-  -DDYNOPT_CANDIDATE16=dynopt_interp8_16x16_sve2_sdoth \
-  -I third_party/x265/source -I third_party/x265/source/common \
-  -I build/x265-8-920b benchmarks/interp8_microbench.cpp /tmp/k.o \
-  build/x265-8-920b/libx265.a -lpthread -ldl -o build/ipb16_mb
+# 一键构建（sve1 目标自动改用 uzp 对和源码，addp 无法 1:1 替换；
+# sdot.h->sdot.s + sqrshrunb 替换）
+BUILD=build/x265-8-920b bash scripts/build-interp8-substituted-microbench.sh \
+  16 sve1 build/ipb16_mb
 bash scripts/bench-generic-paired.sh build/ipb16_mb 16x16 neon cand 30 8 /tmp/ipb16.csv
 # 32x32 同理（best_sve2_sdoth_32x32.cpp、32x32 shape）
 ```
