@@ -25,3 +25,9 @@ target_function:
 output:
   ll: experiments/m18-interp8/llvm-ir/interp8-8x8-dotprod-seed.ll
   json: experiments/m18-interp8/imported/machine-ir.json
+verify:
+  codegen: emit_interp8_c_intrinsics
+  harness: kernels/interp8/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 100000

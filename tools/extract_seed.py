@@ -55,12 +55,14 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 from codegen import (  # noqa: E402
     emit_c_intrinsics,
     emit_dct16_c_intrinsics,
+    emit_interp8_c_intrinsics,
 )
 
 
 CODEGEN_REGISTRY = {
     "emit_c_intrinsics": emit_c_intrinsics,
     "emit_dct16_c_intrinsics": emit_dct16_c_intrinsics,
+    "emit_interp8_c_intrinsics": emit_interp8_c_intrinsics,
 }
 
 DEFAULT_INCLUDES = [
@@ -147,10 +149,11 @@ def verify_roundtrip(recipe, ir):
         f.write(CODEGEN_REGISTRY[mode](ir))
     includes = " ".join("-I%s" % _resolve(ROOT, d)
                         for d in v.get("include_dirs", DEFAULT_INCLUDES))
-    compile_cmd = ("aarch64-linux-gnu-g++ -O3 -DNDEBUG -std=c++11 "
+    extra_flags = " ".join(v.get("compile_flags", []))
+    compile_cmd = ("aarch64-linux-gnu-g++ -O3 -DNDEBUG -std=c++11 %s "
                    "-DHIGH_BIT_DEPTH=0 -DX265_DEPTH=8 -DX265_NS=x265 "
                    "%s %s %s %s -lpthread -ldl -o %s"
-                   % (includes, harness, out_cpp, lib, out_bin))
+                   % (extra_flags, includes, harness, out_cpp, lib, out_bin))
     print("+ %s" % compile_cmd)
     subprocess.run(compile_cmd, shell=True, check=True)
     run = subprocess.run(

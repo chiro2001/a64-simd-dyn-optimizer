@@ -82,7 +82,19 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
     （vs C 的 6 例是上游 dct16_neon 自身已知分歧）→ 门禁按
     “与上游实现位级一致”通过；
 - 门禁注册表：`emit_c_intrinsics` / `emit_dct16_c_intrinsics`
-  （interp8 roundtrip codegen 尚未实现，见 m18 记录，属已知缺口）。
+  / `emit_interp8_c_intrinsics`。
+
+### G4b ✅：interp8 roundtrip codegen + 门禁
+
+- `codegen.emit_interp8_c_intrinsics`：忠实还原 136 节点数据流
+  （4×16B 窗口 load → b-128 xor → 3×tbl1 → 4×vdotq_s32（splat 8192/
+  链式累加）→ concat+vmovn → vqrshrun_n_s16 → 行 store）；
+  系数来自 `x265::g_lumaFilter[phase]`，tbl 掩码内嵌
+  `dotprod_permute_tbl`（从源码取值）；
+- 新 harness `kernels/interp8/roundtrip_verify.cpp`：candidate vs
+  上游 `interp8_horiz_pp_dotprod<8,8>`，随机 stride/8 相位；
+- 门禁结果：**100000 cases mismatches=0 PASS**（seed 语义保真闭环）；
+- 至此三个 seed（dct16/interp8/sa8d）全部纳入出厂 roundtrip 门禁。
 
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
