@@ -20,8 +20,15 @@
 - pass2：归纳 `x0 += 1024`、`x1 += 32`、`x3 += 64`；访存 base x0..x4。
 
 输出已落 `experiments/m33-loop-recovery/loops-3930.json`（含
-induction/mem 字段）。步骤 5-6（LoopIR 结构化 + 发射器消费）仍是
-下一步。
+induction/mem 字段）。
+
+**步骤 5（LoopIR 结构化 IR，2026-08-14）**：
+`optimizer/ir/loop_ir.py` 定义 `LoopIR/IndVar/MemPattern/Instruction`
+dataclass，`recover_trace()` 一条命令完成 parse → loop 检测 → 归纳/访存
+分析 → LoopIR；CLI 为 `tools/loop_ir.py`（`--full` 可带指令体）。
+3930 的结构化 IR 落 `experiments/m33-loop-recovery/loopir-3930.json`。
+
+步骤 6（发射器消费 LoopIR 生成带循环的 kernel）仍是下一步。
 
 ## 1. 语义缺口（用户提出）
 

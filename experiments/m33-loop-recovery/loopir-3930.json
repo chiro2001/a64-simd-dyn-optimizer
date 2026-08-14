@@ -1,0 +1,216 @@
+{
+ "total_insns": 5548,
+ "loops": [
+  {
+   "branch": "0x401d74",
+   "branch_mn": "b.ne",
+   "trip": 2,
+   "period": 1281,
+   "depth": 1,
+   "start": 92,
+   "end": 1373,
+   "induction": [
+    {
+     "reg": "x1",
+     "op": "add",
+     "step": 32
+    },
+    {
+     "reg": "x11",
+     "op": "add",
+     "step": 112
+    }
+   ],
+   "mem": [
+    {
+     "base": "x1",
+     "kind": "stp",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x10",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x11",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 159
+    },
+    {
+     "base": "x12",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x13",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x14",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x15",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x16",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x17",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x21",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x3",
+     "kind": "ld1w",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x5",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x7",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x8",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x9",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    }
+   ]
+  },
+  {
+   "branch": "0x40349c",
+   "branch_mn": "b.ne",
+   "trip": 2,
+   "period": 1395,
+   "depth": 1,
+   "start": 2744,
+   "end": 4139,
+   "induction": [
+    {
+     "reg": "x0",
+     "op": "add",
+     "step": 1024
+    },
+    {
+     "reg": "x1",
+     "op": "add",
+     "step": 32
+    },
+    {
+     "reg": "x3",
+     "op": "add",
+     "step": 64
+    }
+   ],
+   "mem": [
+    {
+     "base": "x0",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x1",
+     "kind": "stp",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x2",
+     "kind": "ld1w",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    },
+    {
+     "base": "x3",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 192
+    },
+    {
+     "base": "x4",
+     "kind": "ld1h",
+     "offsets": [
+      0
+     ],
+     "count": 1
+    }
+   ]
+  }
+ ]
+}
