@@ -1,0 +1,24 @@
+# Normalized seed recipe: SAO edge offset class 3 (diagonal 45deg), 64x1
+# (docs/45). Reference = open-source NEON processSaoCUE3_neon
+# (startX=0, endX=64); scalar tail uses dynamic offset lookup.
+seed: sao-e3-64
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/sao/seed_e3.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_sao_e3_64
+  demangled: dynopt_sao_e3_64
+output:
+  ll: experiments/m30-sao-search/llvm-ir/sao-e3-64-seed.ll
+  json: experiments/m30-sao-search/imported/machine-ir-e3.json
+verify:
+  codegen: emit_sao_e3_c_intrinsics
+  func_name: dynopt_sao_e3_64_roundtrip
+  harness: kernels/sao/roundtrip_verify_e3.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

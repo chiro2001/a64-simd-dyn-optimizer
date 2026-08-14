@@ -367,6 +367,34 @@ def import_llvm_ir_text(ir_text, function=None):
                     "src": ops[0] if ops else None, "dst": dst})
         elif "llvm.aarch64.neon." in rhs:
             ir.add(_parse_neon_intrinsic(rhs, dst))
+        elif rhs.startswith("tail call") or rhs.startswith("call"):
+            m2 = re.search(r"@llvm\.([a-z0-9_.]+)\(", rhs)
+            if m2:
+                name = m2.group(1).split(".", 1)[0]
+                t = re.sub(r"^\s*(?:tail\s+)?call\s+(?:noundef\s+)?", "",
+                           rhs.split("@llvm", 1)[0]).strip()
+                t = re.sub(r"\s+range\([^)]*\)\s*$", "", t).strip()
+                if not (t.startswith("<") or t.startswith("{") or
+                        t in ("i8", "i16", "i32", "i64")):
+                    t = None
+                ops = _parse_operands(rhs)
+                args = []
+                call_args = rhs.split("(", 1)[1].rsplit(")", 1)[0]
+                call_args = re.sub(r"range\([^)]*\)\s*", "", call_args)
+                for a in re.split(r",(?![^<]*>)", call_args):
+                    a = a.strip()
+                    ref = re.search(r"%([A-Za-z0-9._]+)", a)
+                    if ref:
+                        args.append({"ref": ref.group(1)})
+                        continue
+                    imm = re.search(r"i\d+\s+(-?\d+)", a)
+                    if imm:
+                        args.append({"imm": int(imm.group(1))})
+                        continue
+                    args.append({"raw": a})
+                ir.add({"op": "intrinsic", "intrinsic": name, "type": t,
+                        "src": ops, "args": args, "dst": dst})
+                continue
         elif rhs.startswith("lshr"):
             ops = _parse_operands(rhs)
             ir.add({"op": "lshr", "type": _op_type(rhs),

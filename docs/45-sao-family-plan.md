@@ -24,20 +24,27 @@
   sao_e1 ABI；
 - saoCuOrgE2 ✅（2026-08-15）：seed（64x1，右下邻居 + bufft[x+1]
   偏移 1 存储），门禁 20k 0 失配；SVE2 搜索 **154 fused / MCA 74**；
+- saoCuOrgE3 ✅（2026-08-15）：seed（64x1，向量块 1..56 + 标量尾
+  57..63，动态 offsetEo 查表），门禁 20k 0 失配；SVE2 搜索
+  **135 fused / MCA 73**；codegen 新增通用资产：标量 i32/i64
+  有符号算术（修复无符号 et 导致动态索引越界）、动态 GEP +
+  标量 load/store（s8 基有符号）、`llvm.ucmp/smax/umin` 标量
+  intrinsic、通用 llvm intrinsic 导入（剥 range 注解）；
 - 新 codegen 资产：sao_e0 ABI、`smax/smin/sqxtun/tbl1`、
   `vext_s8(a,b,7)`/`vqtbl1_s8(vcombine_s8(...))` shifter、
   <8 x i8> splat/vneg/vadd、标量 load、add/sub 的 128-bit `q` 判定、
   intrinsic arg 剥 `range(...)` 注解、splat 常量 add；
-- 待办：E1_2Rows/E3、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
+- 待办：E1_2Rows、Stats 族（sao-prim-sve2.cpp 已有上游 SVE2
   统计可对照）；E0 若追求更优可试 16 像素/块（降低 splice/tbl
   每块开销，当前 305 vs NEON ~230）。
 
-## 6. E3 注意事项（待做）
+## 6. E3 完成记录
 
 - E3 有 (startX, endX) 范围：endX=64 时向量块覆盖 1..56、标量尾
-  57..63（7 像素），标量尾需要 offsetEo[动态索引] —— importer/
-  codegen 需支持运行时索引的 load（动态 GEP），这是下一个通用资产；
-- 也可用固定 endX=57 的形状规避尾块，但非标准全行。
+  57..63（7 像素），标量尾用 offsetEo[动态索引] —— 已实现动态 GEP
+  + 标量 load/store；坑：标量 add 必须按 LLVM 有符号（et 为负时
+  uint 会让动态索引变成 2^64-2）、s8 基标量 load 必须带符号
+  （-8 不能读成 248）。
 
 ## 2. E0 语义（已实测）
 

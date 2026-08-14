@@ -581,6 +581,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "sao-e3":
+        from emit_sao_e3_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "sad-32":
         from emit_sad_sve2_shared import emit_32x32
 
