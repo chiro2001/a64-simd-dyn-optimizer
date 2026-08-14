@@ -43,6 +43,41 @@ def cpp_constants():
     return "static const int16_t GT32[32][32] = {\n%s\n};\n" % rows
 
 
+def _dup_pair_row(k, a, b):
+    """16-lane constant [g_a[k], g_b[k]] repeated 8 times (sdot z.s C)."""
+    return [GT32[a][k], GT32[b][k]] * 8
+
+
+def cpp_sdot_constants():
+    """SVE2p1 sdot z.s,z.h,z.h constant tables for IDCT32 O/EO/EEO/EEEE.
+
+    sdot z.s,z.h,z.h semantics (VL=256): lane e = d[2e]*c[2e] +
+    d[2e+1]*c[2e+1]. With D = zip1(r_a, r_b), lane e holds (r_a[e], r_b[e])
+    so C[2e], C[2e+1] must be (g_a[k], g_b[k]) -- independent of column e.
+    Each row-pair therefore needs a 16-lane vector with that pair repeated
+    8 times; tables are indexed [k][pair][16].
+    """
+    o = [[_dup_pair_row(k, 4 * p + 1, 4 * p + 3) for p in range(8)]
+         for k in range(16)]
+    eo = [[_dup_pair_row(k, 8 * p + 2, 8 * p + 6) for p in range(4)]
+          for k in range(8)]
+    eeo = [[_dup_pair_row(k, 16 * p + 4, 16 * p + 12) for p in range(2)]
+           for k in range(4)]
+    eeeo = [[_dup_pair_row(k, 8, 24)] for k in range(2)]
+    eeee = [[_dup_pair_row(k, 0, 16)] for k in range(2)]
+    out = []
+    for name, tab in (("CDOT_O", o), ("CDOT_EO", eo), ("CDOT_EEO", eeo),
+                      ("CDOT_EEEO", eeeo), ("CDOT_EEEE", eeee)):
+        groups = []
+        for kk in tab:
+            rows = ["        { %s }" % ", ".join(str(v) for v in pp)
+                    for pp in kk]
+            groups.append("    {\n%s\n    }" % ",\n".join(rows))
+        out.append("static const int16_t %s[%d][%d][16] = {\n%s\n};\n"
+                   % (name, len(tab), len(tab[0]), ",\n".join(groups)))
+    return "\n".join(out)
+
+
 def _round_s16(var, src):
     return [
         "    svint16_t %s = svuzp1_s16(svqrshrnb_n_s32(%s, SHIFT), "
@@ -137,6 +172,103 @@ def chunk_arithmetic(off, s):
     return L
 
 
+def chunk_arithmetic_sdot(off, s):
+    """SVE2p1 sdot z.s,z.h,z.h O/EO/EEO/EEEE/EEEO (layout == mul version).
+
+    Rows are loaded as 16-lane s16 (low 8 lanes = this chunk's columns).
+    Each row pair is interleaved once (zip1) and reused for all k; every
+    sdot consumes one constant vector from the CDOT_* tables.
+    """
+    L = []
+    L.append("    const svbool_t p16 = svptrue_b16();")
+    L.append("    const svint32_t z = svdup_n_s32(0);")
+    for m in range(32):
+        L.append("    svint16_t r%s%d = svld1_s16(p16, src + %d + off);"
+                 % (s, m, 32 * m))
+    # O: 8 row pairs (1,3),(5,7),...,(29,31)
+    for p in range(8):
+        L.append("    svint16_t d%sO%d = svzip1_s16(r%s%d, r%s%d);"
+                 % (s, p, s, 4 * p + 1, s, 4 * p + 3))
+    for k in range(16):
+        acc = "O%s%d" % (s, k)
+        L.append("    svint32_t %s = z;" % acc)
+        for p in range(8):
+            L.append("    %s = sdot_s32_h(%s, d%sO%d, "
+                     "svld1_s16(p16, CDOT_O[%d][%d]));"
+                     % (acc, acc, s, p, k, p))
+    # EO: 4 row pairs (2,6),(10,14),(18,22),(26,30)
+    for p in range(4):
+        L.append("    svint16_t d%sEO%d = svzip1_s16(r%s%d, r%s%d);"
+                 % (s, p, s, 8 * p + 2, s, 8 * p + 6))
+    for k in range(8):
+        acc = "EO%s%d" % (s, k)
+        L.append("    svint32_t %s = z;" % acc)
+        for p in range(4):
+            L.append("    %s = sdot_s32_h(%s, d%sEO%d, "
+                     "svld1_s16(p16, CDOT_EO[%d][%d]));"
+                     % (acc, acc, s, p, k, p))
+    # EEO: 2 row pairs (4,12),(20,28)
+    for p in range(2):
+        L.append("    svint16_t d%sEEO%d = svzip1_s16(r%s%d, r%s%d);"
+                 % (s, p, s, 16 * p + 4, s, 16 * p + 12))
+    for k in range(4):
+        acc = "EEO%s%d" % (s, k)
+        L.append("    svint32_t %s = z;" % acc)
+        for p in range(2):
+            L.append("    %s = sdot_s32_h(%s, d%sEEO%d, "
+                     "svld1_s16(p16, CDOT_EEO[%d][%d]));"
+                     % (acc, acc, s, p, k, p))
+    # EEEO: rows 8,24 (k=0,1); EEEE: rows 0,16 (k=0,1)
+    L.append("    svint16_t d%sEEEO = svzip1_s16(r%s8, r%s24);" % (s, s, s))
+    for k in range(2):
+        acc = "EEEO%s%d" % (s, k)
+        L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEO, "
+                 "svld1_s16(p16, CDOT_EEEO[%d][0]));" % (acc, s, k))
+    L.append("    svint16_t d%sEEEE = svzip1_s16(r%s0, r%s16);" % (s, s, s))
+    for k in range(2):
+        acc = "EEEE%s%d" % (s, k)
+        L.append("    svint32_t %s = sdot_s32_h(z, d%sEEEE, "
+                 "svld1_s16(p16, CDOT_EEEE[%d][0]));" % (acc, s, k))
+    # Butterfly (identical to the mul version: same 8-lane column layout)
+    for name, n in (("EEEE", 2), ("EEEO", 2)):
+        pass
+    for k in range(4):
+        pass
+    return L + _butterfly_s32(s)
+
+
+def _butterfly_s32(s):
+    """Shared EE/EEE/E/t/u butterfly after O/EO/EEO/EEEE/EEEO are ready."""
+    L = []
+    L.append("    svint32_t EEE%s0 = svadd_s32_x(p32, EEEE%s0, EEEO%s0);"
+             % (s, s, s))
+    L.append("    svint32_t EEE%s3 = svsub_s32_x(p32, EEEE%s0, EEEO%s0);"
+             % (s, s, s))
+    L.append("    svint32_t EEE%s1 = svadd_s32_x(p32, EEEE%s1, EEEO%s1);"
+             % (s, s, s))
+    L.append("    svint32_t EEE%s2 = svsub_s32_x(p32, EEEE%s1, EEEO%s1);"
+             % (s, s, s))
+    for k in range(4):
+        L.append("    svint32_t EE%s%d = svadd_s32_x(p32, EEE%s%d, EEO%s%d);"
+                 % (s, k, s, k, s, k))
+    for k in range(4):
+        L.append("    svint32_t EE%s%d = svsub_s32_x(p32, EEE%s%d, EEO%s%d);"
+                 % (s, k + 4, s, 3 - k, s, 3 - k))
+    for k in range(8):
+        L.append("    svint32_t E%s%d = svadd_s32_x(p32, EE%s%d, EO%s%d);"
+                 % (s, k, s, k, s, k))
+    for k in range(8):
+        L.append("    svint32_t E%s%d = svsub_s32_x(p32, EE%s%d, EO%s%d);"
+                 % (s, k + 8, s, 7 - k, s, 7 - k))
+    for k in range(16):
+        L.append("    svint32_t t%s%d = svadd_s32_x(p32, E%s%d, O%s%d);"
+                 % (s, k, s, k, s, k))
+    for k in range(16):
+        L.append("    svint32_t u%s%d = svsub_s32_x(p32, E%s%d, O%s%d);"
+                 % (s, k, s, 15 - k, s, 15 - k))
+    return L
+
+
 def chunk_store_scalar(L):
     L.append("    int16_t o[32][16];")
     for i in range(32):
@@ -161,7 +293,7 @@ def chunk_store_scatter(L):
                  % (i, i))
 
 
-def stage_src(store):
+def stage_src(store, compute):
     L = []
     L.append("template <int SHIFT>")
     L.append("static inline __attribute__((always_inline)) void "
@@ -171,7 +303,12 @@ def stage_src(store):
     L.append("    const svbool_t p32 = svptrue_b32();")
     L.append("    const svbool_t p8h = svwhilelt_b16((uint32_t)0, "
              "(uint32_t)8);")
-    L.extend(chunk_arithmetic(0, ""))
+    if compute == "mul":
+        L.extend(chunk_arithmetic(0, ""))
+    elif compute == "sdot-s32":
+        L.extend(chunk_arithmetic_sdot(0, ""))
+    else:
+        raise ValueError("unknown compute %r" % compute)
     if store == "scalar":
         chunk_store_scalar(L)
     elif store == "scatter":
@@ -193,11 +330,26 @@ def stage_src(store):
     return "\n".join(L)
 
 
-def emit(func_name="dynopt_idct32_sve2_shared", store="scatter"):
+def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
+         compute="mul"):
+    consts = cpp_sdot_constants() if compute == "sdot-s32" else ""
+    if compute == "sdot-s32":
+        helper = (
+            "static inline __attribute__((always_inline)) svint32_t\n"
+            "sdot_s32_h(svint32_t acc, svint16_t a, svint16_t b)\n"
+            "{\n"
+            "    asm volatile(\"sdot %0.s, %1.h, %2.h\"\n"
+            "                 : \"+w\"(acc) : \"w\"(a), \"w\"(b));\n"
+            "    return acc;\n"
+            "}\n")
+    else:
+        helper = ""
     return """\
 // Generated by tools/emit_idct32_sve2_shared.py -- do not edit by hand.
-// IDCT32 SVE2 (VL=256), bit-exact with x265::idct32_c (docs/27 §8).
+// IDCT32 SVE2%s (VL=256), bit-exact with x265::idct32_c (docs/27 §8).
 #include <arm_sve.h>
+
+%s
 
 %s
 
@@ -209,7 +361,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
     idct32_stage<7>(src, coef, 32);
     idct32_stage<12>(coef, dst, dstStride);
 }
-""" % (cpp_constants(), stage_src(store), func_name)
+""" % ("/SVE2p1" if compute == "sdot-s32" else "",
+       consts, helper, stage_src(store, compute), func_name)
 
 
 def main():
@@ -218,9 +371,11 @@ def main():
     ap.add_argument("out", default="generated/idct32/sve2.cpp")
     ap.add_argument("--store", default="scatter",
                     choices=("scalar", "scatter"))
+    ap.add_argument("--compute", default="mul",
+                    choices=("mul", "sdot-s32"))
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(store=args.store))
+        f.write(emit(store=args.store, compute=args.compute))
     print("wrote %s" % args.out)
 
 

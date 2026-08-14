@@ -274,8 +274,57 @@ ld1_s32（128×4×2=1024/趟），且 128 个常量向量同时存活导致 spil
 scalar fused 5932→10603、scatter 6561→7422，est 1935→6518。结论：
 常量必须“按需立即数”或由 sdot 打包复用，不能预载成寄存器向量。
 
-### 8.8 下一步（更新）
+### 8.8 950 实机 paired（2026-08-14，保留）
 
-1. 按 §8.7 实现 sdot 化发射器轴（先只做 O/EO，20k+lite 门禁）；
-2. 若 spill（~3000 条 mov/addvl/ldr/str）仍是瓶颈，再做分块/重排；
-3. 950 实机 paired（scalar vs scatter vs sdot）。
+在 950（内部保密机型，SVE2 2×256 / NEON 4×128）实测近期 idct32 候选：
+scalar（fused 5932）与 scatter（fused 7329，QEMU 口径均过减半门）
+**相对 x265 NEON/C 参考约慢 1.08×**。结论与 dct32 一致：QEMU 指令数
+代理（fused_uop 减半）在 950 上未转化为周期优势；SVE2 2×256 无法靠
+指令数减半赢过 NEON。
+
+**验收口径修订（用户裁定，2026-08-14）**：
+1. 950 的 idct32 周期不再作为验收门槛；950 数据仅保留作成本模型校准。
+2. IDCT32 允许使用 SVE2p1/SVE2p3 指令（如 `sdot z.s, z.h, z.h`、
+   `sdot z.h, z.b, z.b`），正确性以 QEMU（VL=256，SVE2p1 可执行）+
+   TestBenchLite 为门禁；SVE2p3 指令仍只能 semantic-only（QEMU 11.0.3
+   未实现 SVE2p3）。
+3. 2p1/2p3 指令的使用本身就是“960 必须支持 SVE2p3”的证据链：在
+   950（仅 SVE2）上打不过 NEON，而 960 若开放 SVE2p3 才可能由
+   sdot 化/2-way dot 等获得实机优势。
+
+### 8.9 下一步（更新）
+
+### 8.10 sdot-s32 轴实现（2026-08-14，SVE2p1 直算）
+
+`tools/emit_idct32_sve2_shared.py --compute sdot-s32`（布局与 mul 版
+完全一致，蝴蝶/写回复用）：每 2 行 zip1 一次并复用 8 个 k，sdot
+`z.s,z.h,z.h` 按 8 列逐 lane 累加 2 行；常量从 CDOT_* 表 ld1h 加载
+（替代原 1182 条常量 dup/mov）。行按 16-lane s16 加载（每 chunk
+32 ld1h）。GCC 16.1 无 s16 版 ACLE，用内联 asm 发射；编译
+`-march=armv9.4-a+sve2p1`，QEMU 11.0.3 可执行。
+
+| 指标 | 原 scalar | 原 scatter | sdot scalar | sdot scatter |
+| --- | ---: | ---: | ---: | ---: |
+| fused_adj | 5932 | 6561 | **4770** | **4224** |
+| fused_uop | 5932 | 7329 | 4770 | 4992 |
+| MCA（neoverse-v2+sve2p1） | 5141 | 3456 | 5321 | **2877** |
+| est（920B/NP1 吞吐模型） | 9866 | 1935 | 16401 | 5585 |
+| cp（NV2 延迟模型） | 136 | 4170 | 2256 | 405 |
+| 20k 差分 | 0 | 0 | 0 mismatches | 0 mismatches |
+| TestBenchLite idct32 | 5/5 | 5/5 | **5/5 PASS** | **5/5 PASS** |
+
+结论：sdot-s32 把 fused 压到 4770/4992（-20%/-32%），过减半门 7614；
+这是首个 SVE2p1 指令的 IDCT32 候选，作为“960 需要 SVE2p3 系指令”
+证据链的组成部分。MCA/est/cp 模型对 sdot 链的评估仍需校准（sdot
+scalar 的 cp 2256 高于 mul 版 136，与 fused 降幅相反，需查模型分类）。
+
+候选固化 `kernels/idct32/candidates/sdot_{scalar,scatter}_sve2p1.{cpp,S,o}`。
+
+### 8.11 下一步（更新）
+
+1. **C 常量复用**：当前每 chunk 重复加载 CDOT（4 chunk × 128
+   ld1h/stage）；按 k 外层/chunk 内层或显式缓存可降到 128/stage，
+   fused 预计再降 ~400-600；
+2. 继续 §8.7 的 s64 打包轴（SVE2/SVE1 指令，950 可测）作对照；
+3. 搜索工具接入 sve2p1（march 参数化 + compute 轴）；
+4. 960 实机（SVE2.3）paired（scalar vs scatter vs sdot-s32 vs s64 打包）。
