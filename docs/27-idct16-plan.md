@@ -115,10 +115,29 @@ scatter 的 cp 最短（82）。consensus 仍选 zip16；950/960 实机 paired
 尝试 sdot 化 O/EO 时确认：**s16×s16→s32 的非 indexed SDOT 不是
 SVE1/SVE2 指令**（GCC 16 的 `svdot_s32_s16`/`svdot_lane_s32_s16`
 要求 sve2p1，汇编器拒绝 `sdot z.s, z.h, z.h`）；SVE1 只有
-`svdot_lane_s64`（4-way indexed，.D 累加器，dct32 已用）。若继续 sdot
-化，需按 dct32 的 64-bit 段打包布局设计数据/常量（每个 s64 lane 独立
-累加 4 个乘积），O/EO/EEE/EEO 每 half 预计 64 条 mul/mla → 8~10 条
-sdot_lane + 打包指令，收益约 -150 fused/趟。
+`svdot_lane_s64`（4-way indexed，.D 累加器，dct32 已用）。
+
+**`svdot_lane_s64` 精确语义（VL=256，基向量探针 /tmp/sdotl_map）**：
+lane e（seg=e>>1，sub=e&1）累加
+`Σ_{k=0..3} d[seg*8 + sub*4 + k] * c[seg*8 + idx*4 + k]`：
+同一 128-bit 段内两条 lane 共享同一组 4 个常量（lane0/1 用 c0..3，
+lane2/3 用 c8..11，idx 选 c4..7 / c12..15）。
+
+因此 IDCT16 的 O_k（每输出列独立常量）若用 sdot，必须把数据打包成
+“4 行 × 同列”的 lane 组，且段内两 lane 只能共享常量（可放 A/B 两个
+半块的同一列，或接受额外打包）。按 dct32 的 64-bit 段打包布局估算，
+每 half O/EO 约 64 条 mul/mla → 6~8 条 sdot_lane + 12~18 条
+zip/load 打包，净收益仅 -50~-150 fused/趟，且布局搜索空间大——暂缓
+手写，留作搜索轴。
+
+**其他阴性结论**：
+- `svrshrnb_n_s32`（RSHRNB）是截断窄化，不饱和，直接替换
+  add+asr+qxtnb 会 81% 失配；必须用 `svqrshrnb_n_s32`（SQRSHRNB）。
+- `svmullb_lane_s32`（SMLALB）只消费偶 lane（result lane l =
+  r[2l]*c[imm]），s16→s32 加宽 indexed 不能覆盖全部 8 列。
+- `svmul_lane_s32`/`svmla_lane_s32` 的 lane 索引在 128-bit 段内有效
+  （0..3），且把常量按段广播；本算子常量是 (row,k) 标量广播，
+  无法用 lane 索引向量替代 dup。
 
 ### 7.2 IR 自动匹配能力（本次新增）
 
