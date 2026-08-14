@@ -120,7 +120,14 @@ HtoS。
 ## 2. 方向整理（优先级）
 
 **P0：QEMU SVE2p3（进行中，subagent）→ interp8 方案 B**
-- 补丁验证后：实现 interp8 sdot.h 方案、20k/lite、MCA、920B 替换预估。
+- **已完成（2026-08-14，round-0018 咨询交付）**：QEMU 11.0.3 本地
+  构建支持 SVE2p3 SDOT BtoH（补丁
+  `patches/qemu-sve2p3-sdot-btoh.patch`，CPU-features/译码/helper，
+  max CPU SVEver=4，ARM 2-way 语义）；官方 canary
+  （tools/sve2p3_canary）在自定义 QEMU 下 **PASS**，SVE2p1 回归 PASS；
+  构建产物 `build/qemu-build/qemu-aarch64`（磁盘路径，不占内存）。
+- 下一步：实现 interp8 方案 B（sdot.h，预估 fused ~100/-35%），
+  用自定义 QEMU 验证 20k/lite + MCA + 920B 替换预估。
 
 **P1：dct8 提一提**
 - 评估 HtoS（SVE2p1）变体：先 920B 替换预估 + MCA，显著再实现；
