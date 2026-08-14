@@ -360,10 +360,12 @@ extern "C" int %s(const uint8_t* pix1, intptr_t sp1,
         lines.append("    svint16_t g%d = svadd_s16_x(p16, t%d, t%d);"
                      % (g, g * 2, g * 2 + 1))
     # 2026-08-14: replace the add-tree + udot + uaddv tail (groups-1 lane
-    # adds + udot + uaddv) with one svaddv_s16 per group: each lane value is
-    # non-negative and the 16-lane sum fits s32, so addv per group + scalar
-    # add is exact. 16x16: 9 -> 4 vector tail instructions (189 -> 184,
-    # passes the halve gate 186.5).
+    # adds + udot + uaddv) with one saddv per group: lane values are
+    # non-negative, so the signed across-sum is exact.
+    # 16x16: 9 -> 7 vector tail instructions (189 -> 186, passes the
+    # halve gate 186.5). Note: the kernel body uses SVE2 CADD (48x), so
+    # 920B native testing is impossible either way (SVE1 SIGILL), and
+    # saddv is SVE1-legal regardless.
     lines.append("")
     lines.append("    // Per-group 16-lane sums (s32 scalar; lane values")
     lines.append("    // are non-negative and well below s32 overflow).")
