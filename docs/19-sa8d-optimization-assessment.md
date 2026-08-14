@@ -119,6 +119,24 @@ shape），新增两个发射器轴：
 - **验收口径（用户决策 2026-08-13）：SA8D 过 lite 即可，不要求全量
   TestBench 注入**。全量 `--testbench pixel --nobench` 仅 DCT16 保留。
 
+## 5d. 16x16 全代理基线与指令数下限（2026-08-14）
+
+全代理重排（`experiments/m30-sa8d16-search/layout-search-proxy/`）：
+
+| 候选 | fused_uop | MCA | NP1 est | cp | lite 5 seed |
+| --- | ---: | ---: | ---: | ---: | --- |
+| reduce-sve | 189 | 72 | 111 | 35 | PASS |
+
+- 严格口径：189/373 = **50.7%**，尚未真正进入 halve_gate（≤186.5），
+  距减半门还差 3 条 fused_uop（docs/05 的 0.5 门）。
+- 尾部归约实验（udot+uaddv → unpklo/unpkhi+2×uaddv）：20k 差分 0
+  失配，但 fused 仍 189（两侧都是 4 条向量指令），**尾部不是省 3 条
+  的杠杆**。
+- 行 H 现为 3×cadd + 2×tbl（5 op/行）；经典 16 点 H 的 4 级蝶形是
+  12+ op/行，当前已是更优形态。结论：**现有变换式下 189 接近指令数
+  下限**；要跨过减半门需新的 H 变换公式（例如把 level-1 列 H 与行 H
+  的最后一级合并），列为发射器后续增量，暂不投入。
+
 ## 6. 本轮工具/流程教训（写进发射器与搜索 pipeline）
 
 1. **QEMU 默认 VL 不是 256**：`qemu-aarch64 -cpu max` 默认 VL=512
