@@ -337,7 +337,10 @@ kernels/dct16 上游 NEON（dct16_neon）
     vqrshrun + vcombine），QEMU qxtnb 错位规避；
   - 系数来自 g_lumaFilter 相位 1..3，运行时 coeffIdx 分发。
 - 验收（20k 差分 0 失配，experiments/m30-interp8vpp-search/
-  gen-search-16x16/results.json）：**593 fused / MCA 259 / dyn 1761**；
-  对比手写 247/157 —— 正确但未用滑动行复用（16 行 × 8 次加载 +
-  144 stack），滑动行/宽加载是下一轮布局轴。
+  gen-search-16x16/results.json）：
+  - sliding=0（逐 tap 加载）：**593 fused / MCA 259 / dyn 1761**；
+  - sliding=1（11 行→23 行全部预加载 + 加宽外提 + svmla/svmls
+    融合）：**385 fused / MCA 171 / dyn 1057**（-35%/-34%）；
+  - 手写 247/157 —— sliding 版 MCA 差距缩到 ~9%；旋转窗口/4 行分
+    组是下一轮布局轴。
 - 通用发射器现覆盖 4 个配方族、16 个算子形状。
