@@ -509,6 +509,12 @@ fused 5085→5083、stack 430→428，但手动 MCA 1301→**1310（+9）**、
 峰值活跃仍 31——重复 load 的代价超过 spill 节省，**不采用**，默认
 k_block=16。
 
+**Clang profile 阴性（2026-08-14）**：修复后 clang 已正确（20k 0
+失配），C1-C3 关键档（-msve-vector-bits=256、greedy +
+split-spill-mode=speed + eviction-cutoff=1000）在 JIT zip32 上
+fused 5358（GCC 5085）、stack 298 更少但向量指令更多——不敌 GCC，
+按 round-0017 路线图停止枚举编译器隐藏 flag。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
