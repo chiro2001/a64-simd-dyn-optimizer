@@ -291,3 +291,23 @@ DCT16 的“kernel→op DAG→原子 rewrite→序列搜索→验证→计数”
    st1 的 rewrite 作为后续增量；
 3. 回填 docs/23 的 Agent 依赖表（op DAG / rewrite / 序列搜索现在
    对 DCT16 也是自动化路径）。
+
+## 13. 全代理重排（2026-08-14，layout 轴 + MCA/成本/cp/lite）
+
+在 `experiments/m30-dct16-search/layout-search-proxy/` 上跑
+`--rank-by mca --mca-top 10 --cost-top 10 --cp-top 10 --lite-top 5`
+（32 候选全过差分，top-5 官方 5 seed lite 全 PASS）：
+
+| 候选 | fused_uop | MCA cycles | est NP1 | cp NP1 | lite |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 699（legacy，quarter+odd-quarter） | **699** | **212** | **125.5** | 43 | PASS |
+| 727（同族，pass1_even_factor=0） | 727 | 222 | 131.1 | **42** | PASS |
+
+结论：
+- 699 在 fused/MCA/结构成本下均第一，cp 与 727 几乎持平（43 vs 42）；
+  已固化为 `kernels/dct16/candidates/best_op_mca.{cpp,S}`，
+  TestBenchLite dct16 官方 5 seed 全 PASS。
+- 与 §12 的 705（rewrite 序列搜索）差 6 条栈调度；layout 轴 699 就是
+  历史记录里“layout 最优 699”的完整代理验证。
+- 全代理流程（llvm-mca + NP1 结构成本 + NV2 critical-path + lite）
+  在 DCT16 上首次整套跑通，结果与 fused_uop 排名一致。
