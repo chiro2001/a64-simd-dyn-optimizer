@@ -465,15 +465,23 @@ def chunk_store_scatter(L, pref="", off_expr="off"):
                  % (pref, i, off_expr, pref, pref, i))
 
 
-def chunk_store_zip32(L, pref, off_expr):
+def chunk_store_zip32(L, pref, off_expr, fuse_round=False):
     """32 columns x 8 rows -> 8 rows x 32 columns register transpose +
     contiguous stores, same memory addresses as the scatter writeback
     (docs/27 §8.11 写回路径轴). Pattern found by optimizer/ir/
     permute_search.py: splice column pairs into 16-lane vectors, then
-    uzp butterfly order (1,2,4)."""
+    uzp butterfly order (1,2,4).
+    fuse_round (round-0017 zip-fuse 轴): 逐对窄化 n[2p]/n[2p+1] 后
+    立即 splice 成 w[p]，n 立即死亡，降低中间活跃；n 变量由调用方
+    提供（fuse 模式不再提前生成全部 n）。"""
     L.append("    const svbool_t p8z%s = svwhilelt_b16((uint32_t)0, "
              "(uint32_t)8);" % pref)
     for p in range(16):
+        if fuse_round:
+            for q in (2 * p, 2 * p + 1):
+                srcv = ("t%s%d" % (pref, q) if q < 16
+                        else "u%s%d" % (pref, q - 16))
+                L.extend(_round_s16("n%s%d" % (pref, q), srcv))
         L.append("    svint16_t w%s%d = svsplice_s16(p8z%s, n%s%d, n%s%d);"
                  % (pref, p, pref, pref, 2 * p, pref, 2 * p + 1))
     cur = ["w%s%d" % (pref, i) for i in range(16)]
@@ -499,7 +507,7 @@ def chunk_store_zip32(L, pref, off_expr):
                      % (off_expr, r, 16 * half, cur[r + 8 * half]))
 
 
-def stage_src(store, compute, k_block=16):
+def stage_src(store, compute, k_block=16, zip_fuse=False):
     if store == "zip32":
         L = []
         L.append("template <int SHIFT>")
@@ -523,10 +531,12 @@ def stage_src(store, compute, k_block=16):
             else:
                 raise ValueError("unknown compute %r for zip32 store"
                                  % compute)
-            for i in range(32):
-                srcv = "t%s%d" % (s, i) if i < 16 else "u%s%d" % (s, i - 16)
-                L.extend(_round_s16("n%s%d" % (s, i), srcv))
-            chunk_store_zip32(L, s, off)
+            if not zip_fuse:
+                for i in range(32):
+                    srcv = ("t%s%d" % (s, i) if i < 16
+                            else "u%s%d" % (s, i - 16))
+                    L.extend(_round_s16("n%s%d" % (s, i), srcv))
+            chunk_store_zip32(L, s, off, fuse_round=zip_fuse)
             L.append("    }")
         L.append("}")
         return "\n".join(L)
@@ -590,7 +600,7 @@ def stage_src(store, compute, k_block=16):
 
 
 def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
-         compute="mul", k_block=16):
+         compute="mul", k_block=16, zip_fuse=False):
     consts = (cpp_sdot_constants()
               if compute in ("sdot-s32", "sdot-s32-split", "sdot-s32-pair")
               else cpp_constants())
@@ -640,7 +650,8 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
 }
     """ % ("/SVE2p1" if compute in ("sdot-s32", "sdot-s32-split",
                                    "sdot-s32-pair") else "",
-           consts, helper, stage_src(store, compute, k_block), func_name)
+           consts, helper, stage_src(store, compute, k_block, zip_fuse),
+           func_name)
 
 
 def main():
@@ -655,10 +666,13 @@ def main():
     ap.add_argument("--k-block", type=int, default=16,
                     choices=(8, 16),
                     help="O 累加器 k_block（8=半块重走输入行，低峰值活跃）")
+    ap.add_argument("--zip-fuse", action="store_true",
+                    help="zip32 写回逐对 round+splice 融合（round-0017 "
+                         "zip-fuse 轴）")
     args = ap.parse_args()
     with open(args.out, "w") as f:
         f.write(emit(store=args.store, compute=args.compute,
-                     k_block=args.k_block))
+                     k_block=args.k_block, zip_fuse=args.zip_fuse))
     print("wrote %s" % args.out)
 
 

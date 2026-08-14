@@ -527,6 +527,12 @@ fused 5358（GCC 5085）、stack 298 更少但向量指令更多——不敌 GCC
 长），但 MCA 已持平内部（1041 vs 1048，docs/20 §6.17 950 实机
 985~995 最快）；无明显 spill 大头，维持 -O2/op 后端现状。
 
+**zip-fuse 中性（2026-08-14）**：emitter `--zip-fuse` 把 zip32 写回
+改为逐对 round+splice 融合（n 立即死亡）：fused 5085→5087、stack
+430、手动 MCA 1301→1299、uOps 7026→7039——全部噪声内，GCC SSA
+调度已等效实现该融合。**不单独采用**，作为搜索轴保留（后续如与
+k_block/直接 asm 组合可再评估）。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
