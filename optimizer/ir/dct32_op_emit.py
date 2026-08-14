@@ -455,6 +455,20 @@ def _emit_pass(ops: List[Op], add_value: int, row_group: int = 4) -> List[str]:
             body.append("    svint16_t %s = svuzp1_s16(%s, %s);"
                         % (out, n0, n1))
             ctype[out] = "svint16_t"
+        elif kind == "narrow8_k0p":
+            # k0 store variant without tbl2: the two k0p s32 vectors
+            # (lanes [x0,x0,x1,x1,x2,x2,x3,x3]) are concatenated by
+            # uzp1_s32 into [x0..x3, y0..y3]; one rshrnb + uzp1_s16 ->
+            # 8 contiguous lanes (m32 probe). Keeps the merge8 2-input
+            # liveness shape (the 4-input 16-lane variant spilled).
+            body.append("    const svint32_t w_%s = svuzp1_s32(%s, %s);"
+                        % (out, ins[0], ins[1]))
+            body.append("    const svint16_t nr_%s = "
+                        "svrshrnb_n_s32(w_%s, %d);"
+                        % (out, out, attrs["shift"]))
+            body.append("    svint16_t %s = svuzp1_s16(nr_%s, nr_%s);"
+                        % (out, out, out))
+            ctype[out] = "svint16_t"
         elif kind == "store":
             lanes = attrs["lanes"]
             pass_id, k, row = lanes[0]

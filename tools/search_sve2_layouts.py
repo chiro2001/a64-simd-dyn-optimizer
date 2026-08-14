@@ -21,6 +21,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -31,10 +32,16 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
 from kernel_manifest import layout_plans, load_manifest, repo_path  # noqa: E402
 from gen_verify import generate as gen_verify  # noqa: E402
+from parse_qemu_trace import parse_exec  # noqa: E402
 
 
 QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
+
+BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
+             "b.eq", "b.ne", "b.hs", "b.lo", "b.mi", "b.pl", "b.vs",
+             "b.vc", "b.hi", "b.ls", "b.ge", "b.lt", "b.gt", "b.le",
+             "b.al", "b.nv"}
 
 
 def run(cmd, timeout=None, **kw):
@@ -67,14 +74,88 @@ def symbol_range(binary, sym):
     return start, (nxt if nxt is not None else start + 1)
 
 
-def true_dynamic(binary, start, end, log, timeout=None, counts_only=True):
+def trace_to_mca(trace_log, start, end, out_s):
+    """Convert a QEMU dynamic trace (--exec format) into an llvm-mca input
+    file: the real executed instruction stream with branches/returns
+    removed (m33 dynamic-stream口径, docs/10 §5.1)."""
+    insns = parse_exec(trace_log, start, end)
+    with open(out_s, "w") as f:
+        f.write(".arch armv8.2-a+sve2\n.text\n")
+        for i in insns:
+            if i["mn"] in BRANCH_MN:
+                continue
+            ops = i["ops"]
+            # strip inline comments (e.g. `// implicit-def`) which llvm-mc
+            # rejects in a standalone file
+            ops = ops.split("//")[0].strip()
+            f.write(i["mn"] + (" " + ops if ops else "") + "\n")
+    return len(insns)
+
+
+def run_dynamic_mca(trace_log, start, end, out_s, mcpu="neoverse-v2",
+                    mattr="+sve2"):
+    """LLVM-MCA on the complete dynamic execution stream. Returns
+    (cycles, uops) or (None, None) if MCA fails."""
+    total = trace_to_mca(trace_log, start, end, out_s)
+    r = subprocess.run(
+        ["llvm-mca", "-mtriple=aarch64", "-mcpu=" + mcpu,
+         "-mattr=" + mattr, "-iterations=1",
+         "-skip-unsupported-instructions=parse-failure", out_s],
+        capture_output=True, text=True, timeout=180)
+    cycles = uops = None
+    for ln in r.stdout.splitlines():
+        if ln.startswith("Total Cycles:"):
+            cycles = int(ln.split(":")[1].strip())
+        if ln.startswith("Total uOps:"):
+            uops = int(ln.split(":")[1].strip())
+    if r.returncode != 0 and cycles is None:
+        print("mca WARN %s: rc=%d %s" % (out_s, r.returncode,
+                                         r.stderr.strip().splitlines()[-1:]
+                                         if r.stderr else ""))
+    return cycles, uops, total
+
+
+def candidate_range(row, outdir, manifest, backend, kernel):
+    """Resolve the traced [start, end) range for a row. New rows store it
+    at measurement time; cached rows (old verify_cache.json) have the
+    trace driver and symbols on disk, so we recompute it."""
+    if row.get("range"):
+        return int(row["range"][0], 16), int(row["range"][1], 16)
+    driver = os.path.join(outdir, row.get("tag", "") + "-trace-driver")
+    if not os.path.exists(driver):
+        return None
+    if backend == "op" and kernel in ("dct32", "dct16"):
+        start_syms = ["_ZL9op_pass_4PKsPsl"]
+    else:
+        start_syms = manifest["candidate"].get(
+            "range_start", manifest["candidate"]["symbol"])
+    if isinstance(start_syms, str):
+        start_syms = [start_syms]
+    rng = None
+    for start_sym in start_syms:
+        rng = symbol_range(driver, start_sym)
+        if rng:
+            break
+    if rng is None:
+        return None
+    end_sym = manifest["candidate"].get("range_end")
+    if end_sym:
+        rng_end = symbol_range(driver, end_sym)
+        if rng_end is not None:
+            return rng[0], rng_end[1]
+    return rng[0], rng[1]
+
+
+def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
+                 vl_bytes=32):
     r = run(QEMU + ["-one-insn-per-tb", "-d", "exec,in_asm",
                     "-dfilter", "0x%x..0x%x" % (start, end),
                     "-D", log, binary], timeout=timeout)
     if r.returncode != 0:
         return None
     p = run(["python3", os.path.join(ROOT, "tools/parse_qemu_trace.py"),
-             log, hex(start), hex(end), "--exec", "--json", log + ".json"]
+             log, hex(start), hex(end), "--exec", "--json", log + ".json",
+             "--vl-bytes", str(vl_bytes)]
              + (["--stream"] if counts_only else []), timeout=timeout)
     if p.returncode != 0:
         return None
@@ -85,8 +166,10 @@ def true_dynamic(binary, start, end, log, timeout=None, counts_only=True):
         sg = scatter_gather_count(d.get("vector", []))
         c = dict(c)
         c["scatter_gather"] = sg
-        c["vector_fused_uop"] = c.get("vector_fused",
-                                      len(d["vector"])) + 3 * sg
+        sg_uops = sg * max(1, vl_bytes // 8)
+        c["scatter_gather_uops"] = sg_uops
+        c["vector_fused_uop"] = (c.get("vector_fused", len(d["vector"]))
+                                 + (sg_uops - sg))
     if isinstance(d.get("vector"), list):
         n_vec = len(d["vector"])
     else:
@@ -98,6 +181,8 @@ def true_dynamic(binary, start, end, log, timeout=None, counts_only=True):
             "movprfx": c.get("movprfx", 0),
             "vector_fused": c.get("vector_fused", n_vec),
             "scatter_gather": c.get("scatter_gather", 0),
+            "scatter_gather_uops": c.get("scatter_gather_uops",
+                                         c.get("scatter_gather", 0)),
             "stack_vector": c.get("stack_vector", 0),
             "vector_fused_uop": c.get("vector_fused_uop", n_vec)}
 
@@ -176,6 +261,7 @@ def make_emitter(kernel, backend="acle"):
                     k0_even_sve=combo.get("k0_even_sve", 0),
                     k0_shared_mul=combo.get("k0_shared_mul", 0),
                     k0_merge8=combo.get("k0_merge8", 0),
+                    k0_merge16=combo.get("k0_merge16", 0),
                     k0_epack=combo.get("k0_epack", 0),
                     sdot_indexed=combo.get("sdot_indexed", 0),
                     odd_from_k0packs=combo.get("odd_from_k0packs", 0),
@@ -224,14 +310,16 @@ def measure_layout_candidate(task):
     pickled by ProcessPoolExecutor.
 
     task = (tag, combo, src_text, ckey, outdir, backend, manifest,
-            verify_src, driver_o, kernel, contract, first_cases, full_cases)
+            verify_src, driver_o, kernel, contract, first_cases, full_cases,
+            vl_bytes)
 
     Returns (row, cache_entry, stage). `row` is None for build/link
     failures (matching the serial results.json schema); verify failures
     return a row and a negative cache entry.
     """
     (tag, combo, src_text, ckey, outdir, backend, manifest,
-     verify_src, driver_o, kernel, contract, first_cases, full_cases) = task
+     verify_src, driver_o, kernel, contract, first_cases, full_cases,
+     vl_bytes) = task
     src = os.path.join(outdir, tag + ".cpp")
     with open(src, "w") as f:
         f.write(src_text)
@@ -357,13 +445,14 @@ def measure_layout_candidate(task):
     try:
         counts = true_dynamic(driver, rng[0], rng[1],
                               os.path.join(outdir, tag + "-trace.log"),
-                              timeout=300)
+                              timeout=300, vl_bytes=vl_bytes)
     except subprocess.TimeoutExpired:
         row.update({"passed": False, "counts": None})
         return row, None, "TRACE TIMEOUT"
     if counts is None:
         row.update({"passed": False, "counts": None})
         return row, None, "TRACE FAIL"
+    row["range"] = [hex(rng[0]), hex(rng[1])]
     row["counts"] = counts
     return row, {"passed": True, "verify_mismatches": mism,
                  "verify": r.stdout, "counts": counts}, "OK"
@@ -395,8 +484,18 @@ def main():
                     help="full differential case count (default 20000)")
     ap.add_argument("--no-short-gate", action="store_true",
                     help="run only the full differential (exhaustive mode)")
+    ap.add_argument("--mca-top", type=int, default=0,
+                    help="run LLVM-MCA (complete dynamic stream, Neoverse-V2 "
+                         "SVE2 proxy) on the top-N candidates by fused_uop "
+                         "and record mca_cycles/mca_uops (default 0 = off)")
+    ap.add_argument("--mca-mcpu", default="neoverse-v2",
+                    help="llvm-mca -mcpu model (default neoverse-v2; "
+                         "tsv110 has no SVE coverage)")
+    ap.add_argument("--mca-mattr", default="+sve2",
+                    help="llvm-mca -mattr (default +sve2)")
     args = ap.parse_args()
     manifest = load_manifest(args.kernel)
+    vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.contract:
         manifest["contract"] = args.contract
     contract = manifest.get("contract", "upstream-exact")
@@ -510,7 +609,7 @@ def main():
                       manifest, verify_src, driver_o, args.kernel,
                       c_contract,
                       args.full_cases if args.no_short_gate
-                      else args.short_cases, args.full_cases))
+                      else args.short_cases, args.full_cases, vl_bytes))
 
     def _measure_all():
         if args.workers <= 1:
@@ -554,8 +653,9 @@ def main():
     if shape.get("kind") in (None, "dct"):
         n = shape.get("n", 16)
         n_out = n * n
-    print("rank by uop-honest fused count (scatter/gather = 4 uops, "
-          "docs/17 §1):")
+    print("rank by uop-honest fused count (scatter/gather = %d uops at "
+          "VL=%d, docs/17 2026-08-14 口径):"
+          % (max(1, vl_bytes // 8), vl_bytes * 8))
     for r in ok:
         fu = r["counts"]["vector_fused_uop"]
         ratio = fu / baseline if baseline else None
@@ -575,6 +675,32 @@ def main():
             r["halve_gate_met"] = ratio <= gate
         if n_out:
             r["fused_uop_per_output"] = round(fu / n_out, 3)
+    if args.mca_top and ok:
+        print("llvm-mca second proxy on top-%d by fused_uop "
+              "(%s, complete dynamic stream):"
+              % (min(args.mca_top, len(ok)), args.mca_mcpu))
+        for r in ok[:min(args.mca_top, len(ok))]:
+            trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
+            rng = candidate_range(r, args.outdir, manifest, args.backend,
+                                  args.kernel)
+            if rng is None or not os.path.exists(trace):
+                print("  %-24s no trace for MCA" % r["tag"])
+                continue
+            mca_s = os.path.join(args.outdir, r["tag"] + ".mca.s")
+            cycles, uops, total = run_dynamic_mca(
+                trace, rng[0], rng[1], mca_s, args.mca_mcpu, args.mca_mattr)
+            r["mca_cycles"] = cycles
+            r["mca_uops"] = uops
+            print("  %-24s fused_uop=%d dyn=%d mca_cycles=%s mca_uops=%s"
+                  % (r["tag"], r["counts"]["vector_fused_uop"],
+                     total, cycles, uops))
+        withmca = [r for r in ok if r.get("mca_cycles") is not None]
+        if withmca:
+            print("rank by mca_cycles:")
+            for r in sorted(withmca, key=lambda r: r["mca_cycles"]):
+                print("  %-24s fused_uop=%d mca_cycles=%d mca_uops=%d"
+                      % (r["tag"], r["counts"]["vector_fused_uop"],
+                         r["mca_cycles"], r["mca_uops"]))
     if args.finalize and ok:
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")

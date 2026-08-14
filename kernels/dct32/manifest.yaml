@@ -55,6 +55,13 @@ layout_prune:
   - {axis: k0_shared_mul, requires: {k0_even_sve: 1}}
   - {axis: k0_merge8, requires: {k0_even_sve: 1, row_group: [8, 16]}}
   - {axis: k0_epack, requires: {k0_even_sve: 1}}
+  # 2026-08-14 (m32 probe): k0 store without tbl2
+  # (uzp1_s32(k0p_a,k0p_b) concat + rshrnb + uzp1_s16 -> st1h8).
+  # Requires the non-shared-mul k0p layout; the 4-input 16-lane variant
+  # was a negative result (GCC spills, m32).
+  - {axis: k0_merge16, requires: {k0_even_sve: 1, row_group: [8, 16],
+                                  k0_shared_mul: 0}}
+  - {axis: k0_merge8, requires: {k0_merge16: 0}}
 
 layouts:
   layout: [v1, v2, v2b, v3]
@@ -100,6 +107,7 @@ layouts:
   # 一次 rshrnb+uzp1+store8（row8：-32 store/-32 narrow，+32 tbl2；
   # row16 对 4 个 pack 两两合并）。
   k0_merge8: [0, 1]
+  k0_merge16: [0, 1]
   # 2026-08-14: k0_epack（仅 op backend；要求 k0_even_sve=1）：
   # 先按行算 E=lo+rev(hi)（s16 精确，pass2 E 值 < 2^15 无回绕），
   # 单次 pack E（替代 lo/hi 双 pack 36 ops）+ 单 saddlb/lt 四项

@@ -103,6 +103,14 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
         lo["emit_order"] = "k0,odd,k2,k4"
     k0_merge8 = bool(lo.get("k0_merge8", 0)) and k0_even_sve \
         and row_group in (8, 16)
+    # 2026-08-14 (m32 probe): k0 store without tbl2. k0p lanes are
+    # [x0,x0,x1,x1,x2,x2,x3,x3], so uzp1_s32(k0p_a, k0p_b) concatenates
+    # two 4-output groups directly. First variant merged all four packs
+    # into one 16-lane store (narrow16_k0p) but GCC spilled heavily
+    # (m32 negative); the 2-input variant below keeps the merge8
+    # liveness shape and only swaps tbl2 -> uzp1_s32.
+    k0_merge16 = bool(lo.get("k0_merge16", 0)) and k0_even_sve \
+        and row_group in (8, 16) and not k0_merge8
     ops: List[Op] = []
     n = 0
     cur = {"g": 0}
@@ -934,7 +942,8 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                      "k0x_%d_%d_%d" % (k, b, pass_id),
                                      (pa.out, pa.out),
                                      attrs={"kind": "uzp1s"})
-                            kvec[k].append(xa.out)
+                            kvec[k].append(pa.out if k0_merge16
+                                           else xa.out)
                     else:
                         for k in K0_K:
                             ktid = "p%d.k0es.k%d.p%d" % (pass_id, k, b)
@@ -954,11 +963,27 @@ def lower_plan_to_ops(plan: Plan) -> List[Op]:
                                      "k0x_%d_%d_%d" % (k, b, pass_id),
                                      (pa.out, pa.out),
                                      attrs={"kind": "uzp1s"})
-                            kvec[k].append(xa.out)
+                            kvec[k].append(pa.out if k0_merge16
+                                           else xa.out)
                 # narrow/store: per k, merge the packs (row8) or store each
                 for k in K0_K:
                     vecs = kvec[k]
-                    if k0_merge8 and len(vecs) in (2, 4):
+                    if k0_merge16 and len(vecs) in (2, 4):
+                        ktid = "p%d.k0es.k%d" % (pass_id, k)
+                        for pi in range(len(vecs) // 2):
+                            nm = new("narrow8_k0p", ktid,
+                                     "k0n8_%d_%d_%d" % (k, pass_id, pi),
+                                     (vecs[2 * pi], vecs[2 * pi + 1]),
+                                     attrs={"shift": shift})
+                            pair_rows = packs[2 * pi] + packs[2 * pi + 1]
+                            new("store", ktid, "", (nm.out,),
+                                attrs={"base": "dst", "index": "k*32+i",
+                                       "lanes": tuple(
+                                           (pass_id, k, r)
+                                           for r in pair_rows),
+                                       "topology": "contiguous",
+                                       "base_off": 8 * pi})
+                    elif k0_merge8 and len(vecs) in (2, 4):
                         for pi in range(len(vecs) // 2):
                             ktid = "p%d.k0es.k%d" % (pass_id, k)
                             mg = new("permute", ktid,

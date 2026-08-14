@@ -84,9 +84,8 @@ def fused_adjust(vector):
 
 def scatter_gather_count(vector):
     """Count gather loads / scatter stores (SVE ld1/st1 with a vector
-    offset register). On ARM these decompose into multiple ldst uops, so
-    they must NOT be used to inflate surface instruction counts
-    (user policy 2026-08-14)."""
+    offset register). Returns the instruction count; the decomposed-uop
+    accounting is done by `scatter_gather_uops`."""
     n = 0
     for ins in vector:
         m = ins["mn"]
@@ -94,6 +93,17 @@ def scatter_gather_count(vector):
                 r"\[[^\]]*,\s*z\d+", ins["ops"]):
             n += 1
     return n
+
+
+def scatter_gather_uops(n, vl_bytes=32):
+    """Decomposed-uop model for gather loads / scatter stores.
+
+    2026-08-14 用户口径修订（docs/17）：ARM 实现将 SVE gather/scatter 拆为
+    多个 ldst uops，拆分数按其处理的 64-bit 组数计（ld1d/st1d 每元素一组，
+    ld1w/ld1h/ld1b 每 64-bit 一组），即每条指令 vl_bytes/8 个 uops。
+    VL=256 时每条 = 4 uops（旧口径 +3 是该特例）；VL=128 时每条 = 2 uops。
+    """
+    return n * max(1, vl_bytes // 8)
 
 
 def stack_vector_count(insns):
@@ -111,7 +121,7 @@ def stack_vector_count(insns):
     return n
 
 
-def stream_counts(path, start, end):
+def stream_counts(path, start, end, vl_bytes=32):
     """Two-pass streaming counts with the same metric schema as the full
     parser, without materializing the instruction list (P3 fast path).
 
@@ -149,10 +159,12 @@ def stream_counts(path, start, end):
                 r"\b[zq]\d+", ops):
             stack_v += 1
     fused_adj = vector - movprfx
-    fused_uop = fused_adj + 3 * sg
+    sg_uops = scatter_gather_uops(sg, vl_bytes)
+    fused_uop = fused_adj + (sg_uops - sg)
     return {"total": total, "vector": vector,
             "counts": {"vector_raw": vector, "movprfx": movprfx,
                        "vector_fused": fused_adj, "scatter_gather": sg,
+                       "scatter_gather_uops": sg_uops,
                        "stack_vector": stack_v,
                        "vector_fused_uop": fused_uop}}
 
@@ -170,16 +182,21 @@ def main():
     counts_only = "--counts" in args
     stream_mode = "--stream" in args
     exec_mode = "--exec" in args
+    vl_bytes = 32
+    if "--vl-bytes" in args:
+        vl_bytes = int(args[args.index("--vl-bytes") + 1])
     if "--json" in args:
         out_json = args[args.index("--json") + 1]
 
     if stream_mode:
-        d = stream_counts(path, start, end)
+        d = stream_counts(path, start, end, vl_bytes)
         c = d["counts"]
         print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj "
-              "%d, scatter_gather %d, stack_vector %d, fused_uop %d)"
+              "%d, scatter_gather %d, sg_uops %d, stack_vector %d, "
+              "fused_uop %d)"
               % (d["total"], d["vector"], c["movprfx"], c["vector_fused"],
-                 c["scatter_gather"], c["stack_vector"],
+                 c["scatter_gather"], c["scatter_gather_uops"],
+                 c["stack_vector"],
                  c["vector_fused_uop"]))
         if out_json:
             json.dump({"counts": c, "total": d["total"],
@@ -191,9 +208,11 @@ def main():
     vec = [i for i in insns if is_vector(i)]
     movprfx, fused_adj = fused_adjust(vec)
     sg = scatter_gather_count(vec)
+    sg_uops = scatter_gather_uops(sg, vl_bytes)
     stack_v = stack_vector_count(insns)
-    # uop-honest metric: scatter/gather count as 4 ldst uops (penalty +3).
-    fused_uop = fused_adj + 3 * sg
+    # uop-honest metric: scatter/gather count as vl_bytes/8 ldst uops each
+    # (VL=256 => 4 uops/instruction, docs/17 2026-08-14 修订口径).
+    fused_uop = fused_adj + (sg_uops - sg)
     if counts_only:
         from optimizer.ir.asm_ir import dynamic_counts, import_asm_trace
 
@@ -201,14 +220,15 @@ def main():
         print(json.dumps(dynamic_counts(nodes)))
         return 0
     print("dynamic instructions: %d (vector %d, movprfx %d, fused_adj %d, "
-          "scatter_gather %d, stack_vector %d, fused_uop %d)"
-          % (len(insns), len(vec), movprfx, fused_adj, sg, stack_v,
-             fused_uop))
+          "scatter_gather %d, sg_uops %d, stack_vector %d, fused_uop %d)"
+          % (len(insns), len(vec), movprfx, fused_adj, sg, sg_uops,
+             stack_v, fused_uop))
     if out_json:
         json.dump({"instructions": insns, "vector": vec,
                    "counts": {"vector_raw": len(vec), "movprfx": movprfx,
                               "vector_fused": fused_adj,
                               "scatter_gather": sg,
+                              "scatter_gather_uops": sg_uops,
                               "stack_vector": stack_v,
                               "vector_fused_uop": fused_uop}},
                   open(out_json, "w"), indent=1)

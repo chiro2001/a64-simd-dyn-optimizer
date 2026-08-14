@@ -30,7 +30,8 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 from dataclasses import replace  # noqa: E402
 from gen_verify import generate as gen_verify  # noqa: E402
 from kernel_manifest import load_manifest  # noqa: E402
-from search_sve2_layouts import QEMU, run, symbol_range, true_dynamic  # noqa: E402
+from search_sve2_layouts import (QEMU, run, symbol_range, true_dynamic,
+                                 run_dynamic_mca)  # noqa: E402
 
 
 KERNELS = {
@@ -91,32 +92,6 @@ def prune_sequence(kernel, seq):
     if kernel == "dct16" and seq.count("tbl2_to_zip") > 1:
         return "tbl2>1"
     return None
-
-
-def run_mca(obj, workdir):
-    """LLVM-MCA on the object's static body (Neoverse-V2, SVE2)."""
-    s = os.path.join(workdir, os.path.basename(obj) + ".mca.s")
-    txt = subprocess.check_output(["aarch64-linux-gnu-objdump", "-d", obj],
-                                  text=True)
-    lines = [".arch armv8.2-a+sve2", ".text"]
-    for line in txt.splitlines():
-        m = re.match(r"\s*[0-9a-f]+:\s+[0-9a-f]+\s+"
-                     r"([a-z][a-z0-9.]*)\s*(.*)$", line)
-        if m:
-            ops = m.group(2).split("//")[0].strip()
-            lines.append(m.group(1) + (" " + ops if ops else ""))
-    open(s, "w").write("\n".join(lines) + "\n")
-    r = subprocess.run(["llvm-mca", "-mtriple=aarch64", "-mcpu=neoverse-v2",
-                        "-mattr=+sve2", "-iterations=1",
-                        "-skip-unsupported-instructions=parse-failure", s],
-                       capture_output=True, text=True)
-    cycles = uops = None
-    for ln in r.stdout.splitlines():
-        if ln.startswith("Total Cycles:"):
-            cycles = int(ln.split(":")[1].strip())
-        if ln.startswith("Total uOps:"):
-            uops = int(ln.split(":")[1].strip())
-    return cycles, uops
 
 
 def emit_seq(kernel, seq):
@@ -248,7 +223,8 @@ def measure_rewrite_candidate(task):
     return {"seq": key, "passed": True, "mism": mism,
             "fused_uop": counts["vector_fused_uop"],
             "raw": counts["vector"],
-            "movprfx": counts["movprfx"], "_h": h}, "OK"
+            "movprfx": counts["movprfx"], "_h": h,
+            "range": [hex(rng[0]), hex(rng_end[1])]}, "OK"
 
 
 def main():
@@ -347,19 +323,18 @@ def main():
         print("best:", best["seq"], best["fused_uop"])
         top = sorted(measured, key=lambda r: r["fused_uop"])[:10]
         for r in top:
-            if r.get("mca_cycles") is not None:
+            if r.get("mca_cycles") is not None or not r.get("range"):
                 continue
             h = r.get("_h")
-            if not h:
-                rw = [c for c in r["seq"].split("|") if c]
-                src = emit_seq(kernel, rw)
-                h = hashlib.sha256(src.encode()).hexdigest()[:12]
-            obj = os.path.join(OUT, "seq_%s.o" % h)
-            cycles, uops = run_mca(obj, OUT)
+            trace = os.path.join(OUT, "seq_%s-trace.log" % h)
+            mca_s = os.path.join(OUT, "seq_%s.mca.s" % h)
+            cycles, uops, total = run_dynamic_mca(
+                trace, int(r["range"][0], 16), int(r["range"][1], 16),
+                mca_s)
             r["mca_cycles"] = cycles
             r["mca_uops"] = uops
-            print("mca %-52s fused=%s mca_cycles=%s mca_uops=%s"
-                  % (r["seq"], r["fused_uop"], cycles, uops))
+            print("mca %-52s fused=%s dyn_insns=%s mca_cycles=%s mca_uops=%s"
+                  % (r["seq"], r["fused_uop"], total, cycles, uops))
     with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump({"kernel": kernel, "rows": rows,
                    "seq_keys": len(seen),
