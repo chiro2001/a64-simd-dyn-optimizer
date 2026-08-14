@@ -35,6 +35,7 @@ KERNELS = {
     "satd-8x4": ("satd-8x4", "hadamard", {}),
     "satd-8x16": ("satd-8x16", "hadamard", {}),
     "satd-16x8": ("satd-16x8", "hadamard", {}),
+    "satd-16x4": ("satd-16x4", "hadamard", {}),
     "interp8": ("interp8-8x8", "fir", {}),
     "interp8-16": ("interp8-16x16", "fir", {}),
     "interp8-32": ("interp8-32x32", "fir", {}),

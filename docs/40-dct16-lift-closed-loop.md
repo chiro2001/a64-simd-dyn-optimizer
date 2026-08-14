@@ -345,6 +345,13 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - satd-16x8：**183 fused / MCA 69**。
 - satd 共 7 形状覆盖（4x4/4x8/8x4/8x8/8x16/16x8/16x16）。
 
+## 21. satd 16x4（2026-08-15）
+
+- wrapper 循环单迭代（4 行 × 16 列）在 -O2 下直接内联（123 节点），
+  命中 hadamard 零改动；**91 fused / MCA 49**，20k 差分 0 失配
+  （experiments/m30-satd-search/gen-search-16x4/results.json）。
+- satd 共 8 形状；冒烟测试同步扩到 22 核。
+
 ## 16. vertical-fir 配方：interp8 vpp 16x16（2026-08-15，第四个族）
 
 - `tools/gen_sve2_emit.py` 新增 vertical-fir 配方：interp8 vpp 的
