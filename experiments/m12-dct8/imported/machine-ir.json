@@ -1,983 +1,976 @@
 {
- "function": "x265::dct8_neon",
+ "function": null,
  "nodes": [
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "4",
+   "id": 0,
+   "op": "load",
    "ptr": "0",
-   "id": 0
+   "type": "<4 x i16>"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %0, i64 8",
    "dst": "5",
-   "id": 1
+   "id": 1,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %0, i64 8",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "6",
+   "id": 2,
+   "op": "load",
    "ptr": "5",
-   "id": 2
+   "type": "<4 x i16>"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i16, ptr %0, i64 %2",
    "dst": "7",
-   "id": 3
+   "id": 3,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i16, ptr %0, i64 %2",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "8",
+   "id": 4,
+   "op": "load",
    "ptr": "7",
-   "id": 4
+   "type": "<4 x i16>"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %7, i64 8",
    "dst": "9",
-   "id": 5
+   "id": 5,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %7, i64 8",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "10",
+   "id": 6,
+   "op": "load",
    "ptr": "9",
-   "id": 6
+   "type": "<4 x i16>"
   },
   {
-   "op": "shl",
-   "type": "i64",
-   "src": [
-    "2"
-   ],
-   "dst": "11",
    "amt": 2,
-   "id": 7
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %11",
-   "dst": "12",
-   "id": 8
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "13",
-   "ptr": "12",
-   "id": 9
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %12, i64 8",
-   "dst": "14",
-   "id": 10
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "15",
-   "ptr": "14",
-   "id": 11
-  },
-  {
-   "op": "mul",
-   "type": "i64",
-   "src": [
-    "2"
-   ],
-   "dst": "16",
-   "const": 6,
-   "id": 12
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %16",
-   "dst": "17",
-   "id": 13
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "18",
-   "ptr": "17",
-   "id": 14
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %17, i64 8",
-   "dst": "19",
-   "id": 15
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "20",
-   "ptr": "19",
-   "id": 16
-  },
-  {
+   "dst": "11",
+   "id": 7,
    "op": "shl",
-   "type": "i64",
    "src": [
     "2"
    ],
-   "dst": "21",
+   "type": "i64"
+  },
+  {
+   "dst": "12",
+   "id": 8,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %11",
+   "type": "ptr"
+  },
+  {
+   "dst": "13",
+   "id": 9,
+   "op": "load",
+   "ptr": "12",
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "14",
+   "id": 10,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %12, i64 8",
+   "type": "ptr"
+  },
+  {
+   "dst": "15",
+   "id": 11,
+   "op": "load",
+   "ptr": "14",
+   "type": "<4 x i16>"
+  },
+  {
+   "const": 6,
+   "dst": "16",
+   "id": 12,
+   "op": "mul",
+   "src": [
+    "2"
+   ],
+   "type": "i64"
+  },
+  {
+   "dst": "17",
+   "id": 13,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %16",
+   "type": "ptr"
+  },
+  {
+   "dst": "18",
+   "id": 14,
+   "op": "load",
+   "ptr": "17",
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "19",
+   "id": 15,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %17, i64 8",
+   "type": "ptr"
+  },
+  {
+   "dst": "20",
+   "id": 16,
+   "op": "load",
+   "ptr": "19",
+   "type": "<4 x i16>"
+  },
+  {
    "amt": 3,
-   "id": 17
+   "dst": "21",
+   "id": 17,
+   "op": "shl",
+   "src": [
+    "2"
+   ],
+   "type": "i64"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %21",
    "dst": "22",
-   "id": 18
+   "id": 18,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %21",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "23",
+   "id": 19,
+   "op": "load",
    "ptr": "22",
-   "id": 19
+   "type": "<4 x i16>"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 8",
    "dst": "24",
-   "id": 20
+   "id": 20,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 8",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "25",
+   "id": 21,
+   "op": "load",
    "ptr": "24",
-   "id": 21
+   "type": "<4 x i16>"
   },
   {
-   "op": "mul",
-   "type": "i64",
-   "src": [
-    "2"
-   ],
-   "dst": "26",
    "const": 10,
-   "id": 22
+   "dst": "26",
+   "id": 22,
+   "op": "mul",
+   "src": [
+    "2"
+   ],
+   "type": "i64"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %26",
    "dst": "27",
-   "id": 23
+   "id": 23,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %26",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "28",
+   "id": 24,
+   "op": "load",
    "ptr": "27",
-   "id": 24
+   "type": "<4 x i16>"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %27, i64 8",
    "dst": "29",
-   "id": 25
+   "id": 25,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %27, i64 8",
+   "type": "ptr"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
    "dst": "30",
+   "id": 26,
+   "op": "load",
    "ptr": "29",
-   "id": 26
+   "type": "<4 x i16>"
   },
   {
-   "op": "mul",
-   "type": "i64",
-   "src": [
-    "2"
-   ],
-   "dst": "31",
    "const": 12,
-   "id": 27
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %31",
-   "dst": "32",
-   "id": 28
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "33",
-   "ptr": "32",
-   "id": 29
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %32, i64 8",
-   "dst": "34",
-   "id": 30
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "35",
-   "ptr": "34",
-   "id": 31
-  },
-  {
+   "dst": "31",
+   "id": 27,
    "op": "mul",
-   "type": "i64",
    "src": [
     "2"
    ],
-   "dst": "36",
+   "type": "i64"
+  },
+  {
+   "dst": "32",
+   "id": 28,
+   "op": "addr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %31",
+   "type": "ptr"
+  },
+  {
+   "dst": "33",
+   "id": 29,
+   "op": "load",
+   "ptr": "32",
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "34",
+   "id": 30,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %32, i64 8",
+   "type": "ptr"
+  },
+  {
+   "dst": "35",
+   "id": 31,
+   "op": "load",
+   "ptr": "34",
+   "type": "<4 x i16>"
+  },
+  {
    "const": 14,
-   "id": 32
+   "dst": "36",
+   "id": 32,
+   "op": "mul",
+   "src": [
+    "2"
+   ],
+   "type": "i64"
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds i8, ptr %0, i64 %36",
    "dst": "37",
-   "id": 33
-  },
-  {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "38",
-   "ptr": "37",
-   "id": 34
-  },
-  {
+   "id": 33,
    "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %37, i64 8",
-   "dst": "39",
-   "id": 35
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %36",
+   "type": "ptr"
   },
   {
+   "dst": "38",
+   "id": 34,
    "op": "load",
-   "type": "<4 x i16>",
-   "dst": "40",
-   "ptr": "39",
-   "id": 36
+   "ptr": "37",
+   "type": "<4 x i16>"
   },
   {
+   "dst": "39",
+   "id": 35,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %37, i64 8",
+   "type": "ptr"
+  },
+  {
+   "dst": "40",
+   "id": 36,
+   "op": "load",
+   "ptr": "39",
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "41",
+   "id": 37,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "6"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "42",
+   "id": 38,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "41",
-   "id": 37
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "10"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "42",
-   "id": 38
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "4",
    "dst": "43",
-   "id": 39
-  },
-  {
+   "id": 39,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "41",
-   "dst": "44",
-   "id": 40
+   "src": "4",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "44",
+   "id": 40,
+   "op": "sext",
+   "src": "41",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "45",
+   "id": 41,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "44",
     "43"
    ],
-   "dst": "45",
-   "id": 41
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "8",
    "dst": "46",
-   "id": 42
-  },
-  {
+   "id": 42,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "42",
-   "dst": "47",
-   "id": 43
+   "src": "8",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "47",
+   "id": 43,
+   "op": "sext",
+   "src": "42",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "48",
+   "id": 44,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "47",
     "46"
    ],
-   "dst": "48",
-   "id": 44
+   "type": "<4 x i32>"
   },
   {
+   "dst": "49",
+   "id": 45,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "4",
     "41"
    ],
-   "dst": "49",
-   "id": 45
+   "type": "<4 x i16>"
   },
   {
+   "dst": "50",
+   "id": 46,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "8",
     "42"
    ],
-   "dst": "50",
-   "id": 46
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "45",
-    "48"
-   ],
+   "dst": "51",
+   "id": 47,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "51",
-   "id": 47
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "45",
     "48"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "52",
+   "id": 48,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "52",
-   "id": 48
+   "op": "shuffle",
+   "src": [
+    "45",
+    "48"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "52"
-   ],
+   "dst": "53",
+   "id": 49,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "53",
-   "id": 49
+   "op": "shuffle",
+   "src": [
+    "52"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "54",
+   "id": 50,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "53",
     "51"
    ],
-   "dst": "54",
-   "id": 50
+   "type": "<4 x i32>"
   },
   {
+   "dst": "55",
+   "id": 51,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "51",
     "53"
    ],
-   "dst": "55",
-   "id": 51
+   "type": "<4 x i32>"
   },
   {
+   "dst": "56",
+   "id": 52,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "15"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "57",
+   "id": 53,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "56",
-   "id": 52
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "20"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "57",
-   "id": 53
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "13",
    "dst": "58",
-   "id": 54
-  },
-  {
+   "id": 54,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "56",
-   "dst": "59",
-   "id": 55
+   "src": "13",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "59",
+   "id": 55,
+   "op": "sext",
+   "src": "56",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "60",
+   "id": 56,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "59",
     "58"
    ],
-   "dst": "60",
-   "id": 56
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "18",
    "dst": "61",
-   "id": 57
-  },
-  {
+   "id": 57,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "57",
-   "dst": "62",
-   "id": 58
+   "src": "18",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "62",
+   "id": 58,
+   "op": "sext",
+   "src": "57",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "63",
+   "id": 59,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "62",
     "61"
    ],
-   "dst": "63",
-   "id": 59
+   "type": "<4 x i32>"
   },
   {
+   "dst": "64",
+   "id": 60,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "13",
     "56"
    ],
-   "dst": "64",
-   "id": 60
+   "type": "<4 x i16>"
   },
   {
+   "dst": "65",
+   "id": 61,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "18",
     "57"
    ],
-   "dst": "65",
-   "id": 61
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "60",
-    "63"
-   ],
+   "dst": "66",
+   "id": 62,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "66",
-   "id": 62
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "60",
     "63"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "67",
+   "id": 63,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "67",
-   "id": 63
+   "op": "shuffle",
+   "src": [
+    "60",
+    "63"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "67"
-   ],
+   "dst": "68",
+   "id": 64,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "68",
-   "id": 64
+   "op": "shuffle",
+   "src": [
+    "67"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "69",
+   "id": 65,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "68",
     "66"
    ],
-   "dst": "69",
-   "id": 65
+   "type": "<4 x i32>"
   },
   {
+   "dst": "70",
+   "id": 66,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "66",
     "68"
    ],
-   "dst": "70",
-   "id": 66
+   "type": "<4 x i32>"
   },
   {
+   "dst": "71",
+   "id": 67,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "25"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "72",
+   "id": 68,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "71",
-   "id": 67
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "30"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "72",
-   "id": 68
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "23",
    "dst": "73",
-   "id": 69
-  },
-  {
+   "id": 69,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "71",
-   "dst": "74",
-   "id": 70
+   "src": "23",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "74",
+   "id": 70,
+   "op": "sext",
+   "src": "71",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "75",
+   "id": 71,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "74",
     "73"
    ],
-   "dst": "75",
-   "id": 71
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "28",
    "dst": "76",
-   "id": 72
-  },
-  {
+   "id": 72,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "72",
-   "dst": "77",
-   "id": 73
+   "src": "28",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "77",
+   "id": 73,
+   "op": "sext",
+   "src": "72",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "78",
+   "id": 74,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "77",
     "76"
    ],
-   "dst": "78",
-   "id": 74
+   "type": "<4 x i32>"
   },
   {
+   "dst": "79",
+   "id": 75,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "23",
     "71"
    ],
-   "dst": "79",
-   "id": 75
+   "type": "<4 x i16>"
   },
   {
+   "dst": "80",
+   "id": 76,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "28",
     "72"
    ],
-   "dst": "80",
-   "id": 76
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "75",
-    "78"
-   ],
+   "dst": "81",
+   "id": 77,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "81",
-   "id": 77
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "75",
     "78"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "82",
+   "id": 78,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "82",
-   "id": 78
+   "op": "shuffle",
+   "src": [
+    "75",
+    "78"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "82"
-   ],
+   "dst": "83",
+   "id": 79,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "83",
-   "id": 79
+   "op": "shuffle",
+   "src": [
+    "82"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "84",
+   "id": 80,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "83",
     "81"
    ],
-   "dst": "84",
-   "id": 80
+   "type": "<4 x i32>"
   },
   {
+   "dst": "85",
+   "id": 81,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "81",
     "83"
    ],
-   "dst": "85",
-   "id": 81
+   "type": "<4 x i32>"
   },
   {
+   "dst": "86",
+   "id": 82,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "35"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "87",
+   "id": 83,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "86",
-   "id": 82
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "40"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "87",
-   "id": 83
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "33",
    "dst": "88",
-   "id": 84
-  },
-  {
+   "id": 84,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "86",
-   "dst": "89",
-   "id": 85
+   "src": "33",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "89",
+   "id": 85,
+   "op": "sext",
+   "src": "86",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "90",
+   "id": 86,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "89",
     "88"
    ],
-   "dst": "90",
-   "id": 86
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "38",
    "dst": "91",
-   "id": 87
-  },
-  {
+   "id": 87,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "87",
-   "dst": "92",
-   "id": 88
+   "src": "38",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "92",
+   "id": 88,
+   "op": "sext",
+   "src": "87",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "93",
+   "id": 89,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "92",
     "91"
    ],
-   "dst": "93",
-   "id": 89
+   "type": "<4 x i32>"
   },
   {
+   "dst": "94",
+   "id": 90,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "33",
     "86"
    ],
-   "dst": "94",
-   "id": 90
+   "type": "<4 x i16>"
   },
   {
+   "dst": "95",
+   "id": 91,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "38",
     "87"
    ],
-   "dst": "95",
-   "id": 91
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "90",
-    "93"
-   ],
+   "dst": "96",
+   "id": 92,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "96",
-   "id": 92
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "90",
     "93"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "97",
+   "id": 93,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "97",
-   "id": 93
+   "op": "shuffle",
+   "src": [
+    "90",
+    "93"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "97"
-   ],
+   "dst": "98",
+   "id": 94,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "98",
-   "id": 94
+   "op": "shuffle",
+   "src": [
+    "97"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "99",
+   "id": 95,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "98",
     "96"
    ],
-   "dst": "99",
-   "id": 95
+   "type": "<4 x i32>"
   },
   {
+   "dst": "100",
+   "id": 96,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "96",
     "98"
    ],
-   "dst": "100",
-   "id": 96
+   "type": "<4 x i32>"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "101",
    "const_name": "_ZN4x2654g_t8E",
    "const_off": 16,
-   "id": 97
+   "dst": "101",
+   "id": 97,
+   "op": "load",
+   "type": "<4 x i16>"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "102",
    "const_name": "_ZN4x2654g_t8E",
    "const_off": 48,
-   "id": 98
+   "dst": "102",
+   "id": 98,
+   "op": "load",
+   "type": "<4 x i16>"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "103",
    "const_name": "_ZN4x2654g_t8E",
    "const_off": 80,
-   "id": 99
+   "dst": "103",
+   "id": 99,
+   "op": "load",
+   "type": "<4 x i16>"
   },
   {
-   "op": "load",
-   "type": "<4 x i16>",
-   "dst": "104",
    "const_name": "_ZN4x2654g_t8E",
    "const_off": 112,
-   "id": 100
+   "dst": "104",
+   "id": 100,
+   "op": "load",
+   "type": "<4 x i16>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "49"
-   ],
    "args": [
     {
      "ref": "101"
@@ -987,16 +980,15 @@
     }
    ],
    "dst": "105",
-   "id": 101
-  },
-  {
-   "op": "intrinsic",
+   "id": 101,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "50"
-   ],
+    "49"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -1006,16 +998,15 @@
     }
    ],
    "dst": "106",
-   "id": 102
+   "id": 102,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "50"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "105",
-    "106"
-   ],
    "args": [
     {
      "ref": "105"
@@ -1025,16 +1016,15 @@
     }
    ],
    "dst": "107",
-   "id": 103
+   "id": 103,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "105",
+    "106"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "64"
-   ],
    "args": [
     {
      "ref": "101"
@@ -1044,16 +1034,15 @@
     }
    ],
    "dst": "108",
-   "id": 104
-  },
-  {
-   "op": "intrinsic",
+   "id": 104,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "65"
-   ],
+    "64"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -1063,16 +1052,15 @@
     }
    ],
    "dst": "109",
-   "id": 105
+   "id": 105,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "65"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "108",
-    "109"
-   ],
    "args": [
     {
      "ref": "108"
@@ -1082,16 +1070,15 @@
     }
    ],
    "dst": "110",
-   "id": 106
+   "id": 106,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "108",
+    "109"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "107",
-    "110"
-   ],
    "args": [
     {
      "ref": "107"
@@ -1101,15 +1088,15 @@
     }
    ],
    "dst": "111",
-   "id": 107
+   "id": 107,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "107",
+    "110"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "111"
-   ],
    "args": [
     {
      "ref": "111"
@@ -1119,16 +1106,14 @@
     }
    ],
    "dst": "112",
-   "id": 108
+   "id": 108,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "111"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "49"
-   ],
    "args": [
     {
      "ref": "102"
@@ -1138,16 +1123,15 @@
     }
    ],
    "dst": "113",
-   "id": 109
-  },
-  {
-   "op": "intrinsic",
+   "id": 109,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "50"
-   ],
+    "49"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -1157,16 +1141,15 @@
     }
    ],
    "dst": "114",
-   "id": 110
+   "id": 110,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "50"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "113",
-    "114"
-   ],
    "args": [
     {
      "ref": "113"
@@ -1176,16 +1159,15 @@
     }
    ],
    "dst": "115",
-   "id": 111
+   "id": 111,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "113",
+    "114"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "64"
-   ],
    "args": [
     {
      "ref": "102"
@@ -1195,16 +1177,15 @@
     }
    ],
    "dst": "116",
-   "id": 112
-  },
-  {
-   "op": "intrinsic",
+   "id": 112,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "65"
-   ],
+    "64"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -1214,16 +1195,15 @@
     }
    ],
    "dst": "117",
-   "id": 113
+   "id": 113,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "65"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "116",
-    "117"
-   ],
    "args": [
     {
      "ref": "116"
@@ -1233,16 +1213,15 @@
     }
    ],
    "dst": "118",
-   "id": 114
+   "id": 114,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "116",
+    "117"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "115",
-    "118"
-   ],
    "args": [
     {
      "ref": "115"
@@ -1252,15 +1231,15 @@
     }
    ],
    "dst": "119",
-   "id": 115
+   "id": 115,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "115",
+    "118"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "119"
-   ],
    "args": [
     {
      "ref": "119"
@@ -1270,16 +1249,14 @@
     }
    ],
    "dst": "120",
-   "id": 116
+   "id": 116,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "119"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "49"
-   ],
    "args": [
     {
      "ref": "103"
@@ -1289,16 +1266,15 @@
     }
    ],
    "dst": "121",
-   "id": 117
-  },
-  {
-   "op": "intrinsic",
+   "id": 117,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "50"
-   ],
+    "49"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -1308,16 +1284,15 @@
     }
    ],
    "dst": "122",
-   "id": 118
+   "id": 118,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "50"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "121",
-    "122"
-   ],
    "args": [
     {
      "ref": "121"
@@ -1327,16 +1302,15 @@
     }
    ],
    "dst": "123",
-   "id": 119
+   "id": 119,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "121",
+    "122"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "64"
-   ],
    "args": [
     {
      "ref": "103"
@@ -1346,16 +1320,15 @@
     }
    ],
    "dst": "124",
-   "id": 120
-  },
-  {
-   "op": "intrinsic",
+   "id": 120,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "65"
-   ],
+    "64"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -1365,16 +1338,15 @@
     }
    ],
    "dst": "125",
-   "id": 121
+   "id": 121,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "65"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "124",
-    "125"
-   ],
    "args": [
     {
      "ref": "124"
@@ -1384,16 +1356,15 @@
     }
    ],
    "dst": "126",
-   "id": 122
+   "id": 122,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "124",
+    "125"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "123",
-    "126"
-   ],
    "args": [
     {
      "ref": "123"
@@ -1403,15 +1374,15 @@
     }
    ],
    "dst": "127",
-   "id": 123
+   "id": 123,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "123",
+    "126"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "127"
-   ],
    "args": [
     {
      "ref": "127"
@@ -1421,16 +1392,14 @@
     }
    ],
    "dst": "128",
-   "id": 124
+   "id": 124,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "127"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "49"
-   ],
    "args": [
     {
      "ref": "104"
@@ -1440,16 +1409,15 @@
     }
    ],
    "dst": "129",
-   "id": 125
-  },
-  {
-   "op": "intrinsic",
+   "id": 125,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "50"
-   ],
+    "49"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -1459,16 +1427,15 @@
     }
    ],
    "dst": "130",
-   "id": 126
+   "id": 126,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "50"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "129",
-    "130"
-   ],
    "args": [
     {
      "ref": "129"
@@ -1478,16 +1445,15 @@
     }
    ],
    "dst": "131",
-   "id": 127
+   "id": 127,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "129",
+    "130"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "64"
-   ],
    "args": [
     {
      "ref": "104"
@@ -1497,16 +1463,15 @@
     }
    ],
    "dst": "132",
-   "id": 128
-  },
-  {
-   "op": "intrinsic",
+   "id": 128,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "65"
-   ],
+    "64"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -1516,16 +1481,15 @@
     }
    ],
    "dst": "133",
-   "id": 129
+   "id": 129,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "65"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "132",
-    "133"
-   ],
    "args": [
     {
      "ref": "132"
@@ -1535,16 +1499,15 @@
     }
    ],
    "dst": "134",
-   "id": 130
+   "id": 130,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "132",
+    "133"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "131",
-    "134"
-   ],
    "args": [
     {
      "ref": "131"
@@ -1554,15 +1517,15 @@
     }
    ],
    "dst": "135",
-   "id": 131
+   "id": 131,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "131",
+    "134"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "135"
-   ],
    "args": [
     {
      "ref": "135"
@@ -1572,16 +1535,14 @@
     }
    ],
    "dst": "136",
-   "id": 132
+   "id": 132,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "135"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "54",
-    "69"
-   ],
    "args": [
     {
      "ref": "54"
@@ -1591,25 +1552,25 @@
     }
    ],
    "dst": "137",
-   "id": 133
+   "id": 133,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "54",
+    "69"
+   ]
   },
   {
+   "amt": 6,
+   "dst": "138",
+   "id": 134,
    "op": "shl",
-   "type": "<4 x i32>",
    "src": [
     "137"
    ],
-   "dst": "138",
-   "amt": 6,
-   "id": 134
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "138"
-   ],
    "args": [
     {
      "ref": "138"
@@ -1619,46 +1580,44 @@
     }
    ],
    "dst": "139",
-   "id": 135
+   "id": 135,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "138"
+   ]
   },
   {
+   "const_vec": [
+    83,
+    36,
+    83,
+    36
+   ],
+   "dst": "140",
+   "id": 136,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "55"
    ],
-   "dst": "140",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     83,
     36,
     83,
     36
    ],
-   "id": 136
-  },
-  {
+   "dst": "141",
+   "id": 137,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "70"
    ],
-   "dst": "141",
-   "const_vec": [
-    83,
-    36,
-    83,
-    36
-   ],
-   "id": 137
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "140",
-    "141"
-   ],
    "args": [
     {
      "ref": "140"
@@ -1668,15 +1627,15 @@
     }
    ],
    "dst": "142",
-   "id": 138
+   "id": 138,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "140",
+    "141"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "142"
-   ],
    "args": [
     {
      "ref": "142"
@@ -1686,46 +1645,44 @@
     }
    ],
    "dst": "143",
-   "id": 139
+   "id": 139,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "142"
+   ]
   },
   {
+   "const_vec": [
+    64,
+    -64,
+    64,
+    -64
+   ],
+   "dst": "144",
+   "id": 140,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "54"
    ],
-   "dst": "144",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     64,
     -64,
     64,
     -64
    ],
-   "id": 140
-  },
-  {
+   "dst": "145",
+   "id": 141,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "69"
    ],
-   "dst": "145",
-   "const_vec": [
-    64,
-    -64,
-    64,
-    -64
-   ],
-   "id": 141
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "144",
-    "145"
-   ],
    "args": [
     {
      "ref": "144"
@@ -1735,15 +1692,15 @@
     }
    ],
    "dst": "146",
-   "id": 142
+   "id": 142,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "144",
+    "145"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "146"
-   ],
    "args": [
     {
      "ref": "146"
@@ -1753,46 +1710,44 @@
     }
    ],
    "dst": "147",
-   "id": 143
+   "id": 143,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "146"
+   ]
   },
   {
+   "const_vec": [
+    36,
+    -83,
+    36,
+    -83
+   ],
+   "dst": "148",
+   "id": 144,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "55"
    ],
-   "dst": "148",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     36,
     -83,
     36,
     -83
    ],
-   "id": 144
-  },
-  {
+   "dst": "149",
+   "id": 145,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "70"
    ],
-   "dst": "149",
-   "const_vec": [
-    36,
-    -83,
-    36,
-    -83
-   ],
-   "id": 145
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "148",
-    "149"
-   ],
    "args": [
     {
      "ref": "148"
@@ -1802,15 +1757,15 @@
     }
    ],
    "dst": "150",
-   "id": 146
+   "id": 146,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "148",
+    "149"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "150"
-   ],
    "args": [
     {
      "ref": "150"
@@ -1820,16 +1775,14 @@
     }
    ],
    "dst": "151",
-   "id": 147
+   "id": 147,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "150"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "79"
-   ],
    "args": [
     {
      "ref": "101"
@@ -1839,16 +1792,15 @@
     }
    ],
    "dst": "152",
-   "id": 148
-  },
-  {
-   "op": "intrinsic",
+   "id": 148,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "80"
-   ],
+    "79"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -1858,16 +1810,15 @@
     }
    ],
    "dst": "153",
-   "id": 149
+   "id": 149,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "80"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "152",
-    "153"
-   ],
    "args": [
     {
      "ref": "152"
@@ -1877,16 +1828,15 @@
     }
    ],
    "dst": "154",
-   "id": 150
+   "id": 150,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "152",
+    "153"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "94"
-   ],
    "args": [
     {
      "ref": "101"
@@ -1896,16 +1846,15 @@
     }
    ],
    "dst": "155",
-   "id": 151
-  },
-  {
-   "op": "intrinsic",
+   "id": 151,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "95"
-   ],
+    "94"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -1915,16 +1864,15 @@
     }
    ],
    "dst": "156",
-   "id": 152
+   "id": 152,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "95"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "155",
-    "156"
-   ],
    "args": [
     {
      "ref": "155"
@@ -1934,16 +1882,15 @@
     }
    ],
    "dst": "157",
-   "id": 153
+   "id": 153,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "155",
+    "156"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "154",
-    "157"
-   ],
    "args": [
     {
      "ref": "154"
@@ -1953,15 +1900,15 @@
     }
    ],
    "dst": "158",
-   "id": 154
+   "id": 154,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "154",
+    "157"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "158"
-   ],
    "args": [
     {
      "ref": "158"
@@ -1971,16 +1918,14 @@
     }
    ],
    "dst": "159",
-   "id": 155
+   "id": 155,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "158"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "79"
-   ],
    "args": [
     {
      "ref": "102"
@@ -1990,16 +1935,15 @@
     }
    ],
    "dst": "160",
-   "id": 156
-  },
-  {
-   "op": "intrinsic",
+   "id": 156,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "80"
-   ],
+    "79"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -2009,16 +1953,15 @@
     }
    ],
    "dst": "161",
-   "id": 157
+   "id": 157,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "80"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "160",
-    "161"
-   ],
    "args": [
     {
      "ref": "160"
@@ -2028,16 +1971,15 @@
     }
    ],
    "dst": "162",
-   "id": 158
+   "id": 158,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "160",
+    "161"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "94"
-   ],
    "args": [
     {
      "ref": "102"
@@ -2047,16 +1989,15 @@
     }
    ],
    "dst": "163",
-   "id": 159
-  },
-  {
-   "op": "intrinsic",
+   "id": 159,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "95"
-   ],
+    "94"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -2066,16 +2007,15 @@
     }
    ],
    "dst": "164",
-   "id": 160
+   "id": 160,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "95"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "163",
-    "164"
-   ],
    "args": [
     {
      "ref": "163"
@@ -2085,16 +2025,15 @@
     }
    ],
    "dst": "165",
-   "id": 161
+   "id": 161,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "163",
+    "164"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "162",
-    "165"
-   ],
    "args": [
     {
      "ref": "162"
@@ -2104,15 +2043,15 @@
     }
    ],
    "dst": "166",
-   "id": 162
+   "id": 162,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "162",
+    "165"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "166"
-   ],
    "args": [
     {
      "ref": "166"
@@ -2122,16 +2061,14 @@
     }
    ],
    "dst": "167",
-   "id": 163
+   "id": 163,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "166"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "79"
-   ],
    "args": [
     {
      "ref": "103"
@@ -2141,16 +2078,15 @@
     }
    ],
    "dst": "168",
-   "id": 164
-  },
-  {
-   "op": "intrinsic",
+   "id": 164,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "80"
-   ],
+    "79"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -2160,16 +2096,15 @@
     }
    ],
    "dst": "169",
-   "id": 165
+   "id": 165,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "80"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "168",
-    "169"
-   ],
    "args": [
     {
      "ref": "168"
@@ -2179,16 +2114,15 @@
     }
    ],
    "dst": "170",
-   "id": 166
+   "id": 166,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "168",
+    "169"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "94"
-   ],
    "args": [
     {
      "ref": "103"
@@ -2198,16 +2132,15 @@
     }
    ],
    "dst": "171",
-   "id": 167
-  },
-  {
-   "op": "intrinsic",
+   "id": 167,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "95"
-   ],
+    "94"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -2217,16 +2150,15 @@
     }
    ],
    "dst": "172",
-   "id": 168
+   "id": 168,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "95"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "171",
-    "172"
-   ],
    "args": [
     {
      "ref": "171"
@@ -2236,16 +2168,15 @@
     }
    ],
    "dst": "173",
-   "id": 169
+   "id": 169,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "171",
+    "172"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "170",
-    "173"
-   ],
    "args": [
     {
      "ref": "170"
@@ -2255,15 +2186,15 @@
     }
    ],
    "dst": "174",
-   "id": 170
+   "id": 170,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "170",
+    "173"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "174"
-   ],
    "args": [
     {
      "ref": "174"
@@ -2273,16 +2204,14 @@
     }
    ],
    "dst": "175",
-   "id": 171
+   "id": 171,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "174"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "79"
-   ],
    "args": [
     {
      "ref": "104"
@@ -2292,16 +2221,15 @@
     }
    ],
    "dst": "176",
-   "id": 172
-  },
-  {
-   "op": "intrinsic",
+   "id": 172,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "80"
-   ],
+    "79"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -2311,16 +2239,15 @@
     }
    ],
    "dst": "177",
-   "id": 173
+   "id": 173,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "80"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "176",
-    "177"
-   ],
    "args": [
     {
      "ref": "176"
@@ -2330,16 +2257,15 @@
     }
    ],
    "dst": "178",
-   "id": 174
+   "id": 174,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "176",
+    "177"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "94"
-   ],
    "args": [
     {
      "ref": "104"
@@ -2349,16 +2275,15 @@
     }
    ],
    "dst": "179",
-   "id": 175
-  },
-  {
-   "op": "intrinsic",
+   "id": 175,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "95"
-   ],
+    "94"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -2368,16 +2293,15 @@
     }
    ],
    "dst": "180",
-   "id": 176
+   "id": 176,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "95"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "179",
-    "180"
-   ],
    "args": [
     {
      "ref": "179"
@@ -2387,16 +2311,15 @@
     }
    ],
    "dst": "181",
-   "id": 177
+   "id": 177,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "179",
+    "180"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "178",
-    "181"
-   ],
    "args": [
     {
      "ref": "178"
@@ -2406,15 +2329,15 @@
     }
    ],
    "dst": "182",
-   "id": 178
+   "id": 178,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "178",
+    "181"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "182"
-   ],
    "args": [
     {
      "ref": "182"
@@ -2424,16 +2347,14 @@
     }
    ],
    "dst": "183",
-   "id": 179
+   "id": 179,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "182"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "84",
-    "99"
-   ],
    "args": [
     {
      "ref": "84"
@@ -2443,25 +2364,25 @@
     }
    ],
    "dst": "184",
-   "id": 180
+   "id": 180,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "84",
+    "99"
+   ]
   },
   {
+   "amt": 6,
+   "dst": "185",
+   "id": 181,
    "op": "shl",
-   "type": "<4 x i32>",
    "src": [
     "184"
    ],
-   "dst": "185",
-   "amt": 6,
-   "id": 181
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "185"
-   ],
    "args": [
     {
      "ref": "185"
@@ -2471,46 +2392,44 @@
     }
    ],
    "dst": "186",
-   "id": 182
+   "id": 182,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "185"
+   ]
   },
   {
+   "const_vec": [
+    83,
+    36,
+    83,
+    36
+   ],
+   "dst": "187",
+   "id": 183,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "85"
    ],
-   "dst": "187",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     83,
     36,
     83,
     36
    ],
-   "id": 183
-  },
-  {
+   "dst": "188",
+   "id": 184,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "100"
    ],
-   "dst": "188",
-   "const_vec": [
-    83,
-    36,
-    83,
-    36
-   ],
-   "id": 184
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "187",
-    "188"
-   ],
    "args": [
     {
      "ref": "187"
@@ -2520,15 +2439,15 @@
     }
    ],
    "dst": "189",
-   "id": 185
+   "id": 185,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "187",
+    "188"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "189"
-   ],
    "args": [
     {
      "ref": "189"
@@ -2538,46 +2457,44 @@
     }
    ],
    "dst": "190",
-   "id": 186
+   "id": 186,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "189"
+   ]
   },
   {
+   "const_vec": [
+    64,
+    -64,
+    64,
+    -64
+   ],
+   "dst": "191",
+   "id": 187,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "84"
    ],
-   "dst": "191",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     64,
     -64,
     64,
     -64
    ],
-   "id": 187
-  },
-  {
+   "dst": "192",
+   "id": 188,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "99"
    ],
-   "dst": "192",
-   "const_vec": [
-    64,
-    -64,
-    64,
-    -64
-   ],
-   "id": 188
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "191",
-    "192"
-   ],
    "args": [
     {
      "ref": "191"
@@ -2587,15 +2504,15 @@
     }
    ],
    "dst": "193",
-   "id": 189
+   "id": 189,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "191",
+    "192"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "193"
-   ],
    "args": [
     {
      "ref": "193"
@@ -2605,46 +2522,44 @@
     }
    ],
    "dst": "194",
-   "id": 190
+   "id": 190,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "193"
+   ]
   },
   {
+   "const_vec": [
+    36,
+    -83,
+    36,
+    -83
+   ],
+   "dst": "195",
+   "id": 191,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "85"
    ],
-   "dst": "195",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     36,
     -83,
     36,
     -83
    ],
-   "id": 191
-  },
-  {
+   "dst": "196",
+   "id": 192,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "100"
    ],
-   "dst": "196",
-   "const_vec": [
-    36,
-    -83,
-    36,
-    -83
-   ],
-   "id": 192
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "195",
-    "196"
-   ],
    "args": [
     {
      "ref": "195"
@@ -2654,15 +2569,15 @@
     }
    ],
    "dst": "197",
-   "id": 193
+   "id": 193,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "195",
+    "196"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "197"
-   ],
    "args": [
     {
      "ref": "197"
@@ -2672,676 +2587,674 @@
     }
    ],
    "dst": "198",
-   "id": 194
+   "id": 194,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "197"
+   ]
   },
   {
+   "dst": "199",
+   "id": 195,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "186"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "200",
+   "id": 196,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "199",
-   "id": 195
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "159"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "200",
-   "id": 196
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "139",
    "dst": "201",
-   "id": 197
-  },
-  {
+   "id": 197,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "199",
-   "dst": "202",
-   "id": 198
+   "src": "139",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "202",
+   "id": 198,
+   "op": "sext",
+   "src": "199",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "203",
+   "id": 199,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "202",
     "201"
    ],
-   "dst": "203",
-   "id": 199
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "112",
    "dst": "204",
-   "id": 200
-  },
-  {
+   "id": 200,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "200",
-   "dst": "205",
-   "id": 201
+   "src": "112",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "205",
+   "id": 201,
+   "op": "sext",
+   "src": "200",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "206",
+   "id": 202,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "205",
     "204"
    ],
-   "dst": "206",
-   "id": 202
+   "type": "<4 x i32>"
   },
   {
+   "dst": "207",
+   "id": 203,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "139",
     "199"
    ],
-   "dst": "207",
-   "id": 203
+   "type": "<4 x i16>"
   },
   {
+   "dst": "208",
+   "id": 204,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "112",
     "200"
    ],
-   "dst": "208",
-   "id": 204
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "203",
-    "206"
-   ],
+   "dst": "209",
+   "id": 205,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "209",
-   "id": 205
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "203",
     "206"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "210",
+   "id": 206,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "210",
-   "id": 206
+   "op": "shuffle",
+   "src": [
+    "203",
+    "206"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "210"
-   ],
+   "dst": "211",
+   "id": 207,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "211",
-   "id": 207
+   "op": "shuffle",
+   "src": [
+    "210"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "212",
+   "id": 208,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "211",
     "209"
    ],
-   "dst": "212",
-   "id": 208
+   "type": "<4 x i32>"
   },
   {
+   "dst": "213",
+   "id": 209,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "209",
     "211"
    ],
-   "dst": "213",
-   "id": 209
+   "type": "<4 x i32>"
   },
   {
+   "dst": "214",
+   "id": 210,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "190"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "215",
+   "id": 211,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "214",
-   "id": 210
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "167"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "215",
-   "id": 211
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "143",
    "dst": "216",
-   "id": 212
-  },
-  {
+   "id": 212,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "214",
-   "dst": "217",
-   "id": 213
+   "src": "143",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "217",
+   "id": 213,
+   "op": "sext",
+   "src": "214",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "218",
+   "id": 214,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "217",
     "216"
    ],
-   "dst": "218",
-   "id": 214
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "120",
    "dst": "219",
-   "id": 215
-  },
-  {
+   "id": 215,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "215",
-   "dst": "220",
-   "id": 216
+   "src": "120",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "220",
+   "id": 216,
+   "op": "sext",
+   "src": "215",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "221",
+   "id": 217,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "220",
     "219"
    ],
-   "dst": "221",
-   "id": 217
+   "type": "<4 x i32>"
   },
   {
+   "dst": "222",
+   "id": 218,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "143",
     "214"
    ],
-   "dst": "222",
-   "id": 218
+   "type": "<4 x i16>"
   },
   {
+   "dst": "223",
+   "id": 219,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "120",
     "215"
    ],
-   "dst": "223",
-   "id": 219
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "218",
-    "221"
-   ],
+   "dst": "224",
+   "id": 220,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "224",
-   "id": 220
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "218",
     "221"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "225",
+   "id": 221,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "225",
-   "id": 221
+   "op": "shuffle",
+   "src": [
+    "218",
+    "221"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "225"
-   ],
+   "dst": "226",
+   "id": 222,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "226",
-   "id": 222
+   "op": "shuffle",
+   "src": [
+    "225"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "227",
+   "id": 223,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "226",
     "224"
    ],
-   "dst": "227",
-   "id": 223
+   "type": "<4 x i32>"
   },
   {
+   "dst": "228",
+   "id": 224,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "224",
     "226"
    ],
-   "dst": "228",
-   "id": 224
+   "type": "<4 x i32>"
   },
   {
+   "dst": "229",
+   "id": 225,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "194"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "230",
+   "id": 226,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "229",
-   "id": 225
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "175"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "230",
-   "id": 226
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "147",
    "dst": "231",
-   "id": 227
-  },
-  {
+   "id": 227,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "229",
-   "dst": "232",
-   "id": 228
+   "src": "147",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "232",
+   "id": 228,
+   "op": "sext",
+   "src": "229",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "233",
+   "id": 229,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "232",
     "231"
    ],
-   "dst": "233",
-   "id": 229
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "128",
    "dst": "234",
-   "id": 230
-  },
-  {
+   "id": 230,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "230",
-   "dst": "235",
-   "id": 231
+   "src": "128",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "235",
+   "id": 231,
+   "op": "sext",
+   "src": "230",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "236",
+   "id": 232,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "235",
     "234"
    ],
-   "dst": "236",
-   "id": 232
+   "type": "<4 x i32>"
   },
   {
+   "dst": "237",
+   "id": 233,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "147",
     "229"
    ],
-   "dst": "237",
-   "id": 233
+   "type": "<4 x i16>"
   },
   {
+   "dst": "238",
+   "id": 234,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "128",
     "230"
    ],
-   "dst": "238",
-   "id": 234
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "233",
-    "236"
-   ],
+   "dst": "239",
+   "id": 235,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "239",
-   "id": 235
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "233",
     "236"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "240",
+   "id": 236,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "240",
-   "id": 236
+   "op": "shuffle",
+   "src": [
+    "233",
+    "236"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "240"
-   ],
+   "dst": "241",
+   "id": 237,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "241",
-   "id": 237
+   "op": "shuffle",
+   "src": [
+    "240"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "242",
+   "id": 238,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "241",
     "239"
    ],
-   "dst": "242",
-   "id": 238
+   "type": "<4 x i32>"
   },
   {
+   "dst": "243",
+   "id": 239,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "239",
     "241"
    ],
-   "dst": "243",
-   "id": 239
+   "type": "<4 x i32>"
   },
   {
+   "dst": "244",
+   "id": 240,
+   "mask": [
+    3,
+    2,
+    1,
+    0
+   ],
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "198"
    ],
+   "type": "<4 x i16>"
+  },
+  {
+   "dst": "245",
+   "id": 241,
    "mask": [
     3,
     2,
     1,
     0
    ],
-   "dst": "244",
-   "id": 240
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i16>",
    "src": [
     "183"
    ],
-   "mask": [
-    3,
-    2,
-    1,
-    0
-   ],
-   "dst": "245",
-   "id": 241
+   "type": "<4 x i16>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "151",
    "dst": "246",
-   "id": 242
-  },
-  {
+   "id": 242,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "244",
-   "dst": "247",
-   "id": 243
+   "src": "151",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "247",
+   "id": 243,
+   "op": "sext",
+   "src": "244",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "248",
+   "id": 244,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "247",
     "246"
    ],
-   "dst": "248",
-   "id": 244
+   "type": "<4 x i32>"
   },
   {
-   "op": "sext",
-   "type": "<4 x i32>",
-   "src": "136",
    "dst": "249",
-   "id": 245
-  },
-  {
+   "id": 245,
    "op": "sext",
-   "type": "<4 x i32>",
-   "src": "245",
-   "dst": "250",
-   "id": 246
+   "src": "136",
+   "type": "<4 x i32>"
   },
   {
+   "dst": "250",
+   "id": 246,
+   "op": "sext",
+   "src": "245",
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "251",
+   "id": 247,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "250",
     "249"
    ],
-   "dst": "251",
-   "id": 247
+   "type": "<4 x i32>"
   },
   {
+   "dst": "252",
+   "id": 248,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "151",
     "244"
    ],
-   "dst": "252",
-   "id": 248
+   "type": "<4 x i16>"
   },
   {
+   "dst": "253",
+   "id": 249,
    "op": "sub",
-   "type": "<4 x i16>",
    "src": [
     "136",
     "245"
    ],
-   "dst": "253",
-   "id": 249
+   "type": "<4 x i16>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "248",
-    "251"
-   ],
+   "dst": "254",
+   "id": 250,
    "mask": [
     0,
     1,
     4,
     5
    ],
-   "dst": "254",
-   "id": 250
-  },
-  {
    "op": "shuffle",
-   "type": "<4 x i32>",
    "src": [
     "248",
     "251"
    ],
+   "type": "<4 x i32>"
+  },
+  {
+   "dst": "255",
+   "id": 251,
    "mask": [
     2,
     3,
     6,
     7
    ],
-   "dst": "255",
-   "id": 251
+   "op": "shuffle",
+   "src": [
+    "248",
+    "251"
+   ],
+   "type": "<4 x i32>"
   },
   {
-   "op": "shuffle",
-   "type": "<4 x i32>",
-   "src": [
-    "255"
-   ],
+   "dst": "256",
+   "id": 252,
    "mask": [
     1,
     0,
     3,
     2
    ],
-   "dst": "256",
-   "id": 252
+   "op": "shuffle",
+   "src": [
+    "255"
+   ],
+   "type": "<4 x i32>"
   },
   {
+   "dst": "257",
+   "id": 253,
    "op": "add",
-   "type": "<4 x i32>",
    "src": [
     "256",
     "254"
    ],
-   "dst": "257",
-   "id": 253
+   "type": "<4 x i32>"
   },
   {
+   "dst": "258",
+   "id": 254,
    "op": "sub",
-   "type": "<4 x i32>",
    "src": [
     "254",
     "256"
    ],
-   "dst": "258",
-   "id": 254
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "207"
-   ],
    "args": [
     {
      "ref": "101"
@@ -3351,16 +3264,15 @@
     }
    ],
    "dst": "259",
-   "id": 255
-  },
-  {
-   "op": "intrinsic",
+   "id": 255,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "208"
-   ],
+    "207"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -3370,16 +3282,15 @@
     }
    ],
    "dst": "260",
-   "id": 256
+   "id": 256,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "208"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "259",
-    "260"
-   ],
    "args": [
     {
      "ref": "259"
@@ -3389,16 +3300,15 @@
     }
    ],
    "dst": "261",
-   "id": 257
+   "id": 257,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "259",
+    "260"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "222"
-   ],
    "args": [
     {
      "ref": "101"
@@ -3408,16 +3318,15 @@
     }
    ],
    "dst": "262",
-   "id": 258
-  },
-  {
-   "op": "intrinsic",
+   "id": 258,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "223"
-   ],
+    "222"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -3427,16 +3336,15 @@
     }
    ],
    "dst": "263",
-   "id": 259
+   "id": 259,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "223"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "262",
-    "263"
-   ],
    "args": [
     {
      "ref": "262"
@@ -3446,16 +3354,15 @@
     }
    ],
    "dst": "264",
-   "id": 260
+   "id": 260,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "262",
+    "263"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "261",
-    "264"
-   ],
    "args": [
     {
      "ref": "261"
@@ -3465,15 +3372,15 @@
     }
    ],
    "dst": "265",
-   "id": 261
+   "id": 261,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "261",
+    "264"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "265"
-   ],
    "args": [
     {
      "ref": "265"
@@ -3483,30 +3390,28 @@
     }
    ],
    "dst": "266",
-   "id": 262
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 16",
-   "dst": "267",
-   "id": 263
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "266",
-   "ptr": "267",
-   "id": 264
-  },
-  {
+   "id": 262,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "102",
-    "207"
-   ],
+    "265"
+   ]
+  },
+  {
+   "dst": "267",
+   "id": 263,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 16",
+   "type": "ptr"
+  },
+  {
+   "id": 264,
+   "op": "store",
+   "ptr": "267",
+   "src": "266",
+   "type": "<4 x i16> %266"
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -3516,16 +3421,15 @@
     }
    ],
    "dst": "268",
-   "id": 265
-  },
-  {
-   "op": "intrinsic",
+   "id": 265,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "208"
-   ],
+    "207"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -3535,16 +3439,15 @@
     }
    ],
    "dst": "269",
-   "id": 266
+   "id": 266,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "208"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "268",
-    "269"
-   ],
    "args": [
     {
      "ref": "268"
@@ -3554,16 +3457,15 @@
     }
    ],
    "dst": "270",
-   "id": 267
+   "id": 267,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "268",
+    "269"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "222"
-   ],
    "args": [
     {
      "ref": "102"
@@ -3573,16 +3475,15 @@
     }
    ],
    "dst": "271",
-   "id": 268
-  },
-  {
-   "op": "intrinsic",
+   "id": 268,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "223"
-   ],
+    "222"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -3592,16 +3493,15 @@
     }
    ],
    "dst": "272",
-   "id": 269
+   "id": 269,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "223"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "271",
-    "272"
-   ],
    "args": [
     {
      "ref": "271"
@@ -3611,16 +3511,15 @@
     }
    ],
    "dst": "273",
-   "id": 270
+   "id": 270,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "271",
+    "272"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "270",
-    "273"
-   ],
    "args": [
     {
      "ref": "270"
@@ -3630,15 +3529,15 @@
     }
    ],
    "dst": "274",
-   "id": 271
+   "id": 271,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "270",
+    "273"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "274"
-   ],
    "args": [
     {
      "ref": "274"
@@ -3648,30 +3547,28 @@
     }
    ],
    "dst": "275",
-   "id": 272
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 48",
-   "dst": "276",
-   "id": 273
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "275",
-   "ptr": "276",
-   "id": 274
-  },
-  {
+   "id": 272,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "103",
-    "207"
-   ],
+    "274"
+   ]
+  },
+  {
+   "dst": "276",
+   "id": 273,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 48",
+   "type": "ptr"
+  },
+  {
+   "id": 274,
+   "op": "store",
+   "ptr": "276",
+   "src": "275",
+   "type": "<4 x i16> %275"
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -3681,16 +3578,15 @@
     }
    ],
    "dst": "277",
-   "id": 275
-  },
-  {
-   "op": "intrinsic",
+   "id": 275,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "208"
-   ],
+    "207"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -3700,16 +3596,15 @@
     }
    ],
    "dst": "278",
-   "id": 276
+   "id": 276,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "208"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "277",
-    "278"
-   ],
    "args": [
     {
      "ref": "277"
@@ -3719,16 +3614,15 @@
     }
    ],
    "dst": "279",
-   "id": 277
+   "id": 277,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "277",
+    "278"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "222"
-   ],
    "args": [
     {
      "ref": "103"
@@ -3738,16 +3632,15 @@
     }
    ],
    "dst": "280",
-   "id": 278
-  },
-  {
-   "op": "intrinsic",
+   "id": 278,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "223"
-   ],
+    "222"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -3757,16 +3650,15 @@
     }
    ],
    "dst": "281",
-   "id": 279
+   "id": 279,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "223"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "280",
-    "281"
-   ],
    "args": [
     {
      "ref": "280"
@@ -3776,16 +3668,15 @@
     }
    ],
    "dst": "282",
-   "id": 280
+   "id": 280,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "280",
+    "281"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "279",
-    "282"
-   ],
    "args": [
     {
      "ref": "279"
@@ -3795,15 +3686,15 @@
     }
    ],
    "dst": "283",
-   "id": 281
+   "id": 281,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "279",
+    "282"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "283"
-   ],
    "args": [
     {
      "ref": "283"
@@ -3813,30 +3704,28 @@
     }
    ],
    "dst": "284",
-   "id": 282
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 80",
-   "dst": "285",
-   "id": 283
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "284",
-   "ptr": "285",
-   "id": 284
-  },
-  {
+   "id": 282,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "104",
-    "207"
-   ],
+    "283"
+   ]
+  },
+  {
+   "dst": "285",
+   "id": 283,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 80",
+   "type": "ptr"
+  },
+  {
+   "id": 284,
+   "op": "store",
+   "ptr": "285",
+   "src": "284",
+   "type": "<4 x i16> %284"
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -3846,16 +3735,15 @@
     }
    ],
    "dst": "286",
-   "id": 285
-  },
-  {
-   "op": "intrinsic",
+   "id": 285,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "208"
-   ],
+    "207"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -3865,16 +3753,15 @@
     }
    ],
    "dst": "287",
-   "id": 286
+   "id": 286,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "208"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "286",
-    "287"
-   ],
    "args": [
     {
      "ref": "286"
@@ -3884,16 +3771,15 @@
     }
    ],
    "dst": "288",
-   "id": 287
+   "id": 287,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "286",
+    "287"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "222"
-   ],
    "args": [
     {
      "ref": "104"
@@ -3903,16 +3789,15 @@
     }
    ],
    "dst": "289",
-   "id": 288
-  },
-  {
-   "op": "intrinsic",
+   "id": 288,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "223"
-   ],
+    "222"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -3922,16 +3807,15 @@
     }
    ],
    "dst": "290",
-   "id": 289
+   "id": 289,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "223"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "289",
-    "290"
-   ],
    "args": [
     {
      "ref": "289"
@@ -3941,16 +3825,15 @@
     }
    ],
    "dst": "291",
-   "id": 290
+   "id": 290,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "289",
+    "290"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "288",
-    "291"
-   ],
    "args": [
     {
      "ref": "288"
@@ -3960,15 +3843,15 @@
     }
    ],
    "dst": "292",
-   "id": 291
+   "id": 291,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "288",
+    "291"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "292"
-   ],
    "args": [
     {
      "ref": "292"
@@ -3978,30 +3861,28 @@
     }
    ],
    "dst": "293",
-   "id": 292
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 112",
-   "dst": "294",
-   "id": 293
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "293",
-   "ptr": "294",
-   "id": 294
-  },
-  {
+   "id": 292,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
    "src": [
-    "212",
-    "227"
-   ],
+    "292"
+   ]
+  },
+  {
+   "dst": "294",
+   "id": 293,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 112",
+   "type": "ptr"
+  },
+  {
+   "id": 294,
+   "op": "store",
+   "ptr": "294",
+   "src": "293",
+   "type": "<4 x i16> %293"
+  },
+  {
    "args": [
     {
      "ref": "212"
@@ -4011,25 +3892,25 @@
     }
    ],
    "dst": "295",
-   "id": 295
+   "id": 295,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "212",
+    "227"
+   ]
   },
   {
+   "amt": 6,
+   "dst": "296",
+   "id": 296,
    "op": "shl",
-   "type": "<4 x i32>",
    "src": [
     "295"
    ],
-   "dst": "296",
-   "amt": 6,
-   "id": 296
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "296"
-   ],
    "args": [
     {
      "ref": "296"
@@ -4039,53 +3920,51 @@
     }
    ],
    "dst": "297",
-   "id": 297
+   "id": 297,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "296"
+   ]
   },
   {
+   "id": 298,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "297",
    "ptr": "1",
-   "id": 298
+   "src": "297",
+   "type": "<4 x i16> %297"
   },
   {
+   "const_vec": [
+    83,
+    36,
+    83,
+    36
+   ],
+   "dst": "298",
+   "id": 299,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "213"
    ],
-   "dst": "298",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     83,
     36,
     83,
     36
    ],
-   "id": 299
-  },
-  {
+   "dst": "299",
+   "id": 300,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "228"
    ],
-   "dst": "299",
-   "const_vec": [
-    83,
-    36,
-    83,
-    36
-   ],
-   "id": 300
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "298",
-    "299"
-   ],
    "args": [
     {
      "ref": "298"
@@ -4095,15 +3974,15 @@
     }
    ],
    "dst": "300",
-   "id": 301
+   "id": 301,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "298",
+    "299"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "300"
-   ],
    "args": [
     {
      "ref": "300"
@@ -4113,60 +3992,58 @@
     }
    ],
    "dst": "301",
-   "id": 302
+   "id": 302,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "300"
+   ]
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 32",
    "dst": "302",
-   "id": 303
+   "id": 303,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 32",
+   "type": "ptr"
   },
   {
+   "id": 304,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "301",
    "ptr": "302",
-   "id": 304
+   "src": "301",
+   "type": "<4 x i16> %301"
   },
   {
+   "const_vec": [
+    64,
+    -64,
+    64,
+    -64
+   ],
+   "dst": "303",
+   "id": 305,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "212"
    ],
-   "dst": "303",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     64,
     -64,
     64,
     -64
    ],
-   "id": 305
-  },
-  {
+   "dst": "304",
+   "id": 306,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "227"
    ],
-   "dst": "304",
-   "const_vec": [
-    64,
-    -64,
-    64,
-    -64
-   ],
-   "id": 306
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "303",
-    "304"
-   ],
    "args": [
     {
      "ref": "303"
@@ -4176,15 +4053,15 @@
     }
    ],
    "dst": "305",
-   "id": 307
+   "id": 307,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "303",
+    "304"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "305"
-   ],
    "args": [
     {
      "ref": "305"
@@ -4194,60 +4071,58 @@
     }
    ],
    "dst": "306",
-   "id": 308
+   "id": 308,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "305"
+   ]
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 64",
    "dst": "307",
-   "id": 309
+   "id": 309,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 64",
+   "type": "ptr"
   },
   {
+   "id": 310,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "306",
    "ptr": "307",
-   "id": 310
+   "src": "306",
+   "type": "<4 x i16> %306"
   },
   {
+   "const_vec": [
+    36,
+    -83,
+    36,
+    -83
+   ],
+   "dst": "308",
+   "id": 311,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "213"
    ],
-   "dst": "308",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     36,
     -83,
     36,
     -83
    ],
-   "id": 311
-  },
-  {
+   "dst": "309",
+   "id": 312,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "228"
    ],
-   "dst": "309",
-   "const_vec": [
-    36,
-    -83,
-    36,
-    -83
-   ],
-   "id": 312
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "308",
-    "309"
-   ],
    "args": [
     {
      "ref": "308"
@@ -4257,15 +4132,15 @@
     }
    ],
    "dst": "310",
-   "id": 313
+   "id": 313,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "308",
+    "309"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "310"
-   ],
    "args": [
     {
      "ref": "310"
@@ -4275,37 +4150,35 @@
     }
    ],
    "dst": "311",
-   "id": 314
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 96",
-   "dst": "312",
-   "id": 315
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "311",
-   "ptr": "312",
-   "id": 316
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 8",
-   "dst": "313",
-   "id": 317
-  },
-  {
+   "id": 314,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "101",
-    "237"
-   ],
+    "310"
+   ]
+  },
+  {
+   "dst": "312",
+   "id": 315,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 96",
+   "type": "ptr"
+  },
+  {
+   "id": 316,
+   "op": "store",
+   "ptr": "312",
+   "src": "311",
+   "type": "<4 x i16> %311"
+  },
+  {
+   "dst": "313",
+   "id": 317,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 8",
+   "type": "ptr"
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -4315,16 +4188,15 @@
     }
    ],
    "dst": "314",
-   "id": 318
-  },
-  {
-   "op": "intrinsic",
+   "id": 318,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "238"
-   ],
+    "237"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -4334,16 +4206,15 @@
     }
    ],
    "dst": "315",
-   "id": 319
+   "id": 319,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "238"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "314",
-    "315"
-   ],
    "args": [
     {
      "ref": "314"
@@ -4353,16 +4224,15 @@
     }
    ],
    "dst": "316",
-   "id": 320
+   "id": 320,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "314",
+    "315"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "101",
-    "252"
-   ],
    "args": [
     {
      "ref": "101"
@@ -4372,16 +4242,15 @@
     }
    ],
    "dst": "317",
-   "id": 321
-  },
-  {
-   "op": "intrinsic",
+   "id": 321,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "101",
-    "253"
-   ],
+    "252"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "101"
@@ -4391,16 +4260,15 @@
     }
    ],
    "dst": "318",
-   "id": 322
+   "id": 322,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "101",
+    "253"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "317",
-    "318"
-   ],
    "args": [
     {
      "ref": "317"
@@ -4410,16 +4278,15 @@
     }
    ],
    "dst": "319",
-   "id": 323
+   "id": 323,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "317",
+    "318"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "316",
-    "319"
-   ],
    "args": [
     {
      "ref": "316"
@@ -4429,15 +4296,15 @@
     }
    ],
    "dst": "320",
-   "id": 324
+   "id": 324,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "316",
+    "319"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "320"
-   ],
    "args": [
     {
      "ref": "320"
@@ -4447,30 +4314,28 @@
     }
    ],
    "dst": "321",
-   "id": 325
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 24",
-   "dst": "322",
-   "id": 326
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "321",
-   "ptr": "322",
-   "id": 327
-  },
-  {
+   "id": 325,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "102",
-    "237"
-   ],
+    "320"
+   ]
+  },
+  {
+   "dst": "322",
+   "id": 326,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 24",
+   "type": "ptr"
+  },
+  {
+   "id": 327,
+   "op": "store",
+   "ptr": "322",
+   "src": "321",
+   "type": "<4 x i16> %321"
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -4480,16 +4345,15 @@
     }
    ],
    "dst": "323",
-   "id": 328
-  },
-  {
-   "op": "intrinsic",
+   "id": 328,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "238"
-   ],
+    "237"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -4499,16 +4363,15 @@
     }
    ],
    "dst": "324",
-   "id": 329
+   "id": 329,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "238"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "323",
-    "324"
-   ],
    "args": [
     {
      "ref": "323"
@@ -4518,16 +4381,15 @@
     }
    ],
    "dst": "325",
-   "id": 330
+   "id": 330,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "323",
+    "324"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "102",
-    "252"
-   ],
    "args": [
     {
      "ref": "102"
@@ -4537,16 +4399,15 @@
     }
    ],
    "dst": "326",
-   "id": 331
-  },
-  {
-   "op": "intrinsic",
+   "id": 331,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "102",
-    "253"
-   ],
+    "252"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "102"
@@ -4556,16 +4417,15 @@
     }
    ],
    "dst": "327",
-   "id": 332
+   "id": 332,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "102",
+    "253"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "326",
-    "327"
-   ],
    "args": [
     {
      "ref": "326"
@@ -4575,16 +4435,15 @@
     }
    ],
    "dst": "328",
-   "id": 333
+   "id": 333,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "326",
+    "327"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "325",
-    "328"
-   ],
    "args": [
     {
      "ref": "325"
@@ -4594,15 +4453,15 @@
     }
    ],
    "dst": "329",
-   "id": 334
+   "id": 334,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "325",
+    "328"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "329"
-   ],
    "args": [
     {
      "ref": "329"
@@ -4612,30 +4471,28 @@
     }
    ],
    "dst": "330",
-   "id": 335
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 56",
-   "dst": "331",
-   "id": 336
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "330",
-   "ptr": "331",
-   "id": 337
-  },
-  {
+   "id": 335,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "103",
-    "237"
-   ],
+    "329"
+   ]
+  },
+  {
+   "dst": "331",
+   "id": 336,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 56",
+   "type": "ptr"
+  },
+  {
+   "id": 337,
+   "op": "store",
+   "ptr": "331",
+   "src": "330",
+   "type": "<4 x i16> %330"
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -4645,16 +4502,15 @@
     }
    ],
    "dst": "332",
-   "id": 338
-  },
-  {
-   "op": "intrinsic",
+   "id": 338,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "238"
-   ],
+    "237"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -4664,16 +4520,15 @@
     }
    ],
    "dst": "333",
-   "id": 339
+   "id": 339,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "238"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "332",
-    "333"
-   ],
    "args": [
     {
      "ref": "332"
@@ -4683,16 +4538,15 @@
     }
    ],
    "dst": "334",
-   "id": 340
+   "id": 340,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "332",
+    "333"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "103",
-    "252"
-   ],
    "args": [
     {
      "ref": "103"
@@ -4702,16 +4556,15 @@
     }
    ],
    "dst": "335",
-   "id": 341
-  },
-  {
-   "op": "intrinsic",
+   "id": 341,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "103",
-    "253"
-   ],
+    "252"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "103"
@@ -4721,16 +4574,15 @@
     }
    ],
    "dst": "336",
-   "id": 342
+   "id": 342,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "103",
+    "253"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "335",
-    "336"
-   ],
    "args": [
     {
      "ref": "335"
@@ -4740,16 +4592,15 @@
     }
    ],
    "dst": "337",
-   "id": 343
+   "id": 343,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "335",
+    "336"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "334",
-    "337"
-   ],
    "args": [
     {
      "ref": "334"
@@ -4759,15 +4610,15 @@
     }
    ],
    "dst": "338",
-   "id": 344
+   "id": 344,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "334",
+    "337"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "338"
-   ],
    "args": [
     {
      "ref": "338"
@@ -4777,30 +4628,28 @@
     }
    ],
    "dst": "339",
-   "id": 345
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 88",
-   "dst": "340",
-   "id": 346
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "339",
-   "ptr": "340",
-   "id": 347
-  },
-  {
+   "id": 345,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
    "src": [
-    "104",
-    "237"
-   ],
+    "338"
+   ]
+  },
+  {
+   "dst": "340",
+   "id": 346,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 88",
+   "type": "ptr"
+  },
+  {
+   "id": 347,
+   "op": "store",
+   "ptr": "340",
+   "src": "339",
+   "type": "<4 x i16> %339"
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -4810,16 +4659,15 @@
     }
    ],
    "dst": "341",
-   "id": 348
-  },
-  {
-   "op": "intrinsic",
+   "id": 348,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "238"
-   ],
+    "237"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -4829,16 +4677,15 @@
     }
    ],
    "dst": "342",
-   "id": 349
+   "id": 349,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "238"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "341",
-    "342"
-   ],
    "args": [
     {
      "ref": "341"
@@ -4848,16 +4695,15 @@
     }
    ],
    "dst": "343",
-   "id": 350
+   "id": 350,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "341",
+    "342"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "smull",
-   "type": "<4 x i32>",
-   "src": [
-    "104",
-    "252"
-   ],
    "args": [
     {
      "ref": "104"
@@ -4867,16 +4713,15 @@
     }
    ],
    "dst": "344",
-   "id": 351
-  },
-  {
-   "op": "intrinsic",
+   "id": 351,
    "intrinsic": "smull",
-   "type": "<4 x i32>",
+   "op": "intrinsic",
    "src": [
     "104",
-    "253"
-   ],
+    "252"
+   ]
+  },
+  {
    "args": [
     {
      "ref": "104"
@@ -4886,16 +4731,15 @@
     }
    ],
    "dst": "345",
-   "id": 352
+   "id": 352,
+   "intrinsic": "smull",
+   "op": "intrinsic",
+   "src": [
+    "104",
+    "253"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "344",
-    "345"
-   ],
    "args": [
     {
      "ref": "344"
@@ -4905,16 +4749,15 @@
     }
    ],
    "dst": "346",
-   "id": 353
+   "id": 353,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "344",
+    "345"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "343",
-    "346"
-   ],
    "args": [
     {
      "ref": "343"
@@ -4924,15 +4767,15 @@
     }
    ],
    "dst": "347",
-   "id": 354
+   "id": 354,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "343",
+    "346"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "347"
-   ],
    "args": [
     {
      "ref": "347"
@@ -4942,30 +4785,28 @@
     }
    ],
    "dst": "348",
-   "id": 355
-  },
-  {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 120",
-   "dst": "349",
-   "id": 356
-  },
-  {
-   "op": "store",
-   "type": "<4 x i16>",
-   "src": "348",
-   "ptr": "349",
-   "id": 357
-  },
-  {
+   "id": 355,
+   "intrinsic": "rshrn",
    "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
    "src": [
-    "242",
-    "257"
-   ],
+    "347"
+   ]
+  },
+  {
+   "dst": "349",
+   "id": 356,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 120",
+   "type": "ptr"
+  },
+  {
+   "id": 357,
+   "op": "store",
+   "ptr": "349",
+   "src": "348",
+   "type": "<4 x i16> %348"
+  },
+  {
    "args": [
     {
      "ref": "242"
@@ -4975,25 +4816,25 @@
     }
    ],
    "dst": "350",
-   "id": 358
+   "id": 358,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "242",
+    "257"
+   ]
   },
   {
+   "amt": 6,
+   "dst": "351",
+   "id": 359,
    "op": "shl",
-   "type": "<4 x i32>",
    "src": [
     "350"
    ],
-   "dst": "351",
-   "amt": 6,
-   "id": 359
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "351"
-   ],
    "args": [
     {
      "ref": "351"
@@ -5003,53 +4844,51 @@
     }
    ],
    "dst": "352",
-   "id": 360
+   "id": 360,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "351"
+   ]
   },
   {
+   "id": 361,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "352",
    "ptr": "313",
-   "id": 361
+   "src": "352",
+   "type": "<4 x i16> %352"
   },
   {
+   "const_vec": [
+    83,
+    36,
+    83,
+    36
+   ],
+   "dst": "353",
+   "id": 362,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "243"
    ],
-   "dst": "353",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     83,
     36,
     83,
     36
    ],
-   "id": 362
-  },
-  {
+   "dst": "354",
+   "id": 363,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "258"
    ],
-   "dst": "354",
-   "const_vec": [
-    83,
-    36,
-    83,
-    36
-   ],
-   "id": 363
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "353",
-    "354"
-   ],
    "args": [
     {
      "ref": "353"
@@ -5059,15 +4898,15 @@
     }
    ],
    "dst": "355",
-   "id": 364
+   "id": 364,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "353",
+    "354"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "355"
-   ],
    "args": [
     {
      "ref": "355"
@@ -5077,60 +4916,58 @@
     }
    ],
    "dst": "356",
-   "id": 365
+   "id": 365,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "355"
+   ]
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 40",
    "dst": "357",
-   "id": 366
+   "id": 366,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 40",
+   "type": "ptr"
   },
   {
+   "id": 367,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "356",
    "ptr": "357",
-   "id": 367
+   "src": "356",
+   "type": "<4 x i16> %356"
   },
   {
+   "const_vec": [
+    64,
+    -64,
+    64,
+    -64
+   ],
+   "dst": "358",
+   "id": 368,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "242"
    ],
-   "dst": "358",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     64,
     -64,
     64,
     -64
    ],
-   "id": 368
-  },
-  {
+   "dst": "359",
+   "id": 369,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "257"
    ],
-   "dst": "359",
-   "const_vec": [
-    64,
-    -64,
-    64,
-    -64
-   ],
-   "id": 369
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "358",
-    "359"
-   ],
    "args": [
     {
      "ref": "358"
@@ -5140,15 +4977,15 @@
     }
    ],
    "dst": "360",
-   "id": 370
+   "id": 370,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "358",
+    "359"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "360"
-   ],
    "args": [
     {
      "ref": "360"
@@ -5158,60 +4995,58 @@
     }
    ],
    "dst": "361",
-   "id": 371
+   "id": 371,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "360"
+   ]
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 72",
    "dst": "362",
-   "id": 372
+   "id": 372,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 72",
+   "type": "ptr"
   },
   {
+   "id": 373,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "361",
    "ptr": "362",
-   "id": 373
+   "src": "361",
+   "type": "<4 x i16> %361"
   },
   {
+   "const_vec": [
+    36,
+    -83,
+    36,
+    -83
+   ],
+   "dst": "363",
+   "id": 374,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "243"
    ],
-   "dst": "363",
+   "type": "<4 x i32>"
+  },
+  {
    "const_vec": [
     36,
     -83,
     36,
     -83
    ],
-   "id": 374
-  },
-  {
+   "dst": "364",
+   "id": 375,
    "op": "mul",
-   "type": "<4 x i32>",
    "src": [
     "258"
    ],
-   "dst": "364",
-   "const_vec": [
-    36,
-    -83,
-    36,
-    -83
-   ],
-   "id": 375
+   "type": "<4 x i32>"
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "addp",
-   "type": "<4 x i32>",
-   "src": [
-    "363",
-    "364"
-   ],
    "args": [
     {
      "ref": "363"
@@ -5221,15 +5056,15 @@
     }
    ],
    "dst": "365",
-   "id": 376
+   "id": 376,
+   "intrinsic": "addp",
+   "op": "intrinsic",
+   "src": [
+    "363",
+    "364"
+   ]
   },
   {
-   "op": "intrinsic",
-   "intrinsic": "rshrn",
-   "type": "<4 x i16>",
-   "src": [
-    "365"
-   ],
    "args": [
     {
      "ref": "365"
@@ -5239,31 +5074,27 @@
     }
    ],
    "dst": "366",
-   "id": 377
+   "id": 377,
+   "intrinsic": "rshrn",
+   "op": "intrinsic",
+   "src": [
+    "365"
+   ]
   },
   {
-   "op": "addr",
-   "type": "ptr",
-   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 104",
    "dst": "367",
-   "id": 378
+   "id": 378,
+   "op": "addr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1, i64 104",
+   "type": "ptr"
   },
   {
+   "id": 379,
    "op": "store",
-   "type": "<4 x i16>",
-   "src": "366",
    "ptr": "367",
-   "id": 379
+   "src": "366",
+   "type": "<4 x i16> %366"
   }
  ],
- "provenance": {
-  "recipe": "/home/chiro/projects/a64-simd-dyn-optimizer/seeds/dct8.yaml",
-  "compiler": "clang version 22.1.8",
-  "source_sha256": "2103bc8eec7370b754f96184bab5552d780e9e15cba9475f4f7ecc1d664d914f",
-  "ir_sha256": "19342ee8b7902ba2fe777c471b58c4a17139a6320129b2c54743b53a2c3278a1",
-  "target_function": {
-   "mangled": "_ZN4x2659dct8_neonEPKsPsl",
-   "demangled": "x265::dct8_neon"
-  }
- }
+ "schema_version": "0.1"
 }
