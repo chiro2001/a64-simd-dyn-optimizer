@@ -113,11 +113,18 @@ def stage_baseline(outdir, manifest):
     return 0
 
 
-def stage_search(backend, manifest, contract=None):
+def stage_search(backend, manifest, contract=None, outdir=None,
+                 proxy_opts=None, finalize=False):
     cmd = ["python3", os.path.join(ROOT, "tools/search_sve2_layouts.py"),
            "--backend", backend, "--kernel", manifest["kernel"]]
+    if outdir:
+        cmd += ["--outdir", outdir]
     if contract:
         cmd += ["--contract", contract]
+    if finalize:
+        cmd += ["--finalize"]
+    if proxy_opts:
+        cmd += proxy_opts
     return run(cmd).returncode
 
 
@@ -131,7 +138,10 @@ def stage_report(outdir):
                   % (k, v["vector"], v["vector_fused"]))
     print("candidates:")
     ok = [r for r in res if r.get("counts")]
-    ok.sort(key=lambda r: r["counts"]["vector_fused"])
+    ok.sort(key=lambda r: (r.get("lite_pass") is not True,
+                           r.get("consensus_rank", 1e9),
+                           r["counts"].get("vector_fused_uop",
+                                           r["counts"]["vector_fused"])))
     ref = base.get("upstream_sve") or base.get("sve")
     ref_fused = ref["vector_fused"] if ref else None
     for r in ok:
@@ -142,9 +152,21 @@ def stage_report(outdir):
                 / (ref_fused - half)
             extra = " vs_sve=%.3f half_recovery=%.0f%%" % (
                 r["counts"]["vector_fused"] / ref_fused, rec * 100)
-        print("  %-24s vector=%d fused_adj=%d upstream_exact=%s%s"
+        mca = r.get("mca_cycles")
+        est = next((v for k, v in r.items()
+                    if k.startswith("est_cycles_")), None)
+        cp = next((v for k, v in r.items()
+                   if k.startswith("cp_cycles_")), None)
+        lite = "PASS" if r.get("lite_pass") is True else "?"
+        cons = r.get("consensus_rank")
+        print("  %-24s vector=%d fused_adj=%d mca=%s est=%s cp=%s "
+              "lite=%s cons=%s upstream_exact=%s%s"
               % (r["tag"], r["counts"]["vector"],
-                 r["counts"]["vector_fused"], r.get("upstream_exact"), extra))
+                 r["counts"].get("vector_fused_uop",
+                                 r["counts"]["vector_fused"]),
+                 mca, est, cp, lite,
+                 ("%.2f" % cons) if cons is not None else "-",
+                 r.get("upstream_exact"), extra))
     best = ok[0]["tag"] if ok else None
     if best:
         trace = os.path.join(outdir, best + "-trace.log.json")
@@ -254,10 +276,18 @@ def stage_finalize(outdir, manifest, contract=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true")
-    ap.add_argument("--backend", choices=("asm", "acle"), default="asm")
+    ap.add_argument("--backend", choices=("asm", "acle", "op"),
+                    default="asm")
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--contract", default=None)
     ap.add_argument("--outdir", default=None)
+    ap.add_argument("--mca-top", type=int, default=10)
+    ap.add_argument("--cost-top", type=int, default=10)
+    ap.add_argument("--cp-top", type=int, default=10)
+    ap.add_argument("--lite-top", type=int, default=5)
+    ap.add_argument("--rank-by", default="consensus")
+    ap.add_argument("--mca-target", choices=("920B", "NP1"), default=None)
+    ap.add_argument("--finalize", action="store_true")
     ap.add_argument("stage", nargs="?",
                     choices=("baseline", "search", "report", "finalize"))
     args = ap.parse_args()
@@ -272,8 +302,20 @@ def main():
         if args.stage == "baseline":
             return 0
     if args.all or args.stage == "search":
-        if stage_search(args.backend, manifest, args.contract) != 0:
+        proxy_opts = ["--mca-top", str(args.mca_top),
+                      "--cost-top", str(args.cost_top),
+                      "--cp-top", str(args.cp_top),
+                      "--lite-top", str(args.lite_top),
+                      "--rank-by", args.rank_by]
+        if args.mca_target:
+            proxy_opts += ["--mca-target", args.mca_target]
+        if args.rank_by == "consensus" or args.finalize:
+            proxy_opts += ["--require-lite"]
+        if stage_search(args.backend, manifest, args.contract, args.outdir,
+                        proxy_opts, args.finalize) != 0:
             return 1
+        if args.stage == "search":
+            return 0
     if args.all or args.stage == "report":
         return stage_report(args.outdir)
     if args.stage == "finalize":

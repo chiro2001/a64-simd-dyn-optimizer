@@ -192,7 +192,10 @@ best 序列 fused=6456 / mca_cycles=516 / mca_uops=2838，次优 6856 /
   正确性审查。
 
 ### P2：流程闭环自动化
-- pipeline.py 串起：搜索 → finalize → lite → paired → status.md；
+- pipeline.py 串起：搜索 → finalize → lite → paired → status.md
+  （2026-08-14 已升级：支持 op 后端、--outdir、--mca-top/--cost-top/
+  --cp-top/--lite-top/--rank-by/--mca-target/--finalize，report 输出
+  mca/est/cp/lite/consensus 列）；
 - 搜索预算恢复 <60s（layout_prune + codegen 前 canonical 去重）；
 - 负结果自动归档（tag + 原因 + 反例）。
 
