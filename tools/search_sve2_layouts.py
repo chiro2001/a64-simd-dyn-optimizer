@@ -666,6 +666,25 @@ def measure_layout_candidate(task):
             return row, None, "TRACE FAIL"
     row["range"] = [hex(rng[0]), hex(rng[1])]
     row["counts"] = counts
+    try:
+        # docs/09 v0.1: record the static fusion inventory per candidate.
+        # hw_supported is 0 (empty fusion table) so it never drives ranking;
+        # it is a reporting/archive metric only.
+        d = run(["aarch64-linux-gnu-objdump", "-d", obj], timeout=60)
+        from optimizer.analysis.fusion import fusion_report
+        rep = fusion_report(
+            kernel,
+            {"name": "kunpeng-n2-sve2p3-vl256", "issue_est": 4},
+            d.stdout)
+        row["fusion"] = {
+            "eligible": rep["summary"]["structurally_eligible"],
+            "hw_supported": rep["summary"]["hw_supported"],
+            "pairs": ["%s+%s" % (p["insn1"], p["insn2"])
+                      for p in rep["pairs"]],
+            "counts": rep["counts"],
+        }
+    except Exception:  # noqa: BLE001 - fusion inventory is best-effort
+        pass
     return row, {"passed": True, "verify_mismatches": mism,
                  "verify": r.stdout, "counts": counts,
                  "range": row["range"]}, "OK"
@@ -961,11 +980,12 @@ def main():
         counts = row.get("counts")
         if counts:
             print("%-24s %s total=%d vector=%d movprfx=%d fused_adj=%d "
-                  "sg=%d fused_uop=%d"
+                  "sg=%d fused_uop=%d fusion_eligible=%s"
                   % (tag, stage, counts["total"], counts["vector"],
                      counts["movprfx"], counts["vector_fused"],
                      counts["scatter_gather"],
-                     counts["vector_fused_uop"]))
+                     counts["vector_fused_uop"],
+                     (row.get("fusion") or {}).get("eligible", "-")))
         else:
             print("%-24s %s passed=%s mism=%s"
                   % (tag, stage, row.get("passed"),

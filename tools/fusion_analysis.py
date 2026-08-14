@@ -8,7 +8,10 @@ Usage:
 """
 
 import json
+import os
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from optimizer.analysis.fusion import fusion_report
 

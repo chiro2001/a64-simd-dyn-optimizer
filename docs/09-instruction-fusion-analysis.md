@@ -1,7 +1,18 @@
 # 指令融合分析（Instruction Fusion Analysis）需求梳理 v0.4
 
-状态：**待冻结**。v0.4 已按 round-0005 顶级模型核实结果修订（“修订后有
-条件通过”），四项必改：
+状态：**v0.4 冻结，v0.1 实现已接入搜索（2026-08-14）**。v0.4 已按
+round-0005 顶级模型核实结果修订（“修订后有条件通过”），四项必改：
+
+实现状态（2026-08-14）：
+- `optimizer/analysis/fusion.py` + `tools/fusion_analysis.py`（静态
+  inventory：SIMD/load 分类、C1-C4 结构可融合对枚举、movprfx 融合
+  伪指令不计）；7 个单测 PASS；
+- **已接入搜索**：`search_sve2_layouts.py` 对每个候选记录
+  `fusion` 字段（eligible/hw_supported/pairs/counts），输出行带
+  `fusion_eligible=N`；融合表为空 → `hw_supported=0`，**不驱动排序**
+  （符合 v0.4 “融合表为空时不得产生预测收益并驱动搜索”约束）；
+- 示例：interp8vpp-16 acc_split-1 eligible=7、acc_split-2 eligible=39
+  （若 960 未来实现融合，split-2 潜在收益更大；目前仅记录）。
 
 - `cycles_est` 降级为 `instruction_score`（搜索代理），另给资源下界模型；
 - `load > SIMD` 从硬淘汰门改为软信号；
