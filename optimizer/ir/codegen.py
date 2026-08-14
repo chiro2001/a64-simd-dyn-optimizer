@@ -1357,7 +1357,7 @@ def emit_interp8_c_intrinsics(
         if op == "addr":
             rhs = node["rhs"]
             m = re.match(
-                r"getelementptr inbounds (?:i8|\[8 x i16\]), "
+                r"getelementptr inbounds (?:nuw )?(?:i8|\[8 x i16\]), "
                 r"ptr (@_ZN4x26512g_lumaFilterE|%[\w.]+), "
                 r"i64 ([%@\-\d]+)", rhs)
             if not m:

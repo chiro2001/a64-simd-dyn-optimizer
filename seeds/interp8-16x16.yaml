@@ -1,0 +1,40 @@
+# Normalized seed recipe: interp8 horizontal 16x16 NEON dotprod (docs/41).
+# The 16x16 template is fully unrolled by clang (0 br/icmp in the body),
+# so the restricted straight-line importer handles it directly.
+seed: interp8-16x16
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/filter-neon-dotprod.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=16
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ithird_party/x265/source/encoder
+  - -Ibuild/x265-8-cross-make
+target_function:
+  mangled: _ZN4x26524interp8_horiz_pp_dotprodILi16ELi16EEEvPKhlPhli
+  demangled: x265::interp8_horiz_pp_dotprod<16,16>
+output:
+  ll: experiments/m18-interp8/llvm-ir/interp8-16x16-dotprod-seed.ll
+  json: experiments/m18-interp8/imported/machine-ir-16x16.json
+verify:
+  codegen: emit_interp8_c_intrinsics
+  func_name: dynopt_interp8_16x16_neon_roundtrip
+  harness: kernels/interp8/roundtrip_verify_16x16.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 50000

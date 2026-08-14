@@ -146,7 +146,10 @@ def verify_roundtrip(recipe, ir):
     out_cpp = os.path.join(ROOT, "build", "seed-roundtrip-%s.cpp" % recipe["seed"])
     out_bin = os.path.join(ROOT, "build", "seed-roundtrip-%s" % recipe["seed"])
     with open(out_cpp, "w") as f:
-        f.write(CODEGEN_REGISTRY[mode](ir))
+        kwargs = {}
+        if v.get("func_name"):
+            kwargs["func_name"] = v["func_name"]
+        f.write(CODEGEN_REGISTRY[mode](ir, **kwargs))
     includes = " ".join("-I%s" % _resolve(ROOT, d)
                         for d in v.get("include_dirs", DEFAULT_INCLUDES))
     extra_flags = " ".join(v.get("compile_flags", []))
