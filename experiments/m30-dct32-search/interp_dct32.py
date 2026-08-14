@@ -52,9 +52,11 @@ def main():
             elif n['type']=='<8 x i16>' and mask==[7,6,5,4,3,2,1,0]:
                 r=s0[::-1]; env[dstn]=r[:4]+[0]*4 if len(s0)==4 else r
             elif n['type']=='<4 x i32>' and mask==[0,1,4,5]:
-                env[dstn]=[s0[0],env[n['src'][1]][0],s0[1],env[n['src'][1]][1]]
+                s1=env[n['src'][1]]
+                env[dstn]=[s0[0],s0[1],s1[0],s1[1]]
             elif n['type']=='<4 x i32>' and mask==[2,3,6,7]:
-                env[dstn]=[s0[2],env[n['src'][1]][2],s0[3],env[n['src'][1]][3]]
+                s1=env[n['src'][1]]
+                env[dstn]=[s0[2],s0[3],s1[2],s1[3]]
             else: raise Exception('shuffle %s %s'%(n['type'],mask))
         elif op=='intrinsic':
             name=n['intrinsic']
@@ -73,23 +75,27 @@ def main():
                 env[dstn]=[wrap(av[i]*bb[i],32) for i in range(4)]
             elif name=='addp':
                 a=env[n['args'][0]['ref']]; bb=env[n['args'][1]['ref']]
+                    print('interp 84/82:', env.get('84'), env.get('82'), '169/167:', env.get('169'), env.get('167'))
                 if n.get('type')=='<4 x i32>':
                     env[dstn]=[wrap(a[0]+a[1],32),wrap(a[2]+a[3],32),wrap(bb[0]+bb[1],32),wrap(bb[2]+bb[3],32)]
                 else:
                     env[dstn]=[wrap(a[0]+a[1],16),wrap(a[2]+a[3],16),wrap(bb[0]+bb[1],16),wrap(bb[2]+bb[3],16)]
             elif name=='rshrn':
                 a=env[n['args'][0]['ref']]; imm=n['args'][1]['imm']
-                env[dstn]=[wrap(x>>imm,16) for x in a]  # non-rounding
+                env[dstn]=[wrap((x+(1<<(imm-1)))>>imm,16) for x in a]
+                if dstn=='7090': print('interp 7090:', env[dstn])
             else: raise Exception('intrinsic '+name)
         elif op=='extractvalue':
             env[dstn]=env[n['src'][0]][n['index']]
         elif op=='store':
             kind,off=env[n['ptr']]
             vals=env[n['src']]
+            if n.get('src')=='7092': print('interp coef0-store:', vals)
             arr=dst if kind=='dst' else coef
             for k,x in enumerate(vals):
                 arr[off//2+k]=wrap(x,16)
         else: raise Exception('op '+op)
+    print('coef0-1:', coef[:32])
     print('row0:', dst[:16])
     print('row1:', dst[32:48])
 main()

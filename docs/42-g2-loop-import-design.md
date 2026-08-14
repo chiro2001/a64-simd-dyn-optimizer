@@ -261,3 +261,23 @@ sad/quant 还需 binary lifter（docs/02 §6.3）。两者都是后续独立里�
   ld1x4 分块 / mul const_vec 中某一种），需逐 op 与 LLVM 语义核对；
 - 下一步建议：用 llvm-mca 无关的纯语义探针（对单一 op 生成 C 并对照
   参考函数）逐个确认。
+
+## 17. 2026-08-14 dct32 门禁通过 + 两个系统性问题
+
+**根因**：`<4 x i32>` shuffle `[0,1,4,5]`/`[2,3,6,7]` 是**拼接**语义
+（a0,a1,b0,b1），发射器误用 vzip1q/vzip2q（交错）。修正为
+`vcombine_s32(vget_low/high_s32(a), vget_low/high_s32(b))` 后
+**门禁 5000 cases mismatches=0 PASS**——dct32 成为第 14 个 seed 线
+kernel（全直线 + alloca/ld1x4/addp/rshrn 等新形态）。
+
+调试方法沉淀：IR 模块插桩（objcopy globalize/rename + 全局 dump）对照
+解释器，逐点下钻（rshrn→store→addp→shuffle 层层比对）定位到
+单个 shuffle 语义。
+
+**系统性 OOM**：dct32 manifest 的布局轴笛卡尔空间已膨胀到
+**7.37 亿组合**（22 轴，含 rw1-4）；`layout_combos` 物化全列表导致
+内存爆炸。修复：改为**生成器**（惰性产出）；搜索时用 `--skip-axes`
+裁剪。残余问题：裁剪后仍有 10368 组合，dct32 的 seed 线搜索不现实
+——该 kernel 的搜索覆盖由既有特化路径承担（best 4014/1041），
+seed 线验收 = roundtrip 门禁 PASS；真正的修复是 **prune-aware
+枚举**（按轴依赖条件生成而非全笛卡尔后过滤），列入后续工具项。

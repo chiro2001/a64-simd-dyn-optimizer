@@ -41,11 +41,10 @@ def layout_combos(manifest):
     axes = manifest.get("layouts", {})
     names = list(axes.keys())
     if not names:
-        return [{}]
-    combos = []
+        yield {}
+        return
     for vals in product(*(axes[n] for n in names)):
-        combos.append(dict(zip(names, vals)))
-    return combos
+        yield dict(zip(names, vals))
 
 
 def layout_plans(manifest):
@@ -91,4 +90,4 @@ if __name__ == "__main__":
     print("kernel=%s contract=%s vl=%s" % (m["kernel"], m["contract"],
                                            m.get("vl_bytes")))
     print("layouts=%s" % m.get("layouts"))
-    print("layout combos=%d" % len(layout_combos(m)))
+    print("layout combos=%d" % sum(1 for _ in layout_combos(m)))

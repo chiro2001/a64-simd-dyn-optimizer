@@ -1930,11 +1930,13 @@ def emit_structured_neon_intrinsics(
                                      " vdup_n_s16(0));"
                                      % (indent, cid(dst), cid(n["src"][0])))
                 elif vtype == "<4 x i32>" and mask == [0, 1, 4, 5]:
-                    lines.append("%s    %s = vzip1q_s32(%s, %s);"
+                    lines.append("%s    %s = vcombine_s32(vget_low_s32(%s),"
+                                 " vget_low_s32(%s));"
                                  % (indent, cid(dst), cid(n["src"][0]),
                                     cid(n["src"][1])))
                 elif vtype == "<4 x i32>" and mask == [2, 3, 6, 7]:
-                    lines.append("%s    %s = vzip2q_s32(%s, %s);"
+                    lines.append("%s    %s = vcombine_s32(vget_high_s32(%s),"
+                                 " vget_high_s32(%s));"
                                  % (indent, cid(dst), cid(n["src"][0]),
                                     cid(n["src"][1])))
                 else:

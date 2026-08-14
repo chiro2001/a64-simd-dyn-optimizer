@@ -43,3 +43,8 @@ verify:
   harness: kernels/dct32/roundtrip_verify_neon.cpp
   lib: build/x265-8-clang-sve/libx265.a
   cases: 5000
+search:
+  backend: op
+  extra:
+    - --skip-axes
+    - layout,odd_lowering,narrow_batch,constant_layout,rw1,rw2,rw3,rw4
