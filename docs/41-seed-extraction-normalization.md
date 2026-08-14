@@ -121,6 +121,14 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
 - 完整流水线：interp4 16x16 **165 / 70**，精确复现手写最优——chroma
   4-tap 成为 seed 线覆盖的第一个新族（此前只有 luma 8-tap）。
 
+### G4e ✅：interp4 8x8 / 32x32（同族机械扩展）
+
+- `seeds/interp4-8x8.yaml` / `seeds/interp4-32x32.yaml` + 对应 harness：
+  门禁 **50000 / 20000 cases（7 相位）均 0 失配**；
+- 全流程：interp4-8 **85 / 47**、interp4-32 **645 / 189**，与手写
+  特化一致；
+- interp4 族（8/16/32）全部由 seed 线覆盖。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

@@ -1,0 +1,41 @@
+# Normalized seed recipe: interp4 (chroma 4-tap) horizontal 32x32 NEON
+# dotprod. phase==4 stripped, harness tests 7 phases.
+seed: interp4-32x32
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/filter-neon-dotprod.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=16
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ithird_party/x265/source/encoder
+  - -Ibuild/x265-8-cross-make
+extract:
+  strip_uniform_branch: true
+target_function:
+  mangled: _ZN4x26524interp4_horiz_pp_dotprodILi32ELi32EEEvPKhlPhli
+  demangled: x265::interp4_horiz_pp_dotprod<32,32>
+output:
+  ll: experiments/m30-interp4-search/llvm-ir/interp4-32x32-dotprod-seed.ll
+  json: experiments/m30-interp4-search/imported/machine-ir-32x32.json
+verify:
+  codegen: emit_interp8_c_intrinsics
+  func_name: dynopt_interp4_32x32_neon_roundtrip
+  harness: kernels/interp4/roundtrip_verify_32x32.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000
