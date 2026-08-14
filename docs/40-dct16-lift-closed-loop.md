@@ -219,3 +219,19 @@ kernels/dct16 上游 NEON（dct16_neon）
   但 MCA 反而更好；pack=2/evenpair 等布局轴留给配方后续版本。
 - 调试记录：trn1/trn2 的 NEON 语义是奇偶交错（曾误映射 zip1/trn2
   导致 v105 起全错）；splice 的 i64 语义已实测验证。
+
+## 9. hadamard 配方跨形状推广：sa8d-16x16（2026-08-15）
+
+- 同配方直接覆盖新成员（零 per-kernel 发射器代码）：
+  `seeds/sa8d-16x16.yaml`（目标 `pixel_sa8d_16x16_neon`，653 节点）；
+  配方新增 op：常量字节偏移 GEP（左右 8 列象限 +8）、
+  `[0,1,2,3,8,9,10,11]` 的 s16 低半拼接 shuffle（svsplice(pg4)）、
+  `uaddlp`（NEON-bridge `vpaddlq_u16`，GCC 16 无 svpadd）、
+  `vecreduce_add`（svaddv_u32(pg4w)）。
+- 验收（20k 差分 0 失配，experiments/m30-sa8d16-search/
+  gen-search-16x16/results.json）：**505 fused / MCA 157 / dyn 602**；
+  对比手写最优 186 fused / MCA 73 —— 正确但 pack=1 朴素布局
+  （8-lane 行处理 + NEON 桥）尚未利用 16-lane 行寄存器；pack/layout
+  轴是 hadamard 配方下一阶段的优化方向。
+- 配方检测放宽：hadamard 签名 = sabd+abs+umax + (uaddlv | uaddlp+
+  vecreduce_add)。
