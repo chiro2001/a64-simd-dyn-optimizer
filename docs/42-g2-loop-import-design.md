@@ -291,3 +291,10 @@ seed 线验收 = roundtrip 门禁 PASS；真正的修复是 **prune-aware
   组合数本质问题是 manifest 轴空间膨胀（rw1-4、layout 等），需
   **配方级轴子集**（按 kernel 声明搜索用轴）或专门的有界搜索；
   dct32 的 seed 线验收 = roundtrip 门禁 PASS，搜索由特化路径承担。
+
+## 19. seed_pipeline 搜索规模护栏
+
+- 搜索前对 manifest 空间做**有上限计数**（>5000 组合自动跳过搜索，
+  `--force-search` 覆盖），验收口径 = roundtrip 门禁；
+- 实测：dct32 快速跳过（gate 0 失配），sa8d 正常跑搜索（best 79/71）；
+- 防止未来 kernel 的大空间搜索挂死/占满内存。
