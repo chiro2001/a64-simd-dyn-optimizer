@@ -248,6 +248,14 @@ EO 2 行组 × 4 列对 × 4=32；EEO 1 行组 × 2 列对 × 4=8；EEEE/EEEO
 编译标志阴性：IDCT32 scatter 用 -O3 反而更差（fused 6561→7902，
 spill 增多）；-fno-tree-pre/-fweb/-frename-registers 无改善。
 
+**lane 常量向量阴性（2026-08-14）**：把每项 `svdup_n_s32` 换成
+quad-dup 内存常量向量 + `svmla_lane_s32`（每行 4 组 [g4h..g4h+3 ×2]，
+`svmla_lane_s32(acc, r, CT[m][h], k%4)` 的段内广播正好还原标量常量
+语义，20k 正确）。但 GCC 不会跨 chunk CSE 常量加载：每 chunk 128 条
+ld1_s32（128×4×2=1024/趟），且 128 个常量向量同时存活导致 spill 爆炸：
+scalar fused 5932→10603、scatter 6561→7422，est 1935→6518。结论：
+常量必须“按需立即数”或由 sdot 打包复用，不能预载成寄存器向量。
+
 ### 8.8 下一步（更新）
 
 1. 按 §8.7 实现 sdot 化发射器轴（先只做 O/EO，20k+lite 门禁）；
