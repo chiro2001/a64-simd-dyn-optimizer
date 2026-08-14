@@ -605,8 +605,10 @@ sdot-s32 轴、搜索缓存 build fingerprint、MCA 短名单并集。
    in-place 蝶形（EEEE/EEEO→EEE→EE→E 覆盖已死输入）、round+splice
    融合、linear scan（K=24/32）后嵌回两 stage；目标动态 MCA 低于
    当前 1164（idct32）且 peak-live ≤24~32；设计蓝图见
-   docs/28-direct-asm-prototype.md（M1-M5 里程碑，收益预期 ≤10%，
-   M3 起无改善即停）；
+   docs/28-direct-asm-prototype.md。**M1 完成（O 阶段固定寄存器汇编，
+   bad=0）；M2 成本分析停止**：t/u 蝶形在位化需 48 ops/chunk（C++
+   32），spill 节省 ~54/chunk 不足以抵消，预期收益 ≤3-5%——原型
+   按止损规则终止，机制与工具保留；
 2. **950/960 实机 paired**（SVE2p1 候选无法在 920B 跑；920G 内部已有
    早期 1.08× 慢于 NEON 的记录，需用新 best 复测）；
 3. **低价值不优先**：Clang C2-C4（PBQP/ilpmin）诊断、dct32/dct16

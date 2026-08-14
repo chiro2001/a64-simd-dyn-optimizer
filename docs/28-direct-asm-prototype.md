@@ -80,3 +80,19 @@ clobber）。验证：QEMU 随机输入下与 C 参考逐位一致（bad=0）。
 
 下一步：M2（蝶形 + round+splice 融合，z0-z15 中间量 in-place），
 M3（uzp 转置 + 连续 st1h），M4（4 chunk × 2 stage 集成对比 MCA）。
+
+### M2 成本分析（2026-08-14）→ 原型停止
+
+蝶形 t/u 阶段：`t_k = E_k+O_k`、`u_k = E_{15-k}-O_{15-k}`，E_k/O_k
+各被 t_k 与 u_{15-k} 消费两次。32 个 Z 全被 16×E + 16×O 占用时，任何
+dest 覆盖都会破坏另一个源的后续消费；最小正确序列需 1 个 scratch：
+`mov z4,z16k; sub z16k,z_k,z4 (u); add z_k,z_k,z4 (t)` —— **3 条/k =
+48 ops/chunk**，而 C++ 只需 32（add/sub）。每 chunk 的 asm 净收益 =
+spill 节省 ~54（430 stack/8 chunk）− 蝶形多出 16 = 仅 ~38 ops，且
+O/EO/EEO 阶段地址算术与 C++ vnum 持平——预期 MCA 收益 ≤3-5%，不敌
+实现/维护成本。
+
+**结论：M1 已证明机制（固定寄存器 + 零 spill + 位精确），但 M2 起
+无净收益，按 §6 止损规则停止直接 asm 原型**；保留
+`tools/emit_idct32_o_asm.py` 作为未来 pressure-budgeted 工具的基础。
+后续把预算转回：950/960 实机验收、或算法级改进（如两趟融合）。
