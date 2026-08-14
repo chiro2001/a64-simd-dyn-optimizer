@@ -8,741 +8,418 @@
 dynopt_idct32_sve2_shared:
 .LFB5:
 	.cfi_startproc
-	addvl	sp, sp, #-12
-	.cfi_escape 0xf,0x9,0x8f,0,0x92,0x2e,0,0x8,0x60,0x1e,0x22
-	add	x6, x0, 448
+	addvl	sp, sp, #-10
+	.cfi_escape 0xf,0x9,0x8f,0,0x92,0x2e,0,0x8,0x50,0x1e,0x22
+	add	x17, x0, 192
 	ptrue	p7.h, all
-	sub	sp, sp, #2176
-	.cfi_escape 0xf,0xc,0x8f,0,0x92,0x2e,0,0x8,0x60,0x1e,0x23,0x80,0x11,0x22
-	add	x8, x0, 704
-	add	x10, x0, 960
-	add	x3, x0, 64
-	add	x4, x0, 192
-	add	x5, x0, 320
+	sub	sp, sp, #2272
+	.cfi_escape 0xf,0xc,0x8f,0,0x92,0x2e,0,0x8,0x50,0x1e,0x23,0xe0,0x11,0x22
+	add	x16, x0, 320
+	add	x15, x0, 448
+	add	x14, x0, 576
+	add	x13, x0, 704
+	add	x12, x0, 832
 	stp	x29, x30, [sp]
 	.cfi_escape 0x10,0x1d,0x2,0x8f,0
 	.cfi_escape 0x10,0x1e,0x2,0x8f,0x8
 	mov	x29, sp
-	add	x7, x0, 576
-	add	x9, x0, 832
-	add	x11, x0, 1088
+	add	x11, x0, 960
+	add	x10, x0, 1088
+	add	x9, x0, 1216
 	stp	x19, x20, [sp, 16]
-	add	x12, x0, 1216
-	add	x13, x0, 1344
-	stp	x21, x22, [sp, 32]
-	add	x14, x0, 1472
-	add	x15, x0, 1600
-	stp	d8, d9, [sp, 64]
-	add	x16, x0, 1728
-	add	x17, x0, 1856
-	stp	d10, d11, [sp, 80]
+	add	x8, x0, 1344
 	.cfi_escape 0x10,0x13,0x2,0x8f,0x10
 	.cfi_escape 0x10,0x14,0x2,0x8f,0x18
+	add	x19, x0, 64
+	stp	x21, x22, [sp, 32]
+	add	x7, x0, 1472
+	add	x6, x0, 1600
+	stp	x23, x24, [sp, 48]
+	add	x5, x0, 1728
+	add	x4, x0, 1856
+	stp	x25, x26, [sp, 64]
+	add	x3, x0, 1984
+	adrp	x18, _ZL6CDOT_O
+	stp	x27, x28, [sp, 80]
 	.cfi_escape 0x10,0x15,0x2,0x8f,0x20
 	.cfi_escape 0x10,0x16,0x2,0x8f,0x28
-	.cfi_escape 0x10,0x48,0x3,0x8f,0xc0,0
-	.cfi_escape 0x10,0x49,0x3,0x8f,0xc8,0
-	.cfi_escape 0x10,0x4a,0x3,0x8f,0xd0,0
-	.cfi_escape 0x10,0x4b,0x3,0x8f,0xd8,0
-	add	x19, x0, 1984
-	adrp	x18, _ZL6CDOT_O
-	stp	d12, d13, [sp, 96]
-	add	x21, x18, :lo12:_ZL6CDOT_O
-	stp	d14, d15, [sp, 112]
-	ldr	z1, [x6]
-	ldr	z3, [x8]
-	ldr	z5, [x10]
-	ldr	z9, [x3]
-	ldr	z31, [x4]
-	ldr	z10, [x5]
-	ldr	z11, [x7]
-	.cfi_escape 0x10,0x4c,0x3,0x8f,0xe0,0
-	.cfi_escape 0x10,0x4d,0x3,0x8f,0xe8,0
-	.cfi_escape 0x10,0x4e,0x3,0x8f,0xf0,0
-	.cfi_escape 0x10,0x4f,0x3,0x8f,0xf8,0
-	ldr	z12, [x9]
-	ldr	z13, [x11]
-	ldr	z7, [x12]
-	ldr	z14, [x13]
-	ldr	z8, [x14]
-	ldr	z15, [x15]
-	ldr	z17, [x16]
-	ldr	z16, [x17]
-	ldr	z18, [x19]
-	zip1	z2.h, z10.h, z1.h
-	zip1	z4.h, z11.h, z3.h
-	zip1	z6.h, z12.h, z5.h
-	zip1	z0.h, z9.h, z31.h
-	zip1	z1.h, z13.h, z7.h
-	zip1	z3.h, z14.h, z8.h
-	zip1	z5.h, z15.h, z17.h
-	zip1	z16.h, z16.h, z18.h
-	str	x23, [sp, 48]
 	.cfi_escape 0x10,0x17,0x2,0x8f,0x30
+	.cfi_escape 0x10,0x18,0x2,0x8f,0x38
+	.cfi_escape 0x10,0x19,0x3,0x8f,0xc0,0
+	.cfi_escape 0x10,0x1a,0x3,0x8f,0xc8,0
+	.cfi_escape 0x10,0x1b,0x3,0x8f,0xd0,0
+	.cfi_escape 0x10,0x1c,0x3,0x8f,0xd8,0
+	add	x21, x18, :lo12:_ZL6CDOT_O
+	stp	d8, d9, [sp, 96]
+	stp	d10, d11, [sp, 112]
+	stp	d12, d13, [sp, 128]
+	stp	d14, d15, [sp, 144]
+	.cfi_escape 0x10,0x48,0x3,0x8f,0xe0,0
+	.cfi_escape 0x10,0x49,0x3,0x8f,0xe8,0
+	.cfi_escape 0x10,0x4a,0x3,0x8f,0xf0,0
+	.cfi_escape 0x10,0x4b,0x3,0x8f,0xf8,0
+	.cfi_escape 0x10,0x4c,0x3,0x8f,0x80,0x1
+	.cfi_escape 0x10,0x4d,0x3,0x8f,0x88,0x1
+	.cfi_escape 0x10,0x4e,0x3,0x8f,0x90,0x1
+	.cfi_escape 0x10,0x4f,0x3,0x8f,0x98,0x1
+	ldr	z15, [x19]
+	ldr	z24, [x17]
+	ldr	z16, [x16]
+	ldr	z25, [x15]
+	ldr	z17, [x14]
+	ldr	z26, [x13]
+	ldr	z18, [x12]
+	ldr	z27, [x11]
+	ldr	z19, [x10]
+	ldr	z28, [x9]
+	ldr	z20, [x8]
+	ldr	z29, [x7]
+	ldr	z21, [x6]
+	ldr	z30, [x5]
+	ldr	z22, [x4]
+	ldr	z31, [x3]
+	zip1	z0.h, z15.h, z24.h
+	zip1	z1.h, z16.h, z25.h
+	zip1	z2.h, z17.h, z26.h
+	zip1	z3.h, z18.h, z27.h
+	zip1	z4.h, z19.h, z28.h
+	zip1	z7.h, z20.h, z29.h
+	zip1	z8.h, z21.h, z30.h
+	zip1	z22.h, z22.h, z31.h
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x21, #0, MUL VL]
+	ld1h z5.h, p7/z, [x21, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	movi	d31, #0
-	mov	z18.d, z31.d
+	mov	z24.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z30.h
+	sdot z24.s, z0.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x21, #1, MUL VL]
+	ld1h z6.h, p7/z, [x21, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z19.h
+	sdot z24.s, z1.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x21, #2, MUL VL]
+	ld1h z9.h, p7/z, [x21, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z20.h
+	sdot z24.s, z2.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x21, #3, MUL VL]
+	ld1h z10.h, p7/z, [x21, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z21.h
+	sdot z24.s, z3.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x21, #4, MUL VL]
+	ld1h z11.h, p7/z, [x21, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z22.h
+	sdot z24.s, z4.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x21, #5, MUL VL]
+	ld1h z12.h, p7/z, [x21, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z23.h
+	sdot z24.s, z7.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x21, #6, MUL VL]
+	ld1h z13.h, p7/z, [x21, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z24.h
+	sdot z24.s, z8.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x21, #7, MUL VL]
+	ld1h z14.h, p7/z, [x21, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z16.h, z25.h
+	sdot z24.s, z22.h, z14.h
 // 0 "" 2
 #NO_APP
 	adrp	x20, _ZL6CDOT_O+256
 	add	x22, x20, :lo12:_ZL6CDOT_O+256
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z16.h, z12.h
-// 0 "" 2
-#NO_APP
-	adrp	x23, _ZL6CDOT_O+512
-	add	x30, x23, :lo12:_ZL6CDOT_O+512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x30, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x30, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x30, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x30, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z16.h, z21.h
-// 0 "" 2
-#NO_APP
-	adrp	x3, _ZL6CDOT_O+768
-	add	x15, x3, :lo12:_ZL6CDOT_O+768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z21.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x15, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x15, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x15, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x15, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z16.h, z29.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+1024
-	add	x14, x4, :lo12:_ZL6CDOT_O+1024
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x14, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z22.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x14, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x14, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x14, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x14, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x14, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x14, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z16.h, z8.h
-// 0 "" 2
-#NO_APP
-	adrp	x5, _ZL6CDOT_O+1280
-	add	x13, x5, :lo12:_ZL6CDOT_O+1280
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z23.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x13, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x13, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x13, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x13, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z16.h, z28.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+1536
-	add	x12, x6, :lo12:_ZL6CDOT_O+1536
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z24.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x12, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x12, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x12, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x12, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z16.h, z14.h
-// 0 "" 2
-#NO_APP
-	adrp	x7, _ZL6CDOT_O+1792
-	add	x11, x7, :lo12:_ZL6CDOT_O+1792
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x11, #0, MUL VL]
+	ld1h z23.h, p7/z, [x22, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z25.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z8.h
+	sdot z25.s, z0.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x11, #1, MUL VL]
+	ld1h z15.h, p7/z, [x22, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z15.h
+	sdot z25.s, z1.h, z15.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x11, #2, MUL VL]
+	ld1h z16.h, p7/z, [x22, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z17.h
+	sdot z25.s, z2.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x11, #3, MUL VL]
+	ld1h z17.h, p7/z, [x22, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z30.h
+	sdot z25.s, z3.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x11, #4, MUL VL]
+	ld1h z26.h, p7/z, [x22, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z26.h
+	sdot z25.s, z4.h, z26.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x11, #5, MUL VL]
+	ld1h z18.h, p7/z, [x22, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z27.h
+	sdot z25.s, z7.h, z18.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x11, #6, MUL VL]
+	ld1h z27.h, p7/z, [x22, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z28.h
+	sdot z25.s, z8.h, z27.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x11, #7, MUL VL]
+	ld1h z19.h, p7/z, [x22, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z16.h, z29.h
+	sdot z25.s, z22.h, z19.h
 // 0 "" 2
 #NO_APP
-	adrp	x8, _ZL6CDOT_O+2048
-	add	x10, x8, :lo12:_ZL6CDOT_O+2048
+	adrp	x23, _ZL6CDOT_O+512
+	add	x24, x23, :lo12:_ZL6CDOT_O+512
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x10, #0, MUL VL]
+	ld1h z28.h, p7/z, [x24, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z26.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z9.h
+	sdot z26.s, z0.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x10, #1, MUL VL]
+	ld1h z20.h, p7/z, [x24, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z10.h
+	sdot z26.s, z1.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x10, #2, MUL VL]
+	ld1h z29.h, p7/z, [x24, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z11.h
+	sdot z26.s, z2.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x10, #3, MUL VL]
+	ld1h z21.h, p7/z, [x24, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z12.h
+	sdot z26.s, z3.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x10, #4, MUL VL]
+	ld1h z30.h, p7/z, [x24, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z13.h
+	sdot z26.s, z4.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x10, #5, MUL VL]
+	ld1h z5.h, p7/z, [x24, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z7.h
+	sdot z26.s, z7.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x10, #6, MUL VL]
+	ld1h z6.h, p7/z, [x24, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z14.h
+	sdot z26.s, z8.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x10, #7, MUL VL]
+	ld1h z9.h, p7/z, [x24, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z16.h, z8.h
+	sdot z26.s, z22.h, z9.h
 // 0 "" 2
 #NO_APP
-	adrp	x9, _ZL6CDOT_O+2304
-	add	x16, x9, :lo12:_ZL6CDOT_O+2304
+	adrp	x25, _ZL6CDOT_O+768
+	add	x26, x25, :lo12:_ZL6CDOT_O+768
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x16, #0, MUL VL]
+	ld1h z10.h, p7/z, [x26, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z27.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z15.h
+	sdot z27.s, z0.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x16, #1, MUL VL]
+	ld1h z11.h, p7/z, [x26, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z2.h, z17.h
+	sdot z27.s, z1.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x16, #2, MUL VL]
+	ld1h z12.h, p7/z, [x26, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z30.h
+	sdot z27.s, z2.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x16, #3, MUL VL]
+	ld1h z13.h, p7/z, [x26, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z28.h
+	sdot z27.s, z3.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x16, #4, MUL VL]
+	ld1h z14.h, p7/z, [x26, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z29.h
+	sdot z27.s, z4.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x16, #5, MUL VL]
+	ld1h z23.h, p7/z, [x26, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z9.h
+	sdot z27.s, z7.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x16, #6, MUL VL]
+	ld1h z15.h, p7/z, [x26, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z10.h
+	sdot z27.s, z8.h, z15.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x16, #7, MUL VL]
+	ld1h z16.h, p7/z, [x26, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z16.h, z11.h
+	sdot z27.s, z22.h, z16.h
 // 0 "" 2
 #NO_APP
-	adrp	x17, _ZL6CDOT_O+2560
-	add	x18, x17, :lo12:_ZL6CDOT_O+2560
+	adrp	x27, _ZL6CDOT_O+1024
+	add	x28, x27, :lo12:_ZL6CDOT_O+1024
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x18, #0, MUL VL]
+	ld1h z17.h, p7/z, [x28, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z28.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z12.h
+	sdot z28.s, z0.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x18, #1, MUL VL]
+	ld1h z18.h, p7/z, [x28, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z13.h
+	sdot z28.s, z1.h, z18.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x18, #2, MUL VL]
+	ld1h z19.h, p7/z, [x28, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z7.h
+	sdot z28.s, z2.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x18, #3, MUL VL]
+	ld1h z20.h, p7/z, [x28, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z14.h
+	sdot z28.s, z3.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x18, #4, MUL VL]
+	ld1h z29.h, p7/z, [x28, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z8.h
+	sdot z28.s, z4.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x18, #5, MUL VL]
+	ld1h z21.h, p7/z, [x28, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z15.h
+	sdot z28.s, z7.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x18, #6, MUL VL]
+	ld1h z30.h, p7/z, [x28, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z17.h
+	sdot z28.s, z8.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x18, #7, MUL VL]
+	ld1h z5.h, p7/z, [x28, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z16.h, z30.h
+	sdot z28.s, z22.h, z5.h
 // 0 "" 2
 #NO_APP
-	adrp	x19, _ZL6CDOT_O+2816
-	add	x23, x19, :lo12:_ZL6CDOT_O+2816
+	adrp	x30, _ZL6CDOT_O+1280
+	add	x18, x30, :lo12:_ZL6CDOT_O+1280
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x23, #0, MUL VL]
+	ld1h z6.h, p7/z, [x18, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z29.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z9.h
+	sdot z29.s, z0.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x23, #1, MUL VL]
+	ld1h z9.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z1.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x18, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z29.s, z2.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x23, #2, MUL VL]
+	ld1h z11.h, p7/z, [x18, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z11.h
+	sdot z29.s, z3.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #3, MUL VL]
+	ld1h z12.h, p7/z, [x18, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z12.h
+	sdot z29.s, z4.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x23, #4, MUL VL]
+	ld1h z13.h, p7/z, [x18, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z13.h
+	sdot z29.s, z7.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #5, MUL VL]
+	ld1h z14.h, p7/z, [x18, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z7.h
+	sdot z29.s, z8.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x23, #6, MUL VL]
+	ld1h z23.h, p7/z, [x18, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z16.h, z8.h
+	sdot z29.s, z22.h, z23.h
 // 0 "" 2
 #NO_APP
-	adrp	x20, _ZL6CDOT_O+3072
-	add	x6, x20, :lo12:_ZL6CDOT_O+3072
+	adrp	x19, _ZL6CDOT_O+1536
+	add	x17, x19, :lo12:_ZL6CDOT_O+1536
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #0, MUL VL]
+	ld1h z15.h, p7/z, [x17, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z30.d, z31.d
@@ -751,5316 +428,684 @@ dynopt_idct32_sve2_shared:
 	sdot z30.s, z0.h, z15.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #1, MUL VL]
+	ld1h z16.h, p7/z, [x17, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z1.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x17, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z30.s, z2.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #2, MUL VL]
+	ld1h z18.h, p7/z, [x17, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z9.h
+	sdot z30.s, z3.h, z18.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #3, MUL VL]
+	ld1h z19.h, p7/z, [x17, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z10.h
+	sdot z30.s, z4.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x6, #4, MUL VL]
+	ld1h z20.h, p7/z, [x17, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z11.h
+	sdot z30.s, z7.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #5, MUL VL]
+	ld1h z21.h, p7/z, [x17, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z12.h
+	sdot z30.s, z8.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x6, #6, MUL VL]
+	ld1h z5.h, p7/z, [x17, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z16.h, z7.h
+	sdot z30.s, z22.h, z5.h
 // 0 "" 2
 #NO_APP
-	adrp	x3, _ZL6CDOT_O+3328
-	add	x5, x3, :lo12:_ZL6CDOT_O+3328
+	adrp	x16, _ZL6CDOT_O+1792
+	add	x15, x16, :lo12:_ZL6CDOT_O+1792
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z6.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z16.h, z13.h
-// 0 "" 2
-#NO_APP
-	addvl	x4, sp, #7
-	adrp	x7, _ZL6CDOT_O+3584
-	add	x4, x4, 128
-	add	x8, x7, :lo12:_ZL6CDOT_O+3584
-	str	z15, [x4]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z2.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z6.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x8, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z1.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x8, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x8, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x8, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z14.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z16.h, z12.h
-// 0 "" 2
-#NO_APP
-	addvl	x9, sp, #8
-	adrp	x17, _ZL6CDOT_O+3840
-	add	x9, x9, 128
-	add	x19, x17, :lo12:_ZL6CDOT_O+3840
-	str	z13, [x9]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z2.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x19, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z4.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x19, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z6.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x19, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x19, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z3.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x19, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z5.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x19, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z8.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z16.h, z5.h
-// 0 "" 2
-#NO_APP
-	addvl	x20, sp, #9
-	add	x4, x0, 128
-	ldr	z16, [x4]
-	add	x7, x0, 384
-	add	x20, x20, 128
-	ldr	z15, [x7]
-	add	x9, x0, 640
-	ldr	z9, [x9]
-	add	x17, x0, 896
-	ldr	z17, [x17]
-	add	x19, x0, 1152
-	ldr	z10, [x19]
-	add	x4, x0, 1664
-	ldr	z12, [x4]
-	add	x7, x0, 1920
-	ldr	z13, [x7]
-	adrp	x3, .LANCHOR0
-	zip1	z0.h, z16.h, z15.h
-	zip1	z7.h, z9.h, z17.h
-	add	x3, x3, :lo12:.LANCHOR0
-	zip1	z2.h, z12.h, z13.h
-	str	z14, [x20]
-	add	x20, x0, 1408
-	ldr	z11, [x20]
-	zip1	z8.h, z10.h, z11.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x3, #0, MUL VL]
+	ld1h z6.h, p7/z, [x15, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z9.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z0.h, z4.h
+	sdot z9.s, z0.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x3, #1, MUL VL]
+	ld1h z10.h, p7/z, [x15, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z7.h, z6.h
+	sdot z9.s, z1.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x3, #2, MUL VL]
+	ld1h z11.h, p7/z, [x15, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z8.h, z1.h
+	sdot z9.s, z2.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x3, #3, MUL VL]
+	ld1h z12.h, p7/z, [x15, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z2.h, z3.h
+	sdot z9.s, z3.h, z12.h
 // 0 "" 2
-#NO_APP
-	add	x9, x3, 128
-#APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x9, #0, MUL VL]
+	ld1h z13.h, p7/z, [x15, #4, MUL VL]
 // 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z0.h, z5.h
+	sdot z9.s, z4.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x9, #1, MUL VL]
+	ld1h z14.h, p7/z, [x15, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z7.h, z14.h
+	sdot z9.s, z7.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #2, MUL VL]
+	ld1h z23.h, p7/z, [x15, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z8.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	add	x17, x3, 256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z11.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z0.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z7.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x17, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z8.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x17, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z2.h, z4.h
-// 0 "" 2
-#NO_APP
-	add	x19, x3, 384
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z12.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z0.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x19, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z7.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x19, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z8.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x19, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z2.h, z5.h
-// 0 "" 2
-#NO_APP
-	add	x20, x3, 512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x20, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z7.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x20, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z8.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x20, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z2.h, z17.h
-// 0 "" 2
-#NO_APP
-	add	x4, x3, 640
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z0.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z7.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z8.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z2.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x7, x3, 768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z7.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z8.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z4.h
-// 0 "" 2
-#NO_APP
-	add	x9, x3, 896
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z0.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z7.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z8.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z2.h, z8.h
-// 0 "" 2
-#NO_APP
-	add	x17, x0, 256
-	ldr	z2, [x17]
-	add	x19, x0, 768
-	ldr	z1, [x19]
-	add	x20, x0, 1280
-	ldr	z3, [x20]
-	add	x4, x0, 1792
-	ldr	z5, [x4]
-	zip1	z0.h, z2.h, z1.h
-	add	x7, x3, 1024
-	zip1	z17.h, z3.h, z5.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z4.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z0.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z17.h, z7.h
-// 0 "" 2
-#NO_APP
-	add	x9, x3, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z17.h, z2.h
-// 0 "" 2
-#NO_APP
-	add	x17, x3, 1152
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z0.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z17.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x19, x3, 1216
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z17.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x20, x0, 512
-	ldr	z17, [x20]
-	add	x4, x0, 1536
-	ldr	z2, [x4]
-	add	x7, x3, 1280
-	zip1	z1.h, z17.h, z2.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z1.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x9, x3, 1312
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z1.h, z8.h
-// 0 "" 2
-#NO_APP
-	ldr	z0, [x0]
-	add	x17, x0, 1024
-	ldr	z17, [x17]
-	add	x19, x3, 1344
-	zip1	z1.h, z0.h, z17.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x3, x3, 1376
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z8.s, z2.s
-	sub	z8.s, z8.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z9.s
-	add	x4, sp, 128
-	sub	z9.s, z2.s, z9.s
-	add	z0.s, z4.s, z18.s
-	add	z2.s, z17.s, z3.s
-	addvl	x20, sp, #6
-	sub	z17.s, z17.s, z3.s
-	add	z3.s, z2.s, z5.s
-	str	z4, [x4]
-	sqrshrnb	z4.h, z0.s, #7
-	ptrue	p5.h, vl8
-	add	x20, x20, 128
-	addvl	x9, sp, #1
-	uzp1	z0.h, z4.h, z4.h
-	addvl	x17, sp, #10
-	add	z4.s, z17.s, z6.s
-	sub	z17.s, z17.s, z6.s
-	str	z9, [x20]
-	sub	z9.s, z2.s, z5.s
-	add	z5.s, z3.s, z10.s
-	sub	z10.s, z3.s, z10.s
-	add	z2.s, z5.s, z19.s
-	sqrshrnb	z3.h, z2.s, #7
-	uzp1	z6.h, z3.h, z3.h
-	splice	z0.h, p5, z0.h, z6.h
-	addvl	x7, sp, #5
-	add	x9, x9, 128
-	add	x17, x17, 128
-	str	z5, [x9]
-	add	z5.s, z4.s, z11.s
-	str	z0, [x17]
-	add	z0.s, z5.s, z20.s
-	sub	z6.s, z4.s, z11.s
-	add	x7, x7, 128
-	add	z11.s, z8.s, z7.s
-	addvl	x19, sp, #2
-	sub	z8.s, z8.s, z7.s
-	addvl	x3, sp, #3
-	add	z7.s, z11.s, z12.s
-	str	z10, [x7]
-	sqrshrnb	z10.h, z0.s, #7
-	sub	z0.s, z11.s, z12.s
-	add	z12.s, z7.s, z21.s
-	sqrshrnb	z2.h, z12.s, #7
-	uzp1	z3.h, z2.h, z2.h
-	uzp1	z4.h, z10.h, z10.h
-	add	z2.s, z8.s, z13.s
-	add	x19, x19, 128
-	add	x3, x3, 128
-	str	z5, [x19]
-	str	z7, [x3]
-	movprfx	z7, z4
-	splice	z7.h, p5, z7.h, z3.h
-	sub	z3.s, z8.s, z13.s
-	add	z13.s, z2.s, z22.s
-	sqrshrnb	z5.h, z13.s, #7
-	uzp1	z11.h, z5.h, z5.h
-	add	z13.s, z17.s, z14.s
-	sub	z17.s, z17.s, z14.s
-	add	z14.s, z13.s, z23.s
-	sqrshrnb	z10.h, z14.s, #7
-	uzp1	z8.h, z10.h, z10.h
-	movprfx	z5, z11
-	splice	z5.h, p5, z5.h, z8.h
-	add	z11.s, z9.s, z15.s
-	sub	z9.s, z9.s, z15.s
-	add	z15.s, z11.s, z24.s
-	sqrshrnb	z4.h, z15.s, #7
-	add	z15.s, z1.s, z16.s
-	sub	z1.s, z1.s, z16.s
-	add	z16.s, z15.s, z25.s
-	sqrshrnb	z12.h, z16.s, #7
-	add	z8.s, z1.s, z26.s
-	uzp1	z10.h, z12.h, z12.h
-	uzp1	z14.h, z4.h, z4.h
-	add	z12.s, z9.s, z27.s
-	sqrshrnb	z4.h, z8.s, #7
-	splice	z14.h, p5, z14.h, z10.h
-	uzp1	z16.h, z4.h, z4.h
-	sqrshrnb	z10.h, z12.s, #7
-	add	z4.s, z17.s, z28.s
-	uzp1	z8.h, z10.h, z10.h
-	sqrshrnb	z12.h, z4.s, #7
-	splice	z16.h, p5, z16.h, z8.h
-	add	z10.s, z3.s, z29.s
-	addvl	x20, sp, #4
-	sqrshrnb	z8.h, z10.s, #7
-	addvl	x4, sp, #7
-	uzp1	z4.h, z12.h, z12.h
-	uzp1	z12.h, z8.h, z8.h
-	add	z10.s, z0.s, z30.s
-	splice	z4.h, p5, z4.h, z12.h
-	add	x20, x20, 128
-	add	x4, x4, 128
-	ldr	z12, [x4]
-	addvl	x7, sp, #5
-	sqrshrnb	z8.h, z10.s, #7
-	str	z6, [x20]
-	add	z6.s, z6.s, z12.s
-	add	x7, x7, 128
-	addvl	x9, sp, #8
-	uzp1	z10.h, z8.h, z8.h
-	sqrshrnb	z8.h, z6.s, #7
-	ldr	z6, [x7]
-	uzp1	z12.h, z8.h, z8.h
-	add	x9, x9, 128
-	ldr	z8, [x9]
-	splice	z10.h, p5, z10.h, z12.h
-	addvl	x17, sp, #6
-	add	z12.s, z6.s, z8.s
-	addvl	x19, sp, #9
-	sqrshrnb	z6.h, z12.s, #7
-	add	x17, x17, 128
-	add	x19, x19, 128
-	ldr	z8, [x19]
-	uzp1	z12.h, z6.h, z6.h
-	ldr	z6, [x17]
-	add	z6.s, z6.s, z8.s
-	addvl	x3, sp, #10
-	sqrshrnb	z8.h, z6.s, #7
-	uzp1	z6.h, z8.h, z8.h
-	add	x3, x3, 128
-	splice	z12.h, p5, z12.h, z6.h
-	ldr	z6, [x3]
-	uzp1	z8.h, z6.h, z7.h
-	uzp2	z6.h, z6.h, z7.h
-	uzp1	z7.h, z5.h, z14.h
-	addvl	x20, sp, #12
-	uzp2	z14.h, z5.h, z14.h
-	uzp1	z5.h, z8.h, z7.h
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z16.h, z4.h
-	uzp2	z16.h, z16.h, z4.h
-	uzp1	z4.h, z10.h, z12.h
-	add	x20, x20, 128
-	uzp2	z12.h, z10.h, z12.h
-	addvl	x4, sp, #12
-	uzp1	z10.h, z7.h, z4.h
-	uzp2	z7.h, z7.h, z4.h
-	uzp1	z4.h, z5.h, z10.h
-	str	z4, [x20]
-	uzp2	z10.h, z5.h, z10.h
-	add	x4, x4, 192
-	uzp1	z5.h, z6.h, z14.h
-	addvl	x7, sp, #12
-	uzp2	z14.h, z6.h, z14.h
-	uzp1	z6.h, z16.h, z12.h
-	uzp2	z16.h, z16.h, z12.h
-	uzp1	z12.h, z5.h, z6.h
-	str	z12, [x4]
-	uzp1	z4.h, z8.h, z7.h
-	add	x7, x7, 256
-	addvl	x9, sp, #12
-	str	z4, [x7]
-	uzp2	z8.h, z8.h, z7.h
-	add	x9, x9, 320
-	uzp1	z7.h, z14.h, z16.h
-	addvl	x19, sp, #12
-	str	z7, [x9]
-	add	x17, sp, 128
-	uzp2	z5.h, z5.h, z6.h
-	ldr	z6, [x17]
-	add	x19, x19, 384
-	addvl	x3, sp, #1
-	addvl	x20, sp, #12
-	str	z10, [x19]
-	add	x3, x3, 128
-	ldr	z10, [x3]
-	add	x20, x20, 448
-	addvl	x4, sp, #12
-	addvl	x7, sp, #2
-	str	z5, [x20]
-	addvl	x9, sp, #12
-	addvl	x17, sp, #3
-	uzp2	z14.h, z14.h, z16.h
-	addvl	x19, sp, #4
-	sub	z18.s, z6.s, z18.s
-	sub	z19.s, z10.s, z19.s
-	sqrshrnb	z16.h, z18.s, #7
-	sqrshrnb	z5.h, z19.s, #7
-	uzp1	z12.h, z16.h, z16.h
-	add	x4, x4, 512
-	add	x7, x7, 128
-	str	z8, [x4]
-	ldr	z8, [x7]
-	add	x9, x9, 576
-	sub	z20.s, z8.s, z20.s
-	add	x17, x17, 128
-	sqrshrnb	z7.h, z20.s, #7
-	add	x19, x19, 128
-	uzp1	z6.h, z7.h, z7.h
-	addvl	x3, sp, #7
-	sub	z2.s, z2.s, z22.s
-	add	x3, x3, 128
-	sqrshrnb	z16.h, z2.s, #7
-	addvl	x20, sp, #5
-	uzp1	z10.h, z16.h, z16.h
-	addvl	x4, sp, #8
-	addvl	x7, sp, #6
-	uzp1	z4.h, z5.h, z5.h
-	sub	z23.s, z13.s, z23.s
-	splice	z4.h, p5, z4.h, z12.h
-	sqrshrnb	z13.h, z23.s, #7
-	sub	z24.s, z11.s, z24.s
-	sub	z25.s, z15.s, z25.s
-	sqrshrnb	z11.h, z24.s, #7
-	sqrshrnb	z15.h, z25.s, #7
-	uzp1	z12.h, z11.h, z11.h
-	sub	z26.s, z1.s, z26.s
-	uzp1	z5.h, z15.h, z15.h
-	sqrshrnb	z1.h, z26.s, #7
-	splice	z5.h, p5, z5.h, z12.h
-	uzp1	z8.h, z1.h, z1.h
-	sub	z27.s, z9.s, z27.s
-	sub	z28.s, z17.s, z28.s
-	sqrshrnb	z9.h, z27.s, #7
-	sqrshrnb	z17.h, z28.s, #7
-	sub	z29.s, z3.s, z29.s
-	uzp1	z20.h, z17.h, z17.h
-	sqrshrnb	z3.h, z29.s, #7
-	sub	z30.s, z0.s, z30.s
-	sqrshrnb	z0.h, z30.s, #7
-	str	z14, [x9]
-	ldr	z14, [x17]
-	addvl	x9, sp, #9
-	sub	z21.s, z14.s, z21.s
-	addvl	x17, sp, #12
-	sqrshrnb	z18.h, z21.s, #7
-	uzp1	z22.h, z18.h, z18.h
-	splice	z22.h, p5, z22.h, z6.h
-	ldr	z6, [x19]
-	addvl	x19, sp, #12
-	ldr	z18, [x3]
-	uzp1	z17.h, z22.h, z4.h
-	sub	z2.s, z6.s, z18.s
-	uzp2	z4.h, z22.h, z4.h
-	uzp1	z21.h, z0.h, z0.h
-	sqrshrnb	z24.h, z2.s, #7
-	add	x20, x20, 128
-	ldr	z16, [x20]
-	add	x4, x4, 128
-	add	x7, x7, 128
-	ldr	z25, [x7]
-	add	x9, x9, 128
-	ldr	z26, [x9]
-	add	x17, x17, 160
-	sub	z15.s, z25.s, z26.s
-	add	x19, x19, 224
-	addvl	x3, sp, #12
-	uzp1	z19.h, z13.h, z13.h
-	uzp1	z7.h, z9.h, z9.h
-	splice	z19.h, p5, z19.h, z10.h
-	ldr	z10, [x4]
-	uzp1	z27.h, z5.h, z19.h
-	splice	z7.h, p5, z7.h, z8.h
-	sub	z23.s, z16.s, z10.s
-	sqrshrnb	z8.h, z15.s, #7
-	sqrshrnb	z13.h, z23.s, #7
-	uzp2	z19.h, z5.h, z19.h
-	uzp1	z12.h, z13.h, z13.h
-	uzp1	z5.h, z19.h, z4.h
-	uzp1	z14.h, z3.h, z3.h
-	uzp1	z11.h, z24.h, z24.h
-	splice	z14.h, p5, z14.h, z20.h
-	splice	z11.h, p5, z11.h, z21.h
-	uzp1	z20.h, z27.h, z17.h
-	uzp1	z1.h, z14.h, z7.h
-	uzp1	z9.h, z8.h, z8.h
-	uzp2	z7.h, z14.h, z7.h
-	splice	z9.h, p5, z9.h, z12.h
-	uzp1	z28.h, z9.h, z11.h
-	uzp2	z30.h, z9.h, z11.h
-	uzp1	z0.h, z28.h, z1.h
-	uzp1	z22.h, z30.h, z7.h
-	uzp1	z29.h, z0.h, z20.h
-	uzp1	z3.h, z22.h, z5.h
-	str	z29, [x17]
-	str	z3, [x19]
-	uzp2	z14.h, z28.h, z1.h
-	uzp2	z21.h, z27.h, z17.h
-	add	x3, x3, 288
-	uzp1	z6.h, z14.h, z21.h
-	addvl	x20, sp, #12
-	str	z6, [x3]
-	uzp2	z18.h, z30.h, z7.h
-	uzp2	z2.h, z19.h, z4.h
-	add	x20, x20, 352
-	uzp1	z16.h, z18.h, z2.h
-	addvl	x4, sp, #12
-	str	z16, [x20]
-	uzp2	z10.h, z0.h, z20.h
-	add	x4, x4, 416
-	addvl	x7, sp, #12
-	str	z10, [x4]
-	uzp2	z23.h, z22.h, z5.h
-	add	x20, x0, 464
-	add	x7, x7, 480
-	str	z23, [x7]
-	addvl	x17, sp, #12
-	add	x9, x0, 80
-	uzp2	z24.h, z14.h, z21.h
-	add	x19, x0, 208
-	add	x17, x17, 544
-	str	z24, [x17]
-	ldr	z26, [x20]
-	add	x20, x0, 1232
-	ldr	z13, [x9]
-	ldr	z11, [x19]
-	ldr	z20, [x20]
-	add	x3, x0, 336
-	add	x4, x0, 592
-	add	x7, x0, 720
-	ldr	z12, [x3]
-	add	x9, x0, 848
-	add	x17, x0, 976
-	ldr	z15, [x4]
-	add	x19, x0, 1104
-	addvl	x20, sp, #12
-	ldr	z8, [x7]
-	ldr	z27, [x9]
-	ldr	z9, [x17]
-	ldr	z17, [x19]
-	uzp2	z25.h, z18.h, z2.h
-	add	x3, x0, 1360
-	ldr	z28, [x3]
-	add	x4, x0, 1488
-	ldr	z29, [x4]
-	add	x7, x0, 1616
-	ldr	z30, [x7]
-	add	x9, x0, 1744
-	ldr	z7, [x9]
-	add	x17, x0, 1872
-	ldr	z19, [x17]
-	add	x19, x0, 2000
-	ldr	z22, [x19]
-	add	x20, x20, 608
-	zip1	z1.h, z13.h, z11.h
-	zip1	z0.h, z12.h, z26.h
-	zip1	z4.h, z15.h, z8.h
-	zip1	z5.h, z27.h, z9.h
-	zip1	z3.h, z17.h, z20.h
-	zip1	z14.h, z28.h, z29.h
-	zip1	z6.h, z30.h, z7.h
-	zip1	z2.h, z19.h, z22.h
-	str	z25, [x20]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z18.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z18.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z3.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z14.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z18.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z14.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x30, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x30, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z14.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x30, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x30, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x15, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x15, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z14.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x15, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z26.h
+	sdot z9.s, z8.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z15.h, p7/z, [x15, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x14, #0, MUL VL]
+	sdot z9.s, z22.h, z15.h
 // 0 "" 2
 #NO_APP
-	mov	z21.d, z31.d
+	adrp	x13, _ZL6CDOT_O+2048
+	add	x14, sp, 224
+	str	z9, [x14]
+	add	x12, x13, :lo12:_ZL6CDOT_O+2048
 #APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z8.h
-// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x14, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x14, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x14, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x14, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z14.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x14, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x14, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x13, #0, MUL VL]
+	ld1h z16.h, p7/z, [x12, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z22.d, z31.d
+	mov	z13.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z16.h
+	sdot z13.s, z0.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x13, #1, MUL VL]
+	ld1h z17.h, p7/z, [x12, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z10.h
+	sdot z13.s, z1.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x13, #2, MUL VL]
+	ld1h z18.h, p7/z, [x12, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z23.h
+	sdot z13.s, z2.h, z18.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x13, #3, MUL VL]
+	ld1h z19.h, p7/z, [x12, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z24.h
+	sdot z13.s, z3.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x13, #4, MUL VL]
+	ld1h z20.h, p7/z, [x12, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z25.h
+	sdot z13.s, z4.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #5, MUL VL]
+	ld1h z21.h, p7/z, [x12, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z14.h, z13.h
+	sdot z13.s, z7.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #6, MUL VL]
+	ld1h z5.h, p7/z, [x12, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z11.h
+	sdot z13.s, z8.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x13, #7, MUL VL]
+	ld1h z6.h, p7/z, [x12, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x12, #0, MUL VL]
+	sdot z13.s, z22.h, z6.h
 // 0 "" 2
 #NO_APP
-	mov	z23.d, z31.d
+	addvl	x11, sp, #1
+	adrp	x10, _ZL6CDOT_O+2304
+	add	x11, x11, 224
+	add	x9, x10, :lo12:_ZL6CDOT_O+2304
+	str	z13, [x11]
 #APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z26.h
-// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x12, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x12, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z14.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x12, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x12, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x11, #0, MUL VL]
+	ld1h z9.h, p7/z, [x9, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z24.d, z31.d
+	mov	z12.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z7.h
+	sdot z12.s, z0.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x11, #1, MUL VL]
+	ld1h z10.h, p7/z, [x9, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z16.h
+	sdot z12.s, z1.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x11, #2, MUL VL]
+	ld1h z11.h, p7/z, [x9, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z10.h
+	sdot z12.s, z2.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x11, #3, MUL VL]
+	ld1h z14.h, p7/z, [x9, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z25.h
+	sdot z12.s, z3.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x11, #4, MUL VL]
+	ld1h z23.h, p7/z, [x9, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z13.h
+	sdot z12.s, z4.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x11, #5, MUL VL]
+	ld1h z15.h, p7/z, [x9, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z14.h, z11.h
+	sdot z12.s, z7.h, z15.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x11, #6, MUL VL]
+	ld1h z16.h, p7/z, [x9, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z12.h
+	sdot z12.s, z8.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x11, #7, MUL VL]
+	ld1h z17.h, p7/z, [x9, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x10, #0, MUL VL]
+	sdot z12.s, z22.h, z17.h
 // 0 "" 2
 #NO_APP
-	mov	z25.d, z31.d
+	addvl	x8, sp, #2
+	adrp	x7, _ZL6CDOT_O+2560
+	add	x8, x8, 224
+	add	x23, x7, :lo12:_ZL6CDOT_O+2560
+	str	z12, [x8]
 #APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z15.h
-// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x10, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x10, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z14.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x10, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x10, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x16, #0, MUL VL]
+	ld1h z18.h, p7/z, [x23, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z26.d, z31.d
+	mov	z9.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z16.h
+	sdot z9.s, z0.h, z18.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x16, #1, MUL VL]
+	ld1h z19.h, p7/z, [x23, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z10.h
+	sdot z9.s, z1.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x16, #2, MUL VL]
+	ld1h z20.h, p7/z, [x23, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z13.h
+	sdot z9.s, z2.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x16, #3, MUL VL]
+	ld1h z21.h, p7/z, [x23, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x16, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x16, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x16, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x16, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z27.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x18, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x18, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z14.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x18, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x18, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z28.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z14.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z29.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z2.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z14.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z8.h
-// 0 "" 2
-#NO_APP
-	addvl	x21, sp, #7
-	add	x21, x21, 128
-	str	z30, [x21]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x8, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z3.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x8, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z14.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x8, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z6.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x8, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	addvl	x22, sp, #8
-	adrp	x30, _ZL6CDOT_O+3840
-	add	x22, x22, 128
-	add	x23, x30, :lo12:_ZL6CDOT_O+3840
-	str	z7, [x22]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z4.h
+	sdot z9.s, z3.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z5.h, p7/z, [x23, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z14.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z6.h
-// 0 "" 2
-#NO_APP
-	addvl	x15, sp, #9
-	add	x14, x0, 144
-	ldr	z2, [x14]
-	add	x15, x15, 128
-	add	x13, x0, 400
-	ldr	z9, [x13]
-	add	x12, x0, 656
-	ldr	z10, [x12]
-	add	x11, x0, 912
-	ldr	z13, [x11]
-	add	x10, x0, 1168
-	ldr	z16, [x10]
-	add	x16, x0, 1424
-	ldr	z11, [x16]
-	add	x18, x0, 1680
-	ldr	z12, [x18]
-	add	x6, x0, 1936
-	ldr	z15, [x6]
-	adrp	x5, .LANCHOR0
-	zip1	z1.h, z2.h, z9.h
-	zip1	z7.h, z10.h, z13.h
-	zip1	z0.h, z16.h, z11.h
-	add	x3, x5, :lo12:.LANCHOR0
-	zip1	z4.h, z12.h, z15.h
-	str	z30, [x15]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z7.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z4.h, z6.h
-// 0 "" 2
-#NO_APP
-	add	x22, x3, 128
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z9.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z1.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z7.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z4.h, z13.h
-// 0 "" 2
-#NO_APP
-	add	x30, x3, 256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z7.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z4.h, z15.h
-// 0 "" 2
-#NO_APP
-	add	x12, x3, 384
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z11.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z1.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z7.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z4.h, z6.h
-// 0 "" 2
-#NO_APP
-	add	x9, x3, 512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z12.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z1.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z7.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z4.h, z16.h
-// 0 "" 2
-#NO_APP
-	add	x8, x3, 640
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z7.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z0.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z4.h, z14.h
-// 0 "" 2
-#NO_APP
-	add	x7, x3, 768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z1.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z7.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z0.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z4.h, z16.h
-// 0 "" 2
-#NO_APP
-	add	x11, x3, 896
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x11, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x11, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z7.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x11, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x11, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x4, x0, 272
-	ldr	z4, [x4]
-	add	x17, x0, 784
-	ldr	z3, [x17]
-	add	x19, x0, 1296
-	ldr	z6, [x19]
-	add	x20, x0, 1808
-	ldr	z2, [x20]
-	zip1	z30.h, z4.h, z3.h
-	add	x10, x3, 1024
-	zip1	z16.h, z6.h, z2.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z4.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z30.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z16.h, z1.h
-// 0 "" 2
-#NO_APP
-	add	x15, x3, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z30.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z16.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x14, x3, 1152
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x14, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z30.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z16.h, z2.h
-// 0 "" 2
-#NO_APP
-	add	x13, x3, 1216
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z30.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z16.h, z7.h
-// 0 "" 2
-#NO_APP
-	add	x21, x0, 528
-	ldr	z16, [x21]
-	add	x16, x0, 1552
-	ldr	z31, [x16]
-	add	x20, x3, 1280
-	zip1	z0.h, z16.h, z31.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d31, #0
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z0.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x19, x3, 1312
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z0.h, z1.h
-// 0 "" 2
-#NO_APP
-	add	x18, x0, 16
-	ldr	z7, [x18]
-	add	x6, x0, 1040
-	ldr	z16, [x6]
-	add	x16, x3, 1344
-	zip1	z1.h, z7.h, z16.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x17, x3, 1376
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z7.s, z2.s
-	addvl	x5, sp, #6
-	sub	z7.s, z7.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z8.s
-	sub	z8.s, z2.s, z8.s
-	add	z0.s, z4.s, z17.s
-	add	z2.s, z16.s, z3.s
-	add	x5, x5, 128
-	sub	z16.s, z16.s, z3.s
-	addvl	x18, sp, #1
-	add	z3.s, z2.s, z5.s
-	str	z8, [x5]
-	sub	z8.s, z2.s, z5.s
-	add	z5.s, z3.s, z9.s
-	add	x4, sp, 128
-	add	z2.s, z5.s, z18.s
-	sub	z9.s, z3.s, z9.s
-	addvl	x21, sp, #5
-	sqrshrnb	z3.h, z2.s, #7
-	add	x18, x18, 128
-	addvl	x6, sp, #10
-	str	z4, [x4]
-	sqrshrnb	z4.h, z0.s, #7
-	uzp1	z0.h, z4.h, z4.h
-	str	z5, [x18]
-	uzp1	z5.h, z3.h, z3.h
-	splice	z0.h, p5, z0.h, z5.h
-	add	z4.s, z16.s, z6.s
-	add	x21, x21, 128
-	sub	z16.s, z16.s, z6.s
-	add	x6, x6, 128
-	add	z6.s, z4.s, z10.s
-	str	z0, [x6]
-	add	z0.s, z6.s, z19.s
-	add	z2.s, z7.s, z30.s
-	sub	z10.s, z4.s, z10.s
-	sub	z7.s, z7.s, z30.s
-	addvl	x5, sp, #4
-	add	z30.s, z2.s, z11.s
-	str	z9, [x21]
-	sqrshrnb	z9.h, z0.s, #7
-	addvl	x21, sp, #3
-	sub	z0.s, z2.s, z11.s
-	add	z11.s, z30.s, z20.s
-	sqrshrnb	z3.h, z11.s, #7
-	uzp1	z4.h, z9.h, z9.h
-	add	z11.s, z8.s, z14.s
-	uzp1	z5.h, z3.h, z3.h
-	sub	z8.s, z8.s, z14.s
-	sub	z3.s, z7.s, z12.s
-	add	z14.s, z11.s, z23.s
-	add	z2.s, z7.s, z12.s
-	add	x5, x5, 128
-	add	z12.s, z2.s, z21.s
-	addvl	x4, sp, #2
-	add	x21, x21, 128
-	str	z10, [x5]
-	sqrshrnb	z10.h, z12.s, #7
-	uzp1	z9.h, z10.h, z10.h
-	str	z30, [x21]
-	sqrshrnb	z30.h, z14.s, #7
-	add	z12.s, z16.s, z13.s
-	add	x4, x4, 128
-	sub	z16.s, z16.s, z13.s
-	uzp1	z14.h, z30.h, z30.h
-	add	z13.s, z12.s, z22.s
-	add	z30.s, z1.s, z15.s
-	sqrshrnb	z7.h, z13.s, #7
-	sub	z1.s, z1.s, z15.s
-	add	z15.s, z30.s, z24.s
-	sqrshrnb	z10.h, z15.s, #7
-	str	z6, [x4]
-	movprfx	z6, z4
-	splice	z6.h, p5, z6.h, z5.h
-	uzp1	z4.h, z7.h, z7.h
-	movprfx	z5, z9
-	splice	z5.h, p5, z5.h, z4.h
-	uzp1	z9.h, z10.h, z10.h
-	add	z13.s, z1.s, z25.s
-	splice	z14.h, p5, z14.h, z9.h
-	add	z4.s, z8.s, z26.s
-	sqrshrnb	z7.h, z13.s, #7
-	sqrshrnb	z10.h, z4.s, #7
-	uzp1	z9.h, z10.h, z10.h
-	add	z13.s, z16.s, z27.s
-	add	z10.s, z3.s, z28.s
-	addvl	x18, sp, #4
-	uzp1	z15.h, z7.h, z7.h
-	sqrshrnb	z7.h, z13.s, #7
-	splice	z15.h, p5, z15.h, z9.h
-	sqrshrnb	z9.h, z10.s, #7
-	add	x18, x18, 128
-	uzp1	z13.h, z9.h, z9.h
-	ldr	z9, [x18]
-	addvl	x6, sp, #7
-	uzp1	z4.h, z7.h, z7.h
-	add	z7.s, z0.s, z29.s
-	splice	z4.h, p5, z4.h, z13.h
-	add	x6, x6, 128
-	ldr	z13, [x6]
-	addvl	x5, sp, #5
-	sqrshrnb	z10.h, z7.s, #7
-	add	z7.s, z9.s, z13.s
-	sqrshrnb	z9.h, z7.s, #7
-	add	x5, x5, 128
-	uzp1	z13.h, z9.h, z9.h
-	ldr	z9, [x5]
-	addvl	x4, sp, #8
-	add	x4, x4, 128
-	ldr	z7, [x4]
-	addvl	x21, sp, #6
-	addvl	x18, sp, #9
-	uzp1	z10.h, z10.h, z10.h
-	splice	z10.h, p5, z10.h, z13.h
-	add	z13.s, z9.s, z7.s
-	sqrshrnb	z9.h, z13.s, #7
-	add	x21, x21, 128
-	ldr	z7, [x21]
-	add	x18, x18, 128
-	uzp1	z13.h, z9.h, z9.h
-	ldr	z9, [x18]
-	add	z7.s, z7.s, z9.s
-	addvl	x6, sp, #10
-	sqrshrnb	z9.h, z7.s, #7
-	uzp1	z7.h, z9.h, z9.h
-	add	x6, x6, 128
-	splice	z13.h, p5, z13.h, z7.h
-	ldr	z7, [x6]
-	uzp1	z9.h, z7.h, z6.h
-	uzp2	z6.h, z7.h, z6.h
-	uzp1	z7.h, z5.h, z14.h
-	addvl	x5, sp, #12
-	uzp2	z14.h, z5.h, z14.h
-	uzp1	z5.h, z9.h, z7.h
-	uzp2	z9.h, z9.h, z7.h
-	uzp1	z7.h, z15.h, z4.h
-	uzp2	z15.h, z15.h, z4.h
-	uzp1	z4.h, z10.h, z13.h
-	add	x5, x5, 640
-	uzp2	z13.h, z10.h, z13.h
-	addvl	x4, sp, #12
-	uzp1	z10.h, z7.h, z4.h
-	uzp2	z7.h, z7.h, z4.h
-	uzp1	z4.h, z5.h, z10.h
-	str	z4, [x5]
-	uzp2	z10.h, z5.h, z10.h
-	add	x4, x4, 704
-	uzp1	z5.h, z6.h, z14.h
-	addvl	x21, sp, #12
-	uzp2	z14.h, z6.h, z14.h
-	uzp1	z6.h, z15.h, z13.h
-	uzp2	z15.h, z15.h, z13.h
-	uzp1	z13.h, z5.h, z6.h
-	str	z13, [x4]
-	uzp1	z4.h, z9.h, z7.h
-	add	x21, x21, 768
-	addvl	x18, sp, #12
-	str	z4, [x21]
-	uzp2	z9.h, z9.h, z7.h
-	add	x18, x18, 832
-	uzp1	z7.h, z14.h, z15.h
-	addvl	x5, sp, #12
-	str	z7, [x18]
-	add	x6, sp, 128
-	uzp2	z5.h, z5.h, z6.h
-	ldr	z6, [x6]
-	add	x5, x5, 896
-	addvl	x4, sp, #1
-	addvl	x21, sp, #12
-	addvl	x18, sp, #12
-	str	z10, [x5]
-	add	x4, x4, 128
-	ldr	z10, [x4]
-	add	x21, x21, 960
-	add	x18, x18, 1024
-	addvl	x6, sp, #2
-	str	z5, [x21]
-	uzp2	z14.h, z14.h, z15.h
-	sub	z17.s, z6.s, z17.s
-	add	x6, x6, 128
-	addvl	x5, sp, #12
-	addvl	x4, sp, #3
-	str	z9, [x18]
-	addvl	x21, sp, #4
-	addvl	x18, sp, #7
-	ldr	z9, [x6]
-	sqrshrnb	z15.h, z17.s, #7
-	sub	z19.s, z9.s, z19.s
-	uzp1	z13.h, z15.h, z15.h
-	sqrshrnb	z7.h, z19.s, #7
-	add	x5, x5, 1088
-	add	x4, x4, 128
-	add	x21, x21, 128
-	add	x18, x18, 128
-	str	z14, [x5]
-	ldr	z14, [x4]
-	addvl	x6, sp, #5
-	sub	z20.s, z14.s, z20.s
-	sqrshrnb	z17.h, z20.s, #7
-	sub	z18.s, z10.s, z18.s
-	uzp1	z6.h, z7.h, z7.h
-	ldr	z7, [x21]
-	sqrshrnb	z5.h, z18.s, #7
-	sub	z2.s, z2.s, z21.s
-	sub	z24.s, z30.s, z24.s
-	sqrshrnb	z15.h, z2.s, #7
-	sub	z30.s, z1.s, z25.s
-	uzp1	z10.h, z15.h, z15.h
-	sqrshrnb	z25.h, z24.s, #7
-	sqrshrnb	z1.h, z30.s, #7
-	add	x6, x6, 128
-	uzp1	z9.h, z1.h, z1.h
-	addvl	x5, sp, #8
-	addvl	x4, sp, #6
-	addvl	x21, sp, #9
-	uzp1	z4.h, z5.h, z5.h
-	uzp1	z21.h, z17.h, z17.h
-	ldr	z17, [x18]
-	splice	z4.h, p5, z4.h, z13.h
-	addvl	x18, sp, #12
-	sub	z22.s, z12.s, z22.s
-	sub	z23.s, z11.s, z23.s
-	sqrshrnb	z12.h, z22.s, #7
-	sqrshrnb	z11.h, z23.s, #7
-	sub	z26.s, z8.s, z26.s
-	uzp1	z13.h, z11.h, z11.h
-	sqrshrnb	z8.h, z26.s, #7
-	sub	z27.s, z16.s, z27.s
-	sub	z28.s, z3.s, z28.s
-	sqrshrnb	z16.h, z27.s, #7
-	sub	z29.s, z0.s, z29.s
-	uzp1	z19.h, z16.h, z16.h
-	sqrshrnb	z0.h, z29.s, #7
-	ldr	z15, [x6]
-	splice	z21.h, p5, z21.h, z6.h
-	sub	z2.s, z7.s, z17.s
-	uzp1	z16.h, z21.h, z4.h
-	sqrshrnb	z3.h, z28.s, #7
-	uzp1	z20.h, z0.h, z0.h
-	sqrshrnb	z23.h, z2.s, #7
-	add	x5, x5, 128
-	add	x4, x4, 128
-	ldr	z24, [x4]
-	add	x21, x21, 128
-	add	x18, x18, 672
-	uzp1	z18.h, z12.h, z12.h
-	addvl	x6, sp, #12
-	splice	z18.h, p5, z18.h, z10.h
-	ldr	z10, [x5]
-	ldr	z30, [x21]
-	sub	z22.s, z15.s, z10.s
-	uzp1	z5.h, z25.h, z25.h
-	sqrshrnb	z12.h, z22.s, #7
-	splice	z5.h, p5, z5.h, z13.h
-	sub	z25.s, z24.s, z30.s
-	uzp1	z27.h, z5.h, z18.h
-	uzp1	z13.h, z12.h, z12.h
-	uzp1	z14.h, z8.h, z8.h
-	uzp1	z6.h, z3.h, z3.h
-	splice	z14.h, p5, z14.h, z9.h
-	splice	z6.h, p5, z6.h, z19.h
-	sqrshrnb	z9.h, z25.s, #7
-	uzp1	z1.h, z6.h, z14.h
-	uzp1	z19.h, z27.h, z16.h
-	uzp1	z11.h, z23.h, z23.h
-	uzp1	z8.h, z9.h, z9.h
-	splice	z11.h, p5, z11.h, z20.h
-	splice	z8.h, p5, z8.h, z13.h
-	uzp1	z28.h, z8.h, z11.h
-	uzp1	z0.h, z28.h, z1.h
-	uzp1	z26.h, z0.h, z19.h
-	str	z26, [x18]
-	uzp2	z20.h, z8.h, z11.h
-	uzp2	z14.h, z6.h, z14.h
-	uzp2	z4.h, z21.h, z4.h
-	uzp2	z18.h, z5.h, z18.h
-	uzp1	z21.h, z20.h, z14.h
-	uzp1	z5.h, z18.h, z4.h
-	add	x6, x6, 736
-	uzp1	z29.h, z21.h, z5.h
-	addvl	x5, sp, #12
-	str	z29, [x6]
-	uzp2	z3.h, z28.h, z1.h
-	uzp2	z6.h, z27.h, z16.h
-	add	x5, x5, 800
-	uzp1	z7.h, z3.h, z6.h
-	addvl	x4, sp, #12
-	str	z7, [x5]
-	uzp2	z17.h, z20.h, z14.h
-	uzp2	z2.h, z18.h, z4.h
-	add	x4, x4, 864
-	uzp1	z15.h, z17.h, z2.h
-	addvl	x21, sp, #12
-	addvl	x18, sp, #12
-	str	z15, [x4]
-	uzp2	z10.h, z0.h, z19.h
-	add	x21, x21, 928
-	add	x18, x18, 992
-	str	z10, [x21]
-	uzp2	z22.h, z21.h, z5.h
-	addvl	x5, sp, #12
-	str	z22, [x18]
-	add	x18, x0, 480
-	uzp2	z23.h, z3.h, z6.h
-	add	x6, x0, 96
-	add	x4, x0, 224
-	add	x21, x0, 352
-	add	x5, x5, 1056
-	str	z23, [x5]
-	ldr	z30, [x18]
-	add	x18, x0, 1120
-	ldr	z12, [x6]
-	ldr	z11, [x4]
-	ldr	z13, [x21]
-	ldr	z19, [x18]
-	add	x6, x0, 608
-	add	x4, x0, 736
-	ldr	z25, [x6]
-	add	x5, x0, 864
-	add	x21, x0, 992
-	ldr	z27, [x4]
-	add	x18, x0, 1760
-	ldr	z8, [x5]
-	ldr	z16, [x21]
-	ldr	z18, [x18]
-	add	x6, x0, 1248
-	add	x4, x0, 1376
-	add	x21, x0, 1504
-	add	x5, x0, 1632
-	ldr	z28, [x6]
-	addvl	x18, sp, #12
-	ldr	z26, [x4]
-	ldr	z20, [x21]
-	ldr	z14, [x5]
-	uzp2	z24.h, z17.h, z2.h
-	add	x6, x0, 1888
-	ldr	z21, [x6]
-	add	x4, x0, 2016
-	ldr	z29, [x4]
-	add	x18, x18, 1120
-	adrp	x21, _ZL6CDOT_O
-	zip1	z1.h, z12.h, z11.h
-	zip1	z9.h, z13.h, z30.h
-	zip1	z0.h, z25.h, z27.h
-	zip1	z4.h, z8.h, z16.h
-	zip1	z5.h, z19.h, z28.h
-	zip1	z3.h, z26.h, z20.h
-	zip1	z6.h, z14.h, z18.h
-	add	x5, x21, :lo12:_ZL6CDOT_O
-	zip1	z2.h, z21.h, z29.h
-	str	z24, [x18]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z3.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z2.h, z11.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+256
-	add	x4, x6, :lo12:_ZL6CDOT_O+256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z9.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z26.h
-// 0 "" 2
-#NO_APP
-	adrp	x21, _ZL6CDOT_O+512
-	add	x5, x21, :lo12:_ZL6CDOT_O+512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z18.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z9.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z22.h
-// 0 "" 2
-#NO_APP
-	adrp	x18, _ZL6CDOT_O+768
-	add	x6, x18, :lo12:_ZL6CDOT_O+768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z9.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z8.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+1024
-	add	x21, x4, :lo12:_ZL6CDOT_O+1024
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z9.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	adrp	x5, _ZL6CDOT_O+1280
-	add	x18, x5, :lo12:_ZL6CDOT_O+1280
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z21.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z9.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x18, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x18, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x18, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x18, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z25.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+1536
-	add	x4, x6, :lo12:_ZL6CDOT_O+1536
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z22.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z9.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x21, _ZL6CDOT_O+1792
-	add	x5, x21, :lo12:_ZL6CDOT_O+1792
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z23.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z27.h
-// 0 "" 2
-#NO_APP
-	adrp	x18, _ZL6CDOT_O+2048
-	add	x6, x18, :lo12:_ZL6CDOT_O+2048
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z24.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+2304
-	add	x21, x4, :lo12:_ZL6CDOT_O+2304
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z25.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z9.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z28.h
-// 0 "" 2
-#NO_APP
-	adrp	x5, _ZL6CDOT_O+2560
-	add	x18, x5, :lo12:_ZL6CDOT_O+2560
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z26.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z9.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x18, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x18, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x18, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x18, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z13.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+2816
-	add	x4, x6, :lo12:_ZL6CDOT_O+2816
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z27.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z2.h, z10.h
-// 0 "" 2
-#NO_APP
-	adrp	x21, _ZL6CDOT_O+3072
-	add	x5, x21, :lo12:_ZL6CDOT_O+3072
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z28.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z9.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x18, _ZL6CDOT_O+3328
-	add	x6, x18, :lo12:_ZL6CDOT_O+3328
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z29.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z2.h, z14.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+3584
-	add	x21, x4, :lo12:_ZL6CDOT_O+3584
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z14.h
-// 0 "" 2
-#NO_APP
-	addvl	x5, sp, #7
-	add	x5, x5, 128
-	str	z15, [x5]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z9.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z5.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z6.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z15.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z6.h
-// 0 "" 2
-#NO_APP
-	addvl	x23, sp, #8
-	add	x18, x0, 160
-	ldr	z2, [x18]
-	add	x6, x0, 416
-	add	x23, x23, 128
-	ldr	z12, [x6]
-	add	x4, x0, 672
-	ldr	z13, [x4]
-	add	x21, x0, 928
-	ldr	z8, [x21]
-	add	x5, x0, 1184
-	ldr	z7, [x5]
-	add	x18, x0, 1696
-	ldr	z16, [x18]
-	add	x6, x0, 1952
-	ldr	z1, [x6]
-	zip1	z11.h, z2.h, z12.h
-	zip1	z14.h, z13.h, z8.h
-	str	z10, [x23]
-	add	x23, x0, 1440
-	ldr	z15, [x23]
-	zip1	z10.h, z16.h, z1.h
-	zip1	z9.h, z7.h, z15.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z0.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z0.s, z11.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z0.s, z14.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z0.s, z9.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z0.s, z10.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z1.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z1.s, z11.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z1.s, z14.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z1.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z1.s, z10.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z11.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z10.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z11.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z14.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z9.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z10.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z4.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z11.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z14.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z10.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z11.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z14.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z10.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z11.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z10.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x11, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z11.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x11, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z14.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x11, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z9.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x11, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z10.h, z9.h
-// 0 "" 2
-#NO_APP
-	add	x22, x0, 288
-	ldr	z10, [x22]
-	add	x3, x0, 800
-	ldr	z8, [x3]
-	add	x30, x0, 1312
-	ldr	z16, [x30]
-	add	x12, x0, 1824
-	ldr	z15, [x12]
-	zip1	z11.h, z10.h, z8.h
-	zip1	z9.h, z16.h, z15.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z12.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z11.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z9.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z11.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z9.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x14, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z11.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z11.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z9.h, z11.h
-// 0 "" 2
-#NO_APP
-	add	x9, x0, 544
-	ldr	z9, [x9]
-	add	x8, x0, 1568
-	ldr	z8, [x8]
-	zip1	z16.h, z9.h, z8.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z16.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z11.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z16.h, z9.h
-// 0 "" 2
-#NO_APP
-	add	x7, x0, 32
-	ldr	z8, [x7]
-	add	x11, x0, 1056
-	ldr	z16, [x11]
-	zip1	z9.h, z8.h, z16.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z9.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z9.h, z8.h
-// 0 "" 2
-#NO_APP
-	add	z9.s, z16.s, z10.s
-	addvl	x10, sp, #6
-	sub	z8.s, z9.s, z12.s
-	sub	z16.s, z16.s, z10.s
-	add	z10.s, z9.s, z12.s
-	add	z12.s, z10.s, z0.s
-	sub	z0.s, z10.s, z0.s
-	add	z9.s, z12.s, z17.s
-	add	x15, sp, 128
-	add	x10, x10, 128
-	addvl	x14, sp, #5
-	sqrshrnb	z10.h, z9.s, #7
-	str	z0, [x10]
-	str	z12, [x15]
-	add	z12.s, z31.s, z11.s
-	sub	z31.s, z31.s, z11.s
-	sub	z9.s, z12.s, z13.s
-	add	z11.s, z12.s, z13.s
-	add	z13.s, z11.s, z1.s
-	sub	z1.s, z11.s, z1.s
-	add	z0.s, z13.s, z30.s
-	add	z12.s, z31.s, z14.s
-	sqrshrnb	z11.h, z0.s, #7
-	sub	z31.s, z31.s, z14.s
-	add	x14, x14, 128
-	add	z14.s, z12.s, z2.s
-	addvl	x13, sp, #1
-	str	z1, [x14]
-	add	z1.s, z14.s, z18.s
-	sqrshrnb	z0.h, z1.s, #7
-	sub	z2.s, z12.s, z2.s
-	add	x13, x13, 128
-	add	z12.s, z16.s, z15.s
-	addvl	x16, sp, #4
-	sub	z16.s, z16.s, z15.s
-	addvl	x17, sp, #2
-	uzp1	z15.h, z0.h, z0.h
-	add	z0.s, z12.s, z3.s
-	str	z13, [x13]
-	uzp1	z13.h, z11.h, z11.h
-	add	z11.s, z0.s, z19.s
-	add	z1.s, z16.s, z4.s
-	sub	z3.s, z12.s, z3.s
-	sub	z16.s, z16.s, z4.s
-	add	x16, x16, 128
-	add	x17, x17, 128
-	addvl	x4, sp, #9
-	uzp1	z10.h, z10.h, z10.h
-	splice	z10.h, p5, z10.h, z13.h
-	sqrshrnb	z13.h, z11.s, #7
-	add	z11.s, z31.s, z5.s
-	uzp1	z4.h, z13.h, z13.h
-	sub	z31.s, z31.s, z5.s
-	splice	z15.h, p5, z15.h, z4.h
-	add	z5.s, z11.s, z21.s
-	str	z2, [x16]
-	str	z14, [x17]
-	add	z14.s, z1.s, z20.s
-	sqrshrnb	z2.h, z14.s, #7
-	uzp1	z12.h, z2.h, z2.h
-	add	x4, x4, 128
-	str	z15, [x4]
-	sqrshrnb	z15.h, z5.s, #7
-	add	z5.s, z9.s, z6.s
-	uzp1	z13.h, z15.h, z15.h
-	movprfx	z2, z12
-	splice	z2.h, p5, z2.h, z13.h
-	sub	z12.s, z9.s, z6.s
-	add	z6.s, z5.s, z22.s
-	sqrshrnb	z9.h, z6.s, #7
-	add	z15.s, z8.s, z7.s
-	uzp1	z13.h, z9.h, z9.h
-	sub	z9.s, z8.s, z7.s
-	add	z7.s, z15.s, z23.s
-	sqrshrnb	z8.h, z7.s, #7
-	uzp1	z4.h, z8.h, z8.h
-	add	z14.s, z9.s, z24.s
-	splice	z13.h, p5, z13.h, z4.h
-	add	z7.s, z12.s, z25.s
-	addvl	x21, sp, #3
-	sqrshrnb	z8.h, z7.s, #7
-	uzp1	z4.h, z8.h, z8.h
-	add	x21, x21, 128
-	add	z8.s, z16.s, z27.s
-	addvl	x5, sp, #4
-	sqrshrnb	z6.h, z14.s, #7
-	add	z14.s, z31.s, z26.s
-	uzp1	z6.h, z6.h, z6.h
-	sqrshrnb	z7.h, z14.s, #7
-	splice	z6.h, p5, z6.h, z4.h
-	sqrshrnb	z4.h, z8.s, #7
-	str	z3, [x21]
-	add	z3.s, z3.s, z28.s
-	add	x5, x5, 128
-	sqrshrnb	z8.h, z3.s, #7
-	addvl	x23, sp, #5
-	uzp1	z14.h, z7.h, z7.h
-	uzp1	z7.h, z4.h, z4.h
-	ldr	z4, [x5]
-	add	z3.s, z4.s, z29.s
-	splice	z14.h, p5, z14.h, z7.h
-	add	x23, x23, 128
-	addvl	x18, sp, #7
-	uzp1	z7.h, z8.h, z8.h
-	sqrshrnb	z8.h, z3.s, #7
-	ldr	z3, [x23]
-	uzp1	z4.h, z8.h, z8.h
-	add	x18, x18, 128
-	ldr	z8, [x18]
-	splice	z7.h, p5, z7.h, z4.h
-	addvl	x6, sp, #6
-	add	z4.s, z3.s, z8.s
-	addvl	x22, sp, #8
-	sqrshrnb	z3.h, z4.s, #7
-	add	x6, x6, 128
-	add	x22, x22, 128
-	ldr	z4, [x22]
-	uzp1	z8.h, z3.h, z3.h
-	ldr	z3, [x6]
-	add	z3.s, z3.s, z4.s
-	addvl	x3, sp, #9
-	sqrshrnb	z4.h, z3.s, #7
-	uzp1	z3.h, z4.h, z4.h
-	add	x3, x3, 128
-	ldr	z4, [x3]
-	splice	z8.h, p5, z8.h, z3.h
-	uzp1	z3.h, z10.h, z4.h
-	addvl	x30, sp, #12
-	uzp2	z10.h, z10.h, z4.h
-	uzp1	z4.h, z2.h, z13.h
-	uzp2	z13.h, z2.h, z13.h
-	uzp1	z2.h, z3.h, z4.h
-	uzp2	z4.h, z3.h, z4.h
-	uzp1	z3.h, z6.h, z14.h
-	uzp2	z14.h, z6.h, z14.h
-	uzp1	z6.h, z7.h, z8.h
-	add	x30, x30, 1152
-	uzp2	z8.h, z7.h, z8.h
-	addvl	x12, sp, #12
-	uzp1	z7.h, z3.h, z6.h
-	uzp2	z3.h, z3.h, z6.h
-	uzp1	z6.h, z2.h, z7.h
-	str	z6, [x30]
-	uzp2	z2.h, z2.h, z7.h
-	add	x12, x12, 1216
-	uzp1	z7.h, z10.h, z13.h
-	addvl	x9, sp, #12
-	uzp2	z13.h, z10.h, z13.h
-	uzp1	z10.h, z14.h, z8.h
-	uzp2	z14.h, z14.h, z8.h
-	uzp1	z8.h, z7.h, z10.h
-	str	z8, [x12]
-	uzp2	z6.h, z7.h, z10.h
-	add	x9, x9, 1280
-	uzp1	z7.h, z4.h, z3.h
-	addvl	x8, sp, #12
-	str	z7, [x9]
-	uzp2	z4.h, z4.h, z3.h
-	add	x8, x8, 1344
-	uzp1	z3.h, z13.h, z14.h
-	addvl	x7, sp, #12
-	str	z3, [x8]
-	addvl	x10, sp, #12
-	add	x7, x7, 1408
-	str	z2, [x7]
-	add	x11, sp, 128
-	uzp2	z2.h, z13.h, z14.h
-	ldr	z13, [x11]
-	add	x10, x10, 1472
-	addvl	x15, sp, #1
-	addvl	x14, sp, #12
-	str	z6, [x10]
-	addvl	x16, sp, #2
-	sub	z17.s, z13.s, z17.s
-	add	x15, x15, 128
-	ldr	z14, [x15]
-	sqrshrnb	z10.h, z17.s, #7
-	add	x14, x14, 1536
-	uzp1	z8.h, z10.h, z10.h
-	addvl	x13, sp, #12
-	add	x16, x16, 128
-	addvl	x17, sp, #3
-	str	z4, [x14]
-	ldr	z4, [x16]
-	sub	z30.s, z14.s, z30.s
-	sub	z18.s, z4.s, z18.s
-	sqrshrnb	z6.h, z30.s, #7
-	sqrshrnb	z3.h, z18.s, #7
-	sub	z16.s, z16.s, z27.s
-	add	x13, x13, 1600
-	add	x17, x17, 128
-	ldr	z27, [x17]
-	addvl	x4, sp, #4
-	sub	z28.s, z27.s, z28.s
-	addvl	x21, sp, #5
-	addvl	x5, sp, #7
-	addvl	x23, sp, #6
-	addvl	x18, sp, #8
-	uzp1	z7.h, z6.h, z6.h
-	addvl	x6, sp, #12
-	splice	z7.h, p5, z7.h, z8.h
-	sub	z19.s, z0.s, z19.s
-	sub	z20.s, z1.s, z20.s
-	sqrshrnb	z0.h, z19.s, #7
-	sqrshrnb	z1.h, z20.s, #7
-	sub	z21.s, z11.s, z21.s
-	uzp1	z17.h, z1.h, z1.h
-	sqrshrnb	z11.h, z21.s, #7
-	sub	z22.s, z5.s, z22.s
-	sub	z23.s, z15.s, z23.s
-	sqrshrnb	z5.h, z22.s, #7
-	sqrshrnb	z15.h, z23.s, #7
-	uzp1	z14.h, z5.h, z5.h
-	sub	z24.s, z9.s, z24.s
-	sub	z25.s, z12.s, z25.s
-	sqrshrnb	z9.h, z24.s, #7
-	sqrshrnb	z12.h, z25.s, #7
-	uzp1	z8.h, z9.h, z9.h
-	sub	z26.s, z31.s, z26.s
-	sqrshrnb	z31.h, z26.s, #7
-	uzp1	z4.h, z31.h, z31.h
-	str	z2, [x13]
-	uzp1	z2.h, z3.h, z3.h
-	sqrshrnb	z18.h, z16.s, #7
-	sqrshrnb	z3.h, z28.s, #7
-	add	x4, x4, 128
-	add	x21, x21, 128
-	ldr	z20, [x21]
-	add	x5, x5, 128
-	ldr	z1, [x5]
-	add	x23, x23, 128
-	add	x18, x18, 128
-	ldr	z23, [x18]
-	add	x6, x6, 1184
-	addvl	x22, sp, #12
-	addvl	x3, sp, #12
-	uzp1	z13.h, z0.h, z0.h
-	uzp1	z10.h, z11.h, z11.h
-	splice	z13.h, p5, z13.h, z2.h
-	ldr	z2, [x4]
-	splice	z10.h, p5, z10.h, z17.h
-	uzp1	z0.h, z3.h, z3.h
-	sub	z17.s, z20.s, z1.s
-	sub	z29.s, z2.s, z29.s
-	sqrshrnb	z22.h, z17.s, #7
-	sqrshrnb	z21.h, z29.s, #7
-	uzp1	z5.h, z22.h, z22.h
-	uzp1	z30.h, z15.h, z15.h
-	uzp1	z6.h, z12.h, z12.h
-	splice	z30.h, p5, z30.h, z14.h
-	ldr	z14, [x23]
-	splice	z6.h, p5, z6.h, z8.h
-	sub	z24.s, z14.s, z23.s
-	uzp1	z8.h, z30.h, z10.h
-	sqrshrnb	z15.h, z24.s, #7
-	uzp1	z19.h, z18.h, z18.h
-	uzp1	z11.h, z21.h, z21.h
-	splice	z19.h, p5, z19.h, z4.h
-	splice	z11.h, p5, z11.h, z0.h
-	uzp1	z9.h, z19.h, z6.h
-	uzp1	z4.h, z13.h, z7.h
-	uzp1	z12.h, z15.h, z15.h
-	uzp1	z27.h, z8.h, z4.h
-	splice	z12.h, p5, z12.h, z5.h
-	uzp1	z28.h, z12.h, z11.h
-	uzp1	z25.h, z28.h, z9.h
-	uzp1	z26.h, z25.h, z27.h
-	str	z26, [x6]
-	uzp2	z31.h, z12.h, z11.h
-	uzp2	z18.h, z28.h, z9.h
-	uzp2	z3.h, z8.h, z4.h
-	uzp2	z6.h, z19.h, z6.h
-	uzp2	z10.h, z30.h, z10.h
-	uzp2	z7.h, z13.h, z7.h
-	uzp1	z19.h, z18.h, z3.h
-	uzp1	z13.h, z31.h, z6.h
-	uzp1	z16.h, z10.h, z7.h
-	add	x22, x22, 1248
-	uzp1	z30.h, z13.h, z16.h
-	add	x3, x3, 1312
-	addvl	x30, sp, #12
-	str	z30, [x22]
-	str	z19, [x3]
-	uzp2	z0.h, z31.h, z6.h
-	uzp2	z2.h, z10.h, z7.h
-	add	x30, x30, 1376
-	uzp1	z29.h, z0.h, z2.h
-	addvl	x12, sp, #12
-	str	z29, [x30]
-	uzp2	z20.h, z25.h, z27.h
-	add	x12, x12, 1440
-	addvl	x9, sp, #12
-	str	z20, [x12]
-	uzp2	z1.h, z13.h, z16.h
-	add	x9, x9, 1504
-	addvl	x11, sp, #12
-	str	z1, [x9]
-	add	x16, x0, 880
-	uzp2	z17.h, z18.h, z3.h
-	add	x11, x11, 1568
-	addvl	x12, sp, #12
-	str	z17, [x11]
-	ldr	z15, [x16]
-	uzp2	z21.h, z0.h, z2.h
-	add	x8, x0, 112
-	ldr	z22, [x8]
-	add	x7, x0, 240
-	ldr	z11, [x7]
-	add	x10, x0, 368
-	ldr	z14, [x10]
-	add	x15, x0, 496
-	ldr	z23, [x15]
-	add	x14, x0, 624
-	ldr	z24, [x14]
-	add	x13, x0, 752
-	ldr	z9, [x13]
-	add	x17, x0, 1008
-	ldr	z8, [x17]
-	add	x4, x0, 1136
-	ldr	z27, [x4]
-	add	x21, x0, 1264
-	ldr	z28, [x21]
-	add	x5, x0, 1392
-	ldr	z25, [x5]
-	add	x23, x0, 1520
-	ldr	z26, [x23]
-	add	x18, x0, 1648
-	ldr	z31, [x18]
-	add	x6, x0, 1776
-	ldr	z10, [x6]
-	add	x22, x0, 1904
-	ldr	z7, [x22]
-	add	x3, x0, 2032
-	ldr	z16, [x3]
-	add	x12, x12, 1632
-	adrp	x30, _ZL6CDOT_O
-	zip1	z5.h, z22.h, z11.h
-	zip1	z4.h, z14.h, z23.h
-	zip1	z6.h, z24.h, z9.h
-	zip1	z12.h, z15.h, z8.h
-	zip1	z13.h, z27.h, z28.h
-	zip1	z3.h, z25.h, z26.h
-	zip1	z0.h, z31.h, z10.h
-	add	x16, x30, :lo12:_ZL6CDOT_O
-	zip1	z2.h, z7.h, z16.h
-	str	z21, [x12]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d31, #0
-	mov	z18.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x16, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x16, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x16, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z12.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x16, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z13.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x16, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x16, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x16, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z22.h
-// 0 "" 2
-#NO_APP
-	adrp	x9, _ZL6CDOT_O+256
-	add	x15, x9, :lo12:_ZL6CDOT_O+256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z12.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x15, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z13.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x15, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x15, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x15, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z27.h
-// 0 "" 2
-#NO_APP
-	adrp	x8, _ZL6CDOT_O+512
-	add	x14, x8, :lo12:_ZL6CDOT_O+512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x14, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x14, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x14, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z12.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x14, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z13.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x14, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x14, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x14, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z29.h
-// 0 "" 2
-#NO_APP
-	adrp	x7, _ZL6CDOT_O+768
-	add	x13, x7, :lo12:_ZL6CDOT_O+768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z21.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z12.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x13, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z13.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x13, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x13, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x13, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z9.h
-// 0 "" 2
-#NO_APP
-	adrp	x11, _ZL6CDOT_O+1024
-	add	x21, x11, :lo12:_ZL6CDOT_O+1024
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z22.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z12.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z13.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x10, _ZL6CDOT_O+1280
-	add	x23, x10, :lo12:_ZL6CDOT_O+1280
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z23.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z12.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z13.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z24.h
-// 0 "" 2
-#NO_APP
-	adrp	x17, _ZL6CDOT_O+1536
-	add	x22, x17, :lo12:_ZL6CDOT_O+1536
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z24.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z12.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z13.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z10.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+1792
-	add	x30, x4, :lo12:_ZL6CDOT_O+1792
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z25.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z12.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x30, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z13.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x30, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x30, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x30, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z14.h
-// 0 "" 2
-#NO_APP
-	adrp	x5, _ZL6CDOT_O+2048
-	add	x12, x5, :lo12:_ZL6CDOT_O+2048
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z26.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z12.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x12, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z13.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x12, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x12, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x12, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z16.h
-// 0 "" 2
-#NO_APP
-	adrp	x18, _ZL6CDOT_O+2304
-	add	x9, x18, :lo12:_ZL6CDOT_O+2304
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z27.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z12.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x9, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z13.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x9, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x9, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+2560
-	add	x8, x6, :lo12:_ZL6CDOT_O+2560
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z28.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z12.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x8, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z13.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x8, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x8, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x8, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z17.h
-// 0 "" 2
-#NO_APP
-	adrp	x3, _ZL6CDOT_O+2816
-	add	x7, x3, :lo12:_ZL6CDOT_O+2816
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z29.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z12.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x7, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z13.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x7, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x7, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z2.h, z16.h
-// 0 "" 2
-#NO_APP
-	adrp	x11, _ZL6CDOT_O+3072
-	add	x10, x11, :lo12:_ZL6CDOT_O+3072
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z12.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x10, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z13.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x10, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x10, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x10, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z10.h
-// 0 "" 2
-#NO_APP
-	adrp	x17, _ZL6CDOT_O+3328
-	add	x4, x17, :lo12:_ZL6CDOT_O+3328
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z4.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z6.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z12.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z13.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z3.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z0.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z2.h, z8.h
-// 0 "" 2
-#NO_APP
-	addvl	x5, sp, #7
-	adrp	x18, _ZL6CDOT_O+3584
-	add	x5, x5, 128
-	add	x6, x18, :lo12:_ZL6CDOT_O+3584
-	str	z16, [x5]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z6.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z12.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z13.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z2.h, z15.h
-// 0 "" 2
-#NO_APP
-	addvl	x3, sp, #8
-	adrp	x11, _ZL6CDOT_O+3840
-	add	x3, x3, 128
-	add	x17, x11, :lo12:_ZL6CDOT_O+3840
-	str	z7, [x3]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z5.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z4.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x17, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z6.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x17, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z12.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x17, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z13.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x17, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z3.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x17, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z0.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z16.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z0.h
-// 0 "" 2
-#NO_APP
-	addvl	x4, sp, #9
-	add	x18, x0, 176
-	ldr	z2, [x18]
-	add	x6, x0, 432
-	add	x4, x4, 128
-	ldr	z1, [x6]
-	add	x3, x0, 688
-	ldr	z11, [x3]
-	add	x11, x0, 944
-	ldr	z17, [x11]
-	add	x17, x0, 1200
-	ldr	z14, [x17]
-	add	x18, x0, 1712
-	ldr	z15, [x18]
-	add	x6, x0, 1968
-	ldr	z16, [x6]
-	adrp	x5, .LANCHOR0
-	zip1	z4.h, z2.h, z1.h
-	zip1	z7.h, z11.h, z17.h
-	add	x5, x5, :lo12:.LANCHOR0
-	zip1	z3.h, z15.h, z16.h
-	str	z10, [x4]
-	add	x4, x0, 1456
-	ldr	z9, [x4]
-	zip1	z8.h, z14.h, z9.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z9.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z9.s, z4.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x5, #1, MUL VL]
+	ld1h z6.h, p7/z, [x23, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z9.s, z7.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #2, MUL VL]
+	ld1h z13.h, p7/z, [x23, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z8.h, z12.h
+	sdot z9.s, z8.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #3, MUL VL]
+	ld1h z10.h, p7/z, [x23, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z3.h, z13.h
+	sdot z9.s, z22.h, z10.h
 // 0 "" 2
 #NO_APP
-	add	x3, x5, 128
+	addvl	x6, sp, #3
+	adrp	x5, _ZL6CDOT_O+2816
+	add	x6, x6, 224
+	add	x25, x5, :lo12:_ZL6CDOT_O+2816
+	str	z9, [x6]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x3, #0, MUL VL]
+	ld1h z11.h, p7/z, [x25, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z10.d, z31.d
+	mov	z5.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z4.h, z0.h
+	sdot z5.s, z0.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x3, #1, MUL VL]
+	ld1h z14.h, p7/z, [x25, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z7.h, z2.h
+	sdot z5.s, z1.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x3, #2, MUL VL]
+	ld1h z23.h, p7/z, [x25, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z8.h, z1.h
+	sdot z5.s, z2.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x3, #3, MUL VL]
+	ld1h z15.h, p7/z, [x25, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z3.h, z11.h
+	sdot z5.s, z3.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x25, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z4.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x25, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z7.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x25, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z8.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x25, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z22.h, z18.h
 // 0 "" 2
 #NO_APP
-	add	x11, x5, 256
+	addvl	x4, sp, #4
+	adrp	x3, _ZL6CDOT_O+3072
+	add	x4, x4, 224
+	add	x27, x3, :lo12:_ZL6CDOT_O+3072
+	str	z5, [x4]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x11, #0, MUL VL]
+	ld1h z19.h, p7/z, [x27, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z11.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z4.h, z17.h
+	sdot z11.s, z0.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x11, #1, MUL VL]
+	ld1h z20.h, p7/z, [x27, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z7.h, z14.h
+	sdot z11.s, z1.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x11, #2, MUL VL]
+	ld1h z21.h, p7/z, [x27, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z8.h, z15.h
+	sdot z11.s, z2.h, z21.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x11, #3, MUL VL]
+	ld1h z6.h, p7/z, [x27, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z3.h, z16.h
+	sdot z11.s, z3.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z4.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z7.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z8.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z22.h, z14.h
 // 0 "" 2
 #NO_APP
-	add	x17, x5, 384
+	addvl	x20, sp, #5
+	adrp	x30, _ZL6CDOT_O+3328
+	add	x20, x20, 224
+	add	x16, x30, :lo12:_ZL6CDOT_O+3328
+	str	z11, [x20]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x17, #0, MUL VL]
+	ld1h z15.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z0.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x16, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z1.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x16, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z2.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x16, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z3.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x16, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z4.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x16, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z7.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x16, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z8.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x16, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z22.h, z19.h
+// 0 "" 2
+#NO_APP
+	addvl	x19, sp, #6
+	adrp	x14, _ZL6CDOT_O+3584
+	add	x19, x19, 224
+	add	x13, x14, :lo12:_ZL6CDOT_O+3584
+	str	z10, [x19]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z6.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z0.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x13, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z1.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x13, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z2.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x13, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z3.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x13, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x13, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z7.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x13, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z8.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x13, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z22.h, z23.h
+// 0 "" 2
+#NO_APP
+	addvl	x11, sp, #7
+	adrp	x10, _ZL6CDOT_O+3840
+	add	x11, x11, 224
+	add	x8, x10, :lo12:_ZL6CDOT_O+3840
+	str	z6, [x11]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x8, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z12.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z4.h, z5.h
+	sdot z12.s, z0.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x17, #1, MUL VL]
+	ld1h z0.h, p7/z, [x8, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z7.h, z6.h
+	sdot z12.s, z1.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x17, #2, MUL VL]
+	ld1h z1.h, p7/z, [x8, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z8.h, z13.h
+	sdot z12.s, z2.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #3, MUL VL]
+	ld1h z2.h, p7/z, [x8, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z3.h, z0.h
+	sdot z12.s, z3.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z4.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z7.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z8.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x8, #7, MUL VL]
 // 0 "" 2
 #NO_APP
-	add	x4, x5, 512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z4.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z7.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z8.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z3.h, z14.h
-// 0 "" 2
-#NO_APP
-	add	x18, x5, 640
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
+	mov	z17.d, z12.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z7.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z8.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z3.h, z6.h
+	sdot z17.s, z22.h, z8.h
 // 0 "" 2
 #NO_APP
-	add	x6, x5, 768
+	addvl	x7, sp, #8
+	add	x5, x0, 128
+	ldr	z22, [x5]
+	add	x7, x7, 224
+	add	x3, x0, 384
+	ldr	z18, [x3]
+	add	x20, x0, 640
+	ldr	z5, [x20]
+	add	x30, x0, 896
+	ldr	z19, [x30]
+	add	x19, x0, 1152
+	ldr	z20, [x19]
+	add	x14, x0, 1408
+	ldr	z13, [x14]
+	add	x11, x0, 1664
+	ldr	z14, [x11]
+	add	x10, x0, 1920
+	ldr	z11, [x10]
+	adrp	x6, .LANCHOR0
+	zip1	z10.h, z22.h, z18.h
+	add	x4, x6, :lo12:.LANCHOR0
+	zip1	z21.h, z5.h, z19.h
+	zip1	z9.h, z20.h, z13.h
+	zip1	z15.h, z14.h, z11.h
+	str	z17, [x7]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x6, #0, MUL VL]
+	ld1h z23.h, p7/z, [x4, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z15.d, z31.d
+	mov	z2.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z0.h
+	sdot z2.s, z10.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x6, #1, MUL VL]
+	ld1h z6.h, p7/z, [x4, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z7.h, z2.h
+	sdot z2.s, z21.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x6, #2, MUL VL]
+	ld1h z16.h, p7/z, [x4, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z8.h, z1.h
+	sdot z2.s, z9.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #3, MUL VL]
+	ld1h z12.h, p7/z, [x4, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z17.h
+	sdot z2.s, z15.h, z12.h
 // 0 "" 2
 #NO_APP
-	add	x3, x5, 896
+	add	x8, x4, 128
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x3, #0, MUL VL]
+	ld1h z0.h, p7/z, [x8, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z16.d, z31.d
+	mov	z3.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z4.h, z5.h
+	sdot z3.s, z10.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x3, #1, MUL VL]
+	ld1h z1.h, p7/z, [x8, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z7.h, z4.h
+	sdot z3.s, z21.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x3, #2, MUL VL]
+	ld1h z4.h, p7/z, [x8, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z8.h, z7.h
+	sdot z3.s, z9.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x3, #3, MUL VL]
+	ld1h z7.h, p7/z, [x8, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z3.h, z8.h
+	sdot z3.s, z15.h, z7.h
 // 0 "" 2
 #NO_APP
-	add	x11, x0, 304
-	ldr	z3, [x11]
-	add	x17, x0, 816
-	ldr	z6, [x17]
-	add	x4, x0, 1328
-	ldr	z2, [x4]
-	add	x18, x0, 1840
-	ldr	z1, [x18]
-	zip1	z0.h, z3.h, z6.h
-	add	x6, x5, 1024
-	zip1	z17.h, z2.h, z1.h
+	add	x7, x4, 256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z11.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z10.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z21.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z9.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z15.h, z18.h
+// 0 "" 2
+#NO_APP
+	add	x6, x4, 384
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z5.h, p7/z, [x6, #0, MUL VL]
@@ -6069,4641 +1114,6196 @@ dynopt_idct32_sve2_shared:
 	mov	z4.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z0.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z17.h, z7.h
-// 0 "" 2
-#NO_APP
-	add	x3, x5, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z17.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x11, x5, 1152
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x11, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z0.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x11, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z17.h, z1.h
-// 0 "" 2
-#NO_APP
-	add	x17, x5, 1216
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z17.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x4, x0, 560
-	ldr	z17, [x4]
-	add	x18, x0, 1584
-	ldr	z3, [x18]
-	zip1	z1.h, z17.h, z3.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x6, x0, 48
-	ldr	z1, [x6]
-	add	x0, x0, 1072
-	ldr	z17, [x0]
-	add	x3, x5, 1344
-	zip1	z1.h, z1.h, z17.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x5, x5, 1376
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z8.s, z2.s
-	sub	z8.s, z8.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z9.s
-	add	x17, sp, 128
-	sub	z9.s, z2.s, z9.s
-	add	z0.s, z4.s, z18.s
-	add	z2.s, z17.s, z3.s
-	addvl	x11, sp, #6
-	sub	z17.s, z17.s, z3.s
-	add	z3.s, z2.s, z5.s
-	str	z4, [x17]
-	sqrshrnb	z4.h, z0.s, #7
-	ptrue	p6.h, vl8
-	add	x11, x11, 128
-	addvl	x18, sp, #1
-	uzp1	z0.h, z4.h, z4.h
-	addvl	x6, sp, #10
-	add	z4.s, z17.s, z6.s
-	sub	z17.s, z17.s, z6.s
-	str	z9, [x11]
-	sub	z9.s, z2.s, z5.s
-	add	z5.s, z3.s, z10.s
-	sub	z10.s, z3.s, z10.s
-	add	z2.s, z5.s, z19.s
-	sqrshrnb	z3.h, z2.s, #7
-	uzp1	z6.h, z3.h, z3.h
-	splice	z0.h, p6, z0.h, z6.h
-	addvl	x4, sp, #5
-	add	x18, x18, 128
-	add	x6, x6, 128
-	str	z5, [x18]
-	add	z5.s, z4.s, z11.s
-	str	z0, [x6]
-	add	z0.s, z5.s, z20.s
-	sub	z6.s, z4.s, z11.s
-	add	x4, x4, 128
-	add	z11.s, z8.s, z7.s
-	addvl	x0, sp, #2
-	sub	z8.s, z8.s, z7.s
-	addvl	x3, sp, #3
-	add	z7.s, z11.s, z12.s
-	str	z10, [x4]
-	sqrshrnb	z10.h, z0.s, #7
-	sub	z0.s, z11.s, z12.s
-	add	z12.s, z7.s, z21.s
-	sqrshrnb	z2.h, z12.s, #7
-	uzp1	z3.h, z2.h, z2.h
-	uzp1	z4.h, z10.h, z10.h
-	add	z2.s, z8.s, z13.s
-	add	x0, x0, 128
-	add	x3, x3, 128
-	str	z5, [x0]
-	str	z7, [x3]
-	movprfx	z7, z4
-	splice	z7.h, p6, z7.h, z3.h
-	sub	z3.s, z8.s, z13.s
-	add	z13.s, z2.s, z22.s
-	sqrshrnb	z5.h, z13.s, #7
-	uzp1	z11.h, z5.h, z5.h
-	add	z13.s, z17.s, z14.s
-	sub	z17.s, z17.s, z14.s
-	add	z14.s, z13.s, z23.s
-	sqrshrnb	z10.h, z14.s, #7
-	uzp1	z8.h, z10.h, z10.h
-	movprfx	z5, z11
-	splice	z5.h, p6, z5.h, z8.h
-	add	z11.s, z9.s, z15.s
-	sub	z9.s, z9.s, z15.s
-	add	z15.s, z11.s, z24.s
-	sqrshrnb	z4.h, z15.s, #7
-	add	z15.s, z1.s, z16.s
-	sub	z1.s, z1.s, z16.s
-	add	z16.s, z15.s, z25.s
-	sqrshrnb	z12.h, z16.s, #7
-	add	z8.s, z1.s, z26.s
-	uzp1	z10.h, z12.h, z12.h
-	uzp1	z14.h, z4.h, z4.h
-	add	z12.s, z9.s, z27.s
-	sqrshrnb	z4.h, z8.s, #7
-	splice	z14.h, p6, z14.h, z10.h
-	uzp1	z16.h, z4.h, z4.h
-	sqrshrnb	z10.h, z12.s, #7
-	add	z4.s, z17.s, z28.s
-	uzp1	z8.h, z10.h, z10.h
-	sqrshrnb	z12.h, z4.s, #7
-	splice	z16.h, p6, z16.h, z8.h
-	add	z10.s, z3.s, z29.s
-	addvl	x5, sp, #4
-	sqrshrnb	z8.h, z10.s, #7
-	addvl	x11, sp, #7
-	uzp1	z4.h, z12.h, z12.h
-	uzp1	z12.h, z8.h, z8.h
-	add	z10.s, z0.s, z30.s
-	splice	z4.h, p6, z4.h, z12.h
-	add	x5, x5, 128
-	add	x11, x11, 128
-	ldr	z12, [x11]
-	addvl	x17, sp, #5
-	sqrshrnb	z8.h, z10.s, #7
-	str	z6, [x5]
-	add	z6.s, z6.s, z12.s
-	add	x17, x17, 128
-	addvl	x4, sp, #8
-	uzp1	z10.h, z8.h, z8.h
-	sqrshrnb	z8.h, z6.s, #7
-	ldr	z6, [x17]
-	uzp1	z12.h, z8.h, z8.h
-	add	x4, x4, 128
-	ldr	z8, [x4]
-	splice	z10.h, p6, z10.h, z12.h
-	addvl	x18, sp, #6
-	add	z12.s, z6.s, z8.s
-	addvl	x6, sp, #9
-	sqrshrnb	z6.h, z12.s, #7
-	add	x18, x18, 128
-	add	x6, x6, 128
-	ldr	z8, [x6]
-	uzp1	z12.h, z6.h, z6.h
-	ldr	z6, [x18]
-	add	z6.s, z6.s, z8.s
-	addvl	x0, sp, #10
-	sqrshrnb	z8.h, z6.s, #7
-	uzp1	z6.h, z8.h, z8.h
-	add	x0, x0, 128
-	splice	z12.h, p6, z12.h, z6.h
-	ldr	z6, [x0]
-	uzp1	z8.h, z6.h, z7.h
-	uzp2	z6.h, z6.h, z7.h
-	uzp1	z7.h, z5.h, z14.h
-	addvl	x3, sp, #12
-	uzp2	z14.h, z5.h, z14.h
-	uzp1	z5.h, z8.h, z7.h
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z16.h, z4.h
-	uzp2	z16.h, z16.h, z4.h
-	uzp1	z4.h, z10.h, z12.h
-	add	x3, x3, 1664
-	uzp2	z12.h, z10.h, z12.h
-	addvl	x5, sp, #12
-	uzp1	z10.h, z7.h, z4.h
-	uzp2	z7.h, z7.h, z4.h
-	uzp1	z4.h, z5.h, z10.h
-	str	z4, [x3]
-	uzp2	z10.h, z5.h, z10.h
-	add	x5, x5, 1728
-	uzp1	z5.h, z6.h, z14.h
-	addvl	x11, sp, #12
-	uzp2	z14.h, z6.h, z14.h
-	uzp1	z6.h, z16.h, z12.h
-	uzp2	z16.h, z16.h, z12.h
-	uzp1	z12.h, z5.h, z6.h
-	str	z12, [x5]
-	uzp1	z4.h, z8.h, z7.h
-	add	x11, x11, 1792
-	addvl	x17, sp, #12
-	str	z4, [x11]
-	uzp2	z8.h, z8.h, z7.h
-	add	x17, x17, 1856
-	uzp1	z7.h, z14.h, z16.h
-	addvl	x18, sp, #12
-	str	z7, [x17]
-	add	x4, sp, 128
-	uzp2	z5.h, z5.h, z6.h
-	ldr	z6, [x4]
-	add	x18, x18, 1920
-	addvl	x6, sp, #1
-	addvl	x0, sp, #12
-	str	z10, [x18]
-	add	x6, x6, 128
-	ldr	z10, [x6]
-	add	x0, x0, 1984
-	addvl	x3, sp, #12
-	addvl	x5, sp, #2
-	str	z5, [x0]
-	addvl	x11, sp, #12
-	addvl	x17, sp, #3
-	uzp2	z14.h, z14.h, z16.h
-	sub	z18.s, z6.s, z18.s
-	sub	z19.s, z10.s, z19.s
-	sqrshrnb	z16.h, z18.s, #7
-	sqrshrnb	z5.h, z19.s, #7
-	uzp1	z12.h, z16.h, z16.h
-	add	x3, x3, 2048
-	add	x5, x5, 128
-	add	x11, x11, 2112
-	str	z8, [x3]
-	ldr	z8, [x5]
-	add	x17, x17, 128
-	sub	z20.s, z8.s, z20.s
-	addvl	x4, sp, #4
-	sqrshrnb	z7.h, z20.s, #7
-	sub	z2.s, z2.s, z22.s
-	uzp1	z6.h, z7.h, z7.h
-	sqrshrnb	z16.h, z2.s, #7
-	add	x4, x4, 128
-	uzp1	z10.h, z16.h, z16.h
-	addvl	x18, sp, #7
-	addvl	x6, sp, #5
-	addvl	x0, sp, #8
-	addvl	x3, sp, #6
-	uzp1	z4.h, z5.h, z5.h
-	addvl	x5, sp, #9
-	splice	z4.h, p6, z4.h, z12.h
-	sub	z23.s, z13.s, z23.s
-	sub	z24.s, z11.s, z24.s
-	sqrshrnb	z13.h, z23.s, #7
-	sqrshrnb	z11.h, z24.s, #7
-	sub	z25.s, z15.s, z25.s
-	uzp1	z12.h, z11.h, z11.h
-	sqrshrnb	z15.h, z25.s, #7
-	sub	z26.s, z1.s, z26.s
-	uzp1	z5.h, z15.h, z15.h
-	sqrshrnb	z1.h, z26.s, #7
-	splice	z5.h, p6, z5.h, z12.h
-	uzp1	z8.h, z1.h, z1.h
-	sub	z27.s, z9.s, z27.s
-	sub	z28.s, z17.s, z28.s
-	sqrshrnb	z9.h, z27.s, #7
-	sqrshrnb	z17.h, z28.s, #7
-	sub	z29.s, z3.s, z29.s
-	uzp1	z20.h, z17.h, z17.h
-	sqrshrnb	z3.h, z29.s, #7
-	sub	z30.s, z0.s, z30.s
-	sqrshrnb	z0.h, z30.s, #7
-	str	z14, [x11]
-	ldr	z14, [x17]
-	addvl	x11, sp, #12
-	sub	z21.s, z14.s, z21.s
-	addvl	x17, sp, #12
-	sqrshrnb	z18.h, z21.s, #7
-	uzp1	z22.h, z18.h, z18.h
-	splice	z22.h, p6, z22.h, z6.h
-	ldr	z6, [x4]
-	uzp1	z17.h, z22.h, z4.h
-	uzp1	z21.h, z0.h, z0.h
-	uzp2	z4.h, z22.h, z4.h
-	add	x18, x18, 128
-	ldr	z18, [x18]
-	add	x6, x6, 128
-	ldr	z16, [x6]
-	sub	z2.s, z6.s, z18.s
-	add	x0, x0, 128
-	sqrshrnb	z24.h, z2.s, #7
-	add	x3, x3, 128
-	ldr	z25, [x3]
-	add	x5, x5, 128
-	ldr	z26, [x5]
-	add	x11, x11, 1696
-	sub	z15.s, z25.s, z26.s
-	add	x17, x17, 1760
-	addvl	x4, sp, #12
-	uzp1	z19.h, z13.h, z13.h
-	uzp1	z7.h, z9.h, z9.h
-	splice	z19.h, p6, z19.h, z10.h
-	ldr	z10, [x0]
-	uzp1	z27.h, z5.h, z19.h
-	splice	z7.h, p6, z7.h, z8.h
-	sub	z23.s, z16.s, z10.s
-	sqrshrnb	z8.h, z15.s, #7
-	sqrshrnb	z13.h, z23.s, #7
-	uzp2	z19.h, z5.h, z19.h
-	uzp1	z12.h, z13.h, z13.h
-	uzp1	z5.h, z19.h, z4.h
-	uzp1	z14.h, z3.h, z3.h
-	uzp1	z11.h, z24.h, z24.h
-	splice	z14.h, p6, z14.h, z20.h
-	splice	z11.h, p6, z11.h, z21.h
-	uzp1	z20.h, z27.h, z17.h
-	uzp1	z1.h, z14.h, z7.h
-	uzp1	z9.h, z8.h, z8.h
-	uzp2	z7.h, z14.h, z7.h
-	splice	z9.h, p6, z9.h, z12.h
-	uzp1	z28.h, z9.h, z11.h
-	uzp2	z30.h, z9.h, z11.h
-	uzp1	z0.h, z28.h, z1.h
-	uzp1	z22.h, z30.h, z7.h
-	uzp1	z29.h, z0.h, z20.h
-	uzp1	z3.h, z22.h, z5.h
-	str	z29, [x11]
-	str	z3, [x17]
-	uzp2	z14.h, z28.h, z1.h
-	uzp2	z21.h, z27.h, z17.h
-	add	x4, x4, 1824
-	uzp1	z6.h, z14.h, z21.h
-	addvl	x18, sp, #12
-	str	z6, [x4]
-	uzp2	z18.h, z30.h, z7.h
-	uzp2	z2.h, z19.h, z4.h
-	add	x18, x18, 1888
-	addvl	x6, sp, #12
-	uzp1	z16.h, z18.h, z2.h
-	str	z16, [x18]
-	uzp2	z10.h, z0.h, z20.h
-	add	x6, x6, 1952
-	addvl	x0, sp, #12
-	str	z10, [x6]
-	uzp2	z23.h, z22.h, z5.h
-	add	x0, x0, 2016
-	addvl	x3, sp, #12
-	str	z23, [x0]
-	uzp2	z24.h, z14.h, z21.h
-	add	x3, x3, 2080
-	addvl	x5, sp, #12
-	addvl	x11, sp, #7
-	str	z24, [x3]
-	uzp2	z13.h, z18.h, z2.h
-	add	x5, x5, 2144
-	add	x11, x11, 128
-	str	z13, [x11]
-	addvl	x17, sp, #12
-	addvl	x4, sp, #12
-	str	z13, [x5]
-	addvl	x18, sp, #12
-	addvl	x6, sp, #12
-	addvl	x0, sp, #12
-	addvl	x3, sp, #12
-	addvl	x5, sp, #12
-	addvl	x11, sp, #12
-	add	x17, x17, 192
-	add	x4, x4, 320
-	ldr	z11, [x17]
-	add	x18, x18, 448
-	add	x6, x6, 576
-	ldr	z12, [x4]
-	add	x0, x0, 704
-	add	x3, x3, 832
-	ldr	z25, [x18]
-	add	x5, x5, 960
-	add	x11, x11, 1088
-	ldr	z26, [x6]
-	ldr	z15, [x0]
-	ldr	z8, [x3]
-	ldr	z27, [x5]
-	ldr	z17, [x11]
-	addvl	x17, sp, #12
-	addvl	x4, sp, #12
-	addvl	x18, sp, #12
-	addvl	x6, sp, #12
-	zip1	z1.h, z11.h, z12.h
-	addvl	x0, sp, #12
-	addvl	x3, sp, #12
-	zip1	z9.h, z25.h, z26.h
-	addvl	x5, sp, #12
-	addvl	x11, sp, #12
-	zip1	z0.h, z15.h, z8.h
-	add	x17, x17, 1216
-	ldr	z20, [x17]
-	add	x4, x4, 1344
-	ldr	z28, [x4]
-	add	x18, x18, 1472
-	ldr	z29, [x18]
-	add	x6, x6, 1600
-	ldr	z30, [x6]
-	add	x0, x0, 1728
-	ldr	z7, [x0]
-	add	x3, x3, 1856
-	ldr	z19, [x3]
-	add	x5, x5, 1984
-	ldr	z22, [x5]
-	add	x11, x11, 2112
-	ldr	z21, [x11]
-	zip1	z4.h, z27.h, z17.h
-	zip1	z5.h, z20.h, z28.h
-	zip1	z3.h, z29.h, z30.h
-	zip1	z14.h, z7.h, z19.h
-	zip1	z6.h, z22.h, z21.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z18.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z18.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x16, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z9.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x16, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x16, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x16, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x16, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z3.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x16, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z14.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x16, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z9.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x15, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x15, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x15, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z14.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x15, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x14, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z18.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x14, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z9.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x14, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x14, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x14, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x14, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x14, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z14.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x14, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z9.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x13, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x13, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x13, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z14.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z9.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x21, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x21, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x21, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x21, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x21, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z14.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x21, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z21.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z14.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z22.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z14.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z23.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x30, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x30, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x30, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x30, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x30, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x30, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z14.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x30, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z24.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z9.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x12, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x12, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x12, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z14.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x12, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z25.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x9, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z14.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x9, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z26.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z9.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x8, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x8, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x8, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z14.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x8, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z27.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x7, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x7, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z14.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x7, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z28.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x10, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x10, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x10, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z14.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x10, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x16, _ZL6CDOT_O+3328
-	add	x5, x16, :lo12:_ZL6CDOT_O+3328
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z29.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z8.h
-// 0 "" 2
-#NO_APP
-	adrp	x15, _ZL6CDOT_O+3584
-	add	x4, x15, :lo12:_ZL6CDOT_O+3584
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z14.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z6.h, z8.h
-// 0 "" 2
-#NO_APP
-	addvl	x14, sp, #8
-	adrp	x13, _ZL6CDOT_O+3840
-	add	x14, x14, 128
-	add	x3, x13, :lo12:_ZL6CDOT_O+3840
-	str	z2, [x14]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z9.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z4.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x3, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z5.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x3, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x3, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z14.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x3, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z2.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z6.h, z14.h
-// 0 "" 2
-#NO_APP
-	addvl	x21, sp, #9
-	addvl	x22, sp, #12
-	addvl	x30, sp, #12
-	addvl	x12, sp, #12
-	addvl	x9, sp, #12
-	addvl	x8, sp, #12
-	addvl	x7, sp, #12
-	addvl	x10, sp, #12
-	addvl	x17, sp, #12
-	add	x21, x21, 128
-	str	z16, [x21]
-	add	x22, x22, 256
-	ldr	z10, [x22]
-	add	x30, x30, 512
-	ldr	z13, [x30]
-	add	x12, x12, 768
-	ldr	z6, [x12]
-	add	x9, x9, 1024
-	ldr	z11, [x9]
-	add	x8, x8, 1280
-	ldr	z12, [x8]
-	add	x7, x7, 1536
-	ldr	z15, [x7]
-	add	x10, x10, 1792
-	ldr	z8, [x10]
-	add	x17, x17, 2048
-	ldr	z9, [x17]
-	adrp	x23, .LANCHOR0
-	zip1	z2.h, z10.h, z13.h
-	zip1	z1.h, z6.h, z11.h
-	zip1	z7.h, z12.h, z15.h
-	add	x0, x23, :lo12:.LANCHOR0
-	zip1	z0.h, z8.h, z9.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x0, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z2.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x0, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x0, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z7.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x0, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z0.h, z14.h
-// 0 "" 2
-#NO_APP
-	add	x13, x0, 128
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z9.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z2.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z7.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z0.h, z6.h
-// 0 "" 2
-#NO_APP
-	add	x12, x0, 256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x12, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x12, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x12, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z7.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x12, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z0.h, z4.h
-// 0 "" 2
-#NO_APP
-	add	x11, x0, 384
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x11, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z11.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z2.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x11, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z1.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x11, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z7.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x11, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z0.h, z16.h
-// 0 "" 2
-#NO_APP
-	add	x10, x0, 512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z12.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z1.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z7.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z0.h, z4.h
-// 0 "" 2
-#NO_APP
-	add	x9, x0, 640
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z2.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z1.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z7.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z0.h, z16.h
-// 0 "" 2
-#NO_APP
-	add	x8, x0, 768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z2.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z7.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z0.h, z5.h
-// 0 "" 2
-#NO_APP
-	add	x7, x0, 896
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z7.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z7.h
-// 0 "" 2
-#NO_APP
-	addvl	x18, sp, #12
-	addvl	x6, sp, #12
-	add	x18, x18, 384
-	addvl	x16, sp, #12
-	ldr	z0, [x18]
-	addvl	x15, sp, #12
-	add	x6, x6, 896
-	ldr	z6, [x6]
-	add	x16, x16, 1408
-	ldr	z16, [x16]
-	add	x15, x15, 1920
-	ldr	z4, [x15]
-	zip1	z3.h, z0.h, z6.h
-	add	x18, x0, 1024
-	zip1	z1.h, z16.h, z4.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z4.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z1.h, z2.h
-// 0 "" 2
-#NO_APP
-	add	x17, x0, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x16, x0, 1152
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z3.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x16, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z1.h, z2.h
-// 0 "" 2
-#NO_APP
-	add	x15, x0, 1216
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z3.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z3.h
-// 0 "" 2
-#NO_APP
-	addvl	x21, sp, #12
-	addvl	x14, sp, #12
-	add	x21, x21, 1664
-	ldr	z16, [x21]
-	add	x14, x14, 640
-	ldr	z1, [x14]
-	mov	x21, x20
-	zip1	z0.h, z1.h, z16.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z0.h, z3.h
-// 0 "" 2
-#NO_APP
-	mov	x20, x19
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z0.h, z1.h
-// 0 "" 2
-#NO_APP
-	addvl	x19, sp, #12
-	addvl	x23, sp, #12
-	add	x19, x19, 128
-	ldr	z0, [x19]
-	add	x23, x23, 1152
-	ldr	z16, [x23]
-	add	x19, x0, 1344
-	zip1	z1.h, z0.h, z16.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	x30, x0, 1376
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z16.s, z2.s
-	sub	z16.s, z16.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z8.s
-	add	x6, sp, 128
-	sub	z8.s, z2.s, z8.s
-	add	z0.s, z4.s, z17.s
-	add	z2.s, z31.s, z3.s
-	addvl	x22, sp, #6
-	sub	z31.s, z31.s, z3.s
-	add	z3.s, z2.s, z5.s
-	str	z4, [x6]
-	sqrshrnb	z4.h, z0.s, #12
-	add	x22, x22, 128
-	uzp1	z0.h, z4.h, z4.h
-	addvl	x14, sp, #5
-	add	z4.s, z31.s, z6.s
-	addvl	x23, sp, #1
-	sub	z31.s, z31.s, z6.s
-	str	z8, [x22]
-	sub	z8.s, z2.s, z5.s
-	add	z5.s, z3.s, z9.s
-	sub	z9.s, z3.s, z9.s
-	add	z2.s, z5.s, z30.s
-	sqrshrnb	z3.h, z2.s, #12
-	uzp1	z6.h, z3.h, z3.h
-	ptrue	p0.h, vl8
-	add	x14, x14, 128
-	add	x23, x23, 128
-	addvl	x22, sp, #2
-	str	z5, [x23]
-	movprfx	z5, z0
-	splice	z5.h, p0, z5.h, z6.h
-	sub	z6.s, z4.s, z10.s
-	str	z9, [x14]
-	add	z9.s, z4.s, z10.s
-	add	z10.s, z16.s, z7.s
-	add	z0.s, z9.s, z18.s
-	sqrshrnb	z2.h, z0.s, #12
-	sub	z16.s, z16.s, z7.s
-	add	z0.s, z10.s, z11.s
-	sub	z7.s, z10.s, z11.s
-	add	x22, x22, 128
-	add	z11.s, z0.s, z19.s
-	addvl	x6, sp, #10
-	sqrshrnb	z3.h, z11.s, #12
-	addvl	x23, sp, #3
-	uzp1	z4.h, z2.h, z2.h
-	add	z2.s, z16.s, z12.s
-	sub	z16.s, z16.s, z12.s
-	add	z12.s, z2.s, z20.s
-	sqrshrnb	z10.h, z12.s, #12
-	str	z9, [x22]
-	uzp1	z9.h, z3.h, z3.h
-	splice	z4.h, p0, z4.h, z9.h
-	add	z12.s, z31.s, z13.s
-	uzp1	z11.h, z10.h, z10.h
-	sub	z31.s, z31.s, z13.s
-	add	z10.s, z8.s, z14.s
-	add	z13.s, z12.s, z21.s
-	sub	z8.s, z8.s, z14.s
-	add	x6, x6, 128
-	add	z14.s, z10.s, z22.s
-	add	x23, x23, 128
-	str	z4, [x6]
-	sqrshrnb	z4.h, z13.s, #12
-	sqrshrnb	z9.h, z14.s, #12
-	uzp1	z3.h, z4.h, z4.h
-	add	z14.s, z1.s, z15.s
-	movprfx	z4, z11
-	splice	z4.h, p0, z4.h, z3.h
-	sub	z1.s, z1.s, z15.s
-	add	z15.s, z14.s, z23.s
-	sqrshrnb	z11.h, z15.s, #12
-	str	z7, [x23]
-	addvl	x23, sp, #4
-	uzp1	z13.h, z9.h, z9.h
-	uzp1	z3.h, z11.h, z11.h
-	add	z9.s, z1.s, z24.s
-	add	z11.s, z8.s, z25.s
-	add	x23, x23, 128
-	movprfx	z15, z13
-	splice	z15.h, p0, z15.h, z3.h
-	sqrshrnb	z3.h, z11.s, #12
-	sqrshrnb	z13.h, z9.s, #12
-	add	z11.s, z31.s, z26.s
-	uzp1	z9.h, z3.h, z3.h
-	str	z6, [x23]
-	addvl	x23, sp, #5
-	add	z7.s, z7.s, z28.s
-	add	z6.s, z6.s, z29.s
-	add	x23, x23, 128
-	sqrshrnb	z3.h, z11.s, #12
-	uzp1	z13.h, z13.h, z13.h
-	splice	z13.h, p0, z13.h, z9.h
-	add	z9.s, z16.s, z27.s
-	sqrshrnb	z11.h, z9.s, #12
-	uzp1	z3.h, z3.h, z3.h
-	uzp1	z9.h, z11.h, z11.h
-	sqrshrnb	z11.h, z7.s, #12
-	sqrshrnb	z7.h, z6.s, #12
-	ldr	z6, [x23]
-	addvl	x23, sp, #8
-	splice	z3.h, p0, z3.h, z9.h
-	add	x23, x23, 128
-	uzp1	z9.h, z11.h, z11.h
-	uzp1	z11.h, z7.h, z7.h
-	ldr	z7, [x23]
-	addvl	x23, sp, #6
-	splice	z9.h, p0, z9.h, z11.h
-	add	x23, x23, 128
-	add	z11.s, z6.s, z7.s
-	sqrshrnb	z6.h, z11.s, #12
-	uzp1	z11.h, z6.h, z6.h
-	ldr	z6, [x23]
-	addvl	x23, sp, #9
-	add	x23, x23, 128
-	ldr	z7, [x23]
-	add	z6.s, z6.s, z7.s
-	addvl	x23, sp, #10
-	sqrshrnb	z7.h, z6.s, #12
-	uzp1	z6.h, z7.h, z7.h
-	add	x23, x23, 128
-	splice	z11.h, p0, z11.h, z6.h
-	ldr	z6, [x23]
-	uzp1	z7.h, z5.h, z6.h
-	uzp2	z5.h, z5.h, z6.h
-	uzp1	z6.h, z4.h, z15.h
-	uzp2	z15.h, z4.h, z15.h
-	uzp1	z4.h, z7.h, z6.h
-	uzp2	z7.h, z7.h, z6.h
-	uzp1	z6.h, z13.h, z3.h
-	uzp2	z13.h, z13.h, z3.h
-	uzp1	z3.h, z9.h, z11.h
-	add	x22, x1, x2, lsl 1
-	uzp2	z11.h, z9.h, z11.h
-	uzp1	z9.h, z6.h, z3.h
-	uzp2	z6.h, z6.h, z3.h
-	uzp1	z3.h, z4.h, z9.h
-	str	z3, [x1]
-	add	x6, x22, x2, lsl 1
-	uzp2	z9.h, z4.h, z9.h
-	uzp1	z4.h, z5.h, z15.h
-	uzp2	z15.h, z5.h, z15.h
-	uzp1	z5.h, z13.h, z11.h
-	uzp2	z13.h, z13.h, z11.h
-	uzp1	z11.h, z4.h, z5.h
-	str	z11, [x22]
-	add	x14, x6, x2, lsl 1
-	uzp2	z3.h, z4.h, z5.h
-	uzp1	z4.h, z7.h, z6.h
-	str	z4, [x6]
-	uzp2	z7.h, z7.h, z6.h
-	add	x6, x14, x2, lsl 1
-	uzp1	z6.h, z15.h, z13.h
-	str	z6, [x14]
-	add	x14, x6, x2, lsl 1
-	add	x23, sp, 128
-	str	z9, [x6]
-	add	x6, x14, x2, lsl 1
-	uzp2	z9.h, z15.h, z13.h
-	str	z3, [x14]
-	add	x14, x6, x2, lsl 1
-	ldr	z15, [x23]
-	str	z7, [x6]
-	addvl	x6, sp, #1
-	addvl	x23, sp, #2
-	add	x6, x6, 128
-	ldr	z5, [x6]
-	add	x23, x23, 128
-	addvl	x6, sp, #3
-	ldr	z3, [x23]
-	addvl	x23, sp, #4
-	add	x6, x6, 128
-	sub	z16.s, z16.s, z27.s
-	ldr	z27, [x6]
-	add	x23, x23, 128
-	addvl	x6, sp, #5
-	sub	z20.s, z2.s, z20.s
-	add	x6, x6, 128
-	sqrshrnb	z2.h, z20.s, #12
-	ldr	z20, [x23]
-	sub	z19.s, z0.s, z19.s
-	addvl	x23, sp, #8
-	sqrshrnb	z0.h, z19.s, #12
-	sub	z17.s, z15.s, z17.s
-	add	x23, x23, 128
-	uzp1	z15.h, z0.h, z0.h
-	ldr	z0, [x6]
-	addvl	x6, sp, #6
-	sqrshrnb	z13.h, z17.s, #12
-	sub	z30.s, z5.s, z30.s
-	uzp1	z11.h, z13.h, z13.h
-	uzp1	z17.h, z2.h, z2.h
-	ldr	z2, [x23]
-	add	x6, x6, 128
-	addvl	x23, sp, #9
-	sub	z22.s, z10.s, z22.s
-	sqrshrnb	z10.h, z22.s, #12
-	uzp1	z5.h, z10.h, z10.h
-	sqrshrnb	z4.h, z30.s, #12
-	sub	z18.s, z3.s, z18.s
-	sub	z28.s, z27.s, z28.s
-	sqrshrnb	z7.h, z18.s, #12
-	add	x23, x23, 128
-	uzp1	z6.h, z7.h, z7.h
-	sub	z21.s, z12.s, z21.s
-	sub	z23.s, z14.s, z23.s
-	sqrshrnb	z12.h, z21.s, #12
-	sqrshrnb	z14.h, z23.s, #12
-	sub	z24.s, z1.s, z24.s
-	uzp1	z30.h, z14.h, z14.h
-	sqrshrnb	z1.h, z24.s, #12
-	splice	z30.h, p0, z30.h, z5.h
-	ldr	z5, [x6]
-	sub	z25.s, z8.s, z25.s
-	add	x6, x1, 32
-	sqrshrnb	z8.h, z25.s, #12
-	sub	z26.s, z31.s, z26.s
-	sqrshrnb	z31.h, z26.s, #12
-	uzp1	z3.h, z31.h, z31.h
-	str	z9, [x14]
-	uzp1	z9.h, z4.h, z4.h
-	splice	z9.h, p0, z9.h, z11.h
-	uzp1	z11.h, z1.h, z1.h
-	ldr	z23, [x23]
-	splice	z15.h, p0, z15.h, z6.h
-	sub	z24.s, z5.s, z23.s
-	add	x23, x1, x2, lsl 2
-	sqrshrnb	z18.h, z16.s, #12
-	sqrshrnb	z7.h, z28.s, #12
-	sub	z29.s, z20.s, z29.s
-	uzp1	z6.h, z7.h, z7.h
-	sqrshrnb	z21.h, z29.s, #12
-	sqrshrnb	z14.h, z24.s, #12
-	add	x22, x22, 32
-	uzp1	z13.h, z12.h, z12.h
-	uzp1	z4.h, z8.h, z8.h
-	splice	z13.h, p0, z13.h, z17.h
-	splice	z4.h, p0, z4.h, z11.h
-	sub	z17.s, z0.s, z2.s
-	uzp1	z11.h, z30.h, z13.h
-	sqrshrnb	z22.h, z17.s, #12
-	uzp1	z19.h, z18.h, z18.h
-	uzp1	z10.h, z22.h, z22.h
-	splice	z19.h, p0, z19.h, z3.h
-	uzp1	z12.h, z21.h, z21.h
-	uzp1	z1.h, z19.h, z4.h
-	splice	z12.h, p0, z12.h, z6.h
-	uzp1	z3.h, z15.h, z9.h
-	uzp1	z8.h, z14.h, z14.h
-	uzp1	z27.h, z11.h, z3.h
-	splice	z8.h, p0, z8.h, z10.h
-	uzp1	z28.h, z8.h, z12.h
-	uzp1	z25.h, z28.h, z1.h
-	uzp1	z26.h, z25.h, z27.h
-	str	z26, [x6]
-	add	x6, x2, x2, lsl 1
-	uzp2	z31.h, z8.h, z12.h
-	uzp2	z4.h, z19.h, z4.h
-	uzp2	z13.h, z30.h, z13.h
-	uzp2	z9.h, z15.h, z9.h
-	uzp1	z15.h, z31.h, z4.h
-	uzp1	z16.h, z13.h, z9.h
-	uzp1	z30.h, z15.h, z16.h
-	str	z30, [x22]
-	add	x22, x23, 32
-	uzp2	z18.h, z28.h, z1.h
-	uzp2	z7.h, z11.h, z3.h
-	uzp1	z19.h, z18.h, z7.h
-	str	z19, [x22]
-	add	x22, x1, x6, lsl 1
-	add	x22, x22, 32
-	uzp2	z6.h, z31.h, z4.h
-	uzp2	z20.h, z13.h, z9.h
-	uzp1	z29.h, z6.h, z20.h
-	str	z29, [x22]
-	add	x22, x1, x2, lsl 3
-	add	x22, x22, 32
-	uzp2	z0.h, z25.h, z27.h
-	add	x23, x2, x2, lsl 2
-	str	z0, [x22]
-	lsl	x22, x2, 3
-	uzp2	z2.h, z15.h, z16.h
-	sub	x22, x22, x2
-	add	x23, x1, x23, lsl 1
-	uzp2	z17.h, z18.h, z7.h
-	add	x6, x1, x6, lsl 2
-	add	x23, x23, 32
-	str	z2, [x23]
-	add	x22, x1, x22, lsl 1
-	add	x6, x6, 32
-	str	z17, [x6]
-	add	x23, x22, 32
-	uzp2	z21.h, z6.h, z20.h
-	addvl	x22, sp, #12
-	str	z21, [x23]
-	addvl	x23, sp, #12
-	add	x22, x22, 208
-	add	x23, x23, 336
-	ldr	z22, [x22]
-	ldr	z12, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	zip1	z5.h, z22.h, z12.h
-	add	x22, x22, 464
-	add	x23, x23, 592
-	ldr	z10, [x22]
-	ldr	z23, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 720
-	add	x23, x23, 848
-	ldr	z24, [x22]
-	ldr	z14, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 976
-	add	x23, x23, 1104
-	ldr	z8, [x22]
-	ldr	z3, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 1232
-	add	x23, x23, 1360
-	ldr	z27, [x22]
-	ldr	z28, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 1488
-	add	x23, x23, 1616
-	ldr	z25, [x22]
-	ldr	z26, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 1744
-	add	x23, x23, 1872
-	ldr	z9, [x22]
-	ldr	z31, [x23]
-	addvl	x22, sp, #12
-	addvl	x23, sp, #12
-	add	x22, x22, 2000
-	ldr	z16, [x22]
-	add	x23, x23, 2128
-	ldr	z30, [x23]
-	adrp	x6, _ZL6CDOT_O
-	zip1	z1.h, z10.h, z23.h
-	add	x6, x6, :lo12:_ZL6CDOT_O
-	zip1	z11.h, z24.h, z14.h
-	zip1	z4.h, z8.h, z3.h
-	zip1	z13.h, z27.h, z28.h
-	zip1	z6.h, z25.h, z26.h
-	zip1	z15.h, z9.h, z31.h
-	zip1	z0.h, z16.h, z30.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d18, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z7.h
+	sdot z4.s, z10.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z19.h, p7/z, [x6, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z19.h
+	sdot z4.s, z21.h, z19.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z20.h, p7/z, [x6, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z11.h, z20.h
+	sdot z4.s, z9.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x6, #3, MUL VL]
+	ld1h z13.h, p7/z, [x6, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z13.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z15.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z22.h
+	sdot z4.s, z15.h, z13.h
 // 0 "" 2
 #NO_APP
-	adrp	x6, _ZL6CDOT_O+256
-	add	x22, x6, :lo12:_ZL6CDOT_O+256
+	add	x5, x4, 512
 #APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d31, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z11.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z4.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z13.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z6.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z15.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z0.h, z27.h
-// 0 "" 2
-#NO_APP
-	adrp	x23, _ZL6CDOT_O+512
-	add	x6, x23, :lo12:_ZL6CDOT_O+512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d20, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z11.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z13.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z15.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z19.h
-// 0 "" 2
-#NO_APP
-	adrp	x22, _ZL6CDOT_O+768
-	add	x23, x22, :lo12:_ZL6CDOT_O+768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d21, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z11.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z13.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z15.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z24.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+1024
-	add	x22, x6, :lo12:_ZL6CDOT_O+1024
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d22, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z11.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z13.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z15.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z9.h
-// 0 "" 2
-#NO_APP
-	adrp	x23, _ZL6CDOT_O+1280
-	add	x6, x23, :lo12:_ZL6CDOT_O+1280
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d23, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z11.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z13.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z15.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z12.h
-// 0 "" 2
-#NO_APP
-	adrp	x22, _ZL6CDOT_O+1536
-	add	x23, x22, :lo12:_ZL6CDOT_O+1536
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d24, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z11.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z13.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z15.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z26.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+1792
-	add	x22, x6, :lo12:_ZL6CDOT_O+1792
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d25, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z11.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z13.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z15.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z17.h
-// 0 "" 2
-#NO_APP
-	adrp	x23, _ZL6CDOT_O+2048
-	add	x6, x23, :lo12:_ZL6CDOT_O+2048
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d26, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z11.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z13.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z15.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z9.h
-// 0 "" 2
-#NO_APP
-	adrp	x22, _ZL6CDOT_O+2304
-	add	x23, x22, :lo12:_ZL6CDOT_O+2304
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d27, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z11.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z13.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z15.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z12.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+2560
-	add	x22, x6, :lo12:_ZL6CDOT_O+2560
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x22, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d28, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x22, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x22, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z11.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x22, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x22, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z13.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x22, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x22, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z15.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x22, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x23, _ZL6CDOT_O+2816
-	add	x6, x23, :lo12:_ZL6CDOT_O+2816
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d29, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z11.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z13.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z15.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z3.h
-// 0 "" 2
-#NO_APP
-	adrp	x22, _ZL6CDOT_O+3072
-	add	x23, x22, :lo12:_ZL6CDOT_O+3072
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d30, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z11.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z13.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z15.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z10.h
-// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z14.h, p7/z, [x5, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d3, #0
+	mov	z8.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z5.h, z14.h
+	sdot z8.s, z10.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x5, #1, MUL VL]
+	ld1h z23.h, p7/z, [x5, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z1.h, z8.h
+	sdot z8.s, z21.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x5, #2, MUL VL]
+	ld1h z6.h, p7/z, [x5, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z11.h, z9.h
+	sdot z8.s, z9.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z16.h, p7/z, [x5, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z13.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z6.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z15.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z0.h, z17.h
+	sdot z8.s, z15.h, z16.h
 // 0 "" 2
 #NO_APP
-	addvl	x5, sp, #8
-	add	x5, x5, 128
-	str	z3, [x5]
+	add	x3, x4, 640
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x4, #0, MUL VL]
+	ld1h z12.h, p7/z, [x3, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d7, #0
+	mov	z5.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z5.h, z12.h
+	sdot z5.s, z10.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x4, #1, MUL VL]
+	ld1h z0.h, p7/z, [x3, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z11.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z4.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z13.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z6.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z15.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z19.h
-// 0 "" 2
-#NO_APP
-	addvl	x4, sp, #9
-	add	x4, x4, 128
-	str	z7, [x4]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d17, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z5.h
+	sdot z5.s, z21.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z1.h, p7/z, [x3, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z11.h, z1.h
+	sdot z5.s, z9.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x3, #3, MUL VL]
+	ld1h z7.h, p7/z, [x3, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x3, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z13.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x3, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x3, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z15.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x3, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z15.h
+	sdot z5.s, z15.h, z7.h
 // 0 "" 2
 #NO_APP
-	addvl	x3, sp, #10
-	addvl	x6, sp, #12
-	addvl	x22, sp, #12
-	add	x3, x3, 128
-	str	z17, [x3]
-	add	x6, x6, 272
-	add	x22, x22, 528
-	ldr	z0, [x6]
-	ldr	z12, [x22]
-	addvl	x23, sp, #12
-	addvl	x5, sp, #12
-	addvl	x4, sp, #12
-	addvl	x3, sp, #12
-	zip1	z3.h, z0.h, z12.h
-	addvl	x6, sp, #12
-	addvl	x22, sp, #12
-	add	x23, x23, 784
-	ldr	z10, [x23]
-	add	x5, x5, 1040
-	ldr	z14, [x5]
-	add	x4, x4, 1296
-	ldr	z8, [x4]
-	add	x3, x3, 1552
+	add	x20, x4, 768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x20, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z0.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z10.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x20, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z21.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x20, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z9.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x20, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z19.h
+// 0 "" 2
+#NO_APP
+	add	x30, x4, 896
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z10.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z21.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z9.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z15.h, z9.h
+// 0 "" 2
+#NO_APP
+	add	x14, x0, 256
+	ldr	z6, [x14]
+	add	x19, x0, 768
+	ldr	z15, [x19]
+	add	x11, x0, 1280
+	ldr	z13, [x11]
+	add	x10, x0, 1792
+	ldr	z14, [x10]
+	add	x8, x4, 1024
+	zip1	z23.h, z13.h, z14.h
+	zip1	z16.h, z6.h, z15.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z16.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z23.h, z17.h
+// 0 "" 2
+#NO_APP
+	add	x7, x4, 1088
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z16.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z23.h, z18.h
+// 0 "" 2
+#NO_APP
+	add	x6, x4, 1152
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z6.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z16.h, z19.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z23.h, z20.h
+// 0 "" 2
+#NO_APP
+	add	x5, x4, 1216
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z1.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z16.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z23.h, z9.h
+// 0 "" 2
+#NO_APP
+	add	x3, x0, 512
+	ldr	z13, [x3]
+	add	x20, x0, 1536
+	ldr	z15, [x20]
+	add	x30, x4, 1280
+	zip1	z14.h, z13.h, z15.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z14.h, z23.h
+// 0 "" 2
+#NO_APP
+	add	x14, x4, 1312
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z14.h, z16.h
+// 0 "" 2
+#NO_APP
+	ldr	z17, [x0]
+	add	x11, x0, 1024
+	ldr	z18, [x11]
+	add	x19, x4, 1344
+	zip1	z20.h, z17.h, z18.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z23.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z20.h, z19.h
+// 0 "" 2
+#NO_APP
+	add	x4, x4, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z21.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z20.h, z9.h
+// 0 "" 2
+#NO_APP
+	add	x7, x0, 336
+	ldr	z15, [x7]
+	add	x6, x0, 464
+	add	x3, x0, 720
+	ldr	z17, [x3]
+	add	x11, x0, 1232
+	ldr	z9, [x11]
+	ldr	z14, [x6]
+	add	x5, x0, 592
+	ldr	z16, [x5]
+	add	x30, x0, 976
+	ldr	z20, [x30]
+	add	x14, x0, 1104
+	ldr	z19, [x14]
+	add	x6, x0, 1744
+	zip1	z14.h, z15.h, z14.h
+	zip1	z15.h, z16.h, z17.h
+	zip1	z17.h, z19.h, z9.h
+	ldr	z9, [x6]
+	add	x20, x0, 848
+	ldr	z18, [x20]
+	add	x4, x0, 1488
+	add	x7, x0, 1616
+	ldr	z19, [x7]
+	add	x3, x0, 2000
+	zip1	z16.h, z18.h, z20.h
+	ldr	z20, [x4]
+	zip1	z19.h, z19.h, z9.h
 	ldr	z9, [x3]
-	add	x6, x6, 1808
-	ldr	z7, [x6]
-	add	x22, x22, 2064
-	ldr	z16, [x22]
-	zip1	z19.h, z10.h, z14.h
-	zip1	z2.h, z8.h, z9.h
-	zip1	z1.h, z7.h, z16.h
+	add	x19, x0, 1360
+	ldr	z18, [x19]
+	add	x5, x0, 1872
+	zip1	z18.h, z18.h, z20.h
+	ldr	z20, [x5]
+	zip1	z20.h, z20.h, z9.h
+	add	z9.s, z23.s, z13.s
+	sub	z23.s, z23.s, z13.s
+	add	z13.s, z21.s, z22.s
+	sub	z21.s, z21.s, z22.s
+	add	z22.s, z9.s, z7.s
+	sub	z9.s, z9.s, z7.s
+	add	z7.s, z13.s, z10.s
+	sub	z13.s, z13.s, z10.s
+	add	z10.s, z21.s, z6.s
+	sub	z21.s, z21.s, z6.s
+	add	z6.s, z23.s, z1.s
+	sub	z23.s, z23.s, z1.s
+	add	z1.s, z22.s, z2.s
+	sub	z22.s, z22.s, z2.s
+	add	z2.s, z7.s, z3.s
+	sub	z7.s, z7.s, z3.s
+	add	z3.s, z10.s, z11.s
+	sub	z10.s, z10.s, z11.s
+	add	z11.s, z6.s, z4.s
+	sub	z6.s, z6.s, z4.s
+	add	z4.s, z23.s, z8.s
+	sub	z23.s, z23.s, z8.s
+	add	z8.s, z21.s, z5.s
+	sub	z21.s, z21.s, z5.s
+	add	z5.s, z13.s, z0.s
+	sub	z0.s, z13.s, z0.s
+	add	z13.s, z9.s, z12.s
+	sub	z9.s, z9.s, z12.s
+	add	z12.s, z1.s, z24.s
+	sub	z1.s, z1.s, z24.s
+	sqrshrnb	z24.h, z12.s, #7
+	sqrshrnb	z12.h, z1.s, #7
+	uzp1	z1.h, z12.h, z12.h
+	ptrue	p4.h, vl8
+	add	z12.s, z2.s, z25.s
+	sub	z25.s, z2.s, z25.s
+	sqrshrnb	z2.h, z12.s, #7
+	uzp1	z12.h, z2.h, z2.h
+	sqrshrnb	z25.h, z25.s, #7
+	uzp1	z24.h, z24.h, z24.h
+	uzp1	z2.h, z25.h, z25.h
+	splice	z24.h, p4, z24.h, z12.h
+	movprfx	z12, z2
+	splice	z12.h, p4, z12.h, z1.h
+	add	z1.s, z3.s, z26.s
+	sub	z3.s, z3.s, z26.s
+	sqrshrnb	z26.h, z1.s, #7
+	sqrshrnb	z25.h, z3.s, #7
+	add	z3.s, z11.s, z27.s
+	uzp1	z1.h, z25.h, z25.h
+	sub	z27.s, z11.s, z27.s
+	uzp1	z2.h, z26.h, z26.h
+	sqrshrnb	z11.h, z3.s, #7
+	sqrshrnb	z25.h, z27.s, #7
+	uzp1	z26.h, z11.h, z11.h
+	uzp1	z3.h, z25.h, z25.h
+	splice	z2.h, p4, z2.h, z26.h
+	splice	z3.h, p4, z3.h, z1.h
+	uzp1	z1.h, z24.h, z2.h
+	uzp2	z2.h, z24.h, z2.h
+	add	z24.s, z4.s, z28.s
+	sub	z4.s, z4.s, z28.s
+	sqrshrnb	z28.h, z24.s, #7
+	sqrshrnb	z11.h, z4.s, #7
+	add	z25.s, z8.s, z29.s
+	uzp1	z27.h, z28.h, z28.h
+	sub	z29.s, z8.s, z29.s
+	add	z28.s, z5.s, z30.s
+	sqrshrnb	z8.h, z25.s, #7
+	sqrshrnb	z4.h, z29.s, #7
+	uzp1	z24.h, z8.h, z8.h
+	add	x20, sp, 224
+	splice	z27.h, p4, z27.h, z24.h
+	ldr	z24, [x20]
+	uzp1	z26.h, z11.h, z11.h
+	add	z29.s, z13.s, z24.s
+	sub	z5.s, z5.s, z30.s
+	sub	z13.s, z13.s, z24.s
+	sqrshrnb	z30.h, z28.s, #7
+	sqrshrnb	z25.h, z5.s, #7
+	addvl	x30, sp, #1
+	uzp1	z8.h, z25.h, z25.h
+	uzp1	z11.h, z4.h, z4.h
+	sqrshrnb	z4.h, z29.s, #7
+	uzp1	z28.h, z4.h, z4.h
+	splice	z11.h, p4, z11.h, z26.h
+	sqrshrnb	z5.h, z13.s, #7
+	add	x30, x30, 224
+	addvl	x14, sp, #2
+	addvl	x11, sp, #3
+	uzp1	z26.h, z30.h, z30.h
+	uzp1	z29.h, z5.h, z5.h
+	splice	z26.h, p4, z26.h, z28.h
+	splice	z29.h, p4, z29.h, z8.h
+	ldr	z8, [x30]
+	uzp2	z30.h, z27.h, z26.h
+	uzp1	z25.h, z27.h, z26.h
+	add	z27.s, z9.s, z8.s
+	sub	z9.s, z9.s, z8.s
+	sqrshrnb	z24.h, z27.s, #7
+	sqrshrnb	z13.h, z9.s, #7
+	uzp1	z28.h, z13.h, z13.h
+	uzp1	z26.h, z1.h, z25.h
+	add	x14, x14, 224
+	ldr	z5, [x14]
+	uzp2	z1.h, z1.h, z25.h
+	add	x11, x11, 224
+	add	z25.s, z0.s, z5.s
+	addvl	x19, sp, #4
+	sub	z0.s, z0.s, z5.s
+	sqrshrnb	z8.h, z25.s, #7
+	sqrshrnb	z9.h, z0.s, #7
+	uzp1	z27.h, z8.h, z8.h
+	uzp1	z4.h, z24.h, z24.h
+	uzp1	z13.h, z9.h, z9.h
+	splice	z13.h, p4, z13.h, z28.h
+	ldr	z28, [x11]
+	add	z24.s, z21.s, z28.s
+	splice	z4.h, p4, z4.h, z27.h
+	sub	z21.s, z21.s, z28.s
+	sqrshrnb	z5.h, z24.s, #7
+	sqrshrnb	z0.h, z21.s, #7
+	add	x19, x19, 224
+	ldr	z27, [x19]
+	uzp1	z8.h, z0.h, z0.h
+	add	z9.s, z23.s, z27.s
+	addvl	x4, sp, #5
+	sub	z23.s, z23.s, z27.s
+	sqrshrnb	z28.h, z9.s, #7
+	uzp1	z25.h, z5.h, z5.h
+	uzp1	z24.h, z28.h, z28.h
+	splice	z25.h, p4, z25.h, z24.h
+	sqrshrnb	z21.h, z23.s, #7
+	add	x4, x4, 224
+	ldr	z5, [x4]
+	addvl	x7, sp, #6
+	addvl	x6, sp, #7
+	uzp1	z0.h, z21.h, z21.h
+	splice	z0.h, p4, z0.h, z8.h
+	uzp1	z8.h, z4.h, z25.h
+	uzp2	z4.h, z4.h, z25.h
+	add	z25.s, z6.s, z5.s
+	sub	z6.s, z6.s, z5.s
+	sqrshrnb	z27.h, z25.s, #7
+	sqrshrnb	z23.h, z6.s, #7
+	uzp1	z28.h, z23.h, z23.h
+	add	x7, x7, 224
+	ldr	z24, [x7]
+	add	x6, x6, 224
+	add	z21.s, z10.s, z24.s
+	addvl	x5, sp, #8
+	sub	z10.s, z10.s, z24.s
+	sqrshrnb	z5.h, z21.s, #7
+	sqrshrnb	z6.h, z10.s, #7
+	uzp1	z9.h, z27.h, z27.h
+	uzp1	z23.h, z6.h, z6.h
+	splice	z23.h, p4, z23.h, z28.h
+	ldr	z28, [x6]
+	add	z27.s, z7.s, z28.s
+	uzp1	z25.h, z5.h, z5.h
+	sub	z7.s, z7.s, z28.s
+	splice	z9.h, p4, z9.h, z25.h
+	sqrshrnb	z24.h, z27.s, #7
+	add	x5, x5, 224
+	ldr	z5, [x5]
+	addvl	x3, sp, #10
+	add	z6.s, z22.s, z5.s
+	uzp1	z21.h, z24.h, z24.h
+	sqrshrnb	z28.h, z6.s, #7
+	uzp1	z27.h, z28.h, z28.h
+	splice	z21.h, p4, z21.h, z27.h
+	sqrshrnb	z10.h, z7.s, #7
+	uzp1	z24.h, z9.h, z21.h
+	uzp1	z25.h, z10.h, z10.h
+	sub	z22.s, z22.s, z5.s
+	add	x3, x3, 224
+	uzp2	z5.h, z9.h, z21.h
+	addvl	x20, sp, #10
+	uzp1	z9.h, z8.h, z24.h
+	uzp1	z21.h, z26.h, z9.h
+	str	z21, [x3]
+	uzp2	z6.h, z26.h, z9.h
+	sqrshrnb	z7.h, z22.s, #7
+	uzp2	z26.h, z4.h, z5.h
+	add	x20, x20, 288
+	addvl	x30, sp, #10
+	uzp1	z10.h, z7.h, z7.h
+	splice	z10.h, p4, z10.h, z25.h
+	uzp1	z25.h, z2.h, z30.h
+	uzp2	z2.h, z2.h, z30.h
+	uzp1	z30.h, z4.h, z5.h
+	uzp1	z4.h, z25.h, z30.h
+	str	z4, [x20]
+	uzp2	z8.h, z8.h, z24.h
+	add	x10, x0, 80
+	uzp2	z22.h, z1.h, z8.h
+	add	x30, x30, 352
+	uzp1	z1.h, z1.h, z8.h
+	addvl	x14, sp, #10
+	str	z1, [x30]
+	uzp1	z27.h, z2.h, z26.h
+	add	x8, x0, 208
+	add	x14, x14, 416
+	str	z27, [x14]
+	ldr	z24, [x10]
+	addvl	x10, sp, #10
+	add	x10, x10, 480
+	str	z6, [x10]
+	ldr	z5, [x8]
+	addvl	x8, sp, #10
+	uzp2	z28.h, z25.h, z30.h
+	addvl	x11, sp, #10
+	add	x8, x8, 544
+	str	z28, [x8]
+	add	x11, x11, 608
+	addvl	x19, sp, #10
+	addvl	x4, sp, #10
+	str	z22, [x11]
+	uzp1	z8.h, z10.h, z23.h
+	uzp1	z6.h, z0.h, z13.h
+	uzp1	z9.h, z3.h, z12.h
+	uzp2	z7.h, z2.h, z26.h
+	uzp1	z1.h, z29.h, z11.h
+	uzp2	z0.h, z0.h, z13.h
+	uzp2	z29.h, z29.h, z11.h
+	uzp2	z12.h, z3.h, z12.h
+	uzp1	z11.h, z1.h, z9.h
+	uzp1	z3.h, z8.h, z6.h
+	add	x19, x19, 672
+	add	x4, x4, 256
+	addvl	x7, sp, #10
+	uzp1	z13.h, z3.h, z11.h
+	str	z7, [x19]
+	str	z13, [x4]
+	uzp2	z10.h, z10.h, z23.h
+	uzp1	z2.h, z29.h, z12.h
+	uzp1	z22.h, z10.h, z0.h
+	add	x7, x7, 320
+	addvl	x6, sp, #10
+	uzp1	z23.h, z22.h, z2.h
+	str	z23, [x7]
+	uzp2	z4.h, z8.h, z6.h
+	uzp2	z27.h, z1.h, z9.h
+	add	x6, x6, 384
+	addvl	x5, sp, #10
+	uzp1	z25.h, z4.h, z27.h
+	str	z25, [x6]
+	uzp2	z30.h, z10.h, z0.h
+	uzp2	z7.h, z29.h, z12.h
+	add	x5, x5, 448
+	addvl	x3, sp, #10
+	uzp1	z26.h, z30.h, z7.h
+	str	z26, [x5]
+	add	x3, x3, 512
+	addvl	x20, sp, #10
+	uzp2	z28.h, z3.h, z11.h
+	str	z28, [x3]
+	zip1	z21.h, z24.h, z5.h
+	add	x20, x20, 576
+	addvl	x30, sp, #10
+	uzp2	z24.h, z22.h, z2.h
+	str	z24, [x20]
+	add	x30, x30, 640
+	addvl	x14, sp, #10
+	uzp2	z5.h, z4.h, z27.h
+	str	z5, [x30]
+	add	x14, x14, 704
+	uzp2	z8.h, z30.h, z7.h
+	str	z8, [x14]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x0, #0, MUL VL]
+	ld1h z6.h, p7/z, [x21, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d9, #0
+	mov	z0.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z3.h, z5.h
+	sdot z0.s, z21.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x0, #1, MUL VL]
+	ld1h z1.h, p7/z, [x21, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z19.h, z11.h
+	sdot z0.s, z14.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x0, #2, MUL VL]
+	ld1h z9.h, p7/z, [x21, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z2.h, z4.h
+	sdot z0.s, z15.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x0, #3, MUL VL]
+	ld1h z10.h, p7/z, [x21, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z1.h, z13.h
+	sdot z0.s, z16.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x13, #0, MUL VL]
+	ld1h z29.h, p7/z, [x21, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z17.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x21, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z18.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x21, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z19.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x21, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z20.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x22, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d10, #0
+	mov	z26.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z3.h, z6.h
+	sdot z26.s, z21.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #1, MUL VL]
+	ld1h z22.h, p7/z, [x22, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z19.h, z15.h
+	sdot z26.s, z14.h, z22.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x13, #2, MUL VL]
+	ld1h z2.h, p7/z, [x22, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z17.h
+	sdot z26.s, z15.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x13, #3, MUL VL]
+	ld1h z23.h, p7/z, [x22, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z1.h, z0.h
+	sdot z26.s, z16.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x12, #0, MUL VL]
+	ld1h z4.h, p7/z, [x22, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z17.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x22, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z18.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x22, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z19.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x22, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z20.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x24, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d11, #0
+	mov	z27.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z3.h, z12.h
+	sdot z27.s, z21.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x12, #1, MUL VL]
+	ld1h z28.h, p7/z, [x24, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z19.h, z14.h
+	sdot z27.s, z14.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x12, #2, MUL VL]
+	ld1h z24.h, p7/z, [x24, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z2.h, z8.h
+	sdot z27.s, z15.h, z24.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x12, #3, MUL VL]
+	ld1h z5.h, p7/z, [x24, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z1.h, z7.h
+	sdot z27.s, z16.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x11, #0, MUL VL]
+	ld1h z8.h, p7/z, [x24, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z17.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x24, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z18.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x24, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z19.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x24, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z20.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x26, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d12, #0
+	mov	z28.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z3.h, z16.h
+	sdot z28.s, z21.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x11, #1, MUL VL]
+	ld1h z29.h, p7/z, [x26, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z19.h, z5.h
+	sdot z28.s, z14.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x11, #2, MUL VL]
+	ld1h z12.h, p7/z, [x26, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z2.h, z4.h
+	sdot z28.s, z15.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x11, #3, MUL VL]
+	ld1h z3.h, p7/z, [x26, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z1.h, z13.h
+	sdot z28.s, z16.h, z3.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x10, #0, MUL VL]
+	ld1h z11.h, p7/z, [x26, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z17.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x26, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z18.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x26, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z19.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x26, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z20.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x28, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d13, #0
+	mov	z29.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z3.h, z6.h
+	sdot z29.s, z21.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x10, #1, MUL VL]
+	ld1h z4.h, p7/z, [x28, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z19.h, z15.h
+	sdot z29.s, z14.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x10, #2, MUL VL]
+	ld1h z25.h, p7/z, [x28, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z2.h, z17.h
+	sdot z29.s, z15.h, z25.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x10, #3, MUL VL]
+	ld1h z30.h, p7/z, [x28, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z1.h, z0.h
+	sdot z29.s, z16.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #0, MUL VL]
+	ld1h z7.h, p7/z, [x28, #4, MUL VL]
 // 0 "" 2
-#NO_APP
-	movi	d14, #0
-#APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z3.h, z8.h
+	sdot z29.s, z17.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x9, #1, MUL VL]
+	ld1h z24.h, p7/z, [x28, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z19.h, z7.h
+	sdot z29.s, z18.h, z24.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #2, MUL VL]
+	ld1h z5.h, p7/z, [x28, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z2.h, z16.h
+	sdot z29.s, z19.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x9, #3, MUL VL]
+	ld1h z8.h, p7/z, [x28, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z1.h, z5.h
+	sdot z29.s, z20.h, z8.h
 // 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d15, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z19.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d16, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z19.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z2.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z1.h, z2.h
-// 0 "" 2
-#NO_APP
-	addvl	x0, sp, #12
-	addvl	x13, sp, #12
-	addvl	x12, sp, #12
-	addvl	x11, sp, #12
-	add	x0, x0, 400
-	ldr	z1, [x0]
-	add	x13, x13, 912
-	ldr	z7, [x13]
-	add	x12, x12, 1424
-	ldr	z5, [x12]
-	add	x11, x11, 1936
-	ldr	z4, [x11]
-	zip1	z0.h, z1.h, z7.h
-	zip1	z17.h, z5.h, z4.h
-#APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z6.h, p7/z, [x18, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	movi	d19, #0
+	mov	z30.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z6.h
+	sdot z30.s, z21.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x18, #1, MUL VL]
+	ld1h z1.h, p7/z, [x18, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z17.h, z8.h
+	sdot z30.s, z14.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d5, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z0.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x17, #1, MUL VL]
+	ld1h z9.h, p7/z, [x18, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z17.h, z2.h
+	sdot z30.s, z15.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x16, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d6, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z0.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x16, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z17.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d7, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z17.h, z0.h
-// 0 "" 2
-#NO_APP
-	addvl	x10, sp, #12
-	addvl	x9, sp, #12
-	add	x10, x10, 656
-	ldr	z17, [x10]
-	add	x9, x9, 1680
-	ldr	z8, [x9]
-	zip1	z1.h, z17.h, z8.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d2, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z1.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d3, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z1.h, z4.h
-// 0 "" 2
-#NO_APP
-	addvl	x8, sp, #12
-	addvl	x7, sp, #12
-	add	x8, x8, 144
-	ldr	z0, [x8]
-	add	x7, x7, 1168
-	ldr	z17, [x7]
-	zip1	z1.h, z0.h, z17.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d8, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d17, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z8.s, z2.s
-	sub	z8.s, z8.s, z2.s
-	add	z2.s, z1.s, z19.s
-	addvl	x16, sp, #6
-	add	z4.s, z2.s, z9.s
-	sub	z19.s, z1.s, z19.s
-	add	z0.s, z4.s, z18.s
-	add	z1.s, z17.s, z3.s
-	sub	z9.s, z2.s, z9.s
-	sqrshrnb	z2.h, z0.s, #12
-	add	x17, x14, x2, lsl 1
-	add	x15, sp, 128
-	sub	z17.s, z17.s, z3.s
-	add	x16, x16, 128
-	add	z3.s, z1.s, z5.s
-	addvl	x14, sp, #5
-	addvl	x5, sp, #11
-	str	z9, [x16]
-	sub	z9.s, z1.s, z5.s
-	add	z5.s, z3.s, z10.s
-	sub	z10.s, z3.s, z10.s
-	add	z0.s, z5.s, z31.s
-	sqrshrnb	z1.h, z0.s, #12
-	str	z4, [x15]
-	uzp1	z4.h, z2.h, z2.h
-	uzp1	z2.h, z1.h, z1.h
-	splice	z4.h, p0, z4.h, z2.h
-	add	x14, x14, 128
-	addvl	x23, sp, #1
-	str	z10, [x14]
-	add	x5, x5, 128
-	add	z10.s, z8.s, z7.s
-	addvl	x4, sp, #2
-	sub	z8.s, z8.s, z7.s
-	add	z0.s, z10.s, z12.s
-	sub	z10.s, z10.s, z12.s
-	add	z12.s, z0.s, z21.s
-	sqrshrnb	z7.h, z12.s, #12
-	uzp1	z2.h, z7.h, z7.h
-	str	z4, [x5]
-	add	z4.s, z17.s, z6.s
-	add	z3.s, z4.s, z11.s
-	sub	z17.s, z17.s, z6.s
-	add	x23, x23, 128
-	sub	z6.s, z4.s, z11.s
-	add	x4, x4, 128
-	add	z11.s, z3.s, z20.s
-	str	z3, [x4]
-	sub	z3.s, z8.s, z13.s
-	str	z5, [x23]
-	sqrshrnb	z5.h, z11.s, #12
-	uzp1	z1.h, z5.h, z5.h
-	movprfx	z7, z1
-	splice	z7.h, p0, z7.h, z2.h
-	add	z2.s, z8.s, z13.s
-	add	z13.s, z2.s, z22.s
-	sqrshrnb	z4.h, z13.s, #12
-	uzp1	z11.h, z4.h, z4.h
-	add	z13.s, z17.s, z14.s
-	sub	z17.s, z17.s, z14.s
-	add	z14.s, z13.s, z23.s
-	sqrshrnb	z5.h, z14.s, #12
-	uzp1	z1.h, z5.h, z5.h
-	addvl	x13, sp, #4
-	movprfx	z5, z11
-	splice	z5.h, p0, z5.h, z1.h
-	add	z11.s, z9.s, z15.s
-	sub	z9.s, z9.s, z15.s
-	add	z15.s, z11.s, z24.s
-	sqrshrnb	z8.h, z15.s, #12
-	sub	z1.s, z19.s, z16.s
-	add	z15.s, z19.s, z16.s
-	add	z14.s, z1.s, z26.s
-	add	z16.s, z15.s, z25.s
-	uzp1	z4.h, z8.h, z8.h
-	sqrshrnb	z19.h, z16.s, #12
-	sqrshrnb	z8.h, z14.s, #12
-	uzp1	z12.h, z19.h, z19.h
-	uzp1	z19.h, z8.h, z8.h
-	movprfx	z16, z4
-	splice	z16.h, p0, z16.h, z12.h
-	add	z8.s, z17.s, z28.s
-	add	z4.s, z9.s, z27.s
-	sqrshrnb	z12.h, z4.s, #12
-	addvl	x10, sp, #8
-	uzp1	z14.h, z12.h, z12.h
-	sqrshrnb	z4.h, z8.s, #12
-	add	z12.s, z3.s, z29.s
-	sqrshrnb	z8.h, z12.s, #12
-	splice	z19.h, p0, z19.h, z14.h
-	addvl	x3, sp, #3
-	add	x13, x13, 128
-	uzp1	z14.h, z4.h, z4.h
-	add	x10, x10, 128
-	uzp1	z4.h, z8.h, z8.h
-	ldr	z8, [x10]
-	addvl	x9, sp, #5
-	addvl	x8, sp, #9
-	str	z6, [x13]
-	add	z6.s, z6.s, z8.s
-	splice	z14.h, p0, z14.h, z4.h
-	add	x3, x3, 128
-	sqrshrnb	z4.h, z6.s, #12
-	add	x9, x9, 128
-	ldr	z6, [x9]
-	add	x8, x8, 128
-	ldr	z8, [x8]
-	addvl	x16, sp, #6
-	addvl	x15, sp, #10
-	str	z10, [x3]
-	add	z10.s, z10.s, z30.s
-	sqrshrnb	z12.h, z10.s, #12
-	add	x16, x16, 128
-	add	x15, x15, 128
-	uzp1	z10.h, z12.h, z12.h
-	uzp1	z12.h, z4.h, z4.h
-	add	z4.s, z6.s, z8.s
-	ldr	z8, [x16]
-	ldr	z6, [x15]
-	splice	z10.h, p0, z10.h, z12.h
-	addvl	x5, sp, #11
-	sqrshrnb	z12.h, z4.s, #12
-	add	z4.s, z8.s, z6.s
-	sqrshrnb	z8.h, z4.s, #12
-	uzp1	z6.h, z8.h, z8.h
-	add	x5, x5, 128
-	ldr	z4, [x5]
-	uzp1	z12.h, z12.h, z12.h
-	uzp1	z8.h, z4.h, z7.h
-	splice	z12.h, p0, z12.h, z6.h
-	uzp2	z6.h, z4.h, z7.h
-	uzp1	z7.h, z5.h, z16.h
-	uzp2	z16.h, z5.h, z16.h
-	uzp1	z5.h, z8.h, z7.h
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z19.h, z14.h
-	uzp2	z19.h, z19.h, z14.h
-	uzp1	z14.h, z10.h, z12.h
-	uzp2	z12.h, z10.h, z12.h
-	uzp1	z10.h, z7.h, z14.h
-	uzp1	z4.h, z5.h, z10.h
-	str	z4, [x17]
-	add	x22, x17, x2, lsl 1
-	uzp2	z7.h, z7.h, z14.h
-	uzp2	z10.h, z5.h, z10.h
-	uzp1	z5.h, z6.h, z16.h
-	uzp2	z16.h, z6.h, z16.h
-	uzp1	z6.h, z19.h, z12.h
-	uzp1	z14.h, z5.h, z6.h
-	str	z14, [x22]
-	add	x0, x22, x2, lsl 1
-	uzp2	z19.h, z19.h, z12.h
-	uzp1	z12.h, z8.h, z7.h
-	str	z12, [x0]
-	add	x6, x0, x2, lsl 1
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z16.h, z19.h
-	str	z7, [x6]
-	add	x12, x6, x2, lsl 1
-	add	x23, x2, x2, lsl 2
-	str	z10, [x12]
-	add	x11, x12, x2, lsl 1
-	uzp2	z4.h, z5.h, z6.h
-	add	x14, x2, x2, lsl 3
-	addvl	x0, sp, #1
-	addvl	x6, sp, #2
-	str	z4, [x11]
-	add	x7, x11, x2, lsl 1
-	uzp2	z10.h, z16.h, z19.h
-	add	x17, x1, x2, lsl 4
-	add	x4, sp, 128
-	ldr	z5, [x4]
-	add	x0, x0, 128
-	ldr	z6, [x0]
-	sub	z18.s, z5.s, z18.s
-	sub	z31.s, z6.s, z31.s
-	sqrshrnb	z16.h, z18.s, #12
-	sqrshrnb	z19.h, z31.s, #12
-	add	x6, x6, 128
-	ldr	z4, [x6]
-	addvl	x12, sp, #3
-	add	x15, x2, x23, lsl 1
-	str	z8, [x7]
-	add	x22, x7, x2, lsl 1
-	add	x16, x1, x14, lsl 1
-	uzp1	z14.h, z16.h, z16.h
-	add	x7, x17, 32
-	sub	z20.s, z4.s, z20.s
-	add	x17, x2, x2, lsl 1
-	sqrshrnb	z12.h, z20.s, #12
-	sub	z29.s, z3.s, z29.s
-	uzp1	z8.h, z12.h, z12.h
-	sqrshrnb	z4.h, z29.s, #12
-	add	x12, x12, 128
-	ldr	z3, [x12]
-	addvl	x3, sp, #4
-	sub	z30.s, z3.s, z30.s
-	addvl	x11, sp, #8
-	addvl	x13, sp, #5
-	addvl	x10, sp, #9
-	uzp1	z7.h, z19.h, z19.h
-	addvl	x9, sp, #6
-	addvl	x8, sp, #10
-	sub	z21.s, z0.s, z21.s
-	sub	z22.s, z2.s, z22.s
-	sqrshrnb	z0.h, z21.s, #12
-	sqrshrnb	z2.h, z22.s, #12
-	uzp1	z5.h, z0.h, z0.h
-	sub	z23.s, z13.s, z23.s
-	splice	z5.h, p0, z5.h, z8.h
-	sqrshrnb	z13.h, z23.s, #12
-	sub	z24.s, z11.s, z24.s
-	sub	z25.s, z15.s, z25.s
-	sqrshrnb	z11.h, z24.s, #12
-	sqrshrnb	z15.h, z25.s, #12
-	uzp1	z16.h, z11.h, z11.h
-	sub	z26.s, z1.s, z26.s
-	uzp1	z31.h, z15.h, z15.h
-	sqrshrnb	z1.h, z26.s, #12
-	splice	z31.h, p0, z31.h, z16.h
-	uzp1	z6.h, z1.h, z1.h
-	sub	z27.s, z9.s, z27.s
-	sub	z28.s, z17.s, z28.s
-	sqrshrnb	z9.h, z27.s, #12
-	sqrshrnb	z17.h, z28.s, #12
-	uzp1	z19.h, z17.h, z17.h
-	str	z10, [x22]
-	uzp1	z10.h, z2.h, z2.h
-	splice	z7.h, p0, z7.h, z14.h
-	add	x5, x16, 32
-	uzp1	z17.h, z5.h, z7.h
-	add	x4, x1, x23, lsl 2
-	uzp2	z7.h, z5.h, z7.h
-	add	x12, x1, x15, lsl 1
-	sqrshrnb	z20.h, z30.s, #12
-	add	x3, x3, 128
-	ldr	z8, [x3]
-	uzp1	z21.h, z20.h, z20.h
-	add	x11, x11, 128
-	ldr	z12, [x11]
-	add	x13, x13, 128
-	ldr	z2, [x13]
-	sub	z22.s, z8.s, z12.s
-	add	x10, x10, 128
-	sqrshrnb	z24.h, z22.s, #12
-	add	x9, x9, 128
-	ldr	z25, [x9]
-	add	x8, x8, 128
-	ldr	z26, [x8]
-	uzp1	z18.h, z13.h, z13.h
-	sub	z15.s, z25.s, z26.s
-	splice	z18.h, p0, z18.h, z10.h
-	ldr	z10, [x10]
-	uzp1	z27.h, z31.h, z18.h
-	sub	z23.s, z2.s, z10.s
-	uzp2	z18.h, z31.h, z18.h
-	sqrshrnb	z13.h, z23.s, #12
-	uzp1	z31.h, z18.h, z7.h
-	uzp1	z16.h, z13.h, z13.h
-	uzp1	z14.h, z9.h, z9.h
-	uzp1	z0.h, z4.h, z4.h
-	splice	z14.h, p0, z14.h, z6.h
-	splice	z0.h, p0, z0.h, z19.h
-	sqrshrnb	z6.h, z15.s, #12
-	uzp1	z1.h, z0.h, z14.h
-	uzp1	z19.h, z27.h, z17.h
-	uzp2	z14.h, z0.h, z14.h
-	uzp1	z11.h, z24.h, z24.h
-	uzp1	z9.h, z6.h, z6.h
-	splice	z11.h, p0, z11.h, z21.h
-	splice	z9.h, p0, z9.h, z16.h
-	uzp1	z28.h, z9.h, z11.h
-	uzp2	z30.h, z9.h, z11.h
-	uzp1	z4.h, z28.h, z1.h
-	uzp1	z5.h, z30.h, z14.h
-	uzp1	z29.h, z4.h, z19.h
-	uzp1	z3.h, z5.h, z31.h
-	str	z29, [x7]
-	str	z3, [x5]
-	uzp2	z20.h, z28.h, z1.h
-	uzp2	z0.h, z27.h, z17.h
-	add	x11, x2, x17, lsl 2
-	add	x6, x4, 32
-	lsl	x0, x2, 3
-	uzp1	z21.h, z20.h, z0.h
-	add	x13, x12, 32
-	lsl	x12, x2, 4
-	str	z21, [x6]
-	uzp2	z8.h, z30.h, z14.h
-	uzp2	z12.h, z18.h, z7.h
-	add	x3, x1, x17, lsl 3
-	sub	x10, x0, x2
-	sub	x7, x12, x2
-	uzp1	z22.h, z8.h, z12.h
-	str	z22, [x13]
-	add	x8, x1, x11, lsl 1
-	uzp2	z2.h, z4.h, z19.h
-	add	x9, x3, 32
-	str	z2, [x9]
-	add	x5, x1, x10, lsl 2
-	add	x6, x1, x7, lsl 1
-	add	x16, x8, 32
-	uzp2	z10.h, z5.h, z31.h
-	addvl	x13, sp, #12
-	addvl	x3, sp, #12
-	str	z10, [x16]
-	addvl	x9, sp, #7
-	addvl	x8, sp, #12
-	uzp2	z23.h, z20.h, z0.h
-	addvl	x7, sp, #12
-	add	x4, x5, 32
-	str	z23, [x4]
-	lsl	x11, x17, 3
-	add	x13, x13, 2016
-	uzp2	z24.h, z8.h, z12.h
-	add	x17, x6, 32
-	add	x3, x3, 224
-	str	z24, [x17]
-	add	x9, x9, 128
-	add	x8, x8, 352
-	ldr	z16, [x9]
-	add	x7, x7, 480
-	adrp	x0, _ZL6CDOT_O
-	ldr	z13, [x13]
-	ldr	z11, [x3]
-	ldr	z25, [x8]
-	ldr	z26, [x7]
-	add	x10, x0, :lo12:_ZL6CDOT_O
-	addvl	x16, sp, #12
-	zip1	z1.h, z13.h, z16.h
-	addvl	x5, sp, #12
-	addvl	x4, sp, #12
-	zip1	z6.h, z11.h, z25.h
-	addvl	x6, sp, #12
-	addvl	x17, sp, #12
-	addvl	x0, sp, #12
-	addvl	x13, sp, #12
-	addvl	x3, sp, #12
-	addvl	x9, sp, #12
-	addvl	x8, sp, #12
-	addvl	x7, sp, #12
-	add	x16, x16, 608
-	ldr	z15, [x16]
-	add	x5, x5, 736
-	ldr	z27, [x5]
-	add	x4, x4, 864
-	ldr	z9, [x4]
-	add	x6, x6, 992
-	ldr	z17, [x6]
-	add	x17, x17, 1120
-	ldr	z19, [x17]
-	add	x0, x0, 1248
-	ldr	z28, [x0]
-	add	x13, x13, 1376
-	ldr	z29, [x13]
-	add	x3, x3, 1504
-	ldr	z14, [x3]
-	add	x9, x9, 1632
-	ldr	z30, [x9]
-	add	x8, x8, 1760
-	ldr	z18, [x8]
-	add	x7, x7, 1888
-	ldr	z7, [x7]
-	zip1	z4.h, z26.h, z15.h
-	zip1	z5.h, z27.h, z9.h
-	zip1	z3.h, z17.h, z19.h
-	zip1	z0.h, z28.h, z29.h
-	zip1	z2.h, z14.h, z30.h
-	zip1	z16.h, z18.h, z7.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z31.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	movi	d30, #0
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z31.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x10, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x10, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x10, #6, MUL VL]
+	ld1h z10.h, p7/z, [x18, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z30.s, z16.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x10, #7, MUL VL]
+	ld1h z12.h, p7/z, [x18, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z23.h
+	sdot z30.s, z17.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z18.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z19.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z20.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x17, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	adrp	x16, _ZL6CDOT_O+256
-	add	x9, x16, :lo12:_ZL6CDOT_O+256
+	mov	z2.d, z31.d
 #APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z21.h, z22.h
+// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x9, #0, MUL VL]
+	ld1h z23.h, p7/z, [x17, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z14.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x17, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z15.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x17, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z16.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x17, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z17.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x17, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z18.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x17, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z19.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x17, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z20.h, z8.h
 // 0 "" 2
 #NO_APP
-	movi	d31, #0
-	mov	z29.d, z31.d
+	add	x21, sp, 224
+	str	z2, [x21]
 #APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z24.h
-// 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x9, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z2.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x9, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z16.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x9, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z9.h
+	ld1h z6.h, p7/z, [x15, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	adrp	x5, _ZL6CDOT_O+512
-	add	x8, x5, :lo12:_ZL6CDOT_O+512
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z21.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x15, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z15.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x15, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z16.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x15, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z17.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x15, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z18.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x15, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z19.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x15, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z20.h, z13.h
+// 0 "" 2
+#NO_APP
+	addvl	x22, sp, #1
+	add	x22, x22, 224
+	str	z22, [x22]
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x8, #0, MUL VL]
+	ld1h z2.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z21.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z14.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z15.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z16.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x12, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z17.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x12, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z18.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x12, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z19.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x12, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z20.h, z8.h
+// 0 "" 2
+#NO_APP
+	addvl	x24, sp, #2
+	add	x24, x24, 224
+	str	z13, [x24]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z21.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z15.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z16.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x9, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z17.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x9, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z18.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x9, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z19.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x9, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z20.h, z2.h
+// 0 "" 2
+#NO_APP
+	addvl	x26, sp, #3
+	add	x26, x26, 224
+	str	z12, [x26]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z11.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z21.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z14.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z15.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z16.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x23, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z17.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x23, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z18.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x23, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z19.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x23, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z20.h, z13.h
+// 0 "" 2
+#NO_APP
+	addvl	x28, sp, #4
+	add	x28, x28, 224
+	str	z11, [x28]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x25, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z21.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x25, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x25, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z15.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x25, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z16.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x25, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z17.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x25, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z18.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x25, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z19.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x25, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z20.h, z23.h
+// 0 "" 2
+#NO_APP
+	addvl	x18, sp, #5
+	add	x18, x18, 224
+	str	z10, [x18]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z9.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z21.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z14.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z15.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z16.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z17.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z18.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z19.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z20.h, z11.h
+// 0 "" 2
+#NO_APP
+	addvl	x17, sp, #6
+	add	x17, x17, 224
+	str	z9, [x17]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z21.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x16, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x16, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z15.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x16, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z16.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x16, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z17.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x16, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z18.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x16, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z19.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x16, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z20.h, z10.h
+// 0 "" 2
+#NO_APP
+	addvl	x15, sp, #7
+	add	x15, x15, 224
+	str	z8, [x15]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z21.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x13, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z14.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x13, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z15.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x13, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z16.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x13, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z17.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x13, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z18.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x13, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z19.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x13, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z20.h, z6.h
+// 0 "" 2
+#NO_APP
+	addvl	x12, sp, #8
+	adrp	x9, _ZL6CDOT_O+3840
+	add	x12, x12, 224
+	add	x23, x9, :lo12:_ZL6CDOT_O+3840
+	str	z7, [x12]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z3.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z21.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z14.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z15.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z16.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x23, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z17.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x23, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z18.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x23, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z19.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x23, #7, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z3.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z20.h, z19.h
+// 0 "" 2
+#NO_APP
+	addvl	x25, sp, #9
+	add	x27, x0, 144
+	ldr	z2, [x27]
+	add	x25, x25, 224
+	add	x16, x0, 400
+	ldr	z20, [x16]
+	add	x13, x0, 656
+	ldr	z12, [x13]
+	add	x10, x0, 912
+	ldr	z10, [x10]
+	add	x8, x0, 1168
+	ldr	z23, [x8]
+	add	x11, x0, 1424
+	ldr	z8, [x11]
+	add	x19, x0, 1680
+	ldr	z4, [x19]
+	add	x4, x0, 1936
+	ldr	z24, [x4]
+	adrp	x7, .LANCHOR0
+	zip1	z25.h, z2.h, z20.h
+	zip1	z5.h, z12.h, z10.h
+	zip1	z13.h, z23.h, z8.h
+	zip1	z11.h, z4.h, z24.h
+	add	x3, x7, :lo12:.LANCHOR0
+	str	z22, [x25]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z25.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z5.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z13.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z11.h, z3.h
+// 0 "" 2
+#NO_APP
+	add	x30, x3, 128
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z25.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z5.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z13.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z11.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x22, x3, 256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x22, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z17.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z25.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x22, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z5.h, z19.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x22, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z13.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x22, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z11.h, z2.h
+// 0 "" 2
+#NO_APP
+	add	x24, x3, 384
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x24, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z18.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z17.h
+	sdot z18.s, z25.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x8, #1, MUL VL]
+	ld1h z12.h, p7/z, [x24, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z19.h
+	sdot z18.s, z5.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z13.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z11.h, z23.h
+// 0 "" 2
+#NO_APP
+	add	x26, x3, 512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x26, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z19.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z25.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x26, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z5.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x26, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z13.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x26, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z11.h, z6.h
+// 0 "" 2
+#NO_APP
+	add	x28, x3, 640
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x28, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z20.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z25.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x28, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x28, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z13.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x28, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z11.h, z14.h
+// 0 "" 2
+#NO_APP
+	add	x12, x3, 768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z21.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z25.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z5.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z13.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z11.h, z2.h
+// 0 "" 2
+#NO_APP
+	add	x6, x3, 896
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z25.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z5.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z13.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z11.h, z13.h
+// 0 "" 2
+#NO_APP
+	add	x20, x0, 272
+	ldr	z11, [x20]
+	add	x14, x0, 784
+	ldr	z10, [x14]
+	add	x21, x0, 1296
+	ldr	z4, [x21]
+	add	x5, x0, 1808
+	ldr	z24, [x5]
+	add	x9, x3, 1024
+	zip1	z23.h, z11.h, z10.h
+	zip1	z9.h, z4.h, z24.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z3.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z23.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z9.h, z1.h
+// 0 "" 2
+#NO_APP
+	add	x15, x3, 1088
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z25.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z23.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z9.h, z15.h
+// 0 "" 2
+#NO_APP
+	add	x25, x3, 1152
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x25, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z4.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z23.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x25, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z9.h, z2.h
+// 0 "" 2
+#NO_APP
+	add	x27, x3, 1216
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z23.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z9.h, z5.h
+// 0 "" 2
+#NO_APP
+	add	x18, x0, 528
+	ldr	z13, [x18]
+	add	x17, x0, 1552
+	ldr	z11, [x17]
+	add	x16, x3, 1280
+	zip1	z10.h, z13.h, z11.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d23, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z10.h, z24.h
+// 0 "" 2
+#NO_APP
+	add	x13, x3, 1312
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d6, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z10.h, z9.h
+// 0 "" 2
+#NO_APP
+	add	x10, x0, 16
+	ldr	z1, [x10]
+	add	x8, x0, 1040
+	ldr	z14, [x8]
+	add	x11, x3, 1344
+	zip1	z16.h, z1.h, z14.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d2, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z16.h, z15.h
+// 0 "" 2
+#NO_APP
+	add	x19, x3, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d24, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z16.h, z12.h
+// 0 "" 2
+#NO_APP
+	add	x4, x0, 96
+	ldr	z5, [x4]
+	add	x20, x0, 352
+	ldr	z11, [x20]
+	add	x21, x0, 608
+	ldr	z1, [x21]
+	add	x7, x0, 224
+	ldr	z13, [x7]
+	add	x14, x0, 480
+	ldr	z10, [x14]
+	add	x5, x0, 736
+	ldr	z14, [x5]
+	add	x17, x0, 992
+	ldr	z16, [x17]
+	add	x10, x0, 1120
+	add	x4, x0, 1376
+	zip1	z9.h, z5.h, z13.h
+	ldr	z5, [x10]
+	zip1	z10.h, z11.h, z10.h
+	zip1	z11.h, z1.h, z14.h
+	ldr	z1, [x4]
+	add	x18, x0, 864
+	ldr	z15, [x18]
+	add	x8, x0, 1248
+	ldr	z13, [x8]
+	add	x7, x0, 1504
+	ldr	z14, [x7]
+	add	x14, x0, 1760
+	add	x21, x0, 1888
+	zip1	z12.h, z15.h, z16.h
+	ldr	z16, [x14]
+	add	x5, x0, 2016
+	zip1	z13.h, z5.h, z13.h
+	ldr	z5, [x5]
+	zip1	z14.h, z1.h, z14.h
+	ldr	z1, [x21]
+	add	x20, x0, 1632
+	ldr	z15, [x20]
+	zip1	z15.h, z15.h, z16.h
+	zip1	z16.h, z1.h, z5.h
+	sub	z1.s, z2.s, z23.s
+	add	z5.s, z2.s, z23.s
+	add	z23.s, z24.s, z6.s
+	add	z2.s, z5.s, z3.s
+	sub	z24.s, z24.s, z6.s
+	sub	z5.s, z5.s, z3.s
+	add	z3.s, z23.s, z25.s
+	sub	z25.s, z23.s, z25.s
+	sub	z23.s, z24.s, z4.s
+	add	z6.s, z24.s, z4.s
+	add	z4.s, z1.s, z31.s
+	sub	z24.s, z23.s, z20.s
+	sub	z31.s, z1.s, z31.s
+	add	z1.s, z2.s, z7.s
+	sub	z2.s, z2.s, z7.s
+	add	z7.s, z3.s, z8.s
+	sub	z3.s, z3.s, z8.s
+	add	z8.s, z6.s, z17.s
+	sub	z6.s, z6.s, z17.s
+	add	z17.s, z4.s, z18.s
+	sub	z4.s, z4.s, z18.s
+	add	z18.s, z31.s, z19.s
+	sub	z31.s, z31.s, z19.s
+	add	z19.s, z23.s, z20.s
+	add	z20.s, z25.s, z21.s
+	sub	z23.s, z25.s, z21.s
+	add	z21.s, z5.s, z22.s
+	sub	z5.s, z5.s, z22.s
+	add	z22.s, z1.s, z0.s
+	sub	z0.s, z1.s, z0.s
+	sqrshrnb	z25.h, z22.s, #7
+	sqrshrnb	z1.h, z0.s, #7
+	add	z22.s, z7.s, z26.s
+	uzp1	z0.h, z1.h, z1.h
+	sub	z26.s, z7.s, z26.s
+	sqrshrnb	z7.h, z22.s, #7
+	sqrshrnb	z22.h, z26.s, #7
+	uzp1	z1.h, z7.h, z7.h
+	uzp1	z26.h, z22.h, z22.h
+	movprfx	z7, z26
+	splice	z7.h, p4, z7.h, z0.h
+	add	z0.s, z8.s, z27.s
+	uzp1	z25.h, z25.h, z25.h
+	sub	z8.s, z8.s, z27.s
+	splice	z25.h, p4, z25.h, z1.h
+	sqrshrnb	z27.h, z0.s, #7
+	sqrshrnb	z22.h, z8.s, #7
+	uzp1	z0.h, z22.h, z22.h
+	add	z26.s, z17.s, z28.s
+	uzp1	z1.h, z27.h, z27.h
+	sub	z28.s, z17.s, z28.s
+	sqrshrnb	z17.h, z26.s, #7
+	sqrshrnb	z27.h, z28.s, #7
+	uzp1	z8.h, z17.h, z17.h
+	uzp1	z22.h, z27.h, z27.h
+	splice	z1.h, p4, z1.h, z8.h
+	splice	z22.h, p4, z22.h, z0.h
+	uzp1	z0.h, z25.h, z1.h
+	uzp2	z1.h, z25.h, z1.h
+	add	z25.s, z18.s, z29.s
+	add	z8.s, z19.s, z30.s
+	sub	z18.s, z18.s, z29.s
+	sub	z30.s, z19.s, z30.s
+	sqrshrnb	z29.h, z25.s, #7
+	sqrshrnb	z26.h, z18.s, #7
+	sqrshrnb	z19.h, z8.s, #7
+	sqrshrnb	z25.h, z30.s, #7
+	uzp1	z27.h, z19.h, z19.h
+	addvl	x8, sp, #1
+	add	x10, sp, 224
+	ldr	z18, [x10]
+	uzp1	z17.h, z26.h, z26.h
+	add	x8, x8, 224
+	addvl	x4, sp, #2
+	uzp1	z28.h, z29.h, z29.h
+	uzp1	z19.h, z25.h, z25.h
+	splice	z28.h, p4, z28.h, z27.h
+	ldr	z27, [x8]
+	add	z29.s, z20.s, z18.s
+	add	z25.s, z21.s, z27.s
+	sub	z20.s, z20.s, z18.s
+	sqrshrnb	z26.h, z29.s, #7
+	sqrshrnb	z8.h, z20.s, #7
+	splice	z19.h, p4, z19.h, z17.h
+	uzp1	z30.h, z8.h, z8.h
+	sub	z21.s, z21.s, z27.s
+	sqrshrnb	z18.h, z25.s, #7
+	add	x4, x4, 224
+	ldr	z8, [x4]
+	uzp1	z29.h, z18.h, z18.h
+	addvl	x7, sp, #3
+	addvl	x20, sp, #4
+	uzp1	z17.h, z26.h, z26.h
+	sqrshrnb	z20.h, z21.s, #7
+	splice	z17.h, p4, z17.h, z29.h
+	uzp1	z26.h, z28.h, z17.h
+	uzp2	z17.h, z28.h, z17.h
+	add	z28.s, z5.s, z8.s
+	sub	z5.s, z5.s, z8.s
+	sqrshrnb	z27.h, z28.s, #7
+	sqrshrnb	z25.h, z5.s, #7
+	add	x7, x7, 224
+	uzp1	z18.h, z25.h, z25.h
+	add	x20, x20, 224
+	addvl	x14, sp, #5
+	uzp1	z21.h, z20.h, z20.h
+	ldr	z20, [x7]
+	splice	z21.h, p4, z21.h, z30.h
+	uzp1	z29.h, z27.h, z27.h
+	ldr	z27, [x20]
+	uzp1	z30.h, z0.h, z26.h
+	add	z25.s, z24.s, z27.s
+	uzp2	z0.h, z0.h, z26.h
+	add	z26.s, z23.s, z20.s
+	sub	z23.s, z23.s, z20.s
+	sqrshrnb	z8.h, z26.s, #7
+	sqrshrnb	z5.h, z23.s, #7
+	uzp1	z28.h, z8.h, z8.h
+	sub	z24.s, z24.s, z27.s
+	splice	z29.h, p4, z29.h, z28.h
+	sqrshrnb	z26.h, z24.s, #7
+	add	x14, x14, 224
+	ldr	z28, [x14]
+	uzp1	z8.h, z26.h, z26.h
+	addvl	x21, sp, #6
+	adrp	x18, _ZL6CDOT_O
+	uzp1	z23.h, z5.h, z5.h
+	add	z5.s, z31.s, z28.s
+	splice	z23.h, p4, z23.h, z18.h
+	sqrshrnb	z27.h, z5.s, #7
+	sqrshrnb	z18.h, z25.s, #7
+	uzp1	z25.h, z27.h, z27.h
+	uzp1	z20.h, z18.h, z18.h
+	splice	z20.h, p4, z20.h, z25.h
+	sub	z31.s, z31.s, z28.s
+	uzp1	z26.h, z29.h, z20.h
+	uzp2	z28.h, z29.h, z20.h
+	sqrshrnb	z24.h, z31.s, #7
+	add	x17, x18, :lo12:_ZL6CDOT_O
+	add	x21, x21, 224
+	ldr	z29, [x21]
+	addvl	x5, sp, #7
+	add	z18.s, z4.s, z29.s
+	addvl	x18, sp, #8
+	sub	z4.s, z4.s, z29.s
+	sqrshrnb	z20.h, z18.s, #7
+	uzp1	z5.h, z24.h, z24.h
+	splice	z5.h, p4, z5.h, z8.h
+	sqrshrnb	z8.h, z4.s, #7
+	add	x5, x5, 224
+	ldr	z24, [x5]
+	uzp1	z25.h, z8.h, z8.h
+	add	z31.s, z6.s, z24.s
+	add	x18, x18, 224
+	sub	z6.s, z6.s, z24.s
+	sqrshrnb	z29.h, z31.s, #7
+	addvl	x10, sp, #9
+	uzp1	z18.h, z29.h, z29.h
+	uzp1	z27.h, z20.h, z20.h
+	ldr	z20, [x18]
+	sqrshrnb	z4.h, z6.s, #7
+	add	z8.s, z3.s, z20.s
+	splice	z27.h, p4, z27.h, z18.h
+	sub	z3.s, z3.s, z20.s
+	add	x10, x10, 224
+	ldr	z18, [x10]
+	sqrshrnb	z31.h, z3.s, #7
+	addvl	x8, sp, #10
+	uzp1	z6.h, z4.h, z4.h
+	add	z4.s, z2.s, z18.s
+	splice	z6.h, p4, z6.h, z25.h
+	sqrshrnb	z20.h, z4.s, #7
+	sqrshrnb	z25.h, z8.s, #7
+	uzp1	z8.h, z20.h, z20.h
+	uzp1	z24.h, z25.h, z25.h
+	splice	z24.h, p4, z24.h, z8.h
+	uzp1	z29.h, z31.h, z31.h
+	uzp2	z4.h, z27.h, z24.h
+	uzp1	z31.h, z27.h, z24.h
+	add	x8, x8, 736
+	uzp1	z27.h, z26.h, z31.h
+	addvl	x4, sp, #10
+	uzp1	z24.h, z30.h, z27.h
+	str	z24, [x8]
+	sub	z2.s, z2.s, z18.s
+	add	x4, x4, 800
+	uzp2	z18.h, z30.h, z27.h
+	sqrshrnb	z3.h, z2.s, #7
+	addvl	x7, sp, #10
+	uzp1	z25.h, z3.h, z3.h
+	splice	z25.h, p4, z25.h, z29.h
+	uzp1	z29.h, z1.h, z17.h
+	uzp2	z1.h, z1.h, z17.h
+	uzp1	z17.h, z28.h, z4.h
+	uzp1	z30.h, z29.h, z17.h
+	str	z30, [x4]
+	uzp2	z26.h, z26.h, z31.h
+	add	x7, x7, 864
+	uzp2	z20.h, z0.h, z26.h
+	addvl	x20, sp, #10
+	uzp1	z0.h, z0.h, z26.h
+	str	z0, [x7]
+	uzp2	z28.h, z28.h, z4.h
+	add	x20, x20, 928
+	uzp1	z8.h, z1.h, z28.h
+	addvl	x14, sp, #10
+	str	z8, [x20]
+	add	x14, x14, 992
+	addvl	x21, sp, #10
+	str	z18, [x14]
+	uzp2	z2.h, z29.h, z17.h
+	add	x21, x21, 1056
+	addvl	x5, sp, #10
+	addvl	x18, sp, #10
+	str	z2, [x21]
+	uzp2	z3.h, z1.h, z28.h
+	add	x5, x5, 1120
+	add	x18, x18, 1184
+	str	z20, [x5]
+	addvl	x10, sp, #10
+	str	z3, [x18]
+	uzp1	z4.h, z25.h, z6.h
+	uzp1	z18.h, z5.h, z23.h
+	uzp1	z29.h, z21.h, z19.h
+	uzp1	z1.h, z22.h, z7.h
+	uzp2	z19.h, z21.h, z19.h
+	uzp2	z7.h, z22.h, z7.h
+	uzp1	z27.h, z29.h, z1.h
+	uzp1	z22.h, z4.h, z18.h
+	add	x10, x10, 768
+	addvl	x8, sp, #10
+	uzp1	z21.h, z22.h, z27.h
+	str	z21, [x10]
+	uzp2	z6.h, z25.h, z6.h
+	uzp2	z5.h, z5.h, z23.h
+	uzp1	z26.h, z19.h, z7.h
+	uzp1	z24.h, z6.h, z5.h
+	add	x8, x8, 832
+	addvl	x4, sp, #10
+	uzp1	z23.h, z24.h, z26.h
+	str	z23, [x8]
+	uzp2	z17.h, z4.h, z18.h
+	uzp2	z30.h, z29.h, z1.h
+	add	x4, x4, 896
+	addvl	x7, sp, #10
+	uzp1	z25.h, z17.h, z30.h
+	str	z25, [x4]
+	uzp2	z31.h, z6.h, z5.h
+	uzp2	z2.h, z19.h, z7.h
+	add	x7, x7, 960
+	addvl	x20, sp, #10
+	uzp1	z28.h, z31.h, z2.h
+	str	z28, [x7]
+	add	x20, x20, 1024
+	addvl	x14, sp, #10
+	uzp2	z20.h, z22.h, z27.h
+	str	z20, [x20]
+	add	x14, x14, 1088
+	addvl	x21, sp, #10
+	uzp2	z0.h, z24.h, z26.h
+	str	z0, [x14]
+	add	x21, x21, 1152
+	addvl	x5, sp, #10
+	uzp2	z8.h, z17.h, z30.h
+	str	z8, [x21]
+	add	x5, x5, 1216
+	uzp2	z3.h, z31.h, z2.h
+	str	z3, [x5]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x17, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d17, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z9.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x17, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z10.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x17, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z11.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x17, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z12.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x17, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x17, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z14.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x17, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z15.h, z19.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x17, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z16.h, z7.h
+// 0 "" 2
+#NO_APP
+	adrp	x17, _ZL6CDOT_O+256
+	add	x18, x17, :lo12:_ZL6CDOT_O+256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d0, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z9.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z10.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z11.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z12.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x18, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z13.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z14.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z16.h, z25.h
+// 0 "" 2
+#NO_APP
+	adrp	x10, _ZL6CDOT_O+512
+	add	x8, x10, :lo12:_ZL6CDOT_O+512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d19, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z9.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z10.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z28.h, p7/z, [x8, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z28.h
+	sdot z19.s, z11.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x8, #3, MUL VL]
+	ld1h z20.h, p7/z, [x8, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z14.h
+	sdot z19.s, z12.h, z20.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x8, #4, MUL VL]
+	ld1h z8.h, p7/z, [x8, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z7.h
+	sdot z19.s, z13.h, z8.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x8, #5, MUL VL]
+	ld1h z3.h, p7/z, [x8, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z20.h
+	sdot z19.s, z14.h, z3.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x8, #6, MUL VL]
+	ld1h z4.h, p7/z, [x8, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z16.h, z21.h
+	sdot z19.s, z15.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x8, #7, MUL VL]
+	ld1h z18.h, p7/z, [x8, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z8.h
+	sdot z19.s, z16.h, z18.h
 // 0 "" 2
 #NO_APP
 	adrp	x4, _ZL6CDOT_O+768
 	add	x7, x4, :lo12:_ZL6CDOT_O+768
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x7, #0, MUL VL]
+	ld1h z29.h, p7/z, [x7, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z19.d, z31.d
+	movi	d20, #0
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z12.h
+	sdot z20.s, z9.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x7, #1, MUL VL]
+	ld1h z1.h, p7/z, [x7, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z22.h
+	sdot z20.s, z10.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x7, #2, MUL VL]
+	ld1h z6.h, p7/z, [x7, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z10.h
+	sdot z20.s, z11.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x7, #3, MUL VL]
+	ld1h z5.h, p7/z, [x7, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z23.h
+	sdot z20.s, z12.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x7, #4, MUL VL]
+	ld1h z7.h, p7/z, [x7, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z24.h
+	sdot z20.s, z13.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x7, #5, MUL VL]
+	ld1h z22.h, p7/z, [x7, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z13.h
+	sdot z20.s, z14.h, z22.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x7, #6, MUL VL]
+	ld1h z27.h, p7/z, [x7, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z16.h, z11.h
+	sdot z20.s, z15.h, z27.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x7, #7, MUL VL]
+	ld1h z21.h, p7/z, [x7, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z25.h
+	sdot z20.s, z16.h, z21.h
 // 0 "" 2
 #NO_APP
-	adrp	x6, _ZL6CDOT_O+1024
-	add	x6, x6, :lo12:_ZL6CDOT_O+1024
+	adrp	x20, _ZL6CDOT_O+1024
+	add	x14, x20, :lo12:_ZL6CDOT_O+1024
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x6, #0, MUL VL]
+	ld1h z24.h, p7/z, [x14, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z20.d, z31.d
+	movi	d21, #0
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z26.h
+	sdot z21.s, z9.h, z24.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x6, #1, MUL VL]
+	ld1h z26.h, p7/z, [x14, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z15.h
+	sdot z21.s, z10.h, z26.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x6, #2, MUL VL]
+	ld1h z23.h, p7/z, [x14, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z27.h
+	sdot z21.s, z11.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x6, #3, MUL VL]
+	ld1h z30.h, p7/z, [x14, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z9.h
+	sdot z21.s, z12.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x6, #4, MUL VL]
+	ld1h z25.h, p7/z, [x14, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z17.h
+	sdot z21.s, z13.h, z25.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x6, #5, MUL VL]
+	ld1h z31.h, p7/z, [x14, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z28.h
+	sdot z21.s, z14.h, z31.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #6, MUL VL]
+	ld1h z2.h, p7/z, [x14, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z16.h, z14.h
+	sdot z21.s, z15.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #7, MUL VL]
+	ld1h z28.h, p7/z, [x14, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z7.h
+	sdot z21.s, z16.h, z28.h
 // 0 "" 2
 #NO_APP
-	adrp	x17, _ZL6CDOT_O+1280
-	add	x5, x17, :lo12:_ZL6CDOT_O+1280
+	adrp	x21, _ZL6CDOT_O+1280
+	add	x5, x21, :lo12:_ZL6CDOT_O+1280
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z8.h, p7/z, [x5, #0, MUL VL]
 // 0 "" 2
 #NO_APP
+	movi	d22, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z9.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z10.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z11.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z12.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z13.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z15.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z16.h, z5.h
+// 0 "" 2
+#NO_APP
+	adrp	x17, _ZL6CDOT_O+1536
+	add	x18, x17, :lo12:_ZL6CDOT_O+1536
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d23, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z10.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z11.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z12.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x18, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z13.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z14.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z15.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z16.h, z2.h
+// 0 "" 2
+#NO_APP
+	adrp	x10, _ZL6CDOT_O+1792
+	add	x8, x10, :lo12:_ZL6CDOT_O+1792
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d24, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z9.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z10.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z11.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z12.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z13.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z14.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z15.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x8, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z16.h, z6.h
+// 0 "" 2
+#NO_APP
+	adrp	x4, _ZL6CDOT_O+2048
+	add	x7, x4, :lo12:_ZL6CDOT_O+2048
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d25, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z9.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z10.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z11.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z12.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z13.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z14.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z15.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z16.h, z28.h
+// 0 "" 2
+#NO_APP
+	adrp	x20, _ZL6CDOT_O+2304
+	add	x14, x20, :lo12:_ZL6CDOT_O+2304
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d26, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z9.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z10.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z11.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z12.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z13.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z15.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z16.h, z5.h
+// 0 "" 2
+#NO_APP
+	adrp	x21, _ZL6CDOT_O+2560
+	add	x5, x21, :lo12:_ZL6CDOT_O+2560
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d27, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z10.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z11.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z12.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z13.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z14.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z15.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z16.h, z4.h
+// 0 "" 2
+#NO_APP
+	adrp	x17, _ZL6CDOT_O+2816
+	add	x18, x17, :lo12:_ZL6CDOT_O+2816
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d28, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z9.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z10.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z11.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z12.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x18, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z13.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z14.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z15.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z16.h, z31.h
+// 0 "" 2
+#NO_APP
+	adrp	x10, _ZL6CDOT_O+3072
+	add	x8, x10, :lo12:_ZL6CDOT_O+3072
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d29, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z9.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z10.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z11.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z12.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z13.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z15.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x8, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z16.h, z5.h
+// 0 "" 2
+#NO_APP
+	adrp	x4, _ZL6CDOT_O+3328
+	add	x7, x4, :lo12:_ZL6CDOT_O+3328
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d30, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z10.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z11.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z12.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z13.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z14.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z15.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z16.h, z1.h
+// 0 "" 2
+#NO_APP
+	adrp	x20, _ZL6CDOT_O+3584
+	add	x14, x20, :lo12:_ZL6CDOT_O+3584
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d5, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z9.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z10.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z11.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z12.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z13.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z14.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z15.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z16.h, z18.h
+// 0 "" 2
+#NO_APP
+	add	x21, sp, 224
+	str	z5, [x21]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d6, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z9.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z10.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z11.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z12.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x23, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z13.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x23, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z14.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x23, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z15.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x23, #7, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z5.d, z6.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z16.h, z15.h
+// 0 "" 2
+#NO_APP
+	addvl	x23, sp, #1
+	add	x5, x0, 160
+	ldr	z16, [x5]
+	add	x23, x23, 224
+	add	x17, x0, 416
+	ldr	z7, [x17]
+	add	x18, x0, 672
+	ldr	z2, [x18]
+	add	x10, x0, 928
+	ldr	z31, [x10]
+	add	x8, x0, 1184
+	ldr	z8, [x8]
+	add	x4, x0, 1440
+	ldr	z3, [x4]
+	add	x7, x0, 1696
+	ldr	z4, [x7]
+	add	x20, x0, 1952
+	ldr	z1, [x20]
+	zip1	z18.h, z16.h, z7.h
+	zip1	z9.h, z2.h, z31.h
+	zip1	z10.h, z8.h, z3.h
+	zip1	z11.h, z4.h, z1.h
+	str	z5, [x23]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d8, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z18.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z9.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z10.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z11.h, z14.h
+// 0 "" 2
+#NO_APP
+	addvl	x3, sp, #2
+	add	x3, x3, 224
+	str	z8, [x3]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d1, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z18.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z9.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z10.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z11.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x22, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d2, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z18.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x22, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z9.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x22, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z10.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x22, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z11.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d3, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z18.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z9.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z10.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z11.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x26, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d4, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z18.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x26, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z9.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x26, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z10.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x26, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z11.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x28, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d5, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z18.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x28, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z9.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x28, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z10.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x28, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z11.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d6, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z18.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z9.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z10.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z11.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d7, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z18.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z9.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z10.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z11.h, z10.h
+// 0 "" 2
+#NO_APP
+	add	x30, x0, 288
+	ldr	z11, [x30]
+	add	x22, x0, 800
+	ldr	z12, [x22]
+	add	x24, x0, 1312
+	ldr	z13, [x24]
+	add	x26, x0, 1824
+	ldr	z14, [x26]
+	zip1	z8.h, z11.h, z12.h
+	zip1	z31.h, z13.h, z14.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d18, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z8.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z31.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d13, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z8.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z31.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x25, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d14, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z8.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x25, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z31.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d15, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z8.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z31.h, z8.h
+// 0 "" 2
+#NO_APP
+	add	x28, x0, 544
+	ldr	z31, [x28]
+	add	x12, x0, 1568
+	ldr	z9, [x12]
+	zip1	z12.h, z31.h, z9.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d10, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z12.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d11, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z12.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x6, x0, 32
+	ldr	z8, [x6]
+	add	x9, x0, 1056
+	ldr	z31, [x9]
+	zip1	z9.h, z8.h, z31.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d16, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z9.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d31, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z9.h, z8.h
+// 0 "" 2
+#NO_APP
+	add	z9.s, z16.s, z10.s
+	addvl	x20, sp, #2
+	sub	z16.s, z16.s, z10.s
+	add	z10.s, z31.s, z11.s
+	sub	z8.s, z31.s, z11.s
+	add	z12.s, z10.s, z13.s
+	add	z11.s, z9.s, z18.s
+	add	x20, x20, 224
+	sub	z18.s, z9.s, z18.s
+	sub	z9.s, z10.s, z13.s
+	ldr	z10, [x20]
+	add	z13.s, z8.s, z14.s
+	sub	z31.s, z8.s, z14.s
+	add	z8.s, z12.s, z1.s
+	add	z14.s, z16.s, z15.s
+	sub	z12.s, z12.s, z1.s
+	sub	z16.s, z16.s, z15.s
+	add	z1.s, z13.s, z2.s
+	add	z15.s, z11.s, z10.s
+	sub	z13.s, z13.s, z2.s
+	sub	z11.s, z11.s, z10.s
+	add	z2.s, z14.s, z3.s
+	sub	z10.s, z9.s, z6.s
+	sub	z14.s, z14.s, z3.s
+	add	z3.s, z16.s, z4.s
+	sub	z16.s, z16.s, z4.s
+	add	z4.s, z31.s, z5.s
+	sub	z31.s, z31.s, z5.s
+	add	z5.s, z9.s, z6.s
+	add	z6.s, z18.s, z7.s
+	sub	z9.s, z18.s, z7.s
+	add	z7.s, z15.s, z17.s
+	sub	z18.s, z15.s, z17.s
+	sqrshrnb	z17.h, z7.s, #7
+	sqrshrnb	z15.h, z18.s, #7
+	add	z7.s, z8.s, z0.s
+	uzp1	z18.h, z15.h, z15.h
+	sub	z0.s, z8.s, z0.s
+	sqrshrnb	z8.h, z7.s, #7
+	sqrshrnb	z7.h, z0.s, #7
+	uzp1	z15.h, z8.h, z8.h
+	uzp1	z0.h, z7.h, z7.h
+	splice	z0.h, p4, z0.h, z18.h
+	add	z18.s, z1.s, z19.s
+	uzp1	z17.h, z17.h, z17.h
+	sub	z1.s, z1.s, z19.s
+	splice	z17.h, p4, z17.h, z15.h
+	sqrshrnb	z19.h, z18.s, #7
+	sqrshrnb	z15.h, z1.s, #7
+	uzp1	z8.h, z19.h, z19.h
+	uzp1	z7.h, z15.h, z15.h
+	add	z18.s, z2.s, z20.s
+	sub	z2.s, z2.s, z20.s
+	sqrshrnb	z20.h, z18.s, #7
+	sqrshrnb	z19.h, z2.s, #7
+	uzp1	z1.h, z20.h, z20.h
+	movprfx	z15, z8
+	splice	z15.h, p4, z15.h, z1.h
+	uzp1	z8.h, z19.h, z19.h
+	uzp2	z2.h, z17.h, z15.h
+	splice	z8.h, p4, z8.h, z7.h
+	uzp1	z7.h, z17.h, z15.h
+	add	z17.s, z3.s, z21.s
+	sub	z3.s, z3.s, z21.s
+	sqrshrnb	z21.h, z17.s, #7
+	sqrshrnb	z18.h, z3.s, #7
+	add	z15.s, z4.s, z22.s
+	uzp1	z1.h, z18.h, z18.h
+	sub	z4.s, z4.s, z22.s
+	uzp1	z20.h, z21.h, z21.h
+	sqrshrnb	z22.h, z15.s, #7
+	add	z21.s, z5.s, z23.s
+	uzp1	z19.h, z22.h, z22.h
+	sqrshrnb	z17.h, z4.s, #7
+	splice	z20.h, p4, z20.h, z19.h
+	sub	z5.s, z5.s, z23.s
+	add	z4.s, z6.s, z24.s
+	sqrshrnb	z23.h, z21.s, #7
+	sub	z6.s, z6.s, z24.s
+	uzp1	z18.h, z23.h, z23.h
+	sqrshrnb	z24.h, z4.s, #7
+	uzp1	z3.h, z17.h, z17.h
+	uzp1	z22.h, z24.h, z24.h
+	splice	z3.h, p4, z3.h, z1.h
+	movprfx	z19, z18
+	splice	z19.h, p4, z19.h, z22.h
+	sqrshrnb	z1.h, z5.s, #7
+	uzp1	z21.h, z20.h, z19.h
+	uzp1	z15.h, z1.h, z1.h
+	uzp1	z23.h, z7.h, z21.h
+	sqrshrnb	z17.h, z6.s, #7
+	uzp2	z7.h, z7.h, z21.h
+	add	z18.s, z9.s, z25.s
+	add	z21.s, z16.s, z28.s
+	sub	z9.s, z9.s, z25.s
+	add	z6.s, z10.s, z26.s
+	sqrshrnb	z25.h, z18.s, #7
+	sub	z10.s, z10.s, z26.s
+	sub	z16.s, z16.s, z28.s
+	sqrshrnb	z26.h, z6.s, #7
+	add	z28.s, z14.s, z29.s
+	addvl	x22, sp, #1
+	uzp1	z5.h, z17.h, z17.h
+	splice	z5.h, p4, z5.h, z15.h
+	sqrshrnb	z15.h, z9.s, #7
+	uzp1	z4.h, z15.h, z15.h
+	uzp2	z20.h, z20.h, z19.h
+	add	z17.s, z31.s, z27.s
+	add	x3, sp, 224
+	uzp1	z1.h, z25.h, z25.h
+	uzp1	z24.h, z26.h, z26.h
+	add	z25.s, z13.s, z30.s
+	sqrshrnb	z19.h, z10.s, #7
+	sub	z31.s, z31.s, z27.s
+	ldr	z27, [x3]
+	sqrshrnb	z6.h, z25.s, #7
+	add	x22, x22, 224
+	ldr	z18, [x22]
+	addvl	x24, sp, #10
+	uzp1	z9.h, z19.h, z19.h
+	sub	z14.s, z14.s, z29.s
+	splice	z9.h, p4, z9.h, z4.h
+	add	z29.s, z11.s, z18.s
+	sqrshrnb	z4.h, z28.s, #7
+	sqrshrnb	z26.h, z29.s, #7
+	sub	z13.s, z13.s, z30.s
+	add	z30.s, z12.s, z27.s
+	sqrshrnb	z10.h, z30.s, #7
+	uzp1	z28.h, z10.h, z10.h
+	movprfx	z22, z1
+	splice	z22.h, p4, z22.h, z24.h
+	sqrshrnb	z15.h, z21.s, #7
+	sqrshrnb	z1.h, z17.s, #7
+	uzp1	z19.h, z15.h, z15.h
+	uzp1	z21.h, z6.h, z6.h
+	add	x24, x24, 1248
+	addvl	x26, sp, #10
+	sub	z12.s, z12.s, z27.s
+	uzp1	z24.h, z1.h, z1.h
+	uzp1	z27.h, z26.h, z26.h
+	splice	z24.h, p4, z24.h, z19.h
+	movprfx	z25, z28
+	splice	z25.h, p4, z25.h, z27.h
+	uzp1	z17.h, z4.h, z4.h
+	sub	z11.s, z11.s, z18.s
+	splice	z17.h, p4, z17.h, z21.h
+	uzp1	z4.h, z22.h, z24.h
+	uzp1	z6.h, z17.h, z25.h
+	uzp1	z28.h, z4.h, z6.h
+	uzp1	z26.h, z23.h, z28.h
+	str	z26, [x24]
+	uzp1	z21.h, z2.h, z20.h
+	uzp2	z29.h, z17.h, z25.h
+	sqrshrnb	z18.h, z11.s, #7
+	uzp2	z22.h, z22.h, z24.h
+	add	x26, x26, 1312
+	uzp1	z17.h, z22.h, z29.h
+	addvl	x28, sp, #10
+	uzp1	z11.h, z21.h, z17.h
+	sqrshrnb	z12.h, z12.s, #7
+	str	z11, [x26]
+	uzp2	z27.h, z4.h, z6.h
+	sqrshrnb	z30.h, z16.s, #7
+	add	x28, x28, 1376
+	uzp1	z16.h, z12.h, z12.h
+	addvl	x12, sp, #10
+	uzp1	z12.h, z7.h, z27.h
+	str	z12, [x28]
+	uzp2	z24.h, z22.h, z29.h
+	uzp2	z2.h, z2.h, z20.h
+	sqrshrnb	z1.h, z31.s, #7
+	add	x12, x12, 1440
+	addvl	x6, sp, #10
+	uzp1	z31.h, z18.h, z18.h
+	uzp1	z18.h, z2.h, z24.h
+	str	z18, [x12]
+	uzp2	z23.h, z23.h, z28.h
+	add	x6, x6, 1504
+	addvl	x9, sp, #10
+	adrp	x16, _ZL6CDOT_O
+	sqrshrnb	z13.h, z13.s, #7
+	str	z23, [x6]
+	add	x30, x16, :lo12:_ZL6CDOT_O
+	add	x9, x9, 1568
+	addvl	x16, sp, #10
+	uzp1	z15.h, z13.h, z13.h
+	uzp2	z13.h, z21.h, z17.h
+	str	z13, [x9]
+	uzp2	z7.h, z7.h, z27.h
+	add	x16, x16, 1632
+	addvl	x20, sp, #10
+	sqrshrnb	z14.h, z14.s, #7
+	str	z7, [x16]
+	uzp1	z20.h, z14.h, z14.h
+	add	x20, x20, 1696
+	uzp2	z14.h, z2.h, z24.h
+	addvl	x3, sp, #10
+	str	z14, [x20]
+	uzp1	z19.h, z8.h, z0.h
+	splice	z15.h, p4, z15.h, z20.h
+	splice	z31.h, p4, z31.h, z16.h
+	uzp1	z10.h, z5.h, z3.h
+	uzp2	z0.h, z8.h, z0.h
+	uzp2	z3.h, z5.h, z3.h
+	uzp1	z8.h, z31.h, z15.h
+	uzp1	z5.h, z10.h, z19.h
+	add	x3, x3, 1280
+	addvl	x22, sp, #10
+	uzp1	z25.h, z30.h, z30.h
+	uzp1	z30.h, z1.h, z1.h
+	splice	z25.h, p4, z25.h, z30.h
+	uzp1	z16.h, z25.h, z9.h
+	uzp1	z4.h, z8.h, z16.h
+	uzp1	z6.h, z4.h, z5.h
+	str	z6, [x3]
+	uzp2	z31.h, z31.h, z15.h
+	uzp2	z9.h, z25.h, z9.h
+	uzp1	z15.h, z3.h, z0.h
+	uzp1	z22.h, z31.h, z9.h
+	add	x22, x22, 1344
+	uzp1	z29.h, z22.h, z15.h
+	addvl	x24, sp, #10
+	str	z29, [x22]
+	uzp2	z1.h, z10.h, z19.h
+	add	x24, x24, 1408
+	uzp2	z10.h, z8.h, z16.h
+	addvl	x26, sp, #10
+	uzp1	z21.h, z10.h, z1.h
+	str	z21, [x24]
+	uzp2	z17.h, z3.h, z0.h
+	uzp2	z28.h, z31.h, z9.h
+	add	x26, x26, 1472
+	addvl	x28, sp, #10
+	uzp1	z27.h, z28.h, z17.h
+	str	z27, [x26]
+	uzp2	z2.h, z4.h, z5.h
+	add	x28, x28, 1536
+	addvl	x12, sp, #10
+	str	z2, [x28]
+	add	x25, x0, 112
+	uzp2	z24.h, z22.h, z15.h
+	add	x12, x12, 1600
+	addvl	x6, sp, #10
+	str	z24, [x12]
+	uzp2	z19.h, z10.h, z1.h
+	add	x27, x0, 240
+	add	x17, x0, 1264
+	add	x5, x0, 1776
+	add	x6, x6, 1664
+	str	z19, [x6]
+	ldr	z3, [x25]
+	ldr	z5, [x27]
+	ldr	z7, [x17]
+	ldr	z1, [x5]
+	addvl	x25, sp, #10
+	zip1	z4.h, z3.h, z5.h
+	add	x19, x0, 368
+	ldr	z18, [x19]
+	add	x15, x0, 496
+	ldr	z23, [x15]
+	add	x14, x0, 624
+	ldr	z11, [x14]
+	add	x13, x0, 752
+	ldr	z25, [x13]
+	add	x21, x0, 880
+	ldr	z12, [x21]
+	add	x11, x0, 1008
+	ldr	z26, [x11]
+	add	x23, x0, 1136
+	ldr	z13, [x23]
+	add	x18, x0, 1392
+	ldr	z14, [x18]
+	add	x10, x0, 1520
+	ldr	z0, [x10]
+	add	x8, x0, 1648
+	ldr	z8, [x8]
+	add	x4, x0, 1904
+	ldr	z16, [x4]
+	add	x7, x0, 2032
+	ldr	z30, [x7]
+	add	x25, x25, 1728
+	uzp2	z20.h, z28.h, z17.h
+	zip1	z5.h, z13.h, z7.h
+	zip1	z15.h, z8.h, z1.h
+	zip1	z6.h, z18.h, z23.h
+	zip1	z2.h, z11.h, z25.h
+	zip1	z3.h, z12.h, z26.h
+	zip1	z7.h, z14.h, z0.h
+	zip1	z1.h, z16.h, z30.h
+	str	z20, [x25]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d31, #0
+	mov	z18.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z4.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z6.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z2.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x30, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z5.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x30, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z7.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x30, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z15.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x30, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z1.h, z27.h
+// 0 "" 2
+#NO_APP
+	adrp	x27, _ZL6CDOT_O+256
+	add	x15, x27, :lo12:_ZL6CDOT_O+256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z19.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z4.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z6.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x15, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z2.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x15, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z3.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x15, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z5.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x15, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z7.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x15, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z15.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x15, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z1.h, z13.h
+// 0 "" 2
+#NO_APP
+	adrp	x19, _ZL6CDOT_O+512
+	add	x14, x19, :lo12:_ZL6CDOT_O+512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z20.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z6.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z2.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z3.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z5.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z7.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z15.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z1.h, z29.h
+// 0 "" 2
+#NO_APP
+	adrp	x13, _ZL6CDOT_O+768
+	add	x21, x13, :lo12:_ZL6CDOT_O+768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x21, #0, MUL VL]
+// 0 "" 2
+#NO_APP
 	mov	z21.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z8.h
+	sdot z21.s, z4.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #1, MUL VL]
+	ld1h z28.h, p7/z, [x21, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z12.h
+	sdot z21.s, z6.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x5, #2, MUL VL]
+	ld1h z17.h, p7/z, [x21, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z22.h
+	sdot z21.s, z2.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #3, MUL VL]
+	ld1h z27.h, p7/z, [x21, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z10.h
+	sdot z21.s, z3.h, z27.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x5, #4, MUL VL]
+	ld1h z24.h, p7/z, [x21, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z23.h
+	sdot z21.s, z5.h, z24.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x5, #5, MUL VL]
+	ld1h z23.h, p7/z, [x21, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z24.h
+	sdot z21.s, z7.h, z23.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #6, MUL VL]
+	ld1h z11.h, p7/z, [x21, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z16.h, z13.h
+	sdot z21.s, z15.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #7, MUL VL]
+	ld1h z25.h, p7/z, [x21, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z11.h
+	sdot z21.s, z1.h, z25.h
 // 0 "" 2
 #NO_APP
-	adrp	x0, _ZL6CDOT_O+1536
-	add	x4, x0, :lo12:_ZL6CDOT_O+1536
+	adrp	x11, _ZL6CDOT_O+1024
+	add	x23, x11, :lo12:_ZL6CDOT_O+1024
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x4, #0, MUL VL]
+	ld1h z12.h, p7/z, [x23, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z22.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z25.h
+	sdot z22.s, z4.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x4, #1, MUL VL]
+	ld1h z26.h, p7/z, [x23, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z26.h
+	sdot z22.s, z6.h, z26.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #2, MUL VL]
+	ld1h z13.h, p7/z, [x23, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z15.h
+	sdot z22.s, z2.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x4, #3, MUL VL]
+	ld1h z14.h, p7/z, [x23, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z27.h
+	sdot z22.s, z3.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x4, #4, MUL VL]
+	ld1h z0.h, p7/z, [x23, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z9.h
+	sdot z22.s, z5.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x4, #5, MUL VL]
+	ld1h z8.h, p7/z, [x23, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z17.h
+	sdot z22.s, z7.h, z8.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x4, #6, MUL VL]
+	ld1h z16.h, p7/z, [x23, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z16.h, z28.h
+	sdot z22.s, z15.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #7, MUL VL]
+	ld1h z30.h, p7/z, [x23, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z14.h
+	sdot z22.s, z1.h, z30.h
 // 0 "" 2
 #NO_APP
-	adrp	x13, _ZL6CDOT_O+1792
-	add	x3, x13, :lo12:_ZL6CDOT_O+1792
+	adrp	x17, _ZL6CDOT_O+1280
+	add	x16, x17, :lo12:_ZL6CDOT_O+1280
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x3, #0, MUL VL]
+	ld1h z9.h, p7/z, [x16, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z23.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z7.h
+	sdot z23.s, z4.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x3, #1, MUL VL]
+	ld1h z29.h, p7/z, [x16, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z8.h
+	sdot z23.s, z6.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x3, #2, MUL VL]
+	ld1h z10.h, p7/z, [x16, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z12.h
+	sdot z23.s, z2.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x3, #3, MUL VL]
+	ld1h z28.h, p7/z, [x16, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z10.h
+	sdot z23.s, z3.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x3, #4, MUL VL]
+	ld1h z17.h, p7/z, [x16, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z24.h
+	sdot z23.s, z5.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x3, #5, MUL VL]
+	ld1h z27.h, p7/z, [x16, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z13.h
+	sdot z23.s, z7.h, z27.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x3, #6, MUL VL]
+	ld1h z24.h, p7/z, [x16, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z16.h, z11.h
+	sdot z23.s, z15.h, z24.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x3, #7, MUL VL]
+	ld1h z11.h, p7/z, [x16, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z25.h
+	sdot z23.s, z1.h, z11.h
 // 0 "" 2
 #NO_APP
-	adrp	x16, _ZL6CDOT_O+2048
-	add	x17, x16, :lo12:_ZL6CDOT_O+2048
+	adrp	x18, _ZL6CDOT_O+1536
+	add	x10, x18, :lo12:_ZL6CDOT_O+1536
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x17, #0, MUL VL]
+	ld1h z25.h, p7/z, [x10, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z24.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z26.h
+	sdot z24.s, z4.h, z25.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x17, #1, MUL VL]
+	ld1h z12.h, p7/z, [x10, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z15.h
+	sdot z24.s, z6.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x17, #2, MUL VL]
+	ld1h z26.h, p7/z, [x10, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z27.h
+	sdot z24.s, z2.h, z26.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x17, #3, MUL VL]
+	ld1h z13.h, p7/z, [x10, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z9.h
+	sdot z24.s, z3.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #4, MUL VL]
+	ld1h z14.h, p7/z, [x10, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z17.h
+	sdot z24.s, z5.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x17, #5, MUL VL]
+	ld1h z0.h, p7/z, [x10, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z28.h
+	sdot z24.s, z7.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x17, #6, MUL VL]
+	ld1h z8.h, p7/z, [x10, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z16.h, z14.h
+	sdot z24.s, z15.h, z8.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x17, #7, MUL VL]
+	ld1h z16.h, p7/z, [x10, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z7.h
+	sdot z24.s, z1.h, z16.h
 // 0 "" 2
 #NO_APP
-	adrp	x0, _ZL6CDOT_O+2304
-	add	x13, x0, :lo12:_ZL6CDOT_O+2304
+	adrp	x8, _ZL6CDOT_O+1792
+	add	x9, x8, :lo12:_ZL6CDOT_O+1792
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x13, #0, MUL VL]
+	ld1h z30.h, p7/z, [x9, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z25.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z8.h
+	sdot z25.s, z4.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x13, #1, MUL VL]
+	ld1h z9.h, p7/z, [x9, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z12.h
+	sdot z25.s, z6.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x13, #2, MUL VL]
+	ld1h z29.h, p7/z, [x9, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z10.h
+	sdot z25.s, z2.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #3, MUL VL]
+	ld1h z10.h, p7/z, [x9, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z13.h
+	sdot z25.s, z3.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #4, MUL VL]
+	ld1h z28.h, p7/z, [x9, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z11.h
+	sdot z25.s, z5.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x13, #5, MUL VL]
+	ld1h z17.h, p7/z, [x9, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z26.h
+	sdot z25.s, z7.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #6, MUL VL]
+	ld1h z27.h, p7/z, [x9, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z16.h, z15.h
+	sdot z25.s, z15.h, z27.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x13, #7, MUL VL]
+	ld1h z11.h, p7/z, [x9, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z27.h
+	sdot z25.s, z1.h, z11.h
 // 0 "" 2
 #NO_APP
-	adrp	x16, _ZL6CDOT_O+2560
-	add	x17, x16, :lo12:_ZL6CDOT_O+2560
+	adrp	x5, _ZL6CDOT_O+2048
+	add	x22, x5, :lo12:_ZL6CDOT_O+2048
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x17, #0, MUL VL]
+	ld1h z12.h, p7/z, [x22, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z26.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z9.h
+	sdot z26.s, z4.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #1, MUL VL]
+	ld1h z13.h, p7/z, [x22, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z17.h
+	sdot z26.s, z6.h, z13.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x17, #2, MUL VL]
+	ld1h z14.h, p7/z, [x22, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z28.h
+	sdot z26.s, z2.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x17, #3, MUL VL]
+	ld1h z0.h, p7/z, [x22, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z14.h
+	sdot z26.s, z3.h, z0.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x17, #4, MUL VL]
+	ld1h z8.h, p7/z, [x22, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z7.h
+	sdot z26.s, z5.h, z8.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #5, MUL VL]
+	ld1h z16.h, p7/z, [x22, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z8.h
+	sdot z26.s, z7.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x17, #6, MUL VL]
+	ld1h z30.h, p7/z, [x22, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z16.h, z12.h
+	sdot z26.s, z15.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x17, #7, MUL VL]
+	ld1h z9.h, p7/z, [x22, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z10.h
+	sdot z26.s, z1.h, z9.h
 // 0 "" 2
 #NO_APP
-	adrp	x0, _ZL6CDOT_O+2816
-	add	x13, x0, :lo12:_ZL6CDOT_O+2816
+	adrp	x4, _ZL6CDOT_O+2304
+	add	x7, x4, :lo12:_ZL6CDOT_O+2304
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #0, MUL VL]
+	ld1h z29.h, p7/z, [x7, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z27.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z13.h
+	sdot z27.s, z4.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #1, MUL VL]
+	ld1h z10.h, p7/z, [x7, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z11.h
+	sdot z27.s, z6.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x13, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x13, #5, MUL VL]
+	ld1h z28.h, p7/z, [x7, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z27.s, z2.h, z28.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x13, #6, MUL VL]
+	ld1h z17.h, p7/z, [x7, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z16.h, z14.h
+	sdot z27.s, z3.h, z17.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x13, #7, MUL VL]
+	ld1h z11.h, p7/z, [x7, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z7.h
+	sdot z27.s, z5.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z7.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z15.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z1.h, z14.h
 // 0 "" 2
 #NO_APP
-	adrp	x16, _ZL6CDOT_O+3072
-	add	x17, x16, :lo12:_ZL6CDOT_O+3072
+	adrp	x20, _ZL6CDOT_O+2560
+	add	x24, x20, :lo12:_ZL6CDOT_O+2560
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #0, MUL VL]
+	ld1h z0.h, p7/z, [x24, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z28.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z4.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z28.s, z6.h, z8.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x17, #1, MUL VL]
+	ld1h z16.h, p7/z, [x24, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z12.h
+	sdot z28.s, z2.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x17, #2, MUL VL]
+	ld1h z30.h, p7/z, [x24, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z10.h
+	sdot z28.s, z3.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x17, #3, MUL VL]
+	ld1h z9.h, p7/z, [x24, #4, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z13.h
+	sdot z28.s, z5.h, z9.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x17, #4, MUL VL]
+	ld1h z29.h, p7/z, [x24, #5, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z11.h
+	sdot z28.s, z7.h, z29.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x17, #5, MUL VL]
+	ld1h z10.h, p7/z, [x24, #6, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z15.h
+	sdot z28.s, z15.h, z10.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x17, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z16.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #7, MUL VL]
+	ld1h z17.h, p7/z, [x24, #7, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z28.s, z1.h, z17.h
 // 0 "" 2
 #NO_APP
-	adrp	x0, _ZL6CDOT_O+3328
-	add	x13, x0, :lo12:_ZL6CDOT_O+3328
+	adrp	x3, _ZL6CDOT_O+2816
+	add	x26, x3, :lo12:_ZL6CDOT_O+2816
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x13, #0, MUL VL]
+	ld1h z11.h, p7/z, [x26, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z4.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x26, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z6.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x26, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z2.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x26, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z3.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x26, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z5.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x26, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z7.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x26, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z15.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x26, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z1.h, z9.h
+// 0 "" 2
+#NO_APP
+	adrp	x12, _ZL6CDOT_O+3072
+	add	x28, sp, 224
+	str	z12, [x28]
+	add	x6, x12, :lo12:_ZL6CDOT_O+3072
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z30.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z4.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z6.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z2.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z3.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z5.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z7.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z15.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z1.h, z0.h
+// 0 "" 2
+#NO_APP
+	adrp	x25, _ZL6CDOT_O+3328
+	add	x27, x25, :lo12:_ZL6CDOT_O+3328
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z16.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z4.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z6.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z2.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z5.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z7.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z15.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z13.h
+// 0 "" 2
+#NO_APP
+	addvl	x19, sp, #1
+	adrp	x13, _ZL6CDOT_O+3584
+	add	x19, x19, 224
+	add	x11, x13, :lo12:_ZL6CDOT_O+3584
+	str	z16, [x19]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z0.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z6.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x11, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z2.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x11, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z3.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x11, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x11, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z7.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x11, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x11, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z1.h, z11.h
+// 0 "" 2
+#NO_APP
+	adrp	x17, _ZL6CDOT_O+3840
+	add	x18, x17, :lo12:_ZL6CDOT_O+3840
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z4.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z6.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z2.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z3.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x18, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z7.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z15.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z8.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z1.h, z15.h
+// 0 "" 2
+#NO_APP
+	addvl	x8, sp, #2
+	add	x4, x0, 176
+	ldr	z1, [x4]
+	add	x8, x8, 224
+	add	x20, x0, 432
+	ldr	z9, [x20]
+	add	x3, x0, 688
+	ldr	z29, [x3]
+	add	x28, x0, 944
+	ldr	z10, [x28]
+	add	x12, x0, 1200
+	ldr	z16, [x12]
+	add	x25, x0, 1456
+	ldr	z14, [x25]
+	add	x27, x0, 1712
+	ldr	z17, [x27]
+	add	x19, x0, 1968
+	ldr	z11, [x19]
+	adrp	x5, .LANCHOR0
+	zip1	z4.h, z1.h, z9.h
+	zip1	z2.h, z29.h, z10.h
+	zip1	z3.h, z16.h, z14.h
+	zip1	z1.h, z17.h, z11.h
+	add	x13, x5, :lo12:.LANCHOR0
+	str	z13, [x8]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z4.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x13, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z2.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x13, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z3.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x13, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z1.h, z7.h
+// 0 "" 2
+#NO_APP
+	add	x11, x13, 128
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z9.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z4.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z2.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x11, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z3.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x11, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z1.h, z10.h
+// 0 "" 2
+#NO_APP
+	add	x17, x13, 256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x17, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z4.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x17, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z2.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x17, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z3.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x17, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z1.h, z11.h
+// 0 "" 2
+#NO_APP
+	add	x18, x13, 384
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z11.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z4.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z2.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z3.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z1.h, z7.h
+// 0 "" 2
+#NO_APP
+	add	x8, x13, 512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z4.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z2.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z3.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z1.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x5, x13, 640
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z2.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z3.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z1.h, z5.h
+// 0 "" 2
+#NO_APP
+	add	x4, x13, 768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z14.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z4.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z2.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z3.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z1.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x20, x13, 896
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x20, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z15.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z4.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x20, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z2.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x20, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z3.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x20, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z1.h, z3.h
+// 0 "" 2
+#NO_APP
+	add	x3, x0, 304
+	ldr	z6, [x3]
+	add	x28, x0, 816
+	ldr	z5, [x28]
+	add	x12, x0, 1328
+	ldr	z7, [x12]
+	add	x25, x0, 1840
+	ldr	z1, [x25]
+	add	x27, x13, 1024
+	zip1	z29.h, z6.h, z5.h
+	zip1	z17.h, z7.h, z1.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z4.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z29.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z17.h, z2.h
+// 0 "" 2
+#NO_APP
+	add	x19, x13, 1088
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z5.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z29.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x19, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z17.h, z1.h
+// 0 "" 2
+#NO_APP
+	add	x11, x13, 1152
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z6.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z29.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z17.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x17, x13, 1216
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x17, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z7.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z6.h, z14.h
+	sdot z7.s, z29.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x13, #1, MUL VL]
+	ld1h z29.h, p7/z, [x17, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x13, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x13, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x13, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x13, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z2.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x13, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z16.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x13, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z9.h
+	sdot z7.s, z17.h, z29.h
 // 0 "" 2
 #NO_APP
-	addvl	x16, sp, #7
-	adrp	x17, _ZL6CDOT_O+3584
-	add	x16, x16, 128
-	add	x0, x17, :lo12:_ZL6CDOT_O+3584
-	str	z7, [x16]
+	add	x8, x0, 560
+	ldr	z17, [x8]
+	add	x18, x0, 1584
+	ldr	z3, [x18]
+	add	x5, x13, 1280
+	zip1	z1.h, z17.h, z3.h
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x0, #0, MUL VL]
+	ld1h z16.h, p7/z, [x5, #0, MUL VL]
 // 0 "" 2
 #NO_APP
-	mov	z7.d, z31.d
+	mov	z2.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z6.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x0, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z4.h, z17.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x0, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z5.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x0, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x0, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x0, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x0, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z16.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x0, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z15.h
+	sdot z2.s, z1.h, z16.h
 // 0 "" 2
 #NO_APP
-	addvl	x13, sp, #8
-	adrp	x16, _ZL6CDOT_O+3840
-	add	x13, x13, 128
-	add	x17, x16, :lo12:_ZL6CDOT_O+3840
-	str	z7, [x13]
+	add	x4, x13, 1312
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x17, #0, MUL VL]
+	ld1h z29.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z3.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z1.h, z29.h
+// 0 "" 2
+#NO_APP
+	add	x20, x0, 48
+	ldr	z1, [x20]
+	add	x0, x0, 1072
+	ldr	z17, [x0]
+	add	x3, x13, 1344
+	zip1	z1.h, z1.h, z17.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x3, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z17.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x17, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x17, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x17, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z2.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x17, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z16.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x17, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z17.s, z1.h, z16.h
 // 0 "" 2
 #NO_APP
-	addvl	x0, sp, #9
-	addvl	x16, sp, #12
-	addvl	x17, sp, #12
-	add	x0, x0, 128
-	str	z17, [x0]
-	add	x16, x16, 288
-	add	x17, x17, 544
-	ldr	z1, [x16]
-	ldr	z14, [x17]
-	addvl	x0, sp, #12
-	addvl	x16, sp, #12
-	addvl	x17, sp, #12
-	add	x0, x0, 800
-	ldr	z12, [x0]
-	add	x16, x16, 1056
-	add	x17, x17, 1312
-	ldr	z10, [x16]
-	ldr	z8, [x17]
-	addvl	x0, sp, #12
-	addvl	x16, sp, #12
-	addvl	x17, sp, #12
-	add	x0, x0, 1568
-	ldr	z13, [x0]
-	add	x16, x16, 1824
-	ldr	z11, [x16]
-	add	x17, x17, 2080
-	ldr	z15, [x17]
-	adrp	x13, .LANCHOR0
-	zip1	z6.h, z1.h, z14.h
-	zip1	z7.h, z12.h, z10.h
-	zip1	z4.h, z8.h, z13.h
-	add	x13, x13, :lo12:.LANCHOR0
-	zip1	z3.h, z11.h, z15.h
+	add	x13, x13, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z16.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z29.h
+// 0 "" 2
+#NO_APP
+	add	z1.s, z17.s, z2.s
+	sub	z29.s, z16.s, z3.s
+	sub	z17.s, z17.s, z2.s
+	add	z2.s, z16.s, z3.s
+	sub	z16.s, z29.s, z6.s
+	add	z3.s, z1.s, z4.s
+	sub	z1.s, z1.s, z4.s
+	add	z4.s, z2.s, z5.s
+	sub	z2.s, z2.s, z5.s
+	add	z5.s, z29.s, z6.s
+	add	z6.s, z17.s, z7.s
+	sub	z29.s, z16.s, z13.s
+	sub	z17.s, z17.s, z7.s
+	add	z7.s, z3.s, z8.s
+	sub	z3.s, z3.s, z8.s
+	add	z8.s, z4.s, z9.s
+	sub	z4.s, z4.s, z9.s
+	add	z9.s, z5.s, z10.s
+	sub	z5.s, z5.s, z10.s
+	add	z10.s, z6.s, z11.s
+	sub	z6.s, z6.s, z11.s
+	add	z11.s, z17.s, z12.s
+	sub	z17.s, z17.s, z12.s
+	add	z12.s, z16.s, z13.s
+	add	z13.s, z2.s, z14.s
+	sub	z16.s, z7.s, z18.s
+	sub	z2.s, z2.s, z14.s
+	add	z14.s, z1.s, z15.s
+	sub	z1.s, z1.s, z15.s
+	add	z15.s, z7.s, z18.s
+	sqrshrnb	z7.h, z16.s, #7
+	sqrshrnb	z18.h, z15.s, #7
+	uzp1	z16.h, z7.h, z7.h
+	add	z15.s, z8.s, z19.s
+	sub	z19.s, z8.s, z19.s
+	sqrshrnb	z8.h, z15.s, #7
+	sqrshrnb	z15.h, z19.s, #7
+	uzp1	z7.h, z8.h, z8.h
+	uzp1	z8.h, z15.h, z15.h
+	splice	z8.h, p4, z8.h, z16.h
+	add	z16.s, z9.s, z20.s
+	sub	z9.s, z9.s, z20.s
+	sqrshrnb	z19.h, z9.s, #7
+	sqrshrnb	z20.h, z16.s, #7
+	uzp1	z15.h, z19.h, z19.h
+	add	z16.s, z10.s, z21.s
+	uzp1	z18.h, z18.h, z18.h
+	sub	z10.s, z10.s, z21.s
+	splice	z18.h, p4, z18.h, z7.h
+	sqrshrnb	z21.h, z16.s, #7
+	uzp1	z7.h, z20.h, z20.h
+	uzp1	z9.h, z21.h, z21.h
+	movprfx	z19, z7
+	splice	z19.h, p4, z19.h, z9.h
+	sqrshrnb	z20.h, z10.s, #7
+	uzp2	z10.h, z18.h, z19.h
+	uzp1	z7.h, z20.h, z20.h
+	splice	z7.h, p4, z7.h, z15.h
+	uzp1	z15.h, z18.h, z19.h
+	add	z18.s, z11.s, z22.s
+	add	z19.s, z12.s, z23.s
+	sub	z11.s, z11.s, z22.s
+	sub	z12.s, z12.s, z23.s
+	sqrshrnb	z22.h, z18.s, #7
+	sqrshrnb	z21.h, z11.s, #7
+	uzp1	z9.h, z21.h, z21.h
+	sqrshrnb	z23.h, z19.s, #7
+	sqrshrnb	z18.h, z12.s, #7
+	uzp1	z20.h, z23.h, z23.h
+	add	z12.s, z14.s, z25.s
+	uzp1	z16.h, z22.h, z22.h
+	uzp1	z11.h, z18.h, z18.h
+	splice	z16.h, p4, z16.h, z20.h
+	splice	z11.h, p4, z11.h, z9.h
+	add	z22.s, z13.s, z24.s
+	sub	z13.s, z13.s, z24.s
+	sqrshrnb	z24.h, z22.s, #7
+	sqrshrnb	z9.h, z13.s, #7
+	sub	z14.s, z14.s, z25.s
+	uzp1	z19.h, z9.h, z9.h
+	sqrshrnb	z25.h, z12.s, #7
+	sqrshrnb	z20.h, z14.s, #7
+	uzp1	z23.h, z25.h, z25.h
+	add	z22.s, z2.s, z27.s
+	uzp1	z21.h, z24.h, z24.h
+	splice	z21.h, p4, z21.h, z23.h
+	uzp1	z18.h, z16.h, z21.h
+	uzp2	z21.h, z16.h, z21.h
+	uzp1	z24.h, z15.h, z18.h
+	uzp2	z9.h, z15.h, z18.h
+	add	z15.s, z1.s, z26.s
+	sub	z1.s, z1.s, z26.s
+	sqrshrnb	z26.h, z15.s, #7
+	sqrshrnb	z16.h, z1.s, #7
+	uzp1	z12.h, z16.h, z16.h
+	add	x28, sp, 224
+	sub	z2.s, z2.s, z27.s
+	addvl	x12, sp, #1
+	sqrshrnb	z27.h, z22.s, #7
+	sqrshrnb	z25.h, z2.s, #7
+	uzp1	z14.h, z27.h, z27.h
+	addvl	x25, sp, #2
+	uzp1	z13.h, z20.h, z20.h
+	uzp1	z23.h, z25.h, z25.h
+	splice	z13.h, p4, z13.h, z19.h
+	splice	z23.h, p4, z23.h, z12.h
+	add	z20.s, z29.s, z28.s
+	uzp1	z19.h, z26.h, z26.h
+	ldr	z26, [x28]
+	splice	z19.h, p4, z19.h, z14.h
+	add	z16.s, z17.s, z26.s
+	sub	z29.s, z29.s, z28.s
+	sqrshrnb	z12.h, z16.s, #7
+	sqrshrnb	z28.h, z20.s, #7
+	sqrshrnb	z15.h, z29.s, #7
+	uzp1	z18.h, z28.h, z28.h
+	uzp1	z22.h, z12.h, z12.h
+	uzp1	z1.h, z15.h, z15.h
+	movprfx	z2, z18
+	splice	z2.h, p4, z2.h, z22.h
+	sub	z17.s, z17.s, z26.s
+	uzp1	z25.h, z19.h, z2.h
+	uzp2	z15.h, z19.h, z2.h
+	add	z18.s, z4.s, z0.s
+	add	z19.s, z6.s, z30.s
+	sqrshrnb	z27.h, z17.s, #7
+	sqrshrnb	z29.h, z19.s, #7
+	add	x12, x12, 224
+	add	x25, x25, 224
+	ldr	z20, [x25]
+	addvl	x27, sp, #10
+	sub	z6.s, z6.s, z30.s
+	ldr	z30, [x12]
+	uzp1	z12.h, z29.h, z29.h
+	add	z28.s, z5.s, z30.s
+	sqrshrnb	z16.h, z28.s, #7
+	uzp1	z22.h, z16.h, z16.h
+	splice	z12.h, p4, z12.h, z22.h
+	sqrshrnb	z17.h, z18.s, #7
+	add	x27, x27, 1760
+	addvl	x19, sp, #10
+	uzp1	z14.h, z27.h, z27.h
+	uzp1	z2.h, z17.h, z17.h
+	splice	z14.h, p4, z14.h, z1.h
+	add	z1.s, z3.s, z20.s
+	sub	z3.s, z3.s, z20.s
+	sqrshrnb	z26.h, z1.s, #7
+	uzp1	z27.h, z26.h, z26.h
+	splice	z2.h, p4, z2.h, z27.h
+	uzp1	z28.h, z12.h, z2.h
+	uzp2	z20.h, z12.h, z2.h
+	uzp1	z18.h, z25.h, z28.h
+	uzp1	z12.h, z13.h, z11.h
+	uzp2	z11.h, z13.h, z11.h
+	uzp1	z13.h, z24.h, z18.h
+	str	z13, [x27]
+	uzp1	z26.h, z14.h, z23.h
+	uzp1	z22.h, z10.h, z21.h
+	uzp1	z2.h, z15.h, z20.h
+	uzp2	z17.h, z14.h, z23.h
+	add	x19, x19, 1824
+	uzp1	z23.h, z22.h, z2.h
+	addvl	x11, sp, #10
+	str	z23, [x19]
+	sqrshrnb	z19.h, z3.s, #7
+	add	x11, x11, 1888
+	uzp2	z3.h, z25.h, z28.h
+	addvl	x17, sp, #10
+	uzp1	z14.h, z9.h, z3.h
+	str	z14, [x11]
+	uzp2	z25.h, z10.h, z21.h
+	uzp2	z29.h, z15.h, z20.h
+	add	x17, x17, 1952
+	uzp1	z15.h, z25.h, z29.h
+	addvl	x8, sp, #10
+	str	z15, [x17]
+	uzp2	z24.h, z24.h, z18.h
+	add	x8, x8, 2016
+	addvl	x18, sp, #10
+	str	z24, [x8]
+	uzp2	z16.h, z22.h, z2.h
+	add	x18, x18, 2080
+	addvl	x5, sp, #10
+	str	z16, [x18]
+	uzp2	z9.h, z9.h, z3.h
+	add	x5, x5, 2144
+	addvl	x4, sp, #10
+	str	z9, [x5]
+	add	x4, x4, 2208
+	addvl	x20, sp, #10
+	sub	z5.s, z5.s, z30.s
+	sub	z0.s, z4.s, z0.s
+	sqrshrnb	z6.h, z6.s, #7
+	sqrshrnb	z4.h, z0.s, #7
+	uzp1	z1.h, z19.h, z19.h
+	uzp1	z30.h, z4.h, z4.h
+	uzp2	z19.h, z25.h, z29.h
+	str	z19, [x4]
+	uzp1	z27.h, z7.h, z8.h
+	splice	z1.h, p4, z1.h, z30.h
+	uzp1	z21.h, z12.h, z27.h
+	uzp1	z10.h, z6.h, z6.h
+	add	x20, x20, 1792
+	addvl	x0, sp, #10
+	sqrshrnb	z5.h, z5.s, #7
+	uzp1	z0.h, z5.h, z5.h
+	splice	z0.h, p4, z0.h, z10.h
+	uzp1	z6.h, z1.h, z0.h
+	uzp1	z20.h, z6.h, z26.h
+	uzp1	z30.h, z20.h, z21.h
+	str	z30, [x20]
+	uzp2	z4.h, z12.h, z27.h
+	uzp2	z1.h, z1.h, z0.h
+	uzp2	z8.h, z7.h, z8.h
+	uzp1	z28.h, z1.h, z17.h
+	uzp1	z7.h, z11.h, z8.h
+	add	x0, x0, 1856
+	uzp1	z12.h, z28.h, z7.h
+	addvl	x3, sp, #10
+	str	z12, [x0]
+	uzp2	z22.h, z6.h, z26.h
+	add	x3, x3, 1920
+	uzp1	z26.h, z22.h, z4.h
+	addvl	x13, sp, #10
+	str	z26, [x3]
+	uzp2	z5.h, z11.h, z8.h
+	uzp2	z18.h, z1.h, z17.h
+	add	x13, x13, 1984
+	uzp1	z2.h, z18.h, z5.h
+	addvl	x28, sp, #10
+	str	z2, [x13]
+	uzp2	z3.h, z20.h, z21.h
+	add	x28, x28, 2048
+	addvl	x12, sp, #10
+	str	z3, [x28]
+	uzp2	z25.h, z28.h, z7.h
+	add	x12, x12, 2112
+	addvl	x25, sp, #10
+	str	z25, [x12]
+	uzp2	z27.h, z22.h, z4.h
+	add	x25, x25, 2176
+	addvl	x27, sp, #10
+	str	z27, [x25]
+	uzp2	z29.h, z18.h, z5.h
+	add	x19, sp, 224
+	add	x27, x27, 2240
+	addvl	x11, sp, #10
+	str	z29, [x19]
+	add	x11, x11, 288
+	addvl	x17, sp, #10
+	str	z29, [x27]
+	addvl	x8, sp, #10
+	addvl	x18, sp, #10
+	ldr	z0, [x11]
+	addvl	x5, sp, #10
+	addvl	x4, sp, #10
+	addvl	x20, sp, #10
+	addvl	x0, sp, #10
+	addvl	x3, sp, #10
+	addvl	x13, sp, #10
+	addvl	x28, sp, #10
+	addvl	x12, sp, #10
+	addvl	x25, sp, #10
+	addvl	x27, sp, #10
+	add	x17, x17, 416
+	ldr	z17, [x17]
+	add	x8, x8, 544
+	ldr	z21, [x8]
+	add	x18, x18, 672
+	ldr	z7, [x18]
+	add	x5, x5, 800
+	ldr	z10, [x5]
+	add	x4, x4, 928
+	ldr	z23, [x4]
+	add	x20, x20, 1056
+	ldr	z11, [x20]
+	add	x0, x0, 1184
+	ldr	z24, [x0]
+	add	x3, x3, 1312
+	ldr	z16, [x3]
+	add	x13, x13, 1440
+	ldr	z19, [x13]
+	add	x28, x28, 1568
+	ldr	z13, [x28]
+	add	x12, x12, 1696
+	ldr	z4, [x12]
+	add	x25, x25, 1824
+	ldr	z14, [x25]
+	add	x27, x27, 1952
+	ldr	z5, [x27]
+	addvl	x19, sp, #10
+	addvl	x11, sp, #10
+	add	x19, x19, 2080
+	ldr	z15, [x19]
+	add	x11, x11, 2208
+	ldr	z6, [x11]
+	zip1	z3.h, z13.h, z4.h
+	zip1	z8.h, z0.h, z17.h
+	zip1	z4.h, z14.h, z5.h
+	zip1	z9.h, z21.h, z7.h
+	zip1	z1.h, z10.h, z23.h
+	zip1	z2.h, z11.h, z24.h
+	zip1	z12.h, z16.h, z19.h
+	zip1	z5.h, z15.h, z6.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z17.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z8.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z9.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z1.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z2.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x30, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z12.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x30, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z3.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x30, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z4.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x30, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z5.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z18.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z8.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z9.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x15, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z1.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x15, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z2.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x15, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z12.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x15, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z3.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x15, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z4.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x15, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z5.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z19.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z8.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z9.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z1.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z2.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z12.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z3.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z4.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z5.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x21, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z20.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z8.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x21, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z9.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x21, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z1.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x21, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z2.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x21, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z12.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x21, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z3.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x21, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z4.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x21, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z5.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z21.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z8.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z9.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z1.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z2.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x23, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z12.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x23, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z3.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x23, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x23, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z5.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z8.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x16, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z9.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x16, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z1.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x16, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z2.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x16, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z12.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x16, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z3.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x16, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z4.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x16, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z5.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x10, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z23.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z8.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x10, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z9.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x10, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z1.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x10, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z2.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x10, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z12.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x10, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z3.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x10, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x10, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z5.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z24.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z8.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z9.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z1.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z2.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x9, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z12.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x9, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z3.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x9, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z4.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x9, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z5.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x22, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z25.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z8.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x22, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z9.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x22, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z1.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x22, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z2.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x22, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z12.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x22, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z3.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x22, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z4.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x22, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z5.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z26.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z9.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z1.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z2.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z12.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z3.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z4.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z5.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z27.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z8.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z9.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z1.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z2.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x24, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z12.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x24, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z3.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x24, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z4.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x24, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x26, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z28.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z8.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x26, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x26, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z1.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x26, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z2.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x26, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z12.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x26, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z3.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x26, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z4.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x26, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z5.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z29.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z8.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z9.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z1.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z2.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z12.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z3.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z4.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z5.h, z13.h
+// 0 "" 2
+#NO_APP
+	adrp	x30, _ZL6CDOT_O+3328
+	add	x5, x30, :lo12:_ZL6CDOT_O+3328
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z15.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z8.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z9.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z1.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z2.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z12.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z4.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z5.h, z16.h
+// 0 "" 2
+#NO_APP
+	addvl	x15, sp, #1
+	adrp	x14, _ZL6CDOT_O+3584
+	add	x15, x15, 224
+	add	x4, x14, :lo12:_ZL6CDOT_O+3584
+	str	z15, [x15]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z0.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z8.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z9.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z1.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z2.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x4, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z12.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x4, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z3.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x4, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z4.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x4, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z5.h, z11.h
+// 0 "" 2
+#NO_APP
+	adrp	x21, _ZL6CDOT_O+3840
+	add	x3, x21, :lo12:_ZL6CDOT_O+3840
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z16.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z8.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z9.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z2.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x3, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z12.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x3, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z3.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x3, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z4.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x3, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z5.h, z4.h
+// 0 "" 2
+#NO_APP
+	addvl	x23, sp, #2
+	addvl	x10, sp, #10
+	addvl	x9, sp, #10
+	addvl	x22, sp, #10
+	addvl	x7, sp, #10
+	addvl	x24, sp, #10
+	addvl	x26, sp, #10
+	addvl	x6, sp, #10
+	addvl	x17, sp, #10
+	add	x23, x23, 224
+	str	z16, [x23]
+	add	x10, x10, 352
+	ldr	z5, [x10]
+	add	x9, x9, 608
+	ldr	z15, [x9]
+	add	x22, x22, 864
+	ldr	z6, [x22]
+	add	x7, x7, 1120
+	ldr	z30, [x7]
+	add	x24, x24, 1376
+	ldr	z7, [x24]
+	add	x26, x26, 1632
+	ldr	z14, [x26]
+	add	x6, x6, 1888
+	ldr	z10, [x6]
+	add	x17, x17, 2144
+	ldr	z11, [x17]
+	adrp	x16, .LANCHOR0
+	zip1	z1.h, z5.h, z15.h
+	zip1	z2.h, z6.h, z30.h
+	zip1	z3.h, z7.h, z14.h
+	zip1	z16.h, z10.h, z11.h
+	add	x0, x16, :lo12:.LANCHOR0
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x0, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z1.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x0, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z2.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x0, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z3.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x0, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z16.h, z4.h
+// 0 "" 2
+#NO_APP
+	add	x13, x0, 128
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z5.h, p7/z, [x13, #0, MUL VL]
@@ -10712,251 +7312,222 @@ dynopt_idct32_sve2_shared:
 	mov	z9.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z6.h, z5.h
+	sdot z9.s, z1.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x13, #1, MUL VL]
+	ld1h z15.h, p7/z, [x13, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z7.h, z0.h
+	sdot z9.s, z2.h, z15.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x13, #2, MUL VL]
+	ld1h z6.h, p7/z, [x13, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z4.h, z2.h
+	sdot z9.s, z3.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x13, #3, MUL VL]
+	ld1h z30.h, p7/z, [x13, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z3.h, z16.h
+	sdot z9.s, z16.h, z30.h
 // 0 "" 2
 #NO_APP
-	add	x0, x13, 128
+	add	x12, x0, 256
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x0, #0, MUL VL]
+	ld1h z7.h, p7/z, [x12, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z10.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z6.h, z17.h
+	sdot z10.s, z1.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x0, #1, MUL VL]
+	ld1h z14.h, p7/z, [x12, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z7.h, z1.h
+	sdot z10.s, z2.h, z14.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x0, #2, MUL VL]
+	ld1h z11.h, p7/z, [x12, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z4.h, z14.h
+	sdot z10.s, z3.h, z11.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x0, #3, MUL VL]
+	ld1h z13.h, p7/z, [x12, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z3.h, z12.h
+	sdot z10.s, z16.h, z13.h
 // 0 "" 2
 #NO_APP
-	add	x16, x13, 256
+	add	x11, x0, 384
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x16, #0, MUL VL]
+	ld1h z12.h, p7/z, [x11, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z11.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z6.h, z8.h
+	sdot z11.s, z1.h, z12.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x16, #1, MUL VL]
+	ld1h z4.h, p7/z, [x11, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z7.h, z13.h
+	sdot z11.s, z2.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x16, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x16, #3, MUL VL]
+	ld1h z5.h, p7/z, [x11, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z11.s, z3.h, z5.h
 // 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x11, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z16.h, z15.h
+// 0 "" 2
 #NO_APP
-	add	x17, x13, 384
+	add	x10, x0, 512
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x17, #0, MUL VL]
+	ld1h z6.h, p7/z, [x10, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z12.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z6.h, z0.h
+	sdot z12.s, z1.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x17, #1, MUL VL]
+	ld1h z30.h, p7/z, [x10, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z7.h, z2.h
+	sdot z12.s, z2.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x17, #2, MUL VL]
+	ld1h z7.h, p7/z, [x10, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z4.h, z16.h
+	sdot z12.s, z3.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #3, MUL VL]
+	ld1h z14.h, p7/z, [x10, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z3.h, z17.h
+	sdot z12.s, z16.h, z14.h
 // 0 "" 2
 #NO_APP
-	add	x0, x13, 512
+	add	x9, x0, 640
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x0, #0, MUL VL]
+	ld1h z4.h, p7/z, [x9, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z13.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z6.h, z1.h
+	sdot z13.s, z1.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x0, #1, MUL VL]
+	ld1h z5.h, p7/z, [x9, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z7.h, z14.h
+	sdot z13.s, z2.h, z5.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x0, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x0, #3, MUL VL]
+	ld1h z15.h, p7/z, [x9, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	sdot z13.s, z3.h, z15.h
 // 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z16.h, z6.h
+// 0 "" 2
 #NO_APP
-	add	x16, x13, 640
+	add	x8, x0, 768
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x16, #0, MUL VL]
+	ld1h z30.h, p7/z, [x8, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z14.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z6.h, z5.h
+	sdot z14.s, z1.h, z30.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x16, #1, MUL VL]
+	ld1h z7.h, p7/z, [x8, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z7.h, z0.h
+	sdot z14.s, z2.h, z7.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x16, #2, MUL VL]
+	ld1h z4.h, p7/z, [x8, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z4.h, z2.h
+	sdot z14.s, z3.h, z4.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x16, #3, MUL VL]
+	ld1h z5.h, p7/z, [x8, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z3.h, z16.h
+	sdot z14.s, z16.h, z5.h
 // 0 "" 2
 #NO_APP
-	add	x17, x13, 768
+	add	x7, x0, 896
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #0, MUL VL]
+	ld1h z6.h, p7/z, [x7, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z15.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z6.h, z17.h
+	sdot z15.s, z1.h, z6.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x17, #1, MUL VL]
+	ld1h z1.h, p7/z, [x7, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z7.h, z1.h
+	sdot z15.s, z2.h, z1.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x17, #2, MUL VL]
+	ld1h z2.h, p7/z, [x7, #2, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z8.h
+	sdot z15.s, z3.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x17, #3, MUL VL]
+	ld1h z3.h, p7/z, [x7, #3, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z5.h
+	sdot z15.s, z16.h, z3.h
 // 0 "" 2
 #NO_APP
-	add	x0, x13, 896
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x0, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z16.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z6.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x0, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z7.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x0, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z4.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x0, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z3.h, z4.h
-// 0 "" 2
-#NO_APP
-	addvl	x16, sp, #12
-	addvl	x17, sp, #12
-	add	x16, x16, 416
-	ldr	z3, [x16]
-	addvl	x0, sp, #12
-	addvl	x16, sp, #12
-	add	x17, x17, 928
-	ldr	z2, [x17]
-	add	x0, x0, 1440
-	ldr	z17, [x0]
-	add	x16, x16, 1952
-	ldr	z8, [x16]
-	zip1	z1.h, z3.h, z2.h
-	zip1	z0.h, z17.h, z8.h
+	addvl	x20, sp, #10
+	addvl	x28, sp, #10
+	add	x20, x20, 480
+	ldr	z30, [x20]
+	addvl	x25, sp, #10
+	addvl	x27, sp, #10
+	add	x28, x28, 992
+	ldr	z16, [x28]
+	add	x25, x25, 1504
+	ldr	z4, [x25]
+	add	x27, x27, 2016
+	ldr	z7, [x27]
+	zip1	z1.h, z30.h, z16.h
+	add	x18, x0, 1024
+	zip1	z30.h, z4.h, z7.h
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z5.h, p7/z, [x18, #0, MUL VL]
@@ -10971,1642 +7542,13 @@ dynopt_idct32_sve2_shared:
 	ld1h z6.h, p7/z, [x18, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z0.h, z6.h
+	sdot z4.s, z30.h, z6.h
 // 0 "" 2
 #NO_APP
-	add	x18, x13, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z5.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z0.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x17, x13, 1152
+	add	x17, x0, 1088
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
 	ld1h z2.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z6.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z1.h, z2.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z17.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z0.h, z17.h
-// 0 "" 2
-#NO_APP
-	add	x13, x13, 1216
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x13, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z7.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x13, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z1.h
-// 0 "" 2
-#NO_APP
-	addvl	x0, sp, #12
-	addvl	x16, sp, #12
-	add	x0, x0, 672
-	ldr	z0, [x0]
-	add	x16, x16, 1696
-	ldr	z3, [x16]
-	zip1	z17.h, z0.h, z3.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z2.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z17.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x20, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z3.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z17.h, z1.h
-// 0 "" 2
-#NO_APP
-	addvl	x21, sp, #12
-	addvl	x20, sp, #12
-	add	x21, x21, 160
-	ldr	z0, [x21]
-	add	x20, x20, 1184
-	ldr	z17, [x20]
-	zip1	z1.h, z0.h, z17.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z0.h
-// 0 "" 2
-#NO_APP
-	add	z1.s, z8.s, z2.s
-	sub	z8.s, z8.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z9.s
-	add	x18, sp, 128
-	sub	z9.s, z2.s, z9.s
-	add	z0.s, z4.s, z30.s
-	add	z2.s, z17.s, z3.s
-	addvl	x19, sp, #6
-	sub	z17.s, z17.s, z3.s
-	add	z3.s, z2.s, z5.s
-	str	z4, [x18]
-	sqrshrnb	z4.h, z0.s, #12
-	add	x19, x19, 128
-	addvl	x13, sp, #1
-	addvl	x0, sp, #10
-	uzp1	z0.h, z4.h, z4.h
-	add	z4.s, z17.s, z6.s
-	sub	z17.s, z17.s, z6.s
-	str	z9, [x19]
-	sub	z9.s, z2.s, z5.s
-	add	z5.s, z3.s, z10.s
-	sub	z10.s, z3.s, z10.s
-	add	z2.s, z5.s, z29.s
-	sqrshrnb	z3.h, z2.s, #12
-	uzp1	z6.h, z3.h, z3.h
-	splice	z0.h, p0, z0.h, z6.h
-	addvl	x17, sp, #5
-	add	x13, x13, 128
-	add	x0, x0, 128
-	str	z5, [x13]
-	add	z5.s, z4.s, z11.s
-	str	z0, [x0]
-	add	z0.s, z5.s, z18.s
-	sub	z6.s, z4.s, z11.s
-	add	x17, x17, 128
-	add	z11.s, z8.s, z7.s
-	addvl	x16, sp, #2
-	sub	z8.s, z8.s, z7.s
-	addvl	x21, sp, #3
-	add	z7.s, z11.s, z12.s
-	str	z10, [x17]
-	sqrshrnb	z10.h, z0.s, #12
-	sub	z0.s, z11.s, z12.s
-	add	z12.s, z7.s, z19.s
-	sqrshrnb	z2.h, z12.s, #12
-	uzp1	z3.h, z2.h, z2.h
-	uzp1	z4.h, z10.h, z10.h
-	add	z2.s, z8.s, z13.s
-	add	x16, x16, 128
-	add	x21, x21, 128
-	str	z5, [x16]
-	str	z7, [x21]
-	movprfx	z7, z4
-	splice	z7.h, p0, z7.h, z3.h
-	sub	z3.s, z8.s, z13.s
-	add	z13.s, z2.s, z20.s
-	sqrshrnb	z5.h, z13.s, #12
-	uzp1	z11.h, z5.h, z5.h
-	add	z13.s, z17.s, z14.s
-	sub	z17.s, z17.s, z14.s
-	add	z14.s, z13.s, z21.s
-	sqrshrnb	z10.h, z14.s, #12
-	uzp1	z8.h, z10.h, z10.h
-	movprfx	z5, z11
-	splice	z5.h, p0, z5.h, z8.h
-	add	z11.s, z9.s, z15.s
-	sub	z9.s, z9.s, z15.s
-	add	z15.s, z11.s, z22.s
-	sqrshrnb	z4.h, z15.s, #12
-	add	z15.s, z1.s, z16.s
-	sub	z1.s, z1.s, z16.s
-	add	z16.s, z15.s, z23.s
-	sqrshrnb	z12.h, z16.s, #12
-	add	z8.s, z1.s, z24.s
-	uzp1	z14.h, z4.h, z4.h
-	uzp1	z10.h, z12.h, z12.h
-	sqrshrnb	z4.h, z8.s, #12
-	add	z12.s, z9.s, z25.s
-	movprfx	z16, z14
-	splice	z16.h, p0, z16.h, z10.h
-	sqrshrnb	z10.h, z12.s, #12
-	uzp1	z14.h, z4.h, z4.h
-	uzp1	z8.h, z10.h, z10.h
-	add	z4.s, z17.s, z26.s
-	sqrshrnb	z12.h, z4.s, #12
-	splice	z14.h, p0, z14.h, z8.h
-	add	z10.s, z3.s, z27.s
-	addvl	x18, sp, #4
-	sqrshrnb	z8.h, z10.s, #12
-	addvl	x0, sp, #7
-	uzp1	z4.h, z12.h, z12.h
-	uzp1	z12.h, z8.h, z8.h
-	add	z10.s, z0.s, z28.s
-	splice	z4.h, p0, z4.h, z12.h
-	add	x18, x18, 128
-	add	x0, x0, 128
-	ldr	z12, [x0]
-	addvl	x16, sp, #5
-	sqrshrnb	z8.h, z10.s, #12
-	str	z6, [x18]
-	add	z6.s, z6.s, z12.s
-	add	x16, x16, 128
-	addvl	x21, sp, #8
-	uzp1	z10.h, z8.h, z8.h
-	sqrshrnb	z8.h, z6.s, #12
-	ldr	z6, [x16]
-	uzp1	z12.h, z8.h, z8.h
-	add	x21, x21, 128
-	ldr	z8, [x21]
-	splice	z10.h, p0, z10.h, z12.h
-	addvl	x0, sp, #6
-	add	z12.s, z6.s, z8.s
-	addvl	x16, sp, #9
-	sqrshrnb	z6.h, z12.s, #12
-	add	x0, x0, 128
-	add	x16, x16, 128
-	ldr	z8, [x16]
-	uzp1	z12.h, z6.h, z6.h
-	ldr	z6, [x0]
-	add	z6.s, z6.s, z8.s
-	addvl	x21, sp, #10
-	sqrshrnb	z8.h, z6.s, #12
-	uzp1	z6.h, z8.h, z8.h
-	add	x21, x21, 128
-	splice	z12.h, p0, z12.h, z6.h
-	ldr	z6, [x21]
-	uzp1	z8.h, z6.h, z7.h
-	uzp2	z6.h, z6.h, z7.h
-	uzp1	z7.h, z5.h, z16.h
-	uzp2	z16.h, z5.h, z16.h
-	uzp1	z5.h, z8.h, z7.h
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z14.h, z4.h
-	uzp2	z14.h, z14.h, z4.h
-	uzp1	z4.h, z10.h, z12.h
-	add	x22, x22, x2, lsl 1
-	uzp2	z12.h, z10.h, z12.h
-	uzp1	z10.h, z7.h, z4.h
-	uzp2	z7.h, z7.h, z4.h
-	uzp1	z4.h, z5.h, z10.h
-	str	z4, [x22]
-	add	x20, x22, x2, lsl 1
-	uzp2	z10.h, z5.h, z10.h
-	uzp1	z5.h, z6.h, z16.h
-	uzp2	z16.h, z6.h, z16.h
-	uzp1	z6.h, z14.h, z12.h
-	uzp2	z14.h, z14.h, z12.h
-	uzp1	z12.h, z5.h, z6.h
-	str	z12, [x20]
-	add	x13, x20, x2, lsl 1
-	uzp2	z4.h, z5.h, z6.h
-	uzp1	z5.h, z8.h, z7.h
-	str	z5, [x13]
-	add	x19, x13, x2, lsl 1
-	uzp2	z8.h, z8.h, z7.h
-	uzp1	z7.h, z16.h, z14.h
-	str	z7, [x19]
-	add	x17, x19, x2, lsl 1
-	str	z10, [x17]
-	add	x22, x12, x2
-	add	x18, x17, x2, lsl 1
-	str	z4, [x18]
-	uzp2	z10.h, z16.h, z14.h
-	add	x20, x18, x2, lsl 1
-	add	x17, sp, 128
-	ldr	z16, [x17]
-	addvl	x18, sp, #1
-	addvl	x0, sp, #2
-	str	z8, [x20]
-	addvl	x16, sp, #3
-	add	x12, x20, x2, lsl 1
-	sub	z30.s, z16.s, z30.s
-	add	x13, x2, 1
-	sqrshrnb	z14.h, z30.s, #12
-	add	x18, x18, 128
-	ldr	z6, [x18]
-	uzp1	z4.h, z14.h, z14.h
-	sub	z29.s, z6.s, z29.s
-	add	x0, x0, 128
-	ldr	z8, [x0]
-	sqrshrnb	z12.h, z29.s, #12
-	sub	z18.s, z8.s, z18.s
-	add	x16, x16, 128
-	sqrshrnb	z7.h, z18.s, #12
-	str	z10, [x12]
-	ldr	z10, [x16]
-	sub	z16.s, z10.s, z19.s
-	add	x16, x2, x14, lsl 1
-	add	x19, x1, x22, lsl 1
-	uzp1	z19.h, z7.h, z7.h
-	sqrshrnb	z30.h, z16.s, #12
-	sub	z2.s, z2.s, z20.s
-	addvl	x21, sp, #4
-	sqrshrnb	z6.h, z2.s, #12
-	addvl	x22, sp, #7
-	uzp1	z29.h, z6.h, z6.h
-	addvl	x20, sp, #5
-	addvl	x17, sp, #8
-	uzp1	z5.h, z12.h, z12.h
-	addvl	x18, sp, #6
-	splice	z5.h, p0, z5.h, z4.h
-	addvl	x0, sp, #9
-	uzp1	z20.h, z30.h, z30.h
-	sub	z21.s, z13.s, z21.s
-	splice	z20.h, p0, z20.h, z19.h
-	sqrshrnb	z13.h, z21.s, #12
-	sub	z22.s, z11.s, z22.s
-	sub	z23.s, z15.s, z23.s
-	sqrshrnb	z11.h, z22.s, #12
-	sqrshrnb	z15.h, z23.s, #12
-	uzp1	z12.h, z11.h, z11.h
-	sub	z24.s, z1.s, z24.s
-	uzp1	z4.h, z15.h, z15.h
-	sqrshrnb	z1.h, z24.s, #12
-	splice	z4.h, p0, z4.h, z12.h
-	uzp1	z8.h, z1.h, z1.h
-	sub	z25.s, z9.s, z25.s
-	sub	z26.s, z17.s, z26.s
-	sqrshrnb	z9.h, z25.s, #12
-	sqrshrnb	z17.h, z26.s, #12
-	sub	z27.s, z3.s, z27.s
-	uzp1	z7.h, z17.h, z17.h
-	sub	z28.s, z0.s, z28.s
-	sqrshrnb	z0.h, z28.s, #12
-	uzp1	z16.h, z0.h, z0.h
-	uzp1	z17.h, z20.h, z5.h
-	add	x13, x1, x13, lsl 5
-	uzp2	z5.h, z20.h, z5.h
-	add	x14, x1, x14, lsl 2
-	sqrshrnb	z3.h, z27.s, #12
-	add	x21, x21, 128
-	ldr	z19, [x21]
-	add	x22, x22, 128
-	ldr	z30, [x22]
-	add	x20, x20, 128
-	ldr	z6, [x20]
-	sub	z2.s, z19.s, z30.s
-	add	x17, x17, 128
-	sqrshrnb	z22.h, z2.s, #12
-	add	x18, x18, 128
-	ldr	z23, [x18]
-	add	x0, x0, 128
-	ldr	z24, [x0]
-	add	x19, x19, 32
-	sub	z15.s, z23.s, z24.s
-	uzp1	z14.h, z13.h, z13.h
-	uzp1	z18.h, z9.h, z9.h
-	splice	z14.h, p0, z14.h, z29.h
-	ldr	z29, [x17]
-	uzp1	z26.h, z4.h, z14.h
-	splice	z18.h, p0, z18.h, z8.h
-	sub	z21.s, z6.s, z29.s
-	sqrshrnb	z8.h, z15.s, #12
-	sqrshrnb	z13.h, z21.s, #12
-	uzp2	z14.h, z4.h, z14.h
-	uzp1	z12.h, z13.h, z13.h
-	uzp1	z4.h, z14.h, z5.h
-	uzp1	z10.h, z3.h, z3.h
-	uzp1	z11.h, z22.h, z22.h
-	splice	z10.h, p0, z10.h, z7.h
-	splice	z11.h, p0, z11.h, z16.h
-	uzp1	z1.h, z10.h, z18.h
-	uzp1	z7.h, z26.h, z17.h
-	uzp2	z18.h, z10.h, z18.h
-	uzp1	z9.h, z8.h, z8.h
-	splice	z9.h, p0, z9.h, z12.h
-	uzp1	z27.h, z9.h, z11.h
-	uzp2	z16.h, z9.h, z11.h
-	uzp1	z0.h, z27.h, z1.h
-	uzp1	z20.h, z16.h, z18.h
-	uzp1	z25.h, z0.h, z7.h
-	uzp1	z28.h, z20.h, z4.h
-	str	z25, [x13]
-	str	z28, [x19]
-	uzp2	z3.h, z27.h, z1.h
-	uzp2	z10.h, z26.h, z17.h
-	add	x22, x1, x16, lsl 1
-	add	x20, x2, x23, lsl 2
-	add	x21, x14, 32
-	uzp1	z19.h, z3.h, z10.h
-	str	z19, [x21]
-	uzp2	z30.h, z16.h, z18.h
-	uzp2	z2.h, z14.h, z5.h
-	add	x17, x22, 32
-	uzp1	z6.h, z30.h, z2.h
-	add	x23, x1, x23, lsl 3
-	sub	x11, x11, x2
-	str	z6, [x17]
-	add	x0, x1, x20, lsl 1
-	uzp2	z29.h, z0.h, z7.h
-	add	x18, x23, 32
-	str	z29, [x18]
-	add	x16, x1, x11, lsl 1
-	uzp2	z21.h, z20.h, z4.h
-	add	x15, x1, x15, lsl 2
-	add	x13, x0, 32
-	addvl	x21, sp, #12
-	str	z21, [x13]
-	addvl	x22, sp, #12
-	addvl	x20, sp, #12
-	uzp2	z22.h, z3.h, z10.h
-	add	x19, x15, 32
-	add	x14, x16, 32
-	str	z22, [x19]
-	add	x21, x21, 240
-	add	x22, x22, 368
-	uzp2	z13.h, z30.h, z2.h
-	add	x20, x20, 496
-	addvl	x17, sp, #12
-	str	z13, [x14]
-	ldr	z11, [x21]
-	ldr	z12, [x22]
-	ldr	z23, [x20]
-	addvl	x23, sp, #12
-	addvl	x11, sp, #12
-	zip1	z1.h, z11.h, z12.h
-	addvl	x18, sp, #12
-	addvl	x0, sp, #12
-	addvl	x15, sp, #12
-	addvl	x13, sp, #12
-	addvl	x16, sp, #12
-	addvl	x19, sp, #12
-	addvl	x14, sp, #12
-	addvl	x21, sp, #12
-	addvl	x22, sp, #12
-	addvl	x20, sp, #12
-	add	x17, x17, 624
-	ldr	z24, [x17]
-	add	x23, x23, 752
-	ldr	z15, [x23]
-	add	x11, x11, 880
-	ldr	z8, [x11]
-	add	x18, x18, 1008
-	ldr	z26, [x18]
-	add	x0, x0, 1136
-	ldr	z17, [x0]
-	add	x15, x15, 1264
-	ldr	z7, [x15]
-	add	x13, x13, 1392
-	ldr	z27, [x13]
-	add	x16, x16, 1520
-	ldr	z25, [x16]
-	add	x19, x19, 1648
-	ldr	z16, [x19]
-	add	x14, x14, 1776
-	ldr	z18, [x14]
-	add	x21, x21, 1904
-	ldr	z14, [x21]
-	add	x22, x22, 2032
-	ldr	z20, [x22]
-	add	x20, x20, 2160
-	ldr	z28, [x20]
-	zip1	z9.h, z23.h, z24.h
-	zip1	z0.h, z15.h, z8.h
-	zip1	z5.h, z26.h, z17.h
-	zip1	z4.h, z7.h, z27.h
-	zip1	z3.h, z25.h, z16.h
-	zip1	z2.h, z18.h, z14.h
-	zip1	z6.h, z20.h, z28.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x10, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z17.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z19.h, p7/z, [x10, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z9.h, z19.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x10, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z0.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x10, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x10, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z4.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x10, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z3.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x10, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x10, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z17.s, z6.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z18.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z9.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z0.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x9, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z3.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x9, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x9, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z18.s, z6.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x8, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z19.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z1.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x8, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z9.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x8, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z0.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z20.h, p7/z, [x8, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z5.h, z20.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x8, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z4.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x8, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z3.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x8, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z2.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x8, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z19.s, z6.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z21.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z20.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z1.h, z21.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z22.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z9.h, z22.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x7, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x7, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z3.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x7, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z2.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x7, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z20.s, z6.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x6, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z21.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x6, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z9.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x6, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x6, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z5.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x6, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z4.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x6, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z3.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x6, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z2.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x6, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z21.s, z6.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z22.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z9.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z0.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z5.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z4.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z3.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z23.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z2.h, z23.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z24.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z22.s, z6.h, z24.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z23.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z9.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z0.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x4, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z4.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z25.h, p7/z, [x4, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z3.h, z25.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x4, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z2.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x4, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z23.s, z6.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z24.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z1.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z9.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z0.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z5.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x3, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z4.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x3, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x3, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z2.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x3, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z24.s, z6.h, z15.h
-// 0 "" 2
-#NO_APP
-	adrp	x10, _ZL6CDOT_O+2048
-	add	x9, x10, :lo12:_ZL6CDOT_O+2048
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x9, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z25.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z1.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z26.h, p7/z, [x9, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z9.h, z26.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x9, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z27.h, p7/z, [x9, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z5.h, z27.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x9, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x9, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x9, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z2.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x9, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z25.s, z6.h, z10.h
-// 0 "" 2
-#NO_APP
-	adrp	x8, _ZL6CDOT_O+2304
-	add	x7, x8, :lo12:_ZL6CDOT_O+2304
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x7, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z26.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z1.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x7, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z9.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x7, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x7, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z5.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x7, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z4.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x7, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x7, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z2.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x7, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z26.s, z6.h, z7.h
-// 0 "" 2
-#NO_APP
-	adrp	x6, _ZL6CDOT_O+2560
-	add	x5, x6, :lo12:_ZL6CDOT_O+2560
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x5, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z27.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z1.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x5, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z9.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z28.h, p7/z, [x5, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z0.h, z28.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x5, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z5.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x5, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z4.h, z30.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z29.h, p7/z, [x5, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z3.h, z29.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x5, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z2.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x5, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z27.s, z6.h, z11.h
-// 0 "" 2
-#NO_APP
-	adrp	x4, _ZL6CDOT_O+2816
-	add	x3, x4, :lo12:_ZL6CDOT_O+2816
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z28.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z9.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z0.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z5.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x3, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z4.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x3, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z3.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x3, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z2.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z30.h, p7/z, [x3, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z28.s, z6.h, z30.h
-// 0 "" 2
-#NO_APP
-	adrp	x17, _ZL6CDOT_O+3072
-	add	x23, x17, :lo12:_ZL6CDOT_O+3072
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z29.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z1.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z9.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z0.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z5.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x23, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z4.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x23, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z3.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x23, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z2.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x23, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z29.s, z6.h, z14.h
-// 0 "" 2
-#NO_APP
-	adrp	x11, _ZL6CDOT_O+3328
-	add	x18, x11, :lo12:_ZL6CDOT_O+3328
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z30.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x18, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x18, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x18, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x18, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z30.s, z6.h, z16.h
-// 0 "" 2
-#NO_APP
-	adrp	x0, _ZL6CDOT_O+3584
-	add	x15, x0, :lo12:_ZL6CDOT_O+3584
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z1.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z9.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z0.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z5.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x15, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z4.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z8.h, p7/z, [x15, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z3.h, z8.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x15, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x15, #7, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z6.h, z16.h
-// 0 "" 2
-#NO_APP
-	addvl	x13, sp, #8
-	adrp	x16, _ZL6CDOT_O+3840
-	add	x13, x13, 128
-	add	x19, x16, :lo12:_ZL6CDOT_O+3840
-	str	z10, [x13]
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x19, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z14.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x19, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z9.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x19, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x19, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z5.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x19, #4, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z4.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x19, #5, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x19, #6, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z3.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x19, #7, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z15.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z6.h, z2.h
-// 0 "" 2
-#NO_APP
-	addvl	x14, sp, #9
-	addvl	x22, sp, #12
-	addvl	x20, sp, #12
-	addvl	x10, sp, #12
-	addvl	x9, sp, #12
-	addvl	x8, sp, #12
-	addvl	x7, sp, #12
-	addvl	x6, sp, #12
-	addvl	x5, sp, #12
-	add	x14, x14, 128
-	str	z10, [x14]
-	add	x22, x22, 304
-	ldr	z13, [x22]
-	add	x20, x20, 560
-	ldr	z11, [x20]
-	add	x10, x10, 816
-	ldr	z6, [x10]
-	add	x9, x9, 1072
-	ldr	z12, [x9]
-	add	x8, x8, 1328
-	ldr	z8, [x8]
-	add	x7, x7, 1584
-	ldr	z7, [x7]
-	add	x6, x6, 1840
-	ldr	z16, [x6]
-	add	x5, x5, 2096
-	ldr	z14, [x5]
-	adrp	x21, .LANCHOR0
-	zip1	z1.h, z13.h, z11.h
-	zip1	z0.h, z6.h, z12.h
-	zip1	z3.h, z8.h, z7.h
-	add	x4, x21, :lo12:.LANCHOR0
-	zip1	z2.h, z16.h, z14.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x4, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z8.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z9.h, p7/z, [x4, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z0.h, z9.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x4, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z3.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x4, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z8.s, z2.h, z4.h
-// 0 "" 2
-#NO_APP
-	add	x3, x4, 128
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z10.h, p7/z, [x3, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z9.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z1.h, z10.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x3, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z0.h, z13.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z11.h, p7/z, [x3, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z3.h, z11.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x3, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z9.s, z2.h, z6.h
-// 0 "" 2
-#NO_APP
-	add	x17, x4, 256
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z12.h, p7/z, [x17, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z10.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z1.h, z12.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x17, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x17, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z3.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x17, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z10.s, z2.h, z14.h
-// 0 "" 2
-#NO_APP
-	add	x23, x4, 384
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x23, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z11.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x23, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z0.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x23, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z3.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z13.h, p7/z, [x23, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z11.s, z2.h, z13.h
-// 0 "" 2
-#NO_APP
-	add	x11, x4, 512
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x11, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z12.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z1.h, z6.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x11, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z0.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x11, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z3.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z14.h, p7/z, [x11, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z12.s, z2.h, z14.h
-// 0 "" 2
-#NO_APP
-	add	x18, x4, 640
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x18, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z13.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z1.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x18, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z0.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x18, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z3.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x18, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z13.s, z2.h, z6.h
-// 0 "" 2
-#NO_APP
-	add	x0, x4, 768
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x0, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z14.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z1.h, z7.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x0, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z0.h, z16.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z15.h, p7/z, [x0, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z3.h, z15.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x0, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z14.s, z2.h, z5.h
-// 0 "" 2
-#NO_APP
-	add	x15, x4, 896
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z4.h, p7/z, [x15, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z15.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z1.h, z4.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x15, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z0.h, z1.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x15, #2, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z3.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x15, #3, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z15.s, z2.h, z3.h
-// 0 "" 2
-#NO_APP
-	addvl	x13, sp, #12
-	addvl	x16, sp, #12
-	addvl	x19, sp, #12
-	addvl	x14, sp, #12
-	add	x13, x13, 432
-	ldr	z2, [x13]
-	add	x16, x16, 944
-	ldr	z6, [x16]
-	add	x19, x19, 1456
-	ldr	z16, [x19]
-	add	x14, x14, 1968
-	ldr	z7, [x14]
-	zip1	z1.h, z2.h, z6.h
-	add	x21, x4, 1024
-	zip1	z0.h, z16.h, z7.h
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z5.h, p7/z, [x21, #0, MUL VL]
-// 0 "" 2
-#NO_APP
-	mov	z4.d, z31.d
-#APP
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z1.h, z5.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x21, #1, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z4.s, z0.h, z3.h
-// 0 "" 2
-#NO_APP
-	add	x22, x4, 1088
-#APP
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z2.h, p7/z, [x22, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z5.d, z31.d
@@ -12615,16 +7557,16 @@ dynopt_idct32_sve2_shared:
 	sdot z5.s, z1.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z6.h, p7/z, [x22, #1, MUL VL]
+	ld1h z3.h, p7/z, [x17, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z5.s, z0.h, z6.h
+	sdot z5.s, z30.h, z3.h
 // 0 "" 2
 #NO_APP
-	add	x20, x4, 1152
+	add	x16, x0, 1152
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z16.h, p7/z, [x20, #0, MUL VL]
+	ld1h z16.h, p7/z, [x16, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z6.d, z31.d
@@ -12633,402 +7575,5096 @@ dynopt_idct32_sve2_shared:
 	sdot z6.s, z1.h, z16.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z7.h, p7/z, [x20, #1, MUL VL]
+	ld1h z7.h, p7/z, [x16, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z6.s, z0.h, z7.h
+	sdot z6.s, z30.h, z7.h
 // 0 "" 2
 #NO_APP
-	add	x10, x4, 1216
+	add	x15, x0, 1216
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x10, #0, MUL VL]
+	ld1h z2.h, p7/z, [x15, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z7.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z1.h, z3.h
+	sdot z7.s, z1.h, z2.h
 // 0 "" 2
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x10, #1, MUL VL]
+	ld1h z1.h, p7/z, [x15, #1, MUL VL]
 // 0 "" 2
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z7.s, z0.h, z1.h
+	sdot z7.s, z30.h, z1.h
 // 0 "" 2
 #NO_APP
-	addvl	x9, sp, #12
-	addvl	x8, sp, #12
-	add	x9, x9, 688
-	ldr	z0, [x9]
-	add	x8, x8, 1712
-	ldr	z2, [x8]
-	add	x7, x4, 1280
-	zip1	z16.h, z0.h, z2.h
+	addvl	x19, sp, #10
+	addvl	x30, sp, #10
+	add	x19, x19, 736
+	ldr	z30, [x19]
+	add	x30, x30, 1760
+	ldr	z3, [x30]
+	add	x22, x0, 1280
+	zip1	z16.h, z30.h, z3.h
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z3.h, p7/z, [x7, #0, MUL VL]
+	ld1h z1.h, p7/z, [x22, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z2.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z2.s, z16.h, z3.h
+	sdot z2.s, z16.h, z1.h
 // 0 "" 2
 #NO_APP
-	add	x6, x4, 1312
+	add	x21, x0, 1312
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z1.h, p7/z, [x6, #0, MUL VL]
+	ld1h z30.h, p7/z, [x21, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z3.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z3.s, z16.h, z1.h
+	sdot z3.s, z16.h, z30.h
 // 0 "" 2
 #NO_APP
-	addvl	x5, sp, #12
-	addvl	x3, sp, #12
-	add	x5, x5, 176
-	ldr	z0, [x5]
-	add	x3, x3, 1200
-	ldr	z16, [x3]
-	add	x4, x4, 1344
-	zip1	z1.h, z0.h, z16.h
+	addvl	x14, sp, #10
+	addvl	x23, sp, #10
+	add	x14, x14, 224
+	ldr	z1, [x14]
+	add	x23, x23, 1248
+	ldr	z16, [x23]
+	add	x20, x0, 1344
+	zip1	z1.h, z1.h, z16.h
 #APP
 // 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x4, #0, MUL VL]
+	ld1h z30.h, p7/z, [x20, #0, MUL VL]
 // 0 "" 2
 #NO_APP
 	mov	z16.d, z31.d
 #APP
 // 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z16.s, z1.h, z0.h
-// 0 "" 2
-// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	ld1h z0.h, p7/z, [x30, #0, MUL VL]
-// 0 "" 2
-// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
-	sdot z31.s, z1.h, z0.h
+	sdot z16.s, z1.h, z30.h
 // 0 "" 2
 #NO_APP
-	add	x30, x12, x2, lsl 1
+	add	x19, x0, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z1.h, z30.h
+// 0 "" 2
+#NO_APP
 	add	z1.s, z16.s, z2.s
-	addvl	x12, sp, #7
 	sub	z16.s, z16.s, z2.s
-	add	z2.s, z1.s, z4.s
-	sub	z1.s, z1.s, z4.s
-	add	z4.s, z2.s, z8.s
-	sub	z8.s, z2.s, z8.s
-	add	z0.s, z4.s, z17.s
 	add	z2.s, z31.s, z3.s
-	add	x17, sp, 128
+	sub	z30.s, z1.s, z4.s
 	sub	z31.s, z31.s, z3.s
-	add	x12, x12, 128
-	add	z3.s, z2.s, z5.s
-	addvl	x23, sp, #6
-	addvl	x11, sp, #1
-	str	z8, [x12]
-	sub	z8.s, z2.s, z5.s
-	add	z5.s, z3.s, z9.s
-	sub	z9.s, z3.s, z9.s
-	str	z4, [x17]
+	add	z3.s, z1.s, z4.s
+	sub	z1.s, z2.s, z5.s
+	add	z4.s, z2.s, z5.s
+	sub	z2.s, z31.s, z6.s
+	add	z5.s, z31.s, z6.s
+	add	z6.s, z16.s, z7.s
+	sub	z31.s, z2.s, z13.s
+	sub	z16.s, z16.s, z7.s
+	add	z7.s, z3.s, z8.s
+	sub	z3.s, z3.s, z8.s
+	add	z8.s, z4.s, z9.s
+	sub	z4.s, z4.s, z9.s
+	add	z9.s, z5.s, z10.s
+	sub	z5.s, z5.s, z10.s
+	add	z10.s, z6.s, z11.s
+	sub	z6.s, z6.s, z11.s
+	add	z11.s, z16.s, z12.s
+	sub	z16.s, z16.s, z12.s
+	add	z12.s, z2.s, z13.s
+	add	z13.s, z1.s, z14.s
+	sub	z2.s, z1.s, z14.s
+	add	z14.s, z30.s, z15.s
+	sub	z1.s, z7.s, z17.s
+	sub	z30.s, z30.s, z15.s
+	add	z15.s, z7.s, z17.s
+	sqrshrnb	z7.h, z1.s, #12
+	sqrshrnb	z17.h, z15.s, #12
+	uzp1	z1.h, z7.h, z7.h
+	add	z15.s, z8.s, z18.s
+	sub	z18.s, z8.s, z18.s
+	sqrshrnb	z8.h, z15.s, #12
+	sqrshrnb	z15.h, z18.s, #12
+	uzp1	z7.h, z8.h, z8.h
+	uzp1	z8.h, z15.h, z15.h
+	splice	z8.h, p4, z8.h, z1.h
+	add	z1.s, z9.s, z19.s
+	sub	z9.s, z9.s, z19.s
+	sqrshrnb	z18.h, z9.s, #12
+	sqrshrnb	z19.h, z1.s, #12
+	uzp1	z15.h, z18.h, z18.h
+	add	z1.s, z10.s, z20.s
+	uzp1	z17.h, z17.h, z17.h
+	sub	z10.s, z10.s, z20.s
+	splice	z17.h, p4, z17.h, z7.h
+	sqrshrnb	z20.h, z1.s, #12
+	uzp1	z7.h, z19.h, z19.h
+	uzp1	z9.h, z20.h, z20.h
+	movprfx	z18, z7
+	splice	z18.h, p4, z18.h, z9.h
+	sqrshrnb	z19.h, z10.s, #12
+	uzp2	z10.h, z17.h, z18.h
+	uzp1	z7.h, z19.h, z19.h
+	splice	z7.h, p4, z7.h, z15.h
+	uzp1	z15.h, z17.h, z18.h
+	add	z17.s, z11.s, z21.s
+	add	z18.s, z12.s, z22.s
+	sub	z11.s, z11.s, z21.s
+	sub	z12.s, z12.s, z22.s
+	sqrshrnb	z21.h, z17.s, #12
+	sqrshrnb	z20.h, z11.s, #12
+	sqrshrnb	z22.h, z18.s, #12
+	uzp1	z9.h, z20.h, z20.h
+	uzp1	z19.h, z22.h, z22.h
+	sqrshrnb	z17.h, z12.s, #12
+	addvl	x28, sp, #1
+	add	z12.s, z14.s, z24.s
+	uzp1	z1.h, z21.h, z21.h
+	sub	z14.s, z14.s, z24.s
+	add	z21.s, z13.s, z23.s
+	sqrshrnb	z24.h, z12.s, #12
+	splice	z1.h, p4, z1.h, z19.h
+	sub	z13.s, z13.s, z23.s
+	uzp1	z22.h, z24.h, z24.h
+	sqrshrnb	z23.h, z21.s, #12
+	sqrshrnb	z19.h, z14.s, #12
+	add	z21.s, z30.s, z25.s
+	add	z12.s, z2.s, z26.s
+	sub	z30.s, z30.s, z25.s
+	sub	z2.s, z2.s, z26.s
+	sqrshrnb	z25.h, z21.s, #12
+	sqrshrnb	z24.h, z2.s, #12
+	add	x28, x28, 224
+	uzp1	z11.h, z17.h, z17.h
+	uzp1	z20.h, z23.h, z23.h
+	splice	z11.h, p4, z11.h, z9.h
+	splice	z20.h, p4, z20.h, z22.h
+	sqrshrnb	z9.h, z13.s, #12
+	uzp1	z17.h, z1.h, z20.h
+	uzp1	z18.h, z9.h, z9.h
+	uzp2	z20.h, z1.h, z20.h
+	uzp1	z23.h, z15.h, z17.h
+	sqrshrnb	z1.h, z30.s, #12
+	uzp2	z15.h, z15.h, z17.h
+	sqrshrnb	z26.h, z12.s, #12
+	uzp1	z13.h, z19.h, z19.h
+	uzp1	z9.h, z25.h, z25.h
+	splice	z13.h, p4, z13.h, z18.h
+	add	z19.s, z31.s, z27.s
+	uzp1	z18.h, z1.h, z1.h
+	sub	z31.s, z31.s, z27.s
+	add	z25.s, z16.s, z28.s
+	sqrshrnb	z27.h, z19.s, #12
+	uzp1	z22.h, z24.h, z24.h
+	ldr	z24, [x28]
+	uzp1	z17.h, z27.h, z27.h
+	addvl	x28, sp, #2
+	splice	z22.h, p4, z22.h, z18.h
+	uzp1	z14.h, z26.h, z26.h
+	sqrshrnb	z21.h, z31.s, #12
+	add	z26.s, z6.s, z29.s
+	uzp1	z30.h, z21.h, z21.h
+	sub	z16.s, z16.s, z28.s
+	add	x28, x28, 224
+	ldr	z27, [x28]
+	sqrshrnb	z28.h, z25.s, #12
+	add	z31.s, z3.s, z27.s
+	uzp1	z1.h, z28.h, z28.h
+	sqrshrnb	z25.h, z31.s, #12
+	movprfx	z18, z17
+	splice	z18.h, p4, z18.h, z1.h
+	sub	z6.s, z6.s, z29.s
+	sqrshrnb	z17.h, z26.s, #12
+	add	z29.s, z5.s, z24.s
+	sub	z5.s, z5.s, z24.s
+	add	z19.s, z4.s, z0.s
+	splice	z9.h, p4, z9.h, z14.h
+	sqrshrnb	z12.h, z16.s, #12
+	uzp1	z14.h, z9.h, z18.h
+	sqrshrnb	z21.h, z29.s, #12
+	uzp2	z9.h, z9.h, z18.h
+	uzp1	z28.h, z21.h, z21.h
+	uzp1	z18.h, z25.h, z25.h
+	sqrshrnb	z26.h, z5.s, #12
+	uzp1	z2.h, z12.h, z12.h
+	uzp1	z16.h, z17.h, z17.h
+	splice	z2.h, p4, z2.h, z30.h
+	splice	z16.h, p4, z16.h, z28.h
+	uzp1	z25.h, z2.h, z22.h
+	sqrshrnb	z30.h, z19.s, #12
+	uzp2	z2.h, z2.h, z22.h
+	uzp1	z1.h, z30.h, z30.h
+	splice	z1.h, p4, z1.h, z18.h
+	uzp1	z5.h, z16.h, z1.h
+	uzp1	z17.h, z14.h, z5.h
+	uzp1	z22.h, z23.h, z17.h
+	str	z22, [x1]
+	add	x24, x1, x2, lsl 1
+	uzp1	z19.h, z10.h, z20.h
+	sub	z3.s, z3.s, z27.s
+	uzp2	z27.h, z16.h, z1.h
+	uzp1	z1.h, z9.h, z27.h
+	uzp1	z30.h, z19.h, z1.h
+	str	z30, [x24]
+	add	x27, x24, x2, lsl 1
+	uzp2	z14.h, z14.h, z5.h
+	add	x6, x2, x2, lsl 1
+	uzp1	z18.h, z15.h, z14.h
+	str	z18, [x27]
+	add	x26, x27, x2, lsl 1
+	uzp2	z10.h, z10.h, z20.h
+	uzp2	z9.h, z9.h, z27.h
+	sqrshrnb	z12.h, z3.s, #12
+	uzp1	z3.h, z10.h, z9.h
+	str	z3, [x26]
+	add	x25, x26, x2, lsl 1
+	add	x30, x24, 32
+	add	x14, x1, x2, lsl 2
+	uzp2	z23.h, z23.h, z17.h
+	add	x24, x1, x6, lsl 1
+	str	z23, [x25]
+	add	x23, x14, 32
+	add	x27, x24, 32
+	stp	x23, x27, [sp, 176]
+	sub	z0.s, z4.s, z0.s
+	add	x6, x1, x6, lsl 2
 	sqrshrnb	z4.h, z0.s, #12
-	add	z0.s, z5.s, z18.s
-	add	z2.s, z31.s, z6.s
-	sqrshrnb	z3.h, z0.s, #12
-	add	x23, x23, 128
-	add	x11, x11, 128
-	addvl	x18, sp, #2
-	str	z9, [x23]
-	add	z9.s, z2.s, z10.s
-	str	z5, [x11]
-	sub	z5.s, z2.s, z10.s
-	add	z10.s, z9.s, z19.s
-	sqrshrnb	z0.h, z10.s, #12
-	add	z2.s, z16.s, z7.s
-	sub	z6.s, z31.s, z6.s
-	sub	z7.s, z16.s, z7.s
-	uzp1	z31.h, z3.h, z3.h
-	add	x18, x18, 128
-	uzp1	z10.h, z0.h, z0.h
-	add	z0.s, z2.s, z11.s
-	str	z9, [x18]
-	sub	z9.s, z2.s, z11.s
-	add	z11.s, z0.s, z20.s
-	sub	z16.s, z7.s, z12.s
-	add	z2.s, z7.s, z12.s
-	sqrshrnb	z3.h, z11.s, #12
-	add	z12.s, z2.s, z21.s
-	uzp1	z4.h, z4.h, z4.h
-	sqrshrnb	z7.h, z12.s, #12
-	splice	z4.h, p0, z4.h, z31.h
-	uzp1	z11.h, z7.h, z7.h
-	uzp1	z31.h, z3.h, z3.h
-	add	z12.s, z6.s, z13.s
-	splice	z10.h, p0, z10.h, z31.h
-	addvl	x0, sp, #3
-	sub	z31.s, z6.s, z13.s
-	add	z13.s, z12.s, z22.s
-	sqrshrnb	z6.h, z13.s, #12
-	uzp1	z7.h, z6.h, z6.h
-	movprfx	z3, z11
-	splice	z3.h, p0, z3.h, z7.h
-	add	z11.s, z8.s, z14.s
-	sub	z8.s, z8.s, z14.s
-	add	z14.s, z11.s, z23.s
-	add	x0, x0, 128
-	sqrshrnb	z13.h, z14.s, #12
-	add	z14.s, z1.s, z15.s
-	uzp1	z6.h, z13.h, z13.h
-	sub	z1.s, z1.s, z15.s
-	add	z15.s, z14.s, z24.s
-	sqrshrnb	z7.h, z15.s, #12
-	str	z11, [x0]
-	uzp1	z11.h, z7.h, z7.h
-	add	z13.s, z1.s, z25.s
-	movprfx	z15, z6
-	splice	z15.h, p0, z15.h, z11.h
-	add	z11.s, z8.s, z26.s
-	sqrshrnb	z6.h, z13.s, #12
-	sqrshrnb	z13.h, z11.s, #12
-	uzp1	z7.h, z6.h, z6.h
-	add	z11.s, z31.s, z27.s
-	uzp1	z6.h, z13.h, z13.h
-	addvl	x16, sp, #4
-	splice	z7.h, p0, z7.h, z6.h
-	addvl	x14, sp, #5
-	add	z6.s, z16.s, z28.s
-	sqrshrnb	z13.h, z11.s, #12
-	sqrshrnb	z11.h, z6.s, #12
-	add	x16, x16, 128
-	uzp1	z6.h, z11.h, z11.h
-	add	x14, x14, 128
-	addvl	x21, sp, #6
-	str	z9, [x16]
-	add	z9.s, z9.s, z29.s
-	sqrshrnb	z11.h, z9.s, #12
-	str	z5, [x14]
-	add	z5.s, z5.s, z30.s
-	add	x21, x21, 128
-	addvl	x22, sp, #8
-	uzp1	z9.h, z11.h, z11.h
-	uzp1	z13.h, z13.h, z13.h
-	splice	z13.h, p0, z13.h, z6.h
-	sqrshrnb	z6.h, z5.s, #12
-	ldr	z5, [x21]
-	uzp1	z11.h, z6.h, z6.h
-	add	x22, x22, 128
-	ldr	z6, [x22]
-	splice	z9.h, p0, z9.h, z11.h
-	addvl	x9, sp, #7
-	add	z11.s, z5.s, z6.s
-	addvl	x8, sp, #9
-	sqrshrnb	z5.h, z11.s, #12
-	add	x9, x9, 128
-	add	x8, x8, 128
-	ldr	z6, [x8]
-	uzp1	z11.h, z5.h, z5.h
-	ldr	z5, [x9]
-	add	z5.s, z5.s, z6.s
-	sqrshrnb	z6.h, z5.s, #12
-	uzp1	z5.h, z6.h, z6.h
-	splice	z11.h, p0, z11.h, z5.h
-	uzp1	z5.h, z4.h, z10.h
-	uzp2	z4.h, z4.h, z10.h
-	uzp1	z10.h, z3.h, z15.h
-	uzp2	z15.h, z3.h, z15.h
-	uzp2	z6.h, z5.h, z10.h
-	uzp1	z3.h, z5.h, z10.h
-	uzp1	z5.h, z7.h, z13.h
-	uzp2	z13.h, z7.h, z13.h
-	uzp1	z7.h, z9.h, z11.h
-	uzp2	z11.h, z9.h, z11.h
-	uzp2	z10.h, z5.h, z7.h
-	uzp1	z9.h, z5.h, z7.h
-	uzp1	z5.h, z3.h, z9.h
-	str	z5, [x30]
-	add	x15, x30, x2, lsl 1
-	uzp1	z7.h, z4.h, z15.h
-	uzp2	z15.h, z4.h, z15.h
-	uzp1	z4.h, z13.h, z11.h
-	uzp2	z13.h, z13.h, z11.h
-	uzp1	z11.h, z7.h, z4.h
-	str	z11, [x15]
-	add	x13, x15, x2, lsl 1
-	uzp1	z5.h, z6.h, z10.h
-	str	z5, [x13]
-	add	x19, x13, x2, lsl 1
-	uzp2	z6.h, z6.h, z10.h
-	uzp1	z10.h, z15.h, z13.h
-	str	z10, [x19]
-	add	x20, x19, x2, lsl 1
-	add	x10, x2, x2, lsl 2
-	uzp2	z3.h, z3.h, z9.h
-	str	z3, [x20]
-	add	x7, x20, x2, lsl 1
-	add	x30, x2, x2, lsl 1
-	uzp2	z9.h, z7.h, z4.h
-	addvl	x11, sp, #1
-	addvl	x18, sp, #2
-	str	z9, [x7]
-	add	x6, x7, x2, lsl 1
-	uzp2	z3.h, z15.h, z13.h
-	add	x4, x10, x10, lsl 2
-	lsl	x3, x2, 3
-	add	x23, sp, 128
-	ldr	z7, [x23]
-	add	x11, x11, 128
-	ldr	z15, [x11]
-	sub	z17.s, z7.s, z17.s
-	sub	z18.s, z15.s, z18.s
-	sqrshrnb	z4.h, z17.s, #12
-	sqrshrnb	z13.h, z18.s, #12
-	uzp1	z11.h, z4.h, z4.h
-	uzp1	z9.h, z13.h, z13.h
-	add	x18, x18, 128
-	ldr	z5, [x18]
-	addvl	x0, sp, #3
-	str	z6, [x6]
-	add	x12, x6, x2, lsl 1
-	add	x17, x1, x30, lsl 4
-	add	x5, x2, x30, lsl 2
-	sub	z6.s, z5.s, z19.s
-	sub	x9, x3, x2
-	movprfx	z19, z9
-	splice	z19.h, p0, z19.h, z11.h
-	add	x10, x30, x30, lsl 3
-	sqrshrnb	z10.h, z6.s, #12
-	sub	z22.s, z12.s, z22.s
-	sub	z28.s, z16.s, z28.s
-	sqrshrnb	z7.h, z22.s, #12
-	sqrshrnb	z9.h, z28.s, #12
-	add	x0, x0, 128
-	ldr	z12, [x0]
-	addvl	x15, sp, #4
-	sub	z23.s, z12.s, z23.s
-	addvl	x13, sp, #5
-	sqrshrnb	z18.h, z23.s, #12
-	addvl	x16, sp, #6
-	uzp1	z13.h, z18.h, z18.h
-	addvl	x19, sp, #8
-	addvl	x14, sp, #7
-	addvl	x21, sp, #9
-	sub	z20.s, z0.s, z20.s
-	sub	z21.s, z2.s, z21.s
-	sqrshrnb	z0.h, z20.s, #12
-	sqrshrnb	z2.h, z21.s, #12
-	sub	z24.s, z14.s, z24.s
-	uzp1	z15.h, z2.h, z2.h
-	sqrshrnb	z14.h, z24.s, #12
-	sub	z25.s, z1.s, z25.s
-	sub	z26.s, z8.s, z26.s
-	sqrshrnb	z1.h, z25.s, #12
-	sqrshrnb	z8.h, z26.s, #12
-	uzp1	z11.h, z1.h, z1.h
-	sub	z27.s, z31.s, z27.s
-	sqrshrnb	z31.h, z27.s, #12
-	uzp1	z5.h, z31.h, z31.h
-	str	z3, [x12]
-	uzp1	z3.h, z10.h, z10.h
-	add	x20, x1, x4, lsl 1
-	add	x22, x17, 32
-	uzp1	z17.h, z0.h, z0.h
-	add	x15, x15, 128
-	ldr	z16, [x15]
-	splice	z17.h, p0, z17.h, z3.h
-	sub	z29.s, z16.s, z29.s
-	add	x13, x13, 128
-	ldr	z21, [x13]
-	sqrshrnb	z6.h, z29.s, #12
-	sub	z30.s, z21.s, z30.s
-	uzp1	z0.h, z6.h, z6.h
-	sqrshrnb	z12.h, z30.s, #12
-	add	x16, x16, 128
-	ldr	z2, [x16]
-	add	x19, x19, 128
-	add	x14, x14, 128
-	uzp1	z4.h, z7.h, z7.h
-	add	x21, x21, 128
-	ldr	z24, [x21]
-	splice	z4.h, p0, z4.h, z15.h
-	ldr	z15, [x19]
-	uzp1	z10.h, z14.h, z14.h
-	sub	z22.s, z2.s, z15.s
-	splice	z10.h, p0, z10.h, z13.h
+	uzp2	z0.h, z19.h, z1.h
+	str	x30, [sp, 168]
+	add	x30, x25, x2, lsl 1
+	str	z0, [x30]
+	add	x23, x30, x2, lsl 1
+	add	x26, x6, 32
+	uzp2	z15.h, z15.h, z14.h
+	add	x25, x2, x2, lsl 2
+	str	z15, [x23]
+	uzp1	z24.h, z4.h, z4.h
+	sqrshrnb	z6.h, z6.s, #12
+	uzp1	z31.h, z12.h, z12.h
+	uzp2	z12.h, z10.h, z9.h
+	splice	z31.h, p4, z31.h, z24.h
+	str	x26, [sp, 208]
+	add	x26, x23, x2, lsl 1
+	str	z12, [x26]
+	uzp1	z20.h, z7.h, z8.h
+	add	x14, x1, x25, lsl 1
+	uzp1	z29.h, z13.h, z11.h
+	add	x24, x1, 32
+	uzp1	z16.h, z29.h, z20.h
+	uzp1	z21.h, z6.h, z6.h
+	uzp1	z28.h, z26.h, z26.h
+	splice	z28.h, p4, z28.h, z21.h
+	uzp1	z26.h, z31.h, z28.h
+	uzp2	z6.h, z31.h, z28.h
+	uzp1	z5.h, z26.h, z25.h
+	uzp1	z31.h, z5.h, z16.h
+	str	z31, [x24]
+	ldp	x6, x30, [sp, 168]
+	add	x27, x14, 32
+	uzp2	z11.h, z13.h, z11.h
+	uzp2	z8.h, z7.h, z8.h
+	uzp2	z13.h, z29.h, z20.h
+	uzp1	z7.h, z11.h, z8.h
+	uzp1	z29.h, z6.h, z2.h
+	uzp1	z24.h, z29.h, z7.h
+	str	z24, [x6]
+	str	x27, [sp, 200]
+	lsl	x27, x2, 3
+	uzp2	z19.h, z26.h, z25.h
+	uzp1	z25.h, z19.h, z13.h
+	ldr	x25, [sp, 184]
+	str	z25, [x30]
+	uzp2	z4.h, z11.h, z8.h
+	sub	x23, x27, x2
+	uzp2	z17.h, z6.h, z2.h
+	uzp1	z10.h, z17.h, z4.h
+	add	x30, x1, x2, lsl 3
+	str	z10, [x25]
+	uzp2	z27.h, z5.h, z16.h
+	add	x25, x30, 32
+	str	x25, [sp, 192]
+	uzp2	z1.h, z29.h, z7.h
+	add	x24, x1, x23, lsl 1
+	adrp	x27, _ZL6CDOT_O
+	uzp2	z14.h, z19.h, z13.h
+	add	x6, x24, 32
+	str	x6, [sp, 216]
+	uzp2	z9.h, z17.h, z4.h
+	ldp	x23, x24, [sp, 192]
+	str	z27, [x23]
+	add	x6, x27, :lo12:_ZL6CDOT_O
+	str	z1, [x24]
+	ldr	x14, [sp, 208]
+	str	z14, [x14]
+	addvl	x30, sp, #10
+	addvl	x25, sp, #10
+	addvl	x27, sp, #10
+	addvl	x23, sp, #10
+	add	x30, x30, 304
+	ldr	x14, [sp, 216]
+	str	z9, [x14]
+	ldr	z20, [x30]
+	add	x25, x25, 432
+	ldr	z21, [x25]
+	zip1	z8.h, z20.h, z21.h
+	add	x27, x27, 560
+	add	x23, x23, 688
+	ldr	z2, [x27]
+	ldr	z16, [x23]
+	addvl	x24, sp, #10
+	addvl	x14, sp, #10
+	addvl	x30, sp, #10
+	addvl	x25, sp, #10
+	zip1	z6.h, z2.h, z16.h
+	addvl	x27, sp, #10
+	addvl	x23, sp, #10
+	add	x24, x24, 816
+	add	x14, x14, 944
+	ldr	z22, [x24]
+	add	x30, x30, 1072
+	add	x25, x25, 1200
+	ldr	z18, [x14]
+	add	x27, x27, 1328
+	add	x23, x23, 1456
+	ldr	z3, [x30]
+	ldr	z23, [x25]
+	ldr	z0, [x27]
+	ldr	z28, [x23]
+	addvl	x24, sp, #10
+	addvl	x14, sp, #10
+	zip1	z5.h, z22.h, z18.h
+	addvl	x30, sp, #10
+	addvl	x25, sp, #10
+	zip1	z11.h, z3.h, z23.h
+	addvl	x27, sp, #10
+	addvl	x23, sp, #10
+	zip1	z12.h, z0.h, z28.h
+	add	x24, x24, 1584
+	ldr	z7, [x24]
+	add	x14, x14, 1712
 	ldr	z13, [x14]
-	sqrshrnb	z23.h, z22.s, #12
-	sub	z25.s, z13.s, z24.s
-	uzp1	z20.h, z8.h, z8.h
-	sqrshrnb	z14.h, z25.s, #12
-	splice	z20.h, p0, z20.h, z11.h
-	uzp1	z3.h, z9.h, z9.h
-	uzp1	z11.h, z10.h, z4.h
-	splice	z3.h, p0, z3.h, z5.h
-	uzp1	z7.h, z12.h, z12.h
-	uzp1	z1.h, z3.h, z20.h
-	uzp1	z5.h, z17.h, z19.h
-	splice	z7.h, p0, z7.h, z0.h
-	uzp1	z9.h, z11.h, z5.h
-	uzp1	z18.h, z23.h, z23.h
-	uzp1	z8.h, z14.h, z14.h
-	splice	z8.h, p0, z8.h, z18.h
-	uzp1	z28.h, z8.h, z7.h
-	uzp1	z26.h, z28.h, z1.h
-	uzp1	z27.h, z26.h, z9.h
-	str	z27, [x22]
-	add	x7, x1, x5, lsl 2
-	uzp2	z31.h, z8.h, z7.h
-	uzp2	z20.h, z3.h, z20.h
-	uzp2	z19.h, z17.h, z19.h
-	add	x8, x20, 32
-	add	x4, x1, x10, lsl 1
-	add	x6, x2, x9, lsl 2
-	uzp2	z4.h, z10.h, z4.h
-	lsl	x12, x2, 4
-	uzp1	z10.h, z4.h, z19.h
-	uzp1	z17.h, z31.h, z20.h
-	uzp1	z16.h, z17.h, z10.h
-	str	z16, [x8]
-	uzp2	z29.h, z11.h, z5.h
-	add	x30, x7, 32
-	add	x3, x1, x9, lsl 3
-	uzp2	z6.h, z28.h, z1.h
-	sub	x5, x12, x2
-	uzp2	z0.h, z31.h, z20.h
-	uzp2	z21.h, z4.h, z19.h
-	add	x17, x4, 32
-	lsl	x23, x2, 5
-	uzp1	z3.h, z6.h, z29.h
-	uzp1	z30.h, z0.h, z21.h
-	str	z3, [x30]
+	add	x30, x30, 1840
+	ldr	z4, [x30]
+	add	x25, x25, 1968
+	ldr	z30, [x25]
+	add	x27, x27, 2096
+	ldr	z15, [x27]
+	add	x23, x23, 2224
+	ldr	z26, [x23]
+	zip1	z31.h, z7.h, z13.h
+	zip1	z1.h, z4.h, z30.h
+	zip1	z2.h, z15.h, z26.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d17, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z8.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z6.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z5.h, z19.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z11.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z12.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z31.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z1.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z2.h, z9.h
+// 0 "" 2
+#NO_APP
+	adrp	x6, _ZL6CDOT_O+256
+	add	x24, x6, :lo12:_ZL6CDOT_O+256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d18, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z8.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z6.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z5.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z11.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x24, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z12.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x24, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z31.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x24, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z1.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x24, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z2.h, z28.h
+// 0 "" 2
+#NO_APP
+	adrp	x14, _ZL6CDOT_O+512
+	add	x30, x14, :lo12:_ZL6CDOT_O+512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d19, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z8.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z6.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z5.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z11.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x30, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z12.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x30, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z31.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x30, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z1.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x30, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z2.h, z24.h
+// 0 "" 2
+#NO_APP
+	adrp	x25, _ZL6CDOT_O+768
+	add	x27, x25, :lo12:_ZL6CDOT_O+768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d20, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z8.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z6.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z5.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z11.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z12.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z31.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z1.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z2.h, z22.h
+// 0 "" 2
+#NO_APP
+	adrp	x23, _ZL6CDOT_O+1024
+	add	x6, x23, :lo12:_ZL6CDOT_O+1024
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d21, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z8.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z6.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z5.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z11.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z12.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z31.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z1.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z2.h, z30.h
+// 0 "" 2
+#NO_APP
+	adrp	x24, _ZL6CDOT_O+1280
+	add	x14, x24, :lo12:_ZL6CDOT_O+1280
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d22, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z8.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z6.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z11.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z12.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z31.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z1.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z2.h, z10.h
+// 0 "" 2
+#NO_APP
+	adrp	x30, _ZL6CDOT_O+1536
+	add	x25, x30, :lo12:_ZL6CDOT_O+1536
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x25, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d23, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z8.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x25, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z6.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x25, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x25, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z11.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x25, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z12.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x25, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z31.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x25, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z1.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x25, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z2.h, z4.h
+// 0 "" 2
+#NO_APP
+	adrp	x27, _ZL6CDOT_O+1792
+	add	x23, x27, :lo12:_ZL6CDOT_O+1792
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d24, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z6.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z5.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z11.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x23, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z12.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x23, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z31.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x23, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z1.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x23, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z2.h, z10.h
+// 0 "" 2
+#NO_APP
+	adrp	x6, _ZL6CDOT_O+2048
+	add	x24, x6, :lo12:_ZL6CDOT_O+2048
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d25, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z8.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z6.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z11.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x24, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z12.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x24, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z31.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x24, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z1.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x24, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z2.h, z4.h
+// 0 "" 2
+#NO_APP
+	adrp	x14, _ZL6CDOT_O+2304
+	add	x30, x14, :lo12:_ZL6CDOT_O+2304
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x30, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d26, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x30, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z6.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x30, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x30, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z11.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x30, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z12.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x30, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z31.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x30, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z1.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x30, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z2.h, z16.h
+// 0 "" 2
+#NO_APP
+	adrp	x25, _ZL6CDOT_O+2560
+	add	x27, x25, :lo12:_ZL6CDOT_O+2560
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d27, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z8.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z6.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z5.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z11.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z12.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z31.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z1.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z2.h, z15.h
+// 0 "" 2
+#NO_APP
+	adrp	x23, _ZL6CDOT_O+2816
+	add	x6, x23, :lo12:_ZL6CDOT_O+2816
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d28, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z8.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z6.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z5.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z11.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z12.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z31.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z1.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z2.h, z7.h
+// 0 "" 2
+#NO_APP
+	adrp	x24, _ZL6CDOT_O+3072
+	add	x14, x24, :lo12:_ZL6CDOT_O+3072
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d4, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z8.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z6.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z5.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z11.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z12.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z31.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z1.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z2.h, z16.h
+// 0 "" 2
+#NO_APP
+	addvl	x30, sp, #1
+	add	x30, x30, 224
+	str	z4, [x30]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d30, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z8.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z6.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z5.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z11.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z12.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z31.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z1.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z2.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d9, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z8.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z6.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z11.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x4, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z12.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x4, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z31.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x4, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z1.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x4, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z2.h, z15.h
+// 0 "" 2
+#NO_APP
+	str	z9, [x28]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d16, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z8.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z6.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z5.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z11.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x3, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z12.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x3, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z31.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x3, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x3, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z2.h, z1.h
+// 0 "" 2
+#NO_APP
+	addvl	x5, sp, #3
+	addvl	x4, sp, #10
+	addvl	x3, sp, #10
+	addvl	x25, sp, #10
+	addvl	x27, sp, #10
+	addvl	x23, sp, #10
+	addvl	x6, sp, #10
+	addvl	x24, sp, #10
+	addvl	x14, sp, #10
+	add	x5, x5, 224
+	str	z16, [x5]
+	add	x4, x4, 368
+	ldr	z2, [x4]
+	add	x3, x3, 624
+	ldr	z10, [x3]
+	add	x25, x25, 880
+	ldr	z14, [x25]
+	add	x27, x27, 1136
+	ldr	z9, [x27]
+	add	x23, x23, 1392
+	ldr	z3, [x23]
+	add	x6, x6, 1648
+	ldr	z0, [x6]
+	add	x24, x24, 1904
+	ldr	z7, [x24]
+	add	x14, x14, 2160
+	ldr	z4, [x14]
+	zip1	z13.h, z2.h, z10.h
+	zip1	z29.h, z14.h, z9.h
+	zip1	z15.h, z3.h, z0.h
+	zip1	z6.h, z7.h, z4.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x0, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d8, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z13.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x0, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z29.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x0, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z15.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z31.h, p7/z, [x0, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z6.h, z31.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d2, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z13.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x13, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z29.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x13, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z15.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x13, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z6.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d31, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z13.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z29.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z15.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z6.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d3, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z13.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z29.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x11, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z15.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x11, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z6.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x10, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d7, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z13.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x10, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z29.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x10, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z15.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x10, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z6.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d4, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z13.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z29.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z15.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z6.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d0, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z13.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z29.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z6.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d12, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z13.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z29.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z15.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z6.h, z15.h
+// 0 "" 2
+#NO_APP
+	addvl	x0, sp, #10
+	addvl	x13, sp, #10
+	addvl	x12, sp, #10
+	addvl	x11, sp, #10
+	add	x0, x0, 496
+	ldr	z6, [x0]
+	add	x13, x13, 1008
+	ldr	z9, [x13]
+	add	x12, x12, 1520
+	ldr	z5, [x12]
+	add	x11, x11, 2032
+	ldr	z11, [x11]
+	zip1	z10.h, z6.h, z9.h
+	zip1	z16.h, z5.h, z11.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d5, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z10.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z16.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x17, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d11, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z10.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x17, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z16.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x16, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d6, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z10.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x16, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z16.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d1, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z10.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z1.s, z16.h, z10.h
+// 0 "" 2
+#NO_APP
+	addvl	x10, sp, #10
+	addvl	x9, sp, #10
+	add	x10, x10, 752
+	ldr	z16, [x10]
+	add	x9, x9, 1776
+	ldr	z13, [x9]
+	zip1	z29.h, z16.h, z13.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x22, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d15, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z29.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x21, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d14, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z29.h, z10.h
+// 0 "" 2
+#NO_APP
+	addvl	x8, sp, #10
+	addvl	x7, sp, #10
+	add	x8, x8, 240
+	ldr	z13, [x8]
+	add	x7, x7, 1264
+	ldr	z16, [x7]
+	zip1	z10.h, z13.h, z16.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x20, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d13, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z10.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d29, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z10.h, z9.h
+// 0 "" 2
+#NO_APP
+	add	z10.s, z13.s, z15.s
+	sub	z16.s, z13.s, z15.s
+	add	z13.s, z29.s, z14.s
+	add	z15.s, z10.s, z5.s
+	sub	z14.s, z29.s, z14.s
+	sub	z9.s, z10.s, z5.s
+	sub	z29.s, z13.s, z11.s
+	add	z5.s, z13.s, z11.s
+	add	z11.s, z14.s, z6.s
+	sub	z13.s, z14.s, z6.s
+	add	z6.s, z16.s, z1.s
+	sub	z14.s, z13.s, z4.s
+	add	z10.s, z6.s, z3.s
+	sub	z16.s, z16.s, z1.s
+	add	z1.s, z15.s, z8.s
+	sub	z15.s, z15.s, z8.s
+	add	z8.s, z5.s, z2.s
+	sub	z5.s, z5.s, z2.s
+	add	z2.s, z11.s, z31.s
+	sub	z31.s, z11.s, z31.s
+	sub	z11.s, z6.s, z3.s
+	add	z3.s, z16.s, z7.s
+	sub	z6.s, z16.s, z7.s
+	add	z7.s, z13.s, z4.s
+	add	z4.s, z29.s, z0.s
+	sub	z13.s, z1.s, z17.s
+	sub	z0.s, z29.s, z0.s
+	add	z29.s, z9.s, z12.s
+	sub	z9.s, z9.s, z12.s
+	add	z12.s, z1.s, z17.s
+	add	x25, x2, x2, lsl 1
+	sqrshrnb	z17.h, z12.s, #12
+	sqrshrnb	z1.h, z13.s, #12
+	add	z12.s, z8.s, z18.s
+	uzp1	z13.h, z1.h, z1.h
+	sub	z18.s, z8.s, z18.s
+	uzp1	z16.h, z17.h, z17.h
+	sqrshrnb	z8.h, z12.s, #12
+	sqrshrnb	z1.h, z18.s, #12
+	uzp1	z17.h, z8.h, z8.h
+	uzp1	z12.h, z1.h, z1.h
+	splice	z12.h, p4, z12.h, z13.h
+	add	z13.s, z2.s, z19.s
+	splice	z16.h, p4, z16.h, z17.h
+	add	x0, x2, x25, lsl 2
+	sub	z2.s, z2.s, z19.s
+	add	z1.s, z10.s, z20.s
+	sqrshrnb	z19.h, z13.s, #12
+	sqrshrnb	z18.h, z2.s, #12
+	sub	z20.s, z10.s, z20.s
+	uzp1	z17.h, z18.h, z18.h
+	sqrshrnb	z10.h, z1.s, #12
+	uzp1	z8.h, z19.h, z19.h
+	uzp1	z13.h, z10.h, z10.h
+	splice	z8.h, p4, z8.h, z13.h
+	sqrshrnb	z2.h, z20.s, #12
+	uzp2	z19.h, z16.h, z8.h
+	add	z10.s, z7.s, z22.s
+	uzp1	z1.h, z2.h, z2.h
+	sub	z7.s, z7.s, z22.s
+	splice	z1.h, p4, z1.h, z17.h
+	sqrshrnb	z22.h, z10.s, #12
+	uzp1	z17.h, z16.h, z8.h
+	add	z16.s, z3.s, z21.s
+	sub	z3.s, z3.s, z21.s
+	sqrshrnb	z21.h, z16.s, #12
+	sqrshrnb	z18.h, z3.s, #12
+	uzp1	z8.h, z21.h, z21.h
+	uzp1	z20.h, z18.h, z18.h
+	add	x11, x1, x0, lsl 1
+	add	x18, x1, x2, lsl 4
+	uzp1	z13.h, z22.h, z22.h
+	sqrshrnb	z16.h, z7.s, #12
+	movprfx	z2, z8
+	splice	z2.h, p4, z2.h, z13.h
+	add	z21.s, z4.s, z23.s
+	add	z10.s, z29.s, z24.s
+	sub	z4.s, z4.s, z23.s
+	sub	z24.s, z29.s, z24.s
+	sqrshrnb	z23.h, z21.s, #12
+	sqrshrnb	z18.h, z4.s, #12
+	sqrshrnb	z29.h, z10.s, #12
+	sqrshrnb	z22.h, z24.s, #12
+	uzp1	z7.h, z29.h, z29.h
+	uzp1	z3.h, z16.h, z16.h
+	uzp1	z8.h, z23.h, z23.h
+	splice	z3.h, p4, z3.h, z20.h
+	splice	z8.h, p4, z8.h, z7.h
+	uzp1	z20.h, z18.h, z18.h
+	uzp1	z13.h, z2.h, z8.h
+	add	x27, x18, 32
+	uzp2	z21.h, z17.h, z13.h
+	add	x18, x11, 32
+	uzp2	z2.h, z2.h, z8.h
+	add	z29.s, z14.s, z27.s
+	uzp1	z8.h, z17.h, z13.h
+	sub	z14.s, z14.s, z27.s
+	add	z17.s, z9.s, z25.s
+	sqrshrnb	z27.h, z29.s, #12
+	sub	z9.s, z9.s, z25.s
+	addvl	x0, sp, #1
+	sqrshrnb	z25.h, z17.s, #12
+	sqrshrnb	z16.h, z9.s, #12
+	addvl	x11, sp, #3
+	uzp1	z18.h, z16.h, z16.h
+	uzp1	z4.h, z22.h, z22.h
+	uzp1	z23.h, z25.h, z25.h
+	splice	z4.h, p4, z4.h, z20.h
+	uzp1	z22.h, z27.h, z27.h
+	add	z20.s, z0.s, z26.s
+	sub	z0.s, z0.s, z26.s
+	sqrshrnb	z26.h, z20.s, #12
+	sqrshrnb	z24.h, z0.s, #12
+	uzp1	z10.h, z26.h, z26.h
+	splice	z23.h, p4, z23.h, z10.h
+	add	z27.s, z31.s, z30.s
+	sqrshrnb	z13.h, z14.s, #12
+	add	z9.s, z6.s, z28.s
+	uzp1	z17.h, z13.h, z13.h
+	sub	z6.s, z6.s, z28.s
+	sub	z31.s, z31.s, z30.s
+	ldr	z30, [x28]
+	sqrshrnb	z28.h, z9.s, #12
+	add	x0, x0, 224
+	uzp1	z25.h, z28.h, z28.h
+	add	x11, x11, 224
+	ldr	z20, [x11]
+	uzp1	z7.h, z24.h, z24.h
+	splice	z7.h, p4, z7.h, z18.h
+	movprfx	z18, z22
+	splice	z18.h, p4, z18.h, z25.h
+	add	z22.s, z15.s, z20.s
+	uzp2	z10.h, z23.h, z18.h
+	uzp1	z26.h, z23.h, z18.h
+	ldr	z23, [x0]
+	add	z24.s, z11.s, z23.s
+	sub	z14.s, z11.s, z23.s
+	add	z11.s, z5.s, z30.s
+	add	x26, x26, x2, lsl 1
+	sqrshrnb	z16.h, z6.s, #12
+	sub	z5.s, z5.s, z30.s
+	sqrshrnb	z13.h, z24.s, #12
+	sqrshrnb	z29.h, z11.s, #12
+	sqrshrnb	z9.h, z22.s, #12
+	sub	z15.s, z15.s, z20.s
+	uzp1	z18.h, z9.h, z9.h
+	uzp1	z20.h, z4.h, z3.h
+	uzp1	z0.h, z16.h, z16.h
+	uzp2	z3.h, z4.h, z3.h
+	splice	z0.h, p4, z0.h, z17.h
+	uzp1	z28.h, z13.h, z13.h
+	sqrshrnb	z17.h, z27.s, #12
+	uzp1	z25.h, z29.h, z29.h
+	uzp1	z6.h, z17.h, z17.h
+	splice	z25.h, p4, z25.h, z18.h
+	splice	z28.h, p4, z28.h, z6.h
+	uzp1	z11.h, z28.h, z25.h
+	uzp1	z22.h, z26.h, z11.h
+	uzp1	z4.h, z8.h, z22.h
+	str	z4, [x26]
+	add	x22, x26, x2, lsl 1
+	uzp1	z29.h, z19.h, z2.h
+	sqrshrnb	z16.h, z5.s, #12
+	uzp2	z5.h, z28.h, z25.h
+	uzp2	z28.h, z10.h, z5.h
+	uzp1	z9.h, z10.h, z5.h
+	uzp1	z10.h, z29.h, z9.h
+	str	z10, [x22]
+	add	x21, x22, x2, lsl 1
+	uzp2	z26.h, z26.h, z11.h
+	uzp1	z6.h, z21.h, z26.h
+	str	z6, [x21]
+	add	x20, x21, x2, lsl 1
+	uzp2	z2.h, z19.h, z2.h
+	uzp1	z25.h, z2.h, z28.h
+	str	z25, [x20]
+	add	x19, x20, x2, lsl 1
+	uzp2	z8.h, z8.h, z22.h
+	add	x15, x2, x2, lsl 3
+	str	z8, [x19]
+	add	x12, x19, x2, lsl 1
+	uzp2	z18.h, z29.h, z9.h
+	str	z18, [x12]
+	add	x9, x12, x2, lsl 1
+	add	x30, x2, x2, lsl 2
+	add	x17, x1, x15, lsl 1
+	uzp2	z21.h, z21.h, z26.h
+	str	z21, [x9]
+	add	x14, x17, 32
+	sqrshrnb	z23.h, z15.s, #12
+	add	x17, x9, x2, lsl 1
+	uzp2	z15.h, z2.h, z28.h
+	sqrshrnb	z27.h, z14.s, #12
+	uzp1	z14.h, z16.h, z16.h
+	str	z15, [x17]
+	uzp1	z13.h, z0.h, z7.h
+	uzp1	z17.h, z1.h, z12.h
+	uzp2	z7.h, z0.h, z7.h
+	sqrshrnb	z24.h, z31.s, #12
+	uzp1	z0.h, z20.h, z17.h
+	uzp1	z19.h, z27.h, z27.h
+	add	x16, x2, x30, lsl 1
+	uzp1	z31.h, z23.h, z23.h
+	uzp1	z30.h, z24.h, z24.h
+	splice	z31.h, p4, z31.h, z14.h
+	splice	z30.h, p4, z30.h, z19.h
+	uzp1	z14.h, z31.h, z30.h
+	uzp1	z11.h, z14.h, z13.h
+	uzp1	z23.h, z11.h, z0.h
+	str	z23, [x27]
+	uzp2	z31.h, z31.h, z30.h
+	add	x5, x1, x30, lsl 2
+	uzp1	z27.h, z31.h, z7.h
+	lsl	x4, x2, 3
+	uzp2	z12.h, z1.h, z12.h
+	uzp1	z1.h, z3.h, z12.h
+	uzp1	z30.h, z27.h, z1.h
+	str	z30, [x14]
+	uzp2	z16.h, z20.h, z17.h
+	sub	x3, x4, x2
+	uzp2	z5.h, z14.h, z13.h
+	add	x6, x5, 32
+	uzp1	z13.h, z5.h, z16.h
+	add	x24, x1, x16, lsl 1
+	str	z13, [x6]
+	uzp2	z24.h, z3.h, z12.h
+	uzp2	z20.h, z31.h, z7.h
+	add	x10, x1, x25, lsl 3
+	uzp1	z17.h, z20.h, z24.h
+	add	x7, x24, 32
+	lsl	x13, x2, 4
+	str	z17, [x7]
+	add	x23, x1, x3, lsl 2
+	uzp2	z29.h, z11.h, z0.h
+	add	x5, x10, 32
+	sub	x4, x13, x2
+	str	z29, [x5]
+	add	x8, x23, 32
+	uzp2	z2.h, z27.h, z1.h
+	str	z2, [x18]
+	add	x3, x1, x4, lsl 1
+	uzp2	z22.h, z5.h, z16.h
+	addvl	x26, sp, #10
+	addvl	x22, sp, #10
+	str	z22, [x8]
+	addvl	x21, sp, #10
+	addvl	x27, sp, #10
+	uzp2	z26.h, z20.h, z24.h
+	addvl	x20, sp, #10
+	addvl	x14, sp, #10
+	addvl	x19, sp, #10
+	addvl	x12, sp, #10
+	addvl	x6, sp, #10
+	addvl	x9, sp, #10
+	addvl	x8, sp, #10
+	addvl	x7, sp, #10
+	addvl	x18, sp, #10
+	addvl	x5, sp, #10
+	addvl	x4, sp, #10
+	add	x23, x3, 32
+	str	z26, [x23]
+	add	x26, x26, 320
+	ldr	z9, [x26]
+	add	x22, x22, 448
+	ldr	z19, [x22]
+	add	x21, x21, 576
+	ldr	z7, [x21]
+	add	x27, x27, 704
+	ldr	z0, [x27]
+	add	x20, x20, 832
+	ldr	z3, [x20]
+	add	x14, x14, 960
+	ldr	z12, [x14]
+	add	x19, x19, 1088
+	ldr	z1, [x19]
+	add	x12, x12, 1216
+	ldr	z4, [x12]
+	add	x6, x6, 1344
+	ldr	z6, [x6]
+	add	x9, x9, 1472
+	ldr	z28, [x9]
+	add	x8, x8, 1600
+	ldr	z25, [x8]
+	add	x7, x7, 1728
+	ldr	z8, [x7]
+	add	x18, x18, 1856
+	ldr	z18, [x18]
+	add	x5, x5, 1984
+	ldr	z21, [x5]
+	add	x4, x4, 2112
+	ldr	z24, [x4]
+	add	x3, sp, 224
+	ldr	z31, [x3]
+	adrp	x24, _ZL6CDOT_O
+	lsl	x25, x25, 3
+	add	x10, x24, :lo12:_ZL6CDOT_O
+	zip1	z10.h, z9.h, z19.h
+	zip1	z11.h, z7.h, z0.h
+	zip1	z5.h, z3.h, z12.h
+	zip1	z13.h, z1.h, z4.h
+	zip1	z14.h, z6.h, z28.h
+	zip1	z15.h, z25.h, z8.h
+	zip1	z16.h, z18.h, z21.h
+	zip1	z17.h, z24.h, z31.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x10, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d30, #0
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z10.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x10, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z11.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x10, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z5.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x10, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z13.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x10, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z14.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x10, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z15.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x10, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z16.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x10, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z17.h, z9.h
+// 0 "" 2
+#NO_APP
+	adrp	x23, _ZL6CDOT_O+256
+	add	x27, x23, :lo12:_ZL6CDOT_O+256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z19.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	movi	d31, #0
+	mov	z18.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z10.h, z19.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z11.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z5.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z13.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z14.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z15.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z16.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z17.h, z6.h
+// 0 "" 2
+#NO_APP
+	adrp	x24, _ZL6CDOT_O+512
+	add	x9, x24, :lo12:_ZL6CDOT_O+512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z19.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z10.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z11.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z5.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z13.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x9, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z14.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x9, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z15.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x9, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z16.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x9, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z17.h, z20.h
+// 0 "" 2
+#NO_APP
+	adrp	x0, _ZL6CDOT_O+768
+	add	x8, x0, :lo12:_ZL6CDOT_O+768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z20.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z10.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z11.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z5.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z13.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z14.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z15.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z16.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x8, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z17.h, z3.h
+// 0 "" 2
+#NO_APP
+	adrp	x11, _ZL6CDOT_O+1024
+	add	x6, x11, :lo12:_ZL6CDOT_O+1024
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z21.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z10.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z11.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z5.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z14.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z15.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z16.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z17.h, z24.h
+// 0 "" 2
+#NO_APP
+	adrp	x26, _ZL6CDOT_O+1280
+	add	x7, x26, :lo12:_ZL6CDOT_O+1280
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z10.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z11.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z13.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z14.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z15.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z16.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z17.h, z0.h
+// 0 "" 2
+#NO_APP
+	adrp	x22, _ZL6CDOT_O+1536
+	add	x5, x22, :lo12:_ZL6CDOT_O+1536
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z23.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z10.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z11.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z5.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z13.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z14.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z15.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z16.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z17.h, z8.h
+// 0 "" 2
+#NO_APP
+	adrp	x21, _ZL6CDOT_O+1792
+	add	x4, x21, :lo12:_ZL6CDOT_O+1792
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z24.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z10.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z11.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z5.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z13.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x4, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z14.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x4, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z15.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x4, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z16.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x4, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z17.h, z3.h
+// 0 "" 2
+#NO_APP
+	adrp	x20, _ZL6CDOT_O+2048
+	add	x14, x20, :lo12:_ZL6CDOT_O+2048
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z25.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z10.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z11.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z5.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x14, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z14.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x14, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z15.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x14, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z16.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x14, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z17.h, z29.h
+// 0 "" 2
+#NO_APP
+	adrp	x19, _ZL6CDOT_O+2304
+	add	x12, x19, :lo12:_ZL6CDOT_O+2304
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z26.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z10.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z11.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z5.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z13.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x12, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z14.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x12, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z15.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x12, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z16.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x12, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z17.h, z4.h
+// 0 "" 2
+#NO_APP
+	adrp	x18, _ZL6CDOT_O+2560
+	add	x3, x18, :lo12:_ZL6CDOT_O+2560
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z27.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z10.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z11.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z5.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z13.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x3, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z14.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x3, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z15.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x3, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z16.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x3, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z17.h, z0.h
+// 0 "" 2
+#NO_APP
+	adrp	x23, _ZL6CDOT_O+2816
+	add	x24, x23, :lo12:_ZL6CDOT_O+2816
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z28.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z10.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z11.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z5.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z13.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x24, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z14.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x24, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z15.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x24, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z16.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x24, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z17.h, z2.h
+// 0 "" 2
+#NO_APP
+	adrp	x0, _ZL6CDOT_O+3072
+	add	x11, x0, :lo12:_ZL6CDOT_O+3072
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z10.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z11.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x11, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z5.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x11, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z13.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x11, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x11, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z15.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x11, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z16.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x11, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z17.h, z8.h
+// 0 "" 2
+#NO_APP
+	adrp	x22, _ZL6CDOT_O+3328
+	add	x26, sp, 224
+	str	z7, [x26]
+	add	x21, x22, :lo12:_ZL6CDOT_O+3328
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x21, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z2.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z10.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x21, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z11.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x21, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z5.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x21, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z13.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x21, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z14.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x21, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z15.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x21, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z16.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x21, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z17.h, z4.h
+// 0 "" 2
+#NO_APP
+	addvl	x20, sp, #1
+	adrp	x14, _ZL6CDOT_O+3584
+	add	x20, x20, 224
+	add	x19, x14, :lo12:_ZL6CDOT_O+3584
+	str	z2, [x20]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z0.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z10.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x19, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z11.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x19, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z5.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x19, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z13.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x19, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z14.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x19, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x19, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z16.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x19, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z17.h, z12.h
+// 0 "" 2
+#NO_APP
+	adrp	x12, _ZL6CDOT_O+3840
+	add	x18, x12, :lo12:_ZL6CDOT_O+3840
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z4.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z10.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z4.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z11.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z10.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z5.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z13.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x18, #4, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z12.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z14.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x18, #5, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z14.d, z13.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z15.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x18, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z16.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x18, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z17.h, z15.h
+// 0 "" 2
+#NO_APP
+	addvl	x24, sp, #10
+	addvl	x23, sp, #10
+	str	z14, [x28]
+	add	x24, x24, 640
+	ldr	z3, [x24]
+	addvl	x0, sp, #10
+	addvl	x11, sp, #10
+	addvl	x26, sp, #10
+	addvl	x22, sp, #10
+	addvl	x21, sp, #10
+	addvl	x20, sp, #10
+	add	x23, x23, 384
+	ldr	z9, [x23]
+	add	x0, x0, 896
+	ldr	z7, [x0]
+	add	x11, x11, 1152
+	ldr	z1, [x11]
+	add	x26, x26, 1408
+	ldr	z16, [x26]
+	add	x22, x22, 1664
+	ldr	z4, [x22]
+	add	x21, x21, 1920
+	ldr	z17, [x21]
+	add	x20, x20, 2176
+	ldr	z10, [x20]
+	adrp	x3, .LANCHOR0
+	zip1	z6.h, z9.h, z3.h
+	zip1	z29.h, z7.h, z1.h
+	zip1	z2.h, z16.h, z4.h
+	zip1	z3.h, z17.h, z10.h
+	add	x19, x3, :lo12:.LANCHOR0
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z6.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x19, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z29.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x19, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z2.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x19, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z3.h, z13.h
+// 0 "" 2
+#NO_APP
+	add	x14, x19, 128
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z9.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z6.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z29.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x14, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z2.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x14, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z3.h, z1.h
+// 0 "" 2
+#NO_APP
+	add	x12, x19, 256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z6.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z29.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x12, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z2.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x12, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z3.h, z11.h
+// 0 "" 2
+#NO_APP
+	add	x18, x19, 384
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z11.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z6.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z29.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x18, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z2.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x18, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z3.h, z14.h
+// 0 "" 2
+#NO_APP
+	add	x3, x19, 512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z6.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z29.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z2.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z3.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x23, x19, 640
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z6.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x23, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z29.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x23, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z2.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x23, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z3.h, z14.h
+// 0 "" 2
+#NO_APP
+	add	x24, x19, 768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x24, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z14.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z6.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x24, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z29.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x24, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z2.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x24, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z3.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x0, x19, 896
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x0, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z15.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z6.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x0, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z29.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x0, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z2.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x0, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z3.h, z2.h
+// 0 "" 2
+#NO_APP
+	addvl	x26, sp, #10
+	addvl	x22, sp, #10
+	addvl	x21, sp, #10
+	addvl	x20, sp, #10
+	add	x26, x26, 512
+	ldr	z3, [x26]
+	add	x22, x22, 1024
+	ldr	z17, [x22]
+	add	x21, x21, 1536
+	ldr	z5, [x21]
+	add	x20, x20, 2048
+	ldr	z7, [x20]
+	add	x11, x19, 1024
+	zip1	z1.h, z3.h, z17.h
+	zip1	z29.h, z5.h, z7.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z4.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z1.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x11, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z29.h, z6.h
+// 0 "" 2
+#NO_APP
+	add	x14, x19, 1088
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x14, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z5.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z1.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x14, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z29.h, z3.h
+// 0 "" 2
+#NO_APP
+	add	x12, x19, 1152
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z17.h, p7/z, [x12, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z6.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z1.h, z17.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x12, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z29.h, z7.h
+// 0 "" 2
+#NO_APP
+	add	x18, x19, 1216
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z1.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x18, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z29.h, z1.h
+// 0 "" 2
+#NO_APP
+	addvl	x23, sp, #10
+	addvl	x24, sp, #10
+	add	x23, x23, 768
+	ldr	z29, [x23]
+	add	x24, x24, 1792
+	ldr	z2, [x24]
+	add	x3, x19, 1280
+	zip1	z17.h, z29.h, z2.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z2.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z17.h, z3.h
+// 0 "" 2
+#NO_APP
+	add	x0, x19, 1312
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x0, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z3.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z17.h, z16.h
+// 0 "" 2
+#NO_APP
+	addvl	x26, sp, #10
+	addvl	x22, sp, #10
+	add	x26, x26, 256
+	ldr	z1, [x26]
+	add	x22, x22, 1280
+	ldr	z29, [x22]
+	add	x11, x19, 1344
+	zip1	z1.h, z1.h, z29.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z17.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z1.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x19, x19, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z16.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z29.h
+// 0 "" 2
+#NO_APP
+	add	z1.s, z17.s, z2.s
+	sub	z29.s, z16.s, z3.s
+	sub	z17.s, z17.s, z2.s
+	add	z2.s, z16.s, z3.s
+	add	z3.s, z1.s, z4.s
+	sub	z16.s, z29.s, z6.s
+	sub	z1.s, z1.s, z4.s
+	add	z4.s, z2.s, z5.s
+	sub	z2.s, z2.s, z5.s
+	add	z5.s, z29.s, z6.s
+	add	z6.s, z17.s, z7.s
+	sub	z17.s, z17.s, z7.s
+	sub	z29.s, z5.s, z10.s
+	add	z7.s, z3.s, z8.s
+	sub	z3.s, z3.s, z8.s
+	add	z8.s, z4.s, z9.s
+	sub	z4.s, z4.s, z9.s
+	add	z9.s, z5.s, z10.s
+	sub	z5.s, z6.s, z11.s
+	add	z10.s, z6.s, z11.s
+	add	z11.s, z17.s, z12.s
+	sub	z6.s, z17.s, z12.s
+	add	z12.s, z16.s, z13.s
+	sub	z17.s, z7.s, z30.s
+	sub	z16.s, z16.s, z13.s
+	add	z13.s, z2.s, z14.s
+	sub	z2.s, z2.s, z14.s
+	add	z14.s, z1.s, z15.s
+	sub	z1.s, z1.s, z15.s
+	add	z15.s, z7.s, z30.s
+	sqrshrnb	z7.h, z17.s, #12
+	sqrshrnb	z30.h, z15.s, #12
+	uzp1	z17.h, z7.h, z7.h
+	add	z15.s, z8.s, z18.s
+	sub	z18.s, z8.s, z18.s
+	sqrshrnb	z8.h, z15.s, #12
+	sqrshrnb	z15.h, z18.s, #12
+	uzp1	z7.h, z8.h, z8.h
+	uzp1	z8.h, z15.h, z15.h
+	splice	z8.h, p4, z8.h, z17.h
+	add	z17.s, z9.s, z19.s
+	sub	z9.s, z9.s, z19.s
+	uzp1	z30.h, z30.h, z30.h
+	sqrshrnb	z19.h, z17.s, #12
+	splice	z30.h, p4, z30.h, z7.h
+	sqrshrnb	z18.h, z9.s, #12
+	uzp1	z7.h, z19.h, z19.h
+	uzp1	z15.h, z18.h, z18.h
+	add	z17.s, z10.s, z20.s
+	sub	z10.s, z10.s, z20.s
+	sqrshrnb	z20.h, z17.s, #12
+	uzp1	z9.h, z20.h, z20.h
+	sub	x25, x25, x2
+	movprfx	z18, z7
+	splice	z18.h, p4, z18.h, z9.h
+	sqrshrnb	z19.h, z10.s, #12
+	uzp2	z10.h, z30.h, z18.h
+	uzp1	z7.h, z19.h, z19.h
+	splice	z7.h, p4, z7.h, z15.h
+	uzp1	z15.h, z30.h, z18.h
+	add	z30.s, z11.s, z21.s
+	sub	z21.s, z11.s, z21.s
+	sqrshrnb	z11.h, z30.s, #12
+	sqrshrnb	z20.h, z21.s, #12
+	uzp1	z9.h, z20.h, z20.h
+	add	x18, x2, x15, lsl 1
+	add	x26, x2, x30, lsl 2
+	add	z18.s, z12.s, z22.s
+	add	z21.s, z13.s, z23.s
+	sub	z12.s, z12.s, z22.s
+	sub	z13.s, z13.s, z23.s
+	sqrshrnb	z22.h, z18.s, #12
+	sqrshrnb	z30.h, z12.s, #12
+	uzp1	z19.h, z22.h, z22.h
+	sqrshrnb	z23.h, z21.s, #12
+	uzp1	z17.h, z11.h, z11.h
+	uzp1	z11.h, z30.h, z30.h
+	splice	z17.h, p4, z17.h, z19.h
+	splice	z11.h, p4, z11.h, z9.h
+	sqrshrnb	z9.h, z13.s, #12
+	add	x14, x1, x25, lsl 1
+	uzp1	z18.h, z9.h, z9.h
+	add	z12.s, z14.s, z24.s
+	uzp1	z20.h, z23.h, z23.h
+	sub	z14.s, z14.s, z24.s
+	sqrshrnb	z24.h, z12.s, #12
+	sqrshrnb	z19.h, z14.s, #12
+	uzp1	z22.h, z24.h, z24.h
+	splice	z20.h, p4, z20.h, z22.h
+	uzp1	z30.h, z17.h, z20.h
+	uzp2	z20.h, z17.h, z20.h
+	uzp1	z23.h, z15.h, z30.h
+	uzp2	z9.h, z15.h, z30.h
+	add	z15.s, z1.s, z25.s
+	sub	z25.s, z1.s, z25.s
+	sqrshrnb	z1.h, z15.s, #12
+	sqrshrnb	z21.h, z25.s, #12
+	uzp1	z17.h, z1.h, z1.h
+	add	x11, x14, 32
+	add	x0, x1, x18, lsl 1
+	add	x14, x1, x26, lsl 1
+	add	z12.s, z2.s, z26.s
+	addvl	x26, sp, #1
+	sub	z2.s, z2.s, z26.s
+	uzp1	z13.h, z19.h, z19.h
+	sqrshrnb	z26.h, z12.s, #12
+	splice	z13.h, p4, z13.h, z18.h
+	uzp1	z14.h, z26.h, z26.h
+	uzp1	z18.h, z21.h, z21.h
+	movprfx	z24, z17
+	splice	z24.h, p4, z24.h, z14.h
+	sqrshrnb	z22.h, z2.s, #12
+	add	z19.s, z16.s, z27.s
+	add	z21.s, z6.s, z28.s
+	sub	z27.s, z16.s, z27.s
+	sub	z6.s, z6.s, z28.s
+	sqrshrnb	z16.h, z19.s, #12
+	sqrshrnb	z15.h, z27.s, #12
+	sqrshrnb	z28.h, z21.s, #12
+	uzp1	z30.h, z16.h, z16.h
+	uzp1	z17.h, z28.h, z28.h
+	splice	z30.h, p4, z30.h, z17.h
+	ldr	z16, [x28]
+	uzp1	z2.h, z24.h, z30.h
+	uzp2	z14.h, z24.h, z30.h
+	add	x18, x0, 32
+	add	z30.s, z3.s, z16.s
+	uzp1	z25.h, z15.h, z15.h
+	add	x0, sp, 224
+	ldr	z24, [x0]
+	add	x26, x26, 224
+	add	z26.s, z5.s, z24.s
+	uzp1	z1.h, z22.h, z22.h
+	sqrshrnb	z15.h, z26.s, #12
+	splice	z1.h, p4, z1.h, z18.h
+	sub	z22.s, z5.s, z24.s
+	ldr	z5, [x26]
+	sqrshrnb	z18.h, z6.s, #12
+	sub	z27.s, z29.s, z5.s
+	sqrshrnb	z6.h, z30.s, #12
+	add	x17, x17, x2, lsl 1
+	add	z19.s, z29.s, z5.s
+	uzp1	z24.h, z6.h, z6.h
+	add	z29.s, z4.s, z0.s
+	sqrshrnb	z5.h, z27.s, #12
+	sqrshrnb	z21.h, z29.s, #12
+	uzp1	z12.h, z18.h, z18.h
+	uzp1	z28.h, z15.h, z15.h
+	splice	z12.h, p4, z12.h, z25.h
+	uzp1	z18.h, z21.h, z21.h
+	sqrshrnb	z25.h, z19.s, #12
+	splice	z18.h, p4, z18.h, z24.h
+	uzp1	z17.h, z25.h, z25.h
+	splice	z28.h, p4, z28.h, z17.h
+	uzp1	z27.h, z28.h, z18.h
+	uzp1	z15.h, z2.h, z27.h
+	uzp1	z6.h, z23.h, z15.h
+	str	z6, [x17]
+	add	x20, x17, x2, lsl 1
+	uzp2	z29.h, z28.h, z18.h
+	sub	z3.s, z3.s, z16.s
+	uzp1	z18.h, z10.h, z20.h
+	uzp1	z16.h, z14.h, z29.h
+	uzp1	z17.h, z18.h, z16.h
+	str	z17, [x20]
+	add	x3, x20, x2, lsl 1
+	uzp2	z2.h, z2.h, z27.h
+	sub	z0.s, z4.s, z0.s
+	uzp1	z24.h, z9.h, z2.h
+	str	z24, [x3]
+	add	x23, x3, x2, lsl 1
+	uzp2	z10.h, z10.h, z20.h
+	uzp2	z14.h, z14.h, z29.h
+	sqrshrnb	z4.h, z0.s, #12
+	uzp1	z0.h, z10.h, z14.h
+	str	z0, [x23]
+	add	x24, x23, x2, lsl 1
+	add	x16, x1, x16, lsl 2
+	sqrshrnb	z26.h, z3.s, #12
+	uzp2	z23.h, z23.h, z15.h
+	str	z23, [x24]
+	add	x22, x16, 32
+	add	x12, x2, 1
+	add	x16, x24, x2, lsl 1
+	uzp1	z30.h, z26.h, z26.h
+	uzp2	z26.h, z18.h, z16.h
+	str	z26, [x16]
+	add	x25, x16, x2, lsl 1
+	add	x13, x13, x2
+	add	x30, x1, x30, lsl 3
+	uzp2	z9.h, z9.h, z2.h
+	str	z9, [x25]
+	add	x19, x1, x12, lsl 5
+	uzp1	z19.h, z4.h, z4.h
+	add	x12, x30, 32
+	uzp2	z4.h, z10.h, z14.h
+	add	x30, x25, x2, lsl 1
+	sqrshrnb	z22.h, z22.s, #12
+	str	z4, [x30]
+	uzp1	z25.h, z12.h, z1.h
+	uzp1	z28.h, z7.h, z8.h
+	splice	z30.h, p4, z30.h, z19.h
+	uzp1	z21.h, z13.h, z11.h
+	uzp2	z1.h, z12.h, z1.h
+	add	x21, x1, x13, lsl 1
+	uzp1	z12.h, z21.h, z28.h
+	uzp1	z20.h, z22.h, z22.h
+	uzp1	z3.h, z5.h, z5.h
+	splice	z3.h, p4, z3.h, z20.h
+	uzp1	z22.h, z30.h, z3.h
+	uzp1	z19.h, z22.h, z25.h
+	uzp1	z27.h, z19.h, z12.h
+	str	z27, [x19]
+	uzp2	z11.h, z13.h, z11.h
+	uzp2	z30.h, z30.h, z3.h
+	uzp2	z13.h, z21.h, z28.h
+	add	x13, x21, 32
+	uzp1	z21.h, z30.h, z1.h
+	add	x15, x1, x15, lsl 2
+	uzp2	z8.h, z7.h, z8.h
+	uzp1	z7.h, z11.h, z8.h
+	uzp1	z29.h, z21.h, z7.h
+	str	z29, [x13]
+	uzp2	z18.h, z22.h, z25.h
+	add	x21, x15, 32
+	uzp1	z25.h, z18.h, z13.h
+	str	z25, [x21]
+	uzp2	z5.h, z11.h, z8.h
+	uzp2	z15.h, z30.h, z1.h
+	uzp1	z16.h, z15.h, z5.h
+	str	z16, [x18]
+	uzp2	z2.h, z19.h, z12.h
+	add	x15, x14, 32
+	str	z2, [x12]
+	uzp2	z10.h, z21.h, z7.h
+	uzp2	z14.h, z18.h, z13.h
+	str	z10, [x15]
+	addvl	x28, sp, #10
+	uzp2	z28.h, z15.h, z5.h
+	str	z14, [x22]
+	add	x28, x28, 336
+	addvl	x17, sp, #10
+	addvl	x20, sp, #10
+	addvl	x3, sp, #10
+	str	z28, [x11]
+	ldr	z3, [x28]
+	addvl	x22, sp, #10
+	addvl	x23, sp, #10
+	addvl	x13, sp, #10
+	addvl	x24, sp, #10
+	addvl	x11, sp, #10
+	addvl	x19, sp, #10
+	addvl	x16, sp, #10
+	addvl	x21, sp, #10
+	addvl	x18, sp, #10
+	addvl	x25, sp, #10
+	addvl	x12, sp, #10
+	addvl	x14, sp, #10
+	add	x17, x17, 464
+	ldr	z20, [x17]
+	add	x20, x20, 592
+	ldr	z1, [x20]
+	add	x3, x3, 720
+	ldr	z6, [x3]
+	add	x22, x22, 848
+	ldr	z17, [x22]
+	add	x23, x23, 976
+	ldr	z24, [x23]
+	add	x13, x13, 1104
+	ldr	z0, [x13]
+	add	x24, x24, 1232
+	ldr	z23, [x24]
+	add	x11, x11, 1360
+	ldr	z12, [x11]
+	add	x19, x19, 1488
+	ldr	z26, [x19]
+	add	x16, x16, 1616
+	ldr	z4, [x16]
+	add	x21, x21, 1744
+	ldr	z7, [x21]
+	add	x18, x18, 1872
+	ldr	z5, [x18]
+	add	x25, x25, 2000
+	ldr	z22, [x25]
+	add	x12, x12, 2128
+	ldr	z19, [x12]
+	add	x14, x14, 2256
+	ldr	z27, [x14]
+	zip1	z8.h, z3.h, z20.h
+	zip1	z9.h, z1.h, z6.h
+	zip1	z2.h, z17.h, z24.h
+	zip1	z11.h, z0.h, z23.h
+	zip1	z3.h, z12.h, z26.h
+	zip1	z13.h, z4.h, z7.h
+	zip1	z14.h, z5.h, z22.h
+	zip1	z15.h, z19.h, z27.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x10, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z17.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x10, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z9.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x10, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z2.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z18.h, p7/z, [x10, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z11.h, z18.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x10, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z3.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x10, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z13.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x10, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z14.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x10, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z17.s, z15.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z20.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z18.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z8.h, z20.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z9.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z2.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z11.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z3.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z13.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z14.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z18.s, z15.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z19.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z8.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z2.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z11.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x9, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z3.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x9, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z13.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z21.h, p7/z, [x9, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z14.h, z21.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x9, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z19.s, z15.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z20.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z8.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z9.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z2.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z11.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z3.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z14.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x8, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z20.s, z15.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z23.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z21.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z8.h, z23.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z9.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z2.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z11.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x6, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z3.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x6, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z13.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z22.h, p7/z, [x6, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z14.h, z22.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x6, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z21.s, z15.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z22.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z9.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z2.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z11.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z13.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z22.s, z15.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z24.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z23.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z8.h, z24.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z9.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z2.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z11.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z3.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x5, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z13.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x5, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z14.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x5, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z23.s, z15.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z24.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z8.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z9.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z25.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z2.h, z25.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z11.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x4, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x4, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z13.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x4, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z14.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x4, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z24.s, z15.h, z6.h
+// 0 "" 2
+#NO_APP
+	adrp	x10, _ZL6CDOT_O+2048
+	add	x27, x10, :lo12:_ZL6CDOT_O+2048
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z25.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z8.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z9.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z26.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z2.h, z26.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z11.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x27, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z3.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x27, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z13.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z27.h, p7/z, [x27, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z14.h, z27.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x27, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z25.s, z15.h, z30.h
+// 0 "" 2
+#NO_APP
+	adrp	x9, _ZL6CDOT_O+2304
+	add	x8, x9, :lo12:_ZL6CDOT_O+2304
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z26.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z8.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z9.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z2.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z11.h, z28.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x8, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z3.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x8, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x8, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z14.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x8, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z26.s, z15.h, z12.h
+// 0 "" 2
+#NO_APP
+	adrp	x6, _ZL6CDOT_O+2560
+	add	x7, x6, :lo12:_ZL6CDOT_O+2560
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z27.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z8.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z9.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z2.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z11.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z29.h, p7/z, [x7, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z3.h, z29.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x7, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z13.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x7, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z14.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z28.h, p7/z, [x7, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z27.s, z15.h, z28.h
+// 0 "" 2
+#NO_APP
+	adrp	x5, _ZL6CDOT_O+2816
+	add	x4, x5, :lo12:_ZL6CDOT_O+2816
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z28.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z8.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z9.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z2.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z11.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x4, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z3.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x4, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z13.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x4, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z14.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x4, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z28.s, z15.h, z30.h
+// 0 "" 2
+#NO_APP
+	adrp	x15, _ZL6CDOT_O+3072
+	add	x0, x15, :lo12:_ZL6CDOT_O+3072
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x0, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z29.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z8.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x0, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z9.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x0, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z2.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x0, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z11.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x0, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z3.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x0, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z13.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x0, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z14.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x0, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z29.s, z15.h, z7.h
+// 0 "" 2
+#NO_APP
+	adrp	x26, _ZL6CDOT_O+3328
+	add	x28, x26, :lo12:_ZL6CDOT_O+3328
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x28, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z30.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z8.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x28, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z9.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x28, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z2.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x28, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z11.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x28, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z3.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x28, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z13.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x28, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z14.h, z12.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x28, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z30.s, z15.h, z4.h
+// 0 "" 2
+#NO_APP
+	adrp	x20, _ZL6CDOT_O+3584
+	add	x17, sp, 224
 	str	z30, [x17]
-	add	x18, x1, x6, lsl 1
-	sub	x2, x23, x2
-	uzp2	z2.h, z26.h, z9.h
-	add	x11, x3, 32
-	str	z2, [x11]
-	uzp2	z15.h, z17.h, z10.h
-	add	x15, x1, x5, lsl 2
-	add	x0, x18, 32
-	str	z15, [x0]
-	add	x13, x15, 32
+	add	x3, x20, :lo12:_ZL6CDOT_O+3584
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z5.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z8.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z9.h, z30.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x3, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z2.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x3, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z11.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x3, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z3.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x3, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z13.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z0.h, p7/z, [x3, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z14.h, z0.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x3, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z15.h, z12.h
+// 0 "" 2
+#NO_APP
+	addvl	x22, sp, #1
+	adrp	x23, _ZL6CDOT_O+3840
+	add	x22, x22, 224
+	add	x13, x23, :lo12:_ZL6CDOT_O+3840
+	str	z5, [x22]
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x13, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z0.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z8.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z8.h, p7/z, [x13, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z9.h, z8.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x13, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z2.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x13, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z11.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x13, #4, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z3.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x13, #5, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z13.h, z3.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x13, #6, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z14.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x13, #7, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z0.s, z15.h, z14.h
+// 0 "" 2
+#NO_APP
+	addvl	x19, sp, #10
+	addvl	x11, sp, #10
+	add	x19, x19, 656
+	ldr	z30, [x19]
+	addvl	x16, sp, #10
+	addvl	x21, sp, #10
+	addvl	x18, sp, #10
+	addvl	x25, sp, #10
+	addvl	x12, sp, #10
+	addvl	x14, sp, #10
+	add	x11, x11, 400
+	ldr	z5, [x11]
+	add	x16, x16, 912
+	ldr	z10, [x16]
+	add	x21, x21, 1168
+	ldr	z15, [x21]
+	add	x18, x18, 1424
+	ldr	z7, [x18]
+	add	x25, x25, 1680
+	ldr	z1, [x25]
+	add	x12, x12, 1936
+	ldr	z16, [x12]
+	add	x14, x14, 2192
+	ldr	z12, [x14]
+	adrp	x24, .LANCHOR0
+	zip1	z2.h, z5.h, z30.h
+	zip1	z6.h, z10.h, z15.h
+	zip1	z3.h, z7.h, z1.h
+	zip1	z30.h, z16.h, z12.h
+	add	x10, x24, :lo12:.LANCHOR0
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x10, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z8.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z2.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z9.h, p7/z, [x10, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z6.h, z9.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z11.h, p7/z, [x10, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z3.h, z11.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x10, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z8.s, z30.h, z13.h
+// 0 "" 2
+#NO_APP
+	add	x27, x10, 128
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x27, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z9.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z2.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x27, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z6.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z10.h, p7/z, [x27, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z3.h, z10.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x27, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z9.s, z30.h, z15.h
+// 0 "" 2
+#NO_APP
+	add	x9, x10, 256
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x9, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z10.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z2.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x9, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z6.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x9, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z3.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z12.h, p7/z, [x9, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z10.s, z30.h, z12.h
+// 0 "" 2
+#NO_APP
+	add	x8, x10, 384
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x8, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z11.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z2.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z13.h, p7/z, [x8, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z6.h, z13.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x8, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z3.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x8, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z11.s, z30.h, z5.h
+// 0 "" 2
+#NO_APP
+	add	x6, x10, 512
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x6, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z12.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z2.h, z15.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x6, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z6.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x6, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z3.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x6, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z12.s, z30.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x7, x10, 640
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x7, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z13.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z2.h, z4.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z14.h, p7/z, [x7, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z6.h, z14.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x7, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z3.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z15.h, p7/z, [x7, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z13.s, z30.h, z15.h
+// 0 "" 2
+#NO_APP
+	add	x5, x10, 768
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x5, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z14.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z2.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x5, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z6.h, z1.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x5, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z3.h, z16.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z4.h, p7/z, [x5, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z14.s, z30.h, z4.h
+// 0 "" 2
+#NO_APP
+	add	x4, x10, 896
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x4, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z15.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z2.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x4, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z6.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x4, #2, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z3.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x4, #3, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z15.s, z30.h, z3.h
+// 0 "" 2
+#NO_APP
+	addvl	x0, sp, #10
+	addvl	x26, sp, #10
+	add	x0, x0, 528
+	ldr	z30, [x0]
+	addvl	x28, sp, #10
+	addvl	x17, sp, #10
+	add	x26, x26, 1040
+	ldr	z7, [x26]
+	add	x28, x28, 1552
+	ldr	z16, [x28]
+	add	x17, x17, 2064
+	ldr	z4, [x17]
+	zip1	z1.h, z30.h, z7.h
+	add	x15, x10, 1024
+	zip1	z30.h, z16.h, z4.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z5.h, p7/z, [x15, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z4.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z1.h, z5.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x15, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z4.s, z30.h, z2.h
+// 0 "" 2
+#NO_APP
+	add	x20, x10, 1088
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z6.h, p7/z, [x20, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z5.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z1.h, z6.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z3.h, p7/z, [x20, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z5.s, z30.h, z3.h
+// 0 "" 2
+#NO_APP
+	add	x3, x10, 1152
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z7.h, p7/z, [x3, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z6.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z1.h, z7.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z16.h, p7/z, [x3, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z6.s, z30.h, z16.h
+// 0 "" 2
+#NO_APP
+	add	x22, x10, 1216
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z2.h, p7/z, [x22, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z7.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z1.h, z2.h
+// 0 "" 2
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x22, #1, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z7.s, z30.h, z1.h
+// 0 "" 2
+#NO_APP
+	addvl	x13, sp, #10
+	addvl	x24, sp, #10
+	add	x13, x13, 784
+	ldr	z30, [x13]
+	add	x24, x24, 1808
+	ldr	z3, [x24]
+	add	x23, x10, 1280
+	zip1	z16.h, z30.h, z3.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z1.h, p7/z, [x23, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z2.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z2.s, z16.h, z1.h
+// 0 "" 2
+#NO_APP
+	add	x11, x10, 1312
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x11, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z3.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z3.s, z16.h, z30.h
+// 0 "" 2
+#NO_APP
+	addvl	x16, sp, #10
+	addvl	x21, sp, #10
+	add	x16, x16, 272
+	ldr	z1, [x16]
+	add	x21, x21, 1296
+	ldr	z16, [x21]
+	add	x19, x10, 1344
+	zip1	z1.h, z1.h, z16.h
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x19, #0, MUL VL]
+// 0 "" 2
+#NO_APP
+	mov	z16.d, z31.d
+#APP
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z16.s, z1.h, z30.h
+// 0 "" 2
+#NO_APP
+	add	x18, x10, 1376
+#APP
+// 274 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	ld1h z30.h, p7/z, [x18, #0, MUL VL]
+// 0 "" 2
+// 260 "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/idct32/candidates/best_sve2.cpp" 1
+	sdot z31.s, z1.h, z30.h
+// 0 "" 2
+#NO_APP
+	add	z1.s, z16.s, z2.s
+	sub	z16.s, z16.s, z2.s
+	add	z2.s, z31.s, z3.s
+	sub	z30.s, z1.s, z4.s
+	sub	z31.s, z31.s, z3.s
+	add	z3.s, z1.s, z4.s
+	sub	z1.s, z2.s, z5.s
+	add	z4.s, z2.s, z5.s
+	sub	z2.s, z31.s, z6.s
+	add	z5.s, z31.s, z6.s
+	add	z6.s, z16.s, z7.s
+	sub	z31.s, z2.s, z13.s
+	sub	z16.s, z16.s, z7.s
+	add	z7.s, z3.s, z8.s
+	sub	z3.s, z3.s, z8.s
+	add	z8.s, z4.s, z9.s
+	sub	z4.s, z4.s, z9.s
+	add	z9.s, z5.s, z10.s
+	sub	z5.s, z5.s, z10.s
+	add	z10.s, z6.s, z11.s
+	sub	z6.s, z6.s, z11.s
+	add	z11.s, z16.s, z12.s
+	sub	z16.s, z16.s, z12.s
+	add	z12.s, z2.s, z13.s
+	add	z13.s, z1.s, z14.s
+	sub	z2.s, z1.s, z14.s
+	add	z14.s, z30.s, z15.s
+	sub	z1.s, z7.s, z17.s
+	sub	z30.s, z30.s, z15.s
+	add	z15.s, z7.s, z17.s
+	add	x25, x2, x2, lsl 2
+	sqrshrnb	z17.h, z15.s, #12
+	sqrshrnb	z7.h, z1.s, #12
+	add	z15.s, z8.s, z18.s
+	uzp1	z1.h, z7.h, z7.h
+	sub	z18.s, z8.s, z18.s
+	sqrshrnb	z8.h, z15.s, #12
+	sqrshrnb	z15.h, z18.s, #12
+	uzp1	z7.h, z8.h, z8.h
+	uzp1	z8.h, z15.h, z15.h
+	splice	z8.h, p4, z8.h, z1.h
+	add	z1.s, z9.s, z19.s
+	sub	z9.s, z9.s, z19.s
+	add	x27, x2, x2, lsl 1
+	add	x6, x25, x25, lsl 2
+	sqrshrnb	z19.h, z1.s, #12
+	sqrshrnb	z18.h, z9.s, #12
+	add	z1.s, z10.s, z20.s
+	uzp1	z15.h, z18.h, z18.h
+	sub	z10.s, z10.s, z20.s
+	uzp1	z17.h, z17.h, z17.h
+	sqrshrnb	z20.h, z1.s, #12
+	splice	z17.h, p4, z17.h, z7.h
+	uzp1	z9.h, z20.h, z20.h
+	uzp1	z7.h, z19.h, z19.h
+	sqrshrnb	z19.h, z10.s, #12
+	movprfx	z18, z7
+	splice	z18.h, p4, z18.h, z9.h
+	uzp1	z7.h, z19.h, z19.h
+	uzp2	z10.h, z17.h, z18.h
+	splice	z7.h, p4, z7.h, z15.h
+	uzp1	z15.h, z17.h, z18.h
+	add	z17.s, z11.s, z21.s
+	sub	z11.s, z11.s, z21.s
+	sqrshrnb	z21.h, z17.s, #12
+	sqrshrnb	z20.h, z11.s, #12
+	uzp1	z9.h, z20.h, z20.h
+	add	x8, x2, x27, lsl 2
+	add	x7, x1, x6, lsl 1
+	add	z18.s, z12.s, z22.s
+	uzp1	z1.h, z21.h, z21.h
+	sub	z12.s, z12.s, z22.s
+	add	z21.s, z13.s, z23.s
+	sqrshrnb	z22.h, z18.s, #12
+	sqrshrnb	z17.h, z12.s, #12
+	uzp1	z19.h, z22.h, z22.h
+	sub	z13.s, z13.s, z23.s
+	uzp1	z11.h, z17.h, z17.h
+	splice	z11.h, p4, z11.h, z9.h
+	sqrshrnb	z9.h, z13.s, #12
+	splice	z1.h, p4, z1.h, z19.h
+	add	x23, x7, 32
+	sqrshrnb	z23.h, z21.s, #12
+	uzp1	z18.h, z9.h, z9.h
+	uzp1	z20.h, z23.h, z23.h
+	add	z12.s, z14.s, z24.s
+	add	z9.s, z30.s, z25.s
+	sub	z14.s, z14.s, z24.s
+	sub	z30.s, z30.s, z25.s
+	sqrshrnb	z24.h, z12.s, #12
+	sqrshrnb	z17.h, z14.s, #12
+	uzp1	z22.h, z24.h, z24.h
+	sqrshrnb	z25.h, z9.s, #12
+	movprfx	z19, z20
+	splice	z19.h, p4, z19.h, z22.h
+	addvl	x7, sp, #1
+	uzp1	z21.h, z1.h, z19.h
+	add	x4, x1, x8, lsl 2
+	uzp1	z23.h, z15.h, z21.h
+	add	x8, sp, 224
+	uzp2	z15.h, z15.h, z21.h
+	add	z14.s, z2.s, z26.s
+	add	z21.s, z16.s, z28.s
+	sub	z2.s, z2.s, z26.s
+	sub	z16.s, z16.s, z28.s
+	sqrshrnb	z26.h, z14.s, #12
+	add	z28.s, z6.s, z29.s
+	uzp1	z24.h, z26.h, z26.h
+	add	x7, x7, 224
+	uzp1	z13.h, z17.h, z17.h
+	sub	z6.s, z6.s, z29.s
+	ldr	z29, [x7]
+	splice	z13.h, p4, z13.h, z18.h
+	add	z17.s, z31.s, z27.s
+	uzp1	z18.h, z25.h, z25.h
+	sub	z31.s, z31.s, z27.s
+	ldr	z27, [x8]
+	add	z25.s, z5.s, z27.s
+	uzp2	z20.h, z1.h, z19.h
+	movprfx	z22, z18
+	splice	z22.h, p4, z22.h, z24.h
+	sqrshrnb	z1.h, z30.s, #12
+	add	z18.s, z3.s, z0.s
+	add	z30.s, z4.s, z29.s
+	uzp1	z12.h, z1.h, z1.h
+	sqrshrnb	z19.h, z2.s, #12
+	sqrshrnb	z26.h, z30.s, #12
+	sqrshrnb	z2.h, z25.s, #12
+	sqrshrnb	z24.h, z18.s, #12
+	sub	z5.s, z5.s, z27.s
+	sub	z4.s, z4.s, z29.s
+	uzp1	z27.h, z26.h, z26.h
+	uzp1	z29.h, z24.h, z24.h
+	sqrshrnb	z14.h, z28.s, #12
+	movprfx	z25, z27
+	splice	z25.h, p4, z25.h, z29.h
+	add	x30, x30, x2, lsl 1
+	uzp1	z9.h, z19.h, z19.h
+	sqrshrnb	z1.h, z17.s, #12
+	splice	z9.h, p4, z9.h, z12.h
+	uzp1	z17.h, z1.h, z1.h
+	sqrshrnb	z12.h, z21.s, #12
+	uzp1	z28.h, z14.h, z14.h
+	uzp1	z19.h, z12.h, z12.h
+	uzp1	z21.h, z2.h, z2.h
+	splice	z17.h, p4, z17.h, z19.h
+	splice	z28.h, p4, z28.h, z21.h
+	uzp1	z14.h, z22.h, z17.h
+	uzp2	z2.h, z28.h, z25.h
+	uzp1	z18.h, z28.h, z25.h
+	uzp1	z25.h, z14.h, z18.h
+	uzp1	z27.h, z23.h, z25.h
+	str	z27, [x30]
+	add	x14, x30, x2, lsl 1
+	uzp1	z21.h, z10.h, z20.h
+	uzp2	z22.h, z22.h, z17.h
+	sqrshrnb	z4.h, z4.s, #12
+	uzp1	z17.h, z22.h, z2.h
+	uzp1	z29.h, z21.h, z17.h
+	str	z29, [x14]
+	uzp2	z26.h, z14.h, z18.h
+	add	x10, x14, x2, lsl 1
+	sqrshrnb	z30.h, z16.s, #12
+	sub	z0.s, z3.s, z0.s
+	uzp1	z16.h, z4.h, z4.h
+	sqrshrnb	z3.h, z0.s, #12
+	uzp1	z4.h, z15.h, z26.h
+	str	z4, [x10]
+	add	x28, x10, x2, lsl 1
+	uzp2	z24.h, z22.h, z2.h
+	uzp2	z10.h, z10.h, z20.h
+	sqrshrnb	z1.h, z31.s, #12
+	uzp1	z31.h, z3.h, z3.h
+	uzp1	z3.h, z10.h, z24.h
+	str	z3, [x28]
+	add	x20, x28, x2, lsl 1
+	uzp2	z23.h, z23.h, z25.h
+	sqrshrnb	z5.h, z5.s, #12
+	str	z23, [x20]
+	add	x15, x20, x2, lsl 1
+	uzp1	z12.h, z5.h, z5.h
+	uzp2	z5.h, z21.h, z17.h
+	str	z5, [x15]
+	add	x13, x15, x2, lsl 1
+	uzp2	z15.h, z15.h, z26.h
+	sqrshrnb	z6.h, z6.s, #12
+	str	z15, [x13]
+	add	x9, x1, x27, lsl 4
+	lsl	x12, x2, 3
+	uzp1	z20.h, z6.h, z6.h
+	add	x17, x13, x2, lsl 1
+	uzp2	z6.h, z10.h, z24.h
+	str	z6, [x17]
+	sub	x26, x12, x2
+	uzp1	z19.h, z7.h, z8.h
+	splice	z12.h, p4, z12.h, z20.h
+	splice	z31.h, p4, z31.h, z16.h
+	uzp1	z28.h, z13.h, z11.h
+	uzp2	z8.h, z7.h, z8.h
+	uzp2	z11.h, z13.h, z11.h
+	uzp1	z7.h, z31.h, z12.h
+	uzp1	z13.h, z28.h, z19.h
+	add	x22, x9, 32
+	add	x5, x27, x27, lsl 3
+	uzp1	z0.h, z30.h, z30.h
+	uzp1	z30.h, z1.h, z1.h
+	splice	z0.h, p4, z0.h, z30.h
+	uzp1	z16.h, z0.h, z9.h
+	uzp1	z18.h, z7.h, z16.h
+	uzp1	z14.h, z18.h, z13.h
+	str	z14, [x22]
+	uzp2	z31.h, z31.h, z12.h
+	uzp2	z9.h, z0.h, z9.h
+	uzp1	z12.h, z11.h, z8.h
+	uzp1	z22.h, z31.h, z9.h
+	uzp1	z2.h, z22.h, z12.h
+	str	z2, [x23]
+	add	x24, x2, x26, lsl 2
+	uzp2	z1.h, z28.h, z19.h
+	add	x0, x1, x5, lsl 1
+	lsl	x19, x2, 4
+	uzp2	z28.h, z7.h, z16.h
+	add	x11, x4, 32
+	uzp1	z21.h, z28.h, z1.h
+	str	z21, [x11]
+	uzp2	z17.h, z11.h, z8.h
+	add	x3, x1, x26, lsl 3
+	sub	x21, x19, x2
+	uzp2	z25.h, z31.h, z9.h
+	add	x16, x0, 32
+	lsl	x18, x2, 5
+	uzp1	z26.h, z25.h, z17.h
+	str	z26, [x16]
+	add	x27, x1, x24, lsl 1
+	uzp2	z10.h, z18.h, z13.h
+	add	x25, x3, 32
+	sub	x2, x18, x2
+	str	z10, [x25]
+	add	x6, x1, x21, lsl 2
+	add	x12, x27, 32
+	uzp2	z24.h, z22.h, z12.h
+	str	z24, [x12]
+	add	x26, x6, 32
 	add	x1, x1, x2, lsl 1
-	uzp2	z22.h, z6.h, z29.h
-	str	z22, [x13]
-	uzp2	z12.h, z0.h, z21.h
-	add	x16, x1, 32
-	str	z12, [x16]
-	ldr	x23, [sp, 48]
+	uzp2	z19.h, z28.h, z1.h
+	str	z19, [x26]
+	add	x9, x1, 32
+	uzp2	z20.h, z25.h, z17.h
+	str	z20, [x9]
 	ldp	x29, x30, [sp]
 	ldp	x19, x20, [sp, 16]
 	ldp	x21, x22, [sp, 32]
-	ldp	d8, d9, [sp, 64]
-	ldp	d10, d11, [sp, 80]
-	ldp	d12, d13, [sp, 96]
-	ldp	d14, d15, [sp, 112]
+	ldp	d8, d9, [sp, 96]
+	ldp	d10, d11, [sp, 112]
+	ldp	d12, d13, [sp, 128]
+	ldp	d14, d15, [sp, 144]
+	ldp	x23, x24, [sp, 48]
+	ldp	x25, x26, [sp, 64]
+	ldp	x27, x28, [sp, 80]
+	.cfi_restore 27
+	.cfi_restore 28
+	.cfi_restore 25
+	.cfi_restore 26
 	.cfi_restore 23
+	.cfi_restore 24
 	.cfi_restore 21
 	.cfi_restore 22
 	.cfi_restore 19
@@ -13043,9 +12679,9 @@ dynopt_idct32_sve2_shared:
 	.cfi_restore 75
 	.cfi_restore 72
 	.cfi_restore 73
-	addvl	sp, sp, #12
-	.cfi_def_cfa_offset 2176
-	add	sp, sp, 2176
+	addvl	sp, sp, #10
+	.cfi_def_cfa_offset 2272
+	add	sp, sp, 2272
 	.cfi_def_cfa_offset 0
 	ret
 	.cfi_endproc

@@ -66,10 +66,11 @@ def candidate_march(combo):
 
 def candidate_opt(combo):
     if is_sdot_compute(combo.get("compute")):
-        # -frename-registers 实测小赢（2026-08-14）：sdot scatter
-        # fused 5878→5849、MCA 1900→1883；scalar 4704→4697；20k/lite
-        # PASS。其余 -fweb/-fsched-pressure/-fipa-ra 无改善，-O2 更差。
-        return "-O3 -frename-registers"
+        # 2026-08-14（round-0017 咨询实验 2）：-frename-registers 小赢；
+        # --param=sched-pressure-algorithm=1 再赢（zip32 sdot fused
+        # 5249→5111、stack 594→455、uOps -5.5%、MCA -0.8%，20k/lite
+        # PASS）。-msve-vector-bits=256/-flive-range-shrinkage 无改善。
+        return "-O3 -frename-registers --param=sched-pressure-algorithm=1"
     return "-O2"
 
 

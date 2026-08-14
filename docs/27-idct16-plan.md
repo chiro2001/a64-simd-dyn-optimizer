@@ -480,6 +480,17 @@ scatter（1024 uops），换 64 条连续 st1h + 128 splice + 384 uzp，
 （编译器+编译参数+后端，round-0017 咨询），flag/编译器轴扫描不再
 误复用旧计数。
 
+**sched-pressure-algorithm=1（2026-08-14，round-0017 咨询实验 2）**：
+在 sdot 系 `-O3 -frename-registers` 基础上追加
+`--param=sched-pressure-algorithm=1`（比默认算法 2 更保守限制压力）：
+idct32 zip32 sdot fused 5249→**5111**、stack 594→455、动态 MCA
+1185→**1171**（对 NEON -64.7%）、uOps 6822→6383，20k/lite PASS；
+idct16 zip16 sdot 基本持平（fused 976→978、MCA 245→247）。已写入
+搜索工具 sdot 默认参数并重新固化两 kernel best。G1
+（-msve-vector-bits=256）与 G2（-flive-range-shrinkage）无改善。
+round-0017 完整结论见 expert-advice/round-0017/
+（summary.md / tooling-roadmap.md / verification.md）。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
