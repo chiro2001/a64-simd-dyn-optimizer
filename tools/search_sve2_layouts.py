@@ -62,7 +62,12 @@ def candidate_march(combo):
 
 
 def candidate_opt(combo):
-    return "-O3" if is_sdot_compute(combo.get("compute")) else "-O2"
+    if is_sdot_compute(combo.get("compute")):
+        # -frename-registers 实测小赢（2026-08-14）：sdot scatter
+        # fused 5878→5849、MCA 1900→1883；scalar 4704→4697；20k/lite
+        # PASS。其余 -fweb/-fsched-pressure/-fipa-ra 无改善，-O2 更差。
+        return "-O3 -frename-registers"
+    return "-O2"
 
 
 def vector_width_counts(insns):

@@ -407,7 +407,9 @@ sdot 累加器拆分/交织与写回路径。
 
 **已完成（2026-08-14）**：
 1. 搜索工具接入 sve2p1：`candidate_march/candidate_opt` 按 compute 轴
-   选 `armv9.4-a+sve2p1 + -O3`，manifest 新增 `compute: [mul, sdot-s32]`；
+   选 `armv9.4-a+sve2p1 + -O3`（2026-08-14 起 sdot 系加
+   `-frename-registers`，见下方 flag 扫描），manifest 新增
+   `compute: [mul, sdot-s32]`；
    4 组合（store × compute）全跑通。注意 **QEMU 11.0.3 反汇编把 sdot
    打成 .byte，搜索工具的 fused 排名对 sdot 候选偏低**（sdot scalar
    4086 vs 真实 5462），排名方向仍正确（sdot 更优），最终候选以
@@ -443,6 +445,21 @@ padding 未修复。疑似大函数寄存器压力/调度与 chunk3 越界 16-la
 读（`src+992+24` 读越 1024 元素缓冲 8 个元素）的交互。**已暂停**，
 根因诊断与 regspill 收敛策略转交 round-0017 专题咨询
 （expert-advice/round-0017），后续按建议恢复。
+
+**编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
+
+| flag | scalar fused | scatter fused | 备注 |
+| --- | ---: | ---: | ---: |
+| -O3（基线） | 4704 | 5878 | — |
+| -O3 -frename-registers | **4697** | **5849** | scatter MCA 1900→1883；20k/lite PASS |
+| -O3 -fweb | 4704 | 5878 | 无改善 |
+| -O3 -fsched-pressure | 4704 | 5878 | 无改善 |
+| -O3 -fipa-ra | 4704 | 5878 | 无改善 |
+| -O3 -fno-sched-pressure | — | 5941 | 更差 |
+| -O2 | 5000 | 6077 | spill 更多（stk 848/611），已弃 |
+
+结论：sdot 系搜索编译参数改为 `-O3 -frename-registers`（搜索工具
+`candidate_opt` 已更新）；其余 flag 待 round-0017 咨询给出更多方向。
 
 **下一步**：
 1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
