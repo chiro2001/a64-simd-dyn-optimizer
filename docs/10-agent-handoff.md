@@ -130,9 +130,9 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | sa8d16 | reduce-sve | **186（< 减半门 186.5，2026-08-14）** | 73 | 111 | 35 | PASS |
 | interp8 | path-a | 127（基线 141） | 121 | 46 | 33 | PASS |
-| interp8 | path-b sdot.h（SVE2p3，docs/22 §5.3） | **101**（clang）/100（GCC） | 55 | 22.8* | — | PASS |
-| interp8-16 | path-b sdot.h（docs/22 §5.5） | **359**（基线 467） | 121 | 114.25 | — | PASS |
-| interp8-32 | path-b sdot.h（docs/22 §5.5） | **1417**（基线 1829） | 398 | 396.75 | — | PASS |
+| interp8 | path-b sdot.h+addp（SVE2p3，docs/22 §5.7） | **93**（clang） | 53 | — | — | PASS |
+| interp8-16 | path-b sdot.h+addp（docs/22 §5.7） | **327**（基线 467） | 114 | 114.25 | — | PASS |
+| interp8-32 | path-b sdot.h+addp（docs/22 §5.7） | **1289**（基线 1829） | 369 | 396.75 | — | PASS |
 | interp8vpp-16 | 滑动行管线（docs/22 §5.6） | **257**（基线 400） | 168 | — | — | PASS |
 | interp8vpp-32 | 滑动行管线（docs/22 §5.6） | **936**（基线 1572） | 547 | — | — | PASS |
 | idct16 | zip16（consensus 最优） | 1152 | 468 | 413 | 158 | PASS |
