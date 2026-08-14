@@ -334,6 +334,9 @@ def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
 
 def make_emitter(kernel, backend="acle"):
     """Return emit(combo) for the kernel's manifest layout axes."""
+    if backend == "gen":
+        from gen_sve2_emit import make_generic_emitter
+        return make_generic_emitter(kernel)
     if kernel == "dct16" and backend == "op":
         import sys as _sys
         _ir = os.path.join(ROOT, "optimizer", "ir")
@@ -865,7 +868,7 @@ def measure_layout_candidate(task):
 def main():
     install_memguard()
     ap = argparse.ArgumentParser()
-    ap.add_argument("--backend", choices=("acle", "asm", "op"),
+    ap.add_argument("--backend", choices=("acle", "asm", "op", "gen"),
                     default="acle")
     ap.add_argument("--contract", default=None)
     ap.add_argument("--kernel", default="dct16")

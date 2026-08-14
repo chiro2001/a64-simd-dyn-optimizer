@@ -313,3 +313,14 @@ seed 线验收 = roundtrip 门禁 PASS；真正的修复是 **prune-aware
   `--force-search` 覆盖），验收口径 = roundtrip 门禁；
 - 实测：dct32 快速跳过（gate 0 失配），sa8d 正常跑搜索（best 79/71）；
 - 防止未来 kernel 的大空间搜索挂死/占满内存。
+
+## 20. Step 2 完成记录（2026-08-15，结构化 roundtrip 通过）
+
+- `import_llvm_ir_structured` + `emit_structured_neon_intrinsics`
+  （linear goto 发射：块标签 + if/else/goto + 入边 phi 赋值）已可用：
+  **idct16 structured seed 门禁 20k 例 0 失配**（177 个 block 节点，
+  数据依赖 diamond 全部经块 DAG 导入，不再要求文本层先摊平）。
+- 复现命令：`python3 tools/extract_seed.py --recipe seeds/idct16.yaml`
+  （opt_unroll + inject_constants + import_mode: structured）。
+- 剩余（docs/40 §6 方向）：结构化 MachineIR → SVE2 候选的通用发射
+  （与 diff-sum 切片同机制），以及 idct16 的 seed_pipeline 端到端。

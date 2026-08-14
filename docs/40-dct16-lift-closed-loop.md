@@ -163,3 +163,26 @@ kernels/dct16 上游 NEON（dct16_neon）
   解析（记录为 M1a2）；
 - 检测只覆盖“共享常量矩阵 × 逐行叶子”形状；其他结构族（滑动窗、
   差分归约）由后续配方扩展，不在本实验范围。
+
+## 6. 通用发射器首个切片：diff-sum 配方（2026-08-15，/goal 免手写）
+
+目标“新算子免手写特化发射器”的第一个可验证切片：
+`tools/gen_sve2_emit.py` —— **只读 seed 的 MachineIR JSON**，按知识层
+配方（op 形态 → SVE lowering）生成 SVE2 候选，不写任何 per-kernel
+发射器。
+
+- 配方（diff-sum）：`uabd + uaddlv` 对 = 行内绝对差求和；行数 =
+  GEP 行偏移乘数的最大值+1；每行加载宽度 = 16 × uabd 组数
+  （16x16 → 16 字节/行；32x32 → 32 字节/行，VL=256 整行一次）；
+  lowering = `svld1_u8 + svabd_u8 + svaddv_u8` 累加。
+- 接入：`search_sve2_layouts.py --backend gen`（make_emitter 顶层
+  gen 分支，manifest 符号/verify/trace/MCA 全复用现有漏斗）。
+- 验收（20k 差分 0 失配，experiments/m30-sad-search/gen-search-*）：
+  - **sad-16x16：80 fused / MCA 69** —— 与手写最优完全一致；
+  - **sad-32x32：160 fused / MCA 118** —— 与手写最优完全一致。
+- 过程中修掉的推导 bug：行数不能取 uabd 节点数（32x32 每行 2 组），
+  必须按 GEP 行偏移；加载宽度取 16×组数而非固定 16（否则 32 宽行
+  拆 2×16，指令数翻倍）。
+- 结论：diff-sum 家族（sad 16/32）已达成“免手写发射器即复现手写
+  最优”；同配方可扩展到 sa8d/satd（还需 addp/abs/reduce 变体），
+  其他配方（butterfly/fir）按同一机制继续加。
