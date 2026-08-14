@@ -235,3 +235,27 @@ kernels/dct16 上游 NEON（dct16_neon）
   轴是 hadamard 配方下一阶段的优化方向。
 - 配方检测放宽：hadamard 签名 = sabd+abs+umax + (uaddlv | uaddlp+
   vecreduce_add)。
+
+## 10. fir 配方落地：interp8 8x8（2026-08-15，第三个族）
+
+- `tools/gen_sve2_emit.py` 新增 fir 配方：interp8 hpp 的
+  MachineIR（136 节点，m18）→ SVE2 ACLE：
+  - 每行 16 像素滑窗（svld1_u8 pg16b，src+r*stride-3）→ s8
+    （sub 128）；
+  - 共享滑窗 permute（IDX0/1/2 从 taps/宽度推导：输出组 0-3 taps
+    0-3、组 0-3 taps 4-7、组 4-7 taps 4-7）→ svtbl_s8；
+  - 4-way dot：svdot_s32(acc=8192, perm, b0/b1)，b0/b1 = 系数
+    f0..f3 / f4..f7 按 4-lane 组重复（svtbl 构造）；
+  - 窄化走 **NEON-bridge**（vmovn/vcombine/vqrshrun）——QEMU 的
+    svqxtnb/svqrshrunb 在 VL=256 下结果错位（偶数 lane 插零），
+    与手写发射器同法规避；
+  - 系数来自 `extract_x265_constants` 的 g_lumaFilter（通用源）。
+- 验收（20k 差分 0 失配，experiments/m30-interp8-search/
+  gen-search-8x8/results.json）：**106 fused / MCA 52 / dyn 170**；
+  对比手写最优 93 fused / MCA 53 —— 指令数高 14%，MCA 更好。
+- 坑：u8 的 load/tbl 必须用 **b8 谓词**（用 b16 谓词只激活偶数字节，
+  曾致 8 输出里 6 个为 0）；stride 参数 '1'/'3' 只能按需解析，不能
+  预置进 env（会与 load dst 同名冲突）。
+- **通用发射器现状**：diff-sum（sad 16/32）、hadamard（sa8d 8x8/
+  16x16）、fir（interp8 8x8）三个族全部由 MachineIR 自动生成并过
+  20k 差分；除 sa8d 16x16 外，MCA 均不差于手写最优。

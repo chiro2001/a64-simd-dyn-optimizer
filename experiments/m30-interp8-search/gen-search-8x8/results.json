@@ -1,0 +1,42 @@
+[
+ {
+  "tag": "pairsum-addp_path-a_compute-sdot-d",
+  "pairsum": "addp",
+  "path": "a",
+  "compute": "sdot-d",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x4008a0"
+  ],
+  "counts": {
+   "total": 170,
+   "vector": 122,
+   "movprfx": 16,
+   "vector_fused": 106,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 14,
+   "vector_fused_uop": 106
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 24,
+    "simd_insns": 8,
+    "load_insns": 7,
+    "fused_pseudo": 2
+   }
+  },
+  "baseline_ratio": 0.75177304964539,
+  "halve_gate_met": false,
+  "mca_cycles": 52,
+  "mca_uops": 169
+ }
+]
