@@ -263,6 +263,15 @@ EO 2 行组 × 4 列对 × 4=32；EEO 1 行组 × 2 列对 × 4=8；EEEE/EEEO
 128 ld1sh）。s64 累加器低 32 位经 `svuzp1_s32` 提取，保持 s32 wrap
 语义。预计 fused scalar 5932 → ~3700、scatter 7329 → ~5100（约 -22%）。
 
+> **2026-08-14 核算勘误（§8.7 的 128/32/8 是“单个输出行 k”的打包
+> 量，不是整 stage）**：O 有 16 个输出行，每行需 4 行组 × 8 列对 =
+> 32 sdot + 64 tbl2 + 32 zip = 128 条 → 整 stage 16×128 = 2048 条
+> （512 sdot + 1024 tbl2 + 512 zip）；EO 8×32=256、EEO 4×8=32。
+> 仅 O/EO/EEO 每 stage 2336 条、两 stage 4672，已超过 sdot-s32 直算
+> （O/EO/EEO sdot 1376 + zip 128，真实 fused 5462/6079）。**s64 打包
+> 因 tbl2+zip 开销（每 sdot 2 tbl2 + 1 zip）不优于 sdot-s32**，从
+> 8.11 候选轴中降级为“仅当 950 实机需要 SVE2-only 版本时再评估”。
+
 编译标志阴性：IDCT32 scatter 用 -O3 反而更差（fused 6561→7902，
 spill 增多）；-fno-tree-pre/-fweb/-frename-registers 无改善。
 
@@ -333,9 +342,23 @@ str_z ~700），是下一优化点。这是首个 SVE2p1 指令的 IDCT32 候选
 
 ### 8.11 下一步（更新）
 
-1. **C 常量复用**：当前每 chunk 重复加载 CDOT（4 chunk × 128
-   ld1h/stage）；按 k 外层/chunk 内层或显式缓存可降到 128/stage，
-   fused 预计再降 ~400-600；
-2. 继续 §8.7 的 s64 打包轴（SVE2/SVE1 指令，950 可测）作对照；
-3. 搜索工具接入 sve2p1（march 参数化 + compute 轴）；
-4. 960 实机（SVE2.3）paired（scalar vs scatter vs sdot-s32 vs s64 打包）。
+**已完成（2026-08-14）**：
+1. 搜索工具接入 sve2p1：`candidate_march/candidate_opt` 按 compute 轴
+   选 `armv9.4-a+sve2p1 + -O3`，manifest 新增 `compute: [mul, sdot-s32]`；
+   4 组合（store × compute）全跑通。注意 **QEMU 11.0.3 反汇编把 sdot
+   打成 .byte，搜索工具的 fused 排名对 sdot 候选偏低**（sdot scalar
+   4086 vs 真实 5462），排名方向仍正确（sdot 更优），最终候选以
+   objdump 静态流口径复核。
+2. **C 常量复用部分由 GCC 自动完成**（-O3 下 4 chunk 中约 2 组共享
+   C 加载，C ldr 约 688/趟）；剩余显式 stage 级 k 循环复用会因 64 个
+   O 累加器同时存活而 spill 增加，暂不实施。
+3. s64 打包轴按 §8.7 核算勘误降级。
+
+**下一步**：
+1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
+   O/E 峰值存活；或把 CDOT 表按 chunk 对只加载一次（-O3 已部分做到）；
+2. 修正 QEMU trace 统计（sdot→.byte）使搜索 fused 排名可信：给
+   parse_qemu_trace 增加 SVE2p1 反汇编补丁或 objdump 静态流口径；
+3. 自定义 llvm-mca target 补 sdot_z32 调度条目（neoverse-v2 缺，
+   当前 MCA 对 sdot 候选不可用）；
+4. 960 实机（SVE2.3）paired（scalar vs scatter vs sdot-s32）。

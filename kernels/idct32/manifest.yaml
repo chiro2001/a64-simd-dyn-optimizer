@@ -43,4 +43,7 @@ targets:
 layouts:
   # store 轴同 idct16：scalar=标量转置写回；scatter=合并宽度 scatter
   # 写回（指令数接近，MCA/est 大降）。zip32 转置待做。
+  # compute 轴：mul=原 mul/mla；sdot-s32=SVE2p1 sdot z.s,z.h,z.h 直算
+  # （docs/27 §8.10，需 -march=armv9.4-a+sve2p1 + -O3）。
   store: [scalar, scatter]
+  compute: [mul, sdot-s32]

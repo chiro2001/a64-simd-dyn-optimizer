@@ -44,6 +44,21 @@ BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
              "b.al", "b.nv"}
 
 
+def candidate_march(combo):
+    """GNU-as/-g++ -march for a candidate combo.
+
+    sdot-s32 (SVE2p1 `sdot z.s, z.h, z.h`) needs armv9.4-a+sve2p1 and -O3
+    (docs/27 §8.10: -O2 spills more); everything else stays armv8.2-a+sve2.
+    """
+    if combo.get("compute") == "sdot-s32":
+        return "armv9.4-a+sve2p1"
+    return "armv8.2-a+sve2"
+
+
+def candidate_opt(combo):
+    return "-O3" if combo.get("compute") == "sdot-s32" else "-O2"
+
+
 def run(cmd, timeout=None, **kw):
     return subprocess.run(cmd, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT, text=True,
@@ -262,7 +277,8 @@ def make_emitter(kernel, backend="acle"):
         from emit_idct32_sve2_shared import emit
 
         def emit_fn(combo):
-            return emit(store=combo.get("store", "scatter"))
+            return emit(store=combo.get("store", "scatter"),
+                        compute=combo.get("compute", "mul"))
         return emit_fn
     if kernel == "dct32":
         from emit_dct32_sve2_shared import emit
@@ -356,11 +372,13 @@ def measure_layout_candidate(task):
         if backend == "asm":
             s_path = os.path.join(outdir, tag + ".S")
             bootstrap_cpp(src, s_path)
-            c = run(["aarch64-linux-gnu-as", "-march=armv8.2-a+sve2",
+            c = run(["aarch64-linux-gnu-as",
+                     "-march=" + candidate_march(combo),
                      "-o", obj, s_path], timeout=120)
         else:
-            cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                  "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
+            cc = ["aarch64-linux-gnu-g++", candidate_opt(combo),
+                  "-std=c++11", "-march=" + candidate_march(combo),
+                  "-c", src, "-o", obj]
             if backend == "op":
                 cc.insert(2, "-fno-tree-pre")
             c = run(cc, timeout=120)
@@ -371,7 +389,7 @@ def measure_layout_candidate(task):
     verify = os.path.join(outdir, tag + "-verify")
     try:
         v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                 "-march=armv8.2-a+sve2",
+                 "-march=" + candidate_march(combo),
                  verify_src, obj, "-Wl,--start-group",
                  repo_path(manifest, manifest["reference"]["lib"]),
                  "-Wl,--end-group",
@@ -886,8 +904,10 @@ def main():
                 obj = os.path.join(args.outdir, r["tag"] + ".o")
                 if not os.path.exists(obj):
                     src = os.path.join(args.outdir, r["tag"] + ".cpp")
-                    cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
-                          "-march=armv8.2-a+sve2", "-c", src, "-o", obj]
+                    cc = ["aarch64-linux-gnu-g++",
+                          candidate_opt(r), "-std=c++11",
+                          "-march=" + candidate_march(r),
+                          "-c", src, "-o", obj]
                     if args.backend == "op":
                         cc.insert(2, "-fno-tree-pre")
                     c = run(cc, timeout=120)
@@ -985,9 +1005,11 @@ def main():
                     "verify_mismatches", "verify", "counts", "cached"}
             combo = {k: v for k, v in best.items() if k not in meta}
             f.write(emit(combo))
-        run(["aarch64-linux-gnu-g++", "-O2", "-march=armv8.2-a+sve2",
+        run(["aarch64-linux-gnu-g++", candidate_opt(best),
+             "-march=" + candidate_march(best),
              "-S", src_path, "-o", s_path])
-        c = run(["aarch64-linux-gnu-g++", "-O2", "-march=armv8.2-a+sve2",
+        c = run(["aarch64-linux-gnu-g++", candidate_opt(best),
+                 "-march=" + candidate_march(best),
                  "-c", src_path, "-o", obj_path])
         if c.returncode == 0:
             print("finalized %s (fused_uop=%d)" % (src_path, fu(best)))

@@ -332,7 +332,8 @@ def stage_src(store, compute):
 
 def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
          compute="mul"):
-    consts = cpp_sdot_constants() if compute == "sdot-s32" else ""
+    consts = (cpp_sdot_constants() if compute == "sdot-s32"
+              else cpp_constants())
     if compute == "sdot-s32":
         helper = (
             "static inline __attribute__((always_inline)) svint32_t\n"
