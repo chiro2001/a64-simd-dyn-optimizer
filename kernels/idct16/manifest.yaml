@@ -4,7 +4,7 @@ kernel: idct16
 contract: upstream-exact
 vl_bytes: 32
 shape:
-  kind: dct
+  kind: idct
   n: 16
 
 candidate:

@@ -862,6 +862,7 @@ def main():
     if args.lite_top and ok:
         gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                 "dct16": "dct16", "dct32": "dct32",
+                "idct16": "idct16",
                 "interp8": "interp8"}.get(args.kernel)
         seeds = [s.strip() for s in args.lite_seeds.split(",") if s.strip()]
         if gate is None or not seeds:
@@ -985,6 +986,7 @@ def main():
             print("finalized %s (fused_uop=%d)" % (src_path, fu(best)))
             gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                     "dct16": "dct16", "dct32": "dct32",
+                    "idct16": "idct16",
                     "interp8": "interp8"}.get(args.kernel)
             if gate:
                 lite = run(["scripts/build-testbench-lite.sh", obj_path,

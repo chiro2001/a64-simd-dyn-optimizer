@@ -59,15 +59,17 @@ qxtnb 饱和窄化；输出转置目前是标量写回（锚点，后续优化�
 | --- | ---: | ---: | ---: |
 | dynamic | 2995 | 3699 | 1.24× |
 | vector | 2830 | 1060 | 0.37× |
-| fused_uop | **2830** | **1004** | **0.35×**（已过减半门 1415） |
-| MCA cycles | - | 942 | - |
-| NP1 est | - | 2591（转置标量写回偏大） | - |
-| cp (NV2) | - | 87 | - |
+| fused_uop | **2830** | **980** | **0.35×**（已过减半门 1415） |
+| MCA cycles | - | 925 | - |
+| NP1 est | - | 2892（转置标量写回偏大） | - |
+| cp (NV2) | - | 181 | - |
 | 20k 差分 | - | **0 mismatches** | - |
 | TestBenchLite idct16 | - | **5 seed 全 PASS** | - |
 
 已固化 `kernels/idct16/candidates/anchor_sve2.{cpp,S}`；搜索发射器
-已注册 idct16（`--kernel idct16`，当前单轴 phase:a）。
+已注册 idct16（`--kernel idct16`，当前单轴 phase:a），gen_verify 新增
+`kind: idct`（src 连续、dst 带 stride），lite gate 接入搜索
+（`--lite-top`）。
 
 下一步（优化）：常量表用内存 load 替代 160 次 dup、标量转置改为
 zip 树/连续 st1h、sdot 化 O/EO（当前 mla+mad 288 条）、两趟融合。

@@ -23,7 +23,7 @@ static const int16_t GT16[16][16] = {
 
 
 template <int SHIFT>
-static svint16_t rndn(svint32_t v)
+static inline __attribute__((always_inline)) svint16_t rndn(svint32_t v)
 {
     const svbool_t p32 = svptrue_b32();
     v = svadd_s32_x(p32, v, svdup_n_s32(1 << (SHIFT - 1)));
@@ -32,7 +32,7 @@ static svint16_t rndn(svint32_t v)
 }
 
 template <int SHIFT>
-static void idct16_half(const int16_t* src, int16_t* dst, intptr_t stride, int off)
+static inline __attribute__((always_inline)) void idct16_half(const int16_t* src, int16_t* dst, intptr_t stride, int off)
 {
     const svbool_t p32 = svptrue_b32();
     const svbool_t p16 = svptrue_b16();
@@ -207,7 +207,7 @@ static void idct16_half(const int16_t* src, int16_t* dst, intptr_t stride, int o
 }
 
 template <int SHIFT>
-static void idct16_stage(const int16_t* src, int16_t* dst, intptr_t stride)
+static inline __attribute__((always_inline)) void idct16_stage(const int16_t* src, int16_t* dst, intptr_t stride)
 {
     idct16_half<SHIFT>(src, dst, stride, 0);
     idct16_half<SHIFT>(src, dst, stride, 8);

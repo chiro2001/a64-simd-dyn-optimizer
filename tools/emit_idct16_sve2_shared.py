@@ -42,7 +42,8 @@ def stage_src():
     halves (off=0 / off=8)."""
     L = []
     L.append("template <int SHIFT>")
-    L.append("static svint16_t rndn(svint32_t v)")
+    L.append("static inline __attribute__((always_inline)) svint16_t "
+             "rndn(svint32_t v)")
     L.append("{")
     L.append("    const svbool_t p32 = svptrue_b32();")
     L.append("    v = svadd_s32_x(p32, v, svdup_n_s32(1 << (SHIFT - 1)));")
@@ -51,7 +52,8 @@ def stage_src():
     L.append("}")
     L.append("")
     L.append("template <int SHIFT>")
-    L.append("static void idct16_half(const int16_t* src, int16_t* dst, "
+    L.append("static inline __attribute__((always_inline)) void "
+             "idct16_half(const int16_t* src, int16_t* dst, "
              "intptr_t stride, int off)")
     L.append("{")
     L.append("    const svbool_t p32 = svptrue_b32();")
@@ -118,7 +120,8 @@ def stage_src():
     L.append("}")
     L.append("")
     L.append("template <int SHIFT>")
-    L.append("static void idct16_stage(const int16_t* src, int16_t* dst, "
+    L.append("static inline __attribute__((always_inline)) void "
+             "idct16_stage(const int16_t* src, int16_t* dst, "
              "intptr_t stride)")
     L.append("{")
     L.append("    idct16_half<SHIFT>(src, dst, stride, 0);")

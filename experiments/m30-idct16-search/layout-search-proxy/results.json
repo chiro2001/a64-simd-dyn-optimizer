@@ -1,0 +1,35 @@
+[
+ {
+  "tag": "phase-a",
+  "phase": "a",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=5120000 mismatches=0 rate=0.000000%\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x401d80"
+  ],
+  "counts": {
+   "total": 4120,
+   "vector": 1036,
+   "movprfx": 56,
+   "vector_fused": 980,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 24,
+   "vector_fused_uop": 980
+  },
+  "baseline_ratio": 0.3462897526501767,
+  "halve_gate_met": true,
+  "mca_cycles": 925,
+  "mca_uops": 4635,
+  "est_cycles_NP1": 2892.0,
+  "cp_cycles_NP1": 181,
+  "lite_pass": true,
+  "lite_passed": 5,
+  "lite_fails": [],
+  "consensus_rank": 0.0
+ }
+]
