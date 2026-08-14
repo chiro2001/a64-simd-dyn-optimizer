@@ -26,7 +26,37 @@ def _add_terms(a, b, sign=1.0):
     return {k: v for k, v in out.items() if v != 0.0}
 
 
-def lane_forms(ir):
+def _type_lanes(t):
+    m = re.match(r"<(\d+) x i\d+>", t or "")
+    return int(m.group(1)) if m else None
+
+
+def resolve_const_loads(ir, const_tables=None):
+    """Map constant-load nodes (const_name/const_off) to numeric values.
+
+    const_tables: {symbol_name: {byte_offset: [i16 values...]}}. Row values
+    are sliced to the load's lane count. Without tables this is a no-op
+    (returns {}), which keeps the MachineIR line independent of any concrete
+    constant source.
+    """
+    out = {}
+    if not const_tables:
+        return out
+    for n in ir.nodes:
+        if n.get("op") != "load" or not n.get("const_name"):
+            continue
+        tbl = const_tables.get(n["const_name"])
+        if not tbl:
+            continue
+        vals = tbl.get(n.get("const_off"))
+        if not vals:
+            continue
+        nl = _type_lanes(n.get("type"))
+        out[str(n["dst"])] = list(vals[:nl]) if nl else list(vals)
+    return out
+
+
+def lane_forms(ir, const_values=None):
     """Return {dst: [[(leaf, coeff), ...] per lane]} and the leaf set."""
     nodes = ir.nodes
     bydst = {str(n.get("dst")): n for n in nodes}
@@ -34,6 +64,7 @@ def lane_forms(ir):
     opaque = set()
     symbolic = set()   # forms whose coefficients went through a constant
                        # smull (numeric value not tracked yet)
+    const_values = const_values or {}
 
     def lanes_of(node):
         t = node.get("type") or ""
@@ -141,7 +172,35 @@ def lane_forms(ir):
                 return f is not None and f != "opaque" and all(
                     len(t) == 1 and list(t.values())[0] == 1.0 for t in f)
 
-            if is_const_leaf(a) and b not in (None, "opaque"):
+            def const_leaf_values(f):
+                """Per-lane numeric scale if f is an identity const leaf.
+
+                Honors the leaf's lane mapping: form lane i may come from
+                const leaf lane mask[i] after a shuffle, so the value is
+                const_values[leaf_dst][lane_index], not slot i.
+                """
+                if not is_const_leaf(f):
+                    return None
+                leaf_dst = next(iter(f[0]))[0]
+                cv = const_values.get(leaf_dst)
+                if cv is None:
+                    return None
+                out = []
+                for lane_form in f:
+                    (leaf, lane) = next(iter(lane_form))
+                    out.append(cv[lane] if lane < len(cv) else 1.0)
+                return out
+
+            cva = const_leaf_values(a)
+            cvb = const_leaf_values(b)
+            if cva is not None and b not in (None, "opaque"):
+                # numeric constant row: scale the data side elementwise
+                forms[dst] = [{k: v * cva[i] for k, v in b[i].items()}
+                              for i in range(len(b))]
+            elif cvb is not None and a not in (None, "opaque"):
+                forms[dst] = [{k: v * cvb[i] for k, v in a[i].items()}
+                              for i in range(len(a))]
+            elif is_const_leaf(a) and b not in (None, "opaque"):
                 forms[dst] = b
                 symbolic.add(dst)
             elif is_const_leaf(b) and a not in (None, "opaque"):
@@ -308,3 +367,53 @@ def fold_shuffles_into_constants(ir, max_terms=16):
         n["id"] = i
     ir.nodes = out
     return ir
+
+
+def shared_constant_matrix_outputs(nodes, forms):
+    """MachineIR-side detection of narrow outputs with the shape
+    out[i] = sum_j C[j] * leaf_i[j] (shared C across output lanes).
+
+    Port of the asm-trace detector (asm_linearize.py) to the MachineIR node
+    schema (op/intrinsic/dst/args). Returns
+    [{node_id, mn, consts, leaves}].
+    """
+    out = []
+    for n in nodes:
+        if n.get("op") != "intrinsic" or n.get("intrinsic") not in (
+                "rshrn", "rshrn2"):
+            continue
+        f = forms.get(str(n.get("dst")))
+        if not f or len(f) != 4:
+            continue
+        pats = []
+        for lane in f:
+            by_leaf = defaultdict(list)
+            for (leaf, j), coeff in lane.items():
+                by_leaf[leaf].append((j, coeff))
+            vecs = []
+            for leaf, terms in by_leaf.items():
+                terms.sort()
+                vecs.append((leaf, [c for _, c in terms],
+                             [j for j, _ in terms]))
+            pats.append(vecs)
+        sigs = [tuple(sorted(tuple(v) for _, v, _ in vec)) for vec in pats]
+        if len(set(sigs)) != 1:
+            continue
+        lane_pats = [tuple(sorted(tuple(l) for _, _, l in vec))
+                     for vec in pats]
+        if len(set(lane_pats)) != 1:
+            continue
+        shared = pats[0]
+        const_vectors = [list(v) for _, v, _ in shared]
+        leaves = []
+        for vec in pats:
+            lane_leaves = []
+            for leaf, vec_c, lane_c in vec:
+                for k, (s_leaf, s_vec, s_lane) in enumerate(shared):
+                    if s_vec == vec_c and s_lane == lane_c:
+                        lane_leaves.append((leaf, k))
+                        break
+            leaves.append(lane_leaves)
+        out.append({"node_id": n["id"], "mn": n["intrinsic"],
+                    "consts": const_vectors, "leaves": leaves})
+    return out
