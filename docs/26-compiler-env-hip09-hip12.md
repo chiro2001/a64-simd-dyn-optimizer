@@ -141,8 +141,11 @@ load/store 同样按 SVE 管道计。scalar 1.0，movprfx 融合不计。
 ```sh
 # 单 trace 估算（默认 NP1）
 python3 tools/estimate_cycles.py <trace.log> <start> <end> --profile NP1
+# critical-path 估算（NV2 latency，动态流）
+python3 tools/critical_path_dynamic.py <trace.log> <start> <end> --target NP1
 # 搜索中给 top-N 加 est_cycles_<target> 并参与排序
-python3 tools/search_sve2_layouts.py ... --mca-target NP1 --cost-top 10
+python3 tools/search_sve2_layouts.py ... --mca-target NP1 --cost-top 10 \
+  --cp-top 10 --rank-by cp
 ```
 
 初步对照（**注意机器口径，2026-08-14**）：实测锚点是 **950**

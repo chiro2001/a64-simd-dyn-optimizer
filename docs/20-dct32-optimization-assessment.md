@@ -1181,19 +1181,20 @@ const_inline WIP）。`rshrnb`+`uzp1_s16` 是必要组合，不能省。
 --cost-top 10 --lite-top 5`，结果仍存
 `experiments/m30-dct32-search/layout-search-m32/results.json`）：
 
-| 排名 | 候选 | fused_uop | MCA cycles | est NP1 | lite 5 seed |
-| --- | --- | ---: | ---: | ---: | --- |
-| MCA 1 | 4014（zip/row8/k0_merge16） | 4014 | **1041** | **727.7** | PASS |
-| MCA 2 | 4088（zip/row8/merge8） | 4088 | 1055 | 742.0 | PASS |
-| MCA 3 | 4088（zip/row8/merge8, shm=1） | 4088 | 1057 | 744.2 | PASS |
-| MCA 5 | 3930（tbl2/row16/k0_merge16） | **3930** | 1094 | 794.2 | PASS |
+| 排名 | 候选 | fused_uop | MCA cycles | est NP1 | cp NP1 | lite 5 seed |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| MCA 1 | 4014（zip/row8/k0_merge16） | 4014 | **1041** | **727.7** | **134** | PASS |
+| MCA 2 | 4088（zip/row8/merge8） | 4088 | 1055 | 742.0 | 201 | PASS |
+| MCA 3 | 4088（zip/row8/merge8, shm=1） | 4088 | 1057 | 744.2 | 201 | PASS |
+| MCA 5 | 3930（tbl2/row16/k0_merge16） | **3930** | 1094 | 794.2 | 203 | PASS |
 
 结论：
 - 4014 在 llvm-mca 与 NP1 结构成本模型下均排第一，且 TestBenchLite
   官方 5 seed 全 PASS；已固化为
   `kernels/dct32/candidates/best_op_mca.{cpp,S,o}`。
-- fused_uop 最优（3930）不再是 cycle 最优：两个独立 cycle 代理一致
-  指向 4014（zip/row8 比 tbl2/row16 少 ~5% MCA cycle）。
+- fused_uop 最优（3930）不再是 cycle 最优：**三个独立代理一致指向
+  4014**——llvm-mca（1041 vs 1094，-5%）、NP1 结构成本（728 vs 794，
+  -8%）、NV2 critical-path（134 vs 203，-34%）。
 - 机器口径提醒：950 实测只与 920B 结构（SVE 2×256）对照，NP1/960
   （SVE 4×256）无实机数据；4014 的实机优势需在 950 上 paired 验证
   （MCA 预测 1041 vs 1094，约 -5%）。

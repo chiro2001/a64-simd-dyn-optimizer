@@ -513,19 +513,29 @@ def main():
                                             "987654321",
                     help="comma-separated TestBenchLite seeds (default: the "
                          "project's official 5-seed list)")
-    ap.add_argument("--rank-by", choices=("fused_uop", "mca", "lite"),
+    ap.add_argument("--cp-top", type=int, default=0,
+                    help="run the critical-path latency estimator (NV2 "
+                         "latencies, dynamic stream) on the top-N passed "
+                         "candidates and record cp_cycles_<target> "
+                         "(default 0 = off)")
+    ap.add_argument("--rank-by",
+                    choices=("fused_uop", "mca", "cp", "lite"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
                          "falling back to fused_uop for candidates without "
-                         "MCA data; lite requires --lite-top and puts "
-                         "TestBenchLite-passing candidates first)")
+                         "MCA data; cp requires --cp-top and uses "
+                         "cp_cycles as primary key; lite requires "
+                         "--lite-top and puts TestBenchLite-passing "
+                         "candidates first)")
     args = ap.parse_args()
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
         args.mca_top = 10
     if args.rank_by == "lite" and args.lite_top == 0:
         args.lite_top = 10
+    if args.rank_by == "cp" and args.cp_top == 0:
+        args.cp_top = 10
     manifest = load_manifest(args.kernel)
     vl_bytes = int(manifest.get("vl_bytes", 32))
     if args.mca_mcpu is None:
@@ -784,6 +794,34 @@ def main():
             for r in sorted(withcost, key=lambda r: r[key]):
                 print("  %-24s fused_uop=%d %s=%.1f"
                       % (r["tag"], fu(r), key, r[key]))
+    if args.cp_top and ok:
+        from critical_path_dynamic import critical_path as cp_fn
+        from optimizer.mca_targets import target as mca_target
+        tgt = mca_target(args.mca_target)
+        ckey = "cp_cycles_" + tgt["name"]
+        print("critical-path estimator on top-%d by fused_uop (%s, "
+              "NV2 latencies, dynamic stream):"
+              % (min(args.cp_top, len(ok)), tgt["name"]))
+        for r in ok[:min(args.cp_top, len(ok))]:
+            trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
+            rng = candidate_range(r, args.outdir, manifest, args.backend,
+                                  args.kernel)
+            if rng is None or not os.path.exists(trace):
+                print("  %-24s no trace for cp estimator" % r["tag"])
+                continue
+            cp, _, _ = cp_fn(trace, hex(rng[0]), hex(rng[1]), tgt)
+            r[ckey] = cp
+            print("  %-24s fused_uop=%d %s=%.1f"
+                  % (r["tag"], fu(r), ckey, cp))
+        withcp = [r for r in ok if r.get(ckey) is not None]
+        if withcp:
+            print("rank by %s:" % ckey)
+            for r in sorted(withcp, key=lambda r: r[ckey]):
+                print("  %-24s fused_uop=%d %s=%.1f"
+                      % (r["tag"], fu(r), ckey, r[ckey]))
+            if args.rank_by == "cp":
+                ok.sort(key=lambda r: (r.get(ckey) is None,
+                                       r.get(ckey) or 10 ** 9, fu(r)))
     if args.lite_top and ok:
         gate = {"sa8d": "sa8d", "sa8d16": "sa8d16",
                 "dct16": "dct16", "dct32": "dct32",
