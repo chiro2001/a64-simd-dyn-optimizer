@@ -356,5 +356,13 @@ kernels/dct16 上游 NEON（dct16_neon）
   - sliding=0：2369 fused / MCA 965；
   - sliding=1：1625 / 645；
   - sliding=2：**1501 / 583**（best）；
-  - 手写 936/547 —— MCA 差 6.6%。
+- 手写 936/547 —— MCA 差 6.6%。
+
+## 18. interp8 vpp 8x8（2026-08-15，vpp 族补齐）
+
+- vpp-8（157 节点）同配方覆盖：sliding=0 281/137、sliding=1
+  183/93、sliding=2 **183/88**（best，20k 差分 0 失配，
+  experiments/m30-interp8vpp-search/gen-search-8x8/results.json）。
+- 无手写基线（docs/37 此前缺 vpp 8x8），首次覆盖。
+- interp8 的 hpp 8/16/32 与 vpp 8/16/32 至此全部覆盖。
 - 通用发射器现覆盖 4 个配方族、16 个算子形状。

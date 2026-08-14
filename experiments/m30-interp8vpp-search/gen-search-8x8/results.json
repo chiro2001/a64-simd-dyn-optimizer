@@ -1,0 +1,133 @@
+[
+ {
+  "tag": "sliding-0",
+  "sliding": 0,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400880"
+  ],
+  "counts": {
+   "total": 865,
+   "vector": 281,
+   "movprfx": 0,
+   "vector_fused": 281,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 72,
+   "vector_fused_uop": 281
+  },
+  "fusion": {
+   "eligible": 1,
+   "hw_supported": 0,
+   "pairs": [
+    "mla+mls"
+   ],
+   "counts": {
+    "scalar_insns": 33,
+    "simd_insns": 5,
+    "load_insns": 2,
+    "store_insns": 1
+   }
+  },
+  "mca_cycles": 137,
+  "mca_uops": 696
+ },
+ {
+  "tag": "sliding-1",
+  "sliding": 1,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x4017a0"
+  ],
+  "counts": {
+   "total": 511,
+   "vector": 183,
+   "movprfx": 0,
+   "vector_fused": 183,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 23,
+   "vector_fused_uop": 183
+  },
+  "fusion": {
+   "eligible": 14,
+   "hw_supported": 0,
+   "pairs": [
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov"
+   ],
+   "counts": {
+    "scalar_insns": 402,
+    "load_insns": 128,
+    "simd_insns": 272,
+    "store_insns": 16
+   }
+  },
+  "mca_cycles": 93,
+  "mca_uops": 422
+ },
+ {
+  "tag": "sliding-2",
+  "sliding": 2,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x401520"
+  ],
+  "counts": {
+   "total": 481,
+   "vector": 183,
+   "movprfx": 0,
+   "vector_fused": 183,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 23,
+   "vector_fused_uop": 183
+  },
+  "fusion": {
+   "eligible": 5,
+   "hw_supported": 0,
+   "pairs": [
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov",
+    "tbl+mov"
+   ],
+   "counts": {
+    "scalar_insns": 348,
+    "load_insns": 37,
+    "simd_insns": 264,
+    "store_insns": 8
+   }
+  },
+  "mca_cycles": 88,
+  "mca_uops": 380
+ }
+]
