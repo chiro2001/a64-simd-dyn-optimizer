@@ -62,25 +62,20 @@ BUILD_DIR="build/x265-8-950"
 [ "$MACHINE" = 920b ] && BUILD_DIR="build/x265-8-920b"
 if [ -f "$BUILD_DIR/libx265.a" ]; then
     say "  x265 lib: $BUILD_DIR/libx265.a"
+    # One lite build now auto-links every committed candidate (incl.
+    # idct16/32, docs/32 §3), so build once and run all gates.
+    CAND="kernels/interp8/candidates/best_sve2_sdoth.o"
+    if [ ! -f "$CAND" ]; then
+        CAND="kernels/dct16/candidates/best_sve2.o"
+    fi
+    out=$(scripts/build-testbench-lite.sh "$CAND" "$BUILD_DIR" \
+              -- --gate interp8 --seed 1 2>&1) || true
+    line=$(printf '%s\n' "$out" | grep -E 'PASS|FAIL' | tail -1)
+    say "  lite build: ${line:-no gate line}"
     for g in $GATES; do
-        CAND="kernels/interp8/candidates/best_sve2_sdoth.o"
-        case "$g" in
-            sa8d)   CAND="kernels/sa8d/candidates/best_sve2.o" ;;
-            sa8d16) CAND="kernels/sa8d16/candidates/best_sve2.o" ;;
-            dct16)  CAND="kernels/dct16/candidates/best_sve2.o" ;;
-            dct32)  CAND="kernels/dct32/candidates/best_op_mca.o" ;;
-            idct16) CAND="kernels/idct16/candidates/best_sve2.o" ;;
-            idct32) CAND="kernels/idct32/candidates/best_sve2.o" ;;
-        esac
-        if [ ! -f "$CAND" ]; then
-            say "  $g: SKIP (missing $CAND)"
-            continue
-        fi
-        out=$(scripts/build-testbench-lite.sh "$CAND" "$BUILD_DIR" \
-                  -- --gate "$g" --seed 1 2>&1) || true
-        line=$(printf '%s\n' "$out" | grep -E 'PASS|FAIL' | tail -1)
-        rc=$?
-        say "  $g: ${line:-no gate line} (build rc=$rc)"
+        out=$(build/testbench-lite/TestBenchLite --gate "$g" 1 2>&1) || true
+        line=$(printf '%s\n' "$out" | grep -E 'PASS|FAIL|refusing' | tail -1)
+        say "  $g: ${line:-no gate line}"
     done
 else
     say "  x265 lib missing at $BUILD_DIR; gates SKIPPED (build first, docs/32 §2)"
