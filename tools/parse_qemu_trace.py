@@ -23,7 +23,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-INS = re.compile(r"^\s*0x([0-9a-f]+):\s+[0-9a-f]+\s+([a-z][a-z0-9.]*)\s*(.*)$")
+INS = re.compile(r"^\s*0x([0-9a-f]+):\s+[0-9a-f]+\s+([.a-z][a-z0-9.]*)\s*(.*)$")
 TRACE = re.compile(r"^Trace \d+: .*\[[^\]/]*/([0-9a-f]+)/")
 
 

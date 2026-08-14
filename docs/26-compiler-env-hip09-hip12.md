@@ -175,3 +175,43 @@ TestBench **985~995 cyc**（best_op_r16 1019~1077、内部 1167、上游
   fu=4014（MCA 1041）但 TestBenchLite 5 seed 中 1 seed FAIL，
   说明**搜索阶段必须加 lite 门禁后才能按 MCA 排名**，正在补做
   top-N lite 扫描（见 docs/20 §6.13 更新）。
+
+## 5. 自定义 llvm-mca（SVE2p1 sdot 调度补丁，2026-08-14）
+
+**问题**：llvm-mca 22.1.8 的所有 AArch64 调度模型
+（neoverse-v2/v3/512tvb/ampere1a、generic）都没有
+`sdot z.s,z.h,z.h`（SDOT_ZZZ_HtoS / SDOT_ZZZI_HtoS，SVE2p1）与
+`sdot z.h,z.b,z.b`（SDOT_ZZZ_BtoH，SVE2p3）的调度条目，sdot 候选
+无法 MCA 评估（`lack-sched` 跳过会使结果失真）。960 实机未流片，
+NP1 评估必须以 MCA 为代理，因此给 Neoverse-V2 模型补了这两族指令。
+
+**补丁**：`patches/llvm-22.1.8-aarch64-sdot-z32-sched.patch`，在
+`llvm/lib/Target/AArch64/AArch64SchedNeoverseV2.td` 增加两条 InstRW：
+
+```tablegen
+def : InstRW<[V2Wr_ZDOTH, V2Rd_ZDOTH], (instregex "^[SU]DOT_ZZZI?_HtoS")>;
+def : InstRW<[V2Wr_ZDOTH, V2Rd_ZDOTH], (instregex "^[SU]DOT_ZZZI?_BtoH")>;
+```
+
+与项目 dot 口径一致：Latency 4、V02 端口、read-advance 3（同
+SDOT HtoD）。构建脚本 `scripts/build-custom-llvm-mca.sh`（LLVM
+22.1.8 源码 + 代理下载 + cmake 单 target；本机实测约 2 分钟）。
+
+**动态流口径（比静态流更准）**：MCA 输入应使用 QEMU 动态 trace
+（真实执行序）。QEMU 11.0.3 的 in_asm 把 sdot 反汇编成 `.byte`，
+`tools/fix_dynamic_trace.py` 按地址用 objdump 修复
+（`parse_qemu_trace.py` 的 INS 正则已允许 `.byte` 助记符）。
+无循环 kernel 的 objdump 静态流近似动态流（scalar 差 ~3%；
+scatter 静态流明显偏高，以动态流为准）。
+
+**评估结果（neoverse-v2 + sve2p1，动态流，idct32）**：
+
+| 版本 | MCA cycles | uOps |
+| --- | ---: | ---: |
+| NEON 上游 idct32 | 3319 | 12296 |
+| sdot-s32 scalar | 3518 | 20960 |
+| sdot-s32 scatter | **1900** | 10415 |
+
+sdot scatter 动态 MCA 1900 相对 NEON -43%；scalar 仍 +6%（sdot
+依赖链/写回路径）。这是当前 NP1 周期评估的最强代理；est/cp 结构
+模型只作粗排。

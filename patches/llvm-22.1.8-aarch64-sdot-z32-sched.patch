@@ -1,0 +1,14 @@
+@@ -2259,6 +2259,13 @@
+ // Dot product, 16 bit
+ def : InstRW<[V2Wr_ZDOTH, V2Rd_ZDOTH], (instregex "^[SU]DOT_ZZZI?_HtoD")>;
+ 
++// Dot product, 16 bit -> 32 bit, 2-way (SVE2p1, a64-simd-dyn-optimizer
++// NP1/920B model: same 4c V02 dot pipe as HtoD, docs/26)
++def : InstRW<[V2Wr_ZDOTH, V2Rd_ZDOTH], (instregex "^[SU]DOT_ZZZI?_HtoS")>;
++
++// Dot product, 8 bit -> 16 bit, 2-way (SVE2p3 sdot.h; same dot pipe)
++def : InstRW<[V2Wr_ZDOTH, V2Rd_ZDOTH], (instregex "^[SU]DOT_ZZZI?_BtoH")>;
++
+ // Duplicate, immediate and indexed form
+ def : InstRW<[V2Write_2c_1V], (instregex "^DUP_ZI_[BHSD]",
+                                          "^DUP_ZZI_[BHSDQ]")>;

@@ -357,20 +357,20 @@ scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
 | 指标 | NEON 上游 | sdot scalar | sdot scatter |
 | --- | ---: | ---: | ---: |
 | fused_uop（objdump 口径） | 10214 | **4704（-54%）** | **5878（-42%）** |
-| llvm-mca cycles（neoverse-v2） | **3319** | 不可用¹ | 不可用¹ |
-| llvm-mca 跳过 sdot 下限 | - | 3346 | 2876 |
+| llvm-mca cycles（动态流，neoverse-v2+sve2p1 补丁²） | 3319 | 3518 | **1900（-43%）** |
 | est（920B/NP1 吞吐模型） | 5903 | **2738** | **3325** |
 | cp（NV2 延迟模型） | 539 | 71（不可靠） | 128 |
 
-¹ llvm-mca 的所有 AArch64 调度模型（neoverse-v2/v3/512tvb/ampere1a 等，
-generic 亦同）都没有 `sdot z.s,z.h,z.h`（SVE2p1 sdot_z32）的调度条目，
-`lack-sched` 跳过 sdot 得到的是低估下限（真实 ≈ 下限 + ~700 cycles）。
-这是自定义 llvm-mca target 的待补项（docs/26）。
+² 已给 llvm 22.1.8 Neoverse-V2 模型补 sdot_z32（HtoS）与 sdot.h
+（BtoH）调度条目（4c V02，同 HtoD 口径），补丁+构建脚本见
+`patches/llvm-22.1.8-aarch64-sdot-z32-sched.patch` 与
+`scripts/build-custom-llvm-mca.sh`（docs/26 §5）。动态流经
+`tools/fix_dynamic_trace.py` 修复 QEMU 的 .byte 反汇编。
 
-结论：指令数代理下 sdot-s32 已把 idct32 从 NEON 的 10214 压到
-4704/5878（-42%~-54%）；但模型（llvm-mca 下限/est/cp）尚未显示
-周期反超 NEON 的确定性证据——950 实测已证明指令数不直接等于周期，
-960 实机（SVE2.3）paired 仍是最终验收。
+结论：动态流 MCA（当前 NP1 最强代理）下 sdot-s32 scatter 已相对
+NEON -43%（1900 vs 3319），scalar 仍 +6%（3518）——写回方式决定
+周期差异；est/cp 结构模型只作粗排。960 实机（SVE2.3）paired 仍是
+最终验收，但 MCA 已成为等不到实机期间的主要预测工具。
 
 ### 8.11 下一步（更新）
 

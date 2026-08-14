@@ -108,12 +108,26 @@ def trace_to_mca(trace_log, start, end, out_s):
 
 
 def run_dynamic_mca(trace_log, start, end, out_s, mcpu="neoverse-v2",
-                    mattr="+sve2"):
+                    mattr="+sve2", fix_driver=None, mca_bin="llvm-mca"):
     """LLVM-MCA on the complete dynamic execution stream. Returns
-    (cycles, uops) or (None, None) if MCA fails."""
-    total = trace_to_mca(trace_log, start, end, out_s)
+    (cycles, uops) or (None, None) if MCA fails. fix_driver: trace driver
+    binary for objdump repair of QEMU's .byte (SVE2p1 sdot, docs/26 §5)."""
+    if fix_driver:
+        from fix_dynamic_trace import parse_exec_fixed
+        insns, _ = parse_exec_fixed(trace_log, start, end, fix_driver)
+        arch = ".arch armv9.4-a+sve2p1\n"
+        with open(out_s, "w") as f:
+            f.write(arch + ".text\n")
+            for i in insns:
+                if i["mn"] in BRANCH_MN:
+                    continue
+                ops = i["ops"].split("//")[0].strip()
+                f.write(i["mn"] + (" " + ops if ops else "") + "\n")
+        total = len(insns)
+    else:
+        total = trace_to_mca(trace_log, start, end, out_s)
     r = subprocess.run(
-        ["llvm-mca", "-mtriple=aarch64", "-mcpu=" + mcpu,
+        [mca_bin, "-mtriple=aarch64", "-mcpu=" + mcpu,
          "-mattr=" + mattr, "-iterations=1",
          "-skip-unsupported-instructions=parse-failure", out_s],
         capture_output=True, text=True, timeout=180)
@@ -488,16 +502,35 @@ def measure_layout_candidate(task):
             row.update({"passed": False, "counts": None})
             return row, None, "NO RANGE_END"
         rng = (rng[0], rng_end[1])
-    try:
-        counts = true_dynamic(driver, rng[0], rng[1],
-                              os.path.join(outdir, tag + "-trace.log"),
-                              timeout=300, vl_bytes=vl_bytes)
-    except subprocess.TimeoutExpired:
-        row.update({"passed": False, "counts": None})
-        return row, None, "TRACE TIMEOUT"
-    if counts is None:
-        row.update({"passed": False, "counts": None})
-        return row, None, "TRACE FAIL"
+    if combo.get("compute") == "sdot-s32":
+        # QEMU 11.0.3 disassembles sdot z.s,z.h,z.h as .byte, so dynamic
+        # trace counts would miss all 1376 sdots (docs/27 §8.10). These
+        # kernels are fully unrolled: objdump static == dynamic.
+        # Still trace for the dynamic-MCA path (docs/26 §5), but count
+        # statically.
+        try:
+            true_dynamic(driver, rng[0], rng[1],
+                         os.path.join(outdir, tag + "-trace.log"),
+                         timeout=300, vl_bytes=vl_bytes)
+        except subprocess.TimeoutExpired:
+            pass
+        try:
+            from static_counts import static_counts
+            counts = static_counts(obj, vl_bytes=vl_bytes)
+        except Exception as exc:  # noqa: BLE001
+            row.update({"passed": False, "counts": None})
+            return row, None, "STATIC COUNT FAIL: %s" % exc
+    else:
+        try:
+            counts = true_dynamic(driver, rng[0], rng[1],
+                                  os.path.join(outdir, tag + "-trace.log"),
+                                  timeout=300, vl_bytes=vl_bytes)
+        except subprocess.TimeoutExpired:
+            row.update({"passed": False, "counts": None})
+            return row, None, "TRACE TIMEOUT"
+        if counts is None:
+            row.update({"passed": False, "counts": None})
+            return row, None, "TRACE FAIL"
     row["range"] = [hex(rng[0]), hex(rng[1])]
     row["counts"] = counts
     return row, {"passed": True, "verify_mismatches": mism,
@@ -542,6 +575,10 @@ def main():
     ap.add_argument("--mca-mattr", default=None,
                     help="llvm-mca -mattr (default: manifest "
                          "mca_target.llvm_proxy_mattr, i.e. +sve2)")
+    ap.add_argument("--mca-bin", default="llvm-mca",
+                    help="llvm-mca binary (default llvm-mca; use the "
+                         "patched build from scripts/build-custom-llvm-mca.sh "
+                         "for sdot_z32 support, docs/26 §5)")
     ap.add_argument("--mca-target", choices=("920B", "NP1"), default=None,
                     help="target profile for the table-driven cycle "
                          "estimator (default: manifest mca_target.default, "
@@ -604,6 +641,10 @@ def main():
     if args.mca_mattr is None:
         args.mca_mattr = manifest.get("mca_target", {}).get(
             "llvm_proxy_mattr", "+sve2")
+    if "sdot-s32" in manifest.get("layouts", {}).get("compute", []):
+        # sdot_z32 is SVE2p1; the patched llvm-mca needs +sve2p1 to
+        # accept the asm stream (docs/26 §5).
+        args.mca_mattr = "+sve2p1"
     if args.mca_target is None:
         args.mca_target = manifest.get("mca_target", {}).get(
             "default", "NP1")
@@ -805,8 +846,15 @@ def main():
                 print("  %-24s no trace for MCA" % r["tag"])
                 continue
             mca_s = os.path.join(args.outdir, r["tag"] + ".mca.s")
+            fix_driver = None
+            if r.get("compute") == "sdot-s32":
+                # repaired dynamic stream + patched llvm-mca (docs/26 §5)
+                fix_driver = os.path.join(args.outdir,
+                                          r["tag"] + "-trace-driver")
             cycles, uops, total = run_dynamic_mca(
-                trace, rng[0], rng[1], mca_s, args.mca_mcpu, args.mca_mattr)
+                trace, rng[0], rng[1], mca_s, args.mca_mcpu,
+                args.mca_mattr, fix_driver=fix_driver,
+                mca_bin=args.mca_bin)
             r["mca_cycles"] = cycles
             r["mca_uops"] = uops
             print("  %-24s fused_uop=%d dyn=%d mca_cycles=%s mca_uops=%s"
@@ -839,12 +887,18 @@ def main():
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
                                   args.kernel)
-            if rng is None or not os.path.exists(trace):
+            is_sdot = r.get("compute") == "sdot-s32"
+            if rng is None or (not is_sdot and not os.path.exists(trace)):
                 print("  %-24s no trace for estimator" % r["tag"])
                 continue
             hist = {}
-            for insn in parse_exec(trace, rng[0], rng[1]):
-                hist[insn["mn"]] = hist.get(insn["mn"], 0) + 1
+            if r.get("compute") == "sdot-s32":
+                from static_counts import static_hist
+                hist = static_hist(os.path.join(args.outdir,
+                                                r["tag"] + ".o"))
+            else:
+                for insn in parse_exec(trace, rng[0], rng[1]):
+                    hist[insn["mn"]] = hist.get(insn["mn"], 0) + 1
             lb, _ = cycles_lb(hist, prof)
             r[key] = lb
             print("  %-24s fused_uop=%d %s=%.1f"
@@ -867,10 +921,23 @@ def main():
             trace = os.path.join(args.outdir, r["tag"] + "-trace.log")
             rng = candidate_range(r, args.outdir, manifest, args.backend,
                                   args.kernel)
-            if rng is None or not os.path.exists(trace):
+            is_sdot = r.get("compute") == "sdot-s32"
+            if rng is None or (not is_sdot and not os.path.exists(trace)):
                 print("  %-24s no trace for cp estimator" % r["tag"])
                 continue
-            cp, _, _ = cp_fn(trace, hex(rng[0]), hex(rng[1]), tgt)
+            if r.get("compute") == "sdot-s32":
+                # static stream: objdump disassembles sdot correctly;
+                # estimate_critical_path consumes the same fmt_insns form.
+                from critical_path_dynamic import fmt_insns, latency_table
+                from static_counts import static_insns
+                from optimizer.analysis.critical_path import (
+                    estimate_critical_path)
+                insns = static_insns(os.path.join(args.outdir,
+                                                  r["tag"] + ".o"))
+                cp, _, _, _ = estimate_critical_path(
+                    fmt_insns(insns), latency_table(tgt))
+            else:
+                cp, _, _ = cp_fn(trace, hex(rng[0]), hex(rng[1]), tgt)
             r[ckey] = cp
             print("  %-24s fused_uop=%d %s=%.1f"
                   % (r["tag"], fu(r), ckey, cp))
