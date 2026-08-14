@@ -219,3 +219,37 @@ idct32+stride 64 越界（最大索引 2015 > 1056），导致假失配 15.47%�
 
 1. zip32 转置/合并半块写回（scatter 的 cp 4170 偏高，需实机/模型校准）；
 2. 950 实机 paired（scalar vs scatter）；sdot 化按 §7.1c 约束评估。
+
+### 8.7 IDCT32 sdot 化配方（2026-08-14，探针已验证）
+
+scatter 版指令构成：mla/mad/mul **2720**、spill/mov/addvl ~3000、
+写回 1028。sdot 化 O/EO 是最大杠杆（2720 → 预计 ~700）。
+
+利用 `svdot_lane_s64` 的“段内两 lane 共享常量”语义，把同列的两个
+chunk（cols 0..7 与 8..15，同一条 16-lane s16 行向量的低/高半）放进
+lane0/1，列 k+2 的同样两个 chunk 放进 lane2/3。每个 4 行组 × 列对
+`(k, k+2)` 的打包（探针
+`experiments/m31-idct32-sdot/tbl2_sdot_pack.cpp`，QEMU bad=0）：
+
+```
+T1 = svtbl2_s16({r_a, r_b}, idx); T2 = svtbl2_s16({r_c, r_d}, idx);
+D  = svzip1_s16(T1, T2);
+acc = svdot_lane_s64(acc, D, C, 0);   // idx=0：段0 用 col k 常量、段1 用 col k+2
+idx lanes 0..7 = [k, 16+k, 8+k, 24+k, k+2, 16+k+2, 8+k+2, 24+k+2]
+C lanes 0..3 = [g_a[k], g_c[k], g_b[k], g_d[k]]（zip1 行序 a,c,b,d）
+```
+
+每 stage：O 16 奇行=4 行组 × 8 列对 × (2 tbl2+1 zip+1 sdot)=128；
+EO 2 行组 × 4 列对 × 4=32；EEO 1 行组 × 2 列对 × 4=8；EEEE/EEEO
+保持 mul/mla。行按 16-lane s16 加载（32 行 × 2 半 = 64 ld1h/趟，替代
+128 ld1sh）。s64 累加器低 32 位经 `svuzp1_s32` 提取，保持 s32 wrap
+语义。预计 fused scalar 5932 → ~3700、scatter 7329 → ~5100（约 -22%）。
+
+编译标志阴性：IDCT32 scatter 用 -O3 反而更差（fused 6561→7902，
+spill 增多）；-fno-tree-pre/-fweb/-frename-registers 无改善。
+
+### 8.8 下一步（更新）
+
+1. 按 §8.7 实现 sdot 化发射器轴（先只做 O/EO，20k+lite 门禁）；
+2. 若 spill（~3000 条 mov/addvl/ldr/str）仍是瓶颈，再做分块/重排；
+3. 950 实机 paired（scalar vs scatter vs sdot）。
