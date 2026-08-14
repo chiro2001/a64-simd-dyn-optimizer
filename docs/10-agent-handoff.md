@@ -1,32 +1,43 @@
-# Agent 交接上下文（2026-08-14 深夜，DCT32 4002 / 工具链闭环 / 未来方向）
+# Agent 交接上下文（2026-08-14，DCT32/DCT16 全代理闭环 / MCA targets / 未来方向）
 
 本文件是上下文压缩后接手的执行 Agent 的**唯一必读**。开始前按 §7 快速
 清单走一遍；不要凭对话记忆下结论，以仓库当前状态为准。
 
 ## 0. 当前状态（最新优先）
 
-### 0.1 DCT32 best = 4002 fused_uop（黄金标准闭合）
+### 0.1 DCT32：fused best 3930，cycle-proxy best 4014（best_op_mca）
 
 | 指标 | 数值 |
 | --- | ---: |
-| fused_uop（QEMU VL=256 true-dynamic） | **4002** |
-| vector raw / movprfx / stack / sg | 4466 / 464 / 387 / 0 |
+| fused_uop（QEMU VL=256 true-dynamic） | **3930**（tbl2/row16/k0_merge16） |
+| 4014（zip/row8/k0_merge16，best_op_mca） | fused 4014 / MCA **1041** / NP1 est **727.7** / cp 134 |
 | 相对上游 12710 | **0.315×** |
 | 相对内部 fused_uop 4827 / fused_adj 4251 | **0.829× / 0.941×** |
 | 20k 差分 legacy 签名 | 7268（0.0355%，阈值 22528）不变 |
-| TestBenchLite dct32 | 5 seed 全 PASS |
-| 固化 | `kernels/dct32/candidates/best_op_r16.{cpp,S}` |
+| TestBenchLite dct32 | best_op_r16 与 best_op_mca 均 5 seed 全 PASS |
+| 固化 | `kernels/dct32/candidates/best_op_r16.{cpp,S}`（fused 最优）与 `best_op_mca.{cpp,S}`（cycle 代理最优） |
 
 **内部 950 实机 TestBench cycle（2026-08-14，用户提供）**：
-best_op_r16 **1019~1077**、内部手写算子 1167、上游 2107 ——
-工具生成算子首次在 SVE2 实机上超过内部参考（约 1.08×~1.15×），
-较上游约 2×。详见 docs/20 §6.15。
+best_op_mca **985~995**、best_op_r16 1019~1077、内部手写算子 1167、
+上游 2107 —— **best_op_mca（cycle 代理选出）为实机最快**，较内部快
+~18%、较上游 ~2.1×。详见 docs/20 §6.17。
 
-**cycle 代理双第一候选（2026-08-14）**：4014（zip/row8/k0_merge16，
-fused 4014）在 llvm-mca（1041 cyc）与 NP1 结构成本（727.7）下均
-最优，TestBenchLite 官方 5 seed 全 PASS；已固化
-`kernels/dct32/candidates/best_op_mca.{cpp,S,o}`。fused 最优 3930
-（1094/794）保持为 best_op_r16。950 实机 paired（4014 vs 3930）待测。
+**cycle 代理结论（2026-08-14）**：llvm-mca 与 NP1 结构成本一致指向
+4014（1041 / 727.7，均优于 3930 的 1094 / 794.2）；cp（NV2 依赖链）
+在同族 top-N 内也最矮（134 vs 203），但**跨候选不可比**（全局
+rho(cp,fused)=-0.255，docs/20 §6.16）。950 实机 paired（4014 vs
+3930）待测。
+
+**机器口径（重要）**：950 = SVE2 2×256 / NEON 4×128，实测
+1019~1077 / 1167 / 2107 只对照 920B 结构模型；**NP1 = 960 =
+SVE 4×256 / NEON 4×128，暂无实机数据**（docs/26 §5）。
+
+### 0.1b DCT16：layout 最优 699（best_op_mca）
+
+全代理重排（`experiments/m30-dct16-search/layout-search-proxy/`）：
+699（legacy）fused 699 / MCA 212 / NP1 est 125.5 / cp 43，lite 5/5
+PASS；727 次之（222 / 131.1 / cp 42）。已固化
+`kernels/dct16/candidates/best_op_mca.{cpp,S}`（docs/25 §13）。
 
 生成组合（`layout_ir.dct32_v31_plan` + lowering）：
 `legacy_ex=1, legacy_k4=1, slice_kind=zip, row_group=16,
@@ -45,6 +56,7 @@ sdot_indexed=1, odd_from_k0packs=1, k2k4_from_packs=1`；
 | 上游 dct32_sve | 13362 | **2608** | 15009 |
 | 内部 dct32_sve256 | 5381 | **1048** | 5800 |
 | 本项目 4002 | 5619 | **1109** | 5893 |
+| 本项目 4014（best_op_mca） | 5125 | **1041** | 5414 |
 
 tsv110（鲲鹏 920 核心）模型**无 SVE 调度覆盖**（跳过 41%/80%），
 不可用；neoverse-v2 是 LLVM 能给出的最好 SVE 近似。
@@ -61,13 +73,26 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 - 本地 x86：`aarch64-linux-gnu-g++ 16.1.0`、`qemu-aarch64 11.0.3`
   （`-cpu max,sve-max-vq=2` 即 VL=256）、clang 22（`llvm-mca`）、
   QEMU_LD_PREFIX=/usr/aarch64-linux-gnu；12 核。
-- GitHub remote 已 push（main @ a004178）；N1 origin：
+- GitHub remote 已 push（main 最新见 `git log`）；N1 origin：
   chiro@129.146.162.16；920B（SVE1/VL=256，无 PMU，CNTVCT）：
   chiro@124.70.206.229（可能被启停）。
 - 内存教训：大搜索（父进程 ~3GB + 8 worker COW）与 codex 咨询并发
   曾打满 swap 并 OOM 杀掉咨询；已加 `scripts/monitor-resources.sh`
   后台监控（默认 10s → build/resource-monitor.log，gitignored）；
   **大搜索与咨询错峰执行**。
+
+### 0.5 全代理工具（2026-08-14）
+
+- MCA targets：`optimizer/mca_targets.py`，920B（SVE 2×256/NEON 4×128）
+  与 NP1（SVE 4×256/NEON 4×128，960），latency 参考 Neoverse-V2；
+  throughput 按管道结构（2×256=0.5、4×256=0.25 cyc/op）。
+- 搜索新参数：`--mca-top N`（llvm-mca）、`--cost-top N`
+  （表驱动结构成本，`est_cycles_<target>`）、`--cp-top N`
+  （critical-path，`cp_cycles_<target>`）、`--lite-top N`
+  （TestBenchLite 黄金门禁），以及 `--rank-by fused_uop|mca|cp|lite`。
+- 单 trace 工具：`tools/estimate_cycles.py`、`tools/critical_path_dynamic.py`。
+- 920B SVE1 指令实测表：`benchmarks/sve-timing-920b/timing-920b.json`
+  （仅作参考；target 权重已改为结构口径，不再使用实测值）。
 
 ## 1. 实际工作流（docs/23 是权威描述，这里给执行速记）
 
