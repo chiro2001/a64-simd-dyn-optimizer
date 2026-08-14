@@ -133,6 +133,12 @@ ADDP 谓词对和形态）见 docs/22 §5.3。
 - **interp8 方案 B 已落地并固化**（docs/22 §5.3）：fused 101/100，
   lite/20k 全过，MCA 55；后续轴 = UDOT BtoH 去掉 -128（→93）+
   置换/布局再降 tbl/uzp。
+- **round-0019 完成（2026-08-14）**：QEMU 补齐 BtoH dot/udot（vector +
+  indexed）、SABAL/UABAL 2-way（BtoH/HtoS/StoD）、SVE2p3
+  shift-narrow-interleave 9 条、SVE2p2 zeroing unary 一批
+  （patches/qemu-sve2p1p3-remaining.patch，canary PASS，本机复验）。
+  UDOT BtoH 落地后实测否决“无符号直算”方案（u8×u8 与 s8×s8 高字节
+  不等价，docs/22 §5.3），interp8 保持 101/100 为当前最优。
 
 **P1：dct8 提一提**
 - 评估 HtoS（SVE2p1）变体：先 920B 替换预估 + MCA，显著再实现；
