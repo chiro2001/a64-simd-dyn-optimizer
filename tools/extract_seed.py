@@ -64,7 +64,10 @@ CODEGEN_REGISTRY = {
     "emit_c_intrinsics": emit_c_intrinsics,
     "emit_dct8_c_intrinsics": emit_dct8_c_intrinsics,
     "emit_dct16_c_intrinsics": emit_dct16_c_intrinsics,
+    # emit_interp8_c_intrinsics is the generic node-driven NEON roundtrip
+    # emitter (hpp/vpp/interp4 all use it); expose a neutral alias.
     "emit_interp8_c_intrinsics": emit_interp8_c_intrinsics,
+    "emit_neon_c_intrinsics": emit_interp8_c_intrinsics,
 }
 
 DEFAULT_INCLUDES = [

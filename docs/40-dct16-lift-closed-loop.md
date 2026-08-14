@@ -68,7 +68,8 @@ kernels/dct16 上游 NEON（dct16_neon）
     映射**缩放系数（首版按 slot i 取值，shuffle 后错位；修复后
     consts 变为完整 G16 行）；
   - `shared_constant_matrix_outputs()`：asm 检测器的 MachineIR 移植。
-- 新工具 `tools/dct16_recipe_seed.py`：seed → 检测 → 配方匹配 →
+- 新工具 `tools/recipe_seed.py`（原名 dct16_recipe_seed.py）：seed →
+  检测 → 配方匹配 →
   轴种子 JSON。
 - 结果（m30 seed，2244 节点）：
   - **44 命中**（asm 线 39 的超集），13 个唯一常量签名 vs asm 9 个，
@@ -88,7 +89,7 @@ kernels/dct16 上游 NEON（dct16_neon）
   行宽正则灾难性回溯（g_t32 大块）→ 改从声明第二维度取行宽，宏维度
   （NTAPS_*）才解析首行；常量表键需用 x265 mangled 名
   （`_ZN4x2655g_t16E`）匹配 seed 的 const_name；
-- `tools/dct16_recipe_seed.py` 自动提取常量（`--const-tables` 可指定
+- `tools/recipe_seed.py` 自动提取常量（`--const-tables` 可指定
   JSON），不再 import dct16 专属 G16；
 - 结果与 M1a 完全一致（44 命中、odd 1/3/5/7/9/11/13/15、
   even [4,8,12]、轴种子不变）——常量源已通用化。
@@ -121,7 +122,7 @@ kernels/dct16 上游 NEON（dct16_neon）
 
 ### M3b ✅：FIR / diff-sum 检测 + 族→轴种子
 
-- `tools/dct16_recipe_seed.py` 新增 `detect_fir` / `detect_diff_sum` 与
+- `tools/recipe_seed.py` 新增 `detect_fir` / `detect_diff_sum` 与
   `axis_seed_for`（知识层映射：结构事实 → 搜索轴）：
   - **interp8（fir）**：filter=g_lumaFilter、phases=4、taps=8、
     sdot=32、tbl=24、narrow=sqrshrun → 轴种子

@@ -164,6 +164,15 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   属于 docs/02 §6.3 的二进制 lifter 入口案例（当前路线暂不覆盖，后续
   binary lifter 或 asm 常量表导入再补）。
 
+### K3a ✅：seed 分析工具泛化 + NEON codegen registry 化
+
+- `tools/dct16_recipe_seed.py` 改名 `tools/recipe_seed.py`（旧名保留
+  shim）；新增 `--kernel` 参数，报告 kernel/family 不再硬编码 dct16；
+- `seed_pipeline.py` 改调 recipe_seed.py 并透传 kernel；
+- CODEGEN_REGISTRY 新增中立别名 `emit_neon_c_intrinsics`
+  （= emit_interp8_c_intrinsics，事实上的通用 node-driven NEON roundtrip
+  发射器：hpp/vpp/interp4/dct8 共用）。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

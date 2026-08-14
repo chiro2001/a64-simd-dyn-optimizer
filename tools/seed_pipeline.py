@@ -59,8 +59,8 @@ def main():
     run(cmd)
 
     # 2) structure detection -> family / axis seed
-    run([sys.executable, os.path.join(ROOT, "tools", "dct16_recipe_seed.py"),
-         "--machine-ir", mi, "--out", seed_json])
+    run([sys.executable, os.path.join(ROOT, "tools", "recipe_seed.py"),
+         "--machine-ir", mi, "--out", seed_json, "--kernel", args.kernel])
     seed_doc = json.load(open(seed_json))
 
     # 3) search over the kernel's full axis space
