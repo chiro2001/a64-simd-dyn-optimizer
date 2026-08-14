@@ -82,6 +82,18 @@ CNTVCT paired）：当前 dct8（SVE HtoD 移植版）**比上游 NEON 慢
 动态 492 中 str/ldr 占比高），可用 920B 直接实测迭代（dct8 全为
 SVE1/NEON，无需替换）。
 
+**2026-08-14 追加定位**：我们的 dct8 移植版比**上游 dct8_sve 还差**
+（动态 492 vs 310，MCA 118 vs 77，920B p50 5 vs 4）——所谓
+“op-for-op 移植”实际多了 ~180 条指令（NEON bridge 的 8-lane 存取/
+vpadd/rshrn 与 sdot 的 movprfx 零初始化）。上游 SVE 本身也比 NEON
+慢 33%（p50 4 vs 3，同宽 920B）。因此 dct8 两步走：
+1. **纯 SVE 重写对齐上游**（310 dyn / MCA 77 / p50 4）：去掉 NEON
+   bridge；
+2. **寄存器驻留中间量 + HtoS（4-way）**（目标 ≤NEON p50 3）：把两趟
+   pass 的中间量留在 SVE 寄存器（当前 str/ldr 往返 ~40 条），odd 用
+   sdot z.s,z.h,z.h（SVE2p1，920B 用替换预估流验证）。
+设计见 docs/31（待写）。
+
 ### 1.8 interp8 优化现状
 
 方案 A（SVE2-safe sdot.d + NEON bridge）已落地：**fused 127**（基线
