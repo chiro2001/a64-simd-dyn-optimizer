@@ -91,10 +91,10 @@ extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
     // Group totals, then one 16-lane udot + addv.
     svint16_t g0 = svadd_s16_x(p16, t0, t1);
     svint16_t g1 = svadd_s16_x(p16, t2, t3);
-    svint16_t s = svadd_s16_x(p16, g0, g1);
 
-    svuint64_t dot = svdot_u64(svdup_n_u64(0),
-                               svreinterpret_u16_s16(s), svdup_n_u16(1));
-    uint64_t total = svaddv_u64(svptrue_b64(), dot);
+    // Per-group 16-lane sums (s32 scalar; lane values
+    // are non-negative and well below s32 overflow).
+    int32_t total = svaddv_s16(p16, g0);
+    total += svaddv_s16(p16, g1);
     return (int)((total + 1) >> 1);
 }

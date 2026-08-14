@@ -359,18 +359,19 @@ extern "C" int %s(const uint8_t* pix1, intptr_t sp1,
     for g in range(groups):
         lines.append("    svint16_t g%d = svadd_s16_x(p16, t%d, t%d);"
                      % (g, g * 2, g * 2 + 1))
-    total_expr = "g0"
-    for g in range(1, groups):
-        total_expr = "svadd_s16_x(p16, %s, g%d)" % (total_expr, g)
-    lines.append("    svint16_t s = %s;" % total_expr)
+    # 2026-08-14: replace the add-tree + udot + uaddv tail (groups-1 lane
+    # adds + udot + uaddv) with one svaddv_s16 per group: each lane value is
+    # non-negative and the 16-lane sum fits s32, so addv per group + scalar
+    # add is exact. 16x16: 9 -> 4 vector tail instructions (189 -> 184,
+    # passes the halve gate 186.5).
     lines.append("")
-    lines.append("""\
-    svuint64_t dot = svdot_u64(svdup_n_u64(0),
-                               svreinterpret_u16_s16(s), svdup_n_u16(1));
-    uint64_t total = svaddv_u64(svptrue_b64(), dot);
-    return (int)((total + 1) >> 1);
-}
-""")
+    lines.append("    // Per-group 16-lane sums (s32 scalar; lane values")
+    lines.append("    // are non-negative and well below s32 overflow).")
+    lines.append("    int32_t total = svaddv_s16(p16, g0);")
+    for g in range(1, groups):
+        lines.append("    total += svaddv_s16(p16, g%d);" % g)
+    lines.append("    return (int)((total + 1) >> 1);")
+    lines.append("}")
     return "\n".join(lines)
 
 
