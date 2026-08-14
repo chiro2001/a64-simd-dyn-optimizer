@@ -417,7 +417,7 @@ def measure_layout_candidate(task):
                      "-march=" + candidate_march(combo),
                      "-o", obj, s_path], timeout=120)
         else:
-            cc = [_CXX, candidate_opt(combo)] + _OPT_EXTRA.split() + [
+            cc = [_CXX] + candidate_opt(combo).split() + _OPT_EXTRA.split() + [
                   "-std=c++11", "-march=" + candidate_march(combo),
                   "-c", src, "-o", obj]
             if backend == "op":
@@ -1140,10 +1140,10 @@ def main():
                     "verify_mismatches", "verify", "counts", "cached"}
             combo = {k: v for k, v in best.items() if k not in meta}
             f.write(emit(combo))
-        run(["aarch64-linux-gnu-g++", candidate_opt(best),
+        run(["aarch64-linux-gnu-g++"] + candidate_opt(best).split() + [
              "-march=" + candidate_march(best),
              "-S", src_path, "-o", s_path])
-        c = run(["aarch64-linux-gnu-g++", candidate_opt(best),
+        c = run(["aarch64-linux-gnu-g++"] + candidate_opt(best).split() + [
                  "-march=" + candidate_march(best),
                  "-c", src_path, "-o", obj_path])
         if c.returncode == 0:

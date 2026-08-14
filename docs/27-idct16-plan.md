@@ -471,14 +471,17 @@ padding 未修复。疑似大函数寄存器压力/调度与 chunk3 越界 16-la
 | adrp（静态） | 944 | 95 | -849 |
 | 动态指令（trace 口径） | 8501 | 7386 | -13% |
 | fused_uop | 5849 | **5847** | -2（SIMD 口径几乎不动） |
-| 动态 MCA | 1883 | **1688（-10.4%）** | 相对 NEON 3319 达 **-49.1%** |
+| 动态 MCA（全搜索确认） | 1900 | **1550（-18.4%）** | 相对 NEON 3319 **-53.3%**，过 NP1 减半门 |
 | 20k / lite | 0 失配 / PASS | 0 失配 / PASS | 保持 |
 
 scalar 写回变体 MCA 3518→3334（改善但写回路径仍拖后腿，不及
 scatter 1688）。要点：**spill/地址算术多是指令流里的标量部分，
 fused_uop（SIMD 口径）看不到，必须用动态 MCA/总指令数评估**——
 这正好是 round-0017 咨询关注的 regspill 收敛口径。emitter 已默认
-采用 vnum 寻址；搜索候选需重跑固化。
+采用 vnum 寻址；搜索已重跑并固化 best（sdot scatter：
+fused 5847 / MCA 1550 / vector_lb NP1 1266 / lite 5/5，scalar
+变体 MCA 3195）。另修复 finalize 对多 token candidate_opt 的编译
+（`.split()`）。
 
 **下一步**：
 1. 降低 spill（~1650 条 ldr_z/str_z）：尝试按 k 分块/两遍蝴蝶减少
