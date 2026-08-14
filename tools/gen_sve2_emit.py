@@ -1,13 +1,16 @@
 """Generic MachineIR -> SVE2 candidate emitter (docs/40 M3, /goal).
 
-First prototype slice: the diff-sum recipe family (sad/sa8d/satd shape).
-It consumes only the imported MachineIR JSON of the seed (no per-kernel
-hand-written emitter): detects the uabd/uaddlv diff-sum pattern, derives
-the row structure from the GEP address expressions, and emits SVE2 ACLE.
+Recipe registry: each recipe declares (a) a MachineIR op-signature
+detector and (b) an SVE2 ACLE lowering. The emitter consumes only the
+imported MachineIR JSON of the seed -- no per-kernel hand-written emitter.
+The search layer consumes the emitted source through the normal
+verify/trace/MCA funnel (`search_sve2_layouts.py --backend gen`).
 
-The knowledge layer contributes the recipe (which MachineIR op pattern
-means "diff-sum" and what SVE lowering to use); the search layer consumes
-the emitted source through the normal verify/trace/MCA funnel.
+Recipes so far:
+  diff-sum   (sad 16/16/32): uabd + uaddlv per row -> svld1/svabd/svaddv.
+
+Adding a recipe = register a (name, detect, emit) triple; family members
+covered by the same recipe need no emitter code at all.
 """
 
 import json
@@ -26,6 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _RECIPE_ALIAS = {
     "sad": "sad-16x16",
     "sad-32": "sad-32x32",
+    "sa8d": "sa8d-8x8",
 }
 
 
@@ -49,13 +53,37 @@ def _load_machine_ir(kernel):
     return json.load(open(path))
 
 
-def detect_family(machine_ir):
-    """Return a family descriptor for the MachineIR, or None."""
-    ops = [n.get("op") for n in machine_ir["nodes"]]
+def detect_diff_sum(machine_ir):
+    """Diff-sum signature: uabd+uaddlv (sad 16/32)."""
     intr = {n.get("intrinsic") for n in machine_ir["nodes"]
             if n.get("op") == "intrinsic"}
     if "uabd" in intr and "uaddlv" in intr:
-        return "diff-sum"
+        return True
+    return False
+
+
+def detect_hadamard(machine_ir):
+    """Hadamard butterfly signature: sabd+abs+umax+uaddlv (sa8d 8x8).
+    Recognized but not yet lowered: the generic emitter reports the
+    recipe gap instead of silently emitting a wrong kernel."""
+    intr = {n.get("intrinsic") for n in machine_ir["nodes"]
+            if n.get("op") == "intrinsic"}
+    return {"sabd", "abs", "umax", "uaddlv"} <= intr
+
+
+def detect_fir(machine_ir):
+    """FIR signature: dot-product / tbl / narrowing (interp8/4).
+    Recognized but not yet lowered (recipe gap)."""
+    intr = {n.get("intrinsic") for n in machine_ir["nodes"]
+            if n.get("op") == "intrinsic"}
+    return "sdot" in intr or "sqrshrn" in intr
+
+
+def detect_family(machine_ir):
+    """Return the first matching recipe name, or None."""
+    for name, rec in RECIPES.items():
+        if rec["detect"](machine_ir):
+            return name
     return None
 
 
@@ -119,15 +147,29 @@ def emit_diff_sum(machine_ir, func_name):
     return "\n".join(lines) + "\n"
 
 
+RECIPES = {
+    "diff-sum": {
+        "detect": detect_diff_sum,
+        "emit": emit_diff_sum,
+    },
+    # Recognized structure families without a lowering yet: they produce a
+    # clear "recipe gap" error so the tool never silently mis-emits.
+    "hadamard": {"detect": detect_hadamard, "emit": None},
+    "fir": {"detect": detect_fir, "emit": None},
+}
+
+
 def make_generic_emitter(kernel):
     """Return emit(combo) that derives the candidate from the MachineIR.
     Family detection is per-kernel but recipe-driven: no kernel-specific
     emitter code is written for a new member of a known family."""
     mi = _load_machine_ir(kernel)
     family = detect_family(mi)
-    if family != "diff-sum":
+    recipe = RECIPES.get(family)
+    if recipe is None or recipe["emit"] is None:
         raise ValueError(
-            "generic emitter: no recipe for family %r (kernel %s)"
+            "generic emitter: family %r has no lowering yet (kernel %s);"
+            " add a recipe in tools/gen_sve2_emit.py RECIPES"
             % (family, kernel))
 
     manifest_path = os.path.join(ROOT, "kernels", kernel, "manifest.yaml")
@@ -137,5 +179,9 @@ def make_generic_emitter(kernel):
         symbol = man.get("candidate", {}).get("symbol")
 
     def emit(combo):
-        return emit_diff_sum(mi, symbol or "dynopt_%s_sve2" % kernel)
+        return recipe["emit"](mi, symbol or "dynopt_%s_sve2" % kernel)
     return emit
+
+
+def list_recipes():
+    return sorted(RECIPES)

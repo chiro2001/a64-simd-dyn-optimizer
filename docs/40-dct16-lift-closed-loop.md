@@ -186,3 +186,16 @@ kernels/dct16 上游 NEON（dct16_neon）
 - 结论：diff-sum 家族（sad 16/32）已达成“免手写发射器即复现手写
   最优”；同配方可扩展到 sa8d/satd（还需 addp/abs/reduce 变体），
   其他配方（butterfly/fir）按同一机制继续加。
+
+## 7. 通用发射器配方注册表（2026-08-15）
+
+- `tools/gen_sve2_emit.py` 重构为 **RECIPES 注册表**：每个配方 =
+  (detect 签名, emit lowering)。`--backend gen` 按第一个命中的配方
+  生成候选；识别到但没有 lowering 的家族（hadamard/fir）给出明确的
+  “recipe gap”错误，绝不静默误发。
+- 现状：diff-sum（sad 16/32，80/69 与 160/118 复现手写最优）；
+  hadamard（sa8d 8x8 签名已识别）、fir（interp8/4 签名已识别）待
+  实现 lowering。
+- 新增配方协议：在 `tools/gen_sve2_emit.py` 加 `detect_*` +
+  `emit_*` 并注册即可；同配方的新算子（形状/行数/宽度）由
+  MachineIR 自动推导，无需写 per-kernel 发射器。

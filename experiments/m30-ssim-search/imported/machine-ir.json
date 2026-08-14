@@ -1,0 +1,926 @@
+{
+ "function": "dynopt_ssim_4x4x2",
+ "nodes": [
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "6",
+   "ptr": "0",
+   "id": 0
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 %1",
+   "dst": "7",
+   "id": 1
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "8",
+   "ptr": "7",
+   "id": 2
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %7, i64 %1",
+   "dst": "9",
+   "id": 3
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "10",
+   "ptr": "9",
+   "id": 4
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %9, i64 %1",
+   "dst": "11",
+   "id": 5
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "12",
+   "ptr": "11",
+   "id": 6
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "13",
+   "ptr": "2",
+   "id": 7
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %2, i64 %3",
+   "dst": "14",
+   "id": 8
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "15",
+   "ptr": "14",
+   "id": 9
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %14, i64 %3",
+   "dst": "16",
+   "id": 10
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "17",
+   "ptr": "16",
+   "id": 11
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %16, i64 %3",
+   "dst": "18",
+   "id": 12
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "19",
+   "ptr": "18",
+   "id": 13
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "6",
+   "dst": "20",
+   "id": 14
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "8",
+   "dst": "21",
+   "id": 15
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "21",
+    "20"
+   ],
+   "dst": "22",
+   "id": 16
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "10",
+   "dst": "23",
+   "id": 17
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "22",
+    "23"
+   ],
+   "dst": "24",
+   "id": 18
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "12",
+   "dst": "25",
+   "id": 19
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "24",
+    "25"
+   ],
+   "dst": "26",
+   "id": 20
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "26"
+   ],
+   "args": [
+    {
+     "ref": "26"
+    }
+   ],
+   "dst": "27",
+   "id": 21
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "13",
+   "dst": "28",
+   "id": 22
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "15",
+   "dst": "29",
+   "id": 23
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "29",
+    "28"
+   ],
+   "dst": "30",
+   "id": 24
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "17",
+   "dst": "31",
+   "id": 25
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "30",
+    "31"
+   ],
+   "dst": "32",
+   "id": 26
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "19",
+   "dst": "33",
+   "id": 27
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "32",
+    "33"
+   ],
+   "dst": "34",
+   "id": 28
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "34"
+   ],
+   "args": [
+    {
+     "ref": "34"
+    }
+   ],
+   "dst": "35",
+   "id": 29
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "6",
+    "6"
+   ],
+   "args": [
+    {
+     "ref": "6"
+    },
+    {
+     "ref": "6"
+    }
+   ],
+   "dst": "36",
+   "id": 30
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "36"
+   ],
+   "args": [
+    {
+     "ref": "36"
+    }
+   ],
+   "dst": "37",
+   "id": 31
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "8",
+    "8"
+   ],
+   "args": [
+    {
+     "ref": "8"
+    },
+    {
+     "ref": "8"
+    }
+   ],
+   "dst": "38",
+   "id": 32
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "38"
+   ],
+   "args": [
+    {
+     "ref": "38"
+    }
+   ],
+   "dst": "39",
+   "id": 33
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "39",
+    "37"
+   ],
+   "dst": "40",
+   "id": 34
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "10",
+    "10"
+   ],
+   "args": [
+    {
+     "ref": "10"
+    },
+    {
+     "ref": "10"
+    }
+   ],
+   "dst": "41",
+   "id": 35
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "41"
+   ],
+   "args": [
+    {
+     "ref": "41"
+    }
+   ],
+   "dst": "42",
+   "id": 36
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "40",
+    "42"
+   ],
+   "dst": "43",
+   "id": 37
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "12",
+    "12"
+   ],
+   "args": [
+    {
+     "ref": "12"
+    },
+    {
+     "ref": "12"
+    }
+   ],
+   "dst": "44",
+   "id": 38
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "44"
+   ],
+   "args": [
+    {
+     "ref": "44"
+    }
+   ],
+   "dst": "45",
+   "id": 39
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "43",
+    "45"
+   ],
+   "dst": "46",
+   "id": 40
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "13",
+    "13"
+   ],
+   "args": [
+    {
+     "ref": "13"
+    },
+    {
+     "ref": "13"
+    }
+   ],
+   "dst": "47",
+   "id": 41
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "47"
+   ],
+   "args": [
+    {
+     "ref": "47"
+    }
+   ],
+   "dst": "48",
+   "id": 42
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "46",
+    "48"
+   ],
+   "dst": "49",
+   "id": 43
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "15",
+    "15"
+   ],
+   "args": [
+    {
+     "ref": "15"
+    },
+    {
+     "ref": "15"
+    }
+   ],
+   "dst": "50",
+   "id": 44
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "50"
+   ],
+   "args": [
+    {
+     "ref": "50"
+    }
+   ],
+   "dst": "51",
+   "id": 45
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "49",
+    "51"
+   ],
+   "dst": "52",
+   "id": 46
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "17",
+    "17"
+   ],
+   "args": [
+    {
+     "ref": "17"
+    },
+    {
+     "ref": "17"
+    }
+   ],
+   "dst": "53",
+   "id": 47
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "53"
+   ],
+   "args": [
+    {
+     "ref": "53"
+    }
+   ],
+   "dst": "54",
+   "id": 48
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "52",
+    "54"
+   ],
+   "dst": "55",
+   "id": 49
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "19",
+    "19"
+   ],
+   "args": [
+    {
+     "ref": "19"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "56",
+   "id": 50
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "56"
+   ],
+   "args": [
+    {
+     "ref": "56"
+    }
+   ],
+   "dst": "57",
+   "id": 51
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "55",
+    "57"
+   ],
+   "dst": "58",
+   "id": 52
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "6",
+    "13"
+   ],
+   "args": [
+    {
+     "ref": "6"
+    },
+    {
+     "ref": "13"
+    }
+   ],
+   "dst": "59",
+   "id": 53
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "59"
+   ],
+   "args": [
+    {
+     "ref": "59"
+    }
+   ],
+   "dst": "60",
+   "id": 54
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "8",
+    "15"
+   ],
+   "args": [
+    {
+     "ref": "8"
+    },
+    {
+     "ref": "15"
+    }
+   ],
+   "dst": "61",
+   "id": 55
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "61"
+   ],
+   "args": [
+    {
+     "ref": "61"
+    }
+   ],
+   "dst": "62",
+   "id": 56
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "62",
+    "60"
+   ],
+   "dst": "63",
+   "id": 57
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "10",
+    "17"
+   ],
+   "args": [
+    {
+     "ref": "10"
+    },
+    {
+     "ref": "17"
+    }
+   ],
+   "dst": "64",
+   "id": 58
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "64"
+   ],
+   "args": [
+    {
+     "ref": "64"
+    }
+   ],
+   "dst": "65",
+   "id": 59
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "63",
+    "65"
+   ],
+   "dst": "66",
+   "id": 60
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "12",
+    "19"
+   ],
+   "args": [
+    {
+     "ref": "12"
+    },
+    {
+     "ref": "19"
+    }
+   ],
+   "dst": "67",
+   "id": 61
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "uaddlp",
+   "type": "<4 x i32>",
+   "src": [
+    "67"
+   ],
+   "args": [
+    {
+     "ref": "67"
+    }
+   ],
+   "dst": "68",
+   "id": 62
+  },
+  {
+   "op": "add",
+   "type": "<4 x i32>",
+   "src": [
+    "66",
+    "68"
+   ],
+   "dst": "69",
+   "id": 63
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "addp",
+   "type": "<4 x i32>",
+   "src": [
+    "27",
+    "27"
+   ],
+   "args": [
+    {
+     "ref": "27"
+    },
+    {
+     "ref": "27"
+    }
+   ],
+   "dst": "70",
+   "id": 64
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "addp",
+   "type": "<4 x i32>",
+   "src": [
+    "35",
+    "35"
+   ],
+   "args": [
+    {
+     "ref": "35"
+    },
+    {
+     "ref": "35"
+    }
+   ],
+   "dst": "71",
+   "id": 65
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "addp",
+   "type": "<4 x i32>",
+   "src": [
+    "58",
+    "58"
+   ],
+   "args": [
+    {
+     "ref": "58"
+    },
+    {
+     "ref": "58"
+    }
+   ],
+   "dst": "72",
+   "id": 66
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "addp",
+   "type": "<4 x i32>",
+   "src": [
+    "69",
+    "69"
+   ],
+   "args": [
+    {
+     "ref": "69"
+    },
+    {
+     "ref": "69"
+    }
+   ],
+   "dst": "73",
+   "id": 67
+  },
+  {
+   "op": "shuffle",
+   "type": "<2 x i32>",
+   "src": [
+    "70"
+   ],
+   "mask": [
+    0,
+    1
+   ],
+   "dst": "74",
+   "id": 68
+  },
+  {
+   "op": "shuffle",
+   "type": "<2 x i32>",
+   "src": [
+    "71"
+   ],
+   "mask": [
+    0,
+    1
+   ],
+   "dst": "75",
+   "id": 69
+  },
+  {
+   "op": "shuffle",
+   "type": "<2 x i32>",
+   "src": [
+    "72"
+   ],
+   "mask": [
+    0,
+    1
+   ],
+   "dst": "76",
+   "id": 70
+  },
+  {
+   "op": "shuffle",
+   "type": "<2 x i32>",
+   "src": [
+    "73"
+   ],
+   "mask": [
+    0,
+    1
+   ],
+   "dst": "77",
+   "id": 71
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "st4",
+   "type": null,
+   "src": [
+    "74",
+    "75",
+    "76",
+    "77",
+    "4"
+   ],
+   "args": [
+    {
+     "ref": "74"
+    },
+    {
+     "ref": "75"
+    },
+    {
+     "ref": "76"
+    },
+    {
+     "ref": "77"
+    },
+    {
+     "ref": "4"
+    }
+   ],
+   "dst": null,
+   "id": 72
+  }
+ ],
+ "provenance": {
+  "recipe": "/home/chiro/projects/a64-simd-dyn-optimizer/seeds/ssim-4x4x2.yaml",
+  "compiler": "clang version 22.1.8",
+  "source_sha256": "66a1749b3e52addf06603a06b0972aacc7acba741b4584c46a188e0defed01b0",
+  "ir_sha256": "ddc60a427fdd9991e217a533687ad1c347f2199c6b390a94686b9814ebbc37e1",
+  "target_function": {
+   "mangled": "dynopt_ssim_4x4x2",
+   "demangled": "dynopt_ssim_4x4x2"
+  }
+ }
+}
