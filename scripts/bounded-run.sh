@@ -6,9 +6,10 @@
 #   scripts/bounded-run.sh <mem_mb> <timeout_s> <cmd...>
 #
 # Memory limit is enforced with systemd-run cgroup MemoryMax when available
-# (kills only this scope), otherwise with ulimit -v/-m. Wall time uses
-# `timeout -k`. Peak usage is logged to $BOUNDED_LOG (default
-# build/bounded-run.log, gitignored).
+# (kills only this scope), otherwise with ulimit -v/-m. Swap is disabled for
+# the scope so a ballooning job is killed instead of thrashing the host.
+# Wall time uses `timeout -k`. Every invocation is logged to $BOUNDED_LOG
+# (default build/bounded-run.log, gitignored).
 set -u
 
 MEM_MB="${1:?usage: bounded-run.sh <mem_mb> <timeout_s> <cmd...>}"
@@ -24,7 +25,8 @@ mkdir -p "$(dirname "$LOG")"
 run_bounded() {
     if command -v systemd-run >/dev/null 2>&1 && \
        systemd-run --scope -p MemoryMax=$((MEM_MB * 1024 * 1024)) \
-           -p MemorySwapMax=0 --quiet -- timeout -k 10 "$TIMEOUT_S" "$@" \
+           -p MemorySwapMax=0 -p MemoryHigh=$((MEM_MB * 1024 * 1024)) \
+           --quiet -- timeout -k 10 "$TIMEOUT_S" "$@" \
            2>/dev/null; then
         return 0
     fi
@@ -37,6 +39,11 @@ run_bounded() {
 run_bounded "$@"
 rc=$?
 {
-    echo "--- $(date '+%F %T') bounded-run rc=$rc mem=${MEM_MB}MB ---"
+    if [ "$rc" -ge 128 ]; then
+        echo "--- $(date '+%F %T') bounded-run rc=$rc mem=${MEM_MB}MB"
+        echo "    (killed by signal $((rc - 128)): 137=OOM, 124=timeout) ---"
+    else
+        echo "--- $(date '+%F %T') bounded-run rc=$rc mem=${MEM_MB}MB ---"
+    fi
 } >> "$LOG"
 exit $rc

@@ -1,0 +1,37 @@
+{
+ "kernel": "dct16",
+ "family": "butterfly",
+ "family_hint": [
+  "diff-sum"
+ ],
+ "structure": {
+  "diff": 4,
+  "abs": 4,
+  "max": 4,
+  "reduce": "uaddlv",
+  "sve_reduce": 0
+ },
+ "intrinsics": {
+  "abs": 4,
+  "sabd": 4,
+  "umax": 4,
+  "uaddlv": 1
+ },
+ "source": "machine-ir-line",
+ "machine_ir": "experiments/m2-seed/imported/machine-ir.json",
+ "hit_count": 0,
+ "odd_rows": [],
+ "even_rows": [],
+ "splat_count": 0,
+ "axis_seed": {
+  "reduce": [
+   "sve"
+  ],
+  "reduce_tail": [
+   "saddv",
+   "dot-uaddv"
+  ]
+ },
+ "evidence": [],
+ "hits": []
+}

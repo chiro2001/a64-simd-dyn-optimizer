@@ -29,6 +29,8 @@ from collections import Counter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "analysis"))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from memguard import install as install_memguard  # noqa: E402
 
 from linearize import (  # noqa: E402
     lane_forms,
@@ -173,6 +175,7 @@ def axis_seed_for(family, structure):
 
 
 def main():
+    install_memguard()
     ap = argparse.ArgumentParser()
     ap.add_argument("--machine-ir", required=True,
                     help="imported machine-ir.json (m30 seed)")

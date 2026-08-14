@@ -53,6 +53,7 @@ from machine_ir import import_llvm_ir_text  # noqa: E402
 from machine_ir import import_llvm_ir_structured  # noqa: E402
 
 sys.path.insert(0, os.path.join(ROOT, "tools"))
+from memguard import install as install_memguard  # noqa: E402
 from codegen import (  # noqa: E402
     emit_c_intrinsics,
     emit_dct8_c_intrinsics,
@@ -350,6 +351,7 @@ def verify_roundtrip(recipe, ir):
 
 
 def main():
+    install_memguard()
     ap = argparse.ArgumentParser()
     ap.add_argument("--recipe", required=True)
     ap.add_argument("--compiler", default="clang")

@@ -1,0 +1,42 @@
+{
+ "kernel": "dct16",
+ "family": "butterfly",
+ "family_hint": [
+  "fir"
+ ],
+ "structure": {
+  "filter": "g_lumaFilter",
+  "phases": 4,
+  "taps": 8,
+  "sdot": 32,
+  "udot": 0,
+  "tbl": 24,
+  "narrow": "sqrshrun",
+  "src_offsets": [
+   -3
+  ],
+  "window_rows": 1
+ },
+ "intrinsics": {
+  "ld1x3": 1,
+  "tbl1": 24,
+  "sdot": 32,
+  "sqrshrun": 8
+ },
+ "source": "machine-ir-line",
+ "machine_ir": "experiments/m18-interp8/imported/machine-ir.json",
+ "hit_count": 0,
+ "odd_rows": [],
+ "even_rows": [],
+ "splat_count": 0,
+ "axis_seed": {
+  "compute": [
+   "sdot-h"
+  ],
+  "pairsum": [
+   "addp"
+  ]
+ },
+ "evidence": [],
+ "hits": []
+}

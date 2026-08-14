@@ -50,5 +50,13 @@ qemu_*.core
 experiments/**/corpus-*.bin
 experiments/**/oracle-*.txt
 experiments/**/llvm-ir/pixel-prim.ll
+
+# regenerable raw LLVM seed modules / unroll intermediates / lift-search
+# candidates: recipes (seeds/*.yaml), imported machine-ir.json and result
+# summaries are the durable artifacts; the raw modules are recreated by
+# tools/extract_seed.py on demand (631MB of untracked modules observed).
+experiments/**/llvm-ir/*.ll
+experiments/**/llvm-ir/*.ll.*
+experiments/**/lift-search/
 expert-advice/*/session.log
 build/resource-monitor*.log

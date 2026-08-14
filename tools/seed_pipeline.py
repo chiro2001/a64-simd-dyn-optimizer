@@ -23,6 +23,8 @@ except ImportError:
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PATCHED_MCA = "/home/chiro/llvm-src/build-mca/bin/llvm-mca"
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from memguard import install as install_memguard  # noqa: E402
 
 
 def run(cmd, **kw):
@@ -31,6 +33,7 @@ def run(cmd, **kw):
 
 
 def main():
+    install_memguard()
     ap = argparse.ArgumentParser()
     ap.add_argument("--recipe", required=True)
     ap.add_argument("--kernel", required=True,

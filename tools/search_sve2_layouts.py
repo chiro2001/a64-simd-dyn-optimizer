@@ -28,6 +28,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
+from memguard import install as install_memguard  # noqa: E402
 
 from emit_dct16_sve2_asm import assemble, bootstrap_cpp  # noqa: E402
 from kernel_manifest import layout_plans, load_manifest, repo_path  # noqa: E402
@@ -727,6 +728,7 @@ def measure_layout_candidate(task):
 
 
 def main():
+    install_memguard()
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm", "op"),
                     default="acle")
