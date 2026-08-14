@@ -176,6 +176,14 @@ extern "C" void dynopt_dct32_sve2_shared(
     const int16_t*, int16_t*, intptr_t);
 extern "C" void dynopt_interp8_8x8_sve2(
     const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+extern "C" void dynopt_interp8_8x8_sve2_sdoth(
+    const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
+/* SVE2p3 path-B large shapes (docs/22 §5.5): optional so the lite binary
+ * still links when only the 8x8 candidate is provided. */
+extern "C" void dynopt_interp8_16x16_sve2_sdoth(
+    const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
+extern "C" void dynopt_interp8_32x32_sve2_sdoth(
+    const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
 /* IDCT16 candidate is optional (weak): the gate refuses to run when the
  * symbol is absent, so the lite binary still links for other kernels. */
 extern "C" void dynopt_idct16_sve2_shared(
@@ -295,12 +303,20 @@ static int gate_interp8(unsigned int seed)
     EncoderPrimitives ref;
     memset(&ref, 0, sizeof(ref));
     ref.pu[LUMA_8x8].luma_hpp = interp_horiz_pp_neon<8, 8, 8>;
+    ref.pu[LUMA_16x16].luma_hpp = interp_horiz_pp_neon<8, 16, 16>;
+    ref.pu[LUMA_32x32].luma_hpp = interp_horiz_pp_neon<8, 32, 32>;
 
     EncoderPrimitives opt;
     memset(&opt, 0, sizeof(opt));
-    opt.pu[LUMA_8x8].luma_hpp = dynopt_interp8_8x8_sve2;
+    /* Path B (sdot.h) preferred when linked; path A is the fallback. */
+    opt.pu[LUMA_8x8].luma_hpp = dynopt_interp8_8x8_sve2_sdoth
+        ? dynopt_interp8_8x8_sve2_sdoth : dynopt_interp8_8x8_sve2;
+    opt.pu[LUMA_16x16].luma_hpp = dynopt_interp8_16x16_sve2_sdoth;
+    opt.pu[LUMA_32x32].luma_hpp = dynopt_interp8_32x32_sve2_sdoth;
 
-    if (!opt.pu[LUMA_8x8].luma_hpp)
+    if (!opt.pu[LUMA_8x8].luma_hpp ||
+        !opt.pu[LUMA_16x16].luma_hpp ||
+        !opt.pu[LUMA_32x32].luma_hpp)
     {
         fprintf(stderr, "TestBenchLite: interp8 slot is NULL, gate would be "
                         "a false PASS; refusing to run\n");
@@ -309,7 +325,7 @@ static int gate_interp8(unsigned int seed)
 
     IPFilterHarness h;   // constructor fills the random test buffers
     const bool ok = h.testCorrectness(ref, opt);
-    printf("TestBenchLite: seed=0x%08X interp8[8x8 luma_hpp] %s\n",
+    printf("TestBenchLite: seed=0x%08X interp8[8x8+16x16+32x32 luma_hpp] %s\n",
            seed, ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;
 }
