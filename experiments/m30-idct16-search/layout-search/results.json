@@ -1,0 +1,12 @@
+[
+ {
+  "tag": "phase-a",
+  "phase": "a",
+  "contract": "upstream-exact",
+  "passed": false,
+  "verify_mismatches": 94811,
+  "verify": "cases=2000 lanes=512000 mismatches=94811 rate=18.517773%\n first-diff idx=16 want=-1836 got=0\n",
+  "upstream_exact": false,
+  "gate": "short"
+ }
+]

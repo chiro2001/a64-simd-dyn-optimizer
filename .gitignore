@@ -10,18 +10,15 @@
 # layout-search generated artifacts (keep results + generated sources only)
 experiments/m30-dct16-search/layout-search/*
 !experiments/m30-dct16-search/layout-search/results.json
-!experiments/m30-dct16-search/layout-search/*.cpp
 experiments/m30-*-search/layout-search*/
 !experiments/m30-*-search/layout-search*/
 experiments/m30-*-search/layout-search*/*
 !experiments/m30-*-search/layout-search*/results.json
-!experiments/m30-*-search/layout-search*/*.cpp
 experiments/m30-*-search/*.log
 experiments/m30-*-search/store-axis*/
 !experiments/m30-*-search/store-axis*/
 experiments/m30-*-search/store-axis*/*
 !experiments/m30-*-search/store-axis*/results.json
-!experiments/m30-*-search/store-axis*/*.cpp
 config-temp/
 config.log
 
