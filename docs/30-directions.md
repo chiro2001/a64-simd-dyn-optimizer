@@ -133,6 +133,11 @@ ADDP 谓词对和形态）见 docs/22 §5.3。
 - **interp8 方案 B 已落地并固化**（docs/22 §5.3）：fused 101/100，
   lite/20k 全过，MCA 55；后续轴 = UDOT BtoH 去掉 -128（→93）+
   置换/布局再降 tbl/uzp。
+- **大形状 16x16/32x32 已落地并接入搜索工具**（2026-08-14，docs/22
+  §5.5）：fused 359/1417（-23%/-22.5%），20k + TestBenchLite（三形状
+  合一 gate）PASS；新 manifest `interp8-16`/`interp8-32`，sdot-h
+  循环内核改用 `--fix-driver` 修复的动态计数。920B 替换预估
+  neon/cand=0.8715/0.5911（16x16 大形状 load 收益显现）。
 - **round-0019 完成（2026-08-14）**：QEMU 补齐 BtoH dot/udot（vector +
   indexed）、SABAL/UABAL 2-way（BtoH/HtoS/StoD）、SVE2p3
   shift-narrow-interleave 9 条、SVE2p2 zeroing unary 一批
