@@ -118,6 +118,15 @@ kernels/dct16 上游 NEON（dct16_neon）
     与 layout-search-proxy 完全一致；
 - 胜出组合正是轴种子指向的角落。
 
+**验收口径精确化（2026-08-15 审计）**：699-fused 组合是
+`legacy_semantics=1` 的 legacy-internal 契约——搜索对 legacy 候选按
+校准代理界判定“passed”（20k 例允许 ≤22528 失配，该组合为
+2300/20000，即与内部 legacy 参考的差异在代理界内），不是
+upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契约下
+的 dct16 最优另有组合（fused 略高）。验收结论不变：闭环复现了手写
+特化的 699-fused 组合及其 MCA 212，但“复现”一词对应 legacy 代理
+契约，文档需按此口径引用。
+
 ### M3a ✅：interp8 / sa8d seed recipe（docs/41 §5）
 
 ### M3b ✅：FIR / diff-sum 检测 + 族→轴种子
