@@ -26,12 +26,16 @@ SDOT BtoH（补丁目标 `patches/qemu-sve2p3-sdot-btoh.patch` + 构建
 | idct32 zip32 sdot | 1164 | ~148 | MCA/实机 ≈7.9 |
 | idct32 scalar sdot | ~3200 | ~208（由 ratio 0.76 反推） | MCA/实机 ≈15.4 |
 | dct32（950 实机） | 1041 | 985~995 | ≈1.05，对齐很好 |
+| dct8（920B，2026-08-14 新增） | NEON 96 / cand 118（+23%） | NEON p50 3 / cand p50 5（+67%） | MCA 低估 dct8 惩罚 |
 
 观察：**MCA 与 920B 的排序一致**（zip32 快、scalar 慢），但 MCA
 把 scalar 写回代价放大得比实机多（2.7× vs 1.4×）。替换版是 BtoS
 形状（可能高估真实 HtoS 工作量），实机参考对相对排序可信、绝对值
 需保守解读。继续用 `--bench-920b` 积累样本，再做分级校准
-（dct32 的 950 数据说明 NV2 模型在同宽 SVE 上可相当准）。
+（dct32 的 950 数据说明 NV2 模型在同宽 SVE 上可相当准）。dct8
+新样本显示 MCA 会**低估** tiny kernel 的实机惩罚（+23% vs +67%），
+与 idct32 的“高估 scalar 惩罚”方向相反——模型对内存/标量开销的
+权重在不同规模 kernel 上不一致，需按 kernel 分级校准。
 
 ### 1.4 直接 asm 原型为什么终止
 
@@ -70,6 +74,13 @@ llvm-mca 已补 BtoH 调度）+ 920B 替换预估三条线并行。
   项）s32 无溢出风险。可用现有 **920B 替换预估流**先估性能，再决定
   是否实现；
 - 布局搜索空间目前只有 k_tile 轴（1 个通过候选），可加轴。
+
+**2026-08-14 新增实测**（`benchmarks/dct8_microbench.cpp`，920B
+CNTVCT paired）：当前 dct8（SVE HtoD 移植版）**比上游 NEON 慢
+~67%**（p50 5 vs 3；MCA 仅 +23%）——不是“已近地板”，而是明显
+落后。提升方向优先：HtoS 减半 dot + 减少 pass 间内存往返（当前
+动态 492 中 str/ldr 占比高），可用 920B 直接实测迭代（dct8 全为
+SVE1/NEON，无需替换）。
 
 ### 1.8 interp8 优化现状
 

@@ -1,21 +1,10 @@
-// Standalone DCT8 microbenchmark + differential harness (tier a: NEON->NEON).
+// DCT8 real-machine microbenchmark (920B/950): upstream x265 dct8
+// NEON / SVE vs tool-generated candidate, CNTVCT ticks.
 //
-// Exposes four implementations in one binary:
-//   c     - x265 scalar C reference (setupCPrimitives)
-//   neon  - x265 upstream NEON dispatch baseline (setupIntrinsic+Assembly)
-//   empty - loop-only harness with identical call shape, returns 0
-//   cand  - DYNOPT_CANDIDATE macro symbol (8x8 only, link required)
-//
-// Usage:
-//   dct8_microbench <8x8|16x16|32x32|64x64> <c|neon|empty|cand>
-//                   <latency|throughput> <samples> <batch> [--verify-only|--noverify]
-//
-// Output: one CSV line per sample (ticks column feeds the paired-cycles
-// runner when no hardware PMU is available):
-//   shape,impl,mode,sample,batch,ns,ticks,checksum
-#include "primitives.h"
-
-#include <chrono>
+// Usage: dct8_microbench <impl> <latency|throughput> <samples> <batch>
+//   impl: neon | sve | cand
+// Verify mode: dct8_microbench verify <cases>  (vs dct8_sve)
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -24,16 +13,16 @@
 #include <string>
 #include <vector>
 
-using namespace X265_NS;
+namespace x265 {
+void dct8_sve(const int16_t*, int16_t*, intptr_t);
+void dct8_neon(const int16_t*, int16_t*, intptr_t);
+}
 
-#ifndef DYNOPT_CANDIDATE
-#define DYNOPT_CANDIDATE dynopt_dct8_neon_candidate
-#endif
-extern "C" void DYNOPT_CANDIDATE(
-    const int16_t*, int16_t*, intptr_t) __attribute__((weak));
+extern "C" void dynopt_dct8_sve2_shared(
+    const int16_t*, int16_t*, intptr_t);
 
-static const int BUFSZ = 64;
-static const int STRIDE = BUFSZ;
+static const int N = 8;
+static const int STRIDE = 16;
 static const int CORPUS = 1024;
 
 typedef void (*dct_fn)(const int16_t*, int16_t*, intptr_t);
@@ -45,275 +34,99 @@ static inline uint64_t read_cntvct()
     return t;
 }
 
-static void empty_dct(const int16_t*, int16_t*, intptr_t)
+static dct_fn pick(const char* impl)
 {
+    if (!strcmp(impl, "neon"))
+        return x265::dct8_neon;
+    if (!strcmp(impl, "sve"))
+        return x265::dct8_sve;
+    if (!strcmp(impl, "cand"))
+        return dynopt_dct8_sve2_shared;
+    fprintf(stderr, "unknown impl %s\n", impl);
+    exit(2);
 }
 
-struct Corpus
+static int verify(const char* impl, int cases)
 {
-    std::vector<int16_t> data;         // CORPUS * 64*64
-    std::vector<int> oxs, oys;
-    std::vector<const int16_t*> p;
-
-    static LumaCU cu_index(int shape)
+    std::mt19937 rng(0xD8Cu);
+    dct_fn fn = pick(impl);
+    long mism = 0;
+    for (int t = 0; t < cases; t++)
     {
-        return shape == 8 ? BLOCK_8x8
-             : shape == 16 ? BLOCK_16x16
-             : shape == 32 ? BLOCK_32x32
-                           : BLOCK_64x64;
+        int16_t src[N * STRIDE], want[N * N], got[N * N];
+        for (int i = 0; i < N * STRIDE; i++)
+            src[i] = (int16_t)((int)(rng() % 511) - 255);
+        x265::dct8_sve(src, want, STRIDE);
+        fn(src, got, STRIDE);
+        for (int i = 0; i < N * N; i++)
+            if (want[i] != got[i])
+                mism++;
     }
-
-    Corpus(int shape, const EncoderPrimitives& cprim,
-           const EncoderPrimitives& neon, dct_fn cand)
-    {
-        std::mt19937 rng(0xD8C8u + shape);
-        const int maxOff = BUFSZ - shape;
-        data.resize((size_t)CORPUS * BUFSZ * BUFSZ);
-        oxs.resize(CORPUS);
-        oys.resize(CORPUS);
-        p.resize(CORPUS);
-        const LumaCU idx = cu_index(shape);
-        for (int i = 0; i < CORPUS; i++)
-        {
-            int16_t* a = &data[(size_t)i * BUFSZ * BUFSZ];
-            int16_t want[64 * 64], got[64 * 64], candout[64 * 64];
-            for (int attempt = 0; ; attempt++)
-            {
-                // true uniform [-255,255]: rng()%511 covers 0..510
-                for (int j = 0; j < BUFSZ * BUFSZ; j++)
-                    a[j] = (int16_t)((int)(rng() % 511) - 255);
-                const int ox = maxOff > 0 ? (int)(rng() % maxOff) : 0;
-                const int oy = maxOff > 0 ? (int)(rng() % maxOff) : 0;
-                const int16_t* pa = a + (size_t)oy * STRIDE + ox;
-                cprim.cu[idx].dct(pa, want, STRIDE);
-                neon.cu[idx].dct(pa, got, STRIDE);
-                bool good = memcmp(want, got,
-                    (size_t)shape * shape * sizeof(int16_t)) == 0;
-                if (good && cand)
-                {
-                    cand(pa, candout, STRIDE);
-                    good = memcmp(want, candout,
-                        (size_t)shape * shape * sizeof(int16_t)) == 0;
-                }
-                if (good || attempt >= 16)
-                {
-                    // latency mode depends on the output chain, so every
-                    // implementation must traverse the same input sequence;
-                    // upstream NEON diverges from C on ~0.87% of inputs and
-                    // those entries are filtered out here
-                    oxs[i] = ox;
-                    oys[i] = oy;
-                    p[i] = a;
-                    break;
-                }
-            }
-        }
-    }
-
-    const int16_t* a(int i) const { return p[i]; }
-    int off(int i) const { return (int)((size_t)oys[i] * STRIDE + oxs[i]); }
-};
-
-static int c_vs_neon_divergence(const EncoderPrimitives& cprim,
-                                const EncoderPrimitives& neon, int shape)
-{
-    const LumaCU idx = shape == 8 ? BLOCK_8x8
-                     : shape == 16 ? BLOCK_16x16
-                     : shape == 32 ? BLOCK_32x32
-                                   : BLOCK_64x64;
-    const int maxOff = BUFSZ - shape;
-    std::mt19937 rng(0xC8C0u + shape);
-    int mismatches = 0;
-    for (int t = 0; t < 20000; t++)
-    {
-        if (getenv("DCT8_TRACE") && t % 100 == 0)
-            fprintf(stderr, "t=%d\n", t);
-        int16_t a[64 * 64], want[64 * 64], got[64 * 64];
-        for (int i = 0; i < BUFSZ * BUFSZ; i++)
-            a[i] = (int16_t)((int)(rng() % 511) - 255);
-        const int off = maxOff > 0
-            ? (int)(rng() % (maxOff * maxOff + 1)) : 0;
-        const int ox = maxOff > 0 ? off % maxOff : 0;
-        const int oy = maxOff > 0 ? off / maxOff : 0;
-        const int16_t* pa = a + (size_t)oy * STRIDE + ox;
-        cprim.cu[idx].dct(pa, want, STRIDE);
-        neon.cu[idx].dct(pa, got, STRIDE);
-        if (memcmp(want, got, (size_t)shape * shape * sizeof(int16_t)) != 0)
-        {
-            if (mismatches < 5)
-                fprintf(stderr, "MISMATCH shape=%d off=(%d,%d)\n",
-                        shape, ox, oy);
-            mismatches++;
-        }
-    }
-    return mismatches;
+    printf("verify,%s,%d,%ld\n", impl, cases, mism);
+    return mism != 0;
 }
 
-static bool verify_candidate(dct_fn fn, const EncoderPrimitives& cprim,
-                             int shape)
+static int bench(const char* impl, const char* mode, int samples, int batch)
 {
-    const LumaCU idx = BLOCK_8x8;
-    const int maxOff = BUFSZ - shape;
-    std::mt19937 rng(0xDCA0u + shape);
-    int mismatches = 0;
-    for (int t = 0; t < 20000 && mismatches < 5; t++)
+    dct_fn fn = pick(impl);
+    std::mt19937 rng(0xB8Cu);
+    std::vector<int16_t> data((size_t)CORPUS * N * STRIDE);
+    std::vector<const int16_t*> ptr(CORPUS);
+    for (int i = 0; i < CORPUS; i++)
     {
-        int16_t a[64 * 64], want[64 * 64], got[64 * 64];
-        for (int i = 0; i < BUFSZ * BUFSZ; i++)
-            a[i] = (int16_t)((int)(rng() % 511) - 255);
-        const int off = maxOff > 0
-            ? (int)(rng() % (maxOff * maxOff + 1)) : 0;
-        const int ox = maxOff > 0 ? off % maxOff : 0;
-        const int oy = maxOff > 0 ? off / maxOff : 0;
-        const int16_t* pa = a + (size_t)oy * STRIDE + ox;
-        fn(pa, got, STRIDE);
-        cprim.cu[idx].dct(pa, want, STRIDE);
-        if (memcmp(want, got, (size_t)shape * shape * sizeof(int16_t)) != 0)
-        {
-        fprintf(stderr, "CAND MISMATCH shape=%d off=(%d,%d)\n",
-                shape, ox, oy);
-            mismatches++;
-        }
+        int16_t* a = &data[(size_t)i * N * STRIDE];
+        for (int j = 0; j < N * STRIDE; j++)
+            a[j] = (int16_t)((int)(rng() % 511) - 255);
+        ptr[i] = a;
     }
-    return mismatches == 0;
-}
+    std::vector<int16_t> dst((size_t)batch * N * N);
+    uint64_t acc = 0;
+    std::vector<uint64_t> ticks;
+    ticks.reserve(samples);
 
-static int64_t run_batch(dct_fn fn, const Corpus& corpus, int shape,
-                         int batch, bool latency, uint64_t* ticksOut)
-{
-    const uint64_t mask = CORPUS - 1;
-    const uint64_t t0 = read_cntvct();
-    // four independent destinations break the WAW chain between calls in
-    // throughput mode; one zero-initialized buffer in latency mode keeps the
-    // empty implementation's dependent chain well-defined
-    int16_t out[4][64 * 64];
-    memset(out, 0, sizeof(out));
-    int64_t checksum = 0;
-    if (latency)
+    for (int s = 0; s < samples; s++)
     {
-        uint64_t sel = 0x9E3779B97F4A7C15ull;
-        for (int i = 0; i < batch; i++)
+        const int16_t* src = ptr[s % CORPUS];
+        uint64_t t0, t1;
+        if (!strcmp(mode, "throughput"))
         {
-            const size_t idx = (sel + (uint64_t)i) & mask;
-            fn(corpus.a((int)idx) + corpus.off((int)idx), out[0], STRIDE);
-            // dependent chain for latency mode, without a 64-element sum
-            // polluting the per-call cost
-            sel = (uint64_t)((uint32_t)out[0][0] * 0x9E3779B9u
-                             + (uint32_t)out[0][shape * shape - 1]);
-            checksum += out[0][0] + out[0][shape * shape - 1];
+            t0 = read_cntvct();
+            for (int b = 0; b < batch; b++)
+                fn(src, &dst[(size_t)b * N * N], STRIDE);
+            t1 = read_cntvct();
+            ticks.push_back((t1 - t0) / (uint64_t)batch);
         }
-    }
-    else
-    {
-        for (int i = 0; i < batch; i++)
+        else
         {
-            const size_t idx = (uint64_t)i & mask;
-            int16_t* dst = out[i & 3];
-            fn(corpus.a((int)idx) + corpus.off((int)idx), dst, STRIDE);
-            checksum += dst[0] + dst[shape * shape - 1];
+            t0 = read_cntvct();
+            fn(src, &dst[0], STRIDE);
+            t1 = read_cntvct();
+            ticks.push_back(t1 - t0);
         }
+        acc += (uint64_t)dst[(size_t)(s * 7 + 13) % ((size_t)batch * N * N)];
     }
-    *ticksOut = read_cntvct() - t0;
-    return checksum;
+    std::sort(ticks.begin(), ticks.end());
+    uint64_t sum = 0;
+    for (uint64_t t : ticks)
+        sum += t;
+    printf("bench,%s,%s,%d,%d,min=%llu,p50=%llu,p99=%llu,avg=%.1f,sum=%llu\n",
+           impl, mode, samples, batch,
+           (unsigned long long)ticks.front(),
+           (unsigned long long)ticks[samples / 2],
+           (unsigned long long)ticks[(samples * 99) / 100],
+           (double)sum / samples, (unsigned long long)acc);
+    return 0;
 }
 
 int main(int argc, char** argv)
 {
-    if (argc < 6)
+    if (argc >= 3 && !strcmp(argv[1], "verify"))
+        return verify(argv[2], argc > 3 ? atoi(argv[3]) : 20000);
+    if (argc < 5)
     {
-        fprintf(stderr,
-                "usage: %s <8x8|16x16|32x32|64x64> <c|neon|empty|cand> "
-                "<latency|throughput> <samples> <batch> [--verify-only]\n",
-                argv[0]);
+        fprintf(stderr, "usage: dct8_microbench <impl> "
+                        "<latency|throughput> <samples> <batch>\n");
         return 2;
     }
-    const std::string shapeS = argv[1];
-    const std::string implS = argv[2];
-    const std::string modeS = argv[3];
-    const int samples = atoi(argv[4]);
-    const int batch = atoi(argv[5]);
-    const bool verifyOnly = argc > 6 && std::string(argv[6]) == "--verify-only";
-    const bool skipVerify = argc > 6 && std::string(argv[6]) == "--noverify";
-
-    int shape = 0;
-    if (shapeS == "8x8") shape = 8;
-    else if (shapeS == "16x16") shape = 16;
-    else if (shapeS == "32x32") shape = 32;
-    else if (shapeS == "64x64") shape = 64;
-    else { fprintf(stderr, "bad shape\n"); return 2; }
-
-    EncoderPrimitives cprim, neon;
-    std::memset(&cprim, 0, sizeof(cprim));
-    std::memset(&neon, 0, sizeof(neon));
-    setupCPrimitives(cprim);
-    setupAliasPrimitives(cprim);
-    const int cpu = cpu_detect(false);
-    setupIntrinsicPrimitives(neon, cpu);
-    setupAssemblyPrimitives(neon, cpu);
-    setupAliasPrimitives(neon);
-
-    if (!skipVerify)
-    {
-        // Only 8x8 is in scope: for 16/32/64 x265 swaps the dct slot to the
-        // lowpass transform (primitives.cpp setupAliasPrimitives), which is a
-        // different kernel family and can diverge/crash independently.
-        const int shapes[] = { 8 };
-        int diverged = 0;
-        for (size_t i = 0; i < sizeof(shapes) / sizeof(shapes[0]); i++)
-            diverged += c_vs_neon_divergence(cprim, neon, shapes[i]);
-        fprintf(stderr,
-                "c-vs-neon divergence report: %d/20000 cases differ "
-                "(upstream NEON is not bit-exact with C on all in-range "
-                "inputs; x265 TestBench still passes it).\n", diverged);
-        if (verifyOnly && implS != "cand")
-            return 0;
-    }
-
-    dct_fn fn = 0;
-    if (implS == "c") fn = cprim.cu[shape == 8 ? BLOCK_8x8 : shape == 16 ? BLOCK_16x16 : shape == 32 ? BLOCK_32x32 : BLOCK_64x64].dct;
-    else if (implS == "neon") fn = neon.cu[shape == 8 ? BLOCK_8x8 : shape == 16 ? BLOCK_16x16 : shape == 32 ? BLOCK_32x32 : BLOCK_64x64].dct;
-    else if (implS == "empty") fn = empty_dct;
-    else if (implS == "cand")
-    {
-        if (shape != 8) { fprintf(stderr, "cand impl only supports 8x8\n"); return 2; }
-        fn = DYNOPT_CANDIDATE;
-    }
-    else { fprintf(stderr, "bad impl\n"); return 2; }
-    if (!fn) { fprintf(stderr, "impl pointer is NULL\n"); return 2; }
-
-    if (!skipVerify && implS == "cand")
-    {
-        if (!verify_candidate(fn, cprim, shape))
-        {
-            fprintf(stderr, "candidate differential verification FAILED\n");
-            return 1;
-        }
-        fprintf(stderr, "candidate verification OK (cand == C reference on 20k random cases)\n");
-        if (verifyOnly)
-            return 0;
-    }
-
-    const bool latency = modeS == "latency";
-    if (modeS != "latency" && modeS != "throughput")
-    { fprintf(stderr, "bad mode\n"); return 2; }
-
-    const Corpus corpus(shape, cprim, neon,
-                        implS == "cand" ? fn : nullptr);
-    uint64_t dummyTicks = 0;
-    for (int i = 0; i < 64; i++)
-        run_batch(fn, corpus, shape, 512, latency, &dummyTicks);
-
-    printf("shape,impl,mode,sample,batch,ns,ticks,checksum\n");
-    for (int s = 0; s < samples; s++)
-    {
-        const auto t0 = std::chrono::steady_clock::now();
-        uint64_t ticks = 0;
-        const int64_t sum = run_batch(fn, corpus, shape, batch, latency, &ticks);
-        const auto t1 = std::chrono::steady_clock::now();
-        const double ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
-        printf("%s,%s,%s,%d,%d,%.0f,%llu,%lld\n",
-               shapeS.c_str(), implS.c_str(), modeS.c_str(), s, batch, ns,
-               (unsigned long long)ticks, (long long)sum);
-    }
-    return 0;
+    return bench(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
 }
