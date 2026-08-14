@@ -514,6 +514,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_16x16()
         return emit_fn
+    if kernel == "dequant":
+        from emit_dequant_normal_sve2_shared import emit
+
+        def emit_fn(combo):
+            return emit(combo)
+        return emit_fn
     if kernel == "sad-32":
         from emit_sad_sve2_shared import emit_32x32
 

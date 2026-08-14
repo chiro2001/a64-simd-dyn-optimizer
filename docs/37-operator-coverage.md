@@ -14,7 +14,7 @@
 | sa8d/satd | （嵌套） | sa8d 8/16 | satd 各形状未全覆盖 |
 | interp8 | （嵌套 luma_*） | hpp 8/16/32、vpp 16/32 | 缺 vpp 8x8、hps/vps/sp/ss |
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
-| **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | 无（计划 docs/44） | **首选下一族**（纯汇编，走 C/ACLE seed 模式） |
+| **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | dequant_normal ✅（130 fused / MCA 57） | **首选下一族**（纯汇编，走 C/ACLE seed 模式；docs/44） |
 | **sao** | 10（saoCuOrg*/Stats*） | 无 | 次选 |
 | pixel-util | 2（scale1D/2D） | 无 | 简单、收益看形状 |
 | ssim | 1（ssim_4x4x2_core） | 无 | 简单 |

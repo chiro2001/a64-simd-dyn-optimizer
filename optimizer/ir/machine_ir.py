@@ -133,9 +133,11 @@ def import_llvm_ir_text(ir_text, function=None):
         if not m:
             if line.startswith("store"):
                 t = line.split("store", 1)[1].split(",", 1)[0].strip()
+                tm = re.match(r"\s*(<\d+\s+x\s+i\d+>|i\d+)", t)
                 val = re.search(r"%([A-Za-z0-9._]+)\s*,\s*ptr", line)
                 ptr = re.search(r"ptr\s+%([A-Za-z0-9._]+)", line)
-                ir.add({"op": "store", "type": t,
+                ir.add({"op": "store",
+                        "type": tm.group(1) if tm else t,
                         "src": val.group(1) if val else None,
                         "ptr": ptr.group(1) if ptr else None})
                 continue
@@ -203,6 +205,20 @@ def import_llvm_ir_text(ir_text, function=None):
             idx = int(re.search(r"i\d+\s+(-?\d+)\s*$", rhs).group(1))
             ir.add({"op": "extractelement", "type": t.group(1) if t else None,
                     "src": ops, "index": idx, "dst": dst})
+        elif rhs.startswith("insertelement"):
+            ops = _parse_operands(rhs)
+            vm = re.match(r"insertelement\s+(<\d+\s+x\s+i\d+>)\s+poison,",
+                          rhs)
+            im = re.search(r"i\d+\s+(-?\d+)\s*$", rhs)
+            ir.add({"op": "insertelement",
+                    "type": vm.group(1) if vm else None,
+                    "src": ops,
+                    "index": int(im.group(1)) if im else None,
+                    "dst": dst})
+        elif rhs.startswith("trunc"):
+            ops = _parse_operands(rhs)
+            t = rhs.split(" to ", 1)[1].strip()
+            ir.add({"op": "trunc", "type": t, "src": ops, "dst": dst})
         elif rhs.startswith("xor"):
             ops = _parse_operands(rhs)
             node = {"op": "xor", "type": _op_type(rhs), "src": ops,
@@ -225,7 +241,16 @@ def import_llvm_ir_text(ir_text, function=None):
             node = {"op": "sub", "type": _op_type(rhs), "src": ops, "dst": dst}
             if len(ops) == 1:
                 cm = re.search(r",\s*(-?\d+)\s*$", rhs)
-                node["const"] = int(cm.group(1)) if cm else None
+                if cm:
+                    node["const"] = int(cm.group(1))
+                else:
+                    # `sub nsw i32 0, %x` (negation): constant is the
+                    # FIRST operand.
+                    lm = re.match(
+                        r"sub(?:\s+(?:nsw|nuw))*\s+i\d+\s+(-?\d+),\s*%", rhs)
+                    if lm:
+                        node["const"] = int(lm.group(1))
+                        node["const_first"] = True
             ir.add(node)
         elif rhs.startswith("add"):
             ops = _parse_operands(rhs)

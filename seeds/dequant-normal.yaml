@@ -1,0 +1,25 @@
+# Normalized seed recipe: dequant_normal 256 NEON core (docs/41, docs/44).
+# Upstream aarch64 dequant is assembly; the seed is the ACLE semantics in
+# kernels/dequant/seed.cpp, gated bit-exactly against
+# x265_dequant_normal_neon (C reference informational only, docs/37).
+seed: dequant-normal
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/dequant/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_dequant_normal_256
+  demangled: dynopt_dequant_normal_256
+output:
+  ll: experiments/m30-dequant-search/llvm-ir/dequant-normal-256-seed.ll
+  json: experiments/m30-dequant-search/imported/machine-ir.json
+verify:
+  codegen: emit_dequant_normal_c_intrinsics
+  func_name: dynopt_dequant_normal_256_roundtrip
+  harness: kernels/dequant/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

@@ -34,6 +34,23 @@ harness），过 lite 前先 20k 差分 0 失配。
 4. **nquant**：quant 之上叠加代价表（cost table 查表，常量源走
    `extract_x265_constants` 类似路径）。
 
+### 执行记录 2026-08-15：dequant_normal ✅
+
+- seed：`kernels/dequant/seed.cpp`（ACLE，256 元素直线，
+  smull+sqrshl+sqxtn 链），roundtrip 门禁 20k 例 0 失配（对照
+  `x265_dequant_normal_neon`；C 参考同 0 失配，信息项）；
+- importer/codegen 新增通用资产：`trunc`、`insertelement`、
+  `sub` 常量在前（`0 - shift`）、store 类型修正、GEP nuw/nusw、
+  s16 load/store、`smull`/`sqrshl`/`sqxtn`、标量 splat shuffle、
+  vget_low/high、vcombine、dequant ABI（void q/c/scale/shift）；
+- 搜索层：`kernels/dequant/manifest.yaml` + `gen_verify` dequant 分支 +
+  `tools/emit_dequant_normal_sve2_shared.py`（compute 两结构，SRSHL
+  用内联汇编——ACLE 头无变量移位接口；qxtnb/qxtnt 是**交错语义**，
+  smullb/t 偶/奇配对天然正确，ld1sh-mul 需 uzp1 还原顺序）；
+- 结果：**compute-smull 130 fused / MCA 57**（= 上游 SVE2 形状），
+  compute-ld1sh-mul 162 / 63（正确但更差）；20k 差分均 0 失配；
+- 下一步：dequant_scaling（per/num 双循环）。
+
 ## 3. 搜索层需求（新结构族，需一次配方设计）
 
 - `kernels/quant/manifest.yaml` 族：reference = 4 个 NEON 汇编符号，

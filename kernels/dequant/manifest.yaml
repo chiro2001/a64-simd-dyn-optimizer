@@ -1,0 +1,40 @@
+# dequant_normal (256 elements) SVE2 manifest (docs/44).
+# Reference = open-source NEON asm (x265_dequant_normal_neon, pixel-util.S);
+# upstream SVE2 variant (x265_dequant_normal_sve2) exists for comparison.
+kernel: dequant
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: dequant
+  n: 256
+
+candidate:
+  symbol: dynopt_dequant_normal_256_sve2
+  trace_driver_src: kernels/dequant/trace_driver.cpp
+  trace_driver_c: kernels/dequant/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: dequant_normal_neon
+  symbol_mangled: x265_dequant_normal_neon
+  call: x265_dequant_normal_neon
+  decl: |
+    extern "C" void x265_dequant_normal_neon(
+        const int16_t*, int16_t*, int, int, int);
+
+baselines:
+  neon:
+    driver: kernels/dequant/trace_driver.cpp
+    symbol_mangled: x265_dequant_normal_neon
+  sve2:
+    driver: kernels/dequant/trace_driver.cpp
+    symbol_mangled: x265_dequant_normal_sve2
+
+corpus:
+  strides: [1]
+  value_range: [-32768, 32767]
+  cases: 20000
+
+# 结构轴（docs/44 §3）：compute 两种加宽-移位-窄化结构。
+layouts:
+  compute: [smull, ld1sh-mul]
