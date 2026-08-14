@@ -23,13 +23,23 @@ TYPE_MAP = {
 
 def _resolve_addr(env, node):
     rhs = node["rhs"]
-    m = re.match(
+    m8 = re.match(
         r"getelementptr(?:\s+inbounds(?:\s+(?:nuw|nusw))*)?\s+i8,\s*"
         r"ptr\s+%([A-Za-z0-9._]+),\s*"
         r"i64\s+(%[A-Za-z0-9._]+|-?\d+)", rhs)
+    mn = re.match(
+        r"getelementptr(?:\s+inbounds(?:\s+(?:nuw|nusw))*)?\s+"
+        r"(i16|i32|i64),\s*ptr\s+%([A-Za-z0-9._]+),\s*"
+        r"i64\s+(%[A-Za-z0-9._]+|-?\d+)", rhs)
+    if m8:
+        elemsz = 1
+        ptr, off = m8.group(1), m8.group(2)
+    elif mn:
+        elemsz = int(mn.group(1)[1:])
+        ptr, off = mn.group(2), mn.group(3)
+    m = m8 or mn
     if not m:
         raise ValueError("unsupported addr form: %r" % rhs)
-    ptr, off = m.group(1), m.group(2)
     if off.startswith("%"):
         offv = env.get(off[1:])
         if not isinstance(offv, int):
@@ -46,18 +56,19 @@ def _resolve_addr(env, node):
                     base = pv[0] if isinstance(pv, tuple) and pv else ptr
                     byte = pv[2] if isinstance(pv, tuple) and len(pv) > 2 \
                         else 0
-            return ("dyn", base, off[1:], byte)
+            return ("dyn", base, off[1:], byte, elemsz)
         off = offv
         mode = "coef"
     else:
-        off = int(off)
+        off = int(off) * elemsz
         mode = "byte"
     if ptr in ("pix1", "pix2"):
         base, coef, byte = (ptr, 0, 0)
     else:
         pv = env.get(ptr, (ptr, 0, 0))
         if isinstance(pv, tuple) and pv and pv[0] == "dyn":
-            return ("dyn", pv[1], pv[2], pv[3] + off)
+            return ("dyn", pv[1], pv[2], pv[3] + off, pv[4] if len(pv) > 4
+                    else elemsz)
         base, coef, byte = pv
     if mode == "coef":
         return base, coef + off, byte
@@ -253,6 +264,53 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                "stats": ("stats", 0, 0), "count": ("count", 0, 0),
                "0": ("diff", 0, 0), "1": ("rec", 0, 0),
                "2": 1, "3": ("stats", 0, 0), "4": ("count", 0, 0)}
+    elif signature == "sao_stats_e1":
+        lines.append(
+            "extern \"C\" void %s(const int16_t* diff,"
+            " const uint8_t* rec, intptr_t stride, int8_t* upBuff1,"
+            " int32_t* stats, int32_t* count)" % func_name)
+        lines.append("{")
+        env = {"diff": ("diff", 0, 0), "rec": ("rec", 0, 0),
+               "upBuff1": ("upBuff1", 0, 0),
+               "stats": ("stats", 0, 0), "count": ("count", 0, 0),
+               "0": ("diff", 0, 0), "1": ("rec", 0, 0),
+               "2": 1, "3": ("upBuff1", 0, 0),
+               "4": ("stats", 0, 0), "5": ("count", 0, 0)}
+    elif signature == "sao_stats_e2":
+        lines.append(
+            "extern \"C\" void %s(const int16_t* diff,"
+            " const uint8_t* rec, intptr_t stride, int8_t* upBuff1,"
+            " int8_t* upBufft, int32_t* stats, int32_t* count)" % func_name)
+        lines.append("{")
+        env = {"diff": ("diff", 0, 0), "rec": ("rec", 0, 0),
+               "upBuff1": ("upBuff1", 0, 0),
+               "upBufft": ("upBufft", 0, 0),
+               "stats": ("stats", 0, 0), "count": ("count", 0, 0),
+               "0": ("diff", 0, 0), "1": ("rec", 0, 0),
+               "2": 1, "3": ("upBuff1", 0, 0), "4": ("upBufft", 0, 0),
+               "5": ("stats", 0, 0), "6": ("count", 0, 0)}
+    elif signature == "sao_stats_e3":
+        lines.append(
+            "extern \"C\" void %s(const int16_t* diff,"
+            " const uint8_t* rec, intptr_t stride, int8_t* upBuff1,"
+            " int32_t* stats, int32_t* count)" % func_name)
+        lines.append("{")
+        env = {"diff": ("diff", 0, 0), "rec": ("rec", 0, 0),
+               "upBuff1": ("upBuff1", 0, 0),
+               "stats": ("stats", 0, 0), "count": ("count", 0, 0),
+               "0": ("diff", 0, 0), "1": ("rec", 0, 0),
+               "2": 1, "3": ("upBuff1", 0, 0),
+               "4": ("stats", 0, 0), "5": ("count", 0, 0)}
+    elif signature == "sao_stats_bo":
+        lines.append(
+            "extern \"C\" void %s(const int16_t* diff,"
+            " const uint8_t* rec, intptr_t stride,"
+            " int32_t* stats, int32_t* count)" % func_name)
+        lines.append("{")
+        env = {"diff": ("diff", 0, 0), "rec": ("rec", 0, 0),
+               "stats": ("stats", 0, 0), "count": ("count", 0, 0),
+               "0": ("diff", 0, 0), "1": ("rec", 0, 0),
+               "2": 1, "3": ("stats", 0, 0), "4": ("count", 0, 0)}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -284,6 +342,18 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         base_strides["rec"] = "stride"
     if signature == "sao_stats_e0":
         base_strides["rec"] = "stride"
+    if signature == "sao_stats_e1":
+        base_strides["rec"] = "stride"
+        base_strides["upBuff1"] = None
+    if signature == "sao_stats_e2":
+        base_strides["rec"] = "stride"
+        base_strides["upBuff1"] = None
+        base_strides["upBufft"] = None
+    if signature == "sao_stats_e3":
+        base_strides["rec"] = "stride"
+        base_strides["upBuff1"] = None
+    if signature == "sao_stats_bo":
+        base_strides["rec"] = "stride"
     s8_load_bases = set()
     if signature == "sao_e0":
         s8_load_bases = {"offsetEo", "signLeft"}
@@ -296,6 +366,14 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
     if signature == "sao_e3":
         s8_load_bases = {"offsetEo", "upBuff1"}
         cname.update({"1": "upBuff1", "2": "offsetEo"})
+    if signature == "sao_stats_e1":
+        s8_load_bases = {"upBuff1"}
+    if signature == "sao_stats_e2":
+        s8_load_bases = {"upBuff1", "upBufft"}
+    if signature == "sao_stats_e3":
+        s8_load_bases = {"upBuff1"}
+    if signature == "sao_stats_bo":
+        s8_load_bases = {"diff"}
     if signature == "dequant_normal":
         # scalar ABI args referenced as values (trunc/sub srcs)
         cname.update({"0": "q", "1": "c", "2": "scale", "3": "shift"})
@@ -372,7 +450,8 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
         elif op == "load":
             pe = env.get(node["ptr"])
             if isinstance(pe, tuple) and pe and pe[0] == "dyn":
-                _, dynbase, dynoff, dynbyte = pe
+                _, dynbase, dynoff, dynbyte = pe[:4]
+                dynscale = pe[4] if len(pe) > 4 else 1
                 if node.get("type") in ("i8", "i16", "i32", "i64"):
                     ctyp = {"i8": "uint8_t", "i16": "uint16_t",
                             "i32": "uint32_t",
@@ -380,12 +459,13 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                     if dynbase in s8_load_bases:
                         ctyp = {"i8": "int8_t", "i16": "int16_t",
                                 "i32": "int32_t",
-                                "i64": "int64_t"}[node["type"]]
+                            "i64": "int64_t"}[node["type"]]
                     types[dst] = ctyp
                     lines.append("    %s %s = *(const %s*)"
-                                 "((const uint8_t*)%s + (size_t)(%s) + %d);"
+                                 "((const uint8_t*)%s + (size_t)(%s) * %d +"
+                                 " %d);"
                                  % (types[dst], cid(dst), ctyp, dynbase,
-                                    cid(dynoff), dynbyte))
+                                    cid(dynoff), dynscale, dynbyte))
                 else:
                     raise ValueError("codegen dynamic load type %r"
                                      " unsupported" % node.get("type"))
@@ -400,9 +480,16 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             else:
                 offexpr = "%d" % (coef + byte) if byte else "%d" % coef
             if node.get("type") == "<16 x i8>":
-                types[dst] = "uint8x16_t"
-                lines.append("    %s %s = vld1q_u8((const uint8_t*)%s +"
-                             " %s);" % (types[dst], cid(dst), base, offexpr))
+                if base in s8_load_bases:
+                    types[dst] = "int8x16_t"
+                    lines.append("    %s %s = vld1q_s8((const int8_t*)%s +"
+                                 " %s);"
+                                 % (types[dst], cid(dst), base, offexpr))
+                else:
+                    types[dst] = "uint8x16_t"
+                    lines.append("    %s %s = vld1q_u8((const uint8_t*)%s +"
+                                 " %s);"
+                                 % (types[dst], cid(dst), base, offexpr))
             elif node.get("type") == "<8 x i16>":
                 types[dst] = "int16x8_t"
                 lines.append("    %s %s = vld1q_s16((const int16_t*)"
@@ -435,7 +522,27 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                 lines.append("    %s %s = vld1_u8((const uint8_t*)%s +"
                              " %s);" % (types[dst], cid(dst), base, offexpr))
         elif op == "store":
-            base, coef, byte = env[node["ptr"]]
+            pe = env.get(node["ptr"])
+            if isinstance(pe, tuple) and pe and pe[0] == "dyn":
+                _, dynbase, dynoff, dynbyte = pe[:4]
+                dynscale = pe[4] if len(pe) > 4 else 1
+                if node.get("type") in ("i8", "i16", "i32", "i64"):
+                    ctyp = {"i8": "uint8_t", "i16": "uint16_t",
+                            "i32": "uint32_t",
+                            "i64": "uint64_t"}[node["type"]]
+                    if dynbase in s8_load_bases:
+                        ctyp = {"i8": "int8_t", "i16": "int16_t",
+                                "i32": "int32_t",
+                                "i64": "int64_t"}[node["type"]]
+                    lines.append("    *((%s*)((uint8_t*)%s + (size_t)(%s) *"
+                                 " %d + %d)) = %s;"
+                                 % (ctyp, dynbase, cid(dynoff), dynscale,
+                                    dynbyte, cid(node["src"])))
+                else:
+                    raise ValueError("codegen dynamic store type %r"
+                                     " unsupported" % node.get("type"))
+                continue
+            base, coef, byte = pe
             stride = base_strides.get(base)
             if stride:
                 if byte:
@@ -453,8 +560,12 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                              " %s);"
                              % (base, offexpr, cid(node["src"])))
             elif node.get("type") == "<16 x i8>":
-                lines.append("    vst1q_u8((uint8_t*)%s + %s, %s);"
-                             % (base, offexpr, cid(node["src"])))
+                if base in s8_load_bases:
+                    lines.append("    vst1q_s8((int8_t*)%s + %s, %s);"
+                                 % (base, offexpr, cid(node["src"])))
+                else:
+                    lines.append("    vst1q_u8((uint8_t*)%s + %s, %s);"
+                                 % (base, offexpr, cid(node["src"])))
             elif node.get("type") == "<8 x i8>":
                 if base in s8_load_bases:
                     lines.append("    vst1_s8((int8_t*)%s + %s, %s);"
@@ -530,6 +641,14 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
             types[dst] = "int8x8_t"
             lines.append("    %s %s = %s.val[%d];"
                          % (types[dst], cid(dst), cid(src), idx))
+        elif op == "lshr" and node.get("type") in ("i8", "i16", "i32", "i64"):
+            ctyp = {"i8": "uint8_t", "i16": "uint16_t",
+                    "i32": "uint32_t",
+                    "i64": "uint64_t"}[node["type"]]
+            types[dst] = ctyp
+            lines.append("    %s %s = %s >> %d;"
+                         % (types[dst], cid(dst), cid(node["src"][0]),
+                            node.get("amt", 0)))
         elif op == "lshr" and str(node.get("type", "")).startswith("<"):
             vtype = node["type"]
             if vtype == "<8 x i8>":
@@ -586,6 +705,11 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                     elif vtype == "<4 x i32>":
                         types[dst] = "int32x4_t"
                         lines.append("    %s %s = vnegq_s32(%s);"
+                                     % (types[dst], cid(dst),
+                                        cid(node["src"][0])))
+                    elif vtype == "<16 x i8>":
+                        types[dst] = "int8x16_t"
+                        lines.append("    %s %s = vnegq_s8(%s);"
                                      % (types[dst], cid(dst),
                                         cid(node["src"][0])))
                     else:
@@ -1238,6 +1362,34 @@ def emit_sao_stats_e0_c_intrinsics(
     """Flat NEON roundtrip emitter for SAO stats E0 (64x1)."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="sao_stats_e0")
+
+
+def emit_sao_stats_e1_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_stats_e1_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO stats E1 (64x1, upBuff1)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_stats_e1")
+
+
+def emit_sao_stats_e2_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_stats_e2_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO stats E2 (64x1, diag 135)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_stats_e2")
+
+
+def emit_sao_stats_e3_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_stats_e3_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO stats E3 (64x1, diag 45)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_stats_e3")
+
+
+def emit_sao_stats_bo_c_intrinsics(
+        machine_ir, func_name="dynopt_sao_stats_bo_64_roundtrip"):
+    """Flat NEON roundtrip emitter for SAO stats BO (64x1)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="sao_stats_bo")
 
 
 def _sve_flat_indices(node):

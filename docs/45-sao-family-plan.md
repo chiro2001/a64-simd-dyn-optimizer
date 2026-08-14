@@ -140,3 +140,40 @@ insertelement+shuffle+tbl1）实现 8 像素并行。
   参考 sao-prim-sve2.cpp 的 SVE2 版）；可继续加 search 轴（count 用
   histseg2 合并半段、stats 用 sdot32 vs muladd、16 像素块内
   svtbl 旋转等）。
+
+## 9. Stats E1 完成记录（2026-08-15）
+
+- seed：`kernels/sao/seed_stats_e1.cpp`（64x1，对照
+  `saoCuStatsE1_neon` + `saoCuStatsE1_c`）；roundtrip 门禁 20k 例
+  0 失配（一次通过，E0 模板机械扩展 + codegen 新增 s8 向量
+  load/store 与 `vnegq_s8`）。
+- SVE2 搜索（VL=256，20k 0 失配，experiments/m30-sao-search/
+  layout-search-sao-stats-e1/results.json）：
+  - **block-16**：**180 fused / MCA 64**（best，rank-by-mca）；
+  - **block-32**：**112 fused / MCA 71**（指令数更少）。
+- E1 语义比 E0 简单：无行内 carry；upBuff1 进入时被取反（-sign_up），
+  `et = sign_down - sign_up`，然后 upBuff1[x] = sign_down。
+  C/NEON 的 buffer 写入约定不同（C 存 -signDown、NEON 存 signDown），
+  TestBench 只比 stats/count，harness 也只比 stats/count。
+- 待办：Stats E2/E3/BO 同族继续机械扩展。
+
+## 10. Stats E2/E3/BO 完成记录（2026-08-15，sao 族全部收齐）
+
+- **StatsE2**（对角 135°，upBuff1+upBufft 双缓冲）：
+  seed 门禁 20k 0 失配；SVE2 搜索（layout-search-sao-stats-e2）：
+  block-16 **181 fused / MCA 65**（best）、block-32 112/71。
+- **StatsE3**（对角 45°，upBuff1[x-1] 左移写 + 尾像素）：
+  seed 门禁 20k 0 失配；SVE2 搜索（layout-search-sao-stats-e3）：
+  block-16 **180 fused / MCA 65**（best）、block-32 112/71。
+- **StatsBO**（band offset，stats/count[rec>>3] 散列累加）：
+  seed 门禁 20k 0 失配；SVE2 候选镜像上游 u64 字节寻址技巧：
+  **0 vector / 585 dyn / MCA 137**，诚实记录为“无优化空间”
+  （layout-search-sao-stats-bo）。
+- 本轮 codegen 新资产（通用）：**dyn 地址模型支持 i16/i32/i64 GEP**
+  （含元素缩放 scale，load 已支持、store 补齐动态路径）、标量
+  `lshr`（i8/i16/i32/i64 常量移位）、`diff` 基按有符号标量 load
+  （BO 曾因 uint16 读负 diff 出现 65536 偏移错误）。
+- **sao 族（saoCuOrg 6 + Stats 4 = 10 字段）至此全部闭环**；
+  `tools/enumerate_x265_simd.py` 显示 sao 10/10。
+- 待办：下一族按覆盖表优先级（satd/interp 缺失形状/intra/misc），
+  或回到通用 MachineIR→Op DAG 桥（/goal 免手写发射器主线）。

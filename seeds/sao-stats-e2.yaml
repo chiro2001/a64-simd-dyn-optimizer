@@ -1,0 +1,28 @@
+# Normalized seed recipe: SAO stats E2 (diag 135), 64x1 (docs/45 §9).
+# Reference = open-source NEON saoCuStatsE2_neon (sao-prim.cpp).
+seed: sao-stats-e2
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/sao/seed_stats_e2.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+target_function:
+  mangled: dynopt_sao_stats_e2_64
+  demangled: dynopt_sao_stats_e2_64
+output:
+  ll: experiments/m30-sao-search/llvm-ir/sao-stats-e2-seed.ll
+  json: experiments/m30-sao-search/imported/machine-ir-stats-e2.json
+verify:
+  codegen: emit_sao_stats_e2_c_intrinsics
+  func_name: dynopt_sao_stats_e2_64_roundtrip
+  harness: kernels/sao/roundtrip_verify_stats_e2.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  include_dirs:
+    - third_party/x265/source
+    - third_party/x265/source/common
+    - third_party/x265/source/encoder
+    - build/x265-8-cross-make
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

@@ -593,6 +593,30 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "sao-stats-e1":
+        from emit_sao_stats_e1_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
+    if kernel == "sao-stats-e2":
+        from emit_sao_stats_e2_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
+    if kernel == "sao-stats-e3":
+        from emit_sao_stats_e3_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
+    if kernel == "sao-stats-bo":
+        from emit_sao_stats_bo_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "sao-e1-2rows":
         from emit_sao_e1_2rows_sve2_shared import emit_combo
 

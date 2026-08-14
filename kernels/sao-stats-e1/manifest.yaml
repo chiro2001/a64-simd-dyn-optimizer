@@ -1,0 +1,40 @@
+# SAO stats edge class 1 (vertical), 64x1 SVE2 manifest (docs/45).
+kernel: sao-stats-e1
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sao_stats_e1
+  n: 64
+
+candidate:
+  symbol: dynopt_sao_stats_e1_64_sve2
+  trace_driver_src: kernels/sao-stats-e1/trace_driver.cpp
+  trace_driver_c: kernels/sao-stats-e1/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: saoCuStatsE1_neon
+  symbol_mangled: saoCuStatsE1_neon
+  call: saoCuStatsE1_neon
+  decl: |
+    extern "C" void saoCuStatsE1_neon(
+        const int16_t*, const uint8_t*, intptr_t, int8_t*, int, int,
+        int32_t*, int32_t*);
+
+baselines:
+  neon:
+    driver: kernels/sao-stats-e1/trace_driver.cpp
+    symbol_mangled: saoCuStatsE1_neon
+
+corpus:
+  strides: [64, 65, 96, 128]
+  value_range: [0, 255]
+  cases: 20000
+
+layouts:
+  block: [16, 32]
+
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"

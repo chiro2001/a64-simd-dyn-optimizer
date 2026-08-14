@@ -71,6 +71,10 @@ from codegen import (  # noqa: E402
     emit_sao_e2_c_intrinsics,
     emit_sao_e3_c_intrinsics,
     emit_sao_stats_e0_c_intrinsics,
+    emit_sao_stats_e1_c_intrinsics,
+    emit_sao_stats_e2_c_intrinsics,
+    emit_sao_stats_e3_c_intrinsics,
+    emit_sao_stats_bo_c_intrinsics,
     emit_interp8_c_intrinsics,
     emit_structured_neon_intrinsics,
 )
@@ -93,6 +97,10 @@ CODEGEN_REGISTRY = {
     "emit_sao_e2_c_intrinsics": emit_sao_e2_c_intrinsics,
     "emit_sao_e3_c_intrinsics": emit_sao_e3_c_intrinsics,
     "emit_sao_stats_e0_c_intrinsics": emit_sao_stats_e0_c_intrinsics,
+    "emit_sao_stats_e1_c_intrinsics": emit_sao_stats_e1_c_intrinsics,
+    "emit_sao_stats_e2_c_intrinsics": emit_sao_stats_e2_c_intrinsics,
+    "emit_sao_stats_e3_c_intrinsics": emit_sao_stats_e3_c_intrinsics,
+    "emit_sao_stats_bo_c_intrinsics": emit_sao_stats_bo_c_intrinsics,
     # emit_interp8_c_intrinsics is the generic node-driven NEON roundtrip
     # emitter (hpp/vpp/interp4 all use it); expose a neutral alias.
     "emit_interp8_c_intrinsics": emit_interp8_c_intrinsics,

@@ -1,0 +1,19 @@
+// Single-invocation driver for QEMU tracing (SAO stats BO 64).
+#include <cstdint>
+
+extern "C" void dynopt_sao_stats_bo_64_sve2(
+    const int16_t*, const uint8_t*, intptr_t, int32_t*, int32_t*)
+    __attribute__((noinline));
+
+int main()
+{
+    static int16_t diff[80];
+    static uint8_t rec[2 * 64 + 16];
+    static int32_t stats[32], count[32];
+    for (int i = 0; i < 80; i++)
+        diff[i] = (int16_t)((i * 131 - 4097) % 4095);
+    for (int i = 0; i < (int)sizeof(rec); i++)
+        rec[i] = (uint8_t)((i * 37 + 11) % 256);
+    dynopt_sao_stats_bo_64_sve2(diff, rec + 8, 64, stats, count);
+    return stats[0] == 0x7f;
+}
