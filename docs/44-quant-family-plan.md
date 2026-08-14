@@ -88,6 +88,17 @@ harness），过 lite 前先 20k 差分 0 失配。
   zip1/zip2 在 VL=256 各产出 8 lanes，交织偶/奇向量需要两次 store；
 - 待办：nquant（quant 之上加代价表 + 绝对值输出）。
 
+### 执行记录 2026-08-15：nquant ✅（quant 族收齐）
+
+- seed：`kernels/nquant/seed.cpp`（无 deltaU，qCoef=|level|，numSig
+  复用 saddlv 配方），门禁 20k 例 0 失配（对照 `x265_nquant_neon`）；
+- 搜索层：**unpk 329 fused / MCA 131**；smull-ones 362 / 138；
+- quant 族最终状态：
+  dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、
+  quant 508/169、nquant 329/131——四个字段全部 seed+search 闭环，
+  docs/37 覆盖表 quant 行 ✅；
+- 后续：sao 族（10 字段，查表+累加）或 scale/ssim 小算子。
+
 ## 3. 搜索层需求（新结构族，需一次配方设计）
 
 - `kernels/quant/manifest.yaml` 族：reference = 4 个 NEON 汇编符号，

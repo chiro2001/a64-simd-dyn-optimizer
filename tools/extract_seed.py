@@ -60,6 +60,7 @@ from codegen import (  # noqa: E402
     emit_dct16_c_intrinsics,
     emit_dequant_normal_c_intrinsics,
     emit_dequant_scaling_c_intrinsics,
+    emit_nquant_c_intrinsics,
     emit_quant_c_intrinsics,
     emit_interp8_c_intrinsics,
     emit_structured_neon_intrinsics,
@@ -72,6 +73,7 @@ CODEGEN_REGISTRY = {
     "emit_dct16_c_intrinsics": emit_dct16_c_intrinsics,
     "emit_dequant_normal_c_intrinsics": emit_dequant_normal_c_intrinsics,
     "emit_dequant_scaling_c_intrinsics": emit_dequant_scaling_c_intrinsics,
+    "emit_nquant_c_intrinsics": emit_nquant_c_intrinsics,
     "emit_quant_c_intrinsics": emit_quant_c_intrinsics,
     # emit_interp8_c_intrinsics is the generic node-driven NEON roundtrip
     # emitter (hpp/vpp/interp4 all use it); expose a neutral alias.

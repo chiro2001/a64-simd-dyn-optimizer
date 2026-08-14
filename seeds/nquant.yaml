@@ -1,0 +1,22 @@
+# Normalized seed recipe: nquant 256 NEON core (docs/44).
+seed: nquant
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/nquant/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O1
+  - -std=c++11
+target_function:
+  mangled: dynopt_nquant_256
+  demangled: dynopt_nquant_256
+output:
+  ll: experiments/m30-nquant-search/llvm-ir/nquant-256-seed.ll
+  json: experiments/m30-nquant-search/imported/machine-ir.json
+verify:
+  codegen: emit_nquant_c_intrinsics
+  func_name: dynopt_nquant_256_roundtrip
+  harness: kernels/nquant/roundtrip_verify.cpp
+  lib: build/x265-8-clang-sve/libx265.a
+  compile_flags: ["-march=armv8.2-a+dotprod"]
+  cases: 20000

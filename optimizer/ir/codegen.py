@@ -135,6 +135,17 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
                "0": ("coef", 0, 0), "1": ("quantCoeff", 0, 0),
                "2": ("deltaU", 0, 0), "3": ("qCoef", 0, 0),
                "4": 1, "5": 1}
+    elif signature == "nquant":
+        lines.append(
+            "extern \"C\" uint32_t %s(const int16_t* coef,"
+            " const int32_t* quantCoeff, int16_t* qCoef,"
+            " int qBits, int add)" % func_name)
+        lines.append("{")
+        env = {"coef": ("coef", 0, 0),
+               "quantCoeff": ("quantCoeff", 0, 0),
+               "qCoef": ("qCoef", 0, 0),
+               "0": ("coef", 0, 0), "1": ("quantCoeff", 0, 0),
+               "2": ("qCoef", 0, 0), "3": 1, "4": 1}
     else:
         lines.append(
             "extern \"C\" int %s(const uint8_t* pix1,"
@@ -158,6 +169,9 @@ def emit_c_intrinsics(machine_ir, func_name="dynopt_sa8d_8x8_neon_roundtrip",
     elif signature == "quant":
         cname.update({"0": "coef", "1": "quantCoeff", "2": "deltaU",
                       "3": "qCoef", "4": "qBits", "5": "add"})
+    elif signature == "nquant":
+        cname.update({"0": "coef", "1": "quantCoeff", "2": "qCoef",
+                      "3": "qBits", "4": "add"})
 
     def cid(name):
         if name not in cname:
@@ -562,6 +576,13 @@ def emit_quant_c_intrinsics(
     qCoef/qBits/add ABI; abs+mul+sshl+mls+numsig via saddlv)."""
     return emit_c_intrinsics(machine_ir, func_name=func_name,
                              signature="quant")
+
+
+def emit_nquant_c_intrinsics(
+        machine_ir, func_name="dynopt_nquant_256_roundtrip"):
+    """Flat NEON roundtrip emitter for nquant (no deltaU; qCoef=|level|)."""
+    return emit_c_intrinsics(machine_ir, func_name=func_name,
+                             signature="nquant")
 
 
 def _sve_flat_indices(node):
