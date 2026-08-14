@@ -172,7 +172,7 @@ def chunk_arithmetic(off, s):
     return L
 
 
-def chunk_arithmetic_sdot(off, s):
+def chunk_arithmetic_sdot(off, s, k_block=16):
     """SVE2p1 sdot z.s,z.h,z.h O/EO/EEO/EEEE/EEEO (layout == mul version).
 
     Rows are loaded as 16-lane s16 (low 8 lanes = this chunk's columns).
@@ -189,20 +189,23 @@ def chunk_arithmetic_sdot(off, s):
     L.append("    const svbool_t p8r = svwhilelt_b16((uint32_t)0, "
              "(uint32_t)8);")
     L.append("    const svint32_t z = svdup_n_s32(0);")
-    # O: 8 row pairs (1,3),(5,7),...,(29,31)
-    for k in range(16):
-        L.append("    svint32_t O%s%d = z;" % (s, k))
-    for p in range(8):
-        L.append("    svint16_t a%sO%d = svld1_s16(p8r, src + %d + off);"
-                 % (s, p, 32 * (4 * p + 1)))
-        L.append("    svint16_t b%sO%d = svld1_s16(p8r, src + %d + off);"
-                 % (s, p, 32 * (4 * p + 3)))
-        L.append("    svint16_t d%sO%d = svzip1_s16(a%sO%d, b%sO%d);"
-                 % (s, p, s, p, s, p))
-        for k in range(16):
-            L.append("    O%s%d = sdot_s32_h(O%s%d, d%sO%d, "
-                     "load_c(CDOT_O[%d][0], %d));"
-                     % (s, k, s, k, s, p, k, p))
+    # O: 8 row pairs (1,3),(5,7),...,(29,31)。k_block 把 16 个 O 累加器
+    # 分成 kg 组（每组重走输入行）：更低峰值活跃换重复行 load。
+    for kg in range(0, 16, k_block):
+        for k in range(kg, kg + k_block):
+            L.append("    svint32_t O%s%d = z;" % (s, k))
+        for p in range(8):
+            L.append("    svint16_t a%sO%d_%d = svld1_s16(p8r, src + %d + off);"
+                     % (s, p, kg, 32 * (4 * p + 1)))
+            L.append("    svint16_t b%sO%d_%d = svld1_s16(p8r, src + %d + off);"
+                     % (s, p, kg, 32 * (4 * p + 3)))
+            L.append("    svint16_t d%sO%d_%d = svzip1_s16(a%sO%d_%d, "
+                     "b%sO%d_%d);"
+                     % (s, p, kg, s, p, kg, s, p, kg))
+            for k in range(kg, kg + k_block):
+                L.append("    O%s%d = sdot_s32_h(O%s%d, d%sO%d_%d, "
+                         "load_c(CDOT_O[%d][0], %d));"
+                         % (s, k, s, k, s, p, kg, k, p))
     # EO: 4 row pairs (2,6),(10,14),(18,22),(26,30)
     for k in range(8):
         L.append("    svint32_t EO%s%d = z;" % (s, k))
@@ -496,7 +499,7 @@ def chunk_store_zip32(L, pref, off_expr):
                      % (off_expr, r, 16 * half, cur[r + 8 * half]))
 
 
-def stage_src(store, compute):
+def stage_src(store, compute, k_block=16):
     if store == "zip32":
         L = []
         L.append("template <int SHIFT>")
@@ -514,7 +517,7 @@ def stage_src(store, compute):
             if compute == "mul":
                 L.extend(chunk_arithmetic(0, s))
             elif compute == "sdot-s32":
-                L.extend(chunk_arithmetic_sdot(0, s))
+                L.extend(chunk_arithmetic_sdot(0, s, k_block))
             elif compute == "sdot-s32-split":
                 L.extend(chunk_arithmetic_sdot_split(0, s))
             else:
@@ -539,7 +542,7 @@ def stage_src(store, compute):
     if compute == "mul":
         L.extend(chunk_arithmetic(0, ""))
     elif compute == "sdot-s32":
-        L.extend(chunk_arithmetic_sdot(0, ""))
+        L.extend(chunk_arithmetic_sdot(0, "", k_block))
     elif compute == "sdot-s32-split":
         L.extend(chunk_arithmetic_sdot_split(0, ""))
     elif compute == "sdot-s32-pair":
@@ -587,7 +590,7 @@ def stage_src(store, compute):
 
 
 def emit(func_name="dynopt_idct32_sve2_shared", store="scatter",
-         compute="mul"):
+         compute="mul", k_block=16):
     consts = (cpp_sdot_constants()
               if compute in ("sdot-s32", "sdot-s32-split", "sdot-s32-pair")
               else cpp_constants())
@@ -637,7 +640,7 @@ extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t dstStride)
 }
     """ % ("/SVE2p1" if compute in ("sdot-s32", "sdot-s32-split",
                                    "sdot-s32-pair") else "",
-           consts, helper, stage_src(store, compute), func_name)
+           consts, helper, stage_src(store, compute, k_block), func_name)
 
 
 def main():
@@ -649,9 +652,13 @@ def main():
     ap.add_argument("--compute", default="mul",
                     choices=("mul", "sdot-s32", "sdot-s32-split",
                              "sdot-s32-pair"))
+    ap.add_argument("--k-block", type=int, default=16,
+                    choices=(8, 16),
+                    help="O 累加器 k_block（8=半块重走输入行，低峰值活跃）")
     args = ap.parse_args()
     with open(args.out, "w") as f:
-        f.write(emit(store=args.store, compute=args.compute))
+        f.write(emit(store=args.store, compute=args.compute,
+                     k_block=args.k_block))
     print("wrote %s" % args.out)
 
 

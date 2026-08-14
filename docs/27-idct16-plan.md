@@ -503,6 +503,12 @@ idct16 zip16 31——GCC 已把峰值压在 32 预算内（咨询对 transpose �
 -64.9%）、uOps 6383→6172；scatter/scalar 也各降 ~1%；idct16 持平
 （噪声内）。两 kernel best 已重新固化。
 
+**O k_block=8 阴性（2026-08-14）**：emitter 支持 `--k-block 8`
+（16 个 O 累加器分两组、每组重走输入行，低峰值活跃换重复行 load）：
+fused 5085→5083、stack 430→428，但手动 MCA 1301→**1310（+9）**、
+峰值活跃仍 31——重复 load 的代价超过 spill 节省，**不采用**，默认
+k_block=16。
+
 **编译 flag 扫描（2026-08-14，sdot-s32 候选）**：
 
 | flag | scalar fused | scatter fused | 备注 |
