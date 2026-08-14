@@ -41,10 +41,14 @@ cmake --build build/x265-8-950 -j$(nproc)
 bash scripts/build-testbench-lite.sh \
   kernels/interp8/candidates/best_sve2_sdoth.o \
   build/x265-8-950 -- --gate interp8 --seed 1
-# 同样跑：sa8d16、dct16、dct32、idct16、idct32（没有 dct8 gate；
-# dct8 用 20k 差分即可）
+# 2026-08-14 起脚本自动链接 idct16/32 等全部候选，一次构建后 7 个
+# gate 都能跑（没有 dct8 gate；dct8 用 20k 差分即可）：
 build/testbench-lite/TestBenchLite --gate interp8 1 2>&1 | tail -1
 build/testbench-lite/TestBenchLite --gate sa8d16 1 2>&1 | tail -1
+build/testbench-lite/TestBenchLite --gate dct16 1 2>&1 | tail -1
+build/testbench-lite/TestBenchLite --gate dct32 1 2>&1 | tail -1
+build/testbench-lite/TestBenchLite --gate idct16 1 2>&1 | tail -1
+build/testbench-lite/TestBenchLite --gate idct32 1 2>&1 | tail -1
 ```
 
 **预期**：interp8（hpp 8/16/32 + vpp 16/32）PASS、sa8d16 PASS、

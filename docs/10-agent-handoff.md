@@ -128,6 +128,7 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 
 | kernel | 候选 | fused_uop | MCA | NP1 est | cp | lite 5 seed |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
+| dct16 | op-mca（docs/25 §13） | **847**（基线 1808，过减半门 904） | 220 | — | — | PASS |
 | sa8d16 | reduce-sve | **186（< 减半门 186.5，2026-08-14）** | 73 | 111 | 35 | PASS |
 | interp8 | path-a | 127（基线 141） | 121 | 46 | 33 | PASS |
 | interp8 | path-b sdot.h+addp（SVE2p3，docs/22 §5.7） | **93**（clang） | 53 | — | — | PASS |
