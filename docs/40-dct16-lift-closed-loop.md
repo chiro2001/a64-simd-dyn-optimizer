@@ -286,3 +286,16 @@ kernels/dct16 上游 NEON（dct16_neon）
   - interp4-32x32：**1414 fused / MCA 344**（手写 645/189）。
 - **fir 配方共覆盖 6 个形状**（interp8 8/16/32 + interp4 8/16/32），
   全部 MachineIR 自动生成；8x8 两形状 MCA 均优于手写。
+
+## 13. satd-8x8：新算子零改动命中 hadamard 配方（2026-08-15）
+
+- 首次覆盖 satd（docs/37 之前未覆盖）：`seeds/satd-8x8.yaml`
+  （目标 `satd8_neon<8,8>`，125 节点）+ `kernels/satd-8/manifest.yaml`
+  （复用 sa8d 的 verify 形态，参考上游 `satd8_sve2<8,8>`）。
+- 检测：MachineIR op 集（sabd/abs/umax/uaddlv + trn1/trn2 s16/s32）
+  与 hadamard 配方签名完全一致，**零发射器改动**直接生成 SVE2 候选。
+- 验收（20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-8x8/results.json）：**93 fused / MCA 51 / dyn 108**；
+  无手写基线（首次覆盖），对照上游 satd8_sve2 差分通过。
+- 意义：这是“新算子免手写特化发射器”最直接的一例——算子从未
+  覆盖过，仅凭 MachineIR 命中配方即完成优化候选生成与验证。

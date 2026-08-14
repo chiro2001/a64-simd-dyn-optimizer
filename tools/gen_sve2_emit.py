@@ -37,6 +37,7 @@ _RECIPE_ALIAS = {
     "interp4": "interp4-16x16",
     "interp4-8": "interp4-8x8",
     "interp4-32": "interp4-32x32",
+    "satd-8": "satd-8x8",
 }
 
 
