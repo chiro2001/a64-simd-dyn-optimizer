@@ -88,7 +88,7 @@ extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
     svint16_t t2 = svadd_s16_x(p16, m4, m5);
     svint16_t t3 = svadd_s16_x(p16, m6, m7);
 
-    // Group totals, then one 16-lane udot + addv.
+    // Group totals, then one 16-lane across-sum.
     svint16_t g0 = svadd_s16_x(p16, t0, t1);
     svint16_t g1 = svadd_s16_x(p16, t2, t3);
 

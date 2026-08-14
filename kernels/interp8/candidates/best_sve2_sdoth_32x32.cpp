@@ -81,7 +81,6 @@ static inline void interp8_unit8(
     svint16_t t = sdot_h_acc(off4096, X0, c0);
     t = sdot_h(t, X1, c1);
     // lane 2p = pixel p taps (0,1)+(4,5); lane 2p+1 = taps (2,3)+(6,7).
-    // Pair-sum: addp(t,t) -> [p0,p0,p1,p1,...] + uzp1 -> [p0..p7].
     svint16_t d = addp_h(t, svptrue_b16());
     svint16_t pixels = svuzp1_s16(d, d);
     svuint8_t u = svqrshrunb_n_s16(pixels, 6);
