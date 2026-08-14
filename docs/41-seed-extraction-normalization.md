@@ -109,6 +109,18 @@ machine-ir.json + provenance（编译器版本、源码/IR sha256、目标函数
   interp8-16 **327 / 114**、interp8-32 **1289 / 369**；
 - 至此 interp8 hpp 8/16/32 三形状全部由 seed 线自动覆盖。
 
+### G4d ✅：interp4（chroma 4-tap）16x16 新族打通
+
+- `extract.strip_uniform_branch`：interp4 在 phase==4 时派发到另一个
+  kernel，提取时剥离该均匀分支（取主 dotprod 路径），importer 新增
+  带注释标签行支持；harness 测 7 个非恒等相位（项目合同一致）；
+- codegen 新增：`g_chromaFilter` 符号/`<4 x i16>` load、`ld1x2`、
+  `<4 x i16>→<8 x i16>` 扩展、双 `<8 x i8>` 拼接行存储、store 按宽度
+  选 vst1q/vst1；
+- 门禁：**50000 cases（7 相位）mismatches=0**；
+- 完整流水线：interp4 16x16 **165 / 70**，精确复现手写最优——chroma
+  4-tap 成为 seed 线覆盖的第一个新族（此前只有 luma 8-tap）。
+
 ### S1 ✅：seed → 搜索 单命令流水线（seed_pipeline.py）
 
 - `tools/seed_pipeline.py --recipe <seeds/*.yaml> --kernel <name>`：

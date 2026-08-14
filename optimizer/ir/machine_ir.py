@@ -121,7 +121,8 @@ def import_llvm_ir_text(ir_text, function=None):
            or line.startswith("attributes") or line.startswith("!") \
            or line.startswith("source_filename") or line.startswith("target") \
            or line.startswith("module") or line.startswith("define") \
-           or line.endswith(":") or line == "}":
+           or line.endswith(":") or line == "}" \
+           or re.match(r"^\d+:\s*(;.*)?$", line):
             continue
         if "llvm.lifetime.start" in line or "llvm.lifetime.end" in line:
             continue    # stack lifetime annotations, no runtime semantics

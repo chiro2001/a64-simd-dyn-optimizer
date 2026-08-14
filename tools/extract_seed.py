@@ -124,6 +124,57 @@ def find_function(text, target):
     return text[define_start:i + 1]
 
 
+def strip_uniform_branch(body):
+    """Remove a uniform `if (arg == const) special_call; else straight-line`
+    branch so the restricted straight-line importer can take the main path.
+
+    Shape handled (interp4: phase==4 dispatches to another kernel):
+        %x = icmp eq i32 %4, 4
+        br i1 %x, label %T, label %E
+      T:
+        tail call ...            # special path (dropped)
+        br label %M
+      E:
+        ...                      # main straight-line path (kept)
+        br label %M
+      M:
+        ret void
+    """
+    lines = body.splitlines()
+    icmp_i = next((i for i, ln in enumerate(lines)
+                   if "icmp eq" in ln and "br " not in ln), None)
+    if icmp_i is None:
+        return body
+    br = next((ln for ln in lines[icmp_i + 1:]
+               if ln.strip().startswith("br i1")), None)
+    if br is None:
+        raise SystemExit("uniform branch: br i1 not found after icmp")
+    m = re.search(r"label %(\d+), label %(\d+)", br)
+    if not m:
+        raise SystemExit("uniform branch: labels not found")
+    then_label, else_label = m.group(1), m.group(2)
+    out = []
+    skip = False
+    for i, ln in enumerate(lines):
+        s = ln.strip()
+        if i == icmp_i or s.startswith("br i1"):
+            continue  # drop the condition + branch
+        if s.startswith(then_label + ":"):
+            skip = True
+            continue
+        if skip:
+            if s.startswith("br label"):
+                skip = False
+            continue
+        out.append(ln)
+    # drop the final `br label %M` before `M: ret` (merge tail)
+    for i in range(len(out) - 1, -1, -1):
+        if out[i].strip().startswith("br label"):
+            del out[i]
+            break
+    return "\n".join(out) + "\n"
+
+
 def sha256(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -194,6 +245,8 @@ def main():
     run_clang(recipe, args.compiler, ROOT, ll_path)
     text = open(ll_path).read()
     body = find_function(text, recipe["target_function"])
+    if recipe.get("extract", {}).get("strip_uniform_branch"):
+        body = strip_uniform_branch(body)
     fn = recipe["target_function"].get("demangled") or \
         recipe["target_function"].get("mangled")
     try:

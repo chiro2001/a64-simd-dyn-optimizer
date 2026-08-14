@@ -1325,6 +1325,7 @@ def emit_interp8_c_intrinsics(
         "",
         "namespace x265 {",
         "extern const int16_t g_lumaFilter[4][8];",
+        "extern const int16_t g_chromaFilter[8][4];",
         "}",
         "",
         "static const uint8_t dotprod_permute_tbl[48] = {",
@@ -1357,14 +1358,18 @@ def emit_interp8_c_intrinsics(
         if op == "addr":
             rhs = node["rhs"]
             m = re.match(
-                r"getelementptr inbounds (?:nuw )?(?:i8|\[8 x i16\]), "
-                r"ptr (@_ZN4x26512g_lumaFilterE|%[\w.]+), "
+                r"getelementptr inbounds (?:nuw )?"
+                r"(?:i8|\[8 x i16\]|\[4 x i16\]), "
+                r"ptr (@_ZN4x26512g_lumaFilterE|@_ZN4x26514g_chromaFilterE|"
+                r"%[\w.]+), "
                 r"i64 ([%@\-\d]+)", rhs)
             if not m:
                 raise ValueError("unhandled addr %r" % rhs)
             ptr = m.group(1)
             if ptr == "@_ZN4x26512g_lumaFilterE":
                 env[dst] = "filter"
+            elif ptr == "@_ZN4x26514g_chromaFilterE":
+                env[dst] = "chroma"
             else:
                 off = m.group(2)
                 offs = env[off[1:]] if off.startswith("%") else off
@@ -1375,6 +1380,10 @@ def emit_interp8_c_intrinsics(
                 var(dst, "int16x8_t",
                     "vld1q_s16((const int16_t*)x265::g_lumaFilter"
                     " + ((int64_t)coeffIdx)*8)")
+            elif ptr == "chroma":
+                var(dst, "int16x4_t",
+                    "vld1_s16((const int16_t*)x265::g_chromaFilter"
+                    " + ((int64_t)coeffIdx)*4)")
             elif node["type"] == "<16 x i8>":
                 var(dst, "uint8x16_t",
                     "vld1q_u8((const uint8_t*)%s)" % ptr)
@@ -1432,6 +1441,17 @@ def emit_interp8_c_intrinsics(
                 # the IR but never selected by the tbl masks -> zero fill.
                 var(dst, "uint8x16_t",
                     "vcombine_u8(%s, vdup_n_u8(0))" % cid(node["src"][0]))
+            elif vtype == "<16 x i8>" and len(node["src"]) == 2 and \
+                    mask == list(range(16)):
+                # concat two 8-byte halves into the 16-byte row store
+                var(dst, "uint8x16_t",
+                    "vcombine_u8(%s, %s)" % (cid(node["src"][0]),
+                                             cid(node["src"][1])))
+            elif vtype == "<8 x i16>" and len(node["src"]) == 1 and \
+                    mask == list(range(8)):
+                # 4-lane coeff row extended to 8 lanes (undef high, unused)
+                var(dst, "int16x8_t",
+                    "vcombine_s16(%s, vdup_n_s16(0))" % cid(node["src"][0]))
             elif vtype == "<8 x i32>" and mask == list(range(8)):
                 types[dst] = (node["src"][0], node["src"][1])  # pair
             else:
@@ -1453,6 +1473,9 @@ def emit_interp8_c_intrinsics(
             if name == "ld1x3":
                 var(dst, "uint8x16x3_t",
                     "vld1q_u8_x3(dotprod_permute_tbl)")
+            elif name == "ld1x2":
+                var(dst, "uint8x16x2_t",
+                    "vld1q_u8_x2(dotprod_permute_tbl)")
             elif name == "tbl1":
                 a = node["args"][0]["ref"]
                 b = node["args"][1]["ref"]
@@ -1475,8 +1498,11 @@ def emit_interp8_c_intrinsics(
             else:
                 raise ValueError("codegen unknown intrinsic %r" % name)
         elif op == "store":
-            lines.append("    vst1_u8((uint8_t*)%s, %s);"
-                         % (env[node["ptr"]], cid(node["src"])))
+            t = types.get(node["src"], "")
+            fn = "vst1q_u8" if t == "uint8x16_t" else (
+                "vst1_u8" if t == "uint8x8_t" else "vst1_u8")
+            lines.append("    %s((uint8_t*)%s, %s);"
+                         % (fn, env[node["ptr"]], cid(node["src"])))
         else:
             raise ValueError("codegen unsupported op %r" % op)
     lines.append("}")
