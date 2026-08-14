@@ -13,6 +13,7 @@ proxy weights), n1 (NEON128 seed).
 import argparse
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +24,17 @@ from optimizer.mca_targets import target as mca_target
 from parse_qemu_trace import is_vector, parse_exec
 
 
+def _parse(args):
+    if args.fix_driver:
+        # QEMU 11.0.3 把 SVE2p1 sdot 反汇编成 .byte，先用 objdump 修复
+        # 动态流再统计/MCA（docs/26 §5）。
+        from fix_dynamic_trace import parse_exec_fixed
+        insns, _ = parse_exec_fixed(args.trace, int(args.start, 16),
+                                    int(args.end, 16), args.fix_driver)
+        return insns
+    return parse_exec(args.trace, int(args.start, 16), int(args.end, 16))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("trace")
@@ -31,6 +43,10 @@ def main():
     ap.add_argument("--profile",
                     choices=("k920b", "k950", "n1", "920B", "NP1"),
                     default="NP1")
+    ap.add_argument("--fix-driver", default=None,
+                    help="trace driver binary; objdump-repair SVE2p1 "
+                         ".byte instructions before counting (sdot, "
+                         "docs/26 §5)")
     ap.add_argument("--json", default=None)
     args = ap.parse_args()
 
@@ -42,18 +58,39 @@ def main():
         profile = {"k920b": K920B_PROFILE,
                    "k950": K950_PROFILE,
                    "n1": N1_PROFILE}[args.profile]
-    insns = parse_exec(args.trace, int(args.start, 16), int(args.end, 16))
+    insns = _parse(args)
     hist = {}
     nvec = 0
+    sve = neon = 0
     for i in insns:
         hist[i["mn"]] = hist.get(i["mn"], 0) + 1
         if is_vector(i):
             nvec += 1
+            if re.search(r"\b[z]\d+", i["ops"]):
+                sve += 1
+            else:
+                neon += 1
     lb, bounds = cycles_lb(hist, profile)
+    # Width-aware vector throughput lower bound (用户 2026-08-14 双目标
+    # 口径): 920B = SVE 2x256 / NEON 4x128, NP1(960) = SVE 4x256 /
+    # NEON 4x128。纯 SVE256 kernel 与纯 NEON128 kernel 用各自 pipe 数
+    # 计；混合 kernel 取 max（保守，NEON/SVE 大概率共享向量 pipe）。
+    vector_lb = None
+    if args.profile in ("920B", "NP1"):
+        tgt = mca_target(args.profile)
+        vlb = []
+        if sve:
+            vlb.append(sve / tgt["sve_pipes"])
+        if neon:
+            vlb.append(neon / tgt["neon_pipes"])
+        vector_lb = max(vlb) if vlb else 0.0
     out = {
         "profile": profile.name,
         "total_insns": len(insns),
         "vector_insns": nvec,
+        "sve_vector_insns": sve,
+        "neon_vector_insns": neon,
+        "vector_lb_cycles": vector_lb,
         "hist": dict(sorted(hist.items(), key=lambda kv: -kv[1])),
         "class_counts": {k: v for k, v in bounds.items()},
         "resource_lb_cycles": lb,

@@ -95,6 +95,22 @@ NEON 4×128**（SVE 2 条 256-bit 执行管道、NEON 4 条 128-bit 管道，
 | fp div s/d | 6/8 | V0-V3 |
 | fp sqrt s/d | 6/8 | V0-V3 |
 
+### 2.3 毕昇编译器（Bisheng）可用性与 SVE 调度
+
+毕昇 = Huawei 基于 LLVM 10.0.1 的发行版（flang 前端），rpm/tar 可从
+`repo.oepkgs.net/bisheng`（bisheng-compiler-2.1.0-1.aarch64.rpm，
+~302MB；source rpm ~466MB）或华为云镜像
+`mirrors.huaweicloud.com/kunpeng/archive/compiler/bisheng_compiler/`
+（2.4/2.5/3.x 系列）获取。920B 默认 yum 源**不含** bisheng-compiler
+（只有 BiSheng-Autotuner/opentuner）；需手动加 oepkgs 源。
+
+关键结论：毕昇的公开资料（直播/开发者社区）只强调对 920B 的 SVE
+向量化/内建函数优化，**没有公开 920B SVE 逐指令时延/吞吐表**；其
+TSV110 调度模型继承上游 LLVM（SVEUnsupported，同 §1.1），未见到
+独立 SVE reservation 的公开证据。验证源码 .td 需下载 ~466MB src
+rpm，收益低，不列入本轮；若后续需要可补。结论与 §1 一致：920B 的
+SVE 流水线数据只能自测（方案 A 微基准 + 表驱动 cycle 预估）。
+
 ## 3. 下一步（导入 MCA 的路径）
 
 1. 在 920B 上跑 SVE 微基准（latency/throughput），覆盖本项目实际使用
@@ -216,6 +232,30 @@ scalar 的静态流略低估（~3%，动态多出的主要是实际执行中的�
 调整）；scatter 的静态流明显高估（+61%），因为全函数 objdump 包含
 未在测量区间执行的序言/收尾与静态展开序，而动态 trace 反映真实
 执行序。结论：MCA 一律以修复后的动态流为口径，静态只作快速粗筛。
+
+**双目标宽度口径（用户 2026-08-14）**：MCA/成本评估必须区分两个
+目标机——920B = SVE 2×256 / NEON 4×128（SVE 与 NEON 总宽相等，
+无宽度优势）；NP1(960) = SVE 4×256 / NEON 4×128（SVE256 算力是
+NEON 的 **2 倍**）。因此：
+
+- 用 **NP1 评估**时，NEON→SVE256 的理论 cycle 减半是起点，验收应
+  追求**更大**的 cycle 缩减（≥50%），不能拿 920B 的预期当 NP1 目标；
+- 用 **920B 对照**时，SVE 2×256 与 NEON 4×128 总宽相同，收益只能
+  来自指令数/ILP，是保守口径。
+
+`tools/estimate_cycles.py --profile 920B|NP1` 新增
+`vector_lb_cycles`（宽度感知向量吞吐下界：sve/neon 向量指令数分别
+除以各自 pipe 数；SVE2p1 sdot 需 `--fix-driver` 修复 `.byte` 后统计）。
+idct32 实测（动态流，修复后）：
+
+| 版本 | vector 指令 | vector_lb 920B | vector_lb NP1 |
+| --- | ---: | ---: | ---: |
+| NEON 上游 | 10214（全 NEON128） | 2553.5 | 2553.5 |
+| sdot-s32 scatter | 5110（SVE256） | 2510（1.02×） | **1255（2.03×）** |
+
+NP1 下理论向量吞吐下界正好 ~2×：这是“960 需要 SVE256、NEON→SVE256
+应争取 cycle 减半”的结构依据。当前 NV2 代理 MCA（3319 vs 1900，
+1.75×）方向一致但偏保守；920B 无宽度收益，实机 paired 才可信。
 
 **评估结果（neoverse-v2 + sve2p1，动态流，idct32）**：
 

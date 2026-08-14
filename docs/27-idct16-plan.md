@@ -359,7 +359,9 @@ scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
 | fused_uop（objdump 口径） | 10214 | **4704（-54%）** | **5878（-42%）** |
 | llvm-mca cycles（静态流²，全函数 objdump） | 3319 | 3404 | 3065（失真 +61%） |
 | llvm-mca cycles（动态流²，QEMU 修复 trace） | 3319 | 3518 | **1900（-43%）** |
-| est（920B/NP1 吞吐模型） | 5903 | **2738** | **3325** |
+| est 资源下界（scalar 主导，仅粗排） | 5903 | 2738 | 3325 |
+| vector_lb（宽度感知吞吐下界³，920B） | 2553.5 | — | 2510（1.02×，同宽） |
+| vector_lb（宽度感知吞吐下界³，NP1） | 2553.5 | — | **1255（2.03×，SVE 2× 宽）** |
 | cp（NV2 延迟模型） | 539 | 71（不可靠） | 128 |
 
 ² 已给 llvm 22.1.8 Neoverse-V2 模型补 sdot_z32（HtoS）与 sdot.h
@@ -368,11 +370,19 @@ scatter）。当前 sdot-s32（volatile）候选与 NEON 对比：
 `scripts/build-custom-llvm-mca.sh`（docs/26 §5）。动态流经
 `tools/fix_dynamic_trace.py` 修复 QEMU 的 .byte 反汇编；静态流仅作
 粗筛（scalar 差 ~3%，scatter 高估 +61%，见 docs/26 §5 实测对比）。
+³ `tools/estimate_cycles.py --profile 920B|NP1 --fix-driver ...` 新增
+宽度感知向量吞吐下界（sve/neon 向量指令数 ÷ 各自 pipe 数），
+口径说明见 docs/26 §5。
 
 结论：动态流 MCA（当前 NP1 最强代理）下 sdot-s32 scatter 已相对
 NEON -43%（1900 vs 3319），scalar 仍 +6%（3518）——写回方式决定
-周期差异；est/cp 结构模型只作粗排。960 实机（SVE2.3）paired 仍是
-最终验收，但 MCA 已成为等不到实机期间的主要预测工具。
+周期差异；est/cp 结构模型只作粗排。**双目标验收口径（用户
+2026-08-14）**：NP1(960) 的 SVE256 算力是 NEON 的 2 倍，vector_lb
+理论减半（2553.5→1255），NP1 评估应追求 **≥50% cycle 缩减**，当前
+NV2 代理 1.75×（3319→1900）方向一致但偏保守；920B 的 SVE 2×256 与
+NEON 4×128 同宽（vector_lb 1.02×），只作保守对照。960 实机
+（SVE2.3）paired 仍是最终验收，但 MCA 已成为等不到实机期间的主要
+预测工具。
 
 ### 8.11 下一步（更新）
 
