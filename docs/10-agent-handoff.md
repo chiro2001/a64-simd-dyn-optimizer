@@ -133,6 +133,7 @@ latency 0.8625 [0.8533,0.8805]、throughput 0.8509 [0.8444,0.8756]
 | interp8 | path-b sdot.h（SVE2p3，docs/22 §5.3） | **101**（clang）/100（GCC） | 55 | 22.8* | — | PASS |
 | interp8-16 | path-b sdot.h（docs/22 §5.5） | **359**（基线 467） | 121 | 114.25 | — | PASS |
 | interp8-32 | path-b sdot.h（docs/22 §5.5） | **1417**（基线 1829） | 398 | 396.75 | — | PASS |
+| interp8vpp-16 | 滑动行管线（docs/22 §5.6） | **257**（基线 400） | 168 | — | — | PASS |
 | idct16 | zip16（consensus 最优） | 1152 | 468 | 413 | 158 | PASS |
 | idct16 | scatter（cp 最优） | 1179 | 496 | 448 | 120 | PASS |
 | idct16 | anchor_sve2 | 980 | 925 | 2892 | 181 | PASS |

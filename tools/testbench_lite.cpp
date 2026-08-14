@@ -35,6 +35,9 @@ void idct32_c(const int16_t* src, int16_t* dst, intptr_t dstStride);
 template <int N, int W, int H>
 void interp_horiz_pp_neon(const pixel* src, intptr_t srcStride, pixel* dst,
                           intptr_t dstStride, int coeffIdx);
+template <int N, int W, int H>
+void interp_vert_pp_neon(const pixel* src, intptr_t srcStride, pixel* dst,
+                         intptr_t dstStride, int coeffIdx);
 }
 
 using namespace X265_NS;
@@ -184,6 +187,9 @@ extern "C" void dynopt_interp8_16x16_sve2_sdoth(
     const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
 extern "C" void dynopt_interp8_32x32_sve2_sdoth(
     const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
+/* Vertical 8-tap 16x16 (docs/22 §5.6): optional; tested when linked. */
+extern "C" void dynopt_interp8_16x16_sve2_vpp(
+    const uint8_t*, intptr_t, uint8_t*, intptr_t, int) __attribute__((weak));
 /* IDCT16 candidate is optional (weak): the gate refuses to run when the
  * symbol is absent, so the lite binary still links for other kernels. */
 extern "C" void dynopt_idct16_sve2_shared(
@@ -305,6 +311,7 @@ static int gate_interp8(unsigned int seed)
     ref.pu[LUMA_8x8].luma_hpp = interp_horiz_pp_neon<8, 8, 8>;
     ref.pu[LUMA_16x16].luma_hpp = interp_horiz_pp_neon<8, 16, 16>;
     ref.pu[LUMA_32x32].luma_hpp = interp_horiz_pp_neon<8, 32, 32>;
+    ref.pu[LUMA_16x16].luma_vpp = interp_vert_pp_neon<8, 16, 16>;
 
     EncoderPrimitives opt;
     memset(&opt, 0, sizeof(opt));
@@ -313,6 +320,7 @@ static int gate_interp8(unsigned int seed)
         ? dynopt_interp8_8x8_sve2_sdoth : dynopt_interp8_8x8_sve2;
     opt.pu[LUMA_16x16].luma_hpp = dynopt_interp8_16x16_sve2_sdoth;
     opt.pu[LUMA_32x32].luma_hpp = dynopt_interp8_32x32_sve2_sdoth;
+    opt.pu[LUMA_16x16].luma_vpp = dynopt_interp8_16x16_sve2_vpp;
 
     if (!opt.pu[LUMA_8x8].luma_hpp ||
         !opt.pu[LUMA_16x16].luma_hpp ||
@@ -325,8 +333,10 @@ static int gate_interp8(unsigned int seed)
 
     IPFilterHarness h;   // constructor fills the random test buffers
     const bool ok = h.testCorrectness(ref, opt);
-    printf("TestBenchLite: seed=0x%08X interp8[8x8+16x16+32x32 luma_hpp] %s\n",
-           seed, ok ? "PASS" : "FAIL");
+    printf("TestBenchLite: seed=0x%08X interp8[8x8+16x16+32x32 hpp"
+           "%s] %s\n",
+           seed, opt.pu[LUMA_16x16].luma_vpp ? "+16x16 vpp" : "",
+           ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;
 }
 

@@ -238,3 +238,24 @@ s8 是**补码解释**（0x64=+100、0xFF=-1），不是“b-128”；实测
 unsigned→signed 映射是数据相关的（b<128 → +b，b≥128 → b-256），
 常数 8192 无法补偿；每行 1 次 `sub #128`（8/16/32 条）仍必须保留。
 真正免 sub 需要 mixed-sign 2-way dot（ISA 未提供）。
+
+### 5.6 垂直方向 vpp 16x16（2026-08-14，滑动行管线）
+
+垂直 8-tap FIR 的滑动窗口沿行方向：23 个行向量（行 -3..+19）加载
+一次驻留寄存器，输出行 i 直接消费 v_i..v_{i+7}（8×MLA + 双累加器
+4 乘积/acc 防溢出 + 4096/acc 偏移 + sqrshrunb+uzp1）。20k 差分
+× 3 相位 0 失配（vs `interp_vert_pp_neon<8,16,16>`），
+TestBenchLite（`+16x16 vpp`）PASS。候选固化
+`kernels/interp8vpp-16/candidates/best_sve2.*`。
+
+| 实现 | fused | MCA | uOps | 说明 |
+| --- | ---: | ---: | ---: | ---: |
+| 上游 vpp 16x16 | 400 | 112 | 476 | NEON 基线 |
+| vpp acc_split=1（GCC） | **257（-36%）** | 168 | 344 | 2×4 乘积累加器 |
+| vpp acc_split=2（GCC） | 293 | 171 | 422 | 4×2 乘积累加器（链更短但模型不奖励） |
+
+- 指令数 -36%；MCA 反而 +50%（MLA 4 连依赖链 + NV2 模型保守），
+  与水平方向结论一致：指令收益明确，cycle 以 950/960 实机为准。
+- 已接入搜索工具：manifest `interp8vpp-16`（gen_verify 新增
+  interp8vpp 模板，带行上边距），`acc_split: [1,2]` 轴可自动枚举；
+  acc_split=1 双指标最优。

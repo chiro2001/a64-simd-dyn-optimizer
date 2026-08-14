@@ -63,6 +63,10 @@ CAND_INTERP8_32=""
 if [ -f "$ROOT/kernels/interp8/candidates/best_sve2_sdoth_32x32.o" ]; then
     CAND_INTERP8_32="$ROOT/kernels/interp8/candidates/best_sve2_sdoth_32x32.o"
 fi
+CAND_INTERP8_VPP=""
+if [ -f "$ROOT/kernels/interp8vpp-16/candidates/best_sve2.o" ]; then
+    CAND_INTERP8_VPP="$ROOT/kernels/interp8vpp-16/candidates/best_sve2.o"
+fi
 # Drop a reference candidate when the caller passes the same object, so the
 # link does not see duplicate definitions of its symbol.
 [ -n "$CAND_DCT16" ] && [ "$(readlink -f "$CAND_DCT16")" = "$CAND" ] \
@@ -75,7 +79,8 @@ fi
     && CAND_DCT32=""
 [ -n "$CAND_INTERP8" ] && [ "$(readlink -f "$CAND_INTERP8")" = "$CAND" ] \
     && CAND_INTERP8=""
-for var in CAND_INTERP8_SDOTH CAND_INTERP8_16 CAND_INTERP8_32; do
+for var in CAND_INTERP8_SDOTH CAND_INTERP8_16 CAND_INTERP8_32 \
+           CAND_INTERP8_VPP; do
     eval "f=\${$var:-}"
     [ -n "$f" ] && [ "$(readlink -f "$f")" = "$CAND" ] && eval "$var="
 done
@@ -84,7 +89,8 @@ done
 # candidate under test (op-backend candidates reuse the dynopt_* symbol
 # that the grouped reference objects also define).
 for var in CAND_DCT16 CAND_SA8D CAND_SA8D16 CAND_DCT32 CAND_INTERP8 \
-           CAND_INTERP8_SDOTH CAND_INTERP8_16 CAND_INTERP8_32; do
+           CAND_INTERP8_SDOTH CAND_INTERP8_16 CAND_INTERP8_32 \
+           CAND_INTERP8_VPP; do
     eval "f=\${$var:-}"
     [ -n "$f" ] || continue
     if comm -12 \
@@ -118,6 +124,7 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
 
 "$CXX" "$CAND" $CAND_DCT16 $CAND_SA8D $CAND_SA8D16 $CAND_DCT32 \
     $CAND_INTERP8 $CAND_INTERP8_SDOTH $CAND_INTERP8_16 $CAND_INTERP8_32 \
+    $CAND_INTERP8_VPP \
     -Wl,-Bsymbolic,-znoexecstack \
     "$LITE/testbench_lite.o" "$LITE/mbdstharness.o" "$LITE/pixelharness.o" \
     "$LITE/ipfilterharness.o" \

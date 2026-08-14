@@ -461,6 +461,13 @@ def make_emitter(kernel, backend="acle"):
                 func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n,
                 unroll=combo.get("unroll") == "full")
         return emit_fn
+    if kernel == "interp8vpp-16":
+        from emit_interp8_sve2_shared import emit_vpp_16x16
+
+        def emit_fn(combo):
+            return emit_vpp_16x16(
+                acc_split=combo.get("acc_split", 1))
+        return emit_fn
     raise ValueError("no emitter registered for kernel %r" % kernel)
 
 
