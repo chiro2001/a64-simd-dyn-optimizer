@@ -112,10 +112,28 @@ scatter 的 cp 最短（82）。consensus 仍选 zip16；950/960 实机 paired
 
 ### 7.1c SVE1/SVE2 sdot 约束（2026-08-14，探针结论）
 
-尝试 sdot 化 O/EO 时确认：**s16×s16→s32 的非 indexed SDOT 不是
-SVE1/SVE2 指令**（GCC 16 的 `svdot_s32_s16`/`svdot_lane_s32_s16`
-要求 sve2p1，汇编器拒绝 `sdot z.s, z.h, z.h`）；SVE1 只有
-`svdot_lane_s64`（4-way indexed，.D 累加器，dct32 已用）。
+尝试 sdot 化 O/EO 时确认：**s16×s16→s32 的 SDOT 不是 SVE1/SVE2
+指令**。ARM ISA 2026-06 中该变体是独立条目 `sdot_z32_zzz`
+（`SDOT Zda.S, Zn.H, Zm.H`，2-way vectors）与 `sdot_z32_zzzi`
+（`SDOT Zda.S, Zn.H, Zm.H[imm]`，2-way indexed），arch variant =
+`FEAT_SME2 || FEAT_SVE2p1`（v9Ap3/v9Ap4）；而
+`SDOT Zda.H, Zn.B, Zm.B`（b→h）更晚，属 SVE2p3。SVE1/SVE2 只有
+`svdot_lane_s64`（4-way indexed，.D 累加器，dct32 已用），没有
+h→s 变体；`-march=armv8.2-a+sve` 与 `armv9-a+sve2` 汇编器均拒绝
+`sdot z.s, z.h, z.h`。
+
+**2026-08-14 实测（重要更新）**：binutils 2.47 在
+`-march=armv9.4-a+sve2p1` 下接受上述两条指令，**QEMU 11.0.3
+（`-cpu max,sve-max-vq=2`）可执行且语义正确**（探针
+`experiments/m31-idct32-sdot/probe_sdot_z32.c`，VL=256）：
+- vectors 形式：lane e = `d[2e]*c[2e] + d[2e+1]*c[2e+1]`，s32 wrap；
+- indexed 形式：每 128-bit 段内 4 个 s32 lane 共享同一对常量
+  `c[2*imm], c[2*imm+1]`（imm 2-bit，每段独立），且 **Zm 限 z0-z7**；
+- GCC 16.1 ACLE 没有 s16 输入的 `svdot`（`svdot_s32` 只接受
+  svint8_t），发射 sdot_z32 必须走 asm 路径；
+- 920B（SVE1）与 950/920G（SVE2，ARMv8.2 基础）无 SVE2p1，该轴
+  只能以 960（SVE2.3）为验收目标；QEMU 可用于 TestBenchLite
+  正确性门禁。
 
 **`svdot_lane_s64` 精确语义（VL=256，基向量探针 /tmp/sdotl_map）**：
 lane e（seg=e>>1，sub=e&1）累加
