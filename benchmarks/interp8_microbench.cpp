@@ -241,8 +241,14 @@ int main(int argc, char** argv)
     const std::string modeS = argv[3];
     const int samples = atoi(argv[4]);
     const int batch = atoi(argv[5]);
-    const bool verifyOnly = argc > 6 && std::string(argv[6]) == "--verify-only";
-    const bool skipVerify = argc > 6 && std::string(argv[6]) == "--noverify";
+    bool verifyOnly = false, skipVerify = false;
+    for (int i = 6; i < argc; i++)
+    {
+        if (std::string(argv[i]) == "--verify-only")
+            verifyOnly = true;
+        if (std::string(argv[i]) == "--noverify")
+            skipVerify = true;
+    }
 
     int shape = 0;
     bool vertical = false;

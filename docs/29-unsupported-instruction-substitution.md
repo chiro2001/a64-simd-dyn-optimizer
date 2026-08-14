@@ -30,7 +30,9 @@ python3 tools/check_flow_independence.py idct16 --seeds 1,2,3,4,5
 | 原指令（SVE2p1/2p3） | 替换（SVE1/SVE2 合法） | 形状 | 备注 |
 | --- | --- | --- | --- |
 | `sdot zD.s, zA.h, zB.h` | `sdot zD.s, zA.b, zB.b` | 3 寄存器、32-bit 累加 dot | BtoS 是 SVE1 原生；每 lane 乘积数可能多于 HtoS（见 §4 保守性） |
+| `sdot zD.h, zA.b, zB.b`（SVE2p3 BtoH） | `sdot zD.s, zA.b, zB.b` | 3 寄存器 dot（1 def/2 use） | 目标宽度 h→s 不同，依赖形状保留；BtoS 每 lane 4 乘积 vs BtoH 2 乘积，**高估更显著**（见 §4 interp8 行） |
 | `sqrshrnb zD.h, zS.s, #imm`（仅 sve1 目标） | `asr zS.s, zS.s, #imm` + `uzp1 zD.h, zS.h, zS.h` | 移位 + 1 def/2 use 窄化形状 | SVE1 无饱和窄化；仅保依赖形状 |
+| `sqrshrunb zD.b, zS.h, #imm`（仅 sve1 目标） | `asr zS.h, zS.h, #imm` + `uzp1 zD.b, zS.b, zS.b` | 移位 + 1 def/2 use 窄化形状 | 同 sqrshrnb 处理（interp8 path B 用） |
 
 ## 3. 流程
 
@@ -60,6 +62,7 @@ bash scripts/bench-dct32-paired.sh /tmp/mb neon cand
 | --- | ---: | --- |
 | idct32 | **1.129**（bootstrap95 1.121-1.130） | 替换版比 NEON 快 ~13% |
 | idct16 | **0.905**（bootstrap95 0.905-0.907） | 替换版比 NEON 慢 ~9.5% |
+| interp8 path-B（BtoH→BtoS） | **0.5425**（60 对，min 0.348/max 0.783） | 替换版比 NEON 慢 ~1.84x，**高估上界**：BtoS 每 lane 4 乘积 vs 真实 BtoH 2 乘积，dot 工作量翻倍；真实 SVE2p3 kernel 应显著更好（指令数 -28%，MCA 与 NEON 持平），需 950/960 确认 |
 
 保守性：BtoS 每 lane 的乘积数可能多于 HtoS（byte 4-way vs halfword
 2-way 语义），替换版可能**高估**真实工作量——因此 idct32 的 +13%

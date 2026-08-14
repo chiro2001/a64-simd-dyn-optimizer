@@ -31,8 +31,12 @@ import re
 
 SDOT_HTO_S = re.compile(
     r"^(\s*)sdot\s+(z\d+)\.s,\s*(z\d+)\.h,\s*(z\d+)\.h(.*)$")
+SDOT_BTOH_TO_S = re.compile(
+    r"^(\s*)sdot\s+(z\d+)\.h,\s*(z\d+)\.b,\s*(z\d+)\.b(.*)$")
 SQRHSHRNB = re.compile(
     r"^(\s*)sqrshrnb\s+(z\d+)\.h,\s*(z\d+)\.s,\s*#(\d+)(.*)$")
+SQRHSHRUNB = re.compile(
+    r"^(\s*)sqrshrunb\s+(z\d+)\.b,\s*(z\d+)\.h,\s*#(\d+)(.*)$")
 ARCH = re.compile(r"^\s*\.arch\s+.*$")
 
 
@@ -50,11 +54,30 @@ def substitute(lines, target):
             out.append("%ssdot %s.s, %s.b, %s.b%s"
                        % (ind, zd, za, zb, tail))
             continue
+        m = SDOT_BTOH_TO_S.match(line)
+        if m:
+            # SVE2p3 sdot zD.h,zA.b,zB.b (8->16, 2-way): same 3-register
+            # 1-def/2-use dot shape as SVE1 sdot zD.s,zA.b,zB.b (BtoS).
+            # Dest width differs (h vs s) -- dependency shape preserved,
+            # numeric values NOT (docs/29 substitution rules).
+            ind, zd, za, zb, tail = m.groups()
+            out.append("%ssdot %s.s, %s.b, %s.b%s"
+                       % (ind, zd, za, zb, tail))
+            continue
         m = SQRHSHRNB.match(line)
         if m and target == "sve1":
             ind, zd, zs, imm, tail = m.groups()
             out.append("%sasr %s.s, %s.s, #%s%s" % (ind, zs, zs, imm, tail))
             out.append("%suzp1 %s.h, %s.h, %s.h%s" % (ind, zd, zs, zs, tail))
+            continue
+        m = SQRHSHRUNB.match(line)
+        if m and target == "sve1":
+            # SVE2 sqrshrunb (s16->u8 bottom-narrow): SVE1 has no saturating
+            # narrow; asr preserves the shift edge, uzp1 the 1-def/2-use
+            # narrow shape (same treatment as sqrshrnb, docs/29 §2).
+            ind, zd, zs, imm, tail = m.groups()
+            out.append("%sasr %s.h, %s.h, #%s%s" % (ind, zs, zs, imm, tail))
+            out.append("%suzp1 %s.b, %s.b, %s.b%s" % (ind, zd, zs, zs, tail))
             continue
         out.append(line)
     return out
