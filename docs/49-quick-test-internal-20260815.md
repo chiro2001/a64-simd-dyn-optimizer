@@ -204,6 +204,13 @@ soff=15 有 92,999 失配（尾部 ctx 跳过条件缺失），修复后 5,776,0
 改用该 NEON 变体（E2E 码流 ee5db7 一致，中位 8200 vs 8191 ms，噪声
 内持平）。
 
+round-0029：costC1C2Flag 改为 n=1..8 全展开叶子路径（替代 NEON
+run-cache），生产逐调用 6,472,176 次 0 失配，真实分布回放 +30%
+（n8 +49%）；单算子 E2E 中性（该 kernel 在本编码 perf 占比 <1.1%）。
+best5 批量（c1c2+ccn NEON+remain+sa8d16+satd8，19 槽）E2E 中位
+8166 vs 8193 ms，首次方向转正但仍在噪声内。详见
+reports/c1c2-r29-best5-20260815.txt。
+
 ## 7. 注意事项
 
 - CNTVCT 在内网/云端约为百 MHz 级，per-call 取整会把小 kernel 压成
