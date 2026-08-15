@@ -146,3 +146,9 @@ experiments/m30-satd-search/gen-search-full-satd-8x32/*
 experiments/m30-satd-search/gen-search-full-satd-16x*/*
 !experiments/m30-satd-search/gen-search-full-satd-16x*/results.json
 !experiments/m30-satd-search/gen-search-full-satd-16x*/*pack-*.cpp
+
+# satd width-32 artifacts (2026-08-15): keep results + generated
+# candidate sources; trace/log/verify/binaries regenerate.
+experiments/m30-satd-search/gen-search-full-satd-32x*/*
+!experiments/m30-satd-search/gen-search-full-satd-32x*/results.json
+!experiments/m30-satd-search/gen-search-full-satd-32x*/*pack-*.cpp
