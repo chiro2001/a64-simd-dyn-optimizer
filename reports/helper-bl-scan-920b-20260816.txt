@@ -33,3 +33,14 @@ helper 的 `bl` 调用（GCC12 外链 static inline 的栈往返缺陷）。
   920B paired + 注入 E2E；
 - [ ] interp4 filter4 内联候选；
 - [ ] sa8d16 32x32/64x64 上游外链检查（pixel_sa8d_16x16_neon 30 次）。
+
+## 更新（2026-08-16）
+
+- interp8 vps 内联候选已注入（E2E -1.92%，见
+  reports/interp8-vps-inline-inject-20260816.txt）；
+- **interp8 hps 验证为负**：hps 16x16 内联候选 20k 干净但 paired 仅
+  1.06x（2336 vs 2200 ticks）——hps 上游没有 filter8 外链（外链
+  集中在 vert_ps/horiz_pp），内联无收益，**不注入**；
+- 教训：同型修复只对确实外链的函数有效；下一目标是有外链证据的
+  interp4 filter4_sp/ss_s16x8（58/56 次 bl，interp_vert_sp/ss_neon，
+  perf vert_sp 0.94+0.82%）。

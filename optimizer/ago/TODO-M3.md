@@ -118,3 +118,10 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] best8 注入 E2E：**-1.92%**（8028 vs 8192 ms，bit-exact）；
   报告 reports/interp8-vps-inline-inject-20260816.txt；
 - [ ] 同型跟进：interp8 hps/vsp/vss、interp4 filter4、sa8d 32/64。
+
+## interp8 hps 验证（2026-08-16 负结果）
+
+- [x] hps 内联候选 20k 干净，但 920B paired 仅 1.06x（无 filter8
+  外链，不注入）；报告 helper-bl-scan 更新；
+- [ ] interp4 filter4_sp/ss_s16x8 内联候选（58/56 次 bl，真实外链 +
+  vert_sp 热点）：20k + 920B paired + 注入。

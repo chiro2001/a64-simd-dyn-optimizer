@@ -243,15 +243,15 @@ static void hps_impl_3(const uint8_t* src, intptr_t sstride,
     }
 }
 
-extern "C" void dynopt_interp8_hps_32x16_sve2(
+extern "C" void dynopt_interp8_hps_32x32_sve2(
     const uint8_t* src, intptr_t sstride,
     int16_t* dst, intptr_t dstride, int coeffIdx, int isRowExt)
 {
     switch (coeffIdx)
     {
-    case 1: hps_impl_1<1, 32, 16>(src, sstride, dst, dstride, isRowExt); break;
-    case 2: hps_impl_2<2, 32, 16>(src, sstride, dst, dstride, isRowExt); break;
-    default: hps_impl_3<3, 32, 16>(src, sstride, dst, dstride, isRowExt); break;
+    case 1: hps_impl_1<1, 32, 32>(src, sstride, dst, dstride, isRowExt); break;
+    case 2: hps_impl_2<2, 32, 32>(src, sstride, dst, dstride, isRowExt); break;
+    default: hps_impl_3<3, 32, 32>(src, sstride, dst, dstride, isRowExt); break;
     }
 }
 
