@@ -18,6 +18,7 @@
 | scan-pos-last (r30) | emit_scan_pos_last_sve2_shared.py | 4,325,107 bad=0 | +27% |
 | cost-coeff-remain (r32) | emit_cost_remain_sve2_shared.py (emit_dfa) | 2,391,308 bad=0 | +20% |
 | cost-coeff-nxn (NEON) | emit_cost_coeff_nxn_sve2_shared.py (emit_neon) | 5,776,047 bad=0 | +9.7% |
+| sao-stats-bo | kernels/sao-stats-bo（64 宽行标量） | 微基准差分 0 失配 + E2E 码流一致 | +20%（5 vs 6 ticks） |
 | satd-8 | satd 搜索候选 | 20k 差分 + E2E 码流一致 | +8% |
 | sa8d16 | sa8d16 搜索候选 | 20k 差分 + E2E 码流一致 | ~1.0 |
 
@@ -29,7 +30,7 @@
 
 | 片段 | 基线中位 | best6b 中位 | 差 | bootstrap95 |
 | --- | ---: | ---: | ---: | ---: |
-| A（30 帧） | 8180-8210 ms | 8047-8061 ms | -1.63% | [106, 173] ms |
+| A（30 帧） | 8180-8210 ms | 8047-8066 ms（best7 21 槽） | -1.6~-1.8% | [106, 173] ms |
 | B（100 帧） | 22352 ms | 22025 ms | -1.43% | [250, 424] ms |
 
 两次测量均为 5+5 配对、共享节点单核单线程；码流 bit-exact。
