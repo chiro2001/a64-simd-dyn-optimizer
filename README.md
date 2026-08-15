@@ -27,6 +27,10 @@ pass 优化 → 按目标机指令成本表做有界 cover/布局选择 → 20k 
   acc=0.975/tau=0.951/regret=1.0%；920B 80 对 acc=1.000；N1 成本表
   transfer 到 920B acc=1.000；报告
   [reports/ago-m2-expanded-ranking-20260816.txt](reports/ago-m2-expanded-ranking-20260816.txt)）；
+- M3 进行中：已知赢法模板化（PEXT 查表、DFA 状态表）已带穷举证明 +
+  双机 20k 差分 + 微基准（PEXT N1 1.6x/920B 2.2x；DFA N1 1.24x/920B
+  1.38x），见 [reports/ago-m3-pext-template-20260816.txt](reports/ago-m3-pext-template-20260816.txt)
+  与 [reports/ago-m3-dfa-template-20260816.txt](reports/ago-m3-dfa-template-20260816.txt)；
 - 顶级模型咨询：round-0023（AGO 规划条件 GO）与 round-0024
   （M2 拆分 + 排序门/N1 校准协议，decision 已落盘）见
   [expert-advice/](expert-advice/)。

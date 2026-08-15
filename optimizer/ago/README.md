@@ -40,3 +40,14 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
   语料构建与正式排序门；
 - round-0024 咨询完成（response.md + decision.md），pass 管线已按
   “phase-once + 固定点校验”对齐。
+
+## M3（进行中）
+
+- 规则/模板协议：`rules.py`（Pattern/RewriteRule/CoverTemplate/
+  Verifier + ProofObligations）；
+- PEXT 4-bit 查表模板：3^16 穷举 bad=0、scanPosLast 20k 差分双机
+  bad=0、微基准 N1 1.6x / 920B 2.2x；
+- DFA 状态表模板：5x3x256 穷举 bad=0、costCoeffRemain 20k 差分双机
+  bad=0、微基准 N1 1.24x / 920B 1.38x；
+- 发射器（scan/remain）已改为委托 AGO 模板，输出与冻结候选逐字节
+  一致。
