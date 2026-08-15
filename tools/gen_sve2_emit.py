@@ -1209,7 +1209,7 @@ def emit_hadamard(machine_ir, func_name, combo=None):
             width, height = shape
             if width == 16 and height in (4, 8, 16):
                 return _emit_hadamard_satd_wide_natural(func_name, height)
-            if width == 8 and height in (8, 16):
+            if width == 8 and height in (8, 16, 32):
                 return _emit_hadamard_satd8_packed_natural(
                     func_name, height)
         raise ValueError(
@@ -1502,10 +1502,14 @@ def emit_hadamard(machine_ir, func_name, combo=None):
                 setvar(dst, "uint32_t")
             else:
                 raise ValueError("hadamard: unhandled intrinsic %r" % name)
-        elif op == "add" and n.get("type") == "i32" and \
-                n.get("const") is not None:
-            emit(n, "uint32_t %s = %s + %d;"
-                 % (var(dst), var(n["src"][0]), n["const"]))
+        elif op == "add" and n.get("type") == "i32":
+            if n.get("const") is not None:
+                emit(n, "uint32_t %s = %s + %d;"
+                     % (var(dst), var(n["src"][0]), n["const"]))
+            else:
+                emit(n, "uint32_t %s = %s + %s;"
+                     % (var(dst), var(n["src"][0]), var(n["src"][1])))
+            setvar(dst, "uint32_t")
         elif op == "lshr" and n.get("type") == "i32":
             emit(n, "uint32_t %s = %s >> %d;"
                  % (var(dst), var(n["src"][0]), n.get("amt", 0)))

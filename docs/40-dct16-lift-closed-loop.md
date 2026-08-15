@@ -523,3 +523,21 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - satd-8x16 pack=2：**102 / 69**（pack=1 185/70，-45%/-1.4%）。
 - width-16 与 8x8/8x16 SATD manifest 均增加 `pack: [1,2]`，冒烟测试
   切 pack=2。satd 大形状（8x32 等）仍待循环/helper 内联。
+
+## 28. satd 8x32 首次覆盖：unroll 抽取 + pack=2 打包 lowering（2026-08-15）
+
+- 抽取：`seeds/satd-8x32.yaml` 在 clang_args 增加 `-funroll-loops +
+  -mllvm -unroll-threshold=5000 + -unroll-count=32` 后，上游
+  `satd8_neon<8,32>` 成功平铺为 502 节点直线 MachineIR（64 个
+  `<8 x i8>` load + uaddlv），不再需要 G2b 结构化 CFG。
+- codegen 通用资产：hadamard DAG 直译补标量 `i32 add`（双标量 src，
+  无常量），pack=1 锚可编译。
+- pack=2 lowering：`_hadamard_satd8_packed_natural` 的 stages 直接
+  泛化到 32 行（4 个双组 stage）。
+- 验收（20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-full-satd-8x32/results.json）：
+  - pack=2：**202 fused / MCA 91**；
+  - pack=1：370 / 111；
+  - 对照上游 `satd8_sve2<8,32>` 位级一致。
+- `kernels/satd-8x32` + `seeds/satd-8x32.yaml` 建立，manifest 直接
+  包含 `pack: [1,2]`；冒烟测试扩到 23 核。

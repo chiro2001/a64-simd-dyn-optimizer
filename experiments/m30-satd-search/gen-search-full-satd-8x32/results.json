@@ -1,0 +1,97 @@
+[
+ {
+  "tag": "pack-1_compute-sve",
+  "pack": 1,
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400e80"
+  ],
+  "counts": {
+   "total": 436,
+   "vector": 372,
+   "movprfx": 2,
+   "vector_fused": 370,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 370
+  },
+  "fusion": {
+   "eligible": 12,
+   "hw_supported": 0,
+   "pairs": [
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 129,
+    "simd_insns": 240,
+    "fused_pseudo": 2
+   }
+  },
+  "mca_cycles": 111,
+  "mca_uops": 443
+ },
+ {
+  "tag": "pack-2_compute-sve",
+  "pack": 2,
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400ce0"
+  ],
+  "counts": {
+   "total": 329,
+   "vector": 207,
+   "movprfx": 5,
+   "vector_fused": 202,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 202
+  },
+  "fusion": {
+   "eligible": 7,
+   "hw_supported": 0,
+   "pairs": [
+    "sabd+smax",
+    "abs+smax",
+    "sabd+smax",
+    "add+add",
+    "sabd+smax",
+    "add+add",
+    "sabd+smax"
+   ],
+   "counts": {
+    "store_insns": 2,
+    "scalar_insns": 247,
+    "simd_insns": 72,
+    "fused_pseudo": 5,
+    "load_insns": 2
+   }
+  },
+  "mca_cycles": 91,
+  "mca_uops": 337
+ }
+]
