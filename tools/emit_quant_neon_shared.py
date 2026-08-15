@@ -49,8 +49,11 @@ def emit_256(func_name="dynopt_quant_256_sve2", count="vaddv",
 
     step = """\
     int16x8_t %(p)sv = vld1q_s16(coef + %(idx)s);
-    int32x4_t %(p)sa0 = vabsq_s32(vmovl_s16(vget_low_s16(%(p)sv)));
-    int32x4_t %(p)sa1 = vabsq_s32(vmovl_high_s16(%(p)sv));
+    int32x4_t %(p)sa0, %(p)sa1;
+    __asm__("sabdl %%0.4s, %%2.4h, %%3.4h\\n\\t"
+            "sabdl2 %%1.4s, %%2.8h, %%3.8h"
+            : "=&w"(%(p)sa0), "=&w"(%(p)sa1)
+            : "w"(%(p)sv), "w"(zero16));
     int32x4_t %(p)sqc0 = vld1q_s32(qc + %(idx)s);
     int32x4_t %(p)sqc1 = vld1q_s32(qc + %(idx)s + 4);
     int32x4_t %(p)sp0 = vmulq_s32(%(p)sa0, %(p)sqc0);
@@ -104,6 +107,7 @@ extern "C" uint32_t %(func)s(
     const int32x4_t qbits_neg = vdupq_n_s32(-qBits);
     const int32x4_t qbits_pos = vdupq_n_s32(qBits);
     const int32x4_t qbits8_neg = vdupq_n_s32(-(qBits - 8));
+    const int16x8_t zero16 = vdupq_n_s16(0);
 %(nz_src)s
 %(steps)s
 %(nz_end)s
