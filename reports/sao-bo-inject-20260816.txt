@@ -30,3 +30,14 @@ bootstrap95 = [137, 185] ms。对比 best8（-1.92%），BO 贡献约
 - SAO Stats E1/E2/E3 候选为 SVE2-only（920B SVE1 不可原生跑），
   未注入；E2E 已包含 BO；
 - 复现：bash scripts/freeze-best9.sh chiro@124.70.206.229。
+
+## N1 复测（2026-08-16）
+
+| 配置 | 中位 | 差 |
+| --- | ---: | ---: |
+| 干净基线 | 12020 ms | — |
+| best9 注入 | 11870 ms | **-1.62%** |
+
+bootstrap95 = [60, 253] ms，同机 bit-exact b5b18776…。对比 N1 best8
+（-1.78%）：BO 在 Neoverse-N1 无明确收益（标量 64 宽行优化为 920B
+定制），差异在噪声内、无回归。统一发布保持 best9。

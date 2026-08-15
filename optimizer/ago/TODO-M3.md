@@ -161,6 +161,8 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] 发现 best8 遗漏 SAO 家族；BO 920B paired +20%（6->5 ticks）；
 - [x] best9（29 槽）E2E **-2.10%**（8027 vs 8184 ms，bit-exact），
   报告 reports/sao-bo-inject-20260816.txt；
+- [x] N1 best9：-1.62%（11870 vs 12020 ms，bit-exact；BO 在 N1
+  无明确收益，噪声内无回归）；
 - [ ] SAO Stats E1/E2/E3（SVE2-only）留待 950 窗口。
 
 ## N1 端到端（2026-08-16 完成）
