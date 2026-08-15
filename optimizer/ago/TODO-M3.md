@@ -46,6 +46,8 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] 920B paired：pack-2 慢 1.87x（3609 vs 6731 ticks）→ 不可注入；
 - [x] 记录 AGO 预测器 SVE1 失效（SVE 表过乐观）：
   reports/sve1-satd8-search-920b-20260816.txt；
-- [ ] 重建 920B SVE1 指令成本表（CNTVCT paired，依赖/独立链口径），
-  重排 SVE1 候选并加入 sve1 排序门；
+- [x] 重建 920B SVE1 指令成本表 v1（sve1-class-timing.c ->
+  timing-sve1-ago.json：add/sub/mul/abs/sabd/mla/uaddv/tbl/ld1b/sdot，
+  依赖链 + 8 独立链，min-of-7）；
+- [ ] 用 v1 表 + CP 感知给 SVE1 候选加排序门（预注册后评测）；
 - [ ] AGO cover 层增加 sve1 发射模板（接 M2 排序器）。

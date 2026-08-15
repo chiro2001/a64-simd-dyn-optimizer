@@ -1,0 +1,50 @@
+{
+ "abs_s16": {
+  "latency_cyc": 3.81,
+  "throughput_cyc_per_op": 1.0
+ },
+ "add_s16": {
+  "latency_cyc": 2.27,
+  "throughput_cyc_per_op": 0.5
+ },
+ "calib_add_ticks_per_cyc": 0.0345,
+ "cntfrq": 100000000,
+ "empty": {
+  "latency_cyc": 1.0,
+  "throughput_cyc_per_op": 1.0
+ },
+ "freq_hz_est": 2898550724,
+ "ld1b_s8": {
+  "latency_cyc": 24.03,
+  "throughput_cyc_per_op": 0.5
+ },
+ "method": "CNTVCT min-of-7, dependent chain (lat) / 8 independent chains (tput), 2026-08-16, taskset -c 0",
+ "mla_s16": {
+  "latency_cyc": 2.0,
+  "throughput_cyc_per_op": 1.0
+ },
+ "mul_s16": {
+  "latency_cyc": 3.0,
+  "throughput_cyc_per_op": 1.0
+ },
+ "sabd_s16": {
+  "latency_cyc": 2.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "sdot_s32_8b": {
+  "latency_cyc": 2.2,
+  "throughput_cyc_per_op": 0.5
+ },
+ "sub_s16": {
+  "latency_cyc": 2.28,
+  "throughput_cyc_per_op": 0.5
+ },
+ "tbl_s16": {
+  "latency_cyc": 3.0,
+  "throughput_cyc_per_op": 0.69
+ },
+ "uaddv_s32": {
+  "latency_cyc": 13.02,
+  "throughput_cyc_per_op": 1.89
+ }
+}

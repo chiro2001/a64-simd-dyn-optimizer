@@ -45,14 +45,23 @@ ptrue/sel/mla，无 SVE2 mnemonic）。
 
 ## 下一步（已列入 TODO-M3）
 
-1. 重建 920B SVE1 指令成本表：用 CNTVCT paired 微基准标定 gen
-   后端实际使用的指令类（ld1b、tbl、mul、add/sub、abs、sabd、
-   uaddv、sdot、mla、movprfx），含依赖链与独立链两种口径；
-2. 用新表重排 SVE1 候选，加入 AGO 排序门（sve1 目标预注册）；
-3. 只在实测非劣/更快的 SVE1 候选进入注入。
+1. **已完成第一步**：920B SVE1 指令成本表 v1
+   （benchmarks/sve-timing-920b/timing-sve1-ago.json）——
+   add/sub 2.27/0.50、mul 3.00/1.00、abs 3.81/1.00、sabd 2.00/0.50、
+   mla 2.00/1.00、uaddv 延迟 13.02/吞吐 1.89、tbl 3.00/0.69、
+   ld1b load-use 延迟 24.03、sdot(8b) 2.20/0.50（单位 cyc）。
+   关键发现：pack-2 候选慢的原因是 **uaddv 归约延迟 13cyc +
+   ld1b load-use 24cyc 的依赖链**，而非单指令吞吐（add 0.5/cyc）；
+2. 教训：跨 ISA 排序不能只看指令吞吐和；CP（依赖链）必须按目标
+   ISA 结构建模，SVE1 候选先以 920B CNTVCT paired 为准；
+3. objfeatures 增补 tbl 分类（此前 tbl 未被任何类捕获）；
+4. 下一步：用 v1 表给 gen 后端 SVE1 候选加 CP 感知排序（预注册
+   sve1 排序门），只在实测非劣/更快的候选进入注入。
 
 ## 产物
 
 - `experiments/isa-sve1-satd8-20260816/`：2 候选 + 20k 验证 + MCA +
   trace 日志（可再生物）；
+- `benchmarks/sve1-class-timing.c` + `timing-sve1-ago.json`：SVE1
+  指令级成本表 v1（依赖链 + 8 独立链，min-of-7）；
 - 本轮 commit：搜索产物与 docs/52 sve1 目标章节。

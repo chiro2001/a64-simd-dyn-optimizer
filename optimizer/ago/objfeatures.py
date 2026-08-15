@@ -24,6 +24,7 @@ _CLASSES = {
     "abs": re.compile(r"\b(abs)\w*\b"),
     "max": re.compile(r"\b(max|smax|umax)\w*\b"),
     "trn": re.compile(r"\b(trn1|trn2|uzp1|uzp2|zip1|zip2)\w*\b"),
+    "tbl": re.compile(r"\btbl\b"),
     "mul": re.compile(r"\b(mul|mla|sdot|udot)\w*\b"),
     "branch": re.compile(r"\b(bl|b\.)\b"),
 }
