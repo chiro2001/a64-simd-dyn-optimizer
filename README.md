@@ -120,6 +120,11 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
   静态库逐调用差分，修复 soff=15 尾部 ctx 跳过条件后 5,776,047 次调用
   0 失配，真实分布回放 +9.7%；单算子注入码流 ee5db7 一致、E2E 中位
   8200 vs 基线 8191 ms（噪声内）。已设为 cost-coeff-nxn 默认候选。
+- **costC1C2Flag round-29**：n=1..8 全展开叶子路径替代 NEON run-cache，
+  生产逐调用 6,472,176 次 0 失配，真实分布回放 +30%（n8 +49%）；该
+  kernel 在本编码 perf 占比 <1.1%，E2E 中性。best5 批量（c1c2 + ccn
+  NEON + remain + sa8d16 + satd8，19 槽）码流 ee5db7 一致，中位
+  8166 vs 8193 ms，首次方向转正（噪声内）。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
