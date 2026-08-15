@@ -51,6 +51,15 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] 重建 920B SVE1 指令成本表 v1（sve1-class-timing.c ->
   timing-sve1-ago.json：add/sub/mul/abs/sabd/mla/uaddv/tbl/ld1b/sdot，
   依赖链 + 8 独立链，min-of-7）；
-- [ ] SVE1 搜索转向宽行连续家族（dct/interp/quant 行），v1 表 +
-  CP 感知排序门（预注册后评测）；
+- [x] 实现 CP 感知 SVE1 预测器（predict_sve1，v1 表 + 依赖链注释）+
+  单测；量化校准缺口：NEON 预测 132.6 vs 实测 25.6 cyc/call（5.2x
+  过估），SVE1 预测 69.2 vs 47.6（1.45x 过估）——绝对跨 ISA 排序
+  不可用，SVE1 内部相对排序 + 920B paired 兜底；
+- [ ] 预注册 SVE1 排序门（候选语料形成后冻结）：语料 = SVE1 候选
+  （pack-1/2/2b + 后续），真值 = 920B CNTVCT paired 中位（MDE=1%），
+  通过 = 可分辨对 ≥2/3 与 predict_sve1 同向，且胜者实测非劣于
+  上游 NEON 才允许注入；
+- [ ] dct16/interp8 SVE1 搜索被工具缺口阻塞：gen 无 dct recipe、
+  op 后端 sve1 过滤后全部 BUILD FAIL；需先补 SVE1-safe 发射模板
+  （AGO cover 层 sve1 发射器），再搜索宽行家族；
 - [ ] AGO cover 层增加 sve1 发射模板（接 M2 排序器）。

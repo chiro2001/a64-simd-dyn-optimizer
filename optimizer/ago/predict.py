@@ -77,3 +77,41 @@ def predict_from_features(cover_meta: Dict, cover: str, table: Dict,
     cp_chain = cover_meta["cp_chains"][cover]
     spill = int(features.get("spill_reload_heuristic", 0)) * 4
     return predict(cp_chain, tput_ops, table, spill)
+
+
+_SVE1_CLASS_KEY = {
+    "ld_vec": "ld1b_s8",
+    "st_vec": "st1b_s8",
+    "add": "add_s16",
+    "sub": "sub_s16",
+    "abs": "abs_s16",
+    "max": "sabd_s16",        # smax proxy: same 128-bit pipeline class
+    "trn": "tbl_s16",
+    "tbl": "tbl_s16",
+    "mul": "mul_s16",
+    "branch": "empty",
+}
+
+
+def predict_sve1(cp_chain: list, table_sve1: Dict, features: Dict) -> Dict:
+    """CP-aware SVE1 prediction (v1 cost table, 2026-08-16).
+
+    Round-0024 formula with the SVE1 class costs measured on 920B
+    (timing-sve1-ago.json). The CP chain must be annotated per
+    candidate (dependency structure), because uaddv (13.02 cyc) and
+    ld1b load-use (24.03 cyc) dominate real kernels while per-op
+    throughput looks cheap.
+
+    Calibration caveat: absolute predictions are not yet usable across
+    ISA (NEON table was calibrated for ranking within the NEON corpus,
+    not for cross-ISA absolutes); SVE1 candidates are ranked among
+    themselves and the winner is always re-verified by 920B CNTVCT
+    paired before injection.
+    """
+    tput_ops = []
+    for cls, cnt in features.get("insn_by_class", {}).items():
+        key = _SVE1_CLASS_KEY.get(cls)
+        if key:
+            tput_ops.extend([key] * int(cnt))
+    return predict(cp_chain, tput_ops, table_sve1,
+                   int(features.get("spill_reload_heuristic", 0)) * 4)

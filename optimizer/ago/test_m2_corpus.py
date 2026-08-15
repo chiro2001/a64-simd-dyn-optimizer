@@ -15,7 +15,7 @@ from ago.covers_satd8 import all_covers as satd8_covers  # noqa: E402
 from ago.covers_satd8 import emit_cover as emit_satd8  # noqa: E402
 from ago.covers_satd_shapes import all_shapes, emit_cover  # noqa: E402
 from ago.manifest import CandidateManifest  # noqa: E402
-from ago.predict import predict_from_features  # noqa: E402
+from ago.predict import predict_from_features, predict_sve1  # noqa: E402
 
 
 class TestCovers(unittest.TestCase):
@@ -78,6 +78,34 @@ class TestPredict(unittest.TestCase):
                        "throughput_cyc_per_op": 2.0}}
         from ago.predict import _cost
         self.assertEqual(_cost(table, "x")["latency_cyc"], 1.5)
+
+    def test_predict_sve1(self):
+        table = {
+            "empty": {"latency_cyc": 1.0, "throughput_cyc_per_op": 1.0},
+            "add_s16": {"latency_cyc": 2.27,
+                        "throughput_cyc_per_op": 0.50},
+            "sub_s16": {"latency_cyc": 2.28,
+                        "throughput_cyc_per_op": 0.50},
+            "mul_s16": {"latency_cyc": 3.00,
+                        "throughput_cyc_per_op": 1.00},
+            "tbl_s16": {"latency_cyc": 3.00,
+                        "throughput_cyc_per_op": 0.69},
+            "uaddv_s32": {"latency_cyc": 13.02,
+                          "throughput_cyc_per_op": 1.89},
+            "ld1b_s8": {"latency_cyc": 24.03,
+                        "throughput_cyc_per_op": 0.50},
+        }
+        feats = {"insn_by_class": {"ld_vec": 8, "add": 16, "tbl": 4,
+                                   "mul": 8, "max": 2},
+                 "spill_reload_heuristic": 0}
+        cp = ["ld1b_s8", "sub_s16", "tbl_s16", "mul_s16", "add_s16",
+              "uaddv_s32"]
+        p = predict_sve1(cp, table, feats)
+        # tput = 8*0.5 + 16*0.5 + 4*0.69 + 8*1.0 + 2*1.0 = 16.76
+        self.assertAlmostEqual(p["tput_sum"], 8 * 0.5 + 16 * 0.5 +
+                               4 * 0.69 + 8 * 1.0 + 2 * 1.0)
+        # cp = 24.03(null-filled? ld1b has latency) + 2.27 + 3 + 3 + 2.27 + 13.02
+        self.assertGreater(p["predicted_cyc"], 45.0)
 
 
 if __name__ == "__main__":
