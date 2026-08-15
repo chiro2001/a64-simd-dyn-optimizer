@@ -49,3 +49,9 @@ layouts:
   # 2026-08-14: tail-reduction axis (saddv passes the halve gate 186;
   # dot-uaddv is the 189 baseline shape).
   reduce_tail: [saddv, dot-uaddv, neon]
+
+# Pure-NEON search axes (used by --isa neon; the SVE axes above are SVE
+# layout values and would be filtered out by the NEON value gate).
+layouts_neon:
+  reduce: [vpadal, vaddlv, vaddv]
+  quad: [seq, pair]

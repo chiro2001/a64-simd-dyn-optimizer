@@ -78,6 +78,7 @@ ISA_RANK = {"neon": 0, "sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4,
 NEON_SUPPORTED_KERNELS = {
     "find-pos-first-last",
     "pel-filter-luma-strong",
+    "sa8d16",
     "scan-pos-last",
 }
 
@@ -85,7 +86,7 @@ NEON_SUPPORTED_KERNELS = {
 NEON_SAFE_VALUES = {
     "neon", "neon-dot", "scalar", "none", "off", "default",
     "pack", "dot", "addp", "ctz", "clz", "tail",
-    "popcount", "addv",
+    "popcount", "addv", "vpadal", "vaddlv", "vaddv", "seq", "pair",
     0,
 }
 
@@ -449,11 +450,20 @@ def make_emitter(kernel, backend="acle"):
                         unroll=combo.get("unroll", 1))
         return emit_fn
     if kernel == "sa8d16":
-        from emit_sa8d_sve2_shared import emit_16x16
+        if _ISA == "neon":
+            from emit_sa8d_neon_shared import emit_16x16
 
-        def emit_fn(combo):
-            return emit_16x16(
-                reduce_tail=combo.get("reduce_tail", "saddv"))
+            def emit_fn(combo):
+                return emit_16x16(
+                    func_name="dynopt_sa8d_16x16_sve2",
+                    reduce=combo.get("reduce", "vpadal"),
+                    quad=combo.get("quad", "seq"))
+        else:
+            from emit_sa8d_sve2_shared import emit_16x16
+
+            def emit_fn(combo):
+                return emit_16x16(
+                    reduce_tail=combo.get("reduce_tail", "saddv"))
         return emit_fn
     if kernel == "idct16":
         from emit_idct16_sve2_shared import emit
@@ -1200,7 +1210,7 @@ def main():
                          "(default 0 = off)")
     ap.add_argument("--rank-by",
                     choices=("fused_uop", "mca", "cp", "lite", "vector-lb",
-                             "consensus"),
+                             "consensus", "bench920"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
@@ -1212,7 +1222,10 @@ def main():
                          "(docs/26 §5); lite requires "
                          "--lite-top and puts TestBenchLite-passing "
                          "candidates first; consensus averages normalized "
-                         "ranks over all available proxies)")
+                         "ranks over all available proxies; bench920 "
+                         "requires --bench-920b and ranks by the "
+                         "real-machine CNTVCT neon/cand ratio, highest "
+                         "first)")
     ap.add_argument("--require-lite", action="store_true",
                     help="when finalizing, skip candidates that did not pass "
                          "TestBenchLite (requires --lite-top; candidates "
@@ -1256,6 +1269,9 @@ def main():
         args.cp_top = 10
     if args.rank_by == "vector-lb" and args.cost_top == 0:
         args.cost_top = 10
+    if args.rank_by == "bench920" and not args.bench_920b:
+        print("--rank-by bench920 requires --bench-920b", file=sys.stderr)
+        return 2
     if args.rank_by == "consensus":
         # consensus needs all proxies; default the top-N to the largest
         # requested window.
@@ -1303,6 +1319,11 @@ def main():
               "emitter" % (", ".join(sorted(NEON_SUPPORTED_KERNELS)),
                            args.kernel), file=sys.stderr)
         return 2
+    if _ISA == "neon" and manifest.get("layouts_neon"):
+        # NEON searches use the kernel's dedicated pure-NEON axis set
+        # (e.g. sa8d16: reduce vpadal/udot/vaddlv, quad seq/pair) instead
+        # of the SVE layout axes.
+        manifest["layouts"] = manifest["layouts_neon"]
     if args.outdir is None:
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
@@ -1762,10 +1783,11 @@ def main():
                 tag = r["tag"]
                 obj = os.path.join(args.outdir, tag + ".o")
                 binp = os.path.join(args.outdir, tag + "-sa8d-bench")
-                cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                cc = ["aarch64-linux-gnu-g++", "-O2", "-static", "-std=c++11",
                       "-DX265_NS=x265", "-DX265_DEPTH=8", "-DHIGH_BIT_DEPTH=0",
                       "-DDYNOPT_CANDIDATE=dynopt_sa8d_8x8_sve2",
                       "-DDYNOPT_CANDIDATE16=" + sym16,
+                      ] + _OPT_EXTRA.split() + [
                       "-I", os.path.join(ROOT, "third_party/x265/source"),
                       "-I", os.path.join(ROOT, "third_party/x265/source/common"),
                       "-I", os.path.join(ROOT, "build/x265-8-cross-make"),
@@ -1924,6 +1946,15 @@ def main():
         else:
             print("bench-920b: kernel %r has no microbenchmark; skipped"
                   % args.kernel, file=sys.stderr)
+    if args.rank_by == "bench920" and ok:
+        ok.sort(key=lambda r: (r.get("bench920_ratio") is None,
+                               -(r.get("bench920_ratio") or 0.0),
+                               fu(r)))
+        print("rank by 920B CNTVCT neon/cand ratio "
+              "(higher = candidate faster):")
+        for r in ok:
+            print("  %-24s ratio=%s fused_uop=%d"
+                  % (r["tag"], r.get("bench920_ratio"), fu(r)))
     if args.rank_by == "consensus" and ok:
         tgt = None
         try:

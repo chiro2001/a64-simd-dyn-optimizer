@@ -281,3 +281,49 @@ branch/csel 变体（只实现 L=15 特例）通过 20k 却在真实 16x16 TU �
 正确性（码流）完全一致，性能约 +0.6%（对应 kernel 级 ~1.1× 慢），说明
 scanPosLast 不是 920B 端到端 15% 目标的主杠杆；后续应把 NEON 搜索轴与
 多 CG 语料模式扩展到 costCoeffNxN / dct32 / sa8d16 等大热点。
+
+## 9. sa8d16 纯 NEON 搜索（2026-08-15 第三轮）
+
+### 9.1 动机与发射器
+
+920B 上 SVE1 自然行 sa8d16 候选 CNTVCT 只有上游 NEON 的 0.67–0.81
+（SVE1 CADD/TBL 管线输给 NEON 8-lane Hadamard）。新增
+`tools/emit_sa8d_neon_shared.py`（纯 NEON 16x16）：
+
+| 轴 | 取值 | 说明 |
+| --- | --- | --- |
+| reduce | vpadal / vaddlv / vaddv | u16→u32 逐象限累加；u16 lane 和 + 一次 vaddlvq；每象限 vaddvq_u16 + 标量 u32 |
+| quad | seq / pair | 上游顺序四象限 vs 先加载上/下两象限再算（提高 load ILP） |
+
+`--isa neon` 下 manifest 用 `layouts_neon` 覆盖 SVE 轴集；搜索驱动
+`--rank-by bench920` 按 920B CNTVCT neon/cand 比率排序（修复了 bench
+hook 缺 `-static`、忽略 `--opt-extra` 的问题）。
+
+### 9.2 920B 实测（CNTVCT ticks/8 次，25 样本中位）
+
+延迟模式（上游/候选）：
+
+| 变体 | neon | cand | 比率 |
+| --- | ---: | ---: | ---: |
+| vpadal-seq | 55 | 56 | 0.98 |
+| vpadal-pair | 56 | 51 | 1.10 |
+| vaddlv-seq | 56 | 55 | 1.02 |
+| vaddlv-pair | 55 | 49 | **1.12** |
+| vaddv-seq | 56 | 56 | 1.00 |
+| vaddv-pair | 56 | 52 | 1.08 |
+
+吞吐模式：vaddlv-pair 97/84 = 1.15。clang -O3 不如 GCC -O3（约 1.04–
+1.07）。全部 6 变体 20k 差分 0 失配；最优 vaddlv-pair 已写入
+`kernels/sa8d16/candidates/best_sve1.{cpp,S}`（920B 槽位，-O3）。
+
+### 9.3 920B 聚焦 E2E（真实 1080p 30 帧，sa8d16 单算子注入）
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 纯基线 | 8.19 s | 8.18 s | 8.17 s | 8.18 s |
+| 注入 NEON vaddlv-pair | 8.20 s | 8.18 s | 8.19 s | 8.19 s |
+
+码流一致（7981.54 kb/s / QP 33.77）。kernel 级 +10–15% 在 E2E 上落在
+噪声内（sa8d16 热点占比仅 ~2.3%，预期收益 ~0.3%）。结论：单算子注入
+验证了搜索→真机回填→注入闭环；要达成端到端 15%，需要把 NEON 搜索轴
+扩展到 satd/sad/costCoeffNxN/dct32 等热点并批量注入。

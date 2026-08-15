@@ -84,6 +84,12 @@ NEON 搜索（`--isa neon`，mask/pext/flag/count 四轴）把单 CG 微基准�
 并修复了旧差分语料只测单 CG 且几乎全非零的盲区（见
 [docs/48](docs/48-preload-and-isa-profiles.md) §8）。
 
+sa8d16 纯 NEON 搜索（第三轮）：新增 NEON 16x16 发射器（reduce:
+vpadal/vaddlv/vaddv，quad: seq/pair），920B CNTVCT 延迟/吞吐均反超上游
+NEON（vaddlv-pair 1.12×/1.15×，20k 差分 0 失配）；单算子注入 E2E 码流
+一致但差异落在噪声内（热点占比 ~2.3%）。`--rank-by bench920` 支持按真机
+CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）。
+
 ## LD_PRELOAD 注入器
 
 `tools/build_preload_so.py` 一键生成动态库，加载后通过拦截

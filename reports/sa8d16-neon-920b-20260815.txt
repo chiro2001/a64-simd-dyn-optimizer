@@ -1,0 +1,42 @@
+# sa8d16 纯 NEON 搜索 + 920B 实测（2026-08-15 第三轮）
+
+## 动机
+
+SVE1 自然行 sa8d16 候选在 920B 只有上游 NEON 的 0.67–0.81
+（CNTVCT），说明该形状 920B 的 NEON 4x128 数据通路上限更高。本轮新增
+纯 NEON 16x16 发射器（`tools/emit_sa8d_neon_shared.py`），搜索轴：
+
+- reduce: vpadal（上游式）/ vaddlv / vaddv
+- quad: seq（上游四象限顺序）/ pair（先加载上/下两象限，提高 load ILP）
+
+## 920B CNTVCT（ticks/8 次，25 样本中位；越高越好）
+
+延迟模式：
+
+| 变体 | neon | cand | neon/cand |
+| --- | ---: | ---: | ---: |
+| vpadal-seq | 55 | 56 | 0.98 |
+| vpadal-pair | 56 | 51 | 1.10 |
+| vaddlv-seq | 56 | 55 | 1.02 |
+| vaddlv-pair | 55 | 49 | 1.12 |
+| vaddv-seq | 56 | 56 | 1.00 |
+| vaddv-pair | 56 | 52 | 1.08 |
+
+吞吐模式：vaddlv-pair 97/84 = 1.15；clang -O3 约 1.04–1.07，不如 GCC
+-O3。全部 6 变体 20k 差分 0 失配（-O3 对象复验）。
+
+## 920B 聚焦 E2E（真实 1080p 30 帧，sa8d16 单算子注入，各 3 次）
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 纯基线 | 8.19 s | 8.18 s | 8.17 s | 8.18 s |
+| 注入 vaddlv-pair | 8.20 s | 8.18 s | 8.19 s | 8.19 s |
+
+码流一致（7981.54 kb/s / QP 33.77）。E2E 差异在噪声内（sa8d16 热点约
+2.3%，kernel 级 +10–15% 折算 ~0.3%）。
+
+## 工具改进
+
+- `--isa neon` 支持 manifest `layouts_neon` 覆盖（kernel 专属纯 NEON 轴）；
+- `--rank-by bench920`：按 920B CNTVCT neon/cand 比率排序；
+- sa8d bench hook 修复：-static（云端 libstdc++ 旧）+ 使用 `--opt-extra`。
