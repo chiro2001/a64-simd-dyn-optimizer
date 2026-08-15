@@ -161,6 +161,7 @@ static int bench_flag(int which, int samples, int batch)
     std::vector<uint16_t> absbuf(32);
     std::vector<uint8_t> ctx(64);
     std::vector<uint64_t> times;
+    uint64_t per_n[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     times.reserve(samples);
     for (int s = 0; s < samples; s++)
     {
@@ -172,21 +173,26 @@ static int bench_flag(int which, int samples, int batch)
         for (int b = 0; b < batch; b++)
         {
             // Real caller uses numC1Flag = MIN(numNonZero, 8); sweep
-            // n=1..8 so small-chunk behavior (where the run-cache setup
-            // can outweigh the C loop) is measured too.
-            const int n = 1 + (int)(s % 8);
-            if (which == 0)
-                fn(absbuf.data(), n, ctx.data(), 16);
-            else
-                dynopt_cost_c1c2_flag_sve2(
-                    absbuf.data(), n, ctx.data(), 16);
+        // n=1..8 so small-chunk behavior (where the run-cache setup
+        // can outweigh the C loop) is measured too.
+        const int n = 1 + (int)(s % 8);
+        uint64_t t_start = rdtsc();
+        if (which == 0)
+            fn(absbuf.data(), n, ctx.data(), 16);
+        else
+            dynopt_cost_c1c2_flag_sve2(
+                absbuf.data(), n, ctx.data(), 16);
+        per_n[n] += rdtsc() - t_start;
         }
         uint64_t t1 = rdtsc();
         times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
-    printf("flag,%s,total_ticks_median=%llu\n", which ? "cand" : "neon",
+    printf("flag,%s,total_ticks_median=%llu,pern=", which ? "cand" : "neon",
            (unsigned long long)times[times.size() / 2]);
+    for (int n = 1; n <= 8; n++)
+        printf("%llu%s", (unsigned long long)per_n[n],
+               n < 8 ? "," : "\n");
     return 0;
 }
 
