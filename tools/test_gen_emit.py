@@ -25,6 +25,7 @@ import gen_sve2_emit as g  # noqa: E402
 KERNELS = {
     # kernel: (seed recipe name, expected family, best combo)
     "planecopy-cp": ("planecopy-cp", "planecopy", {}),
+    "weight-pp": ("weight-pp", "weight-pp", {}),
     "sad": ("sad-16x16", "diff-sum", {}),
     "sad-32": ("sad-32x32", "diff-sum", {}),
     "sa8d": ("sa8d-8x8", "hadamard",

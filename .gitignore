@@ -309,3 +309,8 @@ experiments/m30-interp8-vss-search/gen-search-interp8-vss-16x4/*
 experiments/m30-planecopy-search/gen-search-*/*
 !experiments/m30-planecopy-search/gen-search-*/results.json
 !experiments/m30-planecopy-search/gen-search-*/compute-sve.cpp
+
+# weight-pp artifacts (2026-08-15)
+experiments/m30-weight-pp-search/gen-search-*/*
+!experiments/m30-weight-pp-search/gen-search-*/results.json
+!experiments/m30-weight-pp-search/gen-search-*/compute-sve.cpp

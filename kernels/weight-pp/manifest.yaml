@@ -1,0 +1,31 @@
+# weight_pp fixed 64x32 branch-0 slice: w0=64, round=32, shift=6, offset=0.
+kernel: weight-pp
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: weight_pp
+  n: 64
+  rows: 32
+
+candidate:
+  symbol: dynopt_weight_pp_sve2
+  trace_driver_src: kernels/weight-pp/trace_driver.cpp
+  trace_driver_c: kernels/weight-pp/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: weight_pp_neon
+  symbol_mangled: _ZN12_GLOBAL__N_114weight_pp_neonEPKhlPhliiii
+  call: weight_pp_neon
+
+corpus:
+  strides: [64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
+
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"

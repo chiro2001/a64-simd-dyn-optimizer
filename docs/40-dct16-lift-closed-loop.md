@@ -788,3 +788,14 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   以调用匿名 namespace 的 NEON 参考（sao_e0 同款方式）。
 - 验收（20k 差分 0 失配）：**128 fused / MCA 60**。
 - 冒烟测试扩到 68 核；enumerate todo 降至 9。
+
+## 51. weight_pp 首覆盖（branch-0 切片，2026-08-15）
+
+- 新配方 `weight-pp`：constant-shape wrapper 固定 w0=64/round=32/
+  shift=6/offset=0，抽取 1406 节点 MachineIR；候选 `svld1ub_u16` 零扩展
+  + `svmul_n_u16` + offset + `svqxtnb_u16`（注意结果在偶 byte slot，
+  需 `svuzp1_u8` 压实）+ `svst1_u8`。
+- `gen_verify` 新增 `weight_pp` include 式 verify（调用匿名 namespace
+  的 `weight_pp_neon`）。
+- 验收（20k 差分 0 失配）：**642 fused / MCA 213**。
+- 冒烟测试扩到 69 核；enumerate todo 降至 8。

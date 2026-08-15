@@ -116,6 +116,8 @@ def main():
         }
         if name == "planecopy_cp":
             done = "planecopy-cp" in cov
+        elif name == "weight_pp":
+            done = "weight-pp" in cov
         else:
             done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,
