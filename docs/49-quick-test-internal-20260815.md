@@ -222,6 +222,16 @@ round-0032：costCoeffRemain 改用 DFA 表（5×3×256 ADD/NEXT，7.7KB），
 生产 239 万次 0 失配，回放 +20%；best6b（含 DFA remain）E2E 中位
 8061 vs 8210 ms，与 best6 持平。
 
+round-0037：saoCuStatsBO 候选 +20%（5 vs 6 ticks），加入后为 **best7
+（21 槽：best6b + sao-stats-bo）**；30 帧码流 ee5db7 一致，中位
+8066 ms。复测命令：
+
+```sh
+python3 tools/build_preload_so.py --isa sve1 \
+  --kernels cost-c1c2-flag,cost-coeff-nxn,cost-coeff-remain,sa8d16,satd-8,scan-pos-last,sao-stats-bo \
+  --opt=-O3 --inject-outdir build/dynopt-inject-best7
+```
+
 ```sh
 # 本地构建 best6 注入包
 python3 tools/build_preload_so.py --isa sve1 \

@@ -199,6 +199,14 @@ tools/parse_quick_report.py             # paired 结果回填/验收表
 best6b 冻结发布（20 槽、双片段 CI、一键复现命令）见
 [docs/51-release-best6b-20260815.md](docs/51-release-best6b-20260815.md)。
 
+best7 = best6b + sao-stats-bo（21 槽，2026-08-15 起冻结）：30 帧码流
+ee5db7 一致，中位 8066 ms；复现命令与完整清单见
+[docs/51-release-best6b-20260815.md](docs/51-release-best6b-20260815.md)。
+
+临时产物约定：项目相关的临时文件一律放 `~/tmp/dynopt/`（可随时删除），
+不散落在 ~/tmp 或 /tmp 根目录；`experiments/` 只保留
+`results.json` 等可再生物，原始搜索产物已按此策略清理（2026-08-16）。
+
 ## 目录
 
 - `docs/`：规划、评测规范、逐轮进展与交接
