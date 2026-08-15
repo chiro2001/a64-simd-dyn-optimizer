@@ -205,9 +205,14 @@ def find_function(text, target):
     return text[define_start:i + 1]
 
 
-def strip_uniform_branch(body):
+def strip_uniform_branch(body, take="else"):
     """Remove a uniform `if (arg == const) special_call; else straight-line`
-    branch so the restricted straight-line importer can take the main path.
+    branch so the restricted straight-line importer can take one path.
+
+    take="else" keeps the else path (default, interp4 phase==4 dispatch);
+    take="then" keeps the then path (used for `if (isRowExt) extra_rows`
+    where the common rows live before the branch and the then path exits
+    straight to the merge block).
 
     Shape handled (interp4: phase==4 dispatches to another kernel):
         %x = icmp eq i32 %4, 4
@@ -234,13 +239,14 @@ def strip_uniform_branch(body):
     if not m:
         raise SystemExit("uniform branch: labels not found")
     then_label, else_label = m.group(1), m.group(2)
+    drop_label = then_label if take == "else" else else_label
     out = []
     skip = False
     for i, ln in enumerate(lines):
         s = ln.strip()
         if i == icmp_i or s.startswith("br i1"):
             continue  # drop the condition + branch
-        if s.startswith(then_label + ":"):
+        if s.startswith(drop_label + ":"):
             skip = True
             continue
         if skip:
@@ -417,7 +423,9 @@ def main():
     text = open(ll_path).read()
     body = find_function(text, recipe["target_function"])
     if recipe.get("extract", {}).get("strip_uniform_branch"):
-        body = strip_uniform_branch(body)
+        body = strip_uniform_branch(
+            body, recipe["extract"].get("strip_uniform_branch_take",
+                                        "else"))
     if recipe.get("extract", {}).get("strip_switch_case") is not None:
         body = strip_switch_take_case(
             body, recipe["extract"]["strip_switch_case"])

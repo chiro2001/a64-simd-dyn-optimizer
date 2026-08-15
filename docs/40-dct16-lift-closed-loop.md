@@ -593,3 +593,18 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
     -68%/-66%）；
   - 64x48：**1681 / 427**（pack=1 5242/1273，-68%/-66%）。
 - 冒烟测试扩到 33 核。
+
+## 33. fir-ps 配方首切片：interp8 hps 8x8（2026-08-15）
+
+- 抽取工具新增 `strip_uniform_branch_take: then`：`if (isRowExt)` 循环
+  被 LLVM 形成 `br i1 %isRowExt, label %merge, label %extra`；默认
+  take=else 会保留 extra 路径（15 stores），take=then 保留 8-row 主路径。
+- `seeds/interp8-hps-8.yaml` 目标 wrapper `interp_horiz_ps_neon<8,8,8>`，
+  `strip_switch_case: 1` 选 phase1 + take=then；244 节点直线 MachineIR。
+- 新配方 `fir-ps`（detect：umull + `<8 x i16>` stores，无 sqrshrun/sdot）：
+  `emit_fir_ps` 复用 FIR 滑窗 `svdot_s32`，零 DC 累加（-8192 与 128
+  bias 抵消），直接 `vst1q_s16` 存储。
+- `gen_verify` 新增 `interp8_hps` 形状：coeffIdx 1..3 运行时扫描、
+  isRowExt=0 固定。
+- 验收（20k 差分 0 失配）：**98 fused / MCA 45**；无手写基线
+  （首次覆盖）。冒烟测试扩到 34 核。
