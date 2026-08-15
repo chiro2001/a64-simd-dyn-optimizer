@@ -385,6 +385,10 @@ experiments/m30-interp8vpp-16x64-search/search-*/*
 !experiments/m30-interp8vpp-16x64-search/search-*/results.json
 experiments/m30-interp8vpp-64x48-search/search-*/*
 !experiments/m30-interp8vpp-64x48-search/search-*/results.json
+experiments/m30-interp8vpp-16x4-search/search-*/*
+!experiments/m30-interp8vpp-16x4-search/search-*/results.json
+experiments/m30-interp8vpp-32x24-search/search-*/*
+!experiments/m30-interp8vpp-32x24-search/search-*/results.json
 experiments/m30-interp4vpp-8x32-search/search-*/*
 !experiments/m30-interp4vpp-8x32-search/search-*/results.json
 experiments/m30-interp4vpp-16x64-search/search-*/*
