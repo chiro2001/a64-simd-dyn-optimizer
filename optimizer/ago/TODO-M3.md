@@ -104,3 +104,10 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   （reports/filter8-inline-gain-920b-20260816.txt）；
 - [ ] interp8 vps/hps 内联候选（覆盖 luma_vps/luma_hps 热点形状）：
   20k + 920B paired + 注入 E2E（下一轮主任务）。
+
+## interp8 vert_ps 16x16 内联验证（2026-08-16 完成）
+
+- [x] 内联候选 20k 差分 bad=0；920B paired **~1.5x 快**
+  （3630 vs 2400 ticks；reports/interp8-vps16-inline-20260816.txt）；
+- [ ] 多形状 + coeffIdx 1/2/3 分派的内联候选注入（luma_vps 热点形状）
+  + 20k + 920B paired + E2E。

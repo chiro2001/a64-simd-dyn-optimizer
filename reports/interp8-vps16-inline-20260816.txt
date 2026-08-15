@@ -1,0 +1,30 @@
+# interp8 vert_ps 16x16 内联候选验证（2026-08-16）
+
+## 实现
+
+- benchmarks/interp8_vps_16x16_cand.cpp：上游 filter8_u8x16<3> 函数体
+  + always_inline，滚动 11 行窗口，16 行 x 16 列 vert_ps（u8 -> s16，
+  8-tap，IF_INTERNAL_OFFS=8192）；
+- benchmarks/interp8_vps_verify.cpp：20k 差分 + CNTVCT paired，参考 =
+  primitives.pu[LUMA_16x16].luma_vps（filter_ps_t，coeffIdx=3）。
+
+## 结果（920B，taskset -c 0，batch=512 中位）
+
+| 实现 | ticks/512 调用 | 相对 |
+| --- | ---: | ---: |
+| 上游 luma_vps（filter8 外链） | 3624-3635 | 1.00 |
+| 内联候选 | 2331-2491 | **0.66（候选快 ~1.5x）** |
+
+20k 差分 bad=0（逐输出像素一致）。
+
+## 结论
+
+filter8 外链修复在真实 vert_ps 16x16 上兑现 ~1.5x（与 filter8 纯函数
+2.0x 一致，受窗口载入/存储摊销）。语义 bit-exact、零算法改动。
+
+## 下一步
+
+- 多形状 + 完整 filter_ps_t 签名（coeffIdx 1/2/3 分派）内联候选：
+  覆盖 luma_vps 热点形状（16x16/32x32/8x8/16x8/8x16 等）；
+- 20k 全形状差分 + 920B paired + build_preload_so 注册注入 + E2E；
+- 同型跟进：interp8 hps（filter8 水平）、interp4 filter4、sa8d 32/64。
