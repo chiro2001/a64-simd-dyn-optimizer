@@ -1,0 +1,38 @@
+# 8-bit horizontal 8-tap luma filter (interp8), 64x32, SVE2p3 (VL=256).
+kernel: interp8-64x32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp8
+  n: 64
+  rows: 32
+
+candidate:
+  symbol: dynopt_interp8_64x32_sve2
+  trace_driver_src: kernels/interp8-64x32/trace_driver.cpp
+  trace_driver_c: kernels/interp8-64x32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp_horiz_pp_neon
+  symbol_mangled: _ZN4x26520interp_horiz_pp_neonILi8ELi64ELi32EEEvPKhlPhli
+  call: x265::interp_horiz_pp_neon<8, 64, 32>
+  decl: |
+    namespace x265 {
+    template <int N, int W, int H> void interp_horiz_pp_neon(
+        const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+    }
+
+baselines:
+  neon:
+    driver: kernels/interp8-64x32/trace_driver.cpp
+    symbol_mangled: _ZN4x26520interp_horiz_pp_neonILi8ELi64ELi32EEEvPKhlPhli
+
+corpus:
+  strides: [64, 128]
+  cases: 20000
+
+layouts:
+  compute: [sdot-h]
+  unroll: [loop, full]
+  pairsum: [addp, uzp]

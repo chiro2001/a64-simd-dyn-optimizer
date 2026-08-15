@@ -42,6 +42,8 @@
 - **pelFilterLumaStrong 字段首覆盖**：V/H 强滤波 20k 差分 0 失配
   （NEON 版 81/53，较标量 82 MCA -35%）；AArch64 已注册字段
   enumerate todo 清零（29/29）。
+- **64 宽 luma hpp / 32x32 chroma vpp**：interp8-64x32 2505/690、
+  interp4vpp-32x32 655/275，均 20k 差分 0 失配。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。

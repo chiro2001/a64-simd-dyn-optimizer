@@ -367,3 +367,9 @@ experiments/m30-chroma-copy-pp-search/search-*/*
 # pelFilterLumaStrong search artifacts (2026-08-15)
 experiments/m30-pel-filter-luma-strong-search/search-*/*
 !experiments/m30-pel-filter-luma-strong-search/search-*/results.json
+
+# 64x32 luma hpp / 32x32 chroma vpp search artifacts (2026-08-15)
+experiments/m30-interp8-64x32-search/search-*/*
+!experiments/m30-interp8-64x32-search/search-*/results.json
+experiments/m30-interp4vpp-32x32-search/search-*/*
+!experiments/m30-interp4vpp-32x32-search/search-*/results.json
