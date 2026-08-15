@@ -1,0 +1,37 @@
+# Normalized seed recipe: interp8 luma_hps 8x16 (filter-prim.cpp).
+seed: interp8-hps-8x16
+compiler: clang
+target: aarch64-linux-gnu
+source: third_party/x265/source/common/aarch64/filter-prim.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=64
+  - -mllvm
+  - -inline-threshold=100000
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ithird_party/x265/source/encoder
+  - -Ibuild/x265-8-cross-make
+extract:
+  strip_switch_case: 1
+  strip_uniform_branch: true
+  strip_uniform_branch_take: then
+target_function:
+  mangled: _ZN4x26520interp_horiz_ps_neonILi8ELi8ELi16EEEvPKhlPslii
+  demangled: x265::interp_horiz_ps_neon<8,8,16>
+output:
+  ll: experiments/m30-interp8-hps-search/llvm-ir/interp8-hps-8x16.ll
+  json: experiments/m30-interp8-hps-search/imported/machine-ir-8x16.json

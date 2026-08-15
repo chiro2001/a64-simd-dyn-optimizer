@@ -176,3 +176,9 @@ experiments/m30-satd-search/gen-search-full-satd-64x48/*
 experiments/m30-interp8-hps-search/gen-search-*/*
 !experiments/m30-interp8-hps-search/gen-search-*/results.json
 !experiments/m30-interp8-hps-search/gen-search-*/compute-*.cpp
+
+# interp8 hps 8x16 artifacts (2026-08-15): keep results + generated
+# candidate source; trace/log/verify/binaries regenerate.
+experiments/m30-interp8-hps-search/gen-search-8x16/*
+!experiments/m30-interp8-hps-search/gen-search-8x16/results.json
+!experiments/m30-interp8-hps-search/gen-search-8x16/compute-*.cpp

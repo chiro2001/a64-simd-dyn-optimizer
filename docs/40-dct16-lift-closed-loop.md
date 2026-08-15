@@ -608,3 +608,13 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   isRowExt=0 固定。
 - 验收（20k 差分 0 失配）：**98 fused / MCA 45**；无手写基线
   （首次覆盖）。冒烟测试扩到 34 核。
+
+## 34. hps 8x16 同配方覆盖（2026-08-15）
+
+- `_fir_ps_derived` 泛化：从 wrapper 函数名解析 W/H（LLVM 的 i16 GEP
+  字节偏移不是行号），rows=H、groups=W/8。
+- `gen_verify` 的 `interp8_hps` 形状泛化为非方阵（shape.n=width,
+  shape.rows=height）。
+- 验收（20k 差分 0 失配）：**186 fused / MCA 72**，无手写基线。
+- 冒烟测试扩到 35 核。hps 16/32 的 wrapper 内仍有未展开循环，
+  strip_switch 的 merge-phi 解析需支持内部循环 phi，留待 G2b 同款处理。

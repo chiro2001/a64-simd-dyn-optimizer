@@ -91,20 +91,27 @@ def detect_hadamard(machine_ir):
 
 
 def _fir_ps_derived(machine_ir):
-    """Derive the pixel->short 8x8 hps facts directly from the stripped
-    seed: one <8 x i16> store per output row (width 8), 8 taps, column
-    window offset -3. The generic pp parser is not used because LLVM
-    emits i16 GEPs whose byte offsets are not row indices."""
+    """Derive pixel->short hps facts from the stripped seed. LLVM emits
+    i16 GEPs whose byte offsets are not row indices, so shape comes from
+    the wrapper function name interp_horiz_ps_neon<N,W,H>; rows=H and
+    groups=W/8 (the emitter's 8-output unit width)."""
     nodes = machine_ir["nodes"]
-    stores = [n for n in nodes if n.get("op") == "store"
-              and n.get("type") == "<8 x i16>"]
-    rows = len(stores)
+    m = re.search(r"interp_horiz_ps_neon<\d+,\s*(\d+),\s*(\d+)>",
+                  machine_ir.get("function") or "")
+    if m:
+        width, height = int(m.group(1)), int(m.group(2))
+    else:
+        stores = [n for n in nodes if n.get("op") == "store"
+                  and n.get("type") == "<8 x i16>"]
+        width, height = 8, len(stores)
+    if width % 8:
+        raise ValueError("fir-ps: width %d is not a multiple of 8" % width)
     filter_name = "g_lumaFilter"
     for n in nodes:
         if n.get("op") == "addr" and "g_chromaFilter" in (n.get("rhs")
                                                            or ""):
             filter_name = "g_chromaFilter"
-    return rows, 1, 6, 8, -3, filter_name
+    return height, width // 8, 6, 8, -3, filter_name
 
 
 def detect_fir_ps(machine_ir):
