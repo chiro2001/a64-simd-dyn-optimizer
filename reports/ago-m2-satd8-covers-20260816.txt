@@ -1,0 +1,61 @@
+# AGO M2：SATD 8x8 第二个数据流锚点 + 有界 cover 搜索 + 留出集排序门
+# （2026-08-16，git 21860a7 + 本报告提交）
+
+## 1. 锚点复现（先复现，不要求加速）
+
+契约：x265 `satd8<8,8>`（两段 SWAR `satd_8x4`）为语义权威；上游 NEON
+`pixel_satd_8x8_neon` 为目标实现。数值一致性：Python 20k 随机模拟
+0 失配（无最终移位，与 sa8d 不同）。
+
+paired（CNTVCT batch=4096 总节拍中位，3 次重复，verify_bad=0）：
+
+| 平台 | 上游 NEON | AGO cover | neon/cand |
+| --- | ---: | ---: | ---: |
+| Neoverse-N1 | 1178 | 1198/1198/1196 | 0.983 |
+| 920B | 3420-3424 | 3437-3441 | 0.995 |
+
+判定：差异在噪声带内，锚点复现通过（与 M0 sa8d 的 0.985/1.006 同量级）。
+
+## 2. 有界 cover 语料（全部过 20k oracle）
+
+- A upstream：o0=sum0+sum1；o1=sum2+sum3；accv=o0+o1；uaddlv。
+- B balanced：acc0=sum0+sum2；acc1=sum1+sum3；accv=acc0+acc1；uaddlv。
+- C dual-reduce：uaddlv(o0)+uaddlv(o1)，无最终 acc 加法。
+
+预测（N1 成本表 throughput 和；latency 破平；代理
+add_u16/maxv_u8/paddl_u16）：
+
+| cover | tput_sum | lat_sum | 预测排序 |
+| --- | ---: | ---: | --- |
+| A | 7.24 | 13.23 | =B，优于 C |
+| B | 7.24 | 13.23 | =A，优于 C |
+| C | 8.84 | 19.59 | 最差 |
+
+## 3. 预注册排序门（写入 optimizer/ago/TODO-M2.md 后才测量）
+
+- 真值：N1/920B 各 3 次 CNTVCT batch(4096) 中位；
+- 噪声规则：两 cover 中位差 >2% 才视为可分；
+- 通过条件：N1 可分辨对 ≥2/3 与预测同向；920B ≥1/2。
+
+## 4. 实测与判定
+
+| 平台 | A cand | B cand | C cand | 判定 |
+| --- | ---: | ---: | ---: | --- |
+| Neoverse-N1 | 1198 | 1198 | 1263 | A==B，C 最差 |
+| 920B | 3440 | 3438 | 3581 | A==B，C 最差 |
+
+- 可预测对：A<C、B<C 共 2 对；两平台全部同向（2/2）。
+- A/B 对：预测判平，实测 N1 完全同值、920B 差 0.06%（<2% 不可分）——
+  无预测冲突。
+- **N1 门 PASS（2/2 ≥ 2/3）；920B 门 PASS（2/2 ≥ 1/2）。**
+
+## 5. 结论与边界
+
+1. satd8 8x8 锚点与 cover 排序门完成：静态成本表（吞吐和）在这个
+   受限语料上成功预测实机排序，N1 成本表可作为后续 NEON kernel 的
+   默认排序源（按预注册规则）。
+2. 边界：本门只验证尾部（add/reduce）变体排序，未验证整 region 的
+   布局/调度/寄存器分配；A/B 在成本模型下不可分，实测也确实不可分，
+   说明当前粒度不足以在同类结构之间排序（M2 后半段的真实差距）。
+3. 下一步（M3 前置）：扩展 cover 空间到 hasamard 段（转置顺序、
+   abs/add 组合），并用 N1 PMU 指令计数校验静态指令数预测。

@@ -3,7 +3,12 @@
 # source -> 20k differential vs the C SWAR reference (satd_8x4 x two
 # bands), plus a Python-level C-vs-NEON identity precheck.
 #
-# Usage: scripts/verify-ago-satd8.sh [--cxx CXX] [--qemu QEMU]
+# Usage: scripts/verify-ago-satd8.sh [--cover A|B|C] [--cxx CXX]
+#                                    [--qemu QEMU]
+#   --cover NAME  verify a specific cover from covers_satd8.py instead
+#                 of the default cover_neon.py output
+#   AGO_NATIVE=1  run the built binary directly (native aarch64)
+#   AGO_STATIC=0  dynamic link
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -11,15 +16,26 @@ cd "$ROOT"
 
 CXX="${AGO_CXX:-aarch64-linux-gnu-g++}"
 QEMU="${AGO_QEMU:-build/qemu-build/qemu-aarch64}"
+COVER=""
+if [ "${1:-}" = "--cover" ]; then
+    COVER="$2"
+    shift 2
+fi
 WORK="$(mktemp -d /tmp/ago-satd8.XXXXXX)"
 trap 'rm -rf "$WORK"' EXIT
 
-python3 - "$WORK/cover.cpp" <<'PY'
+python3 - "$WORK/cover.cpp" "$COVER" <<'PY'
 import sys
 sys.path.insert(0, "optimizer")
 from ago.frontend import SATD8_DSL, parse_dsl
 from ago.cover_neon import build_c_source
-open(sys.argv[1], "w").write(build_c_source(parse_dsl(SATD8_DSL)))
+from ago.covers_satd8 import emit_cover
+cover = sys.argv[2]
+if cover:
+    src = emit_cover(cover, "dynopt_ago_satd8")
+else:
+    src = build_c_source(parse_dsl(SATD8_DSL))
+open(sys.argv[1], "w").write(src)
 PY
 
 # oracle (C SWAR reference satd_8x4 x two bands) + AGO cover differential
@@ -83,6 +99,14 @@ int main() {
 }
 EOF
 
-"$CXX" -O2 -static -std=c++11 "$WORK/verify.cpp" "$WORK/cover.cpp" \
+STATIC_FLAG="-static"
+if [ "${AGO_LINK_STATIC:-${AGO_STATIC:-1}}" = "0" ]; then
+    STATIC_FLAG=""
+fi
+"$CXX" -O2 $STATIC_FLAG -std=c++11 "$WORK/verify.cpp" "$WORK/cover.cpp" \
   -o "$WORK/verify" 2>&1 | head -5
-"$QEMU" -L /usr/aarch64-linux-gnu "$WORK/verify"
+if [ "${AGO_NATIVE:-0}" = "1" ]; then
+    "$WORK/verify"
+else
+    "$QEMU" -L /usr/aarch64-linux-gnu "$WORK/verify"
+fi

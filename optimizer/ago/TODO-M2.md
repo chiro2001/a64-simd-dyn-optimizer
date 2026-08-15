@@ -28,8 +28,15 @@ NEON cover，用 N1/920B 指令成本表预测排序，在留出集上验证排�
   转置/配对顺序、abs/add vs abd 变体），全部先过 20k oracle；
 - [ ] 用 `benchmarks/neon-timing-n1/timing-n1.json` 与 920B 表对
   cover 排序（指令数 + 关键路径 + 吞吐下界）；
-- [ ] 预注册排序质量门：候选语料收集完后，固定噪声协议（N1 PMU /
-  920B CNTVCT batch 中位）与阈值，再评测；
+- [x] 预注册排序质量门（2026-08-16，评估前写入）：
+  - 语料：satd8 尾部 3 个合法 cover（A upstream / B balanced /
+    C dual-reduce），全部通过 20k oracle；
+  - 预测：N1 指令成本表（timing-n1.json，add_u16/maxv_u8/paddl_u16
+    代理）的 throughput 周期和为主排序，latency 和破平；
+  - 真值：N1 与 920B 各 3 次 CNTVCT batch(4096) 中位；
+  - 噪声规则：两 cover 中位差 >2% 才视为可分（否则该对不计）；
+  - 通过条件：N1 上可分辨对的 ≥2/3 与预测同向；920B 上 ≥1/2；
+  - 若 N1 通过，N1 成本表成为后续 NEON kernel 的默认排序源。
 - [ ] 结果落 reports/，提交并推送。
 
 ## M3+（计划）

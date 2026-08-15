@@ -4,6 +4,7 @@
 # Usage: scripts/build-ago-satd8-bench.sh [CXX] [BUILD_DIR]
 #   CXX       cross/native C++ compiler (default aarch64-linux-gnu-g++)
 #   BUILD_DIR x265 build dir with libx265.a (default build/x265-8-cross-make)
+#   AGO_LINK_STATIC=0 -> dynamic link (machines without static libnuma)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -11,6 +12,10 @@ cd "$ROOT"
 
 CXX="${1:-aarch64-linux-gnu-g++}"
 BUILD_DIR="${2:-build/x265-8-cross-make}"
+STATIC_FLAG="-static"
+if [ "${AGO_LINK_STATIC:-1}" = "0" ]; then
+    STATIC_FLAG=""
+fi
 OUT="build/ago_satd8_microbench"
 
 python3 - build/ago_satd8_cover.cpp <<'PY'
@@ -21,12 +26,12 @@ from ago.cover_neon import build_c_source
 open(sys.argv[1], "w").write(build_c_source(parse_dsl(SATD8_DSL)))
 PY
 
-"$CXX" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
+"$CXX" -O3 $STATIC_FLAG -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
   -DX265_DEPTH=8 -DX265_NS=x265 \
   -I third_party/x265/source -I third_party/x265/source/common \
   -I "$BUILD_DIR" benchmarks/ago_satd8_microbench.cpp \
   build/ago_satd8_cover.cpp "$BUILD_DIR/libx265.a" \
-  -lpthread -ldl -o "$OUT"
+  -lpthread -ldl -lnuma -o "$OUT"
 
 echo "built $OUT"
 echo "run: $OUT neon [samples] [batch]"
