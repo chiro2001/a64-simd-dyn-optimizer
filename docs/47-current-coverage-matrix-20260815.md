@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 99 |
+| kernel 目录 | 108 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -113,6 +113,20 @@
 | interp8vpp-32x16 | 488/288 | 首覆盖 |
 | interp8vpp-32x64 | 1832/1063 | 首覆盖 |
 | interp8vpp-64x32 | 2367/1118 | 首覆盖 |
+
+### 4.2 interp4（chroma 4-tap）非方形形状（2026-08-15 补，20k 差分 0 失配）
+
+| 算子 | 自动候选 fused/MCA | 备注 |
+| --- | --- | --- |
+| interp4-8x16 | 165/70 | hpp 首覆盖 |
+| interp4-16x8 | 85/47 | hpp 首覆盖 |
+| interp4-16x32 | 325/109 | hpp 首覆盖 |
+| interp4-32x16 | 325/109 | hpp 首覆盖 |
+| interp4vpp-8x8 | 90/57 | vpp 首覆盖 |
+| interp4vpp-8x16 | 170/92 | vpp 首覆盖 |
+| interp4vpp-16x8 | 90/57 | vpp 首覆盖 |
+| interp4vpp-16x32 | 330/151 | vpp 首覆盖 |
+| interp4vpp-32x16 | 335/150 | vpp 首覆盖 |
 
 ## 5. 自动搜索线：misc 首覆盖
 

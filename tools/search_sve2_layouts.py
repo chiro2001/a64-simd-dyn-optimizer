@@ -522,11 +522,36 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_32x32()
         return emit_fn
+    if kernel.startswith("interp4-") and \
+            kernel not in ("interp4", "interp4-8", "interp4-32"):
+        m = re.fullmatch(r"interp4-(\d+)x(\d+)", kernel)
+        if not m:
+            raise ValueError("unrecognized interp4 kernel %r" % kernel)
+        w, h = int(m.group(1)), int(m.group(2))
+        from emit_interp4_sve2_shared import emit as emit_hpp
+
+        def emit_fn(combo):
+            return emit_hpp(
+                func_name="dynopt_interp4_%dx%d_sve2" % (w, h),
+                width=w, height=h)
+        return emit_fn
     if kernel == "interp4vpp-16":
         from emit_interp4_sve2_shared import emit_vpp_16x16
 
         def emit_fn(combo):
             return emit_vpp_16x16()
+        return emit_fn
+    if kernel.startswith("interp4vpp-") and kernel != "interp4vpp-16":
+        m = re.fullmatch(r"interp4vpp-(\d+)x(\d+)", kernel)
+        if not m:
+            raise ValueError("unrecognized interp4vpp kernel %r" % kernel)
+        w, h = int(m.group(1)), int(m.group(2))
+        from emit_interp4_sve2_shared import emit_vpp
+
+        def emit_fn(combo):
+            return emit_vpp(
+                func_name="dynopt_interp4_%dx%d_sve2_vpp" % (w, h),
+                width=w, height=h)
         return emit_fn
     if kernel == "sad":
         from emit_sad_sve2_shared import emit_16x16

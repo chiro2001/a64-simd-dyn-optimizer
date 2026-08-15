@@ -1,0 +1,28 @@
+[
+ {
+  "tag": "compute-sve",
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 434,
+   "vector": 335,
+   "movprfx": 0,
+   "vector_fused": 335,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 31,
+   "vector_fused_uop": 335
+  },
+  "range": [
+   "0x4007e0",
+   "0x400ec0"
+  ],
+  "cached": true,
+  "mca_cycles": 150,
+  "mca_uops": 465
+ }
+]
