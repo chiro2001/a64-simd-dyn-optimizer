@@ -83,6 +83,36 @@ adapter 的 `diff` 行距错误（应为 `MAX_CU_SIZE=64`，不是 `rec` 的
 `costCoeffRemain_c`；这些是下一步优化的主目标。详细报告见
 [reports/real-1080p-e2e-20260815.txt](../reports/real-1080p-e2e-20260815.txt)。
 
+### 7.2 perf 算子热点与 SVE1 搜索质量回填
+
+920B 无 PMU，但 `perf record -e cpu-clock -F 99` 可用。1080p 基线 top
+算子（perf flat，cpu-clock 采样）：
+
+| 算子 | 占比 | 已有 SIMD 基线 |
+| --- | ---: | --- |
+| costCoeffNxN | 5.65% | NEON asm |
+| scanPosLast | 3.39% | NEON asm |
+| quant | 2.39% | NEON asm |
+| dct32 | 2.26% | NEON asm |
+| sa8d16 | 2.26% | NEON asm |
+| psyCost | 2.14% | NEON asm |
+| interp_hv / interp8 | 2.01% | i8mm/dotprod |
+| satd8 | 1.63% | NEON asm |
+| idct32 | 1.26% | NEON asm |
+
+SVE1 搜索输出质量回填（CNTVCT，NEON/cand，越大越好；>1 表示反超）：
+
+| 算子 | GCC -O2 | clang -O3 | 结论 |
+| --- | ---: | ---: | ---: |
+| sa8d16 | 0.67 | 0.81 | 搜索/编译质量显著改善，仍未反超 |
+| dct32 | 0.60 | 0.73 | 同上 |
+| interp8-8x8 | ~0.61 | 0.72 | 同上 |
+| costCoeffNxN | 1.0 | 1.0 | microbench 持平 |
+| costCoeffRemain | 1.0 | 1.0 | 持平 |
+
+结论：clang -O3 是 SVE1 搜索的重要编译轴，已加入后续搜索扫描；但当前
+所有 SVE1 候选仍未在 920B 上反超 NEON，端到端 +15% 目标尚未达成。
+
 真机验证还发现并修复了 copy relocation 问题：x265 可执行文件会把
 `x265::primitives` copy 到自身地址空间，`dlsym(RTLD_DEFAULT)` 拿到的是
 空副本；注入器现通过 `dl_iterate_phdr` 找到真实 `libx265.so` 对象再取
