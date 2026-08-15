@@ -1563,8 +1563,18 @@ int main(int argc, char** argv)
         if (bad)
         {
             if (mism < 5)
-                fprintf(stderr, "mismatch i=%d scan=%d want=%d got=%d\\n",
-                        i, scanType, wlast, glast);
+            {
+                int kb = -1;
+                for (int k = 0; k < 64 && kb < 0; k++)
+                    if (ws[k] != gs[k] || wf[k] != gf[k] || wn[k] != gn[k])
+                        kb = k;
+                fprintf(stderr, "mismatch i=%d scan=%d want=%d got=%d "
+                        "k=%d ws=%u gs=%u wf=%u gf=%u wn=%u gn=%u\\n",
+                        i, scanType, wlast, glast, kb,
+                        kb >= 0 ? ws[kb] : 0, kb >= 0 ? gs[kb] : 0,
+                        kb >= 0 ? wf[kb] : 0, kb >= 0 ? gf[kb] : 0,
+                        kb >= 0 ? wn[kb] : 0, kb >= 0 ? gn[kb] : 0);
+            }
             mism++;
         }
     }
