@@ -14,6 +14,13 @@ static inline uint16_t rev16(uint16_t x)
     return (uint16_t)(r >> 16);
 }
 
+static inline uint32_t rbit32(uint32_t x)
+{
+    uint32_t r;
+    __asm__("rbit %w[r], %w[x]" : [r] "=r"(r) : [x] "r"(x));
+    return r;
+}
+
 static inline uint16_t next_scan_off(const uint16_t** sp)
 {
     // Post-increment scan offset load: keeps the per-CG address bump in
@@ -86,7 +93,7 @@ extern "C" int dynopt_scan_pos_last_sve2(const uint16_t* scan, const int16_t* co
     uint8_t* pn0 = coeffNum;
     uint8_t* pn = coeffNum;
     int lastIndex = 0;
-    uint16_t last_nz = 0;
+    uint32_t rb_last = 0;
     while (numSig > 0)
     {
         const uint16_t off = next_scan_off(&sc);
@@ -107,19 +114,23 @@ extern "C" int dynopt_scan_pos_last_sve2(const uint16_t* scan, const int16_t* co
         const uint32_t spl = masks_addp(zero, neg);
         const uint16_t nz = (uint16_t)(spl >> 16);
         const uint16_t sn = (uint16_t)spl;
-        const uint8_t cnt = (uint8_t)__builtin_popcount((unsigned)nz);
-        const uint16_t rev = rev16(nz);
-        *pf++ = rev;
+        const uint8_t cnt = cnt_addv(zero);
+        const uint32_t rb = rbit32((uint32_t)sn | ((uint32_t)nz << 16));
+        *pf++ = (uint16_t)rb;
+        rb_last = rb;
         const uint16_t sig = pext_clz(sn, nz);
-                last_nz = nz;
-        if (nz)
-            lastIndex = 31 - __builtin_clz((unsigned)nz);
+        
         *ps++ = sig;
         *pn++ = cnt;
         numSig -= (int)cnt;
     }
         if (pn != pn0)
-        pf[-1] = (uint16_t)(rev16(last_nz) >> (15 - lastIndex));
+    {
+        const uint32_t w = rbit32(rb_last);
+        const uint32_t k = __builtin_clz(w);
+        pf[-1] = (uint16_t)(rb_last >> k);
+        lastIndex = (int)(15 - (int)k);
+    }
 
     return (int)((pn - pn0) - 1) * 16 + lastIndex;
 }

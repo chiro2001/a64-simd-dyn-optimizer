@@ -44,3 +44,14 @@
    tail 变体。修复后 20k 多 CG 差分 0 失配。
 3. scanPosLast 的 NEON 搜索证明工具链有效（2.24× → 1.04×），但该 kernel
    不是 920B 端到端 15% 目标的主杠杆。
+
+## round-0024 更新
+
+- 抓真实 30 帧分布：55% 调用 numSig≤4、74% trSize∈{8,32}；
+- rbit-tail 优化（循环里直接 rbit(interleaved) 存 rev16(nz)，尾用
+  rbit+clz+lsr 修复并算 lastIndex，省 ~3 op/循环）：真实 numSig 分布
+  微基准从慢 1.14× 反超到 **1.017×**（2264 vs 2303）；20k 全量 0 失配；
+- 注入 920B：码流一致（ee5db7），但 E2E 8.19–8.22s vs 基线 8.16–8.18s
+  （仍慢 ~0.3%）——单 CG 反超不转化，多 CG/大 trSize 场景仍落后；
+- **结论：scanPosLast 不作为注入项**（避免 E2E 负贡献），rbit-tail 优化
+  保留为最佳候选。

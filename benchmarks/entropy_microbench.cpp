@@ -44,9 +44,9 @@ static int bench_scan(int which, int samples, int batch)
     x265_setup_primitives(&p);
     scanPosLast_t neon = primitives.scanPosLast;
     std::mt19937 rng(0x5CA9u);
-    // 4 CGs x 16 coeffs, ~5 nonzeros per CG (realistic transform density);
-    // scan[CG*16 + j] = CG*16 + zigzag(j) keeps each CG within its own
-    // 4x4 row-major quadrant.
+    // Real 30-frame histogram (round-0024): 55% of scanPosLast calls
+    // have numSig<=4, and single-CG calls dominate.  Sweep numSig 1..16
+    // with the 4x4 scan table (trSize=4 slice).
     static const uint16_t SCAN64[64] = {
         0, 4, 1, 8, 5, 2, 12, 9, 6, 3, 13, 10, 7, 14, 11, 15,
         16, 20, 17, 24, 21, 18, 28, 25, 22, 19, 29, 26, 23, 30, 27, 31,
@@ -60,10 +60,11 @@ static int bench_scan(int which, int samples, int batch)
     times.reserve(samples);
     for (int s = 0; s < samples; s++)
     {
+        const int nz = 1 + (int)(s % 16);
         for (int i = 0; i < 64; i++)
         {
             const int lane = i & 15;
-            coeff[i] = lane < 5 ? (int16_t)((lane + 1) * 17 + (i >> 4)) : 0;
+            coeff[i] = lane < nz ? (int16_t)((lane + 1) * 17) : 0;
         }
         std::memset(sign.data(), 0, sign.size() * 2);
         std::memset(flag.data(), 0, flag.size() * 2);
@@ -73,11 +74,11 @@ static int bench_scan(int which, int samples, int batch)
         {
             if (which == 0)
                 neon(SCAN64, coeff.data(), sign.data(),
-                     flag.data(), num.data(), 20, SCAN64, 4);
+                     flag.data(), num.data(), nz, SCAN64, 4);
             else
                 dynopt_scan_pos_last_sve2(
                     SCAN64, coeff.data(), sign.data(),
-                    flag.data(), num.data(), 20, SCAN64, 4);
+                    flag.data(), num.data(), nz, SCAN64, 4);
         }
         uint64_t t1 = rdtsc();
         // Total ticks per batch (not per call): CNTVCT on the cloud host
