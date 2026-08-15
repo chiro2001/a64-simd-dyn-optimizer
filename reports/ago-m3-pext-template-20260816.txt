@@ -1,0 +1,47 @@
+# AGO M3：PEXT 查表模板（2026-08-16）
+
+## 目标（round-0024 接口）
+
+把已知赢法“4-bit PEXT 查表”（round-0030 scanPosLast）沉淀为 AGO 的
+RewriteRule/CoverTemplate/Verifier 组合，使表生成、发射与证明来自单一
+权威（optimizer/ago/templates/pext_table.py），不再散落在搜索发射器内。
+
+## 交付
+
+- `optimizer/ago/rules.py`：Pattern/RewriteRule/CoverTemplate/Verifier/
+  ProofObligation 协议（round-0024 双协议接口的最小实现）；
+- `optimizer/ago/templates/pext_table.py`：表生成（从参考 bit-select
+  语义推导）、C 发射（PEXT4+CNT4+pext_nibble）、穷举证明 harness；
+- `tools/emit_scan_pos_last_sve2_shared.py` 的 nibble 分支改为引用
+  AGO 模板；输出与冻结候选 best_sve2.cpp **逐字节一致**（diff 验证）；
+- `scripts/verify-ago-pext.sh`：穷举证明 + scanPosLast 20k 差分；
+- `benchmarks/scan_verify.cpp`、`benchmarks/pext_microbench.cpp` +
+  `scripts/build-ago-pext-bench.sh`。
+
+## 证明（有限域穷举）
+
+- 域：所有可区分输入对 (v&m, m)，Σ_m 2^popcount(m) = 3^16 =
+  43,046,721 对（pext 只依赖 v&m；全 2^32 空间因此归约后仍为穷举）；
+- 结果：N1 与 920B 均 `pext4 exhaustive total=43046721 bad=0`；
+- scanPosLast 20k 差分（x265 primitives 参考 vs 模板产物）：
+  N1 `bad=0`、920B `bad=0`。
+
+## 模板产物性能（paired，CNTVCT batch=8192 中位，3 次重复）
+
+| 平台 | ctz 循环 | PEXT 表 | table/ctz |
+| --- | ---: | ---: | ---: |
+| Neoverse-N1 | 1052-1064 | 666-668 | 1.58-1.60x |
+| 920B | 4760-4800 | 2137-2153 | 2.22-2.25x |
+
+与 round-0030 全 kernel 真实分布回放 +27% 一致（模板组件本身收益更大）。
+
+## 边界
+
+- 证明覆盖 pext/cnt 子函数；全 kernel 正确性以 20k 差分 + 既有生产
+  逐调用差分（432 万次）为准；
+- 发射目前为 NEON 目标；SVE1/SVE2 目标模板待 M4 接入。
+
+## 下一步
+
+- DFA 状态表模板（costCoeffRemain）：有限转移证明 + 大值 fallback；
+- 全展开/NEON-tail 模板；--backend ago 注入。
