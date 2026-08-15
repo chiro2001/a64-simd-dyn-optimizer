@@ -409,6 +409,8 @@ experiments/m30-interp4vpp-32x24-search/search-*/*
 !experiments/m30-interp4vpp-32x24-search/search-*/results.json
 experiments/m30-interp4vpp-16x24-search/search-*/*
 !experiments/m30-interp4vpp-16x24-search/search-*/results.json
+experiments/m30-interp4vpp-8x6-search/search-*/*
+!experiments/m30-interp4vpp-8x6-search/search-*/results.json
 experiments/m30-interp4vpp-32x48-search/search-*/*
 !experiments/m30-interp4vpp-32x48-search/search-*/results.json
 experiments/m30-interp4-8x32-search/search-*/*
