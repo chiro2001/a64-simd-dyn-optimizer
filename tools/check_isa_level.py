@@ -16,6 +16,12 @@ Limitations (documented, not silent):
     rule (`tbl`/`tbx` with a `{zN.x-zM.x}` two-register table) because the
     catalog's `asm` string only spells TBL and objdump prints `tbl` for both
     the SVE1 one-register and SVE2 two-register encodings.
+  - Single-register TBX is SVE2-only (FEAT_SVE2) even though NEON TBX is
+    base AdvSIMD and SVE1 TBL is FEAT_SVE; operand rules distinguish by
+    z-register operands.
+  - UDOT mirrors SDOT: 4-way .S/.B/.B and .D/.H/.H are SVE1, 2-way
+    .S/.H/.H is SVE2p1 and 2-way .H/.B/.B is SVE2p3. The catalog has no
+    UDOT 2-way entries, so operand rules are the only guard.
   - A mnemonic whose encodings span levels (e.g. TBL: one SVE1, one SVE2
     encoding) is reported as `ambiguous` at the lower level; it passes the
     gate but is listed for manual encoding review.
@@ -115,11 +121,27 @@ def operand_level(mnemonic, operands):
         if re.search(r"\bz\d+\.h\s*,\s*z\d+\.b", ops):
             return LEVELS["sve2p3"]   # SVE2p3 2-way B->H (docs/22)
         return None                   # SVE1 4-way forms stay at rank 1
+    if mnemonic == "udot":
+        # UDOT mirrors SDOT: 4-way .S/.B/.B and .D/.H/.H are SVE1; 2-way
+        # .S/.H/.H is SVE2p1; 2-way .H/.B/.B is SVE2p3.
+        if re.search(r"\bz\d+\.s\s*,\s*z\d+\.h", ops):
+            return LEVELS["sve2p1"]
+        if re.search(r"\bz\d+\.h\s*,\s*z\d+\.b", ops):
+            return LEVELS["sve2p3"]
+        return None
+    if mnemonic == "tbx":
+        # NEON TBX is base AdvSIMD; SVE TBX (even single-register) is SVE2.
+        # TBL differs: the SVE1 single-register form exists, so it stays at
+        # the catalog rank unless the two-register form is detected.
+        if re.search(r"\bz\d+\.", ops):
+            return LEVELS["sve2"]
+        return None
     # SVE2-only mnemonic families; NEON variants use vN/qN/dN operands and
     # must not be flagged.
     if mnemonic in ("rshrnb", "rshrn", "rshrn2",
                     "sqrshrnb", "sqrshrn", "sqrshrunb", "sqrshrun",
-                    "cadd", "addp", "histcnt", "histseg", "match", "nmatch"):
+                    "cadd", "addp", "histcnt", "histseg", "match", "nmatch",
+                    "fmlalb", "fmlalt", "fmlslb", "fmlslt"):
         if re.search(r"\bz\d+\.", ops):
             return LEVELS["sve2"]
     return None

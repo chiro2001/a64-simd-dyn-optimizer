@@ -90,12 +90,18 @@ instructions:
      pattern: {op: sabd, pred: true}, status: known}
   - {id: sve-umax-u16, feature: sve, asm: UMAX, intrinsic: svmax_u16_x,
      pattern: {op: umax, pred: true}, status: known}
-  - {id: sve-umaxp-u16, feature: sve, asm: UMAXP, intrinsic: svmaxp_u16,
-     pattern: {op: umaxp, pred: true}, status: verify}
   - {id: sve-zip1-u16, feature: sve, asm: ZIP1, intrinsic: svzip1_u16,
      pattern: {op: zip1, pred: false}, status: known}
   - {id: sve-zip2-u16, feature: sve, asm: ZIP2, intrinsic: svzip2_u16,
      pattern: {op: zip2, pred: false}, status: known}
+  - {id: sve-trn1-s16, feature: sve, asm: TRN1, intrinsic: svtrn1_s16,
+     pattern: {op: trn1, pred: false}, status: known}
+  - {id: sve-trn2-s16, feature: sve, asm: TRN2, intrinsic: svtrn2_s16,
+     pattern: {op: trn2, pred: false}, status: known}
+  - {id: sve-uzp1-s16, feature: sve, asm: UZP1, intrinsic: svuzp1_s16,
+     pattern: {op: uzp1, pred: false}, status: verified}
+  - {id: sve-uzp2-s16, feature: sve, asm: UZP2, intrinsic: svuzp2_s16,
+     pattern: {op: uzp2, pred: false}, status: verified}
   - {id: sve-tbl-u16, feature: sve, asm: TBL, intrinsic: svtbl_u16,
      pattern: {op: tbl, pred: false}, status: known}
   - {id: sve-uaddv-u16, feature: sve, asm: UADDV, intrinsic: svuaddv_u16,
@@ -106,10 +112,28 @@ instructions:
      pattern: {op: whilelt, pred: true}, status: known}
   - {id: sve-sdot-s32, feature: sve, asm: SDOT, intrinsic: svdot_s32,
      pattern: {op: sdot, pred: false}, status: verify}
-  - {id: sve-addp-s64, feature: sve, asm: ADDP, intrinsic: svaddp_s64_x,
-     pattern: {op: addp, pred: true},
-     semantics: "pairwise within 128-bit segment: [a0+a1, b0+b1, a2+a3, b2+b3]",
+  # SDOT .D, .H, .H (16-bit x 16-bit -> 64-bit accumulator) is SVE1
+  # (FEAT_SVE), NOT SVE2: verified on clang-22/GCC-16.1 with
+  # -march=armv8.2-a+sve (both emit sdot z.d, z.h, z.h) and in the ARM
+  # catalog (sdot_z_zzz / sdot_z_zzzi = FEAT_SVE). The SVE2p1 form is the
+  # 2-way .S, .H, .H variant (sve2p1-sdot-s16-s32 below).
+  - {id: sve-sdot-s64-s16, feature: sve, asm: SDOT, intrinsic: svdot_s64,
+     pattern: {op: sdot, bits: [16, 64], pred: false},
+     semantics: "one s64 lane per 4 consecutive s16 elements; at VL=256 16 s16 per operand produce 4 s64 lanes: [dot4(0:4), dot4(4:8), dot4(8:12), dot4(12:16)]",
      status: verified}
+  - {id: sve-udot-s64-s16, feature: sve, asm: UDOT, intrinsic: svdot_u64,
+     pattern: {op: udot, bits: [16, 64], pred: false}, status: verify}
+  - {id: sve-sqadd-s16, feature: sve, asm: SQADD, intrinsic: svqadd_s16,
+     pattern: {op: sqadd, pred: false}, status: known}
+  - {id: sve-uqadd-u16, feature: sve, asm: UQADD, intrinsic: svqadd_u16,
+     pattern: {op: uqadd, pred: false}, status: known}
+  - {id: sve-ld1-gather-u32, feature: sve, asm: LD1W,
+     intrinsic: svld1_gather_u32base_u32,
+     pattern: {op: load, gather: true, pred: true}, status: verify}
+  - {id: sve-ld2-s16, feature: sve, asm: LD2H, intrinsic: svld2_s16,
+     pattern: {op: load, structure: 2, pred: true}, status: verify}
+  - {id: sve-st2-s16, feature: sve, asm: ST2H, intrinsic: svst2_s16,
+     pattern: {op: store, structure: 2, pred: true}, status: verify}
   - {id: sve-uzp1-s64, feature: sve, asm: UZP1, intrinsic: svuzp1_s64,
      pattern: {op: uzp1, pred: false},
      semantics: "even elements of concatenation: [a0,a2,...,b0,b2,...]",
@@ -137,10 +161,6 @@ instructions:
      status: verify}
 
   # ---- SVE2 ----
-  - {id: sve2-sdot-s64-s16, feature: sve2, asm: SDOT, intrinsic: svdot_s64,
-     pattern: {op: sdot, bits: [16, 64], pred: false},
-     semantics: "one s64 lane per 4 consecutive s16 elements; at VL=256 16 s16 per operand produce 4 s64 lanes: [dot4(0:4), dot4(4:8), dot4(8:12), dot4(12:16)]",
-     status: verified}
   - {id: sve2-rshrnb-s16-s32, feature: sve2, asm: RSHRNB,
      intrinsic: svrshrnb_n_s32,
      pattern: {op: rshrnb, bits: [32, 16], pred: false},
@@ -153,19 +173,83 @@ instructions:
      status: verify}
   - {id: sve2-addp-s32, feature: sve2, asm: ADDP, intrinsic: svaddp_s32_x,
      pattern: {op: addp, pred: true}, status: verify}
-  - {id: sve2-uzp1-s16, feature: sve2, asm: UZP1, intrinsic: svuzp1_s16,
-     pattern: {op: uzp1, pred: false}, status: verified}
-  - {id: sve2-uzp2-s16, feature: sve2, asm: UZP2, intrinsic: svuzp2_s16,
-     pattern: {op: uzp2, pred: false}, status: verified}
+  # SVE ADDP is SVE2-only: the predicated whole-vector encoding
+  # (Zdn, Pg/M, Zdn, Zm) is FEAT_SVE2 per catalog addp_z_p_zz; the SVE1
+  # segment-pairwise form does NOT exist (as rejects addp under +sve).
+  - {id: sve2-addp-s64, feature: sve2, asm: ADDP, intrinsic: svaddp_s64_x,
+     pattern: {op: addp, pred: true}, status: verified}
   - {id: sve2-tbl2-u16, feature: sve2, asm: TBL, intrinsic: svtbl2_u16,
      pattern: {op: tbl2, pred: false}, status: verify}
-  - {id: sve2-umaxp-u16, feature: sve2, asm: UMAXP, intrinsic: svmaxp_u16,
+  # TBX (single-register table) is SVE2 (FEAT_SVE2), unlike single-register
+  # TBL which is SVE1. NEON TBX is base AdvSIMD (handled by operand rules in
+  # check_isa_level.py).
+  - {id: sve2-tbx-u16, feature: sve2, asm: TBX, intrinsic: svtbx_u16,
+     pattern: {op: tbx, pred: false}, status: verify}
+  - {id: sve2-umaxp-u16, feature: sve2, asm: UMAXP, intrinsic: svmaxp_u16_x,
      pattern: {op: umaxp, pred: true}, status: verify}
   - {id: sve2-histcnt-u32, feature: sve2, asm: HISTCNT, intrinsic: svhistcnt_u32,
      pattern: {op: histcnt, pred: true}, status: verify}
+  - {id: sve2-histseg-u8, feature: sve2, asm: HISTSEG, intrinsic: svhistseg_u8,
+     pattern: {op: histseg, pred: false}, status: verify}
+  - {id: sve2-match-s8, feature: sve2, asm: MATCH, intrinsic: svmatch_s8,
+     pattern: {op: match, pred: true}, status: verify}
+  - {id: sve2-nmatch-s8, feature: sve2, asm: NMATCH, intrinsic: svnmatch_s8,
+     pattern: {op: nmatch, pred: true}, status: verify}
+  - {id: sve2-cadd-s16, feature: sve2, asm: CADD, intrinsic: svcadd_s16,
+     pattern: {op: cadd, pred: false}, status: known}
+  - {id: sve2-smullb-s32, feature: sve2, asm: SMULLB, intrinsic: svmullb_s32,
+     pattern: {op: smullb, pred: false}, status: verify}
+  - {id: sve2-smullt-s32, feature: sve2, asm: SMULLT, intrinsic: svmullt_s32,
+     pattern: {op: smullt, pred: false}, status: verify}
+  - {id: sve2-umullb-u32, feature: sve2, asm: UMULLB, intrinsic: svmullb_u32,
+     pattern: {op: umullb, pred: false}, status: verify}
+  - {id: sve2-umullt-u32, feature: sve2, asm: UMULLT, intrinsic: svmullt_u32,
+     pattern: {op: umullt, pred: false}, status: verify}
+  - {id: sve2-smlalb-s32, feature: sve2, asm: SMLALB, intrinsic: svmlalb_s32,
+     pattern: {op: smlalb, pred: false}, status: verify}
+  - {id: sve2-smlalt-s32, feature: sve2, asm: SMLALT, intrinsic: svmlalt_s32,
+     pattern: {op: smlalt, pred: false}, status: verify}
+  - {id: sve2-umlalb-u32, feature: sve2, asm: UMLALB, intrinsic: svmlalb_u32,
+     pattern: {op: umlalb, pred: false}, status: verify}
+  - {id: sve2-umlalt-u32, feature: sve2, asm: UMLALT, intrinsic: svmlalt_u32,
+     pattern: {op: umlalt, pred: false}, status: verify}
+  - {id: sve2-smlslb-s32, feature: sve2, asm: SMLSLB, intrinsic: svmlslb_s32,
+     pattern: {op: smlslb, pred: false}, status: verify}
+  - {id: sve2-umlslb-u32, feature: sve2, asm: UMLSLB, intrinsic: svmlslb_u32,
+     pattern: {op: umlslb, pred: false}, status: verify}
+  - {id: sve2-eor3-u64, feature: sve2, asm: EOR3, intrinsic: sveor3_u64,
+     pattern: {op: eor3, pred: false}, status: verify}
+  - {id: sve2-bcax-u64, feature: sve2, asm: BCAX, intrinsic: svbcax_u64,
+     pattern: {op: bcax, pred: false}, status: verify}
+  - {id: sve2-pmullb-u64, feature: sve2, asm: PMULLB, intrinsic: svpmullb_u64,
+     pattern: {op: pmullb, pred: false}, status: verify}
+  - {id: sve2-pmullt-u64, feature: sve2, asm: PMULLT, intrinsic: svpmullt_u64,
+     pattern: {op: pmullt, pred: false}, status: verify}
+  - {id: sve2-sqadd-pred-s16, feature: sve2, asm: SQADD,
+     intrinsic: svqadd_s16_m, pattern: {op: sqadd, pred: true}, status: verify}
+  - {id: sve2-uqadd-pred-u16, feature: sve2, asm: UQADD,
+     intrinsic: svqadd_u16_m, pattern: {op: uqadd, pred: true}, status: verify}
 
-  # ---- SVE2p3 (placeholder; confirm ACLE names on toolchain) ----
-  # ---- SVE2.3 (FEAT_SVE2p3, Armv9.5) ----
+  # ---- SVE2 BitPerm (FEAT_SVE_BitPerm, optional even with SVE2) ----
+  - {id: sve2-bitperm-bext-u64, feature: sve2_bitperm, asm: BEXT,
+     intrinsic: svbext_u64, pattern: {op: bext, pred: false}, status: verify}
+  - {id: sve2-bitperm-bdep-u64, feature: sve2_bitperm, asm: BDEP,
+     intrinsic: svbdep_u64, pattern: {op: bdep, pred: false}, status: verify}
+  - {id: sve2-bitperm-bgrp-u64, feature: sve2_bitperm, asm: BGRP,
+     intrinsic: svbgrp_u64, pattern: {op: bgrp, pred: false}, status: verify}
+
+  # ---- SVE2p1 (FEAT_SVE2p1, Armv9.4-A) ----
+  # SDOT .S, .H, .H (2-way 16-bit -> 32-bit) is SVE2p1, NOT SVE1: clang-22
+  # assembler rejects it under +sve2 ("requires sme2 or sve2p1") and accepts
+  # under +sve2p1; catalog sdot_z32_zzz feature_level = sve2p1.
+  - {id: sve2p1-sdot-s16-s32, feature: sve2p1, asm: SDOT,
+     intrinsic: svdot_s32_s16, pattern: {op: sdot, bits: [16, 32], pred: false},
+     status: verify}
+  - {id: sve2p1-udot-s16-s32, feature: sve2p1, asm: UDOT,
+     intrinsic: svdot_u32_u16, pattern: {op: udot, bits: [16, 32], pred: false},
+     status: verify}
+
+  # ---- SVE2.3 (FEAT_SVE2p3, Armv9.7-A per LLVM AArch64Features.td) ----
   # 2026-06 官方 ISA 共 16 条；GCC 16.1 的 arm_sve.h 尚无对应 ACLE 内置，
   # 只能走直接汇编（asm backend），故 intrinsic 为 null、status 为 verify。
   - {id: sve2p3-addqp, feature: sve2p3, asm: ADDQP, intrinsic: null,
@@ -175,6 +259,8 @@ instructions:
   # raises SIGILL (not emulated) - verification requires 960 or newer QEMU.
   - {id: sve2p3-sdot-h, feature: sve2p3, asm: SDOT, intrinsic: null,
      pattern: {op: sdot, bits: [8, 16]}, status: verify}
+  - {id: sve2p3-udot-b2h, feature: sve2p3, asm: UDOT, intrinsic: null,
+     pattern: {op: udot, bits: [8, 16]}, status: verify}
   - {id: sve2p3-addsubp, feature: sve2p3, asm: ADDSUBP, intrinsic: null,
      pattern: {op: addsubp}, status: verify}
   - {id: sve2p3-fcvtzsn, feature: sve2p3, asm: FCVTZSN, intrinsic: null,

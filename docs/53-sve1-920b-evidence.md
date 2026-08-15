@@ -5,7 +5,9 @@
 截至 2026-08-16，**920B 上所有已实测的 SVE1 候选都未超过上游 NEON**，
 其中多数慢 1.5–1.9×。920B（Kunpeng 920）上 SVE1 的 2×256-bit 宽度
 优势被三种结构代价抵消：uaddv 归约延迟 13cyc、ld1b load→use 延迟
-24cyc、以及 SVE1 缺少 zip/uzp/trn/cadd/宽乘（需 tbl/常数模拟）。
+24cyc、以及 SVE1 缺少 CADD90/宽乘/TBL2/TBX/2-way 点积。
+（2026-08-16 ISA 核查修正：zip/uzp/trn、gather、LD2-4/ST2-4、
+饱和算术、SDOT 16→64 都是 **SVE1 就有的**，详见 §6。）
 因此 **SVE1 在 920B 不是可靠的 30% 算子收益来源**；920B 的优化路径
 以 NEON 目标为主（M2 排序已验证 N1 表 transfer 到 920B），SVE1 保留
 为 950（SVE2）方向的搜索轴。
@@ -32,8 +34,8 @@ benchmarks/sve-timing-920b/timing-sve1-ago.json：
 | add/sub 单指令吞吐 | 0.50 cyc/op（不慢） |
 | uaddv 归约延迟 | 13.02 cyc |
 | ld1b load→use 延迟 | 24.03 cyc |
-| tbl（SVE1 唯一通用 permute） | 3.00 / 0.69 |
-| SVE1 无 zip/uzp/trn/cadd/smullb | 需 tbl+常数模拟，链长翻倍 |
+| tbl（SVE1 最灵活的 permute，但非唯一：zip/uzp/trn 均在 SVE1） | 3.00 / 0.69 |
+| SVE1 无 cadd/smullb/smlalb/umullb/tbl2/tbx（SVE2） | cadd90 需 tbl+符号+乘+加 4 条模拟；宽乘缺失使 dct 的 s32 中间精度需解包 |
 
 候选实测 IPC：NEON satd8 ~3.5、SVE1 pack-2 ~1.9——SVE1 候选的指令
 数没少（92 vs 90），但 permute/归约/load-use 依赖链让有效并行度减半。
@@ -51,3 +53,43 @@ AGO 排序器跨 ISA 绝对预测不可用（NEON 过估 5.2×、SVE1 过估 1.4
   均来自 SVE2/950 实测）；
 - AGO 资源优先：NEON cover 搜索 + 真实视频热点的算子回归矩阵 +
   costCoeffNxN 等已注入内核的进一步优化。
+
+## 6. ISA 对齐审计（2026-08-16，subagent + 本地双工具链交叉）
+
+对“SVE1 缺少的指令”逐条核查（ARM catalog
+`experiments/m7-isa-coverage/isa-catalog.json` + clang-22/GCC-16.1
+编译/汇编矩阵 + LLVM AArch64Features.td），完整表见
+reports/sve-instruction-version-audit-20260816.md：
+
+| 此前错误主张 | 真实版本 |
+| --- | --- |
+| ZIP1/2、UZP1/2、TRN1/2 是 SVE2 | **SVE1（FEAT_SVE）**（.Q 128-bit 元素才需 F64MM） |
+| Gather 装载是 SVE2 | **SVE1（FEAT_SVE）** |
+| LD2/LD3/LD4、ST2/ST3/ST4 是 SVE2 | **SVE1（FEAT_SVE）** |
+| 饱和算术是 SVE2 | SQADD/UQADD 无谓词形式是 **SVE1**（谓词合并形式才是 SVE2） |
+| SDOT 16-bit 是 SVE2p1 | 分两种：**16→64（.D,.H,.H）是 SVE1**；16→32（.S,.H,.H）才是 SVE2p1；8→16（.H,.B,.B）是 SVE2p3 |
+| TBL 单寄存器=TBX 单寄存器 | TBL 单寄存器 SVE1；**TBX（即使单寄存器）是 SVE2** |
+
+确认无误的主张：CADD、SMULLB/T、SMLALB/T、UMULLB/T、TBL2、RSHRNB、
+ADDP（SVE 无无谓词形式，谓词整向量形式是 SVE2）、HISTCNT/HISTSEG、
+MATCH/NMATCH = SVE2；BEXT/BDEP/BGRP = **可选** FEAT_SVE_BitPerm；
+PMULLB/T = SVE2（128-bit 形式另需 FEAT_SVE_PMULL128）。
+
+**搜索目标对齐修正（已落地）**：
+
+- `isa/aarch64/instructions.yaml`：`sve2-sdot-s64-s16` → `sve-sdot-s64-s16`
+  （feature=sve）；`sve2-uzp1/2-s16` → `sve-uzp1/2-s16`（feature=sve）；
+  `sve-addp-s64` 移到 sve2（SVE ADDP 是 SVE2）；删除 `sve-umaxp-u16`
+  （SVE UMAXP 是 SVE2）；新增 trn1/2、sqadd/uqadd、gather、ld2/st2、
+  cadd、宽乘族、tbx、eor3/bcax、pmullb/t、match/nmatch、histseg、
+  bext/bdep/bgrp（sve2_bitperm）、sdot/udot 2-way（sve2p1/sve2p3）。
+- `tools/check_isa_level.py`：新增 `udot`（镜像 sdot）、`tbx` 单寄存器、
+  `fmlalb/fmlalt/fmlslb/fmlslt` 的 operand 规则，修复 3 个可复现假阴性
+  （tbx/udot 2-way/fmlalb 曾可穿透 sve1 门禁）；回归测试
+  `tools/test_check_isa_level.py` 10 条全绿。
+- 现有 9 个 `best_sve1.o` 在加固后门禁下 9/9 仍 PASS（无 SVE2+ 泄漏）。
+
+**对 SVE1 搜索方向的修正**：satd/dct 的转置/打包阶段在 920B 上可以用
+zip/uzp/trn 直接做，不必只用 tbl 模拟；**SDOT .D,.H,.H（16→64 点积）
+在 SVE1 可用**，interp8 path-A 的 sdot.d 切片不构成 SVE2 依赖。真正
+限制 920B 的仍是 cadd90 模拟链、宽乘缺失与 uaddv/ld1b 长依赖链。
