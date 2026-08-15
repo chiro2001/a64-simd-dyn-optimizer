@@ -31,3 +31,8 @@ rshrnb+uzp1 / uzp1 / tbl / zip1 / st1h / ld1h / ld1h+add。
   （VL=128）补测；
 - st1h/ld1h 用流式地址（8192 元素环形缓冲）避免编译器 hoist；
 - `ld1h_use_add` 是 load-to-use+add 链的近似。
+
+2026-08-16（round-0023 审计项）：输出中 `null` 表示该口径未测
+（如 load 的 latency、纯依赖链的 throughput）；数值 0 不再出现。
+timing-920b.json 已重建（数据与旧表一致：freq ~2.9GHz，add_s32
+2.25 = 每迭代两条 add 的依赖链平均，单 add ~1.1cyc）。

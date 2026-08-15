@@ -483,10 +483,21 @@ int main(void) {
         fprintf(stderr, "DBG %s lat_diff=%lu thr_diff=%lu\n",
                 bs[i].name, last_lat_diff, last_thr_diff);
 #endif
-        printf("%s\"%s\": {\"latency_cyc\": %.2f, \"throughput_cyc_per_op\": %.2f}\n",
-               first ? " " : ",", bs[i].name,
-               bs[i].lat ? lat / calib : 0.0,
-               bs[i].thr ? thr / calib : 0.0);
+        const char* pre = first ? " " : ",";
+        if (bs[i].lat && bs[i].thr)
+            printf("%s\"%s\": {\"latency_cyc\": %.2f, "
+                   "\"throughput_cyc_per_op\": %.2f}\n",
+                   pre, bs[i].name, lat / calib, thr / calib);
+        else if (bs[i].lat)
+            printf("%s\"%s\": {\"latency_cyc\": %.2f, "
+                   "\"throughput_cyc_per_op\": null}\n",
+                   pre, bs[i].name, lat / calib);
+        else if (bs[i].thr)
+            printf("%s\"%s\": {\"latency_cyc\": null, "
+                   "\"throughput_cyc_per_op\": %.2f}\n",
+                   pre, bs[i].name, thr / calib);
+        else
+            printf("%s\"%s\": null\n", pre, bs[i].name);
         first = 0;
     }
     printf("}\n");

@@ -63,7 +63,10 @@ run_perf() {
     echo ","
     return 0
   fi
-  awk -F, '$3=="cycles:u"{c=$4} $3=="instructions:u"{i=$4} END{printf "%.0f,%.0f", c, i}' "$tmp"
+  # perf stat -x, CSV layout: <count>,<unit>,<event>,<interval>,... so
+  # the count is field 1, NOT field 4 (round-0023 audit: N1 output verified
+  # e.g. "158995,,cycles:u,375160,100.00,,").
+  awk -F, '$3=="cycles:u"{c=$1} $3=="instructions:u"{i=$1} END{printf "%.0f,%.0f", c, i}' "$tmp"
   rm -f "$tmp"
 }
 

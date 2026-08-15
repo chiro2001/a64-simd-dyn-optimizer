@@ -1,0 +1,18 @@
+{
+ "cntfrq": 25000000,
+ "calib_add_ticks_per_cyc": 0.0085,
+ "freq_hz_est": 2947765594,
+ "empty": {"latency_cyc": 0.98, "throughput_cyc_per_op": 0.12}
+,"add_u8": {"latency_cyc": 2.89, "throughput_cyc_per_op": 1.88}
+,"add_u16": {"latency_cyc": 2.44, "throughput_cyc_per_op": 1.88}
+,"abd_u8": {"latency_cyc": 2.63, "throughput_cyc_per_op": 1.88}
+,"sub_u8": {"latency_cyc": 2.80, "throughput_cyc_per_op": 1.88}
+,"abs_s16": {"latency_cyc": 1.97, "throughput_cyc_per_op": 1.60}
+,"addl_u8": {"latency_cyc": 3.94, "throughput_cyc_per_op": 2.67}
+,"padd_u8": {"latency_cyc": 3.94, "throughput_cyc_per_op": 1.88}
+,"paddl_u16": {"latency_cyc": 5.91, "throughput_cyc_per_op": 1.60}
+,"maxv_u8": {"latency_cyc": 8.86, "throughput_cyc_per_op": 2.35}
+,"sdot": {"latency_cyc": 1.68, "throughput_cyc_per_op": 2.49}
+,"ld1_u8": {"latency_cyc": null, "throughput_cyc_per_op": 0.25}
+,"st1_u8": {"latency_cyc": null, "throughput_cyc_per_op": 0.30}
+}
