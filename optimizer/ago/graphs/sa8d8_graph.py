@@ -11,7 +11,8 @@ from __future__ import annotations
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
 
 from ago.contracts.sa8d8 import Sa8d8Contract  # noqa: E402
 from ago.ir import Graph, Op, Shape, Value  # noqa: E402
