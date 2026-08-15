@@ -1203,6 +1203,12 @@ def main():
         # MCA 118 / 920B p50 5；clang 编出 310 dyn / MCA 77 / p50 4
         # （= 上游 dct8_sve）。默认 dct8 用 clang（docs/30 §1.7）。
         _CXX = "clang --target=aarch64-linux-gnu"
+    elif _ISA == "sve1":
+        # 2026-08-15 真机回填：clang -O3 的 SVE1 候选普遍优于 GCC -O2
+        # （sa8d16 0.67->0.81、dct32 0.60->0.73、interp8 0.61->0.72）。
+        _CXX = "clang --target=aarch64-linux-gnu"
+        if not args.opt_extra:
+            args.opt_extra = "-O3"
     _OPT_EXTRA = args.opt_extra
     if args.rank_by == "mca" and args.mca_top == 0:
         # ranking by MCA implies running the second proxy; default to top-10.
