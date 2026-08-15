@@ -1,0 +1,35 @@
+# 920B libx265 NEON helper 外链扫描（2026-08-16）
+
+方法：objdump -dC + nm 归属，统计 libx265.so.216 中所有对匿名命名空间
+helper 的 `bl` 调用（GCC12 外链 static inline 的栈往返缺陷）。
+
+## 外链全景（按调用次数）
+
+| helper | bl 次数 | 归属（top） | 运行时热点 | 处置 |
+| --- | ---: | --- | --- | --- |
+| satd_8x4（C 模板） | 205 | satd8<32,24>/<24,32>/<32,16>/<16,32> 等 C 模板实例 | perf 无此符号（低） | 观察，非优先 |
+| filter8_u8x16<1/2/3> | 88/88/68 | interp8_vert_ps_neon 各形状（16x4..16x64 等） | interp 家族合计 ~5%（vps/vert_sp/horiz_ps/hv） | **优先**：内联候选 |
+| satd_4x4（C 模板） | 74 | satd4<12,32>/<12,16>/<16,12> 等 | 低 | 观察 |
+| filter4_sp_s16x8 / filter4_ss_s16x8 | 58 / 56 | interp_vert_sp/ss_neon（interp4） | interp4 部分 | 次优先 |
+| pixel_sa8d_16x16_neon | 30 | sa8d16_neon<64,64>/<32,64>/<32,32> | sa8d16 上游形状 | 已注入内联 16x16；32/64 可再查 |
+| pixel_satd_8x16_neon / 16x8 | 24 / 11 | satd8_neon<24,64>/<24,32>/<8,64> 等 | 已注入 8x16/16x8 内联 | 已修复主槽；模板实例仍外链（观察） |
+| hadamard_4x4_quad | 7 | 16x16/8x16/16x8 | 已修复 | 已完成 |
+| _sa8d_8x8（C） | 6 | sa8d16<16,16>/sa8d16_neon<16,16> | 低 | 观察 |
+
+## 结论
+
+1. satd 家族外链（hadamard_4x4_quad、pixel_satd_8x16/16x8）已通过
+   内联候选修复并注入（E2E -1.76%）；
+2. **下一个同型机会：interp8 filter8_u8x16 外链**（vps 家族，真实
+   热点，profile interp 合计 ~5%）。复制上游 filter 实现为全内联
+   候选，预期 1.3x+，语义 bit-exact，零算法改动；
+3. interp4 filter4_sp/ss 与 sa8d 32/64 形状次优先；
+4. C 模板静态实例（satd_8x4/satd_4x4）调用点多但 perf 无热点，
+   暂不处理。
+
+## 下一步（TODO-M3）
+
+- [ ] interp8 vps（filter8_u8x16<1/2/3>）内联候选：20k 差分 +
+  920B paired + 注入 E2E；
+- [ ] interp4 filter4 内联候选；
+- [ ] sa8d16 32x32/64x64 上游外链检查（pixel_sa8d_16x16_neon 30 次）。

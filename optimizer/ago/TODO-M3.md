@@ -88,3 +88,12 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] E2E 注入复测：-1.61% → **-1.76%**（8061 vs 8200 ms，bit-exact
   ee5db7），报告 reports/satd-8x16-16x8-inline-20260816.txt；
 - [ ] 全库 helper 外链扫描（hadamard_4x4_dual/8x8、sa8d/sad 家族）。
+
+## helper 外链扫描结果（2026-08-16，reports/helper-bl-scan-920b）
+
+- [x] 扫描完成：satd C 模板 205+74 处（非热点）、filter8_u8x16 244 处
+  （interp8 vps 真实热点 ~5%）、filter4 114 处、sa8d16 30 处、
+  hadamard_4x4_quad 7 处（已修复）；
+- [ ] **interp8 vps 内联候选**（filter8_u8x16 全内联）：20k + 920B
+  paired + 注入；
+- [ ] interp4 filter4 / sa8d16 32/64 内联候选（次优先）。
