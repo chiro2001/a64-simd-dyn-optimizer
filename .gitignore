@@ -246,3 +246,8 @@ experiments/m30-interp8-vps-search/gen-search-interp8-vps-8x8/*
 experiments/m30-satd-search/gen-search-full-satd-24x32/*
 !experiments/m30-satd-search/gen-search-full-satd-24x32/results.json
 !experiments/m30-satd-search/gen-search-full-satd-24x32/*pack-*.cpp
+
+# satd 64x64 artifacts (2026-08-15)
+experiments/m30-satd-search/gen-search-full-satd-64x64/*
+!experiments/m30-satd-search/gen-search-full-satd-64x64/results.json
+!experiments/m30-satd-search/gen-search-full-satd-64x64/*pack-*.cpp

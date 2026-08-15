@@ -44,6 +44,7 @@ KERNELS = {
     "satd-64x32": ("satd-64x32", "hadamard", {"pack": 2}),
     "satd-48x64": ("satd-48x64", "hadamard", {"pack": 2}),
     "satd-64x48": ("satd-64x48", "hadamard", {"pack": 2}),
+    "satd-64x64": ("satd-64x64", "hadamard", {"pack": 2}),
     "satd-4x8": ("satd-4x8", "hadamard", {}),
     "satd-8x4": ("satd-8x4", "hadamard", {}),
     "satd-8x16": ("satd-8x16", "hadamard", {"pack": 2}),
