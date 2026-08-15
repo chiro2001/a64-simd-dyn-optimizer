@@ -19,6 +19,7 @@ cd "$ROOT"
 
 EXPECT_MD5="${FREEZE_MD5:-ee5db7384df974ba25e4f1df8178dcb6}"
 INPUT="${FREEZE_INPUT:-/tmp/real_1080p_30f.yuv}"
+FRAMES="${FREEZE_FRAMES:-30}"
 REPO="/home/chiro/projects/a64-simd-dyn-optimizer"
 
 echo "[freeze] building best6b inject bundle"
@@ -39,27 +40,27 @@ cp build/preload-work-best6b-freeze/*.o "$PKG/work/"
 tar -C "$PKG" -czf /tmp/e2e-full.tar.gz out work
 
 echo "[freeze] pushing bundle to $HOST"
-scp -o BatchMode=yes /tmp/e2e-full.tar.gz \
+scp -o BatchMode=yes -o ServerAliveInterval=30 /tmp/e2e-full.tar.gz \
   scripts/strip-dynopt-link.py scripts/cloud-e2e-inject.sh \
   "$HOST":/tmp/
 
 ENC="taskset -c 0 ./x265 --input $INPUT \
-  --input-res 1920x1080 --fps 30 --frames 30 \
+  --input-res 1920x1080 --fps 30 --frames $FRAMES \
   --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0 --b-adapt 0"
 
 echo "[freeze] injecting"
-ssh -o BatchMode=yes "$HOST" \
+ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO && git -C third_party/x265 checkout -- \
    source/common/primitives.cpp 2>/dev/null; \
    bash /tmp/cloud-e2e-inject.sh >/tmp/freeze-inject.log 2>&1"
 
 echo "[freeze] optimized encode (md5)"
-OPT_MD5=$(ssh -o BatchMode=yes "$HOST" \
+OPT_MD5=$(ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && $ENC -o /tmp/freeze-opt.mp4 \
    >/dev/null 2>&1; md5sum /tmp/freeze-opt.mp4 | cut -d' ' -f1")
 
 echo "[freeze] 5 optimized timing runs"
-ssh -o BatchMode=yes "$HOST" \
+ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && \
    for i in 1 2 3 4 5; do s=\$(date +%s%N); \
      $ENC -o /dev/null >/dev/null 2>&1; \
@@ -67,7 +68,7 @@ ssh -o BatchMode=yes "$HOST" \
   > /tmp/freeze-opt-ms.txt
 
 echo "[freeze] restoring clean baseline"
-ssh -o BatchMode=yes "$HOST" \
+ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO && python3 /tmp/strip-dynopt-link.py && \
    git -C third_party/x265 checkout -- source/common/primitives.cpp && \
    touch third_party/x265/source/common/primitives.cpp && \
@@ -76,7 +77,7 @@ ssh -o BatchMode=yes "$HOST" \
      >/dev/null 2>&1"
 
 echo "[freeze] baseline encode (md5) + 5 timing runs"
-ssh -o BatchMode=yes "$HOST" \
+ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && \
    $ENC -o /tmp/freeze-base.mp4 >/dev/null 2>&1; \
    md5sum /tmp/freeze-base.mp4 | cut -d' ' -f1; \
