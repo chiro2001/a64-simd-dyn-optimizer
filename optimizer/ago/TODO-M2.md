@@ -1,12 +1,21 @@
-# M2：第二个数据流锚点 + 有界 cover 搜索 + 留出集代价排序（round-0023）
+# M2：第二个数据流锚点 + 有界 cover 搜索 + 留出集代价排序
+# （round-0023 范围，round-0024 拆分为 foundation + expanded）
 
 ## 目标
 
 不追求第二个 kernel 的加速；证明 AGO 流水线能端到端复现第二个
-数据流形状（SATD 8x8，4x4 象限结构），并为同一张图生成 2-3 个合法
-NEON cover，用 N1/920B 指令成本表预测排序，在留出集上验证排序质量。
+数据流形状（SATD 8x8，4x4 象限结构），并建立**可验证的排序工具**
+（候选清单 → final-object 特征 → 噪声探针 → 留出排序门）。
 
-## 锚点任务（satd8 8x8）
+round-0024 拆分为：
+
+- **M2-foundation（已完成，提交 21860a7/5f9ae14）**：satd8 锚点复现 +
+  A/B/C 尾部 cover 冒烟排序门（2 个可分辨对，N1/920B PASS）；
+  该结果是 foundation，**不构成通用排序声称**。
+- **M2-expanded（剩余验收）**：语料扩到 region/形状/cover 多样性，
+  按 round-0024 协议预注册正式排序门。
+
+## M2-foundation 任务（satd8 8x8，已完成）
 
 - [x] 数值一致性预检：C `satd8<8,8>`（两段 SWAR `satd_8x4`）与上游
   NEON `pixel_satd_8x8_neon` 20k 随机模拟 0 失配；
@@ -20,24 +29,49 @@ NEON cover，用 N1/920B 指令成本表预测排序，在留出集上验证排�
 - [x] 20k oracle 门禁：`scripts/verify-ago-satd8.sh`（bad=0）；
 - [x] paired 微基准：`benchmarks/ago_satd8_microbench.cpp` +
   `scripts/build-ago-satd8-bench.sh`；
-- [ ] N1 / 920B 实机 paired（目标：先复现，不要求更快）。
+- [x] N1 / 920B 实机 paired：N1 0.983、920B 0.995（噪声带内复现）。
 
-## 有界 cover 搜索与排序门（进行中）
+## 有界 cover 搜索与排序门（M2-foundation 已完成，见报告）
 
-- [ ] 同一 satd8 图生成 2-3 个合法 NEON cover（如 reduction 形状、
-  转置/配对顺序、abs/add vs abd 变体），全部先过 20k oracle；
-- [ ] 用 `benchmarks/neon-timing-n1/timing-n1.json` 与 920B 表对
-  cover 排序（指令数 + 关键路径 + 吞吐下界）；
-- [x] 预注册排序质量门（2026-08-16，评估前写入）：
-  - 语料：satd8 尾部 3 个合法 cover（A upstream / B balanced /
-    C dual-reduce），全部通过 20k oracle；
-  - 预测：N1 指令成本表（timing-n1.json，add_u16/maxv_u8/paddl_u16
-    代理）的 throughput 周期和为主排序，latency 和破平；
-  - 真值：N1 与 920B 各 3 次 CNTVCT batch(4096) 中位；
-  - 噪声规则：两 cover 中位差 >2% 才视为可分（否则该对不计）；
-  - 通过条件：N1 上可分辨对的 ≥2/3 与预测同向；920B 上 ≥1/2；
-  - 若 N1 通过，N1 成本表成为后续 NEON kernel 的默认排序源。
-- [ ] 结果落 reports/，提交并推送。
+- [x] A/B/C 尾部 cover（共享前缀，全部 20k oracle 通过）；
+- [x] 冒烟预测（N1 表 tput 和）与 N1/920B CNTVCT 实测；
+- [x] 结果：reports/ago-m2-satd8-covers-20260816.txt。
+
+## M2-expanded（进行中，round-0024 协议）
+
+### 第一步：候选清单 + final-object 特征 + 噪声探针
+
+- [ ] 建立不可变候选 manifest：contract hash、region/node ID、模板
+  参数、ISA、编译器版本/flags、源与 final-object hash、验证证据；
+- [ ] final-object 特征提取：反汇编指令数、峰值 live 向量、
+  spill/reload 计数、对象 hash 去重（同对象不算多样性）；
+- [ ] N1 基线-自对比噪声探针，预注册 q_target / MDE；
+  920B 单独 q_920b（共享节点噪声大时记 inconclusive-noise）。
+
+### 第二步：扩大的留出排序门（数值在探针后冻结）
+
+- [ ] 语料目标：≥8 个 region/形状实例（SA8D/SATD 子 region 或
+  pack 变体），每实例 baseline + 2 个语义不同 cover；
+- [ ] 解析代价模型（round-0024 公式）：predicted =
+  max(关键路径, max_resource(uops/容量)) + load/store + spill/branch
+  + 不确定性；**禁止 latency×throughput**；替代 covers_satd8 的
+  tput_sum 冒烟代理；
+- [ ] 预注册指标：≥30 可分辨对、成对准确率 ≥0.75（bootstrap 下界
+  ≥0.60）、tau≥0.60 或 rho≥0.70（先定一个）、top-1 regret ≤
+  max(2*q_target, 3%)、无对 baseline 的 CI 分离回归；
+- [ ] 920B transfer 规则：≥10 可分辨对、≥0.60 符号一致、无 CI 分离
+  回归，否则 transfer-unknown（不因同为 NEON 而默认迁移）；
+- [ ] 若语料不足（如最终对象 <24），记 `foundation-only`，明确推迟
+  排序声称，不硬凑。
+
+### 并行：N1 成本模型校准（实验 2）
+
+- [ ] 手写 asm 单指令延迟链 + 独立链饱和扫描（1/2/4/8 链）+ mixed-op
+  资源矩阵；matched empty loop；保存反汇编与事件缩放；
+- [ ] 提取 LLVM AArch64SchedNeoverseN1.td 与 GCC N1 DFA 记录为内部
+  统一表（不平均两源，保留分歧与 uncertainty 标记）；
+- [ ] 只标定语料用到的 opcode 类，在留出序列上验证；
+- [ ] 920B 保持 on-target 配对更新，不用 N1 权重改写 920B 表。
 
 ## M3+（计划）
 

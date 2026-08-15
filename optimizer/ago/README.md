@@ -30,4 +30,6 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
 - M0 验收通过（SA8D 8x8，N1 0.985 / 920B 1.006，0 失配，提交 86ff2df）；
 - M1 通过（受限 DSL 前端 + pass 管线，提交 43dfc7e / 1accad9）；
 - M2 锚点进行中：satd8 8x8 契约/图/cover/20k 门禁/paired 微基准就绪；
-- round-0024 规划咨询已异步启动。
+- M2-foundation 完成（21860a7 / 5f9ae14），M2-expanded 进行中；
+- round-0024 咨询完成（response.md + decision.md），pass 管线已按
+  “phase-once + 固定点校验”对齐。

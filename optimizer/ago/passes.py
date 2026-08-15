@@ -1,12 +1,16 @@
-"""AGO pass pipeline skeleton (M1, round-0023).
+"""AGO pass pipeline skeleton (M1, round-0023; round-0024 alignment).
 
 Design rules from round-0023: phase ordering with executable pre/post
 checks, deterministic canonical hashes, decreasing measures, cycle
-detection, and hard budgets. No global fixed-point iteration.
+detection, and hard budgets. No implicit global fixed-point iteration:
+each phase is applied exactly once per pipeline invocation, then the
+result must already be a fixed point of the pipeline (checked, not
+iterated to).
 
-A Pass transforms a Graph into a new Graph; the pipeline runs passes in
-order, checks invariants, and stops at a deterministic fixed point (or
-when the budget/hash cycle is hit).
+A Pass transforms a Graph into a new Graph; the pipeline applies passes
+in order, checks invariants, and raises if the result is not stable
+under one more application (a phase that needs repeated application
+must be expressed as explicit phases).
 """
 
 from __future__ import annotations
@@ -86,26 +90,26 @@ class Pipeline:
 
     def run(self, g: Graph, budget: int = 64,
             max_nodes: int = 4096) -> Graph:
-        h_prev = g.canonical_hash()
-        seen = {h_prev}
-        for _ in range(budget):
-            g2 = g
-            for p in self.passes:
-                if not p.check_pre(g2):
-                    raise PassError("%s pre-check failed" % p.name)
-                g2 = p.apply(g2)
-                if not p.check_post(g2):
-                    raise PassError("%s post-check failed" % p.name)
-            if len(g2.ops) > max_nodes:
-                raise PassError("graph exceeds node budget")
-            h = g2.canonical_hash()
-            if h == h_prev:
-                return g2  # deterministic fixed point
-            if h in seen:
-                raise PassError("pass cycle detected")
-            seen.add(h)
-            g, h_prev = g2, h
-        raise PassError("pass budget exhausted")
+        if budget < 1:
+            raise PassError("budget must be >= 1")
+        g2 = g
+        for p in self.passes:
+            if not p.check_pre(g2):
+                raise PassError("%s pre-check failed" % p.name)
+            g2 = p.apply(g2)
+            if not p.check_post(g2):
+                raise PassError("%s post-check failed" % p.name)
+        if len(g2.ops) > max_nodes:
+            raise PassError("graph exceeds node budget")
+        # fixed-point check: one more full application must not change
+        # the canonical hash. This detects a phase that would need
+        # implicit iteration instead of explicit phasing.
+        g3 = g2
+        for p in self.passes:
+            g3 = p.apply(g3)
+        if g3.canonical_hash() != g2.canonical_hash():
+            raise PassError("pipeline not idempotent; needs explicit phase")
+        return g2
 
 
 def default_pipeline() -> Pipeline:

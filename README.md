@@ -8,6 +8,30 @@ LLVM-MCA / 实机 CNTVCT 多级代理评估，最后通过 `LD_PRELOAD` 快速�
 
 规划与完整文档见 [docs/README.md](docs/README.md)。
 
+## AGO：自动图优化 sidecar（2026-08-16 起的新主方向）
+
+在既有“布局搜索 + 专用发射器”之上，新增 **AGO（AArch64 SIMD Graph
+Optimizer）** 并行后端：从 kernel 契约/受限 DSL 自动建数据流图 → 逐个
+pass 优化 → 按目标机指令成本表做有界 cover/布局选择 → 20k 差分 +
+生产逐调用差分验证 → N1 PMU / 920B CNTVCT 真机回放更新代价表。
+目标是解决“内部手写算子可在 920B 超开源 NEON 30%+，而现有搜索工具
+搜不出来”的算子级质量差距（规划 [docs/52](docs/52-ago-plan-20260816.md)，
+实现 [optimizer/ago](optimizer/ago/README.md)）。
+
+当前进度（2026-08-16）：
+
+- M0 通过：SA8D 8x8 垂直切片（契约 → 图 → NEON cover → 20k 门禁 →
+  N1/920B paired 复现，0 失配）；
+- M1 通过：受限 fail-closed DSL 前端 + pass 管线（确定性/幂等/预算）；
+- M2-foundation 通过：SATD 8x8 第二锚点 + A/B/C 尾部 cover 冒烟排序门
+  （N1 与 920B 均 PASS；报告
+  [reports/ago-m2-satd8-covers-20260816.txt](reports/ago-m2-satd8-covers-20260816.txt)）；
+  M2-expanded（正式留出排序门：≥8 region 实例、噪声探针、0.75 成对
+  准确率等）为剩余验收，见 [optimizer/ago/TODO-M2.md](optimizer/ago/TODO-M2.md)；
+- 顶级模型咨询：round-0023（AGO 规划条件 GO）与 round-0024
+  （M2 拆分 + 排序门/N1 校准协议，decision 已落盘）见
+  [expert-advice/](expert-advice/)。
+
 ## 当前状态（2026-08-15）
 
 - **覆盖**：179 个 kernel 目录；AArch64 已注册 29 个 dispatch 字段全部有
@@ -137,7 +161,8 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
 端到端 +15% 需要一批大热点同时显著反超，或单个 ≥5% 占比热点大幅反超。
-当前证据下该目标不可达，仍在继续扩大覆盖与转化率。
+搜索路线已到转化率瓶颈，**AGO 作为并行 sidecar 主攻算子级质量**（见上
+一节），现有注入/冻结链路保持不变。
 
 ## LD_PRELOAD 注入器
 
