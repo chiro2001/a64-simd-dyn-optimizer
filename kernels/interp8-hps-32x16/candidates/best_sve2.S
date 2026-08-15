@@ -8,54 +8,91 @@
 dynopt_interp8_hps_32x16_sve2:
 .LFB3886:
 	.cfi_startproc
-	sub	w5, w4, #1
-	sub	w7, w4, #1
+	sub	w6, w4, #1
+	sub	w4, w4, #1
 	movi	d25, #0
-	cmp	w7, 3
-	mov	x6, 16
-	lsl	x5, x5, 4
-	adrp	x4, .LANCHOR0
-	csel	x5, x5, x6, cc
-	add	x4, x4, :lo12:.LANCHOR0
-	mov	x7, 0
-	ldr	q1, [x4, x5]
-	add	x5, x4, 48
-	ldr	z30, [x5]
-	add	x5, x4, 64
-	ldr	z29, [x5]
-	add	x5, x4, 80
-	ldr	z28, [x5]
-	xtn	v1.8b, v1.8h
-	add	x5, x4, 96
-	ldr	z27, [x5]
-	add	x5, x0, 29
-	add	x4, x4, 112
-	ldr	z26, [x4]
-	tbl	z30.b, {z1.b}, z30.b
-	tbl	z27.b, {z1.b}, z27.b
+	cmp	w4, 3
+	mov	x5, 16
+	lsl	x6, x6, 4
+	adrp	x9, .LANCHOR0
+	csel	x6, x6, x5, cc
+	add	x9, x9, :lo12:.LANCHOR0
+	sub	x8, x0, #3
+	add	x7, x0, 5
+	mov	x4, 0
+	add	x11, x9, 48
+	ldr	z30, [x11]
+	ldr	q31, [x9, x6]
+	add	x6, x0, 13
+	add	x0, x0, 21
+	add	x10, x9, 96
+	ldr	z27, [x10]
+	add	x11, x9, 64
+	ldr	z29, [x11]
+	add	x10, x9, 80
+	xtn	v31.8b, v31.8h
+	ldr	z28, [x10]
+	add	x9, x9, 112
+	ldr	z26, [x9]
+	tbl	z30.b, {z31.b}, z30.b
+	tbl	z27.b, {z31.b}, z27.b
 	.p2align 5,,15
 .L3:
-	sub	x0, x5, #32
-	add	x4, x2, x7, lsl 1
-.L4:
-	ldr	q24, [x0], 8
-	add	z24.b, z24.b, #128
-	tbl	z22.b, {z24.b}, z28.b
-	tbl	z0.b, {z24.b}, z29.b
-	movprfx	z23, z25
-	sdot	z23.s, z22.b, z30.b
+	ldr	q21, [x8, x4]
+	add	z21.b, z21.b, #128
+	tbl	z22.b, {z21.b}, z28.b
+	tbl	z0.b, {z21.b}, z29.b
+	movprfx	z19, z25
+	sdot	z19.s, z22.b, z30.b
+	movprfx	z20, z25
+	sdot	z20.s, z0.b, z30.b
+	tbl	z21.b, {z21.b}, z26.b
+	sdot	z20.s, z22.b, z27.b
+	sdot	z19.s, z21.b, z27.b
+	uzp1	v19.8h, v20.8h, v19.8h
+	subs	w5, w5, #1
+	str	q19, [x2]
+	ldr	q16, [x7, x4]
+	add	z16.b, z16.b, #128
+	tbl	z17.b, {z16.b}, z28.b
+	tbl	z18.b, {z16.b}, z29.b
+	movprfx	z6, z25
+	sdot	z6.s, z17.b, z30.b
+	movprfx	z7, z25
+	sdot	z7.s, z18.b, z30.b
+	tbl	z16.b, {z16.b}, z26.b
+	sdot	z7.s, z17.b, z27.b
+	sdot	z6.s, z16.b, z27.b
+	uzp1	v6.8h, v7.8h, v6.8h
+	str	q6, [x2, 16]
+	ldr	q3, [x6, x4]
+	add	z3.b, z3.b, #128
+	tbl	z4.b, {z3.b}, z28.b
+	tbl	z5.b, {z3.b}, z29.b
+	movprfx	z1, z25
+	sdot	z1.s, z4.b, z30.b
+	movprfx	z2, z25
+	sdot	z2.s, z5.b, z30.b
+	tbl	z3.b, {z3.b}, z26.b
+	sdot	z2.s, z4.b, z27.b
+	sdot	z1.s, z3.b, z27.b
+	uzp1	v1.8h, v2.8h, v1.8h
+	str	q1, [x2, 32]
+	ldr	q23, [x0, x4]
+	add	z23.b, z23.b, #128
+	tbl	z24.b, {z23.b}, z28.b
+	tbl	z0.b, {z23.b}, z29.b
 	movprfx	z31, z25
-	sdot	z31.s, z0.b, z30.b
-	tbl	z24.b, {z24.b}, z26.b
-	sdot	z31.s, z22.b, z27.b
-	sdot	z23.s, z24.b, z27.b
-	uzp1	v23.8h, v31.8h, v23.8h
-	str	q23, [x4], 16
-	cmp	x0, x5
-	bne	.L4
-	add	x7, x7, x3
-	add	x5, x0, x1
-	subs	w6, w6, #1
+	sdot	z31.s, z24.b, z30.b
+	movprfx	z22, z25
+	sdot	z22.s, z0.b, z30.b
+	tbl	z23.b, {z23.b}, z26.b
+	sdot	z22.s, z24.b, z27.b
+	sdot	z31.s, z23.b, z27.b
+	uzp1	v31.8h, v22.8h, v31.8h
+	add	x4, x4, x1
+	str	q31, [x2, 48]
+	add	x2, x2, x3, lsl 1
 	bne	.L3
 	ret
 	.cfi_endproc
