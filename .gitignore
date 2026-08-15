@@ -60,3 +60,11 @@ experiments/**/llvm-ir/*.ll.*
 experiments/**/lift-search/
 expert-advice/*/session.log
 build/resource-monitor*.log
+
+# vertical-fir sliding=3 search artifacts (2026-08-15): keep durable
+# results + best generated source; trace/log/verify/binaries regenerate.
+experiments/m30-interp8vpp-search/gen-search3-*/*
+!experiments/m30-interp8vpp-search/gen-search3-*/results.json
+!experiments/m30-interp8vpp-search/gen-search3-*/sliding-3_acc_split-1.cpp
+experiments/m30-interp8vpp-search/gen-search-full-*/*
+!experiments/m30-interp8vpp-search/gen-search-full-*/results.json

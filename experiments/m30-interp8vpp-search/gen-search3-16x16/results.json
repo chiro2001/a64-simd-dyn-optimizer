@@ -1,0 +1,47 @@
+[
+ {
+  "tag": "sliding-3_acc_split-1",
+  "sliding": 3,
+  "acc_split": 1,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x400d00"
+  ],
+  "counts": {
+   "total": 308,
+   "vector": 262,
+   "movprfx": 15,
+   "vector_fused": 247,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 16,
+   "vector_fused_uop": 247
+  },
+  "fusion": {
+   "eligible": 7,
+   "hw_supported": 0,
+   "pairs": [
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov"
+   ],
+   "counts": {
+    "scalar_insns": 98,
+    "simd_insns": 189,
+    "fused_pseudo": 15,
+    "store_insns": 16
+   }
+  },
+  "mca_cycles": 157,
+  "mca_uops": 319
+ }
+]
