@@ -30,3 +30,10 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [ ] 受保护回退（fallback）；
 - [ ] 生产逐调用差分 + canary + 真实分布回放；
 - [ ] 非劣于冻结发射器（best7）。
+
+## 端到端现状（2026-08-16）
+
+- 真实 1080p 30 帧 920B E2E：基线 8194 ms vs best6b 8046 ms
+  （-1.61%，bootstrap [119,166] ms，bit-exact）；
+- 优化版 perf 热点与下一步回归矩阵计划：
+  reports/e2e-best6b-perf-20260816.txt。
