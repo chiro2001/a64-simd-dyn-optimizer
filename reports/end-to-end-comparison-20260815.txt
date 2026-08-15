@@ -28,7 +28,12 @@
 
 负结果（保留文档，不注入）：ccn soff 全展开 +7.5%（< 循环版）、
 costC1C2Flag run-cache/NEON 掩码路径、dct32 替换候选（0.93-0.97）、
-quant（13 vs 9 ticks）、interp8 SVE1 替换（0.55-0.87）。
+quant（12-13 vs 9 ticks，三轮尝试：SVE1/NEON 全展开/NEON pair+uzp；
+上游手写 asm 无法被搜索生成反超）、interp8 SVE1 替换（0.55-0.87）。
+
+round-0033 quant pair+uzp：16 元素/轮双链 + 上游风格零计数，20k 差分
+0 失配（顺带修正 qo 窄化必须用截断 vmovn 而非饱和 vqmovn），但 920B
+CNTVCT 仍 12 vs 上游 9 ticks，不注入。
 
 ## 端到端结果
 
@@ -52,6 +57,8 @@ quant（13 vs 9 ticks）、interp8 SVE1 替换（0.55-0.87）。
 3. 工具链已具备：真实轨迹录制/回放、生产逐调用差分、ISA 受限搜索、
    LD_PRELOAD/编译期注入；sve2（950）档对 6 个内核构建/ISA 门禁全部
    通过（不限制 ISA 结果不劣化的回归成立）。
-4. 建议：内网 920B/950 复测本报告配置（docs/49 有命令）；950 上重点
+4. quant 判定为搜索生成不可达（三轮负结果）；剩余可撬动的热点以
+   dct32 原生搜索与 motionEstimate 内部 sad/satd 覆盖为主。
+5. 建议：内网 920B/950 复测本报告配置（docs/49 有命令）；950 上重点
    验证 scan/ccn/c1c2 在 SVE2 下的表现；后续优化优先 quant/dct32 的
    原生搜索与 motionEstimate 内部 sad/satd 覆盖。

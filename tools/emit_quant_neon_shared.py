@@ -20,10 +20,22 @@ Semantics per element (x265 quant_c, 256 elems):
 
 def emit_256(func_name="dynopt_quant_256_sve2", count="vaddv",
              shape="full"):
-    if count not in ("vaddv", "vceqz"):
+    if count not in ("vaddv", "vceqz", "uzp"):
         raise ValueError("unknown count %r" % count)
+    if shape not in ("full", "loop", "pair"):
+        raise ValueError("unknown shape %r" % shape)
 
-    if count == "vaddv":
+    if count == "uzp":
+        # Upstream-style zero count: cmeq gives -1 per zero lane in an
+        # s16 accumulator; vaddlvq then yields -zeros (round-0033).
+        nz_src = ("    int16x8_t nzacc = vdupq_n_s16(0);")
+        nz_step = ("    nzacc = vaddq_s16(nzacc, vreinterpretq_s16_u16(\n"
+                   "        vceqzq_s16(\n"
+                   "        vcombine_s16(vmovn_s32(%(p)sl0),\n"
+                   "                     vmovn_s32(%(p)sl1)))));")
+        nz_end = ("    const int32_t z = vaddlvq_s16(nzacc);\n"
+                  "    return 256 + z;")
+    elif count == "vaddv":
         nz_src = ("    uint32_t nz = 0;\n"
                   "    uint32x4_t nzacc = vdupq_n_u32(0);")
         nz_step = ("    nzacc = vaddq_u32(nzacc, vandq_u32(\n"
@@ -73,10 +85,25 @@ def emit_256(func_name="dynopt_quant_256_sve2", count="vaddv",
     int32x4_t %(p)sqq0 = vsubq_s32(veorq_s32(%(p)sl0, %(p)ssg), %(p)ssg);
     int32x4_t %(p)sqq1 = vsubq_s32(veorq_s32(%(p)sl1, %(p)ssg2), %(p)ssg2);
     vst1q_s16(qo + %(idx)s,
-              vcombine_s16(vqmovn_s32(%(p)sqq0), vqmovn_s32(%(p)sqq1)));
+              vcombine_s16(vmovn_s32(%(p)sqq0), vmovn_s32(%(p)sqq1)));
 %(nz_step)s
 """
-    if shape == "full":
+    if shape == "pair":
+        # Two independent 8-element chains per loop iteration for ILP
+        # without the icache cost of a 32-block full unroll (round-0033).
+        pair = []
+        for pfx in ("a", "b"):
+            pair.append(step % {
+                "idx": "i + %d" % (0 if pfx == "a" else 8),
+                "p": pfx + "_",
+                "nz_step": nz_step % {"p": pfx + "_"}})
+        steps_src = ("    for (int i = 0; i < 256; i += 16)\n"
+                     "    {\n"
+                     + "\n".join(
+                         "    " + ln for ln in
+                         ("\n".join(pair)).splitlines())
+                     + "\n    }")
+    elif shape == "full":
         steps = []
         for gi in range(32):
             steps.append(step % {
