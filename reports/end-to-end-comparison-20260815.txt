@@ -50,6 +50,10 @@ CNTVCT 仍 12 vs 上游 9 ticks，不注入。
 码流全部与基线一致（ee5db7…）。收益分解：scan r30 ≈ +0.8%、ccn NEON
 ≈ +0.4%、c1c2 r29 ≈ +0.3%、satd8/sa8d16/remain 少量。
 
+配对 bootstrap（scripts/paired_ci.py，20000 次）：best6b vs 基线中位差
+134 ms（1.63%），95% CI [5, 173] ms——下界 >0，统计显著（样本 5+5，
+CI 宽反映共享节点噪声与一个离群点）。
+
 ## 结论
 
 1. **端到端 -1.8~-1.9% 可复现**（两次独立配对测量），码流 bit-exact；
