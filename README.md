@@ -85,6 +85,7 @@
 - **chroma.copy_pp 8x8**：16/18，20k 差分 0 失配（SVE2）。
 - **chroma.copy_ss 16x16**：32/26，20k 差分 0 失配（SVE2）。
 - **chroma.copy_sp 16x16**：48/31，20k 差分 0 失配（SVE2）。
+- **chroma.copy_ps 16x16**：32/26，20k 差分 0 失配（SVE2）。
 - **chroma vpp 8x64 / 16x4**：650/272、50/43，均 20k 差分
   0 失配（SVE2）。
 - **chroma vpp 8x4**：50/43，20k 差分 0 失配（SVE2）。
