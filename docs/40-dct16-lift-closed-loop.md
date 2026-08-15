@@ -446,3 +446,18 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
 - `kernels/sa8d16/manifest.yaml` 增加 `pack: [1,2]`；
   `tools/test_gen_emit.py` 以 pack=2+saddv 作为 sa8d16 冒烟 combo。
   hadamard 配方主线现在 sa8d16 也达到手写最优。
+
+## 24. hadamard 8x8 双行打包：sa8d 通用发射器复现手写四组合（2026-08-15）
+
+- `emit_hadamard` 对 `pack=pair/evenpair` 字符串轴（sa8d 8x8 专用）
+  派发到 `_emit_hadamard_sa8d_8x8_packed`：双行共享一个 16-lane z.h
+  寄存器（高低半各一行），行 Hadamard 用 `svcadd + svtbl` 同拍处理；
+  结构签名要求 16 个 `<8 x i8>` load + uaddlv + `<2 x i64>` shuffle
+  （后者把 full 8x8 SA8D DAG 与 4x4-quad SATD DAG 区分开）。
+- 验收（20k 差分 0 失配，experiments/m30-sa8d-search/
+  gen-search-pack/results.json）：
+  - evenpair+sve：**79 fused / MCA 71**（= 手写最优 79/71）；
+  - pair+sve：84 / 73；
+  - evenpair+neon：86 / 66；pair+neon：86 / 67。
+- `tools/test_gen_emit.py` 的 sa8d 冒烟 combo 切到 evenpair+sve。
+  hadamard 配方的 sa8d 8x8/16x16 两个手写目标均已追平。

@@ -77,3 +77,9 @@ experiments/m30-sa8d16-search/gen-search-pack2/*
 !experiments/m30-sa8d16-search/gen-search-pack2/reduce_tail-dot-uaddv_pack-2_reduce-sve.cpp
 experiments/m30-sa8d16-search/gen-search-full-pack/*
 !experiments/m30-sa8d16-search/gen-search-full-pack/results.json
+
+# sa8d 8x8 packed search artifacts (2026-08-15): keep results + generated
+# candidate sources; trace/log/verify/binaries regenerate.
+experiments/m30-sa8d-search/gen-search-pack/*
+!experiments/m30-sa8d-search/gen-search-pack/results.json
+!experiments/m30-sa8d-search/gen-search-pack/reduce-*.cpp

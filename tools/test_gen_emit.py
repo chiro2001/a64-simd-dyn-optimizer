@@ -26,7 +26,8 @@ KERNELS = {
     # kernel: (seed recipe name, expected family, best combo)
     "sad": ("sad-16x16", "diff-sum", {}),
     "sad-32": ("sad-32x32", "diff-sum", {}),
-    "sa8d": ("sa8d-8x8", "hadamard", {}),
+    "sa8d": ("sa8d-8x8", "hadamard",
+            {"pack": "evenpair", "reduce": "sve"}),
     "sa8d16": ("sa8d-16x16", "hadamard",
                {"pack": 2, "reduce_tail": "saddv"}),
     "satd-4": ("satd-4x4", "hadamard", {}),
