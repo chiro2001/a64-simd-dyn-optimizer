@@ -106,6 +106,10 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
 - **950**：costC1C2Flag +81%（20k 干净，保留）；costCoeffRemain ~中性；
   scanPosLast SVE2 候选慢 4.5×，950 不注入；sa8d16 的 SVE2 候选正确性
   FAIL，950 沿用 NEON 版本（reports/950-quick-test-20260815.txt）。
+- **costC1C2Flag 终局**：n<=4 展开叶子路径 + n5-8 NEON run-cache，
+  60k 混合语料差分 0 失配、码流一致，但 E2E 仍 +0.7%（n1 占真实调用
+  ~41%，uniform 语料下 n1 比 0.91）——不作为注入项，保留为最优已知
+  候选（reports/c1c2-920b-e2e-20260815.txt）。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
