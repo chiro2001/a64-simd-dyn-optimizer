@@ -44,6 +44,7 @@ targets:
   halve_gate: 0.5
 
 layouts:
+  pack: [1, 2]
   reduce: [sve]
   # 2026-08-14: tail-reduction axis (saddv passes the halve gate 186;
   # dot-uaddv is the 189 baseline shape).

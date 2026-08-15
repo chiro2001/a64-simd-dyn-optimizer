@@ -68,3 +68,12 @@ experiments/m30-interp8vpp-search/gen-search3-*/*
 !experiments/m30-interp8vpp-search/gen-search3-*/sliding-3_acc_split-1.cpp
 experiments/m30-interp8vpp-search/gen-search-full-*/*
 !experiments/m30-interp8vpp-search/gen-search-full-*/results.json
+
+# hadamard pack=2 search artifacts (2026-08-15): keep durable results +
+# generated pack=2 sources; trace/log/verify/binaries regenerate.
+experiments/m30-sa8d16-search/gen-search-pack2/*
+!experiments/m30-sa8d16-search/gen-search-pack2/results.json
+!experiments/m30-sa8d16-search/gen-search-pack2/reduce_tail-saddv_pack-2_reduce-sve.cpp
+!experiments/m30-sa8d16-search/gen-search-pack2/reduce_tail-dot-uaddv_pack-2_reduce-sve.cpp
+experiments/m30-sa8d16-search/gen-search-full-pack/*
+!experiments/m30-sa8d16-search/gen-search-full-pack/results.json

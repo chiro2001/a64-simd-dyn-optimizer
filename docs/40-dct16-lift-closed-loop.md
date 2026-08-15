@@ -427,3 +427,22 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
 - `kernels/interp8vpp-16|32/manifest.yaml` 的 sliding 轴扩为
   [0,1,2,3]；`tools/test_gen_emit.py` 以 sliding=3 作为两核的
   冒烟 combo。vertical-fir 主线已从 MCA 差 2.5%/6.6% 变为完全一致。
+
+## 23. hadamard pack=2：sa8d16 自然 16-lane 行追平手写（2026-08-15）
+
+- `emit_hadamard` 新增 `pack=2` 分支：`_hadamard_natural_sa8d_rows`
+  用结构签名识别 sa8d 16x16 四象限 seed（64 个 `<8 x i8>` load =
+  16 行 × 2 plane × 2 半列，uaddlp+vecreduce_add 尾部归约），
+  `_emit_hadamard_sa8d_natural` 生成自然 16-lane 行候选：
+  - `svld1ub_u16` 双 plane 一次差分 + `svsub`；
+  - `svcadd + svtbl(HAD_IDX16)` 行 Hadamard，左右 8x8 象限同拍处理；
+  - 列 Hadamard 用 SUMSUB/ABSSUB/`svmax`，每 8 行一组尾部归约
+    （saddv / dot-uaddv 两轴）。
+- 验收（20k 差分 0 失配，experiments/m30-sa8d16-search/
+  gen-search-pack2/results.json）：
+  - pack=2 + saddv：**186 fused / MCA 73**（= 手写 186/73，过减半门）；
+  - pack=2 + dot-uaddv：189 / 72；
+  - pack=1 原 DAG 直译：505 / 157（对照锚）。
+- `kernels/sa8d16/manifest.yaml` 增加 `pack: [1,2]`；
+  `tools/test_gen_emit.py` 以 pack=2+saddv 作为 sa8d16 冒烟 combo。
+  hadamard 配方主线现在 sa8d16 也达到手写最优。

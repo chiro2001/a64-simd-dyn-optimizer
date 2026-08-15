@@ -1,0 +1,145 @@
+[
+ {
+  "tag": "reduce_tail-saddv_pack-1_reduce-sve",
+  "reduce_tail": "saddv",
+  "pack": 1,
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x401120"
+  ],
+  "counts": {
+   "total": 602,
+   "vector": 521,
+   "movprfx": 16,
+   "vector_fused": 505,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 505
+  },
+  "fusion": {
+   "eligible": 7,
+   "hw_supported": 0,
+   "pairs": [
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 177,
+    "simd_insns": 344,
+    "fused_pseudo": 16
+   }
+  },
+  "baseline_ratio": 1.353887399463807,
+  "halve_gate_met": false,
+  "mca_cycles": 157,
+  "mca_uops": 605
+ },
+ {
+  "tag": "reduce_tail-saddv_pack-2_reduce-sve",
+  "reduce_tail": "saddv",
+  "pack": 2,
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400b20"
+  ],
+  "counts": {
+   "total": 224,
+   "vector": 189,
+   "movprfx": 3,
+   "vector_fused": 186,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 186
+  },
+  "fusion": {
+   "eligible": 8,
+   "hw_supported": 0,
+   "pairs": [
+    "sabd+smax",
+    "sabd+smax",
+    "sabd+smax",
+    "abs+smax",
+    "abs+smax",
+    "sabd+smax",
+    "add+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 115,
+    "simd_insns": 105,
+    "fused_pseudo": 3
+   }
+  },
+  "baseline_ratio": 0.49865951742627346,
+  "halve_gate_met": true,
+  "mca_cycles": 73,
+  "mca_uops": 230
+ },
+ {
+  "tag": "reduce_tail-dot-uaddv_pack-2_reduce-sve",
+  "reduce_tail": "dot-uaddv",
+  "pack": 2,
+  "reduce": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400b40"
+  ],
+  "counts": {
+   "total": 227,
+   "vector": 193,
+   "movprfx": 4,
+   "vector_fused": 189,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 189
+  },
+  "fusion": {
+   "eligible": 8,
+   "hw_supported": 0,
+   "pairs": [
+    "sabd+smax",
+    "sabd+smax",
+    "sabd+smax",
+    "abs+smax",
+    "sabd+smax",
+    "add+add",
+    "add+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 116,
+    "simd_insns": 105,
+    "fused_pseudo": 4
+   }
+  },
+  "baseline_ratio": 0.5067024128686327,
+  "halve_gate_met": false,
+  "mca_cycles": 72,
+  "mca_uops": 228
+ }
+]
