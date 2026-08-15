@@ -526,7 +526,9 @@ def emit_hadamard(machine_ir, func_name, combo=None):
     anchor); 2 = natural 16-lane-row SA8D lowering for the detected
     16x16 four-quadrant shape (hand-optimal candidate shape).
     """
-    pack = int((combo or {}).get("pack", 1) or 1)
+    pack = (combo or {}).get("pack", 1)
+    if isinstance(pack, str) and pack.isdigit():
+        pack = int(pack)
     if pack == 2:
         rows = _hadamard_natural_sa8d_rows(machine_ir)
         if rows is None:
