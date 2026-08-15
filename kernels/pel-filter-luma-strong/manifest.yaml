@@ -1,0 +1,32 @@
+# pelFilterLumaStrong: strong luma deblock, vertical/horizontal variants.
+kernel: pel-filter-luma-strong
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: pel_filter_luma_strong
+  n: 4
+
+candidate:
+  symbol: dynopt_pel_filter_luma_strong_sve2
+  trace_driver_src: kernels/pel-filter-luma-strong/trace_driver.cpp
+  trace_driver_c: kernels/pel-filter-luma-strong/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pelFilterLumaStrong_V_neon
+  symbol_mangled: pelFilterLumaStrong_V_neon
+  call: pelFilterLumaStrong_V_neon
+  decl: |
+    void pelFilterLumaStrong_V_neon(
+        uint8_t*, intptr_t, intptr_t, int32_t, int32_t);
+
+baselines:
+  neon:
+    driver: kernels/pel-filter-luma-strong/trace_driver.cpp
+    symbol_mangled: pelFilterLumaStrong_V_neon
+
+corpus:
+  cases: 20000
+
+layouts:
+  compute: [scalar]

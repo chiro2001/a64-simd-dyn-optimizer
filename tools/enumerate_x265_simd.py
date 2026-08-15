@@ -132,6 +132,8 @@ def main():
             done = "cu-copy-pp" in cov
         elif name == "pu":
             done = "pu-copy-pp" in cov
+        elif name == "pelFilterLumaStrong":
+            done = "pel-filter-luma-strong" in cov
         else:
             done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,

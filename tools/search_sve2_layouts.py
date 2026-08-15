@@ -636,6 +636,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return _copy_emit(combo, _sym, _w, _h)
         return emit_fn
+    if kernel == "pel-filter-luma-strong":
+        from emit_pel_filter_luma_strong_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 

@@ -363,3 +363,7 @@ experiments/m30-pu-copy-pp-search/search-*/*
 !experiments/m30-pu-copy-pp-search/search-*/results.json
 experiments/m30-chroma-copy-pp-search/search-*/*
 !experiments/m30-chroma-copy-pp-search/search-*/results.json
+
+# pelFilterLumaStrong search artifacts (2026-08-15)
+experiments/m30-pel-filter-luma-strong-search/search-*/*
+!experiments/m30-pel-filter-luma-strong-search/search-*/results.json
