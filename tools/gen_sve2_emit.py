@@ -1268,7 +1268,7 @@ def emit_hadamard(machine_ir, func_name, combo=None):
             width, height = shape
             if width == 16 and height in (4, 8, 16, 32, 64):
                 return _emit_hadamard_satd_wide_natural(func_name, height)
-            if width in (32, 48, 64) and height in (8, 16, 24, 32, 64):
+            if width in (32, 48, 64) and height in (8, 16, 24, 32, 48, 64):
                 return _emit_hadamard_satd_multiunit_natural(
                     func_name, height, width // 16)
             if width == 8 and height in (8, 16, 32):
