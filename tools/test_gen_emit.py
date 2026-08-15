@@ -47,7 +47,7 @@ KERNELS = {
     "interp8vpp-8": ("interp8vpp-8", "vertical-fir", {"sliding": 2}),
     "interp8vpp-16": ("interp8vpp-16", "vertical-fir", {"sliding": 3}),
     "interp8vpp-32": ("interp8vpp-32", "vertical-fir", {"sliding": 3}),
-    "interp4vpp-16": ("interp4vpp-16", "vertical-fir", {"sliding": 1}),
+    "interp4vpp-16": ("interp4vpp-16", "vertical-fir", {"sliding": 3}),
 }
 
 

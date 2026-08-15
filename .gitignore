@@ -83,3 +83,12 @@ experiments/m30-sa8d16-search/gen-search-full-pack/*
 experiments/m30-sa8d-search/gen-search-pack/*
 !experiments/m30-sa8d-search/gen-search-pack/results.json
 !experiments/m30-sa8d-search/gen-search-pack/reduce-*.cpp
+
+# interp4vpp sliding=3 artifacts (2026-08-15): keep results + best
+# generated source; trace/log/verify/binaries regenerate.
+experiments/m30-interp4vpp-search/gen-search3-*/*
+!experiments/m30-interp4vpp-search/gen-search3-*/results.json
+!experiments/m30-interp4vpp-search/gen-search3-*/sliding-3.cpp
+experiments/m30-interp4vpp-search/gen-search-full-*/*
+!experiments/m30-interp4vpp-search/gen-search-full-*/results.json
+!experiments/m30-interp4vpp-search/gen-search-full-*/compute-sdot-h_sliding-3.cpp

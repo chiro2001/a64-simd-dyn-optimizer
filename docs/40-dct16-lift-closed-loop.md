@@ -461,3 +461,21 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - evenpair+neon：86 / 66；pair+neon：86 / 67。
 - `tools/test_gen_emit.py` 的 sa8d 冒烟 combo 切到 evenpair+sve。
   hadamard 配方的 sa8d 8x8/16x16 两个手写目标均已追平。
+
+## 25. vertical-fir chroma sliding=3：interp4vpp 追平手写（2026-08-15）
+
+- `emit_vertical_fir` 的 sliding=3 分支扩展到 chroma 4-tap：
+  `_emit_vertical_fir_chroma_native` 把 seed 每行两个 `<8 x i8>` store
+  合并为 full-width 16-lane 行（`store_lanes × groups` 推导，并保留
+  width=32 的 units 泛化），4 个系数向量 `svdup` 预构建，单累加器链
+  MLA + 8192 DC + `svqrshrunb/uzp1` 原生窄化，5+1 软件流水。
+- 验收（20k 差分 0 失配）：
+  - manifest 全轴（compute=sdot-h 使搜索按 clang -O3 +
+    sve2p3 编译，与手写同口径）：**sliding=3 = 171 fused / MCA 96**
+    （= 手写 171/96），experiments/m30-interp4vpp-search/
+    gen-search-full-16x16/results.json；
+  - 约束到 sliding=3 的 g++ -O2 副产物：170 fused / MCA 92
+    （gen-search3-16x16，信息项，不作为同口径对比）。
+- `kernels/interp4vpp-16/manifest.yaml` sliding 轴扩为 [0,1,2,3]；
+  `tools/test_gen_emit.py` 以 sliding=3 作为冒烟 combo。
+  vertical-fir 配方的 luma/chroma 手写目标至此全部追平。

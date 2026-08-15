@@ -33,5 +33,5 @@ corpus:
   cases: 20000
 
 layouts:
-  sliding: [0, 1, 2]
+  sliding: [0, 1, 2, 3]
   compute: [sdot-h]

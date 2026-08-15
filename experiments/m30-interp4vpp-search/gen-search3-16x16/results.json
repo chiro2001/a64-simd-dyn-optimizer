@@ -1,0 +1,38 @@
+[
+ {
+  "tag": "sliding-3",
+  "sliding": 3,
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x400b40"
+  ],
+  "counts": {
+   "total": 212,
+   "vector": 170,
+   "movprfx": 0,
+   "vector_fused": 170,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 16,
+   "vector_fused_uop": 170
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 72,
+    "simd_insns": 119,
+    "load_insns": 4,
+    "store_insns": 16
+   }
+  },
+  "mca_cycles": 92,
+  "mca_uops": 227
+ }
+]
