@@ -1,0 +1,190 @@
+[
+ {
+  "tag": "compute-sdot-h_pairsum-addp_unroll-loop",
+  "compute": "sdot-h",
+  "pairsum": "addp",
+  "unroll": "loop",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400900"
+  ],
+  "counts": {
+   "total": 459,
+   "vector": 359,
+   "movprfx": 32,
+   "vector_fused": 327,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 22,
+   "vector_fused_uop": 327
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 46,
+    "simd_insns": 12,
+    "load_insns": 7,
+    "fused_pseudo": 2
+   }
+  },
+  "mca_cycles": 114,
+  "mca_uops": 464
+ },
+ {
+  "tag": "compute-sdot-h_pairsum-addp_unroll-full",
+  "compute": "sdot-h",
+  "pairsum": "addp",
+  "unroll": "full",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400ee0"
+  ],
+  "counts": {
+   "total": 447,
+   "vector": 359,
+   "movprfx": 32,
+   "vector_fused": 327,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 6,
+   "vector_fused_uop": 327
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 231,
+    "simd_insns": 177,
+    "load_insns": 6,
+    "fused_pseudo": 32
+   }
+  },
+  "mca_cycles": 115,
+  "mca_uops": 468
+ },
+ {
+  "tag": "compute-sdot-h_pairsum-uzp_unroll-loop",
+  "compute": "sdot-h",
+  "pairsum": "uzp",
+  "unroll": "loop",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400900"
+  ],
+  "counts": {
+   "total": 490,
+   "vector": 391,
+   "movprfx": 32,
+   "vector_fused": 359,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 22,
+   "vector_fused_uop": 359
+  },
+  "fusion": {
+   "eligible": 2,
+   "hw_supported": 0,
+   "pairs": [
+    "uzp1+add",
+    "uzp1+add"
+   ],
+   "counts": {
+    "scalar_insns": 45,
+    "simd_insns": 14,
+    "load_insns": 7,
+    "fused_pseudo": 2
+   }
+  },
+  "mca_cycles": 121,
+  "mca_uops": 495
+ },
+ {
+  "tag": "compute-sdot-h_pairsum-uzp_unroll-full",
+  "compute": "sdot-h",
+  "pairsum": "uzp",
+  "unroll": "full",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400f60"
+  ],
+  "counts": {
+   "total": 478,
+   "vector": 391,
+   "movprfx": 32,
+   "vector_fused": 359,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 6,
+   "vector_fused_uop": 359
+  },
+  "fusion": {
+   "eligible": 32,
+   "hw_supported": 0,
+   "pairs": [
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add"
+   ],
+   "counts": {
+    "scalar_insns": 230,
+    "simd_insns": 209,
+    "load_insns": 6,
+    "fused_pseudo": 32
+   }
+  },
+  "mca_cycles": 123,
+  "mca_uops": 499
+ }
+]

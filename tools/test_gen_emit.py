@@ -38,17 +38,28 @@ KERNELS = {
     "satd-8x16": ("satd-8x16", "hadamard", {}),
     "satd-16x8": ("satd-16x8", "hadamard", {}),
     "satd-16x4": ("satd-16x4", "hadamard", {}),
-    "interp8": ("interp8-8x8", "fir", {}),
-    "interp8-16": ("interp8-16x16", "fir", {}),
-    "interp8-32": ("interp8-32x32", "fir", {}),
-    "interp4": ("interp4-16x16", "fir", {}),
-    "interp4-8": ("interp4-8x8", "fir", {}),
-    "interp4-32": ("interp4-32x32", "fir", {}),
+    "interp8": ("interp8-8x8", "fir",
+                {"compute": "sdot-h", "pairsum": "addp"}),
+    "interp8-16": ("interp8-16x16", "fir",
+                  {"compute": "sdot-h", "unroll": "loop",
+                   "pairsum": "addp"}),
+    "interp8-32": ("interp8-32x32", "fir",
+                  {"compute": "sdot-h", "unroll": "full",
+                   "pairsum": "addp"}),
+    "interp4": ("interp4-16x16", "fir",
+               {"compute": "sdot-h"}),
+    "interp4-8": ("interp4-8x8", "fir",
+                 {"compute": "sdot-h"}),
+    "interp4-32": ("interp4-32x32", "fir",
+                  {"compute": "sdot-h"}),
     "interp8vpp-8": ("interp8vpp-8", "vertical-fir", {"sliding": 2}),
     "interp8vpp-16": ("interp8vpp-16", "vertical-fir", {"sliding": 3}),
     "interp8vpp-32": ("interp8vpp-32", "vertical-fir", {"sliding": 3}),
     "interp4vpp-16": ("interp4vpp-16", "vertical-fir", {"sliding": 3}),
 }
+
+SDOTH_KERNELS = {"interp8", "interp8-16", "interp8-32",
+                 "interp4", "interp4-8", "interp4-32"}
 
 
 def machine_ir_path(recipe):
@@ -84,9 +95,11 @@ def main():
             fd, tmp = tempfile.mkstemp(suffix=".cpp")
             os.write(fd, src.encode())
             os.close(fd)
+            march = ("armv9.4-a+sve2p3" if kernel in SDOTH_KERNELS
+                     else "armv8.2-a+sve2")
             cc = subprocess.run(
                 ["aarch64-linux-gnu-g++", "-O3", "-std=c++11",
-                 "-march=armv8.2-a+sve2", "-fsyntax-only", tmp],
+                 "-march=" + march, "-fsyntax-only", tmp],
                 capture_output=True, text=True)
             os.unlink(tmp)
             if cc.returncode != 0:

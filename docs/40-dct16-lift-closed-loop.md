@@ -479,3 +479,23 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
 - `kernels/interp4vpp-16/manifest.yaml` sliding 轴扩为 [0,1,2,3]；
   `tools/test_gen_emit.py` 以 sliding=3 作为冒烟 combo。
   vertical-fir 配方的 luma/chroma 手写目标至此全部追平。
+
+## 26. fir SVE2p3 sdot.h 路径进通用配方：6 个 hpp 形状追平手写（2026-08-15）
+
+- `emit_fir` 识别 `compute=sdot-h` 后走配方级 SVE2p3 lowering：
+  - 8-tap luma（interp8 8/16/32）：`_emit_fir_luma_sdoth` =
+    `svtbl` 滑窗 + `sdot z.h,z.b,z.b`（内联 asm）+ `addp_h` pair-sum +
+    `svqrshrunb/uzp1`；unroll/pairsum 轴照常传入；
+  - 4-tap chroma（interp4 8/16/32）：`_emit_fir_chroma_sdoth` =
+    两 tbl 滑窗 + 两次 sdot.h + 8192 DC + 原生窄化；系数从
+    `g_chromaFilter` 解析生成 8x4 表。
+- 验收（各 20k 差分 0 失配）：
+  - interp8：sdot-h+addp **93 fused / MCA 53**（= 手写 93/53）；
+    sdot-d 原路径 106/52、sdot-h+uzp 101/55；
+  - interp8-16：loop **327 / 114**（= 手写）；full 327/115；
+  - interp8-32：full **1289 / 367**（手写记录 1289/369）；
+    loop 1289/369；
+  - interp4-8/16/32：**85/47、165/70、645/189**（= 手写）。
+- `tools/test_gen_emit.py` 的 6 个 fir 核切到 sdot-h 最佳 combo，并按
+  kernel 使用 `-march=armv9.4-a+sve2p3` 做 syntax-only 编译。
+  docs/46 §7 的“sdot.h 未进通用配方”限制消除。
