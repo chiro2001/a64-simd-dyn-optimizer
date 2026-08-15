@@ -23,6 +23,8 @@ extern "C" uint32_t dynopt_cost_coeff_nxn_sve2(
     const uint8_t*, uint32_t, uint8_t*, int, int, int);
 extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
     uint16_t*, intptr_t, uint8_t*, intptr_t);
+extern "C" uint32_t dynopt_cost_coeff_remain_sve2(
+    uint16_t*, int, int);
 static inline uint64_t rdtsc()
 {
     uint64_t t;
@@ -187,7 +189,12 @@ static int bench_remain(int which, int samples, int batch)
             absbuf[i] = (uint16_t)(rng() & 0x3FF);
         uint64_t t0 = rdtsc();
         for (int b = 0; b < batch; b++)
-            fn(absbuf.data(), 16, 0);
+        {
+            if (which == 0)
+                fn(absbuf.data(), 16, 0);
+            else
+                dynopt_cost_coeff_remain_sve2(absbuf.data(), 16, 0);
+        }
         uint64_t t1 = rdtsc();
         uint64_t per = (t1 - t0) / (uint64_t)batch;
         times.push_back(per);
