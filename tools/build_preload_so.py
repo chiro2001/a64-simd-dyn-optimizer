@@ -126,6 +126,107 @@ static void dynopt_ssim_adapter(
         "save": None,
         "adapter": "dynopt_ssim_adapter",
     },
+    "sao-stats-bo": {
+        "cand_decl": ("void %SYM%(const int16_t*, const uint8_t*,"
+                      " intptr_t, int32_t*, int32_t*)"),
+        "orig_decl": "static saoCuStatsBO_t dynopt_orig_stats_bo = nullptr;",
+        "body": """
+static void dynopt_stats_bo_adapter(
+    const int16_t* diff, const uint8_t* rec, intptr_t stride,
+    int endX, int endY, int32_t* stats, int32_t* count)
+{
+    if (dynopt_orig_stats_bo && (endX != 64 || endY <= 0))
+        return dynopt_orig_stats_bo(diff, rec, stride, endX, endY,
+                                    stats, count);
+    for (int y = 0; y < endY; y++)
+        %SYM%(diff + y * stride, rec + y * stride, stride, stats, count);
+}
+""",
+        "save": "dynopt_orig_stats_bo = P->saoCuStatsBO;",
+        "adapter": "dynopt_stats_bo_adapter",
+    },
+    "sao-stats-e0": {
+        "cand_decl": ("void %SYM%(const int16_t*, const uint8_t*,"
+                      " intptr_t, int32_t*, int32_t*)"),
+        "orig_decl": "static saoCuStatsE0_t dynopt_orig_stats_e0 = nullptr;",
+        "body": """
+static void dynopt_stats_e0_adapter(
+    const int16_t* diff, const uint8_t* rec, intptr_t stride,
+    int endX, int endY, int32_t* stats, int32_t* count)
+{
+    if (dynopt_orig_stats_e0 && (endX != 64 || endY <= 0))
+        return dynopt_orig_stats_e0(diff, rec, stride, endX, endY,
+                                    stats, count);
+    for (int y = 0; y < endY; y++)
+        %SYM%(diff + y * stride, rec + y * stride, stride, stats, count);
+}
+""",
+        "save": "dynopt_orig_stats_e0 = P->saoCuStatsE0;",
+        "adapter": "dynopt_stats_e0_adapter",
+    },
+    "sao-stats-e1": {
+        "cand_decl": ("void %SYM%(const int16_t*, const uint8_t*,"
+                      " intptr_t, int8_t*, int32_t*, int32_t*)"),
+        "orig_decl": "static saoCuStatsE1_t dynopt_orig_stats_e1 = nullptr;",
+        "body": """
+static void dynopt_stats_e1_adapter(
+    const int16_t* diff, const uint8_t* rec, intptr_t stride,
+    int8_t* upBuff1, int endX, int endY,
+    int32_t* stats, int32_t* count)
+{
+    if (dynopt_orig_stats_e1 && (endX != 64 || endY <= 0))
+        return dynopt_orig_stats_e1(diff, rec, stride, upBuff1,
+                                    endX, endY, stats, count);
+    for (int y = 0; y < endY; y++)
+        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+              stats, count);
+}
+""",
+        "save": "dynopt_orig_stats_e1 = P->saoCuStatsE1;",
+        "adapter": "dynopt_stats_e1_adapter",
+    },
+    "sao-stats-e2": {
+        "cand_decl": ("void %SYM%(const int16_t*, const uint8_t*,"
+                      " intptr_t, int8_t*, int8_t*, int32_t*, int32_t*)"),
+        "orig_decl": "static saoCuStatsE2_t dynopt_orig_stats_e2 = nullptr;",
+        "body": """
+static void dynopt_stats_e2_adapter(
+    const int16_t* diff, const uint8_t* rec, intptr_t stride,
+    int8_t* upBuff1, int8_t* upBuff, int endX, int endY,
+    int32_t* stats, int32_t* count)
+{
+    if (dynopt_orig_stats_e2 && (endX != 64 || endY <= 0))
+        return dynopt_orig_stats_e2(diff, rec, stride, upBuff1, upBuff,
+                                    endX, endY, stats, count);
+    for (int y = 0; y < endY; y++)
+        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+              upBuff, stats, count);
+}
+""",
+        "save": "dynopt_orig_stats_e2 = P->saoCuStatsE2;",
+        "adapter": "dynopt_stats_e2_adapter",
+    },
+    "sao-stats-e3": {
+        "cand_decl": ("void %SYM%(const int16_t*, const uint8_t*,"
+                      " intptr_t, int8_t*, int32_t*, int32_t*)"),
+        "orig_decl": "static saoCuStatsE3_t dynopt_orig_stats_e3 = nullptr;",
+        "body": """
+static void dynopt_stats_e3_adapter(
+    const int16_t* diff, const uint8_t* rec, intptr_t stride,
+    int8_t* upBuff1, int endX, int endY,
+    int32_t* stats, int32_t* count)
+{
+    if (dynopt_orig_stats_e3 && (endX != 64 || endY <= 0))
+        return dynopt_orig_stats_e3(diff, rec, stride, upBuff1,
+                                    endX, endY, stats, count);
+    for (int y = 0; y < endY; y++)
+        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+              stats, count);
+}
+""",
+        "save": "dynopt_orig_stats_e3 = P->saoCuStatsE3;",
+        "adapter": "dynopt_stats_e3_adapter",
+    },
     "sao": {
         "cand_decl": "void %SYM%(uint8_t*, int8_t*, int8_t*, intptr_t)",
         "orig_decl": "static saoCuOrgE0_t dynopt_orig_sao_e0 = nullptr;",
@@ -175,6 +276,22 @@ static void dynopt_sao_e1_2rows_adapter(
 """,
         "save": "dynopt_orig_sao_e1_2 = P->saoCuOrgE1_2Rows;",
         "adapter": "dynopt_sao_e1_2rows_adapter",
+    },
+    "sao-e1": {
+        "cand_decl": "void %SYM%(uint8_t*, int8_t*, int8_t*, intptr_t)",
+        "orig_decl": "static saoCuOrgE1_t dynopt_orig_sao_e1 = nullptr;",
+        "body": """
+static void dynopt_sao_e1_adapter(
+    uint8_t* rec, int8_t* upBuff1, int8_t* offsetEo,
+    intptr_t stride, int width)
+{
+    if (dynopt_orig_sao_e1 && width != 64)
+        return dynopt_orig_sao_e1(rec, upBuff1, offsetEo, stride, width);
+    %SYM%(rec, upBuff1, offsetEo, stride);
+}
+""",
+        "save": "dynopt_orig_sao_e1 = P->saoCuOrgE1;",
+        "adapter": "dynopt_sao_e1_adapter",
     },
     "sao-e2": {
         "cand_decl": ("void %SYM%(uint8_t*, int8_t*, int8_t*, int8_t*,"
@@ -565,6 +682,10 @@ def entries_for_kernel(kernel, sym):
         add("saoCuOrgE1_2Rows", "void",
             "uint8_t*, int8_t*, int8_t*, intptr_t, int")
         return out
+    if kernel == "sao-e1":
+        add("saoCuOrgE1", "void",
+            "uint8_t*, int8_t*, int8_t*, intptr_t, int")
+        return out
     if kernel == "sao-e2":
         add("saoCuOrgE2[1]", "void",
             "uint8_t*, int8_t*, int8_t*, int8_t*, int, intptr_t")
@@ -572,6 +693,31 @@ def entries_for_kernel(kernel, sym):
     if kernel == "sao-e3":
         add("saoCuOrgE3[1]", "void",
             "uint8_t*, int8_t*, int8_t*, intptr_t, int, int")
+        return out
+    if kernel == "sao-stats-bo":
+        add("saoCuStatsBO", "void",
+            "const int16_t*, const uint8_t*, intptr_t, int, int,"
+            " int32_t*, int32_t*")
+        return out
+    if kernel == "sao-stats-e0":
+        add("saoCuStatsE0", "void",
+            "const int16_t*, const uint8_t*, intptr_t, int, int,"
+            " int32_t*, int32_t*")
+        return out
+    if kernel == "sao-stats-e1":
+        add("saoCuStatsE1", "void",
+            "const int16_t*, const uint8_t*, intptr_t, int8_t*,"
+            " int, int, int32_t*, int32_t*")
+        return out
+    if kernel == "sao-stats-e2":
+        add("saoCuStatsE2", "void",
+            "const int16_t*, const uint8_t*, intptr_t, int8_t*,"
+            " int8_t*, int, int, int32_t*, int32_t*")
+        return out
+    if kernel == "sao-stats-e3":
+        add("saoCuStatsE3", "void",
+            "const int16_t*, const uint8_t*, intptr_t, int8_t*,"
+            " int, int, int32_t*, int32_t*")
         return out
     return out
 
@@ -689,8 +835,25 @@ def try_generate_specialized(kernel, isa, workdir):
         return []
     try:
         s._ISA = isa
-        emit = s.make_emitter(kernel, "acle")
         man = load_manifest(kernel)
+    except Exception:
+        return []
+    if kernel == "sao-e1":
+        # The x265 saoCuOrgE1 slot is a single-row primitive; emit a
+        # rows=1 variant of the same 64-wide E1 kernel (default emitter
+        # generates the 4-row coverage shape, which is not slot-safe).
+        try:
+            from emit_sao_e1_sve2_shared import emit_64x4
+            sym = (man.get("candidate") or {}).get("symbol")
+            src = emit_64x4(func_name=sym, rows=1)
+            path = os.path.join(workdir, kernel + "-special-0.cpp")
+            with open(path, "w") as f:
+                f.write(src)
+            return [path]
+        except Exception:
+            return []
+    try:
+        emit = s.make_emitter(kernel, "acle")
     except Exception:
         return []
     combos = []

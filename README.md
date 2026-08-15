@@ -89,7 +89,7 @@ LD_PRELOAD=/abs/path/build/dynopt-x265-sve2.so x265 --input ... --output ...
 ```
 
 构建报告（`--json`）会列出实际 patch 的 kernel/slot 和跳过原因；当前只
-支持 8-bit x265。全 kernel 扫描下 sve2 可 patch 147 个、sve1 原生 74 个
+支持 8-bit x265。全 kernel 扫描下 sve2 可 patch 153 个、sve1 原生 79 个
 （quant/dequant/sao/ssim 等固定形状字段经 adapter 接入）。实现细节与
 ISA 限制见
 [docs/48-preload-and-isa-profiles.md](docs/48-preload-and-isa-profiles.md)。

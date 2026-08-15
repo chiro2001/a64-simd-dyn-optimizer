@@ -54,18 +54,18 @@ CNTVCT 实测（920B，上游 NEON 基线 vs SVE1 候选，2000 次）：
 
 | 目标 | 成功 patch kernel 数 | 说明 |
 | --- | ---: | --- |
-| sve2（950） | 147 | 含 dct8/dct16/dct32、sa8d/sa8d16、interp8vpp、chroma、quant/dequant、sao、planecopy/weight/ssim 等 |
-| sve1（920B） | 74（原生） | 含 dct8、dct32(best_sve1)、copy 族、hps/vps、interp8/gen、satd、scale2d、ssim、planecopy、scan、sign 等 |
+| sve2（950） | 153 | 含 dct8/dct16/dct32、sa8d/sa8d16、interp8vpp、chroma、quant/dequant、sao org/stats、planecopy/weight/ssim 等 |
+| sve1（920B） | 79（原生） | 含 dct8、dct32(best_sve1)、copy 族、hps/vps、interp8/gen、satd、scale2d、ssim、planecopy、scan、sign 等 |
 
 跳过原因主要是：该 kernel 当前只有 SVE2p3/SVE2p1 候选（interp8 path-B、
-interp4 非方形 hpp、IDCT）、`isRowExt` 变体不适用于通用 slot、sao-stats
-固定形状与 x265 多行 contract 不匹配、或 `dst4x4/idst4x4` 尚无本项目候选。
+interp4 非方形 hpp、IDCT）、`isRowExt` 变体不适用于通用 slot、
+`dequant-scaling-le` 与 gt 共用符号、或 `dst4x4/idst4x4` 尚无本项目候选。
 生成式 SVE1 候选（interp8/sa8d/satd/interp4 等）已通过 20k 差分。
 
 固定形状字段（quant/nquant/dequant/dequant-scaling/sao/ssim）通过
 wrapper adapter 接入：完整 primitive 签名转发到候选，形状不匹配时回退到
 原始 x265 函数（sao B0 按 4 行分块循环；E2/E3 仅 patch width=64 的大块
-slot）。
+slot；stats 按行循环；sao-e1 用 rows=1 特化生成）。
 
 ### 2.2 `search_sve2_layouts.py --isa`
 
