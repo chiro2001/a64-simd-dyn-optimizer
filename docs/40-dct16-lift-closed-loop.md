@@ -681,3 +681,17 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - vss 16x16：**872 fused / MCA 297**；
   - vss 32x32：**3464 / 1056**。
 - 冒烟测试扩到 45 核。
+
+## 40. vertical-sp 配方：interp8 vsp 16x16 / 32x32（2026-08-15）
+
+- 新增 `detect_vertical_sp`（smull + `<8 x i16>` loads + `<8 x i8>`
+  stores）与 `_emit_vertical_sp_native`：s32 累加器从
+  `offset = (1<<11)+(8192<<6)` 起步，8 tap `svmla_s32`，尾部
+  `svshrnb(8)` 取中 16 位、`svqshrunb(4)` 截断饱和到 u8、
+  `svuzp1` 压实后 `svst1_u8`。
+- constant-shape wrapper seed：16x16=1265 节点、32x32=4889 节点。
+- `gen_verify` 新增 `interp8_vsp` 形状（int16 -> u8）。
+- 验收（各 20k 差分 0 失配）：
+  - vsp 16x16：**938 fused / MCA 317**；
+  - vsp 32x32：**3725 / 1137**。
+- 冒烟测试扩到 47 核；luma_* 的 hps/vps/vsp/vss 四族均已有首覆盖。
