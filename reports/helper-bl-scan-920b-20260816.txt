@@ -65,3 +65,13 @@ helper 的 `bl` 调用（GCC12 外链 static inline 的栈往返缺陷）。
   到 s32 的索引，需要多次 permute 重组，指令数爆炸；
 - quant/dct32/dct16 的算法级优化在 920B 上（SVE1 缺宽乘 + 上游
   NEON asm 已紧凑）证据上不可行；剩余路径为 950 SVE2 实测窗口。
+
+## 更新 4（2026-08-16 interp8 vsp）
+
+- 确认 interp8_vert_sp_neon 内部 bl filter8_s16x8<1/2/3>（外链真实
+  存在），生成 6 形状内联候选，36 万矩阵差分 0 失配；
+- 920B paired：16x16 1.00x（3524 vs 3527 ticks）、32x32 0.96x
+  （13694 vs 13152）——**无收益**：filter8_s16x8 函数体大（10+ 条
+  mla），外链开销占比小；vert_sp 时间主要在 vtbl2/vqshrun/存储；
+- 结论：外链修复线全部收尾（satd ✓、interp8 vps ✓、hps ✗、
+  psy-cost ✗、vsp ✗）；920B dispatch 级无可动项，等待 950 SVE2。
