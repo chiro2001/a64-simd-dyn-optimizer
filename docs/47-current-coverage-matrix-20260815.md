@@ -150,7 +150,7 @@
 | cu-copy-pp | 32x32 代表切片 | 64/43 |
 | pu-copy-pp | 16x16 代表切片 | 32/26 |
 | chroma-copy-pp | 16x16 代表切片 | 32/26 |
-| pel-filter-luma-strong | V/H 强滤波 | 0 vector/82 MCA（标量首覆盖） |
+| pel-filter-luma-strong | V/H 强滤波 | 81/53（NEON 版，优于标量 82 MCA） |
 
 ## 6. 手动/特化线
 

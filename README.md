@@ -40,7 +40,8 @@
 - **cu/pu/chroma 代表切片**：copy_pp 32x32/16x16/16x16
   （64/43、32/26、32/26），20k 差分 0 失配；enumerate todo 降至 1。
 - **pelFilterLumaStrong 字段首覆盖**：V/H 强滤波 20k 差分 0 失配
-  （标量切片）；AArch64 已注册字段 enumerate todo 清零（29/29）。
+  （NEON 版 81/53，较标量 82 MCA -35%）；AArch64 已注册字段
+  enumerate todo 清零（29/29）。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。

@@ -29,4 +29,4 @@ corpus:
   cases: 20000
 
 layouts:
-  compute: [scalar]
+  compute: [scalar, neon]

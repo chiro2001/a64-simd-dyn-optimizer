@@ -6,173 +6,192 @@
 	.global	dynopt_pel_filter_luma_strong_sve2
 	.type	dynopt_pel_filter_luma_strong_sve2, %function
 dynopt_pel_filter_luma_strong_sve2:
-.LFB1:
+.LFB3889:
 	.cfi_startproc
-	stp	x29, x30, [sp, -80]!
-	.cfi_def_cfa_offset 80
-	.cfi_offset 29, -80
-	.cfi_offset 30, -72
-	neg	w14, w3
-	neg	w13, w4
-	mov	x29, sp
-	sub	x30, x2, x2, lsl 2
-	stp	x19, x20, [sp, 16]
-	.cfi_offset 19, -64
-	.cfi_offset 20, -56
-	mov	x20, x1
-	lsl	x19, x2, 1
-	neg	x1, x2, lsl 1
-	stp	x21, x22, [sp, 32]
-	.cfi_offset 21, -48
-	.cfi_offset 22, -40
-	neg	x21, x2
-	neg	x22, x2, lsl 2
-	stp	x23, x24, [sp, 48]
-	.cfi_offset 23, -32
-	.cfi_offset 24, -24
-	add	x23, x2, x2, lsl 1
-	mov	w18, 4
-	mov	w12, 255
-	stp	x25, x26, [sp, 64]
-	.cfi_offset 25, -16
-	.cfi_offset 26, -8
-.L8:
-	ldrb	w17, [x0, x30]
-	ldrb	w7, [x0, x22]
-	ldrb	w10, [x0, x21]
-	ldrb	w9, [x0]
-	add	w5, w17, w17, lsl 1
-	ldrb	w11, [x0, x1]
-	add	w7, w5, w7, lsl 1
-	ldrb	w16, [x0, x2]
-	add	w26, w9, w10
-	ldrb	w15, [x0, x19]
-	add	w5, w11, w17
-	add	w8, w5, w10
-	ldrb	w24, [x0, x23]
-	add	w7, w7, w11
-	add	w5, w11, w5
-	add	w6, w11, w10, lsl 1
-	add	w26, w26, w16
-	add	w26, w26, w15
-	add	w7, w7, w10
-	add	w5, w5, w10, lsl 1
-	add	w6, w6, w9, lsl 1
-	add	w25, w26, 2
-	add	w7, w7, w9
-	add	w26, w26, w15, lsl 1
-	add	w5, w5, w9, lsl 1
-	add	w6, w6, w16, lsl 1
-	add	w24, w26, w24, lsl 1
-	add	w7, w7, 4
-	add	w8, w8, w9
-	add	w5, w5, w16
-	add	w6, w6, w15
-	add	w8, w8, 2
-	add	w5, w5, 4
-	add	w6, w6, 4
-	add	w24, w24, 4
-	asr	w7, w7, 3
-	asr	w8, w8, 2
-	asr	w5, w5, 3
-	asr	w6, w6, 3
-	asr	w25, w25, 2
-	asr	w24, w24, 3
-	sub	w7, w7, w17
-	sub	w8, w8, w11
-	sub	w5, w5, w10
-	sub	w6, w6, w9
-	sub	w25, w25, w16
-	sub	w24, w24, w15
-	mov	w26, w14
-	cmp	w14, w7
-	bgt	.L2
-	cmp	w3, w7
-	csel	w26, w3, w7, le
-.L2:
-	add	w7, w26, w17
-	cmp	w7, 255
-	csel	w7, w7, w12, le
-	bic	w7, w7, w7, asr #31
-	strb	w7, [x0, x30]
-	mov	w7, w14
-	cmp	w14, w8
-	bgt	.L3
-	cmp	w3, w8
-	csel	w7, w3, w8, le
-.L3:
-	add	w7, w7, w11
-	cmp	w7, 255
-	csel	w7, w7, w12, le
-	bic	w7, w7, w7, asr #31
-	strb	w7, [x0, x1]
-	mov	w7, w14
-	cmp	w14, w5
-	bgt	.L4
-	cmp	w3, w5
-	csel	w7, w3, w5, le
+	dup	v31.4h, w3
+	dup	v30.4h, w4
+	uzp1	v30.2d, v31.2d, v30.2d
+	neg	v29.8h, v30.8h
+	cmp	x1, 1
+	beq	.L7
+	adrp	x3, .LANCHOR0
+	add	x3, x3, :lo12:.LANCHOR0
+	sub	x0, x0, #4
+	mov	w2, 4
+	ldr	q2, [x3, 64]
+	ldp	d28, d27, [x3]
+	ldp	d26, d25, [x3, 16]
+	ldp	d24, d23, [x3, 32]
+	ldp	d22, d3, [x3, 48]
 .L4:
-	add	w5, w7, w10
-	cmp	w5, 255
-	csel	w5, w5, w12, le
-	bic	w5, w5, w5, asr #31
-	strb	w5, [x0, x21]
-	mov	w5, w13
-	cmp	w13, w6
-	bgt	.L5
-	cmp	w4, w6
-	csel	w5, w4, w6, le
-.L5:
-	add	w5, w5, w9
-	cmp	w5, 255
-	csel	w5, w5, w12, le
-	bic	w5, w5, w5, asr #31
-	strb	w5, [x0]
-	mov	w5, w13
-	cmp	w13, w25
-	bgt	.L6
-	cmp	w4, w25
-	csel	w5, w4, w25, le
-.L6:
-	add	w5, w5, w16
-	cmp	w5, 255
-	csel	w5, w5, w12, le
-	bic	w5, w5, w5, asr #31
-	strb	w5, [x0, x2]
-	mov	w5, w13
-	cmp	w13, w24
-	bgt	.L7
-	cmp	w4, w24
-	csel	w5, w4, w24, le
+	subs	w2, w2, #1
+	ldr	d19, [x0]
+	fmov	d4, d19
+	tbl	v0.8b, {v4.16b}, v27.8b
+	tbl	v1.8b, {v4.16b}, v28.8b
+	tbl	v6.8b, {v4.16b}, v26.8b
+	tbl	v5.8b, {v4.16b}, v25.8b
+	tbl	v4.8b, {v4.16b}, v24.8b
+	uaddl	v4.8h, v5.8b, v4.8b
+	umlal	v4.8h, v1.8b, v23.8b
+	umlal	v4.8h, v0.8b, v22.8b
+	umlal	v4.8h, v6.8b, v3.8b
+	urshl	v4.8h, v4.8h, v2.8h
+	usubw	v4.8h, v4.8h, v0.8b
+	smax	v4.8h, v29.8h, v4.8h
+	smin	v4.8h, v30.8h, v4.8h
+	xtn	v4.8b, v4.8h
+	add	v4.8b, v19.8b, v4.8b
+	str	d4, [x0]
+	add	x0, x0, x1
+	bne	.L4
+	ret
+	.p2align 2,,3
 .L7:
-	add	w5, w5, w15
-	cmp	w5, 255
-	csel	w5, w5, w12, le
-	subs	w18, w18, #1
-	bic	w5, w5, w5, asr #31
-	strb	w5, [x0, x19]
-	add	x0, x0, x20
-	bne	.L8
-	ldp	x19, x20, [sp, 16]
-	ldp	x21, x22, [sp, 32]
-	ldp	x23, x24, [sp, 48]
-	ldp	x25, x26, [sp, 64]
-	ldp	x29, x30, [sp], 80
-	.cfi_restore 30
-	.cfi_restore 29
-	.cfi_restore 25
-	.cfi_restore 26
-	.cfi_restore 23
-	.cfi_restore 24
-	.cfi_restore 21
-	.cfi_restore 22
-	.cfi_restore 19
-	.cfi_restore 20
-	.cfi_def_cfa_offset 0
+	sub	x1, x0, x2, lsl 2
+	ldr	d18, [x0]
+	add	x4, x1, x2, lsl 1
+	add	x6, x1, x2
+	add	x7, x2, x4
+	lsl	x8, x2, 1
+	add	x3, x7, x2, lsl 1
+	ldr	d21, [x1, x2]
+	ldr	d20, [x2, x6]
+	add	x5, x2, x3
+	ldr	d3, [x2, x4]
+	movi	v7.4h, 0x2
+	ldr	d16, [x8, x7]
+	ldr	d31, [x2, x3]
+	zip1	v2.2s, v21.2s, v20.2s
+	zip1	v17.2s, v3.2s, v18.2s
+	zip1	v3.2s, v20.2s, v3.2s
+	zip1	v18.2s, v18.2s, v16.2s
+	ldr	d22, [x2, x5]
+	zip1	v19.2s, v16.2s, v31.2s
+	ldr	d23, [x1]
+	zip1	v31.2s, v21.2s, v31.2s
+	zip1	v16.2s, v20.2s, v16.2s
+	uaddl	v3.8h, v3.8b, v17.8b
+	zip1	v22.2s, v23.2s, v22.2s
+	uaddl	v19.8h, v2.8b, v19.8b
+	uaddw	v18.8h, v3.8h, v18.8b
+	uaddl	v22.8h, v22.8b, v31.8b
+	add	v1.8h, v18.8h, v18.8h
+	uaddw	v18.8h, v18.8h, v31.8b
+	add	v1.8h, v1.8h, v19.8h
+	urshr	v0.8h, v18.8h, 2
+	mla	v18.8h, v22.8h, v7.h[0]
+	urshr	v1.8h, v1.8h, 3
+	usubw	v0.8h, v0.8h, v16.8b
+	urshr	v18.8h, v18.8h, 3
+	usubw	v1.8h, v1.8h, v17.8b
+	smax	v0.8h, v29.8h, v0.8h
+	usubw	v18.8h, v18.8h, v31.8b
+	smax	v1.8h, v29.8h, v1.8h
+	smin	v0.8h, v30.8h, v0.8h
+	smax	v18.8h, v29.8h, v18.8h
+	smin	v1.8h, v30.8h, v1.8h
+	xtn	v0.8b, v0.8h
+	smin	v18.8h, v30.8h, v18.8h
+	xtn	v1.8b, v1.8h
+	add	v0.8b, v0.8b, v16.8b
+	xtn	v18.8b, v18.8h
+	add	v1.8b, v1.8b, v17.8b
+	add	v18.8b, v18.8b, v31.8b
+	str	s1, [x2, x4]
+	st1	{v1.s}[1], [x0]
+	str	s0, [x2, x6]
+	st1	{v0.s}[1], [x3]
+	str	s18, [x1, x2]
+	st1	{v18.s}[1], [x5]
 	ret
 	.cfi_endproc
-.LFE1:
+.LFE3889:
 	.size	dynopt_pel_filter_luma_strong_sve2, .-dynopt_pel_filter_luma_strong_sve2
+	.section	.rodata
+	.align	4
+	.set	.LANCHOR0,. + 0
+.LC0:
+	.byte	-1
+	.byte	0
+	.byte	1
+	.byte	2
+	.byte	3
+	.byte	4
+	.byte	5
+	.byte	-1
+.LC1:
+	.byte	-1
+	.byte	1
+	.byte	2
+	.byte	3
+	.byte	4
+	.byte	5
+	.byte	6
+	.byte	-1
+.LC2:
+	.byte	-1
+	.byte	2
+	.byte	3
+	.byte	4
+	.byte	5
+	.byte	6
+	.byte	7
+	.byte	-1
+.LC3:
+	.byte	-1
+	.byte	3
+	.byte	4
+	.byte	5
+	.byte	6
+	.byte	-1
+	.byte	3
+	.byte	-1
+.LC4:
+	.byte	-1
+	.byte	4
+	.byte	-1
+	.byte	1
+	.byte	2
+	.byte	3
+	.byte	4
+	.byte	-1
+.LC5:
+	.byte	0
+	.byte	2
+	.byte	1
+	.byte	2
+	.byte	2
+	.byte	1
+	.byte	1
+	.byte	0
+.LC6:
+	.byte	0
+	.byte	3
+	.byte	1
+	.byte	2
+	.byte	2
+	.byte	1
+	.byte	3
+	.byte	0
+.LC7:
+	.byte	0
+	.byte	1
+	.byte	1
+	.byte	2
+	.byte	2
+	.byte	1
+	.byte	2
+	.byte	0
+.LC8:
+	.hword	0
+	.hword	-3
+	.hword	-2
+	.hword	-3
+	.hword	-3
+	.hword	-2
+	.hword	-3
+	.hword	0
 	.ident	"GCC: (GNU) 16.1.0"
 	.section	.note.GNU-stack,"",@progbits
 
