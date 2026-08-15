@@ -284,3 +284,23 @@ experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-32x16/*
 experiments/m30-interp8-vss-search/gen-search-interp8-vss-32x16/*
 !experiments/m30-interp8-vss-search/gen-search-interp8-vss-32x16/results.json
 !experiments/m30-interp8-vss-search/gen-search-interp8-vss-32x16/compute-sve.cpp
+
+# vps/vsp/vss 8x4 & 16x4 artifacts (2026-08-15)
+experiments/m30-interp8-vps-search/gen-search-interp8-vps-8x4/*
+!experiments/m30-interp8-vps-search/gen-search-interp8-vps-8x4/results.json
+!experiments/m30-interp8-vps-search/gen-search-interp8-vps-8x4/compute-sve.cpp
+experiments/m30-interp8-vps-search/gen-search-interp8-vps-16x4/*
+!experiments/m30-interp8-vps-search/gen-search-interp8-vps-16x4/results.json
+!experiments/m30-interp8-vps-search/gen-search-interp8-vps-16x4/compute-sve.cpp
+experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-8x4/*
+!experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-8x4/results.json
+!experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-8x4/compute-sve.cpp
+experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-16x4/*
+!experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-16x4/results.json
+!experiments/m30-interp8-vsp-search/gen-search-interp8-vsp-16x4/compute-sve.cpp
+experiments/m30-interp8-vss-search/gen-search-interp8-vss-8x4/*
+!experiments/m30-interp8-vss-search/gen-search-interp8-vss-8x4/results.json
+!experiments/m30-interp8-vss-search/gen-search-interp8-vss-8x4/compute-sve.cpp
+experiments/m30-interp8-vss-search/gen-search-interp8-vss-16x4/*
+!experiments/m30-interp8-vss-search/gen-search-interp8-vss-16x4/results.json
+!experiments/m30-interp8-vss-search/gen-search-interp8-vss-16x4/compute-sve.cpp

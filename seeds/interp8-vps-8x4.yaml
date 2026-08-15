@@ -1,0 +1,36 @@
+# Normalized seed recipe: interp8 luma_vps 8x4.
+seed: interp8-vps-8x4
+compiler: clang
+target: aarch64-linux-gnu
+source: kernels/interp8-vps-8x4/seed.cpp
+clang_args:
+  - -march=armv8.2-a+dotprod
+  - -O2
+  - -std=c++11
+  - -funroll-loops
+  - -mllvm
+  - -unroll-threshold=5000
+  - -mllvm
+  - -unroll-count=64
+  - -mllvm
+  - -inline-threshold=100000
+  - -DHAVE_NEON=1
+  - -DHAVE_NEON_DOTPROD=1
+  - -DX265_ARCH_ARM64=1
+  - -DENABLE_ASSEMBLY=1
+  - -DHIGH_BIT_DEPTH=0
+  - -DX265_DEPTH=8
+  - -DX265_NS=x265
+  - -Ithird_party/x265/source
+  - -Ithird_party/x265/source/common
+  - -Ithird_party/x265/source/common/aarch64
+  - -Ithird_party/x265/source/encoder
+  - -Ibuild/x265-8-cross-make
+extract:
+  strip_switch_case: 1
+target_function:
+  mangled: dynopt_interp8_vps_8x4_seed
+  demangled: dynopt_interp8_vps_8x4_seed
+output:
+  ll: experiments/m30-interp8-vps-search/llvm-ir/interp8-vps-8x4.ll
+  json: experiments/m30-interp8-vps-search/imported/machine-ir-8x4.json

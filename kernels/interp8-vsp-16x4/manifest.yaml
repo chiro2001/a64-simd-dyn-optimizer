@@ -1,0 +1,35 @@
+# interp8 luma_vsp 16x4.
+kernel: interp8-vsp-16x4
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp8_vsp
+  n: 16
+  rows: 4
+candidate:
+  symbol: dynopt_interp8_vsp_16x4_sve2
+  trace_driver_src: kernels/interp8-vsp-16x4/trace_driver.cpp
+  trace_driver_c: kernels/interp8-vsp-16x4/trace_driver.cpp
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp_vert_sp_neon
+  symbol_mangled: _ZN4x26519interp_vert_sp_neonILi8ELi16ELi4EEEvPKslPhli
+  call: x265::interp_vert_sp_neon<8, 16, 4>
+  decl: |
+    namespace x265 {
+    template <int N, int W, int H> void interp_vert_sp_neon(
+        const int16_t*, intptr_t, uint8_t*, intptr_t, int);
+    }
+baselines:
+  neon:
+    driver: kernels/interp8-vsp-16x4/trace_driver.cpp
+    symbol_mangled: _ZN4x26519interp_vert_sp_neonILi8ELi16ELi4EEEvPKslPhli
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+layouts:
+  compute: [sve]
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"
