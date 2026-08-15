@@ -102,7 +102,7 @@ def main():
                         "interp8-hps-16x16", "interp8-hps-32x32",
                         "interp8-vps-16x16", "interp8-vps-32x32",
                         "interp8-vss-16x16", "interp8-vss-32x32",
-                        "interp8-vsp-16x16", "interp8-vsp-32x32"},
+                        "interp8-vsp-8x8", "interp8-vsp-16x16", "interp8-vsp-32x32"},
             "interp4": {"interp4", "interp4-8", "interp4-32",
                         "interp4vpp-16"},
             "quant": {"quant", "nquant", "dequant",

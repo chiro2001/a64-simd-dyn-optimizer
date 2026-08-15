@@ -695,3 +695,11 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - vsp 16x16：**938 fused / MCA 317**；
   - vsp 32x32：**3725 / 1137**。
 - 冒烟测试扩到 47 核；luma_* 的 hps/vps/vsp/vss 四族均已有首覆盖。
+
+## 41. vsp/vss 8x8 小形状补齐（2026-08-15）
+
+- 同一 constant-shape wrapper 流程；vsp 8x8=341 节点、vss 8x8=281 节点。
+- 验收（各 20k 差分 0 失配）：
+  - vsp 8x8：**241 fused / MCA 107**；
+  - vss 8x8：**224 / 97**。
+- 冒烟测试扩到 49 核。
