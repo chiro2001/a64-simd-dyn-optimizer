@@ -59,6 +59,8 @@
 - **luma hps 32x8**：362/118，20k 差分 0 失配（gen 发射器，
   isRowExt=0）。
 - **luma vpp 64x16**：1242/585，20k 差分 0 失配（SVE2）。
+- **luma vpp 16x64 / 64x48**：919/542、3540/1650，均 20k 差分
+  0 失配（SVE2）。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。
