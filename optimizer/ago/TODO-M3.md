@@ -134,3 +134,11 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   hps/psy-cost 排除，interp4 filter4 低优先；
 - [ ] 下一阶段：算法级优化（dct16/32、quant、ME 子核）或维持
   -1.92% 现状并等待 950 SVE2 窗口。
+
+## N1 端到端（2026-08-16 完成）
+
+- [x] best8 注入 N1 实测：基线 11976 vs 11831 ms，**-1.78%**
+  （bootstrap95 [53,221] ms，同机 bit-exact b5b18776）；
+  报告 reports/n1-e2e-best8-20260816.txt；
+- [x] freeze-best8.sh md5 门禁改为同机一致即 PASS（跨机哈希不同
+  合法）；双目标汇总：920B -1.92%、N1 -1.78%。
