@@ -13,6 +13,9 @@ from ago.rules import CoverTemplate, Pattern, ProofObligation, RewriteRule  # no
 from ago.templates.pext_table import (  # noqa: E402
     emit_pext_nibble, gen_cnt4, gen_pext4, pext_reference, proof_c_source,
     proof_obligations)
+from ago.templates.dfa_table import (  # noqa: E402
+    dfa_step, emit_dfa, gen_dfa_tables, phase_base, proof_c_source as
+    dfa_proof_c_source, proof_obligations as dfa_proof_obligations)
 
 
 class TestPextTable(unittest.TestCase):
@@ -51,6 +54,31 @@ class TestRuleProtocol(unittest.TestCase):
             RewriteRule().apply(None, None)
         with self.assertRaises(NotImplementedError):
             CoverTemplate().emit(None, None)
+
+
+class TestDfaTable(unittest.TestCase):
+    def test_table_matches_reference(self):
+        add_tbl, nxt_tbl = gen_dfa_tables()
+        i = 0
+        for g in range(5):
+            for phase in range(3):
+                for v in range(256):
+                    add, ng = dfa_step(g, phase_base(phase), v)
+                    self.assertEqual(add_tbl[i], add)
+                    self.assertEqual(nxt_tbl[i], ng)
+                    i += 1
+        self.assertEqual(i, 5 * 3 * 256)
+
+    def test_emit_contains_tables(self):
+        src = emit_dfa("dynopt_cost_coeff_remain_sve2")
+        self.assertIn("DYNOPT_REM_ADD", src)
+        self.assertIn("DYNOPT_REM_NEXT", src)
+        self.assertIn("dynopt_cost_coeff_remain_sve2", src)
+
+    def test_proof_and_obligations(self):
+        self.assertIn("3840", dfa_proof_obligations()[0].to_json())
+        src = dfa_proof_c_source()
+        self.assertIn("dfa exhaustive bad=%d", src)
 
 
 if __name__ == "__main__":

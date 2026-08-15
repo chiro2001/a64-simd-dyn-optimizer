@@ -25,7 +25,8 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 
 - [x] PEXT：穷举 3^16 对 bad=0 + scanPosLast 20k 差分双机 bad=0 +
   模板微基准 N1 1.6x / 920B 2.2x（reports/ago-m3-pext-template-20260816.txt）；
-- [ ] DFA：有限转移穷举 + costCoeffRemain 生产差分；
+- [x] DFA：5x3x256 穷举 bad=0 + costCoeffRemain 20k 差分双机 bad=0 +
+  微基准 N1 1.24x / 920B 1.38x（reports/ago-m3-dfa-template-20260816.txt）；
 - [ ] 受保护回退（fallback）；
 - [ ] 生产逐调用差分 + canary + 真实分布回放；
 - [ ] 非劣于冻结发射器（best7）。
