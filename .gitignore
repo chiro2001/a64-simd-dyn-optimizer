@@ -216,3 +216,9 @@ experiments/m30-interp8-hps-search/gen-search-interp8-hps-16x16-ext/*
 experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32-ext/*
 !experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32-ext/results.json
 !experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32-ext/compute-*.cpp
+
+# interp8 vss artifacts (2026-08-15): keep results + generated candidate
+# sources; trace/log/verify/binaries regenerate.
+experiments/m30-interp8-vss-search/gen-search-*/*
+!experiments/m30-interp8-vss-search/gen-search-*/results.json
+!experiments/m30-interp8-vss-search/gen-search-*/compute-sve.cpp

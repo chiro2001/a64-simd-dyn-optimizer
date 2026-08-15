@@ -82,6 +82,8 @@ KERNELS = {
                           {"compute": "sdot-d"}),
     "interp8-vps-16x16": ("interp8-vps-16x16", "vertical-ps",
                           {"acc_split": 1}),
+    "interp8-vss-16x16": ("interp8-vss-16x16", "vertical-ss", {}),
+    "interp8-vss-32x32": ("interp8-vss-32x32", "vertical-ss", {}),
     "interp8-vps-32x32": ("interp8-vps-32x32", "vertical-ps",
                           {"acc_split": 1}),
     "interp8vpp-16": ("interp8vpp-16", "vertical-fir", {"sliding": 3}),

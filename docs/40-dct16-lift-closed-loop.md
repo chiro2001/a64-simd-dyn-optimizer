@@ -667,3 +667,17 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - 16x16-ext：**516 / 159**；
   - 32x32-ext：**1726 / 606**。
 - 冒烟测试扩到 43 核。
+
+## 39. vertical-ss 配方：interp8 vss 16x16 / 32x32（2026-08-15）
+
+- 新增 `detect_vertical_ss`（smull + `<8 x i16>` load/store）与
+  `_emit_vertical_ss_native`：每 8-lane s16 组 `svunpklo_s32` 加宽到
+  一个 s32 累加器，8 个 `svmla_s32` tap，`svshrnb_n_s32(6)` 截断窄化
+  （NEON `vshrn` 是截断语义，`svrshrnb` 会多 1），`svuzp1` 压实后
+  `svst1_s16` 存储。
+- constant-shape wrapper seed：16x16=1081 节点、32x32=4265 节点。
+- `gen_verify` 新增 `interp8_vss` 形状（int16 输入，垂直 3 行余量）。
+- 验收（各 20k 差分 0 失配）：
+  - vss 16x16：**872 fused / MCA 297**；
+  - vss 32x32：**3464 / 1056**。
+- 冒烟测试扩到 45 核。

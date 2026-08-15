@@ -1,0 +1,46 @@
+[
+ {
+  "tag": "compute-sve",
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x4017c0"
+  ],
+  "counts": {
+   "total": 1008,
+   "vector": 872,
+   "movprfx": 0,
+   "vector_fused": 872,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 288,
+   "vector_fused_uop": 872
+  },
+  "fusion": {
+   "eligible": 7,
+   "hw_supported": 0,
+   "pairs": [
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov",
+    "mov+mov"
+   ],
+   "counts": {
+    "store_insns": 40,
+    "scalar_insns": 628,
+    "simd_insns": 86,
+    "load_insns": 264
+   }
+  },
+  "mca_cycles": 297,
+  "mca_uops": 1051
+ }
+]
