@@ -64,3 +64,7 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   （AGO cover 层 sve1 发射器），再搜索宽行家族；
 - [x] **定位调整（docs/53）**：920B 全量 SVE1 证据均为负 → 920B 主攻
   NEON；SVE1 降级为“实测非劣才注入”特例；SVE2 方向以 950 为准。
+- [x] SVE1 原生重排 satd8 探索（2026-08-16）：TBL 双层水平 hadamard
+  方案 Python 模拟 5000/5000 正确（tools/ago_sve1_satd8_design.py），
+  但指令预算 ~184 vs pack-2 92，不占优 → **SVE1 satd8 方向停止**；
+  SVE1 只保留实测非劣特例，SVE2/950 继续。
