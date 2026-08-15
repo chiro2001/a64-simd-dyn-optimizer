@@ -46,8 +46,12 @@ def build_sa8d8_graph() -> Graph:
                                  {"n": 8, "idx": i})
     # horizontal 8-point Hadamard with abs sums (hadamard_8_h -> sum[4])
     for i in range(4):
-        g.ops["h_h_%d" % i] = Op("hadamard_h_abs", ("t0", "t1", "t2", "t3"),
-                                 "s%d" % i, {"group": i})
+        base = 4 * (i // 2)
+        g.ops["h_h_%d" % i] = Op(
+            "hadamard_h_abs",
+            tuple("t%d" % j for j in range(base, base + 4)),
+                                 "s%d" % i,
+                                 {"group": i})
     # out0 = s0+s1, out1 = s2+s3
     g.ops["sum01"] = Op("add", ("s0", "s1"), "o0")
     g.ops["sum23"] = Op("add", ("s2", "s3"), "o1")

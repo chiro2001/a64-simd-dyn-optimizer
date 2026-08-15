@@ -75,7 +75,7 @@ def parse_dsl(text: str) -> Graph:
             load_b = "ld2_%s" % rb
             g.ops[load_a] = Op("load", (pa,), "p1r%s" % ra, {"row": int(ra)})
             g.ops[load_b] = Op("load", (pb,), "p2r%s" % rb, {"row": int(rb)})
-            g.ops[dst] = Op("sub_ext", (load_a, load_b), dst,
+            g.ops[dst] = Op("sub_ext", ("p1r%s" % ra, "p2r%s" % rb), dst,
                             {"elem": "s16"})
             ids[dst] = dst
             i += 1
@@ -101,8 +101,10 @@ def parse_dsl(text: str) -> Graph:
             if src not in ids:
                 raise FrontendError("hadamard_h_abs source %s unknown" % src)
             for k in range(4):
+                base = 4 * (k // 2)
                 g.ops["h_h_%d" % k] = Op(
-                    "hadamard_h_abs", ("t0", "t1", "t2", "t3"),
+                    "hadamard_h_abs",
+                    tuple("t%d" % j for j in range(base, base + 4)),
                     "s%d" % k, {"group": k})
             ids[dst] = "s0"
             i += 1
