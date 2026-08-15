@@ -121,18 +121,17 @@ static int bench_cost(int which, int samples, int batch)
             if (which == 0)
                 neon(SCAN, coeff.data(), 4,
                      absbuf.data() + 8, tab.data(),
-                     0x5555u, base.data(), 3, 15, 0);
+                    0x5555u, base.data(), 3, 15, 0);
             else
                 dynopt_cost_coeff_nxn_sve2(SCAN, coeff.data(), 4,
                                            absbuf.data() + 8, tab.data(),
                                            0x5555u, base.data(), 3, 15, 0);
         }
         uint64_t t1 = rdtsc();
-        uint64_t per = (t1 - t0) / (uint64_t)batch;
-        times.push_back(per);
+        times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
-    printf("cost,%s,median=%llu\n", which ? "cand" : "neon",
+    printf("cost,%s,total_ticks_median=%llu\n", which ? "cand" : "neon",
            (unsigned long long)times[times.size() / 2]);
     return 0;
 }
@@ -164,12 +163,15 @@ static int bench_flag(int which, int samples, int batch)
         uint64_t t0 = rdtsc();
         for (int b = 0; b < batch; b++)
         {
-            // Real caller uses numC1Flag = MIN(numNonZero, 8).
+            // Real caller uses numC1Flag = MIN(numNonZero, 8); sweep
+            // n=1..8 so small-chunk behavior (where the run-cache setup
+            // can outweigh the C loop) is measured too.
+            const int n = 1 + (int)(s % 8);
             if (which == 0)
-                fn(absbuf.data(), 8, ctx.data(), 16);
+                fn(absbuf.data(), n, ctx.data(), 16);
             else
                 dynopt_cost_c1c2_flag_sve2(
-                    absbuf.data(), 8, ctx.data(), 16);
+                    absbuf.data(), n, ctx.data(), 16);
         }
         uint64_t t1 = rdtsc();
         times.push_back(t1 - t0);

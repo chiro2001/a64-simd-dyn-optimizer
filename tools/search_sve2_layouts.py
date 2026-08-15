@@ -80,6 +80,7 @@ NEON_SUPPORTED_KERNELS = {
     "pel-filter-luma-strong",
     "quant",
     "sa8d16",
+    "satd-8",
     "scan-pos-last",
 }
 
@@ -89,6 +90,7 @@ NEON_SAFE_VALUES = {
     "pack", "dot", "addp", "ctz", "clz", "tail",
     "popcount", "addv", "vpadal", "vaddlv", "vaddv", "seq", "pair",
     "vceqz", "full", "loop", 1, 2,
+    "vpaddl",
     0,
 }
 
@@ -442,6 +444,12 @@ def make_emitter(kernel, backend="acle"):
 
         def emit_fn(combo):
             return emit(k_tile=combo.get("k_tile", 1))
+        return emit_fn
+    if kernel == "satd-8" and _ISA == "neon":
+        from emit_satd_neon_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
         return emit_fn
     if kernel == "sa8d":
         from emit_sa8d_sve2_shared import emit

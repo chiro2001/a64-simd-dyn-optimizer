@@ -524,6 +524,19 @@ def entries_for_kernel(kernel, sym):
             "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
         return out
     if kernel.startswith("satd"):
+        if kernel == "satd-8":
+            # Multi-shape candidate: 8x8/16x16 primitives + 32x32/64x64
+            # wrappers cover the square PU slots (16x16+ slots call the
+            # 16x16 primitive internally in x265's satd8_neon template).
+            params = "const uint8_t*, intptr_t, const uint8_t*, intptr_t"
+            for n, sym in ((8, "dynopt_satd_8x8_sve2"),
+                           (16, "dynopt_satd_16x16_sve2"),
+                           (32, "dynopt_satd_32x32_sve2"),
+                           (64, "dynopt_satd_64x64_sve2")):
+                add("pu[%s].satd" % luma_pu(n, n), "int", params, sym)
+                add("chroma[X265_CSP_I444].pu[%s].satd"
+                    % luma_pu(n, n), "int", params, sym)
+            return out
         shape = _shape_of(kernel)
         if shape and (shape[0], shape[1]) in I444_PU_SHAPES:
             add("pu[%s].satd" % luma_pu(*shape), "int",

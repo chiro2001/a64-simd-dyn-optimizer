@@ -17,6 +17,8 @@ extern "C" int dynopt_sad_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 extern "C" int dynopt_sa8d_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+extern "C" int dynopt_satd_8x8_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
 static inline uint64_t rdtsc()
 {
@@ -55,6 +57,11 @@ int main(int argc, char** argv)
         neon = primitives.cu[BLOCK_16x16].sa8d;
         cand = dynopt_sa8d_16x16_sve2;
     }
+    else if (!strcmp(op, "satd8"))
+    {
+        neon = primitives.pu[LUMA_8x8].satd;
+        cand = dynopt_satd_8x8_sve2;
+    }
     if (!neon || !cand)
         return 2;
     std::mt19937 rng(0x51A7u);
@@ -77,7 +84,7 @@ int main(int argc, char** argv)
                 sink += neon(a.data(), 64, b.data(), 64);
         }
         uint64_t t1 = rdtsc();
-        times.push_back((t1 - t0) / (uint64_t)batch);
+        times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
     printf("%s,%s,median=%llu\n", op, which ? "cand" : "neon",

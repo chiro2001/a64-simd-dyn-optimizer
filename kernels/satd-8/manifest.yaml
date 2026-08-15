@@ -37,6 +37,10 @@ layouts:
   pack: [1, 2]
   compute: [sve]
 
+# Pure-NEON SATD 8x8 axes (--isa neon).
+layouts_neon:
+  reduce: [vaddlv, vpaddl, vaddv]
+
 mca_target:
   default: NP1
   llvm_proxy_cpu: neoverse-v2

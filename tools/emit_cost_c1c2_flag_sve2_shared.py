@@ -91,6 +91,37 @@ static inline void dynopt_c1_run(uint8_t& st, int sym, int len,
     st = dynopt_c1_next[st][sym][len];
 }
 
+static inline uint32_t dynopt_c1_scalar(
+    uint16_t* absCoeff, int n, uint8_t* baseCtxMod, intptr_t ctxOffset)
+{
+    uint32_t sum = 0;
+    uint32_t c1 = 1, firstC2Idx = 8, firstC2Flag = 2, c1Next = 0xFFFFFFFE;
+    for (int idx = 0; idx < n; idx++)
+    {
+        const uint32_t symbol1 = absCoeff[idx] > 1;
+        const uint32_t symbol2 = absCoeff[idx] > 2;
+        const uint32_t mstate = baseCtxMod[c1];
+        baseCtxMod[c1] = DYNOPT_NEXT_STATE[mstate][symbol1];
+        sum += DYNOPT_ENTROPY_BITS[mstate ^ symbol1];
+        if (symbol1)
+            c1Next = 0;
+        if (symbol1 + firstC2Flag == 3)
+            firstC2Flag = symbol2;
+        if (symbol1 + firstC2Idx == 9)
+            firstC2Idx = (uint32_t)idx;
+        c1 = c1Next & 3;
+        c1Next >>= 2;
+    }
+    if (!c1)
+    {
+        uint8_t* ctx = baseCtxMod + ctxOffset;
+        const uint32_t mstate = ctx[0];
+        ctx[0] = DYNOPT_NEXT_STATE[mstate][firstC2Flag];
+        sum += DYNOPT_ENTROPY_BITS[mstate ^ firstC2Flag];
+    }
+    return (sum & 0x00FFFFFF) + (c1 << 26) + (firstC2Idx << 28);
+}
+
 extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
     uint16_t* absCoeff, intptr_t numC1Flag, uint8_t* baseCtxMod,
     intptr_t ctxOffset)
@@ -101,36 +132,12 @@ extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
     const int n = (int)numC1Flag;
     if (n <= 0)
         return (0 << 26) + (8 << 28);
-    if (n > 8)
-    {
-        // Rare large chunk: scalar reference path.
-        uint32_t sum = 0;
-        uint32_t c1 = 1, firstC2Idx = 8, firstC2Flag = 2, c1Next = 0xFFFFFFFE;
-        for (int idx = 0; idx < n; idx++)
-        {
-            const uint32_t symbol1 = absCoeff[idx] > 1;
-            const uint32_t symbol2 = absCoeff[idx] > 2;
-            const uint32_t mstate = baseCtxMod[c1];
-            baseCtxMod[c1] = DYNOPT_NEXT_STATE[mstate][symbol1];
-            sum += DYNOPT_ENTROPY_BITS[mstate ^ symbol1];
-            if (symbol1)
-                c1Next = 0;
-            if (symbol1 + firstC2Flag == 3)
-                firstC2Flag = symbol2;
-            if (symbol1 + firstC2Idx == 9)
-                firstC2Idx = (uint32_t)idx;
-            c1 = c1Next & 3;
-            c1Next >>= 2;
-        }
-        if (!c1)
-        {
-            uint8_t* ctx = baseCtxMod + ctxOffset;
-            const uint32_t mstate = ctx[0];
-            ctx[0] = DYNOPT_NEXT_STATE[mstate][firstC2Flag];
-            sum += DYNOPT_ENTROPY_BITS[mstate ^ firstC2Flag];
-        }
-        return (sum & 0x00FFFFFF) + (c1 << 26) + (firstC2Idx << 28);
-    }
+    // Round-0024: run-cache setup beats the scalar loop for large chunks
+    // (n=8 measured ~1.9x), but loses on small chunks (n<=4): the mask/
+    // first-index work costs more than 1-3 scalar iterations, and real
+    // calls are dominated by small n. Route those to the scalar path.
+    if (n <= 4 || n > 8)
+        return dynopt_c1_scalar(absCoeff, n, baseCtxMod, ctxOffset);
 
     // NEON masks for symbol1/symbol2.
     uint16x8_t a = vld1q_u16(absCoeff);
@@ -145,6 +152,16 @@ extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
     {
         m1 |= (uint16_t)((s1a[i] ? 1 : 0) << i);
         m2 |= (uint16_t)((s2a[i] ? 1 : 0) << i);
+    }
+    // The vector load reads a full 8 lanes, but only the first n are part
+    // of this chunk; the remaining lanes are later coefficients whose
+    // values must NOT influence the mask (round-0024: the old code took
+    // first = ctz(m1) over all 8 lanes, so a >1 coefficient after index
+    // n-1 shifted the first-1 handling and corrupted the context update).
+    if (n < 8)
+    {
+        m1 &= (uint16_t)((1u << n) - 1);
+        m2 &= (uint16_t)((1u << n) - 1);
     }
     const int first = m1 ? __builtin_ctz((unsigned)m1) : n;
     const uint32_t firstSym2 = (first < n && (m2 >> first) & 1) ? 1 : 0;
