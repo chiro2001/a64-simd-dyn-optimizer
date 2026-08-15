@@ -66,6 +66,8 @@ KERNELS = {
     "interp8vpp-8": ("interp8vpp-8", "vertical-fir", {"sliding": 2}),
     "interp8-hps-8": ("interp8-hps-8", "fir-ps",
                      {"compute": "sdot-d"}),
+    "interp8-hps-8x8-ext": ("interp8-hps-8x8-ext", "fir-ps",
+                            {"compute": "sdot-d"}),
     "interp8-hps-8x16": ("interp8-hps-8x16", "fir-ps",
                          {"compute": "sdot-d"}),
     "interp8-hps-16x16": ("interp8-hps-16x16", "fir-ps",

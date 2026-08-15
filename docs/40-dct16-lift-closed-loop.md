@@ -648,3 +648,12 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - vps 16x16：**214 fused / MCA 136**；
   - vps 32x32：**808 / 479**。
 - 冒烟测试扩到 39 核。
+
+## 37. hps isRowExt=1 首切片（2026-08-15）
+
+- `_fir_ps_derived` 识别 `_ext` wrapper：输出行数 H+7、源行偏移 -3；
+  候选对 r=0..H+6 使用 `src + (r-3)*srcStride -3` 的同一滑窗滤波。
+- `gen_verify` 新增 `interp8_hps_ext`：源缓冲区留 3 行上边距，比较
+  H+7 行输出，coeffIdx 1..3、isRowExt=1。
+- 验收（20k 差分 0 失配）：**175 fused / MCA 68**。
+- 冒烟测试扩到 40 核。

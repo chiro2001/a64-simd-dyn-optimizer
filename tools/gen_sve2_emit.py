@@ -97,6 +97,7 @@ def _fir_ps_derived(machine_ir):
     groups=W/8 (the emitter's 8-output unit width)."""
     nodes = machine_ir["nodes"]
     fn = machine_ir.get("function") or ""
+    is_ext = "_ext" in fn
     m = re.search(r"interp_horiz_ps_neon<\d+,\s*(\d+),\s*(\d+)>", fn)
     if m:
         width, height = int(m.group(1)), int(m.group(2))
@@ -115,7 +116,11 @@ def _fir_ps_derived(machine_ir):
         if n.get("op") == "addr" and "g_chromaFilter" in (n.get("rhs")
                                                            or ""):
             filter_name = "g_chromaFilter"
-    return height, width // 8, 6, 8, -3, filter_name
+    # isRowExt == 1 adds N_TAPS-1 output rows and shifts the source by
+    # -(N_TAPS/2-1) rows (the column -3 offset is separate).
+    rows = height + (7 if is_ext else 0)
+    row_off = -3 if is_ext else 0
+    return rows, width // 8, 6, 8, -3, filter_name, row_off
 
 
 def detect_vertical_ps(machine_ir):
@@ -688,8 +693,8 @@ def emit_fir_ps(machine_ir, func_name, combo=None):
     accumulator starts at zero (the -IF_INTERNAL_OFFS constant cancels
     the 128 bias) and the narrowed s16 lanes are stored directly.
     Contract is isRowExt == 0 (the extracted seed path)."""
-    rows, groups, prec, taps, load_off, filter_name = _fir_ps_derived(
-        machine_ir)
+    rows, groups, prec, taps, load_off, filter_name, row_off = \
+        _fir_ps_derived(machine_ir)
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     from extract_x265_constants import parse_int16_tables  # noqa: E402
     cpp = os.path.join(ROOT, "third_party/x265/source/common/constants.cpp")
@@ -793,7 +798,7 @@ def emit_fir_ps(machine_ir, func_name, combo=None):
         "        for (int g = 0; g < %d; g++)" % groups,
         "        {",
         "            svuint8_t s = svld1_u8(pg16b,"
-        " src + r * srcStride %s + g * 8);" % load_off,
+        " src + (r + %d) * srcStride %s + g * 8);" % (row_off, load_off),
         "            svint8_t s8 = svreinterpret_s8_u8(",
         "                svsub_u8_x(pg16b, s, svdup_n_u8(128)));",
         "            svint8_t p0 = svtbl_s8(s8, ix0);",

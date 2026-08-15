@@ -198,3 +198,9 @@ experiments/m30-interp8-vps-search/gen-search-*/*
 !experiments/m30-interp8-vps-search/gen-search-*/results.json
 !experiments/m30-interp8-vps-search/gen-search-*/*acc_split-1*.cpp
 !experiments/m30-interp8-vps-search/gen-search-*/compute-sve_acc_split-1.cpp
+
+# interp8 hps isRowExt=1 artifacts (2026-08-15): keep results + generated
+# candidate source; trace/log/verify/binaries regenerate.
+experiments/m30-interp8-hps-search/gen-search-8x8-ext/*
+!experiments/m30-interp8-hps-search/gen-search-8x8-ext/results.json
+!experiments/m30-interp8-hps-search/gen-search-8x8-ext/compute-*.cpp
