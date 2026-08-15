@@ -68,3 +68,13 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   方案 Python 模拟 5000/5000 正确（tools/ago_sve1_satd8_design.py），
   但指令预算 ~184 vs pack-2 92，不占优 → **SVE1 satd8 方向停止**；
   SVE1 只保留实测非劣特例，SVE2/950 继续。
+
+## satd16 收益根因与内联修复推广（2026-08-16）
+
+- [x] 根因定位：上游 16x16 慢 = GCC12 将 hadamard_4x4_quad 外链
+  （4 次 bl + 栈往返）；候选全内联 → 1.51-1.63x 快（对照实验排除
+  编译器版本）；报告 reports/satd16-inline-gain-analysis-20260816.txt；
+- [ ] emit_satd_neon_shared 增加 satd 8x16/16x8 内联发射（预期类似
+  收益）；20k 差分 + 920B paired + 注入 E2E；
+- [ ] 扫描 lib 其它 NEON helper 外链（hadamard_4x4_dual/8x8、
+  sa8d/sad 家族），批量生成内联候选。

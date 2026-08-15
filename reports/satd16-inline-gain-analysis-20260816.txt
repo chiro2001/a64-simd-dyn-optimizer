@@ -1,0 +1,44 @@
+# satd16 注入候选 1.5x 收益根因：GCC12 helper 外链（2026-08-16）
+
+## 现象
+
+920B 实测（CNTVCT batch=4096 中位）：
+
+| 实现 | ticks/4096 | 相对 |
+| --- | ---: | ---: |
+| 上游 pixel_satd_16x16_neon（libx265.so.216 内） | 19267-20372 | 1.00 |
+| 注入候选 dynopt_satd_16x16_sve2（gcc16 交叉编译） | 12001 | **1.63x 快** |
+| 同一候选源码用 920B g++12 现场编译 | 13485-13491 | **1.51x 快** |
+
+对照实验排除编译器版本差异：g++12 独立编译仍快 1.5x → 收益来自源码布局/编译上下文。
+
+## 根因（反汇编对比）
+
+上游 `pixel_satd_16x16_neon`（0x238 字节，142 条）：
+- 每个 row-group 把 8 个 diff 向量 `stp q..,[sp]` 存栈，然后 **`bl hadamard_4x4_quad`（函数调用）**，返回后从栈 `ldp` 取回；
+- GCC 12 在 pixel-prim.cpp 这个巨型内联单元里没有内联 `hadamard_4x4_quad`（static inline 但未内联），产生 4 次调用 + 128 字节/组栈往返。
+
+候选 `_16x16_sve2_impl`（0x4d8 字节，310 条）：全部内联，无栈流量、无调用。
+
+lib 中 `bl hadamard_4x4_quad` 共 7 处归属：
+
+| 函数 | bl 次数 |
+| --- | ---: |
+| pixel_satd_16x16_neon | 4 |
+| pixel_satd_8x16_neon | 2 |
+| pixel_satd_16x8_neon | 1 |
+
+`satd8_neon<8,8>` 区间内 0 个 bl（已内联，所以上游 satd8 不慢，与我们的 cover 持平 0.98-1.0 一致）。
+
+## 结论与推广
+
+1. satd16 注入收益 = **修复 GCC12 外链/栈流量**，不是新算法。该收益已含在 best6b E2E（-1.61%）内；
+2. 同样受外链影响的形状：**satd 8x16、16x8**（各 1-2 次 bl）——用 emit_satd_neon_shared 的内联结构生成候选，预期类似 1.5x 收益；
+3. 系统性方法：扫描 lib 中所有 NEON 函数对外部 helper 的 `bl`（hadamard_4x4_quad/dual/8x8、sa8d helper 等），为热点形状批量生成内联候选；
+4. 约束符合“算子层面”：不修改编码流程，仅替换 dispatch 函数指针。
+
+## 下一步（TODO-M3）
+
+- [ ] emit_satd_neon_shared 增加 8x16/16x8 内联发射（复用 16x16 impl 结构）；
+- [ ] 20k 差分 + 920B paired（预期 ~1.5x）；
+- [ ] 注入并复测 E2E；顺带把 sa8d/sad 家族的外链扫描做一遍。
