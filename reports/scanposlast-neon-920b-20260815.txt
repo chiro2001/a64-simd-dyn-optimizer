@@ -1,0 +1,46 @@
+# scanPosLast NEON→NEON 搜索 + 920B 聚焦 E2E（2026-08-15）
+
+## 输入
+
+- 真实 1080p 30 帧 YUV420：`/tmp/real_1080p_30f.yuv`（1920x1080）
+- 命令：`taskset -c 0 x265 --input ... --input-res 1920x1080 --fps 30
+  --frames 30 -o /dev/null --pools 0 --frame-threads 1 --no-wpp
+  --lookahead-threads 0 --b-adapt 0`
+- 注入方式：编译进 `libx265.so.216`（scanPosLast 单算子）
+
+## 920B CNTVCT（总节拍/8192 次，越小越好）
+
+单 CG（6 非零）：
+
+| 变体 | 候选 | 上游 | 比率 |
+| --- | ---: | ---: | ---: |
+| pack+ctz+popcount | 18220 | 8119 | 2.24× |
+| dot+ctz+popcount | 10676 | 8118 | 1.32× |
+| addp+clz+tail+popcount | 8450 | 8119 | 1.04× |
+
+多 CG（16x16，4 CG × 约 5 非零）：
+
+| 变体 | 候选 | 上游 | 比率 |
+| --- | ---: | ---: | ---: |
+| addp+clz+tail+popcount | 29190 | 25547 | 1.14× |
+| addp+clz+csel+addv（错误语义） | 28201 | 25553 | 1.10× |
+
+## 920B E2E（各 3 次）
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 纯基线 | 8.16 s | 8.17 s | 8.17 s | 8.17 s |
+| 注入修正后 NEON tail | 8.22 s | 8.21 s | 8.21 s | 8.21 s |
+
+码流：基线 7981.54 kb/s / QP 33.77；注入 7981.54 kb/s / QP 33.77
+（完全一致）。
+
+## 关键教训
+
+1. 旧 scanPosLast 差分语料几乎全非零（L=15），未覆盖
+   `rev16(nz)>>(15-L)` 末 CG 语义；branch/csel 变体通过 20k 但在真实
+   16x16 TU 上改变码流。
+2. `tools/gen_verify.py` 已扩展为单/多 CG 交替随机稀疏语料；发射器只留
+   tail 变体。修复后 20k 多 CG 差分 0 失配。
+3. scanPosLast 的 NEON 搜索证明工具链有效（2.24× → 1.04×），但该 kernel
+   不是 920B 端到端 15% 目标的主杠杆。

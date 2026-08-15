@@ -44,15 +44,27 @@ static int bench_scan(int which, int samples, int batch)
     x265_setup_primitives(&p);
     scanPosLast_t neon = primitives.scanPosLast;
     std::mt19937 rng(0x5CA9u);
-    std::vector<int16_t> coeff(16);
-    std::vector<uint16_t> sign(64), flag(64);
-    std::vector<uint8_t> num(64);
+    // 4 CGs x 16 coeffs, ~5 nonzeros per CG (realistic transform density);
+    // scan[CG*16 + j] = CG*16 + zigzag(j) keeps each CG within its own
+    // 4x4 row-major quadrant.
+    static const uint16_t SCAN64[64] = {
+        0, 4, 1, 8, 5, 2, 12, 9, 6, 3, 13, 10, 7, 14, 11, 15,
+        16, 20, 17, 24, 21, 18, 28, 25, 22, 19, 29, 26, 23, 30, 27, 31,
+        32, 36, 33, 40, 37, 34, 44, 41, 38, 35, 45, 42, 39, 46, 43, 47,
+        48, 52, 49, 56, 53, 50, 60, 57, 54, 51, 61, 58, 55, 62, 59, 63
+    };
+    std::vector<int16_t> coeff(64);
+    std::vector<uint16_t> sign(8), flag(8);
+    std::vector<uint8_t> num(8);
     std::vector<uint64_t> times;
     times.reserve(samples);
     for (int s = 0; s < samples; s++)
     {
-        for (int i = 0; i < 16; i++)
-            coeff[i] = i < 6 ? (int16_t)((i + 1) * 17) : 0;
+        for (int i = 0; i < 64; i++)
+        {
+            const int lane = i & 15;
+            coeff[i] = lane < 5 ? (int16_t)((lane + 1) * 17 + (i >> 4)) : 0;
+        }
         std::memset(sign.data(), 0, sign.size() * 2);
         std::memset(flag.data(), 0, flag.size() * 2);
         std::memset(num.data(), 0, num.size());
@@ -60,19 +72,21 @@ static int bench_scan(int which, int samples, int batch)
         for (int b = 0; b < batch; b++)
         {
             if (which == 0)
-                neon(SCAN, coeff.data(), sign.data(),
-                     flag.data(), num.data(), 6, SCAN, 4);
+                neon(SCAN64, coeff.data(), sign.data(),
+                     flag.data(), num.data(), 20, SCAN64, 4);
             else
-                dynopt_scan_pos_last_sve2(SCAN, coeff.data(), sign.data(),
-                                          flag.data(), num.data(), 6,
-                                          SCAN, 4);
+                dynopt_scan_pos_last_sve2(
+                    SCAN64, coeff.data(), sign.data(),
+                    flag.data(), num.data(), 20, SCAN64, 4);
         }
         uint64_t t1 = rdtsc();
-        uint64_t per = (t1 - t0) / (uint64_t)batch;
-        times.push_back(per);
+        // Total ticks per batch (not per call): CNTVCT on the cloud host
+        // ticks at ~100 MHz, so per-call rounding hides the difference
+        // between a 1-2 tick kernel and a 0-1 tick one.
+        times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
-    printf("scan,%s,median=%llu\n", which ? "cand" : "neon",
+    printf("scan,%s,total_ticks_median=%llu\n", which ? "cand" : "neon",
            (unsigned long long)times[times.size() / 2]);
     return 0;
 }

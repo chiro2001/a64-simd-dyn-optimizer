@@ -42,6 +42,10 @@ LLVM-MCA / 实机 CNTVCT 多级代理评估，最后通过 `LD_PRELOAD` 快速�
   `check_isa_level.py` 静态门禁。
 - `--isa sve2`：950（SVE2.0 及以下）。排除 SVE2p1/SVE2p3 的
   `sdot-s32`/`sdot.h` 路径，编译 `-march=armv8.2-a+sve2`。
+- `--isa neon`：NEON+dotprod 纯 NEON 搜索（NEON→NEON 有效性验证）。
+  只接受发射器有纯 NEON lowering 的 kernel（当前 scan-pos-last /
+  find-pos-first-last / pel-filter-luma-strong），编译
+  `-march=armv8.2-a+dotprod`，对象级拒绝任何 SVE 指令。
 
 也可直接用 `--target 920B|950`，等价于 `--isa sve1|sve2` +
 对应 MCA profile。
@@ -72,6 +76,13 @@ python3 tools/search_sve2_layouts.py --kernel interp8 --target 950 \
 79 个 SVE1 kernel 后中位 7476 ms vs 基线 7152 ms（约 +4.5% 变慢），当前
 SVE1 候选适合搜索/正确性验证，不适合直接替换；详见
 [docs/48](docs/48-preload-and-isa-profiles.md) §7。
+
+真实 1080p 视频（30 帧）上的聚焦测试：基线 8.16–8.17 s。scanPosLast 的
+NEON 搜索（`--isa neon`，mask/pext/flag/count 四轴）把单 CG 微基准从
+2.24× 慢收敛到 1.04×；修正多 CG 语义后注入的候选与基线**码流完全一致**
+（7981.54 kb/s、QP 33.77），耗时 8.21–8.22 s（约 +0.6%）。该轮同时暴露
+并修复了旧差分语料只测单 CG 且几乎全非零的盲区（见
+[docs/48](docs/48-preload-and-isa-profiles.md) §8）。
 
 ## LD_PRELOAD 注入器
 

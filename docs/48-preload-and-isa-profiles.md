@@ -220,3 +220,64 @@ scripts/verify-preload-real-machine.sh <user@host> sve1
 scripts/build-x265-injected.sh --isa sve1 --kernels sa8d,interp8 \
   --build-dir build/x265-8-cross-sve2 --inject-out build/dynopt-inject
 ```
+
+## 8. NEON→NEON 搜索与 scanPosLast 多 CG 修复（2026-08-15 第二轮）
+
+### 8.1 `--isa neon`
+
+`search_sve2_layouts.py --isa neon` 增加纯 NEON 搜索路径：
+
+- `-march=armv8.2-a+dotprod`，对象级扫描拒绝任何 z 寄存器/SVE 指令；
+- 仅允许发射器有纯 NEON lowering 的 kernel（scan-pos-last、
+  find-pos-first-last、pel-filter-luma-strong），其余 kernel 显式报错；
+- 修复 `candidate_march` 在 neon 模式下回退到 `armv8.2-a+sve2` 的 bug
+  （此前 GCC 会把 NEON 源码自动向量化成 SVE）。
+
+### 8.2 scanPosLast NEON 搜索轴
+
+`kernels/scan-pos-last/manifest.yaml` 增加四轴搜索：
+
+| 轴 | 取值 | 说明 |
+| --- | --- | --- |
+| mask | pack / dot / addp | 16 lane → 16bit 掩码：位循环、u8 dotprod、3 级 vpaddq（一次出 sign+nz） |
+| pext | ctz / clz | sign 压缩：`__builtin_ctz` 循环（GCC 展开）vs clz/lsl/extr/bfc 紧凑循环 |
+| flag | tail | 中间 CG 存 `rev16(nz)`，末 CG 存 `rev16(nz)>>(15-L)`（上游 asm 语义） |
+| count | popcount / addv | 标量 popcount vs `addv`+`smov` 计数 |
+
+920B CNTVCT（单 CG 6 非零，8192 次/批，总节拍中位）：
+
+| 变体 | 候选 | 上游 | 比率 |
+| --- | ---: | ---: | ---: |
+| pack+ctz+popcount（旧 neon） | 18220 | 8119 | 2.24× |
+| dot+ctz+popcount（旧 neon-dot） | 10676 | 8118 | 1.32× |
+| addp+clz+tail+popcount（最优） | 8450 | 8119 | 1.04× |
+
+多 CG（4 个 4x4 CG × 约 5 非零，16x16 TU）下最优变体约 1.10–1.14×。
+结论：NEON 搜索把候选从 2.24× 收敛到 ~1.04–1.14×，全程 20k 差分 0 失配；
+scanPosLast 的瓶颈是标量 PEXT 与 per-CG 循环开销，上游 NEON asm 已接近
+该形状的下限。
+
+### 8.3 多 CG 语料盲区与修复
+
+旧 scanPosLast 差分语料只测单 CG，且随机系数几乎全非零（L=15），从未
+覆盖末 CG `rev16(nz)>>(15-L)` 与中间 CG `rev16(nz)` 的语义，导致
+branch/csel 变体（只实现 L=15 特例）通过 20k 却在真实 16x16 TU 上改变
+码流（7981→7687 kb/s）。修复：
+
+- `tools/gen_verify.py`：scanPosLast 语料交替单 CG（4x4）与多 CG
+  （16x16，由 4x4 模式拼出的 256 项 scan 表），随机稀疏密度；
+- 发射器删除 branch/csel 变体，末 CG 统一按上游尾段
+  `pf[-1] = rev16(last_nz) >> (15 - lastIndex)` 修正；
+- 修复后 20k 多 CG 差分 0 失配，注入 920B 后与基线**码流一致**
+  （7981.54 kb/s、QP 33.77）。
+
+### 8.4 920B 聚焦 E2E（真实 1080p 30 帧，scanPosLast 单算子注入）
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 纯基线 | 8.16 s | 8.17 s | 8.17 s | 8.17 s |
+| 注入修正后 NEON tail | 8.22 s | 8.21 s | 8.21 s | 8.21 s |
+
+正确性（码流）完全一致，性能约 +0.6%（对应 kernel 级 ~1.1× 慢），说明
+scanPosLast 不是 920B 端到端 15% 目标的主杠杆；后续应把 NEON 搜索轴与
+多 CG 语料模式扩展到 costCoeffNxN / dct32 / sa8d16 等大热点。

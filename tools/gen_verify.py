@@ -1533,29 +1533,53 @@ int main(int argc, char** argv)
     const int cases = argc > 1 ? atoi(argv[1]) : ${cases};
     std::mt19937 rng(0x5C2026u);
     long mism = 0;
+    // 16x16 multi-CG scan table built from the 4x4 pattern: CG k covers
+    // sub-block (k>>2, k&3) whose 16 positions are
+    // k_base + g_scan4x4[scanType][j] (each CG is one 4x4 quadrant).
+    uint16_t scan16[256];
     for (int i = 0; i < cases; i++)
     {
         const int scanType = (int)(rng() % 3);
-        const uint16_t* scan = x265::g_scan4x4[scanType];
-        int16_t coeff[16];
-        int numSig = 0;
-        for (int j = 0; j < 16; j++)
+        const uint16_t* scanCG = x265::g_scan4x4[scanType];
+        const uint16_t* scan = scanCG;
+        for (int k = 0; k < 16; k++)
         {
-            coeff[j] = (int16_t)((int)(rng() & 0xFFFF) - 32768);
+            const int base = ((k >> 2) * 4) * 16 + (k & 3) * 4;
+            for (int j = 0; j < 16; j++)
+                scan16[k * 16 + j] = (uint16_t)(
+                    base + ((scanCG[j] >> 2) * 16 + (scanCG[j] & 3)));
+        }
+        // Alternate single-CG (4x4 TU) and multi-CG (16x16 TU) inputs:
+        // intermediate CGs store rev16(nz) in coeffFlag, the final CG
+        // stores rev16(nz) >> (15-lastIndex) (bit i = position
+        // lastIndex-i), and a single-CG corpus alone cannot catch a
+        // swapped convention (2026-08-15 E2E bitstream regression).
+        const bool big = (rng() & 1) != 0;
+        const int trSize = big ? 16 : 4;
+        const int ncoeff = big ? 256 : 16;
+        if (big)
+            scan = scan16;
+        int16_t coeff[256];
+        int numSig = 0;
+        for (int j = 0; j < ncoeff; j++)
+        {
+            const bool nz = big ? ((rng() & 7) == 0)
+                                : ((rng() & 1) != 0);
+            coeff[j] = nz ? (int16_t)((int)(rng() & 0xFFFF) - 32768) : 0;
             numSig += coeff[j] != 0;
         }
         if (numSig == 0)
         {
-            coeff[scan[rng() % 16]] = 1;
+            coeff[scan[rng() % ncoeff]] = 1;
             numSig = 1;
         }
         uint16_t ws[64] = {}, gs[64] = {};
         uint16_t wf[64] = {}, gf[64] = {};
         uint8_t wn[64] = {}, gn[64] = {};
         const int wlast = ${ref_call}(
-            scan, coeff, ws, wf, wn, numSig, scan, 4);
+            scan, coeff, ws, wf, wn, numSig, scanCG, trSize);
         const int glast = ${cand_sym}(
-            scan, coeff, gs, gf, gn, numSig, scan, 4);
+            scan, coeff, gs, gf, gn, numSig, scanCG, trSize);
         int bad = (wlast != glast);
         for (int k = 0; k < 64 && !bad; k++)
             if (ws[k] != gs[k] || wf[k] != gf[k] || wn[k] != gn[k])

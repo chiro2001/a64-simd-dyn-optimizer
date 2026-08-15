@@ -54,6 +54,7 @@ _OPT_EXTRA = ""
 _ISA = None
 
 ISA_MARCH = {
+    "neon": "armv8.2-a+dotprod",
     "sve1": "armv8.2-a+sve+dotprod",
     "sve2": "armv8.2-a+sve2",
     "sve2p1": "armv9.4-a+sve2p1",
@@ -61,17 +62,41 @@ ISA_MARCH = {
 }
 
 ISA_MATTR = {
+    "neon": "+dotprod",
     "sve1": "+sve",
     "sve2": "+sve2",
     "sve2p1": "+sve2p1",
     "sve2p3": "+sve2p3",
 }
 
-ISA_RANK = {"sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4, "sve2p3": 5}
+ISA_RANK = {"neon": 0, "sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4,
+            "sve2p3": 5}
+
+# Kernels whose emitter has a real NEON lowering (no SVE intrinsics).
+# `--isa neon` refuses other kernels instead of silently building SVE
+# source with a NEON-only -march.
+NEON_SUPPORTED_KERNELS = {
+    "find-pos-first-last",
+    "pel-filter-luma-strong",
+    "scan-pos-last",
+}
+
+# Layout values that lower to pure NEON/scalar code (or are inert axes).
+NEON_SAFE_VALUES = {
+    "neon", "neon-dot", "scalar", "none", "off", "default",
+    "pack", "dot", "addp", "ctz", "clz", "tail",
+    "popcount", "addv",
+    0,
+}
 
 # Layout axes whose values need a newer ISA than the default SVE2 build
 # (the SVE2p1 sdot-s32 family and the SVE2p3 sdot.h path-B family).
 ISA_REQUIRED = {
+    "sve": "sve1",
+    "sve1": "sve1",
+    "sve2": "sve2",
+    "sdot-d": "sve2",
+    "sve-gather": "sve2",
     "sdot-h": "sve2p3",
     "sdot-s32": "sve2p1",
     "sdot-s32-split": "sve2p1",
@@ -96,6 +121,10 @@ def combo_isa_allowed(combo):
     SVE2p3-only lowers on 920B (SVE1) or 950 (SVE2.0 and below)."""
     if not _ISA:
         return True
+    if _ISA == "neon":
+        # NEON mode is only meaningful when every axis value lowers to
+        # pure NEON/scalar code; anything SVE-flavored is dropped.
+        return all(v in NEON_SAFE_VALUES for v in combo.values())
     for axis, val in combo.items():
         req = ISA_REQUIRED.get(str(val))
         if req and ISA_RANK[req] > ISA_RANK[_ISA]:
@@ -888,7 +917,14 @@ def measure_layout_candidate(task):
         return None, None, "BUILD TIMEOUT"
     if c.returncode != 0:
         return None, None, "BUILD FAIL"
-    if _ISA:
+    if _ISA == "neon":
+        # Pure-NEON gate: the NEON_SAFE_VALUES filter already restricts the
+        # emitters, but a compiler could still lower a builtin to SVE on a
+        # march that enables it. Reject any z-register SVE instruction.
+        d = run(["aarch64-linux-gnu-objdump", "-d", obj], timeout=60)
+        if re.search(r"\b[zZ]\d+(?:\.\w+)?\b", d.stdout):
+            return None, None, "SVE IN OBJECT (neon mode)"
+    if _ISA and _ISA != "neon":
         try:
             g = run([sys.executable,
                      os.path.join(ROOT, "tools/check_isa_level.py"),
@@ -1075,11 +1111,12 @@ def main():
     ap.add_argument("--backend", choices=("acle", "asm", "op", "gen"),
                     default="acle")
     ap.add_argument("--isa", "--target-isa", default=None,
-                    choices=("sve1", "sve2", "sve2p1", "sve2p3"),
+                    choices=("neon", "sve1", "sve2", "sve2p1", "sve2p3"),
                     help="restrict search/generation to this ISA level "
-                         "(920B: sve1 with VL=256; 950: sve2 and below). "
-                         "Unsupported compute axes are dropped and every "
-                         "built object is gated with check_isa_level.py.")
+                         "(920B: sve1 with VL=256; 950: sve2 and below; "
+                         "neon: NEON+dotprod only, for NEON->NEON validity "
+                         "checks). Unsupported compute axes are dropped; "
+                         "SVE objects are rejected in neon mode.")
     ap.add_argument("--target", choices=("920B", "950"), default=None,
                     help="convenience alias: 920B -> --isa sve1 "
                          "--mca-target 920B; 950 -> --isa sve2 "
@@ -1261,6 +1298,11 @@ def main():
     if args.contract:
         manifest["contract"] = args.contract
     contract = manifest.get("contract", "upstream-exact")
+    if _ISA == "neon" and args.kernel not in NEON_SUPPORTED_KERNELS:
+        print("--isa neon supports only %s; kernel %r has no pure-NEON "
+              "emitter" % (", ".join(sorted(NEON_SUPPORTED_KERNELS)),
+                           args.kernel), file=sys.stderr)
+        return 2
     if args.outdir is None:
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
@@ -1712,7 +1754,57 @@ def main():
               % (min(args.bench_top, len(ok)), host))
         paired_dct = os.path.join(ROOT, "scripts", "bench-dct32-paired.sh")
         paired_gen = os.path.join(ROOT, "scripts", "bench-generic-paired.sh")
-        if args.kernel in ("interp8", "interp8-16", "interp8-32"):
+        if args.kernel in ("sa8d", "sa8d16"):
+            shape = "16x16" if args.kernel == "sa8d16" else "8x8"
+            sym16 = manifest["candidate"]["symbol"]
+            mb_src = os.path.join(ROOT, "benchmarks/sa8d_microbench.cpp")
+            for r in ok[:min(args.bench_top, len(ok))]:
+                tag = r["tag"]
+                obj = os.path.join(args.outdir, tag + ".o")
+                binp = os.path.join(args.outdir, tag + "-sa8d-bench")
+                cc = ["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
+                      "-DX265_NS=x265", "-DX265_DEPTH=8", "-DHIGH_BIT_DEPTH=0",
+                      "-DDYNOPT_CANDIDATE=dynopt_sa8d_8x8_sve2",
+                      "-DDYNOPT_CANDIDATE16=" + sym16,
+                      "-I", os.path.join(ROOT, "third_party/x265/source"),
+                      "-I", os.path.join(ROOT, "third_party/x265/source/common"),
+                      "-I", os.path.join(ROOT, "build/x265-8-cross-make"),
+                      mb_src,
+                      os.path.join(ROOT, "kernels/sa8d/candidates/best_sve2.o"),
+                      obj,
+                      "-Wl,--start-group",
+                      os.path.join(ROOT, "build/x265-8-cross-make/libx265.a"),
+                      "-Wl,--end-group", "-lpthread", "-ldl", "-o", binp]
+                c = run(cc, timeout=300)
+                if c.returncode != 0 or not os.path.exists(binp):
+                    print("  %-24s sa8d bench build failed" % tag)
+                    r["bench920_ratio"] = None
+                    continue
+                try:
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", binp,
+                         host + ":/tmp/sv_" + tag], timeout=180,
+                        capture_output=True)
+                    subprocess.run(
+                        ["scp", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", paired_gen,
+                         host + ":/tmp/bench-generic-paired.sh"],
+                        timeout=60, capture_output=True)
+                    rr = run(
+                        ["ssh", "-o", "ConnectTimeout=10",
+                         "-o", "BatchMode=yes", host,
+                         "bash /tmp/bench-generic-paired.sh /tmp/sv_%s %s "
+                         "neon cand 20 8 /tmp/svpair_%s 2>&1 | grep 'neon/cand'"
+                         % (tag, shape, tag)], timeout=600)
+                    m = re.search(r"median=([0-9.]+)", rr.stdout)
+                    ratio = float(m.group(1)) if m else None
+                    r["bench920_ratio"] = ratio
+                    print("  %-24s bench920 %s neon/cand ratio=%s"
+                          % (tag, shape, ratio))
+                except Exception as e:  # noqa: BLE001
+                    print("  %-24s bench920 skipped: %s" % (tag, e))
+        elif args.kernel in ("interp8", "interp8-16", "interp8-32"):
             shape_n = {"interp8": 8, "interp8-16": 16,
                        "interp8-32": 32}[args.kernel]
             shape = "%dx%d" % (shape_n, shape_n)

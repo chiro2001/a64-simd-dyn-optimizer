@@ -31,3 +31,7 @@ corpus:
 
 layouts:
   compute: [scalar, neon, neon-dot]
+  mask: [pack, dot, addp]
+  pext: [ctz, clz]
+  flag: [tail]
+  count: [popcount, addv]
