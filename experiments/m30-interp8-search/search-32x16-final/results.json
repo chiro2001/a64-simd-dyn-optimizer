@@ -1,0 +1,224 @@
+[
+ {
+  "tag": "unroll-loop_pairsum-addp_compute-sdot-h",
+  "unroll": "loop",
+  "pairsum": "addp",
+  "compute": "sdot-h",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400980"
+  ],
+  "counts": {
+   "total": 821,
+   "vector": 713,
+   "movprfx": 64,
+   "vector_fused": 649,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 24,
+   "vector_fused_uop": 649
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 63,
+    "simd_insns": 23,
+    "load_insns": 9,
+    "fused_pseudo": 4
+   }
+  },
+  "mca_cycles": 197,
+  "mca_uops": 856
+ },
+ {
+  "tag": "unroll-loop_pairsum-uzp_compute-sdot-h",
+  "unroll": "loop",
+  "pairsum": "uzp",
+  "compute": "sdot-h",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x400980"
+  ],
+  "counts": {
+   "total": 884,
+   "vector": 777,
+   "movprfx": 64,
+   "vector_fused": 713,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 24,
+   "vector_fused_uop": 713
+  },
+  "fusion": {
+   "eligible": 4,
+   "hw_supported": 0,
+   "pairs": [
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add"
+   ],
+   "counts": {
+    "scalar_insns": 62,
+    "simd_insns": 27,
+    "load_insns": 9,
+    "fused_pseudo": 4
+   }
+  },
+  "mca_cycles": 213,
+  "mca_uops": 919
+ },
+ {
+  "tag": "unroll-full_pairsum-addp_compute-sdot-h",
+  "unroll": "full",
+  "pairsum": "addp",
+  "compute": "sdot-h",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x4014a0"
+  ],
+  "counts": {
+   "total": 812,
+   "vector": 713,
+   "movprfx": 64,
+   "vector_fused": 649,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 8,
+   "vector_fused_uop": 649
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 386,
+    "simd_insns": 353,
+    "load_insns": 8,
+    "fused_pseudo": 64
+   }
+  },
+  "mca_cycles": 198,
+  "mca_uops": 863
+ },
+ {
+  "tag": "unroll-full_pairsum-uzp_compute-sdot-h",
+  "unroll": "full",
+  "pairsum": "uzp",
+  "compute": "sdot-h",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007d4",
+   "0x401580"
+  ],
+  "counts": {
+   "total": 875,
+   "vector": 777,
+   "movprfx": 64,
+   "vector_fused": 713,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 8,
+   "vector_fused_uop": 713
+  },
+  "fusion": {
+   "eligible": 64,
+   "hw_supported": 0,
+   "pairs": [
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp2+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add",
+    "uzp1+add"
+   ],
+   "counts": {
+    "scalar_insns": 385,
+    "simd_insns": 417,
+    "load_insns": 8,
+    "fused_pseudo": 64
+   }
+  },
+  "mca_cycles": 213,
+  "mca_uops": 926
+ }
+]

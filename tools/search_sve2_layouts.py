@@ -469,7 +469,23 @@ def make_emitter(kernel, backend="acle"):
             # SVE2p3 path-B only (docs/22 §5.5); symbol matches the
             # manifest candidate so the trace driver/verifier bind.
             return emit_sdot_h(
-                func_name="dynopt_interp8_%dx%d_sve2" % (n, n), n=n,
+                func_name="dynopt_interp8_%dx%d_sve2" % (n, n),
+                width=n, height=n,
+                unroll=combo.get("unroll") == "full",
+                pairsum=combo.get("pairsum", "addp"))
+        return emit_fn
+    if kernel.startswith("interp8-") and \
+            kernel not in ("interp8", "interp8-16", "interp8-32"):
+        m = re.fullmatch(r"interp8-(\d+)x(\d+)", kernel)
+        if not m:
+            raise ValueError("unrecognized interp8 kernel %r" % kernel)
+        w, h = int(m.group(1)), int(m.group(2))
+        from emit_interp8_sve2_shared import emit_sdot_h
+
+        def emit_fn(combo):
+            return emit_sdot_h(
+                func_name="dynopt_interp8_%dx%d_sve2" % (w, h),
+                width=w, height=h,
                 unroll=combo.get("unroll") == "full",
                 pairsum=combo.get("pairsum", "addp"))
         return emit_fn
