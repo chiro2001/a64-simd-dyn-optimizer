@@ -1,0 +1,36 @@
+# Chroma 4-tap horizontal 16x24 (SVE2p3, VL=256), upstream-exact.
+kernel: interp4-16x24
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp4
+  n: 16
+  rows: 24
+
+candidate:
+  symbol: dynopt_interp4_16x24_sve2
+  trace_driver_src: kernels/interp4-16x24/trace_driver.cpp
+  trace_driver_c: kernels/interp4-16x24/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp4_horiz_pp_dotprod
+  symbol_mangled: _ZN4x26524interp4_horiz_pp_dotprodILi16ELi24EEEvPKhlPhli
+  call: x265::interp4_horiz_pp_dotprod<16, 24>
+  decl: |
+    namespace x265 {
+    template <int W, int H> void interp4_horiz_pp_dotprod(
+        const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+    }
+
+baselines:
+  neon:
+    driver: kernels/interp4-16x24/trace_driver.cpp
+    symbol_mangled: _ZN4x26524interp4_horiz_pp_dotprodILi16ELi24EEEvPKhlPhli
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sdot-h]
