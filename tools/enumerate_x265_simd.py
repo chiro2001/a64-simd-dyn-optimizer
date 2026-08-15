@@ -120,6 +120,8 @@ def main():
             done = "weight-pp" in cov
         elif name == "sign":
             done = "sign" in cov
+        elif name == "findPosFirstLast":
+            done = "find-pos-first-last" in cov
         else:
             done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,

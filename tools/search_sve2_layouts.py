@@ -606,6 +606,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "find-pos-first-last":
+        from emit_find_pos_first_last_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 

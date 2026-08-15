@@ -1,0 +1,34 @@
+# findPosFirstLast: packed first/last nonzero positions + abs sum sign.
+kernel: find-pos-first-last
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: find_pos_first_last
+  n: 16
+
+candidate:
+  symbol: dynopt_find_pos_first_last_sve2
+  trace_driver_src: kernels/find-pos-first-last/trace_driver.cpp
+  trace_driver_c: kernels/find-pos-first-last/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: findPosFirstLast_neon
+  symbol_mangled: _ZN4x26521findPosFirstLast_neonEPKslPKt
+  call: x265::findPosFirstLast_neon
+  decl: |
+    namespace x265 {
+    uint32_t findPosFirstLast_neon(
+        const int16_t*, intptr_t, const uint16_t*);
+    }
+
+baselines:
+  neon:
+    driver: kernels/find-pos-first-last/trace_driver.cpp
+    symbol_mangled: _ZN4x26521findPosFirstLast_neonEPKslPKt
+
+corpus:
+  cases: 20000
+
+layouts:
+  compute: [neon]
