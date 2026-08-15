@@ -52,3 +52,29 @@
 bash scripts/freeze-best6b.sh chiro@124.70.206.229
 perf record -e cpu-clock -F 199 ... ./x265 ...（注入后）
 ```
+
+## best8 注入版 perf（2026-08-16 更新）
+
+best8（28 槽）注入后 920B 热点（perf record -F 199，~1K samples）：
+
+| 函数 | 占比 | 类型 |
+| --- | ---: | ---: |
+| MotionEstimate::motionEstimate | 5.12% | ME 主路径（satd 已注入） |
+| dynopt_cost_coeff_nxn_sve2 | 3.60% | 已注入 |
+| dct32_neon | 2.97% | 上游 asm（920B 候选未非劣） |
+| x265_quant_neon | 2.59% | 上游 asm（候选慢） |
+| Entropy::encodeBin | 2.53% | 非 dispatch 内联 |
+| dynopt_sa8d_16x16 | 2.28% | 已注入 |
+| dynopt_satd_16x16 | 2.21% | 已注入 |
+| psyCost_pp_neon<3>/<2> | 1.96%+1.01% | 已验证内联无收益 |
+| dynopt_scan_pos_last | 1.71% | 已注入 |
+| signBitHidingHDQ | 1.71% | 非 dispatch |
+| codeCoeffNxN | 1.64% | 非 dispatch |
+| interp_hv/vert_sp/horiz_ps | ~5.4% | vps 已注入；hv/horiz 为 dotprod 路径 |
+| dct16_neon | 1.07% | 上游 asm |
+
+分析：熵系合计 ~7.8%（ccn 已注入 +9.7%）；quant 系（quant +
+signBitHidingHDQ）~4.3%；dct 系 ~4.0%；ME ~5.1%。可注入且算法级
+突破的主要剩余项为 quant/dct32/dct16（920B 上历史候选均未非劣），
+非 dispatch 的 encodeBin/codeCoeffNxN/signBitHidingHDQ 合计 ~6%
+受“不动编码流程”约束无法注入。
