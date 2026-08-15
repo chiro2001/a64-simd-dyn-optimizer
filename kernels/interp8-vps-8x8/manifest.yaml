@@ -1,0 +1,36 @@
+# interp8 luma_vps 8x8.
+kernel: interp8-vps-8x8
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp8_vps
+  n: 8
+  rows: 8
+candidate:
+  symbol: dynopt_interp8_vps_8x8_sve2
+  trace_driver_src: kernels/interp8-vps-8x8/trace_driver.cpp
+  trace_driver_c: kernels/interp8-vps-8x8/trace_driver.cpp
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp_vert_ps_neon
+  symbol_mangled: _ZN4x26519interp_vert_ps_neonILi8ELi8ELi8EEEvPKhlPsli
+  call: x265::interp_vert_ps_neon<8, 8, 8>
+  decl: |
+    namespace x265 {
+    template <int N, int W, int H> void interp_vert_ps_neon(
+        const uint8_t*, intptr_t, int16_t*, intptr_t, int);
+    }
+baselines:
+  neon:
+    driver: kernels/interp8-vps-8x8/trace_driver.cpp
+    symbol_mangled: _ZN4x26519interp_vert_ps_neonILi8ELi8ELi8EEEvPKhlPsli
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+layouts:
+  acc_split: [1]
+  compute: [sve]
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"

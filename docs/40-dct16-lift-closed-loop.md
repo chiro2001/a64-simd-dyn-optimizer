@@ -703,3 +703,10 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - vsp 8x8：**241 fused / MCA 107**；
   - vss 8x8：**224 / 97**。
 - 冒烟测试扩到 49 核。
+
+## 42. vps 8x8 补齐（2026-08-15）
+
+- `_emit_vertical_ps8_native`：8-lane 谓词 `pg8b/pg8h` 的零累加器
+  软流水，`svld1ub_u16` 加宽载入 + `svst1_s16` 输出。
+- 验收（20k 差分 0 失配）：**118 fused / MCA 78**。
+- 冒烟测试扩到 50 核。
