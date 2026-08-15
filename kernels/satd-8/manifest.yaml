@@ -34,6 +34,7 @@ corpus:
   cases: 20000
 
 layouts:
+  pack: [1, 2]
   compute: [sve]
 
 mca_target:

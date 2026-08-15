@@ -510,10 +510,16 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   16-lane z.h 差分向量；行 4-point Hadamard 用两段
   `svcadd + svtbl(HAD_IDX16)`；列折叠为 abs(sum)/abd 对 + `svmax`；
   rows/4 组 u16 和累加后 `svaddv_u16`。
+- width-8 SATD 打包 lowering `_emit_hadamard_satd8_packed_natural`：
+  把两个竖直 4-row 组打包进 z.h 低/高半（`svsel` + 带偏移的谓词
+  `svld1ub_u16`），行变换与列折叠都 lane-wise 各半独立。
 - 验收（各 20k 差分 0 失配，对照上游 satd8_sve2 位级一致）：
   - satd-16x16 pack=2：**140 fused / MCA 74**（pack=1 441/133，
     -68%/-44%）；
   - satd-16x8 pack=2：**72 / 53**（pack=1 183/69，-61%/-23%）；
-  - satd-16x4 pack=2：**36 / 43**（pack=1 91/49，-60%/-12%）。
-- 三个 width-16 SATD manifest 增加 `pack: [1,2]`；冒烟测试切 pack=2。
-  satd 大形状（8x32 等）仍待循环/helper 内联。
+  - satd-16x4 pack=2：**36 / 43**（pack=1 91/49，-60%/-12%）；
+  - satd-8x8 pack=2：**52 / 53**（pack=1 93/51，fused -44%，
+    MCA +2 cycles，作为 fused 优先轴保留）；
+  - satd-8x16 pack=2：**102 / 69**（pack=1 185/70，-45%/-1.4%）。
+- width-16 与 8x8/8x16 SATD manifest 均增加 `pack: [1,2]`，冒烟测试
+  切 pack=2。satd 大形状（8x32 等）仍待循环/helper 内联。
