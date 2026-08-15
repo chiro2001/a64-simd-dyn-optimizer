@@ -111,3 +111,10 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   （3630 vs 2400 ticks；reports/interp8-vps16-inline-20260816.txt）；
 - [ ] 多形状 + coeffIdx 1/2/3 分派的内联候选注入（luma_vps 热点形状）
   + 20k + 920B paired + E2E。
+
+## interp8 vps 内联注入（2026-08-16 完成）
+
+- [x] 6 形状候选 + 60 万矩阵差分 0 失配 + 920B paired 1.30-1.81x；
+- [x] best8 注入 E2E：**-1.92%**（8028 vs 8192 ms，bit-exact）；
+  报告 reports/interp8-vps-inline-inject-20260816.txt；
+- [ ] 同型跟进：interp8 hps/vsp/vss、interp4 filter4、sa8d 32/64。

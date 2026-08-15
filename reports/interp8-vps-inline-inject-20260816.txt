@@ -1,0 +1,39 @@
+# interp8 vps 内联候选注入（2026-08-16）
+
+## 实现
+
+- tools/emit_interp8_vps_inline.py：filter8_u8x16/u8x8 三个 coeffIdx
+  版本 always_inline + vert_ps 滚动窗口模板（W==8 用 u8x8，W>=16 按
+  16 列分段），符号 dynopt_interp8_vps_<W>x<H>_sve2（与 manifest 对齐）；
+- 6 个形状候选源：kernels/interp8-vps-{8x8,8x16,16x16,16x32,32x16,
+  32x32}/candidates/best_sve2.cpp；
+- benchmarks/interp8_vps_matrix_verify.cpp（10 形状 x coeffIdx 1/2/3
+  x 20000 = 60 万差分）+ interp8_vps_bench.cpp；
+- scripts/freeze-best8.sh：best6b + satd8x16/16x8 + interp8-vps x6。
+
+## 验证与实测（920B）
+
+矩阵 60 万差分 0 失配。paired（coeffIdx=3，batch=512 中位）：
+
+| 形状 | 上游 ticks | 候选 ticks | 加速 |
+| --- | ---: | ---: | ---: |
+| 8x8 | 959 | 546 | 1.76x |
+| 16x16 | 3618-3633 | 2002-2004 | 1.81x |
+| 32x32 | 13771-13775 | 10572-10612 | 1.30x |
+| 16x32 | 6960-6988 | 3870-3878 | 1.80x |
+
+## E2E（真实 1080p 30 帧，5+5 paired，码流 bit-exact ee5db7…）
+
+| 配置 | 中位 | 差 |
+| --- | ---: | ---: |
+| 干净基线 | 8192 ms | — |
+| best8（28 槽：best6b + satd8x16/16x8 + interp8-vps x6） | 8028 ms | **-1.92%** |
+
+bootstrap95 = [144, 172] ms。累积：best6b -1.61% → +satd 矩形 -1.76%
+→ +interp8-vps -1.92%。
+
+## 结论
+
+GCC12 helper 外链修复（内联候选）已覆盖 satd 家族与 interp8 vps，
+全部 bit-exact、零算法改动；E2E 累计 -1.92%。下一步同型：interp8
+hps/vsp/vss、interp4 filter4、sa8d 32/64 形状。
