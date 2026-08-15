@@ -31,4 +31,5 @@ corpus:
   cases: 20000
 
 layouts:
+  compute: [sve2, sve1]
   widen: [unpk, smull-ones]
