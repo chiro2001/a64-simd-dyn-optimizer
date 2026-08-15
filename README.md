@@ -23,11 +23,10 @@ pass 优化 → 按目标机指令成本表做有界 cover/布局选择 → 20k 
 - M0 通过：SA8D 8x8 垂直切片（契约 → 图 → NEON cover → 20k 门禁 →
   N1/920B paired 复现，0 失配）；
 - M1 通过：受限 fail-closed DSL 前端 + pass 管线（确定性/幂等/预算）；
-- M2-foundation 通过：SATD 8x8 第二锚点 + A/B/C 尾部 cover 冒烟排序门
-  （N1 与 920B 均 PASS；报告
-  [reports/ago-m2-satd8-covers-20260816.txt](reports/ago-m2-satd8-covers-20260816.txt)）；
-  M2-expanded（正式留出排序门：≥8 region 实例、噪声探针、0.75 成对
-  准确率等）为剩余验收，见 [optimizer/ago/TODO-M2.md](optimizer/ago/TODO-M2.md)；
+- M2 通过：SATD 8x8 锚点 + 17 实例正式留出排序门（N1 81 可分辨对
+  acc=0.975/tau=0.951/regret=1.0%；920B 80 对 acc=1.000；N1 成本表
+  transfer 到 920B acc=1.000；报告
+  [reports/ago-m2-expanded-ranking-20260816.txt](reports/ago-m2-expanded-ranking-20260816.txt)）；
 - 顶级模型咨询：round-0023（AGO 规划条件 GO）与 round-0024
   （M2 拆分 + 排序门/N1 校准协议，decision 已落盘）见
   [expert-advice/](expert-advice/)。

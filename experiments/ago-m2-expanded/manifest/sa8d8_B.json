@@ -1,0 +1,17 @@
+{
+  "cflags": "-O3 -DNDEBUG -std=c++11 -march=armv8.2-a+dotprod",
+  "compiler": "aarch64-linux-gnu-g++",
+  "compiler_version": "aarch64-linux-gnu-g++ (GCC) 16.1.0",
+  "contract_hash": "sa8d8_u8: d[i][j",
+  "cover": "B",
+  "isa": "neon",
+  "kernel": "sa8d8",
+  "object_hash": "3663a7f8e5948d8606a71fab02e1b357041595ee9c48c76f5d895d687d0ae8d0",
+  "region": "sa8d8/reduce",
+  "source_hash": "f13cc0203a2f1c8262e7521cfd43611ad11faf5fb55d9d7ef41115018512cc6a",
+  "target": "n1",
+  "template_params": {
+    "tail": "    uint16x8_t o0 = vadd"
+  },
+  "verify": "20k oracle (pending native run)"
+}

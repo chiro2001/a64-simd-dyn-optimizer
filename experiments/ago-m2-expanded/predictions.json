@@ -1,0 +1,274 @@
+[
+  {
+    "cp_lat": 38.62,
+    "instance": "satd8_A",
+    "predicted_cyc": 132.6,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 132.6
+  },
+  {
+    "cp_lat": 38.62,
+    "instance": "satd8_B",
+    "predicted_cyc": 132.6,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 132.6
+  },
+  {
+    "cp_lat": 39.07,
+    "instance": "satd8_C",
+    "predicted_cyc": 134.48,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 134.48
+  },
+  {
+    "cp_lat": 39.97,
+    "instance": "satd8_D",
+    "predicted_cyc": 168.32,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 168.32
+  },
+  {
+    "cp_lat": 38.62,
+    "instance": "satd8_E",
+    "predicted_cyc": 132.6,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 132.6
+  },
+  {
+    "cp_lat": 41.51,
+    "instance": "sa8d8_A",
+    "predicted_cyc": 179.6,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 179.6
+  },
+  {
+    "cp_lat": 41.96,
+    "instance": "sa8d8_B",
+    "predicted_cyc": 181.48,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 181.48
+  },
+  {
+    "cp_lat": 41.51,
+    "instance": "sa8d8_C",
+    "predicted_cyc": 179.6,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 179.6
+  },
+  {
+    "cp_lat": 41.06,
+    "instance": "satd16x8_A",
+    "predicted_cyc": 272.22,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 272.22
+  },
+  {
+    "cp_lat": 41.51,
+    "instance": "satd16x8_B",
+    "predicted_cyc": 279.51,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 279.51
+  },
+  {
+    "cp_lat": 43.95,
+    "instance": "satd16x8_C",
+    "predicted_cyc": 272.22,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 272.22
+  },
+  {
+    "cp_lat": 41.06,
+    "instance": "satd8x16_A",
+    "predicted_cyc": 272.72,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 272.72
+  },
+  {
+    "cp_lat": 41.51,
+    "instance": "satd8x16_B",
+    "predicted_cyc": 280.56,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 280.56
+  },
+  {
+    "cp_lat": 43.95,
+    "instance": "satd8x16_C",
+    "predicted_cyc": 272.72,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 272.72
+  },
+  {
+    "cp_lat": 36.18,
+    "instance": "satd8x4_A",
+    "predicted_cyc": 62.54,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 62.54
+  },
+  {
+    "cp_lat": 36.63,
+    "instance": "satd8x4_B",
+    "predicted_cyc": 62.54,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 62.54
+  },
+  {
+    "cp_lat": 39.07,
+    "instance": "satd8x4_C",
+    "predicted_cyc": 62.54,
+    "spill_penalty": 0,
+    "table": "n1",
+    "tput_sum": 62.54
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8_A",
+    "predicted_cyc": 84.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 84.0
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8_B",
+    "predicted_cyc": 84.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 84.0
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8_C",
+    "predicted_cyc": 85.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 85.0
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8_D",
+    "predicted_cyc": 103.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 103.0
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8_E",
+    "predicted_cyc": 84.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 84.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "sa8d8_A",
+    "predicted_cyc": 109.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 109.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "sa8d8_B",
+    "predicted_cyc": 110.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 110.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "sa8d8_C",
+    "predicted_cyc": 109.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 109.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "satd16x8_A",
+    "predicted_cyc": 170.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 170.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "satd16x8_B",
+    "predicted_cyc": 179.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 179.0
+  },
+  {
+    "cp_lat": 15.0,
+    "instance": "satd16x8_C",
+    "predicted_cyc": 170.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 170.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "satd8x16_A",
+    "predicted_cyc": 172.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 172.0
+  },
+  {
+    "cp_lat": 14.0,
+    "instance": "satd8x16_B",
+    "predicted_cyc": 183.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 183.0
+  },
+  {
+    "cp_lat": 15.0,
+    "instance": "satd8x16_C",
+    "predicted_cyc": 172.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 172.0
+  },
+  {
+    "cp_lat": 12.0,
+    "instance": "satd8x4_A",
+    "predicted_cyc": 40.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 40.0
+  },
+  {
+    "cp_lat": 12.0,
+    "instance": "satd8x4_B",
+    "predicted_cyc": 40.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 40.0
+  },
+  {
+    "cp_lat": 13.0,
+    "instance": "satd8x4_C",
+    "predicted_cyc": 40.0,
+    "spill_penalty": 0,
+    "table": "920b",
+    "tput_sum": 40.0
+  }
+]

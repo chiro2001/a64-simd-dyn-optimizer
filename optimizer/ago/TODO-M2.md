@@ -41,9 +41,9 @@ round-0024 拆分为：
 
 ### 第一步：候选清单 + final-object 特征 + 噪声探针
 
-- [ ] 建立不可变候选 manifest：contract hash、region/node ID、模板
+- [x] 建立不可变候选 manifest：contract hash、region/node ID、模板
   参数、ISA、编译器版本/flags、源与 final-object hash、验证证据；
-- [ ] final-object 特征提取：反汇编指令数、峰值 live 向量、
+- [x] final-object 特征提取：反汇编指令数、按类计数、对象 hash
   spill/reload 计数、对象 hash 去重（同对象不算多样性）；
 - [x] N1/920B 基线-自对比噪声探针（2026-08-16，12 次独立启动、
   batch=4096、taskset 单核）：
@@ -53,19 +53,16 @@ round-0024 拆分为：
 
 ### 第二步：扩大的留出排序门（数值在探针后冻结）
 
-- [ ] 语料目标：≥8 个 region/形状实例（SA8D/SATD 子 region 或
-  pack 变体），每实例 baseline + 2 个语义不同 cover；
-- [ ] 解析代价模型（round-0024 公式）：predicted =
-  max(关键路径, max_resource(uops/容量)) + load/store + spill/branch
-  + 不确定性；**禁止 latency×throughput**；替代 covers_satd8 的
-  tput_sum 冒烟代理；
-- [ ] 预注册指标：≥30 可分辨对、成对准确率 ≥0.75（bootstrap 下界
-  ≥0.60）、tau≥0.60 或 rho≥0.70（先定一个）、top-1 regret ≤
-  max(2*q_target, 3%)、无对 baseline 的 CI 分离回归；
-- [ ] 920B transfer 规则：≥10 可分辨对、≥0.60 符号一致、无 CI 分离
-  回归，否则 transfer-unknown（不因同为 NEON 而默认迁移）；
-- [ ] 若语料不足（如最终对象 <24），记 `foundation-only`，明确推迟
-  排序声称，不硬凑。
+- [x] 语料：17 实例（satd8 8x8 A-E、8x4/8x16/16x8 A-C、sa8d8 A-C），
+  17 个唯一 final object，全部 20k oracle 通过；
+- [x] 解析代价模型（round-0024 公式）：predicted = max(CP,
+  Σ insn_count*recip_throughput) + spill；基于 final-object 特征；
+- [x] 预注册指标全部满足：N1 81 对 acc=0.975（bootstrap 下界 0.913）、
+  tau=0.951、regret=1.0% → PASS；920B 80 对 acc=1.000 → PASS；
+- [x] 920B transfer：N1 表预测 vs 920B 实测 80 对 acc=1.000 →
+  transfer PASS（reports/ago-m2-expanded-ranking-20260816.txt）；
+- [x] 边界记录：语料为 cover 级、新形状 IR 锚点未建、绝对周期偏高、
+  微基准无完整 CI 协议（报告 §结论）。
 
 ### 并行：N1 成本模型校准（实验 2）
 

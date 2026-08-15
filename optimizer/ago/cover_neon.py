@@ -88,6 +88,19 @@ static inline void hadamard_4_h(const int16x8_t in_coefs[4],
     transpose_s16_s32x2(&out_coefs[0], &out_coefs[1], s0, s1);
     transpose_s16_s32x2(&out_coefs[2], &out_coefs[3], d0, d1);
 }
+static inline int hadamard_4x4(int16x8_t a0, int16x8_t a1)
+{
+    int16x8_t sum, dif, t0, t1;
+    sumsubq_s16(&sum, &dif, a0, a1);
+    transpose_s16_s64x2(&t0, &t1, sum, dif);
+    sumsubq_s16(&sum, &dif, t0, t1);
+    transpose_s16_s16x2(&t0, &t1, sum, dif);
+    abssumsubq_s16(&sum, &dif, t0, t1);
+    transpose_s16_s32x2(&t0, &t1, sum, dif);
+    uint16x8_t max = vmaxq_u16(vreinterpretq_u16_s16(t0),
+                               vreinterpretq_u16_s16(t1));
+    return vaddlvq_u16(max);
+}
 static inline void hadamard_abs_4_h(const int16x8_t in_coefs[4],
                                     int16x8_t out_coefs[4])
 {

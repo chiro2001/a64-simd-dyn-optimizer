@@ -30,6 +30,13 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
 - M0 验收通过（SA8D 8x8，N1 0.985 / 920B 1.006，0 失配，提交 86ff2df）；
 - M1 通过（受限 DSL 前端 + pass 管线，提交 43dfc7e / 1accad9）；
 - M2 锚点进行中：satd8 8x8 契约/图/cover/20k 门禁/paired 微基准就绪；
-- M2-foundation 完成（21860a7 / 5f9ae14），M2-expanded 进行中；
+- M2-foundation 完成（21860a7 / 5f9ae14），M2-expanded 排序门通过
+  （N1 81 对 acc=0.975、tau=0.951；920B 80 对 acc=1.000；N1 表
+  transfer 到 920B acc=1.000；报告
+  reports/ago-m2-expanded-ranking-20260816.txt）；
+- 新增 manifest / objfeatures / predict：候选清单、final-object
+  特征与 max(CP, tput) 解析预测；covers_satd_shapes：8x4/8x16/16x8
+  cover 发射器；tools/ago_m2_corpus.py + scripts/ago-m2-gate.sh：
+  语料构建与正式排序门；
 - round-0024 咨询完成（response.md + decision.md），pass 管线已按
   “phase-once + 固定点校验”对齐。

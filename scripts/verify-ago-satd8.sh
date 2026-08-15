@@ -3,10 +3,12 @@
 # source -> 20k differential vs the C SWAR reference (satd_8x4 x two
 # bands), plus a Python-level C-vs-NEON identity precheck.
 #
-# Usage: scripts/verify-ago-satd8.sh [--cover A|B|C] [--cxx CXX]
+# Usage: scripts/verify-ago-satd8.sh [--shape 8x8|8x4|8x16|16x8]
+#                                    [--cover A|B|C|D|E] [--cxx CXX]
 #                                    [--qemu QEMU]
-#   --cover NAME  verify a specific cover from covers_satd8.py instead
-#                 of the default cover_neon.py output
+#   --shape SHAPE  target shape (default 8x8)
+#   --cover NAME   verify a specific cover from covers_satd8.py /
+#                  covers_satd_shapes.py instead of the default output
 #   AGO_NATIVE=1  run the built binary directly (native aarch64)
 #   AGO_STATIC=0  dynamic link
 set -euo pipefail
@@ -17,24 +19,36 @@ cd "$ROOT"
 CXX="${AGO_CXX:-aarch64-linux-gnu-g++}"
 QEMU="${AGO_QEMU:-build/qemu-build/qemu-aarch64}"
 COVER=""
+SHAPE="8x8"
 if [ "${1:-}" = "--cover" ]; then
     COVER="$2"
+    shift 2
+fi
+if [ "${1:-}" = "--shape" ]; then
+    SHAPE="$2"
     shift 2
 fi
 WORK="$(mktemp -d /tmp/ago-satd8.XXXXXX)"
 trap 'rm -rf "$WORK"' EXIT
 
-python3 - "$WORK/cover.cpp" "$COVER" <<'PY'
+python3 - "$WORK/cover.cpp" "$COVER" "$SHAPE" <<'PY'
 import sys
 sys.path.insert(0, "optimizer")
 from ago.frontend import SATD8_DSL, parse_dsl
 from ago.cover_neon import build_c_source
 from ago.covers_satd8 import emit_cover
+from ago.covers_satd_shapes import emit_cover as emit_shape_cover
 cover = sys.argv[2]
-if cover:
+shape = sys.argv[3]
+symbols = {"8x8": "dynopt_ago_satd8", "8x4": "dynopt_ago_satd8x4",
+           "8x16": "dynopt_ago_satd8x16", "16x8": "dynopt_ago_satd16x8"}
+if shape == "8x8" and cover:
     src = emit_cover(cover, "dynopt_ago_satd8")
+elif shape != "8x8" and cover:
+    src = emit_shape_cover(shape, cover, symbols[shape])
 else:
-    src = build_c_source(parse_dsl(SATD8_DSL))
+    src = build_c_source(parse_dsl(SATD8_DSL)) if shape == "8x8" else \
+        emit_shape_cover(shape, "A", symbols[shape])
 open(sys.argv[1], "w").write(src)
 PY
 
@@ -82,19 +96,32 @@ static int oracle_satd8(const uint8_t* p1, intptr_t s1,
     return oracle_satd_8x4(p1, s1, p2, s2)
          + oracle_satd_8x4(p1 + 4 * s1, s1, p2 + 4 * s2, s2);
 }
-extern "C" int dynopt_ago_satd8(
+static int oracle_satd_shape(const uint8_t* p1, intptr_t s1,
+                             const uint8_t* p2, intptr_t s2,
+                             int rows, int cols)
+{
+    int sum = 0;
+    for (int r = 0; r < rows; r += 4)
+        for (int c = 0; c < cols; c += 8)
+            sum += oracle_satd_8x4(p1 + r * s1 + c, s1,
+                                   p2 + r * s2 + c, s2);
+    return sum;
+}
+extern "C" int SYMBOL(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
-int main() {
+int main(int argc, char** argv) {
+    int rows = argc > 1 ? atoi(argv[1]) : 8;
+    int cols = argc > 2 ? atoi(argv[2]) : 8;
     std::mt19937 rng(0x5A8Du);
     int bad = 0;
     for (int t = 0; t < 20000; t++) {
-        uint8_t a[64], b[64];
-        for (int i = 0; i < 64; i++) { a[i] = (uint8_t)rng(); b[i] = (uint8_t)rng(); }
-        int want = oracle_satd8(a, 8, b, 8);
-        int got = dynopt_ago_satd8(a, 8, b, 8);
+        uint8_t a[1024], b[1024];
+        for (int i = 0; i < 1024; i++) { a[i] = (uint8_t)rng(); b[i] = (uint8_t)rng(); }
+        int want = oracle_satd_shape(a, 16, b, 16, rows, cols);
+        int got = SYMBOL(a, 16, b, 16);
         if (want != got) { if (bad < 5) printf("mismatch t=%d want=%d got=%d\n", t, want, got); bad++; }
     }
-    printf("ago satd8 verify bad=%d\n", bad);
+    printf("ago satd%s verify bad=%d\n", cols == 8 ? "8" : "16x8", bad);
     return bad != 0;
 }
 EOF
@@ -103,10 +130,20 @@ STATIC_FLAG="-static"
 if [ "${AGO_LINK_STATIC:-${AGO_STATIC:-1}}" = "0" ]; then
     STATIC_FLAG=""
 fi
-"$CXX" -O2 $STATIC_FLAG -std=c++11 "$WORK/verify.cpp" "$WORK/cover.cpp" \
+"$CXX" -O2 $STATIC_FLAG -std=c++11 \
+  -DSYMBOL=$(python3 -c 'import sys; sys.path.insert(0,"optimizer");
+from ago.covers_satd_shapes import _SHAPE_DEFS
+print(_SHAPE_DEFS[sys.argv[1]][2] if sys.argv[1] != "8x8" else "dynopt_ago_satd8")' "$SHAPE") \
+  "$WORK/verify.cpp" "$WORK/cover.cpp" \
   -o "$WORK/verify" 2>&1 | head -5
+SHAPE_ARGS=""
+case "$SHAPE" in
+    8x4) SHAPE_ARGS="4 8";;
+    8x16) SHAPE_ARGS="16 8";;
+    16x8) SHAPE_ARGS="8 16";;
+esac
 if [ "${AGO_NATIVE:-0}" = "1" ]; then
-    "$WORK/verify"
+    "$WORK/verify" $SHAPE_ARGS
 else
-    "$QEMU" -L /usr/aarch64-linux-gnu "$WORK/verify"
+    "$QEMU" -L /usr/aarch64-linux-gnu "$WORK/verify" $SHAPE_ARGS
 fi

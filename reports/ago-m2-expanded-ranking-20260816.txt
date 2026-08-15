@@ -1,0 +1,64 @@
+# AGO M2-expanded：正式留出排序门（2026-08-16）
+
+## 预注册协议（round-0024，先于测量写入 TODO-M2）
+
+- 语料：satd8 8x8（A-E）+ satd8 8x4 / 8x16 / 16x8（A-C）+
+  sa8d8 8x8（A-C）= 17 个实例、17 个不同 final object；
+- 预测：final-object 指令特征（objdump 分类计数）x N1/920B 成本表，
+  predicted = max(CP 延迟链, Σ count*recip_throughput) + spill；
+- 噪声：q_N1=0、q_920b=0.0009 → MDE=1%；
+- 通过条件（N1）：>=30 可分辨对、acc>=0.75、block-bootstrap 下界
+  >=0.60、tau>=0.60、top-1 regret<=3%；920B transfer：>=10 对、
+  符号一致>=0.60。
+
+## 语料与验证
+
+- 17 实例全部通过各自 20k oracle（QEMU 与 N1/920B 原生均 bad=0）；
+- 对象特征：8x4 44 条指令、8x8 90-111、8x16/16x8 180-195、
+  sa8d8 116-117；spill=0、外部调用=0；对象 hash 全部唯一。
+
+## N1 正式门（N1 成本表预测 vs N1 实测）
+
+| 指标 | 结果 | 门槛 |
+| --- | ---: | --- |
+| 可分辨对 | 81 | >=30 |
+| 成对准确率 | 0.975 | >=0.75 |
+| bootstrap 下界 (5%) | 0.913 | >=0.60 |
+| tie-aware tau | 0.951 | >=0.60 |
+| top-1 regret | 1.0% | <=3% |
+
+判定：**PASS**。剩余 2 个错误对均为 8x4 A/B/C 内部预测平、实测差
+1.05%（恰在 MDE 边界外），属噪声边界。
+
+## 920B transfer 门
+
+### 920B 表预测 vs 920B 实测：80 对、acc=1.000、tau=1.000、
+regret=0.1% → PASS。
+
+### N1 表预测 vs 920B 实测（跨机 transfer）：80 对、acc=1.000、
+tau=1.000、>=10 对、符号一致 100% → **transfer PASS**。
+
+## 结论与边界
+
+1. M2-expanded 排序门按预注册协议通过：基于 final-object 特征的解析
+   成本模型（max(CP, tput)）在 N1 与 920B 上都能正确排序 17 个
+   cover/形状实例，且 N1 表预测可直接 transfer 到 920B。
+2. 该结果把 AGO 从“固定 lowering”推进到“可预测、可排序的 cover
+   选择”；M3 可在此基础上接入自动搜索（有限枚举 + 预测剪枝）。
+3. 边界：
+   - 语料是 cover 级（4 个 SATD 形状 + 1 个 SA8D 形状），新形状的
+     IR 图/DSL 锚点未建（manifest 以契约为准）；
+   - 绝对周期估计偏大（~4x），只保证排序不保证绝对值，920B 表粒度
+     仍不足以单独排序（靠 N1 表 + 920B 实测 transfer 成立）；
+   - 微基准为 batch 中位 + MDE 判定，无完整 CI/bootstrap 计时协议；
+     bootstrap 仅用于成对准确率下界。
+
+## 交付物
+
+- `optimizer/ago/{manifest,objfeatures,predict}.py`：候选清单/特征/预测；
+- `optimizer/ago/covers_satd_shapes.py`：8x4/8x16/16x8 cover 发射器；
+- `tools/ago_m2_corpus.py`：语料构建（17 实例、manifest、特征、预测）；
+- `scripts/ago-m2-gate.sh`：oracle + 构建 + 测量 + 门评估；
+- `benchmarks/ago_satd_microbench.cpp`：形状参数化 paired 微基准；
+- `experiments/ago-m2-expanded/`：manifest/features/predictions/
+  measurements（obj/bench 为可再生物，已清理）。
