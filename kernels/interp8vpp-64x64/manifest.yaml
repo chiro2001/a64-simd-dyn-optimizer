@@ -34,3 +34,4 @@ corpus:
 
 layouts:
   acc_split: [1, 2]
+  tile: [64, 16, 8, 4]

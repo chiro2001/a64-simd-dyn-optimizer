@@ -113,7 +113,7 @@
 | interp8vpp-32x16 | 488/288 | 首覆盖 |
 | interp8vpp-32x64 | 1832/1063 | 首覆盖 |
 | interp8vpp-64x32 | 2367/1118 | 首覆盖 |
-| interp8vpp-64x64 | 4715/2183 | 首覆盖（最大 luma vpp） |
+| interp8vpp-64x64 | 4715/2183 | 首覆盖（最大 luma vpp；tile 4/8/16 均更差） |
 
 ### 4.2 interp4（chroma 4-tap）非方形形状（2026-08-15 补，20k 差分 0 失配）
 

@@ -518,7 +518,8 @@ def make_emitter(kernel, backend="acle"):
             return emit_vpp(
                 func_name="dynopt_interp8_%dx%d_sve2_vpp" % (w, h),
                 width=w, height=h,
-                acc_split=combo.get("acc_split", 1))
+                acc_split=combo.get("acc_split", 1),
+                tile=combo.get("tile"))
         return emit_fn
     if kernel == "interp4":
         from emit_interp4_sve2_shared import emit_16x16

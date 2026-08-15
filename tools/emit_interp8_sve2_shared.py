@@ -288,7 +288,7 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
     return head
 
 
-def emit_vpp(func_name, width=16, height=16, acc_split=1):
+def emit_vpp(func_name, width=16, height=16, acc_split=1, tile=None):
     """Vertical 8-tap luma filter (SVE2, VL=256), square WxH.
 
     Upstream interp8_vert_pp_neon<8,W,H> contract: src is the block
@@ -345,42 +345,60 @@ def emit_vpp(func_name, width=16, height=16, acc_split=1):
                  % (n_accs, 8192 // n_accs))
     lines.append("    const svint16_t off = svdup_n_s16(%d);"
                  % (8192 // n_accs))
-    lines.append("    const uint8_t* rb = src - 3 * srcStride;")
-    for i in range(min(8, n_rows)):
-        for u in range(units):
-            lines.append("    svint16_t v%d_%d = vrow(rb, srcStride, %d, %d,"
-                         " p16);" % (i, u, i, u))
-    lines.append("")
-    for i in range(rows):
-        if i + 8 < n_rows:
-            # Software-pipelined: load the row that output row i+1 needs;
-            # keeps at most 9 row-units live (fits 32 z-regs, avoids the
-            # 46-upfront spill storm seen with eager loads).
+
+    def emit_body(rows, t0, ind):
+        n_rows = rows + 7
+        out = []
+        out.append("%sconst uint8_t* rb = src + %s * srcStride"
+                   " - 3 * srcStride;" % (ind, t0))
+        for i in range(min(8, n_rows)):
             for u in range(units):
-                lines.append("    svint16_t v%d_%d = vrow(rb, srcStride,"
-                             " %d, %d, p16);" % (i + 8, u, i + 8, u))
-        for u in range(units):
-            lines.append("    {")
-            if acc_split == 1:
-                accs = [("a0", (0, 2, 4, 6)), ("a1", (1, 3, 5, 7))]
-            else:
-                accs = [("a0", (0, 4)), ("a1", (1, 5)),
-                        ("a2", (2, 6)), ("a3", (3, 7))]
-            for name, taps in accs:
-                lines.append("        svint16_t %s = off;" % name)
-                for k in taps:
-                    lines.append("        %s = svmla_s16_x(p16, %s, v%d_%d,"
-                                 " c%d);" % (name, name, i + k, u, k))
-            lines.append("        svint16_t pixels = %s;" % accs[0][0])
-            for name, _ in accs[1:]:
-                lines.append("        pixels = svadd_s16_x(p16, pixels, %s);"
-                             % name)
-            lines.append("        svuint8_t u8 = svqrshrunb_n_s16("
-                         "pixels, 6);")
-            lines.append("        svuint8_t uz = svuzp1_u8(u8, u8);")
-            lines.append("        svst1_u8(p8b, dst + %d * dstStride + %d,"
-                         " uz);" % (i, u * 16))
-            lines.append("    }")
+                out.append("%ssvint16_t v%d_%d = vrow(rb, srcStride,"
+                           " %d, %d, p16);" % (ind, i, u, i, u))
+        out.append("")
+        for i in range(rows):
+            if i + 8 < n_rows:
+                for u in range(units):
+                    out.append("%ssvint16_t v%d_%d = vrow(rb, srcStride,"
+                               " %d, %d, p16);" % (ind, i + 8, u,
+                                                   i + 8, u))
+            for u in range(units):
+                out.append("%s{" % ind)
+                if acc_split == 1:
+                    accs = [("a0", (0, 2, 4, 6)), ("a1", (1, 3, 5, 7))]
+                else:
+                    accs = [("a0", (0, 4)), ("a1", (1, 5)),
+                            ("a2", (2, 6)), ("a3", (3, 7))]
+                for name, taps in accs:
+                    out.append("%s    svint16_t %s = off;" % (ind, name))
+                    for k in taps:
+                        out.append("%s    %s = svmla_s16_x(p16, %s,"
+                                   " v%d_%d, c%d);"
+                                   % (ind, name, name, i + k, u, k))
+                out.append("%s    svint16_t pixels = %s;"
+                           % (ind, accs[0][0]))
+                for name, _ in accs[1:]:
+                    out.append("%s    pixels = svadd_s16_x(p16, pixels,"
+                               " %s);" % (ind, name))
+                out.append("%s    svuint8_t u8 = svqrshrunb_n_s16("
+                           "pixels, 6);" % ind)
+                out.append("%s    svuint8_t uz = svuzp1_u8(u8, u8);" % ind)
+                out.append("%s    svst1_u8(p8b, dst + (%s + %d) *"
+                           " dstStride + %d, uz);"
+                           % (ind, t0, i, u * 16))
+                out.append("%s}" % ind)
+        return out
+
+    if tile and tile < height:
+        if height % tile:
+            raise ValueError("emit_vpp tile must divide height")
+        lines.append("    for (int t0 = 0; t0 < %d; t0 += %d)"
+                     % (height, tile))
+        lines.append("    {")
+        lines.extend(emit_body(tile, "t0", "        "))
+        lines.append("    }")
+    else:
+        lines.extend(emit_body(height, "0", "    "))
     lines.append("}")
     return "\n".join(lines)
 
