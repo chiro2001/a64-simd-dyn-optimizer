@@ -88,7 +88,7 @@ NEON_SAFE_VALUES = {
     "neon", "neon-dot", "scalar", "none", "off", "default",
     "pack", "dot", "addp", "ctz", "clz", "tail",
     "popcount", "addv", "vpadal", "vaddlv", "vaddv", "seq", "pair",
-    "vceqz", 1, 2,
+    "vceqz", "full", "loop", 1, 2,
     0,
 }
 

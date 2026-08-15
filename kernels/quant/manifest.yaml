@@ -36,6 +36,8 @@ layouts:
 
 # Pure-NEON quant axes (--isa neon): nonzero count via u32 vaddvq
 # accumulate (u8-mask vaddlvq variant was dropped: 20k diff failed on the
-# cloud GCC's vaddlvq_u8 return handling, round-0023).
+# cloud GCC's vaddlvq_u8 return handling, round-0023); shape full=32x
+# unrolled 8-elem blocks, loop=single 8-elem body.
 layouts_neon:
   count: [vaddv]
+  shape: [full, loop]
