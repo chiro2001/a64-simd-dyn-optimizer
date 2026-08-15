@@ -33,3 +33,9 @@ corpus:
 layouts:
   compute: [sve2, sve1]
   widen: [unpk, smull-ones]
+
+# Pure-NEON quant axes (--isa neon): nonzero count via u32 vaddvq
+# accumulate (u8-mask vaddlvq variant was dropped: 20k diff failed on the
+# cloud GCC's vaddlvq_u8 return handling, round-0023).
+layouts_neon:
+  count: [vaddv]

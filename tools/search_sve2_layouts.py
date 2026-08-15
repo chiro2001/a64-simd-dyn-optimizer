@@ -78,6 +78,7 @@ ISA_RANK = {"neon": 0, "sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4,
 NEON_SUPPORTED_KERNELS = {
     "find-pos-first-last",
     "pel-filter-luma-strong",
+    "quant",
     "sa8d16",
     "scan-pos-last",
 }
@@ -87,6 +88,7 @@ NEON_SAFE_VALUES = {
     "neon", "neon-dot", "scalar", "none", "off", "default",
     "pack", "dot", "addp", "ctz", "clz", "tail",
     "popcount", "addv", "vpadal", "vaddlv", "vaddv", "seq", "pair",
+    "vceqz", 1, 2,
     0,
 }
 
@@ -681,10 +683,16 @@ def make_emitter(kernel, backend="acle"):
             return _emit_dqs(dict(combo, branch=_dqs_branch))
         return emit_fn
     if kernel == "quant":
-        from emit_quant_sve2_shared import emit
+        if _ISA == "neon":
+            from emit_quant_neon_shared import emit_combo
 
-        def emit_fn(combo):
-            return emit(combo)
+            def emit_fn(combo):
+                return emit_combo(combo)
+        else:
+            from emit_quant_sve2_shared import emit
+
+            def emit_fn(combo):
+                return emit(combo)
         return emit_fn
     if kernel == "nquant":
         from emit_nquant_sve2_shared import emit

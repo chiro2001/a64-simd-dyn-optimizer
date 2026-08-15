@@ -167,10 +167,11 @@ else
     say "  dct8: SKIP (build failed; needs x265 lib)"
 fi
 
-# sa8d16 native on both machines: 950 uses the SVE2 candidate, 920B uses
-# the pure-NEON vaddlv-pair candidate (best_sve1, round-0022).
-SA8D16_OBJ="kernels/sa8d16/candidates/best_sve2.o"
-[ "$MACHINE" = 920b ] && SA8D16_OBJ="kernels/sa8d16/candidates/best_sve1.o"
+# sa8d16 native on both machines: the pure-NEON vaddlv-pair candidate
+# (best_sve1, round-0022; 20k exact on 920B).  The old SVE2 best_sve2
+# candidate fails correctness on 950 (becc57b/round-0023) and is retired;
+# best_sve2.{cpp,S} now holds the same NEON source for sve2 builds.
+SA8D16_OBJ="kernels/sa8d16/candidates/best_sve1.o"
 if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
         -DX265_DEPTH=8 -DX265_NS=x265 \
         -DDYNOPT_CANDIDATE=dynopt_sa8d_8x8_sve2 \

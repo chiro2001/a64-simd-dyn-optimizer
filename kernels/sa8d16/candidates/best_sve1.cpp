@@ -112,8 +112,8 @@ static inline void hadamard_8x8(const int16x8_t diff[8], uint16x8_t *r0,
     *r1 = vaddq_u16(sum[2], sum[3]);
 }
 
-extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
-                        const uint8_t* pix2, intptr_t sp2)
+static int dynopt_sa8d_16x16_sve2_impl(const uint8_t* pix1, intptr_t sp1,
+                         const uint8_t* pix2, intptr_t sp2)
 {
     int16x8_t diff[8];
     int16x8_t dl[8], dr[8];
@@ -145,4 +145,66 @@ extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
     tot = vaddq_u16(tot, r1);
         return (int)((vaddlvq_u16(tot) + 1) >> 1);
 
+}
+
+extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
+                        const uint8_t* pix2, intptr_t sp2)
+{
+    return dynopt_sa8d_16x16_sve2_impl(pix1, sp1, pix2, sp2);
+}
+
+extern "C" int dynopt_sa8d_32x32_sve2(
+    const uint8_t* pix1, intptr_t sp1,
+    const uint8_t* pix2, intptr_t sp2)
+{
+    int cost = 0;
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 0, sp1,
+                       pix2 + 0 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 16, sp1,
+                       pix2 + 0 * sp2 + 16, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 0, sp1,
+                       pix2 + 16 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 16, sp1,
+                       pix2 + 16 * sp2 + 16, sp2);
+    return cost;
+}
+
+extern "C" int dynopt_sa8d_64x64_sve2(
+    const uint8_t* pix1, intptr_t sp1,
+    const uint8_t* pix2, intptr_t sp2)
+{
+    int cost = 0;
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 0, sp1,
+                       pix2 + 0 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 16, sp1,
+                       pix2 + 0 * sp2 + 16, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 32, sp1,
+                       pix2 + 0 * sp2 + 32, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 0 * sp1 + 48, sp1,
+                       pix2 + 0 * sp2 + 48, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 0, sp1,
+                       pix2 + 16 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 16, sp1,
+                       pix2 + 16 * sp2 + 16, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 32, sp1,
+                       pix2 + 16 * sp2 + 32, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 16 * sp1 + 48, sp1,
+                       pix2 + 16 * sp2 + 48, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 32 * sp1 + 0, sp1,
+                       pix2 + 32 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 32 * sp1 + 16, sp1,
+                       pix2 + 32 * sp2 + 16, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 32 * sp1 + 32, sp1,
+                       pix2 + 32 * sp2 + 32, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 32 * sp1 + 48, sp1,
+                       pix2 + 32 * sp2 + 48, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 48 * sp1 + 0, sp1,
+                       pix2 + 48 * sp2 + 0, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 48 * sp1 + 16, sp1,
+                       pix2 + 48 * sp2 + 16, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 48 * sp1 + 32, sp1,
+                       pix2 + 48 * sp2 + 32, sp2);
+        cost += dynopt_sa8d_16x16_sve2_impl(pix1 + 48 * sp1 + 48, sp1,
+                       pix2 + 48 * sp2 + 48, sp2);
+    return cost;
 }

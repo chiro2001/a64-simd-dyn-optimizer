@@ -1,0 +1,33 @@
+# 950 (920G) quick test (2026-08-15, pull add1a0f)
+
+来源：内网 950 实机（SVE2 2x256 / NEON 4x128，无 SVE2p1/p3，无 PMU；
+gcc-16 native + clang-22；x265 b81f650，lib build/x265-8-950）。
+
+## 熵族（新增）
+
+| kernel | neon(ticks/4096) | cand | neon/cand | 说明 |
+| --- | ---: | ---: | ---: | ---: |
+| costC1C2Flag | 11975 | 6630 | 1.81 | run-cache，20k 差分干净，保留 |
+| costCoeffRemain | 17165± | 14629 | 1.17 | 接近持平（0.95–1.17），低优先 |
+| scanPosLast | 5287 | 23656 | 0.22 | 候选 ~4.5× 慢（gcc/clang 同），950 不注入 |
+
+## 原有候选（未变）
+
+ivpp16 +47%；interp4 16/32 ~0.81/0.84（BtoS sub，留 960）；dct8 +48%（perf
+only，TestBench 已知坏）；idct16 ≥1.09；idct32 ≥1.03；interp8 path-B 未
+采用（0.44–0.60）。
+
+## 正确性
+
+- costC1C2Flag / costCoeffRemain 20k 差分 PASS。
+- sa8d16（950 SVE2 best_sve2）**仍 FAIL 正确性**（becc57b 已知，本 pull
+  未变）→ 950 不可保留该 SVE2 候选；920B 用 NEON best_sve1（20k PASS）。
+- interp8/dct/idct 原生门禁需要 SVE2p1/p3，950 上 SIGILL。
+
+## 处理
+
+- scanPosLast：NEON tail 候选在 950 上慢 4.5×，与 920B 行为（多 CG
+  ~1.1× 慢）差异大；950 构建不注入 scanPosLast。
+- sa8d16：950 建议改注入 NEON best_sve1（920B 已验证正确；950 上性能待
+  内网复测），废弃有正确性问题的 SVE2 best_sve2。
+- 950 门禁用 `scripts/build-testbench-lite-native.sh`。

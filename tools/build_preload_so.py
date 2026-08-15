@@ -476,8 +476,8 @@ def entries_for_kernel(kernel, sym):
     """Return [(slot_expr, ret, params)] for the x265 dispatch table."""
     out = []
 
-    def add(slot, ret, params):
-        out.append((slot, ret, params))
+    def add(slot, ret, params, entry_sym=None):
+        out.append((slot, ret, params, entry_sym or sym))
 
     if kernel == "dct8":
         add("cu[BLOCK_8x8].dct", "void",
@@ -504,8 +504,19 @@ def entries_for_kernel(kernel, sym):
             "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
         return out
     if kernel == "sa8d16":
-        add("cu[BLOCK_16x16].sa8d", "int",
-            "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
+        params = "const uint8_t*, intptr_t, const uint8_t*, intptr_t"
+        for n, sym in ((16, "dynopt_sa8d_16x16_sve2"),
+                       (32, "dynopt_sa8d_32x32_sve2"),
+                       (64, "dynopt_sa8d_64x64_sve2")):
+            add("cu[BLOCK_%dx%d].sa8d" % (n, n), "int", params, sym)
+            # Chroma aliases are set by setupAliasPrimitives BEFORE the
+            # patch runs, so the patched luma pointer never propagates;
+            # patch the chroma slots explicitly (I420 16/32/64 + I444).
+            if n <= 32:
+                add("chroma[X265_CSP_I420].cu[BLOCK_420_%dx%d].sa8d"
+                    % (n, n), "int", params, sym)
+            add("chroma[X265_CSP_I444].cu[BLOCK_%dx%d].sa8d"
+                % (n, n), "int", params, sym)
         return out
     if kernel in ("sad", "sad-32"):
         w = 16 if kernel == "sad" else 32
@@ -1154,13 +1165,14 @@ def main():
             decls.append(adapter["body"].replace("%SYM%", sym))
             if adapter.get("save"):
                 saves.append("    " + adapter["save"])
-        for slot, ret, params in entries:
+        for slot, ret, params, esym in entries:
+            slot_sym = adapter["adapter"] if adapter else esym
             if not adapter:
-                decls.append("extern \"C\" %s %s(%s);" % (ret, sym, params))
+                decls.append("extern \"C\" %s %s(%s);" % (ret, esym, params))
             assigns.append("    P->%s = %s;" % (slot, slot_sym))
         report["patched"].append(
             {"kernel": kernel, "symbol": sym,
-             "slots": [s for s, _, _ in entries]})
+             "slots": [s for s, _, _, _ in entries]})
 
     if not objs:
         raise SystemExit("no candidates survived the ISA/source filters")

@@ -1,0 +1,18 @@
+# quant 纯 NEON 初版（2026-08-15）
+
+## 结果
+
+- `tools/emit_quant_neon_shared.py`：纯 NEON quant（256 元素），全展开
+  32 块 × 8 元素；count=vaddv（u32 vaddvq 零计数）。vceqz 轴因云端
+  GCC `vaddlvq_u8` 返回处理差异 20k 失配，已删除。
+- 20k 全量差分 0 失配（-O3 对象）。
+- 920B CNTVCT（quant_microbench，25 样本中位）：上游 9 ticks/call，
+  候选 13 ticks/call → **0.69×，未反超**（上游手写 asm 每 8 元素
+  sabdl/mul/sshl/mls 紧凑结构，GCC NEON C 有栈溢出 stk≈185）。
+
+## 结论
+
+quant 的 NEON C 初版比 SVE1 候选（0.75）略差，均未反超上游 asm。下一步
+候选方向：内联 asm 镜像上游结构（sabdl/mul/sshl/mls + 8 元素/迭代），
+或先确认真实 E2E 中 quant 的调用参数分布（qBits/add 固定为 16/128？
+微基准用 qBits=16, add=128）。
