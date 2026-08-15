@@ -1,0 +1,34 @@
+# costC1C2Flag 槽位替换排查（2026-08-15）
+
+## 现象
+
+920B 真机（build/x265-8-gcc，单核单线程、30 帧 1080p）：
+
+| 状态 | md5 | bitrate / QP |
+| --- | --- | --- |
+| 干净基线（确定性，3 次一致） | ee5db7384df974ba25e4f1df8178dcb6 | 7981.54 kb/s / 33.77 |
+| patch costC1C2Flag = NEON run-cache 候选 | 22c4b76a6cefee02923d40b26f644def | 7974.26 kb/s / 33.78 |
+| patch costC1C2Flag = 与 C 参考逐字相同的标量副本 | 22c4b76a6cefee02923d40b26f644def | 7974.26 kb/s / 33.78 |
+| patch costCoeffRemain（仅 remain） | ee5db7384df974ba25e4f1df8178dcb6 | 7981.54 kb/s / 33.77 |
+
+## 已排除
+
+- 候选逻辑错误：NEON 候选 200k 全值域差分 0 失配；真实路径诊断（候选
+  与参考逐调用对比 sum 与 64 字节 ctx）未触发差异。
+- 槽位偏移错误：offsetof 验证 costC1C2Flag=7072、costCoeffRemain=7064，
+  patch 汇编写入偏移一致。
+- 链接候选对象本身改变输出：不 patch 仅链接对象输出仍为基线。
+- 编码非确定性：基线 3 次编码 md5 相同。
+
+## 结论
+
+把 costC1C2Flag 槽位替换为**任意**等价实现都会改变编码输出，与实现逻辑
+无关。原因未明（可能该槽位存在未记录的副作用/调用时机依赖）。该 kernel
+暂不用于 E2E 注入；costCoeffRemain 确认可注入。
+
+## 附注
+
+排查过程中发现：云端多次实验会污染 build.ninja 链接行与第三方源码状态，
+导致误判（早前“remain 改变码流”即由此而来）。每次实验前必须
+`git -C third_party/x265 checkout -- .` + 清空链接行 + 重编
+primitives/entropy/dct 三个对象，并以 3 次确定性编码为基线。

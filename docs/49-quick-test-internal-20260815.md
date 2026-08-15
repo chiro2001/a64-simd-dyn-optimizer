@@ -112,9 +112,24 @@ python3 tools/build_preload_so.py --isa sve1 --kernels sa8d16 \
 | --- | --- | --- |
 | sa8d16（NEON vaddlv-pair，best_sve1） | 延迟 1.12× / 吞吐 1.15× | 20k 差分 0 失配，可注入 |
 | scanPosLast（NEON tail，best_sve2） | 单 CG 1.04×；多 CG ~1.10–1.14× | 码流一致，可注入 |
-| costC1C2Flag（run-cache） | 微基准 ~1.68× vs C 标量 | 200k 差分 0 失配、单注入码流一致；E2E 收益待批量验证 |
-| costCoeffRemain | 微基准 ~1.02× | **注意**：单注入会改变码流（md5 不同），原因未定位，暂勿注入 |
+| costC1C2Flag（run-cache） | 微基准 ~1.68× vs C 标量 | 200k 差分 0 失配，但**该槽位被替换为任何实现（含与 C 参考逐字相同的标量副本）都会改变编码输出**（基线确定性 3 次 md5 一致，注入后 7974.26 kb/s / QP 33.78 vs 基线 7981.54/33.77）；原因未明，暂不用于 E2E 注入 |
+| costCoeffRemain | 微基准 ~1.02× | 与基线码流一致（ee5db7…），可注入；早前“码流改变”为云端构建状态混乱导致的误判 |
 | sa8d16 mixed（SVE1 宽装载+NEON H） | 0.92–0.95× | 负结果，保留为搜索轴 |
+
+### costC1C2Flag 槽位替换现象（待查）
+
+2026-08-15 排查记录：云端 920B 真机（x265-8-gcc，确定性能基线）上，
+把 `primitives.costC1C2Flag` 通过编译期 patch 替换为以下任意实现都会使
+编码输出从 `ee5db7…`（7981.54 kb/s / QP 33.77）变为 `22c4b7…`
+（7974.26 kb/s / QP 33.78）：
+
+- NEON run-cache 候选（200k 差分 0 失配）；
+- 与 C 参考逐字相同的标量副本（仅 DYNOPT 内嵌表替代 extern 表）。
+
+槽位偏移已验证正确（costC1C2Flag=7072、costCoeffRemain=7064），链接
+候选对象本身（不 patch）不改变输出。原因待查：可能是该槽位在 x265 中
+存在未记录的副作用契约或 patch 时机问题。结论：**该 kernel 暂不用于
+端到端注入**，微基准 1.68× 收益保留为搜索/后续参考。
 
 ## 6. 结果回填
 
