@@ -1,0 +1,58 @@
+# SVE1.0 搜索目标首轮：satd-8 gen 候选（2026-08-16）
+
+## 背景（用户拍板 2026-08-16）
+
+920B 为 SVE1.0 2x256 + NEON 4x128，上游 x265 仅 NEON；SVE1 作为
+AGO 一等搜索目标（docs/52 §4.3）。
+
+## 搜索产物
+
+`tools/search_sve2_layouts.py --kernel satd-8 --backend gen --isa sve1`
+产出 2 个候选（本地 llvm-mca + QEMU 20k 验证）：
+
+| 候选 | fused_uop | mca_cycles | 20k 差分 |
+| --- | ---: | ---: | ---: |
+| pack-1_compute-sve | 76 | 47 | 0 失配 |
+| pack-2_compute-sve | 61 | 53 | 0 失配 |
+
+pack-2 反汇编仅含 SVE1 指令（ld1b/tbl/add/sub/abs/sabd/uaddv/
+ptrue/sel/mla，无 SVE2 mnemonic）。
+
+## 920B 实测（CNTVCT batch=4096 中位，3 次重复，satd8 8x8）
+
+| 实现 | ticks/4096 | 相对 |
+| --- | ---: | ---: |
+| 上游 NEON（x265_satd8） | 3608-3612 | 1.00 |
+| SVE1 pack-2 候选 | 6731-6806 | **1.87x 慢** |
+
+结论：该 SVE1 候选**不可注入**（与历史 79-kernel SVE1 注入整体变慢
+一致：小 stride 非连续块 + 依赖链使 256-bit 宽度优势无法兑现）。
+
+## AGO 预测器失效（重要证据）
+
+用 M2 排序器（920B 表 + final-object 特征）预测两个实现的每调用
+周期：
+
+| 实现 | 预测 | 实测 |
+| --- | ---: | ---: |
+| NEON satd8_A | 84.0 | ~25.6 cyc/call |
+| SVE1 pack-2 | 37.0 | ~47.6 cyc/call |
+
+预测方向与实测相反：SVE1 表（timing-920b.json）的吞吐/延迟条目
+过于乐观（2 宽假设、tbl/sdot 未按真实依赖/串行建模），且 class
+映射把 SVE 指令并入 NEON 类。**若直接信任排序器，会选中慢 1.87x
+的候选**——这正是 M2 门只验证 NEON、未覆盖 SVE1 目标留下的坑。
+
+## 下一步（已列入 TODO-M3）
+
+1. 重建 920B SVE1 指令成本表：用 CNTVCT paired 微基准标定 gen
+   后端实际使用的指令类（ld1b、tbl、mul、add/sub、abs、sabd、
+   uaddv、sdot、mla、movprfx），含依赖链与独立链两种口径；
+2. 用新表重排 SVE1 候选，加入 AGO 排序门（sve1 目标预注册）；
+3. 只在实测非劣/更快的 SVE1 候选进入注入。
+
+## 产物
+
+- `experiments/isa-sve1-satd8-20260816/`：2 候选 + 20k 验证 + MCA +
+  trace 日志（可再生物）；
+- 本轮 commit：搜索产物与 docs/52 sve1 目标章节。
