@@ -35,6 +35,8 @@
   12 fused / 25 MCA，20k 差分 0 失配；enumerate todo 降至 6。
 - **scanPosLast 字段首覆盖**：4x4 三种 scan 20k 差分 0 失配
   （标量切片，0 vector/34 MCA，后续可向量化）；enumerate todo 降至 5。
+- **costCoeffNxN 字段首覆盖**：4x4 sig-map 代价 20k 差分 0 失配
+  （12 vector/109 MCA，首覆盖）；enumerate todo 降至 4。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。
