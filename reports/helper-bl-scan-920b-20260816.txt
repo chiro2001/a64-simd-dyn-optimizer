@@ -44,3 +44,14 @@ helper 的 `bl` 调用（GCC12 外链 static inline 的栈往返缺陷）。
 - 教训：同型修复只对确实外链的函数有效；下一目标是有外链证据的
   interp4 filter4_sp/ss_s16x8（58/56 次 bl，interp_vert_sp/ss_neon，
   perf vert_sp 0.94+0.82%）。
+
+## 更新 2（2026-08-16 psy-cost）
+
+- psyCost_pp 内联候选（4 形状，calc_energy_8x8 + hadamard 全内联）
+  20k 差分 0 失配；
+- 920B paired：8x8 1.19x（274 vs 230 ticks）、16x16 0.99x、
+  32x32 1.00x、64x64 0.99x——**calc_energy 外链只存在于 8x8 路径**
+  （psyCost_pp_neon<1>），16/32/64 无外链无收益；
+- 结论：psy-cost 注入价值低（8x8 收益边际且非热点），不纳入；
+- 外链修复线收尾：satd 家族 ✓、interp8 vps ✓、interp8 hps ✗、
+  psy-cost ✗（边际）；interp4 filter4 外链属低热点路径（不优先）。

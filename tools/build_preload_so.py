@@ -435,6 +435,9 @@ def _shape_of(kernel):
     m = re.fullmatch(r"chroma-copy-pp(?:-(\d+)x(\d+))?", kernel)
     if m:
         return int(m.group(1) or 16), int(m.group(2) or 16)
+    m = re.fullmatch(r"psy-cost-(\d+)x(\d+)", kernel)
+    if m:
+        return int(m.group(1)), int(m.group(2))
     return None
 
 
@@ -455,6 +458,8 @@ def _interp_field(kernel):
         return "filter_vpp"
     if kernel.startswith("interp4"):
         return "filter_hpp"
+    if kernel.startswith("psy-cost"):
+        return "psy_cost_pp"
     return None
 
 
@@ -469,6 +474,8 @@ def _interp_type(kernel):
         return ("void", "const int16_t*, intptr_t, uint8_t*, intptr_t, int")
     if field == "luma_vss":
         return ("void", "const int16_t*, intptr_t, int16_t*, intptr_t, int")
+    if field == "psy_cost_pp":
+        return ("int", "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
     return ("void", "const uint8_t*, intptr_t, uint8_t*, intptr_t, int")
 
 
@@ -663,6 +670,12 @@ def entries_for_kernel(kernel, sym):
     if kernel == "find-pos-first-last":
         add("findPosFirstLast", "uint32_t",
             "const int16_t*, intptr_t, const uint16_t[16]")
+        return out
+    if kernel.startswith("psy-cost-"):
+        shape = _shape_of(kernel)
+        if shape and shape[0] == shape[1] and shape[0] in (8, 16, 32, 64):
+            add("cu[%s].psy_cost_pp" % luma_cu(shape[0]), "int",
+                "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
         return out
     if kernel == "cost-coeff-nxn":
         add("costCoeffNxN", "uint32_t",

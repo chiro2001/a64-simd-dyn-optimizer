@@ -125,3 +125,12 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   外链，不注入）；报告 helper-bl-scan 更新；
 - [ ] interp4 filter4_sp/ss_s16x8 内联候选（58/56 次 bl，真实外链 +
   vert_sp 热点）：20k + 920B paired + 注入。
+
+## psy-cost 验证（2026-08-16 负结果）
+
+- [x] psyCost_pp 内联候选 4 形状 20k 干净；paired 仅 8x8 1.19x、
+  16/32/64 ~1.0x（calc_energy 外链只在 8x8 路径）→ **不注入**；
+- [x] 外链修复线结论：satd/interp8-vps 兑现（E2E -1.92%），
+  hps/psy-cost 排除，interp4 filter4 低优先；
+- [ ] 下一阶段：算法级优化（dct16/32、quant、ME 子核）或维持
+  -1.92% 现状并等待 950 SVE2 窗口。
