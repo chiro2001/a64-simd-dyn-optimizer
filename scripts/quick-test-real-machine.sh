@@ -167,22 +167,52 @@ else
     say "  dct8: SKIP (build failed; needs x265 lib)"
 fi
 
+# sa8d16 native on both machines: 950 uses the SVE2 candidate, 920B uses
+# the pure-NEON vaddlv-pair candidate (best_sve1, round-0022).
+SA8D16_OBJ="kernels/sa8d16/candidates/best_sve2.o"
+[ "$MACHINE" = 920b ] && SA8D16_OBJ="kernels/sa8d16/candidates/best_sve1.o"
+if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
+        -DX265_DEPTH=8 -DX265_NS=x265 \
+        -DDYNOPT_CANDIDATE=dynopt_sa8d_8x8_sve2 \
+        -DDYNOPT_CANDIDATE16=dynopt_sa8d_16x16_sve2 \
+        -I third_party/x265/source -I third_party/x265/source/common \
+        -I "$BUILD_DIR" benchmarks/sa8d_microbench.cpp \
+        kernels/sa8d/candidates/best_sve2.o \
+        "$SA8D16_OBJ" \
+        "$BUILD_DIR/libx265.a" -lpthread -ldl -o build/qt_sa8d16 \
+        >/dev/null 2>&1; then
+    bench_row sa8d16 build/qt_sa8d16 16x16 neon cand 20 8
+else
+    say "  sa8d16: SKIP (build failed; needs $SA8D16_OBJ + x265 lib)"
+fi
+
+# Entropy family (scanPosLast NEON tail, costC1C2Flag run-cache,
+# costCoeffRemain port): CNTVCT total-ticks per 4096 calls.
+python3 - <<'PY' >/dev/null 2>&1 || true
+import sys
+sys.path.insert(0, "tools")
+from emit_cost_c1c2_flag_sve2_shared import emit as e1
+from emit_cost_remain_sve2_shared import emit as e2
+open("build/qt_c1c2.cpp", "w").write(e1("dynopt_cost_c1c2_flag_sve2"))
+open("build/qt_remain.cpp", "w").write(e2("dynopt_cost_coeff_remain_sve2"))
+PY
+if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
+        -DX265_DEPTH=8 -DX265_NS=x265 \
+        -I third_party/x265/source -I third_party/x265/source/common \
+        -I "$BUILD_DIR" benchmarks/entropy_microbench.cpp \
+        kernels/scan-pos-last/candidates/best_sve2.o \
+        build/qt_c1c2.cpp build/qt_remain.cpp \
+        benchmarks/entropy_stubs.cpp benchmarks/entropy_tables.cpp \
+        "$BUILD_DIR/libx265.a" -lpthread -ldl -o build/qt_entropy \
+        >/dev/null 2>&1; then
+    for m in scan cost flag remain; do
+        say "  entropy_${m}: $(build/qt_entropy $m neon 1 4096 2>/dev/null | tail -1) / $(build/qt_entropy $m cand 1 4096 2>/dev/null | tail -1)"
+    done
+else
+    say "  entropy: SKIP (build failed; needs scanPosLast best_sve2 + x265 lib)"
+fi
+
 if [ "$MACHINE" = 950 ]; then
-    # sa8d16 native (SVE2)
-    if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
-            -DX265_DEPTH=8 -DX265_NS=x265 \
-            -DDYNOPT_CANDIDATE=dynopt_sa8d_8x8_sve2 \
-            -DDYNOPT_CANDIDATE16=dynopt_sa8d_16x16_sve2 \
-            -I third_party/x265/source -I third_party/x265/source/common \
-            -I "$BUILD_DIR" benchmarks/sa8d_microbench.cpp \
-            kernels/sa8d/candidates/best_sve2.o \
-            kernels/sa8d16/candidates/best_sve2.o \
-            "$BUILD_DIR/libx265.a" -lpthread -ldl -o build/qt_sa8d16 \
-            >/dev/null 2>&1; then
-        bench_row sa8d16 build/qt_sa8d16 16x16 neon cand 20 8
-    else
-        say "  sa8d16: SKIP (build failed)"
-    fi
     # interp8 vpp16 native
     if "$NATIVE_CC" -O3 -static -DNDEBUG -std=c++11 -DHIGH_BIT_DEPTH=0 \
             -DX265_DEPTH=8 -DX265_NS=x265 \

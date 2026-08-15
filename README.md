@@ -131,6 +131,7 @@ scripts/build-x265-injected.sh --isa sve1 --kernels sa8d,interp8 \
 ```sh
 scripts/doctor.sh                       # 环境体检
 scripts/bootstrap.sh                    # 幂等安装缺失工具
+scripts/quick-test-real-machine.sh <920b|950> [report]  # 内网实机快速测试
 python3 tools/test_gen_emit.py          # 通用发射器冒烟回归（69/69）
 python3 tools/enumerate_x265_simd.py    # 覆盖清点（29/29，todo=0）
 python3 tools/search_sve2_layouts.py --kernel <k> --workers 4 \
@@ -142,6 +143,9 @@ scripts/verify-preload-real-machine.sh <user@host> sve1  # 920B 真机验证
 scripts/quick-test-real-machine.sh <950|920b> [report]  # 实机快速测试
 tools/parse_quick_report.py             # paired 结果回填/验收表
 ```
+
+内网 920B/950 的快速实测流程、候选清单与已知问题见
+[docs/49](docs/49-quick-test-internal-20260815.md)。
 
 ## 目录
 

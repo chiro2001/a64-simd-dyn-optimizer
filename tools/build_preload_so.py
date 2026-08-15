@@ -333,6 +333,7 @@ static void dynopt_sao_e3_adapter(
 # Kernels without a manifest yet but with a fixed candidate symbol.
 SPECIAL_SYMBOLS = {
     "cost-c1c2-flag": "dynopt_cost_c1c2_flag_sve2",
+    "cost-coeff-remain": "dynopt_cost_coeff_remain_sve2",
 }
 
 # x265 config dir that contains x265_config.h for the 8-bit build.
@@ -647,6 +648,9 @@ def entries_for_kernel(kernel, sym):
         add("costC1C2Flag", "uint32_t",
             "uint16_t*, intptr_t, uint8_t*, intptr_t")
         return out
+    if kernel == "cost-coeff-remain":
+        add("costCoeffRemain", "uint32_t", "uint16_t*, int, int")
+        return out
     if kernel == "quant":
         add("quant", "uint32_t",
             "const int16_t*, const int32_t*, int32_t*, int16_t*,"
@@ -854,6 +858,16 @@ def try_generate_specialized(kernel, isa, workdir):
             path = os.path.join(workdir, kernel + "-special-0.cpp")
             with open(path, "w") as f:
                 f.write(emit_c1(sym))
+            return [path]
+        except Exception:
+            return []
+    if kernel == "cost-coeff-remain":
+        try:
+            from emit_cost_remain_sve2_shared import emit as emit_rem
+            sym = SPECIAL_SYMBOLS[kernel]
+            path = os.path.join(workdir, kernel + "-special-0.cpp")
+            with open(path, "w") as f:
+                f.write(emit_rem(sym))
             return [path]
         except Exception:
             return []

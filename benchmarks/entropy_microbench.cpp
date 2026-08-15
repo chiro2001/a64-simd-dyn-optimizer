@@ -164,18 +164,18 @@ static int bench_flag(int which, int samples, int batch)
         uint64_t t0 = rdtsc();
         for (int b = 0; b < batch; b++)
         {
+            // Real caller uses numC1Flag = MIN(numNonZero, 8).
             if (which == 0)
-                fn(absbuf.data(), 16, ctx.data(), 16);
+                fn(absbuf.data(), 8, ctx.data(), 16);
             else
                 dynopt_cost_c1c2_flag_sve2(
-                    absbuf.data(), 16, ctx.data(), 16);
+                    absbuf.data(), 8, ctx.data(), 16);
         }
         uint64_t t1 = rdtsc();
-        uint64_t per = (t1 - t0) / (uint64_t)batch;
-        times.push_back(per);
+        times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
-    printf("flag,%s,median=%llu\n", which ? "cand" : "neon",
+    printf("flag,%s,total_ticks_median=%llu\n", which ? "cand" : "neon",
            (unsigned long long)times[times.size() / 2]);
     return 0;
 }
@@ -210,11 +210,10 @@ static int bench_remain(int which, int samples, int batch)
                 dynopt_cost_coeff_remain_sve2(absbuf.data(), 16, 0);
         }
         uint64_t t1 = rdtsc();
-        uint64_t per = (t1 - t0) / (uint64_t)batch;
-        times.push_back(per);
+        times.push_back(t1 - t0);
     }
     std::sort(times.begin(), times.end());
-    printf("remain,%s,median=%llu\n", which ? "cand" : "neon",
+    printf("remain,%s,total_ticks_median=%llu\n", which ? "cand" : "neon",
            (unsigned long long)times[times.size() / 2]);
     return 0;
 }

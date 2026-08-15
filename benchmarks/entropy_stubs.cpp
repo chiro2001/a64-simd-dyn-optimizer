@@ -12,15 +12,3 @@ extern "C" uint32_t dynopt_cost_coeff_nxn_sve2(
 {
     return 0;
 }
-
-extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
-    uint16_t*, intptr_t, uint8_t*, intptr_t)
-{
-    return 0;
-}
-
-extern "C" uint32_t dynopt_cost_coeff_remain_sve2(
-    uint16_t*, int, int)
-{
-    return 0;
-}
