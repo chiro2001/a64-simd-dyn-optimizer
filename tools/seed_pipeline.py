@@ -46,6 +46,14 @@ def main():
                     help="skip the roundtrip gate during extraction")
     ap.add_argument("--force-search", action="store_true",
                     help="run the search even if the manifest space is huge")
+    ap.add_argument("--isa", "--target-isa", default=None,
+                    choices=("sve1", "sve2", "sve2p1", "sve2p3"),
+                    help="restrict search/generation to this ISA level "
+                         "(920B: sve1, 950: sve2); passed to "
+                         "search_sve2_layouts.py --isa")
+    ap.add_argument("--target", choices=("920B", "950"), default=None,
+                    help="convenience alias passed to search as "
+                         "--target 920B|950")
     args = ap.parse_args()
     if yaml is None:
         raise SystemExit("pyyaml required")
@@ -144,6 +152,10 @@ def main():
         cmd += ["--manifest", constrained_manifest]
     if search_cfg.get("backend"):
         cmd += ["--backend", search_cfg["backend"]]
+    if args.isa:
+        cmd += ["--isa", args.isa]
+    if args.target:
+        cmd += ["--target", args.target]
     for e in extra:
         cmd += [str(e)]
     if skip_set:

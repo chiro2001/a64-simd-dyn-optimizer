@@ -98,6 +98,33 @@ TWO_REG_TABLE = re.compile(
 )
 
 
+def operand_level(mnemonic, operands):
+    """Operand-aware feature level for mnemonics whose encodings span
+    feature levels. objdump prints the same mnemonic for NEON and SVE
+    forms (ADDP) or for SVE encodings that only differ by element width
+    (SDOT). The ARM catalog's mnemonic-level minimum would otherwise
+    under-report the actual SVE2-only form.
+
+    Returns None when no operand rule applies (use the catalog rank).
+    """
+    ops = operands.strip()
+    if mnemonic == "sdot":
+        # SVE1: sdot z.s, z.b, z.b and sdot z.d, z.h, z.h (both 4-way).
+        if re.search(r"\bz\d+\.s\s*,\s*z\d+\.h", ops):
+            return LEVELS["sve2p1"]   # SVE2p1 2-way H->S
+        if re.search(r"\bz\d+\.h\s*,\s*z\d+\.b", ops):
+            return LEVELS["sve2p3"]   # SVE2p3 2-way B->H (docs/22)
+        return None                   # SVE1 4-way forms stay at rank 1
+    # SVE2-only mnemonic families; NEON variants use vN/qN/dN operands and
+    # must not be flagged.
+    if mnemonic in ("rshrnb", "rshrn", "rshrn2",
+                    "sqrshrnb", "sqrshrn", "sqrshrunb", "sqrshrun",
+                    "cadd", "addp", "histcnt", "histseg", "match", "nmatch"):
+        if re.search(r"\bz\d+\.", ops):
+            return LEVELS["sve2"]
+    return None
+
+
 def atom_rank(atom):
     if atom in ATOM_RANK:
         return ATOM_RANK[atom]
@@ -133,7 +160,13 @@ def build_mnemonic_levels(catalog_path):
         asm = (x.get("asm") or "").strip()
         if not asm:
             continue
+        # Some shared entries spell UMLAL{2}; strip the {2} suffix so the
+        # NEON (FEAT_AdvSIMD) encoding is not hidden behind the SME2-only
+        # UMLAL entry of the same base mnemonic. Do NOT strip ordinary
+        # trailing digits (st1/uzp1/zip1 are distinct mnemonics).
         mnem = asm.split()[0].lower()
+        if mnem.endswith("{2}"):
+            mnem = mnem[:-3]
         if not re.fullmatch(r"[a-z][a-z0-9._]*", mnem):
             continue
         dnf = parse_exprs(x.get("feature_exprs") or [])
@@ -152,7 +185,11 @@ def build_mnemonic_levels(catalog_path):
 def parse_disasm(text):
     """Yield (address, mnemonic, operands, symbol) for objdump output."""
     insn_re = re.compile(
-        r"^\s*([0-9a-f]+):\s+((?:[0-9a-f]{2}\s*)+)\s+([a-z][a-z0-9._]*)\b"
+        # AArch64 objdump writes the bytes contiguously, so the byte group
+        # never crosses the whitespace before the mnemonic. A `\s*` inside
+        # the group would let hex-looking mnemonic letters (cadd, sdot,
+        # ...) be consumed as bytes and silently drop the mnemonic.
+        r"^\s*([0-9a-f]+):\s+((?:[0-9a-f]{2})+)\s+([a-z][a-z0-9._]*)\b"
     )
     sym_re = re.compile(r"^\s*[0-9a-f]+\s+<([^>]+)>:\s*$")
     current = None
@@ -210,7 +247,9 @@ def main():
         if symbols is not None and sym not in symbols:
             continue
         counts[mnem] += 1
-        effective = levels.get(mnem)
+        effective = operand_level(mnem, operands)
+        if effective is None:
+            effective = levels.get(mnem)
         if mnem in ("tbl", "tbx") and TWO_REG_TABLE.search(operands):
             effective = 2  # two-register table: the SVE2 encoding
         if mnem not in levels:

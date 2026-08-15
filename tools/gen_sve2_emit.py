@@ -2734,7 +2734,44 @@ RECIPES = {
 }
 
 
-def make_generic_emitter(kernel):
+_CADD90_SVE1_HELPER = r"""
+// SVE1 exact replacement for SVE2 CADD #90 on 16-bit lanes:
+//   even lane: a[2i] - b[2i+1]; odd lane: a[2i+1] + b[2i].
+static const int16_t DYNOPT_CADD_SIGN16[16] =
+    { -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1 };
+static const uint16_t DYNOPT_CADD_SWAP16[16] =
+    { 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14 };
+
+static inline svint16_t dynopt_cadd90_s16(svint16_t a, svint16_t b)
+{
+    const svbool_t p = svptrue_b16();
+    const svint16_t sign = svld1_s16(p, DYNOPT_CADD_SIGN16);
+    const svuint16_t idx = svld1_u16(p, DYNOPT_CADD_SWAP16);
+    const svint16_t bs = svtbl_s16(b, idx);
+    return svadd_s16_x(p, a, svmul_s16_x(p, bs, sign));
+}
+
+#define DYNOPT_CADD90(a, b) dynopt_cadd90_s16((a), (b))
+"""
+
+
+def _rewrite_sve1(src):
+    """Post-emit rewrite that replaces SVE2-only constructs with exact
+    SVE1 lowers when the search/generation backend is restricted to
+    SVE1 (920B, VL=256). Currently handles the hadamard CADD #90
+    butterfly; the generic fir/vertical recipes already lower their
+    narrowing through NEON-bridge intrinsics, which are SVE1 legal."""
+    if "svcadd_s16" not in src:
+        return src
+    src = src.replace("#include <arm_sve.h>",
+                      "#include <arm_sve.h>\n" + _CADD90_SVE1_HELPER, 1)
+    src = re.sub(
+        r"svcadd_s16\(\s*([A-Za-z0-9_]+)\s*,\s*\1\s*,\s*90\s*\)",
+        r"DYNOPT_CADD90(\1, \1)", src)
+    return src
+
+
+def make_generic_emitter(kernel, isa=None):
     """Return emit(combo) that derives the candidate from the MachineIR.
     Family detection is per-kernel but recipe-driven: no kernel-specific
     emitter code is written for a new member of a known family."""
@@ -2754,7 +2791,10 @@ def make_generic_emitter(kernel):
         symbol = man.get("candidate", {}).get("symbol")
 
     def emit(combo):
-        return recipe["emit"](mi, symbol or "dynopt_%s_sve2" % kernel, combo)
+        src = recipe["emit"](mi, symbol or "dynopt_%s_sve2" % kernel, combo)
+        if isa == "sve1":
+            src = _rewrite_sve1(src)
+        return src
     return emit
 
 

@@ -51,6 +51,32 @@ QEMU_SVE2P3 = os.path.join(
 _CXX = "aarch64-linux-gnu-g++"
 _CXX_OVERRIDE = None
 _OPT_EXTRA = ""
+_ISA = None
+
+ISA_MARCH = {
+    "sve1": "armv8.2-a+sve",
+    "sve2": "armv8.2-a+sve2",
+    "sve2p1": "armv9.4-a+sve2p1",
+    "sve2p3": "armv9.4-a+sve2p3",
+}
+
+ISA_MATTR = {
+    "sve1": "+sve",
+    "sve2": "+sve2",
+    "sve2p1": "+sve2p1",
+    "sve2p3": "+sve2p3",
+}
+
+ISA_RANK = {"sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4, "sve2p3": 5}
+
+# Layout axes whose values need a newer ISA than the default SVE2 build
+# (the SVE2p1 sdot-s32 family and the SVE2p3 sdot.h path-B family).
+ISA_REQUIRED = {
+    "sdot-h": "sve2p3",
+    "sdot-s32": "sve2p1",
+    "sdot-s32-split": "sve2p1",
+    "sdot-s32-pair": "sve2p1",
+}
 
 BRANCH_MN = {"b", "br", "ret", "bl", "blr", "cbz", "cbnz", "tbz", "tbnz",
              "b.eq", "b.ne", "b.hs", "b.lo", "b.mi", "b.pl", "b.vs",
@@ -62,6 +88,19 @@ SDOT_COMPUTES = ("sdot-s32", "sdot-s32-split", "sdot-h")
 
 def is_sdot_compute(v):
     return v in SDOT_COMPUTES
+
+
+def combo_isa_allowed(combo):
+    """True when every layout value in `combo` is available at `_ISA`.
+    Used by --isa to stop the search/generator from proposing SVE2p1/
+    SVE2p3-only lowers on 920B (SVE1) or 950 (SVE2.0 and below)."""
+    if not _ISA:
+        return True
+    for axis, val in combo.items():
+        req = ISA_REQUIRED.get(str(val))
+        if req and ISA_RANK[req] > ISA_RANK[_ISA]:
+            return False
+    return True
 
 
 def qemu_cmd(combo=None):
@@ -80,6 +119,8 @@ def candidate_march(combo):
     sdot-s32 (SVE2p1 `sdot z.s, z.h, z.h`) needs armv9.4-a+sve2p1 and -O3
     (docs/27 §8.10: -O2 spills more); everything else stays armv8.2-a+sve2.
     """
+    if _ISA:
+        return ISA_MARCH[_ISA]
     if combo.get("compute") == "sdot-h":
         return "armv9.4-a+sve2p3"
     if is_sdot_compute(combo.get("compute")):
@@ -336,7 +377,7 @@ def make_emitter(kernel, backend="acle"):
     """Return emit(combo) for the kernel's manifest layout axes."""
     if backend == "gen":
         from gen_sve2_emit import make_generic_emitter
-        return make_generic_emitter(kernel)
+        return make_generic_emitter(kernel, isa=_ISA)
     if kernel == "dct16" and backend == "op":
         import sys as _sys
         _ir = os.path.join(ROOT, "optimizer", "ir")
@@ -847,6 +888,18 @@ def measure_layout_candidate(task):
         return None, None, "BUILD TIMEOUT"
     if c.returncode != 0:
         return None, None, "BUILD FAIL"
+    if _ISA:
+        try:
+            g = run([sys.executable,
+                     os.path.join(ROOT, "tools/check_isa_level.py"),
+                     "--object", obj, "--level", _ISA, "--json",
+                     "--objdump", "aarch64-linux-gnu-objdump"], timeout=120)
+            gj = json.loads(g.stdout) if g.stdout else {}
+            viol = gj.get("violations") or []
+        except (ValueError, KeyError):
+            viol = [{"mnemonic": "unknown"}]
+        if viol:
+            return None, None, "ISA VIOLATION (%d)" % len(viol)
     verify = os.path.join(outdir, tag + "-verify")
     try:
         _inc = ["-I" + os.path.join(ROOT, d) for d in (
@@ -1021,6 +1074,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=("acle", "asm", "op", "gen"),
                     default="acle")
+    ap.add_argument("--isa", "--target-isa", default=None,
+                    choices=("sve1", "sve2", "sve2p1", "sve2p3"),
+                    help="restrict search/generation to this ISA level "
+                         "(920B: sve1 with VL=256; 950: sve2 and below). "
+                         "Unsupported compute axes are dropped and every "
+                         "built object is gated with check_isa_level.py.")
+    ap.add_argument("--target", choices=("920B", "950"), default=None,
+                    help="convenience alias: 920B -> --isa sve1 "
+                         "--mca-target 920B; 950 -> --isa sve2 "
+                         "--mca-target 950")
     ap.add_argument("--contract", default=None)
     ap.add_argument("--kernel", default="dct16")
     ap.add_argument("--outdir", default=None)
@@ -1126,7 +1189,12 @@ def main():
     ap.add_argument("--bench-top", type=int, default=3,
                     help="candidates benchmarked on 920B (default 3)")
     args = ap.parse_args()
-    global _CXX, _CXX_OVERRIDE, _OPT_EXTRA
+    global _CXX, _CXX_OVERRIDE, _OPT_EXTRA, _ISA
+    if args.target and not args.isa:
+        args.isa = "sve1" if args.target == "920B" else "sve2"
+    if args.target and args.mca_target is None:
+        args.mca_target = args.target
+    _ISA = args.isa
     if args.cxx:
         _CXX = args.cxx
         _CXX_OVERRIDE = args.cxx
@@ -1168,10 +1236,16 @@ def main():
         args.mca_mcpu = manifest.get("mca_target", {}).get(
             "llvm_proxy_cpu", "neoverse-v2")
     if args.mca_mattr is None:
-        args.mca_mattr = manifest.get("mca_target", {}).get(
-            "llvm_proxy_mattr", "+sve2")
-    if any(is_sdot_compute(c)
-           for c in manifest.get("layouts", {}).get("compute", [])):
+        if _ISA:
+            args.mca_mattr = ISA_MATTR[_ISA]
+        else:
+            args.mca_mattr = manifest.get("mca_target", {}).get(
+                "llvm_proxy_mattr", "+sve2")
+    if _ISA and args.mca_arch is None:
+        args.mca_arch = ISA_MARCH[_ISA]
+    if (not _ISA and any(is_sdot_compute(c)
+                         for c in manifest.get("layouts", {})
+                         .get("compute", []))):
         # sdot_z32 is SVE2p1; the patched llvm-mca needs +sve2p1 to
         # accept the asm stream (docs/26 §5).
         args.mca_mattr = "+sve2p1"
@@ -1185,6 +1259,16 @@ def main():
         args.outdir = os.path.join(
             ROOT, "experiments/m30-%s-search/layout-search" % args.kernel)
     emit = make_emitter(args.kernel, args.backend)
+    if _ISA and args.backend == "gen":
+        # Generic fir/vertical recipes lower sdot-h only on SVE2p3; when
+        # the target is 920B (sve1) or 950 (sve2) and the manifest only
+        # proposes the SVE2p3 path, fall back to the generic sdot-d path
+        # (SVE1 sdot .s/.b + NEON-bridge narrowing), which is exact.
+        layouts = manifest.get("layouts", {})
+        if "compute" in layouts and not any(
+                combo_isa_allowed({"compute": v})
+                for v in layouts["compute"]):
+            layouts["compute"].append("sdot-d")
     if args.skip_axes:
         skip = set(x.strip() for x in args.skip_axes.split(",") if x.strip())
         for ax in skip:
@@ -1216,6 +1300,16 @@ def main():
     # P2: the manifest's layout_prune rules replace per-kernel hardcoded
     # axis-dependency chains; only derived normalization stays here.
     combos = layout_plans(manifest)
+    if _ISA:
+        before = 0
+        kept = []
+        for c in combos:
+            before += 1
+            if combo_isa_allowed(c):
+                kept.append(c)
+        combos = kept
+        print("--isa %s: %d/%d layout combos survive the ISA filter"
+              % (_ISA, len(combos), before))
     if not combos or not manifest.get("layouts"):
         print("manifest has no layout axes", file=sys.stderr)
         return 2
@@ -1793,9 +1887,10 @@ def main():
         best = ok[0]
         cand_dir = os.path.join(ROOT, "kernels", args.kernel, "candidates")
         os.makedirs(cand_dir, exist_ok=True)
-        src_path = os.path.join(cand_dir, "best_sve2.cpp")
-        s_path = os.path.join(cand_dir, "best_sve2.S")
-        obj_path = os.path.join(cand_dir, "best_sve2.o")
+        stem = "best_sve1" if _ISA == "sve1" else "best_sve2"
+        src_path = os.path.join(cand_dir, stem + ".cpp")
+        s_path = os.path.join(cand_dir, stem + ".S")
+        obj_path = os.path.join(cand_dir, stem + ".o")
         with open(src_path, "w") as f:
             meta = {"tag", "contract", "upstream_exact", "passed",
                     "verify_mismatches", "verify", "counts", "cached"}
