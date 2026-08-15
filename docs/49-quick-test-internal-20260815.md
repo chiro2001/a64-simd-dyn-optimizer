@@ -175,6 +175,27 @@ tools/parse_quick_report.py reports/qt-*.txt   # 汇总 paired 表
 手工数据建议按 docs/48 的表格格式回填：kernel、形状、上游中位、候选
 中位、neon/cand 比率、编译档（gcc/clang、-O2/-O3）、日期与 commit。
 
+### 真实调用轨迹回放（2026-08-15，推荐口径）
+
+合成/均匀微基准会系统性误判熵族内核（round-0021 P0）。在目标机抓真实
+轨迹并用 `benchmarks/entropy_trace_replay` 回放：
+
+```sh
+# 录制端（cloud 920B）
+python3 tools/trace_entropy_calls.py
+# 把 build/trace-entropy/trace_rec.o + x265-dynopt-trace.patch 放到目标机，
+# 应用 patch、把 trace_rec.o 并入 libx265.so.216 链接行，然后：
+DYNOPT_TRACE_PATH=/path/trace.bin taskset -c 0 x265 --input ... -o out.mp4
+# 确认输出 md5 与基线一致（包装器必须透明）
+
+# 回放端（同一目标机，静态交叉编译）
+/tmp/entropy-trace-replay /path/trace.bin neon /tmp/replay-work
+/tmp/entropy-trace-replay /path/trace.bin cand /tmp/replay-work
+```
+
+结果见 reports/entropy-replay-920b-20260815.txt：ccn 标量 +6.3%、
+c1c2/remain/scan 持平；与已知 E2E 符号一致。
+
 ## 7. 注意事项
 
 - CNTVCT 在内网/云端约为百 MHz 级，per-call 取整会把小 kernel 压成

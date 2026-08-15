@@ -110,6 +110,12 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
   60k 混合语料差分 0 失配、码流一致，但 E2E 仍 +0.7%（n1 占真实调用
   ~41%，uniform 语料下 n1 比 0.91）——不作为注入项，保留为最优已知
   候选（reports/c1c2-920b-e2e-20260815.txt）。
+- **真实调用轨迹回放（P0 工具）**：920B 抓 30 帧编码的 1896 万次熵族
+  调用并回放计时（tools/trace_entropy_calls.py +
+  benchmarks/entropy_trace_replay.cpp）。真实分布下 costCoeffNxN 标量
+  候选 +6.3%，costC1C2Flag/scanPosLast/costCoeffRemain 全部持平，与
+  已知 E2E 符号一致；均匀微基准对熵族的判断不可信
+  （reports/entropy-replay-920b-20260815.txt）。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
