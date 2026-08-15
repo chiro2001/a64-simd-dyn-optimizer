@@ -14,6 +14,7 @@
 | interp8 path-B SVE1 替换 | 0.55-0.87，不注入 | docs/29 |
 | sad16 SVE1 候选 | 78 vs 43 ticks（1.8× 慢） | 本轮实测 |
 | psyCost_pp（上游基线） | 4x4/8x8/16x16/32x32/64x64 = 0/1/7/27/109 ticks；32x32 已约 3.8 ops/cycle，同算法无 1.3× 空间 | 本轮实测（per-shape microbench） |
+| sao-stats-e0/e1/e2（SVE2 候选） | 使用 SVE2 `svhistseg`，920B 无法运行（ISA 门禁拒绝）；仅 950 可验 | 本轮检查 |
 | sa8d16 mixed（SVE1 宽装载+NEON H） | 0.92-0.95 | docs/48 |
 | scanPosLast SVE2 候选（950） | 慢 4.5×，950 不注入 | reports/950-quick-test-20260815.txt |
 | sa8d16 SVE2 候选（950） | 正确性 FAIL | 同上 |
