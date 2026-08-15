@@ -1,0 +1,32 @@
+# saoCuStatsBO 注入（best9，2026-08-16）
+
+## 发现
+
+best8 注入集遗漏了 sao-stats-bo（此前 best6b/best8 的 freeze 脚本
+kernel 列表均未含 SAO 家族）。perf 中 saoCuStatsBO 占比 0.88%，
+微基准实测 6 -> 5 ticks（+20%）。
+
+## 920B paired（sao_stats_bo_microbench，batch=64）
+
+| 实现 | ticks | 相对 |
+| --- | ---: | ---: |
+| 上游 saoCuStatsBO | 6 | 1.00 |
+| 候选 | 5 | **1.20x（+20%）** |
+
+verify_bad=0（与 round-0037 一致）。
+
+## E2E（真实 1080p 30 帧，5+5 paired，bit-exact ee5db7…）
+
+| 配置 | 中位 | 差 |
+| --- | ---: | ---: |
+| 干净基线 | 8184 ms | — |
+| best9（best8 + sao-stats-bo，29 槽） | 8027 ms | **-2.10%** |
+
+bootstrap95 = [137, 185] ms。对比 best8（-1.92%），BO 贡献约
+0.18 个百分点，与 0.88% 占比 x 20% 收益一致。
+
+## 说明
+
+- SAO Stats E1/E2/E3 候选为 SVE2-only（920B SVE1 不可原生跑），
+  未注入；E2E 已包含 BO；
+- 复现：bash scripts/freeze-best9.sh chiro@124.70.206.229。

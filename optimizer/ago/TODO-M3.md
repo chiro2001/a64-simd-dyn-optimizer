@@ -156,6 +156,13 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] 算子平均三口径：item-level 39.1%（达标）、kernel-level 26%、
   占比加权 21%（未达）；30% 口径需在 950 SVE2 上继续。
 
+## saoCuStatsBO 注入（2026-08-16 完成，best9）
+
+- [x] 发现 best8 遗漏 SAO 家族；BO 920B paired +20%（6->5 ticks）；
+- [x] best9（29 槽）E2E **-2.10%**（8027 vs 8184 ms，bit-exact），
+  报告 reports/sao-bo-inject-20260816.txt；
+- [ ] SAO Stats E1/E2/E3（SVE2-only）留待 950 窗口。
+
 ## N1 端到端（2026-08-16 完成）
 
 - [x] best8 注入 N1 实测：基线 11976 vs 11831 ms，**-1.78%**
