@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 162 |
+| kernel 目录 | 163 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -189,6 +189,7 @@
 | cost-coeff-nxn | 4x4 sig-map cost | 10 vector/97 MCA（-O3 后较 12/109 改善） |
 | cu-copy-pp | 32x32 代表切片 | 64/43 |
 | cu-sub-ps | 16x16 代表切片 | 64/36 |
+| cu-copy-ss | 16x16 代表切片 | 32/26 |
 | pu-copy-pp | 16x16 代表切片 | 32/26 |
 | pu-addavg | 16x16 代表切片 | 128/58 |
 | chroma-copy-pp | 16x16 代表切片 | 32/26 |
