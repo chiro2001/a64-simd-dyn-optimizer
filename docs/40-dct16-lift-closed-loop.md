@@ -405,4 +405,25 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - 手写 171/96 —— 正确，指令数待 sdot-h/更优布局轴。
 - 修坑：sliding=0 的 tap 循环与 load 偏移必须参数化（chroma 曾越界
   读 CTBL[4..7]）；luma 8x16/16x16 回归不受影响。
-- 通用发射器现覆盖 4 个配方族、16 个算子形状。
+- 通用发射器现覆盖 4 个配方族、22 个算子形状。
+
+## 22. vertical-fir sliding=3：原生软流水追平手写（2026-08-15）
+
+- `emit_vertical_fir` 新增 `sliding=3`（`_emit_vertical_fir_native`）：
+  只依赖配方推导事实（16-lane 行、8 taps、g_lumaFilter 相位 1..3、
+  rows/列组数）生成与手写 `emit_vpp` 同构的候选：
+  - 行加载用 `svld1ub_u16` 加宽载入 + `svsub 128` 去偏置；
+  - 8 个系数向量用 `svdup` 预构建并跨行共享（替代逐 tap 的标量
+    load/branch/svdup）；
+  - 软件流水：先载入 8 行，每输出行再补载下一行，live 集 ≤9 行；
+  - 2/4 累加器切分 DC 8192，缩短 MLA 依赖链；
+  - 窄化用 SVE2 原生 `svqrshrunb + svuzp1` 替代 NEON-bridge
+    （该形状在 QEMU VL=256 下验证正确，20k 差分兜底）。
+- 验收（各 20k 差分 0 失配）：
+  - interp8vpp-16：**247 fused / MCA 157**（= 手写 247/157），
+    experiments/m30-interp8vpp-search/gen-search3-16x16/results.json；
+  - interp8vpp-32：**936 fused / MCA 547**（= 手写 936/547），
+    experiments/m30-interp8vpp-search/gen-search3-32x32/results.json。
+- `kernels/interp8vpp-16|32/manifest.yaml` 的 sliding 轴扩为
+  [0,1,2,3]；`tools/test_gen_emit.py` 以 sliding=3 作为两核的
+  冒烟 combo。vertical-fir 主线已从 MCA 差 2.5%/6.6% 变为完全一致。
