@@ -1,0 +1,6646 @@
+{
+ "function": "dynopt_interp8_hps_8x16_ext_seed",
+ "nodes": [
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 -3",
+   "dst": "7",
+   "id": 0
+  },
+  {
+   "op": "mul",
+   "type": "i64",
+   "src": [
+    "1"
+   ],
+   "dst": "8",
+   "const": -3,
+   "id": 1
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %7, i64 %8",
+   "dst": "9",
+   "id": 2
+  },
+  {
+   "op": "shl",
+   "type": "i64",
+   "src": [
+    "1"
+   ],
+   "dst": "10",
+   "amt": 1,
+   "id": 3
+  },
+  {
+   "op": "shl",
+   "type": "i64",
+   "src": [
+    "3"
+   ],
+   "dst": "11",
+   "amt": 2,
+   "id": 4
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "12",
+   "ptr": "9",
+   "id": 5
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 1",
+   "dst": "13",
+   "id": 6
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "14",
+   "ptr": "13",
+   "id": 7
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 2",
+   "dst": "15",
+   "id": 8
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "16",
+   "ptr": "15",
+   "id": 9
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 3",
+   "dst": "17",
+   "id": 10
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "18",
+   "ptr": "17",
+   "id": 11
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 4",
+   "dst": "19",
+   "id": 12
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "20",
+   "ptr": "19",
+   "id": 13
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 5",
+   "dst": "21",
+   "id": 14
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "22",
+   "ptr": "21",
+   "id": 15
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %9, i64 6",
+   "dst": "23",
+   "id": 16
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "24",
+   "ptr": "23",
+   "id": 17
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %9, i64 %1",
+   "dst": "25",
+   "id": 18
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "26",
+   "ptr": "25",
+   "id": 19
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 1",
+   "dst": "27",
+   "id": 20
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "28",
+   "ptr": "27",
+   "id": 21
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 2",
+   "dst": "29",
+   "id": 22
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "30",
+   "ptr": "29",
+   "id": 23
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 3",
+   "dst": "31",
+   "id": 24
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "32",
+   "ptr": "31",
+   "id": 25
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 4",
+   "dst": "33",
+   "id": 26
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "34",
+   "ptr": "33",
+   "id": 27
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 5",
+   "dst": "35",
+   "id": 28
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "36",
+   "ptr": "35",
+   "id": 29
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %25, i64 6",
+   "dst": "37",
+   "id": 30
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "38",
+   "ptr": "37",
+   "id": 31
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "24",
+   "dst": "39",
+   "id": 32
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "12",
+   "dst": "40",
+   "id": 33
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "14"
+   ],
+   "args": [
+    {
+     "ref": "14"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "41",
+   "id": 34
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "16"
+   ],
+   "args": [
+    {
+     "ref": "16"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "42",
+   "id": 35
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "18"
+   ],
+   "args": [
+    {
+     "ref": "18"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "43",
+   "id": 36
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "20"
+   ],
+   "args": [
+    {
+     "ref": "20"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "44",
+   "id": 37
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "22"
+   ],
+   "args": [
+    {
+     "ref": "22"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "45",
+   "id": 38
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "39",
+    "40"
+   ],
+   "dst": "46",
+   "id": 39
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "46"
+   ],
+   "dst": "47",
+   "splat": -8192,
+   "const": null,
+   "id": 40
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "47",
+    "41"
+   ],
+   "dst": "48",
+   "id": 41
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "48",
+    "42"
+   ],
+   "dst": "49",
+   "id": 42
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "49",
+    "43"
+   ],
+   "dst": "50",
+   "id": 43
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "50",
+    "44"
+   ],
+   "dst": "51",
+   "id": 44
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "51",
+    "45"
+   ],
+   "dst": "52",
+   "id": 45
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "38",
+   "dst": "53",
+   "id": 46
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "26",
+   "dst": "54",
+   "id": 47
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "28"
+   ],
+   "args": [
+    {
+     "ref": "28"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "55",
+   "id": 48
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "30"
+   ],
+   "args": [
+    {
+     "ref": "30"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "56",
+   "id": 49
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "32"
+   ],
+   "args": [
+    {
+     "ref": "32"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "57",
+   "id": 50
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "34"
+   ],
+   "args": [
+    {
+     "ref": "34"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "58",
+   "id": 51
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "36"
+   ],
+   "args": [
+    {
+     "ref": "36"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "59",
+   "id": 52
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "53",
+    "54"
+   ],
+   "dst": "60",
+   "id": 53
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "60"
+   ],
+   "dst": "61",
+   "splat": -8192,
+   "const": null,
+   "id": 54
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "61",
+    "55"
+   ],
+   "dst": "62",
+   "id": 55
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "62",
+    "56"
+   ],
+   "dst": "63",
+   "id": 56
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "63",
+    "57"
+   ],
+   "dst": "64",
+   "id": 57
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "64",
+    "58"
+   ],
+   "dst": "65",
+   "id": 58
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "65",
+    "59"
+   ],
+   "dst": "66",
+   "id": 59
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "52",
+   "ptr": "2",
+   "id": 60
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %2, i64 %3",
+   "dst": "67",
+   "id": 61
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "66",
+   "ptr": "67",
+   "id": 62
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %2, i64 %11",
+   "dst": "68",
+   "id": 63
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %9, i64 %10",
+   "dst": "69",
+   "id": 64
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "70",
+   "ptr": "69",
+   "id": 65
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 1",
+   "dst": "71",
+   "id": 66
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "72",
+   "ptr": "71",
+   "id": 67
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 2",
+   "dst": "73",
+   "id": 68
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "74",
+   "ptr": "73",
+   "id": 69
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 3",
+   "dst": "75",
+   "id": 70
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "76",
+   "ptr": "75",
+   "id": 71
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 4",
+   "dst": "77",
+   "id": 72
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "78",
+   "ptr": "77",
+   "id": 73
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 5",
+   "dst": "79",
+   "id": 74
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "80",
+   "ptr": "79",
+   "id": 75
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %69, i64 6",
+   "dst": "81",
+   "id": 76
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "82",
+   "ptr": "81",
+   "id": 77
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %69, i64 %1",
+   "dst": "83",
+   "id": 78
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "84",
+   "ptr": "83",
+   "id": 79
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 1",
+   "dst": "85",
+   "id": 80
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "86",
+   "ptr": "85",
+   "id": 81
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 2",
+   "dst": "87",
+   "id": 82
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "88",
+   "ptr": "87",
+   "id": 83
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 3",
+   "dst": "89",
+   "id": 84
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "90",
+   "ptr": "89",
+   "id": 85
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 4",
+   "dst": "91",
+   "id": 86
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "92",
+   "ptr": "91",
+   "id": 87
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 5",
+   "dst": "93",
+   "id": 88
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "94",
+   "ptr": "93",
+   "id": 89
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %83, i64 6",
+   "dst": "95",
+   "id": 90
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "96",
+   "ptr": "95",
+   "id": 91
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "82",
+   "dst": "97",
+   "id": 92
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "70",
+   "dst": "98",
+   "id": 93
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "72"
+   ],
+   "args": [
+    {
+     "ref": "72"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "99",
+   "id": 94
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "74"
+   ],
+   "args": [
+    {
+     "ref": "74"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "100",
+   "id": 95
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "76"
+   ],
+   "args": [
+    {
+     "ref": "76"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "101",
+   "id": 96
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "78"
+   ],
+   "args": [
+    {
+     "ref": "78"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "102",
+   "id": 97
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "80"
+   ],
+   "args": [
+    {
+     "ref": "80"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "103",
+   "id": 98
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "97",
+    "98"
+   ],
+   "dst": "104",
+   "id": 99
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "104"
+   ],
+   "dst": "105",
+   "splat": -8192,
+   "const": null,
+   "id": 100
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "105",
+    "99"
+   ],
+   "dst": "106",
+   "id": 101
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "106",
+    "100"
+   ],
+   "dst": "107",
+   "id": 102
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "107",
+    "101"
+   ],
+   "dst": "108",
+   "id": 103
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "108",
+    "102"
+   ],
+   "dst": "109",
+   "id": 104
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "109",
+    "103"
+   ],
+   "dst": "110",
+   "id": 105
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "96",
+   "dst": "111",
+   "id": 106
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "84",
+   "dst": "112",
+   "id": 107
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "86"
+   ],
+   "args": [
+    {
+     "ref": "86"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "113",
+   "id": 108
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "88"
+   ],
+   "args": [
+    {
+     "ref": "88"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "114",
+   "id": 109
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "90"
+   ],
+   "args": [
+    {
+     "ref": "90"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "115",
+   "id": 110
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "92"
+   ],
+   "args": [
+    {
+     "ref": "92"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "116",
+   "id": 111
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "94"
+   ],
+   "args": [
+    {
+     "ref": "94"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "117",
+   "id": 112
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "111",
+    "112"
+   ],
+   "dst": "118",
+   "id": 113
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "118"
+   ],
+   "dst": "119",
+   "splat": -8192,
+   "const": null,
+   "id": 114
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "119",
+    "113"
+   ],
+   "dst": "120",
+   "id": 115
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "120",
+    "114"
+   ],
+   "dst": "121",
+   "id": 116
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "121",
+    "115"
+   ],
+   "dst": "122",
+   "id": 117
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "122",
+    "116"
+   ],
+   "dst": "123",
+   "id": 118
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "123",
+    "117"
+   ],
+   "dst": "124",
+   "id": 119
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "110",
+   "ptr": "68",
+   "id": 120
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %68, i64 %3",
+   "dst": "125",
+   "id": 121
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "124",
+   "ptr": "125",
+   "id": 122
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %68, i64 %11",
+   "dst": "126",
+   "id": 123
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %69, i64 %10",
+   "dst": "127",
+   "id": 124
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "128",
+   "ptr": "127",
+   "id": 125
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 1",
+   "dst": "129",
+   "id": 126
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "130",
+   "ptr": "129",
+   "id": 127
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 2",
+   "dst": "131",
+   "id": 128
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "132",
+   "ptr": "131",
+   "id": 129
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 3",
+   "dst": "133",
+   "id": 130
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "134",
+   "ptr": "133",
+   "id": 131
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 4",
+   "dst": "135",
+   "id": 132
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "136",
+   "ptr": "135",
+   "id": 133
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 5",
+   "dst": "137",
+   "id": 134
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "138",
+   "ptr": "137",
+   "id": 135
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %127, i64 6",
+   "dst": "139",
+   "id": 136
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "140",
+   "ptr": "139",
+   "id": 137
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %127, i64 %1",
+   "dst": "141",
+   "id": 138
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "142",
+   "ptr": "141",
+   "id": 139
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 1",
+   "dst": "143",
+   "id": 140
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "144",
+   "ptr": "143",
+   "id": 141
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 2",
+   "dst": "145",
+   "id": 142
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "146",
+   "ptr": "145",
+   "id": 143
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 3",
+   "dst": "147",
+   "id": 144
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "148",
+   "ptr": "147",
+   "id": 145
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 4",
+   "dst": "149",
+   "id": 146
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "150",
+   "ptr": "149",
+   "id": 147
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 5",
+   "dst": "151",
+   "id": 148
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "152",
+   "ptr": "151",
+   "id": 149
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %141, i64 6",
+   "dst": "153",
+   "id": 150
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "154",
+   "ptr": "153",
+   "id": 151
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "140",
+   "dst": "155",
+   "id": 152
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "128",
+   "dst": "156",
+   "id": 153
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "130"
+   ],
+   "args": [
+    {
+     "ref": "130"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "157",
+   "id": 154
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "132"
+   ],
+   "args": [
+    {
+     "ref": "132"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "158",
+   "id": 155
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "134"
+   ],
+   "args": [
+    {
+     "ref": "134"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "159",
+   "id": 156
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "136"
+   ],
+   "args": [
+    {
+     "ref": "136"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "160",
+   "id": 157
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "138"
+   ],
+   "args": [
+    {
+     "ref": "138"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "161",
+   "id": 158
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "155",
+    "156"
+   ],
+   "dst": "162",
+   "id": 159
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "162"
+   ],
+   "dst": "163",
+   "splat": -8192,
+   "const": null,
+   "id": 160
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "163",
+    "157"
+   ],
+   "dst": "164",
+   "id": 161
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "164",
+    "158"
+   ],
+   "dst": "165",
+   "id": 162
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "165",
+    "159"
+   ],
+   "dst": "166",
+   "id": 163
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "166",
+    "160"
+   ],
+   "dst": "167",
+   "id": 164
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "167",
+    "161"
+   ],
+   "dst": "168",
+   "id": 165
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "154",
+   "dst": "169",
+   "id": 166
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "142",
+   "dst": "170",
+   "id": 167
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "144"
+   ],
+   "args": [
+    {
+     "ref": "144"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "171",
+   "id": 168
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "146"
+   ],
+   "args": [
+    {
+     "ref": "146"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "172",
+   "id": 169
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "148"
+   ],
+   "args": [
+    {
+     "ref": "148"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "173",
+   "id": 170
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "150"
+   ],
+   "args": [
+    {
+     "ref": "150"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "174",
+   "id": 171
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "152"
+   ],
+   "args": [
+    {
+     "ref": "152"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "175",
+   "id": 172
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "169",
+    "170"
+   ],
+   "dst": "176",
+   "id": 173
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "176"
+   ],
+   "dst": "177",
+   "splat": -8192,
+   "const": null,
+   "id": 174
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "177",
+    "171"
+   ],
+   "dst": "178",
+   "id": 175
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "178",
+    "172"
+   ],
+   "dst": "179",
+   "id": 176
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "179",
+    "173"
+   ],
+   "dst": "180",
+   "id": 177
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "180",
+    "174"
+   ],
+   "dst": "181",
+   "id": 178
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "181",
+    "175"
+   ],
+   "dst": "182",
+   "id": 179
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "168",
+   "ptr": "126",
+   "id": 180
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %126, i64 %3",
+   "dst": "183",
+   "id": 181
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "182",
+   "ptr": "183",
+   "id": 182
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %126, i64 %11",
+   "dst": "184",
+   "id": 183
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %127, i64 %10",
+   "dst": "185",
+   "id": 184
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "186",
+   "ptr": "185",
+   "id": 185
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 1",
+   "dst": "187",
+   "id": 186
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "188",
+   "ptr": "187",
+   "id": 187
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 2",
+   "dst": "189",
+   "id": 188
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "190",
+   "ptr": "189",
+   "id": 189
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 3",
+   "dst": "191",
+   "id": 190
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "192",
+   "ptr": "191",
+   "id": 191
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 4",
+   "dst": "193",
+   "id": 192
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "194",
+   "ptr": "193",
+   "id": 193
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 5",
+   "dst": "195",
+   "id": 194
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "196",
+   "ptr": "195",
+   "id": 195
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %185, i64 6",
+   "dst": "197",
+   "id": 196
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "198",
+   "ptr": "197",
+   "id": 197
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %185, i64 %1",
+   "dst": "199",
+   "id": 198
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "200",
+   "ptr": "199",
+   "id": 199
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 1",
+   "dst": "201",
+   "id": 200
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "202",
+   "ptr": "201",
+   "id": 201
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 2",
+   "dst": "203",
+   "id": 202
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "204",
+   "ptr": "203",
+   "id": 203
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 3",
+   "dst": "205",
+   "id": 204
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "206",
+   "ptr": "205",
+   "id": 205
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 4",
+   "dst": "207",
+   "id": 206
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "208",
+   "ptr": "207",
+   "id": 207
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 5",
+   "dst": "209",
+   "id": 208
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "210",
+   "ptr": "209",
+   "id": 209
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %199, i64 6",
+   "dst": "211",
+   "id": 210
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "212",
+   "ptr": "211",
+   "id": 211
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "198",
+   "dst": "213",
+   "id": 212
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "186",
+   "dst": "214",
+   "id": 213
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "188"
+   ],
+   "args": [
+    {
+     "ref": "188"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "215",
+   "id": 214
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "190"
+   ],
+   "args": [
+    {
+     "ref": "190"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "216",
+   "id": 215
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "192"
+   ],
+   "args": [
+    {
+     "ref": "192"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "217",
+   "id": 216
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "194"
+   ],
+   "args": [
+    {
+     "ref": "194"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "218",
+   "id": 217
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "196"
+   ],
+   "args": [
+    {
+     "ref": "196"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "219",
+   "id": 218
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "213",
+    "214"
+   ],
+   "dst": "220",
+   "id": 219
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "220"
+   ],
+   "dst": "221",
+   "splat": -8192,
+   "const": null,
+   "id": 220
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "221",
+    "215"
+   ],
+   "dst": "222",
+   "id": 221
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "222",
+    "216"
+   ],
+   "dst": "223",
+   "id": 222
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "223",
+    "217"
+   ],
+   "dst": "224",
+   "id": 223
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "224",
+    "218"
+   ],
+   "dst": "225",
+   "id": 224
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "225",
+    "219"
+   ],
+   "dst": "226",
+   "id": 225
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "212",
+   "dst": "227",
+   "id": 226
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "200",
+   "dst": "228",
+   "id": 227
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "202"
+   ],
+   "args": [
+    {
+     "ref": "202"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "229",
+   "id": 228
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "204"
+   ],
+   "args": [
+    {
+     "ref": "204"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "230",
+   "id": 229
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "206"
+   ],
+   "args": [
+    {
+     "ref": "206"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "231",
+   "id": 230
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "208"
+   ],
+   "args": [
+    {
+     "ref": "208"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "232",
+   "id": 231
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "210"
+   ],
+   "args": [
+    {
+     "ref": "210"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "233",
+   "id": 232
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "227",
+    "228"
+   ],
+   "dst": "234",
+   "id": 233
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "234"
+   ],
+   "dst": "235",
+   "splat": -8192,
+   "const": null,
+   "id": 234
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "235",
+    "229"
+   ],
+   "dst": "236",
+   "id": 235
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "236",
+    "230"
+   ],
+   "dst": "237",
+   "id": 236
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "237",
+    "231"
+   ],
+   "dst": "238",
+   "id": 237
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "238",
+    "232"
+   ],
+   "dst": "239",
+   "id": 238
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "239",
+    "233"
+   ],
+   "dst": "240",
+   "id": 239
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "226",
+   "ptr": "184",
+   "id": 240
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %184, i64 %3",
+   "dst": "241",
+   "id": 241
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "240",
+   "ptr": "241",
+   "id": 242
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %184, i64 %11",
+   "dst": "242",
+   "id": 243
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %185, i64 %10",
+   "dst": "243",
+   "id": 244
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "244",
+   "ptr": "243",
+   "id": 245
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 1",
+   "dst": "245",
+   "id": 246
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "246",
+   "ptr": "245",
+   "id": 247
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 2",
+   "dst": "247",
+   "id": 248
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "248",
+   "ptr": "247",
+   "id": 249
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 3",
+   "dst": "249",
+   "id": 250
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "250",
+   "ptr": "249",
+   "id": 251
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 4",
+   "dst": "251",
+   "id": 252
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "252",
+   "ptr": "251",
+   "id": 253
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 5",
+   "dst": "253",
+   "id": 254
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "254",
+   "ptr": "253",
+   "id": 255
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %243, i64 6",
+   "dst": "255",
+   "id": 256
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "256",
+   "ptr": "255",
+   "id": 257
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %243, i64 %1",
+   "dst": "257",
+   "id": 258
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "258",
+   "ptr": "257",
+   "id": 259
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 1",
+   "dst": "259",
+   "id": 260
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "260",
+   "ptr": "259",
+   "id": 261
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 2",
+   "dst": "261",
+   "id": 262
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "262",
+   "ptr": "261",
+   "id": 263
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 3",
+   "dst": "263",
+   "id": 264
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "264",
+   "ptr": "263",
+   "id": 265
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 4",
+   "dst": "265",
+   "id": 266
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "266",
+   "ptr": "265",
+   "id": 267
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 5",
+   "dst": "267",
+   "id": 268
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "268",
+   "ptr": "267",
+   "id": 269
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %257, i64 6",
+   "dst": "269",
+   "id": 270
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "270",
+   "ptr": "269",
+   "id": 271
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "256",
+   "dst": "271",
+   "id": 272
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "244",
+   "dst": "272",
+   "id": 273
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "246"
+   ],
+   "args": [
+    {
+     "ref": "246"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "273",
+   "id": 274
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "248"
+   ],
+   "args": [
+    {
+     "ref": "248"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "274",
+   "id": 275
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "250"
+   ],
+   "args": [
+    {
+     "ref": "250"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "275",
+   "id": 276
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "252"
+   ],
+   "args": [
+    {
+     "ref": "252"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "276",
+   "id": 277
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "254"
+   ],
+   "args": [
+    {
+     "ref": "254"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "277",
+   "id": 278
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "271",
+    "272"
+   ],
+   "dst": "278",
+   "id": 279
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "278"
+   ],
+   "dst": "279",
+   "splat": -8192,
+   "const": null,
+   "id": 280
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "279",
+    "273"
+   ],
+   "dst": "280",
+   "id": 281
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "280",
+    "274"
+   ],
+   "dst": "281",
+   "id": 282
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "281",
+    "275"
+   ],
+   "dst": "282",
+   "id": 283
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "282",
+    "276"
+   ],
+   "dst": "283",
+   "id": 284
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "283",
+    "277"
+   ],
+   "dst": "284",
+   "id": 285
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "270",
+   "dst": "285",
+   "id": 286
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "258",
+   "dst": "286",
+   "id": 287
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "260"
+   ],
+   "args": [
+    {
+     "ref": "260"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "287",
+   "id": 288
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "262"
+   ],
+   "args": [
+    {
+     "ref": "262"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "288",
+   "id": 289
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "264"
+   ],
+   "args": [
+    {
+     "ref": "264"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "289",
+   "id": 290
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "266"
+   ],
+   "args": [
+    {
+     "ref": "266"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "290",
+   "id": 291
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "268"
+   ],
+   "args": [
+    {
+     "ref": "268"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "291",
+   "id": 292
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "285",
+    "286"
+   ],
+   "dst": "292",
+   "id": 293
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "292"
+   ],
+   "dst": "293",
+   "splat": -8192,
+   "const": null,
+   "id": 294
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "293",
+    "287"
+   ],
+   "dst": "294",
+   "id": 295
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "294",
+    "288"
+   ],
+   "dst": "295",
+   "id": 296
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "295",
+    "289"
+   ],
+   "dst": "296",
+   "id": 297
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "296",
+    "290"
+   ],
+   "dst": "297",
+   "id": 298
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "297",
+    "291"
+   ],
+   "dst": "298",
+   "id": 299
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "284",
+   "ptr": "242",
+   "id": 300
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %242, i64 %3",
+   "dst": "299",
+   "id": 301
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "298",
+   "ptr": "299",
+   "id": 302
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %242, i64 %11",
+   "dst": "300",
+   "id": 303
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %243, i64 %10",
+   "dst": "301",
+   "id": 304
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "302",
+   "ptr": "301",
+   "id": 305
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 1",
+   "dst": "303",
+   "id": 306
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "304",
+   "ptr": "303",
+   "id": 307
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 2",
+   "dst": "305",
+   "id": 308
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "306",
+   "ptr": "305",
+   "id": 309
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 3",
+   "dst": "307",
+   "id": 310
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "308",
+   "ptr": "307",
+   "id": 311
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 4",
+   "dst": "309",
+   "id": 312
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "310",
+   "ptr": "309",
+   "id": 313
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 5",
+   "dst": "311",
+   "id": 314
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "312",
+   "ptr": "311",
+   "id": 315
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %301, i64 6",
+   "dst": "313",
+   "id": 316
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "314",
+   "ptr": "313",
+   "id": 317
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %301, i64 %1",
+   "dst": "315",
+   "id": 318
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "316",
+   "ptr": "315",
+   "id": 319
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 1",
+   "dst": "317",
+   "id": 320
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "318",
+   "ptr": "317",
+   "id": 321
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 2",
+   "dst": "319",
+   "id": 322
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "320",
+   "ptr": "319",
+   "id": 323
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 3",
+   "dst": "321",
+   "id": 324
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "322",
+   "ptr": "321",
+   "id": 325
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 4",
+   "dst": "323",
+   "id": 326
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "324",
+   "ptr": "323",
+   "id": 327
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 5",
+   "dst": "325",
+   "id": 328
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "326",
+   "ptr": "325",
+   "id": 329
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %315, i64 6",
+   "dst": "327",
+   "id": 330
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "328",
+   "ptr": "327",
+   "id": 331
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "314",
+   "dst": "329",
+   "id": 332
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "302",
+   "dst": "330",
+   "id": 333
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "304"
+   ],
+   "args": [
+    {
+     "ref": "304"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "331",
+   "id": 334
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "306"
+   ],
+   "args": [
+    {
+     "ref": "306"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "332",
+   "id": 335
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "308"
+   ],
+   "args": [
+    {
+     "ref": "308"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "333",
+   "id": 336
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "310"
+   ],
+   "args": [
+    {
+     "ref": "310"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "334",
+   "id": 337
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "312"
+   ],
+   "args": [
+    {
+     "ref": "312"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "335",
+   "id": 338
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "329",
+    "330"
+   ],
+   "dst": "336",
+   "id": 339
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "336"
+   ],
+   "dst": "337",
+   "splat": -8192,
+   "const": null,
+   "id": 340
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "337",
+    "331"
+   ],
+   "dst": "338",
+   "id": 341
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "338",
+    "332"
+   ],
+   "dst": "339",
+   "id": 342
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "339",
+    "333"
+   ],
+   "dst": "340",
+   "id": 343
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "340",
+    "334"
+   ],
+   "dst": "341",
+   "id": 344
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "341",
+    "335"
+   ],
+   "dst": "342",
+   "id": 345
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "328",
+   "dst": "343",
+   "id": 346
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "316",
+   "dst": "344",
+   "id": 347
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "318"
+   ],
+   "args": [
+    {
+     "ref": "318"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "345",
+   "id": 348
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "320"
+   ],
+   "args": [
+    {
+     "ref": "320"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "346",
+   "id": 349
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "322"
+   ],
+   "args": [
+    {
+     "ref": "322"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "347",
+   "id": 350
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "324"
+   ],
+   "args": [
+    {
+     "ref": "324"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "348",
+   "id": 351
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "326"
+   ],
+   "args": [
+    {
+     "ref": "326"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "349",
+   "id": 352
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "343",
+    "344"
+   ],
+   "dst": "350",
+   "id": 353
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "350"
+   ],
+   "dst": "351",
+   "splat": -8192,
+   "const": null,
+   "id": 354
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "351",
+    "345"
+   ],
+   "dst": "352",
+   "id": 355
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "352",
+    "346"
+   ],
+   "dst": "353",
+   "id": 356
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "353",
+    "347"
+   ],
+   "dst": "354",
+   "id": 357
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "354",
+    "348"
+   ],
+   "dst": "355",
+   "id": 358
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "355",
+    "349"
+   ],
+   "dst": "356",
+   "id": 359
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "342",
+   "ptr": "300",
+   "id": 360
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %300, i64 %3",
+   "dst": "357",
+   "id": 361
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "356",
+   "ptr": "357",
+   "id": 362
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %300, i64 %11",
+   "dst": "358",
+   "id": 363
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %301, i64 %10",
+   "dst": "359",
+   "id": 364
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "360",
+   "ptr": "359",
+   "id": 365
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 1",
+   "dst": "361",
+   "id": 366
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "362",
+   "ptr": "361",
+   "id": 367
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 2",
+   "dst": "363",
+   "id": 368
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "364",
+   "ptr": "363",
+   "id": 369
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 3",
+   "dst": "365",
+   "id": 370
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "366",
+   "ptr": "365",
+   "id": 371
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 4",
+   "dst": "367",
+   "id": 372
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "368",
+   "ptr": "367",
+   "id": 373
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 5",
+   "dst": "369",
+   "id": 374
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "370",
+   "ptr": "369",
+   "id": 375
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %359, i64 6",
+   "dst": "371",
+   "id": 376
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "372",
+   "ptr": "371",
+   "id": 377
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %359, i64 %1",
+   "dst": "373",
+   "id": 378
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "374",
+   "ptr": "373",
+   "id": 379
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 1",
+   "dst": "375",
+   "id": 380
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "376",
+   "ptr": "375",
+   "id": 381
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 2",
+   "dst": "377",
+   "id": 382
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "378",
+   "ptr": "377",
+   "id": 383
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 3",
+   "dst": "379",
+   "id": 384
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "380",
+   "ptr": "379",
+   "id": 385
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 4",
+   "dst": "381",
+   "id": 386
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "382",
+   "ptr": "381",
+   "id": 387
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 5",
+   "dst": "383",
+   "id": 388
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "384",
+   "ptr": "383",
+   "id": 389
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %373, i64 6",
+   "dst": "385",
+   "id": 390
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "386",
+   "ptr": "385",
+   "id": 391
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "372",
+   "dst": "387",
+   "id": 392
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "360",
+   "dst": "388",
+   "id": 393
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "362"
+   ],
+   "args": [
+    {
+     "ref": "362"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "389",
+   "id": 394
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "364"
+   ],
+   "args": [
+    {
+     "ref": "364"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "390",
+   "id": 395
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "366"
+   ],
+   "args": [
+    {
+     "ref": "366"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "391",
+   "id": 396
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "368"
+   ],
+   "args": [
+    {
+     "ref": "368"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "392",
+   "id": 397
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "370"
+   ],
+   "args": [
+    {
+     "ref": "370"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "393",
+   "id": 398
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "387",
+    "388"
+   ],
+   "dst": "394",
+   "id": 399
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "394"
+   ],
+   "dst": "395",
+   "splat": -8192,
+   "const": null,
+   "id": 400
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "395",
+    "389"
+   ],
+   "dst": "396",
+   "id": 401
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "396",
+    "390"
+   ],
+   "dst": "397",
+   "id": 402
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "397",
+    "391"
+   ],
+   "dst": "398",
+   "id": 403
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "398",
+    "392"
+   ],
+   "dst": "399",
+   "id": 404
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "399",
+    "393"
+   ],
+   "dst": "400",
+   "id": 405
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "386",
+   "dst": "401",
+   "id": 406
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "374",
+   "dst": "402",
+   "id": 407
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "376"
+   ],
+   "args": [
+    {
+     "ref": "376"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "403",
+   "id": 408
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "378"
+   ],
+   "args": [
+    {
+     "ref": "378"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "404",
+   "id": 409
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "380"
+   ],
+   "args": [
+    {
+     "ref": "380"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "405",
+   "id": 410
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "382"
+   ],
+   "args": [
+    {
+     "ref": "382"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "406",
+   "id": 411
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "384"
+   ],
+   "args": [
+    {
+     "ref": "384"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "407",
+   "id": 412
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "401",
+    "402"
+   ],
+   "dst": "408",
+   "id": 413
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "408"
+   ],
+   "dst": "409",
+   "splat": -8192,
+   "const": null,
+   "id": 414
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "409",
+    "403"
+   ],
+   "dst": "410",
+   "id": 415
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "410",
+    "404"
+   ],
+   "dst": "411",
+   "id": 416
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "411",
+    "405"
+   ],
+   "dst": "412",
+   "id": 417
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "412",
+    "406"
+   ],
+   "dst": "413",
+   "id": 418
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "413",
+    "407"
+   ],
+   "dst": "414",
+   "id": 419
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "400",
+   "ptr": "358",
+   "id": 420
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %358, i64 %3",
+   "dst": "415",
+   "id": 421
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "414",
+   "ptr": "415",
+   "id": 422
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %358, i64 %11",
+   "dst": "416",
+   "id": 423
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %359, i64 %10",
+   "dst": "417",
+   "id": 424
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "418",
+   "ptr": "417",
+   "id": 425
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 1",
+   "dst": "419",
+   "id": 426
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "420",
+   "ptr": "419",
+   "id": 427
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 2",
+   "dst": "421",
+   "id": 428
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "422",
+   "ptr": "421",
+   "id": 429
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 3",
+   "dst": "423",
+   "id": 430
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "424",
+   "ptr": "423",
+   "id": 431
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 4",
+   "dst": "425",
+   "id": 432
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "426",
+   "ptr": "425",
+   "id": 433
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 5",
+   "dst": "427",
+   "id": 434
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "428",
+   "ptr": "427",
+   "id": 435
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %417, i64 6",
+   "dst": "429",
+   "id": 436
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "430",
+   "ptr": "429",
+   "id": 437
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %417, i64 %1",
+   "dst": "431",
+   "id": 438
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "432",
+   "ptr": "431",
+   "id": 439
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 1",
+   "dst": "433",
+   "id": 440
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "434",
+   "ptr": "433",
+   "id": 441
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 2",
+   "dst": "435",
+   "id": 442
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "436",
+   "ptr": "435",
+   "id": 443
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 3",
+   "dst": "437",
+   "id": 444
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "438",
+   "ptr": "437",
+   "id": 445
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 4",
+   "dst": "439",
+   "id": 446
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "440",
+   "ptr": "439",
+   "id": 447
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 5",
+   "dst": "441",
+   "id": 448
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "442",
+   "ptr": "441",
+   "id": 449
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %431, i64 6",
+   "dst": "443",
+   "id": 450
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "444",
+   "ptr": "443",
+   "id": 451
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "430",
+   "dst": "445",
+   "id": 452
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "418",
+   "dst": "446",
+   "id": 453
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "420"
+   ],
+   "args": [
+    {
+     "ref": "420"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "447",
+   "id": 454
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "422"
+   ],
+   "args": [
+    {
+     "ref": "422"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "448",
+   "id": 455
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "424"
+   ],
+   "args": [
+    {
+     "ref": "424"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "449",
+   "id": 456
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "426"
+   ],
+   "args": [
+    {
+     "ref": "426"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "450",
+   "id": 457
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "428"
+   ],
+   "args": [
+    {
+     "ref": "428"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "451",
+   "id": 458
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "445",
+    "446"
+   ],
+   "dst": "452",
+   "id": 459
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "452"
+   ],
+   "dst": "453",
+   "splat": -8192,
+   "const": null,
+   "id": 460
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "453",
+    "447"
+   ],
+   "dst": "454",
+   "id": 461
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "454",
+    "448"
+   ],
+   "dst": "455",
+   "id": 462
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "455",
+    "449"
+   ],
+   "dst": "456",
+   "id": 463
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "456",
+    "450"
+   ],
+   "dst": "457",
+   "id": 464
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "457",
+    "451"
+   ],
+   "dst": "458",
+   "id": 465
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "444",
+   "dst": "459",
+   "id": 466
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "432",
+   "dst": "460",
+   "id": 467
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "434"
+   ],
+   "args": [
+    {
+     "ref": "434"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "461",
+   "id": 468
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "436"
+   ],
+   "args": [
+    {
+     "ref": "436"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "462",
+   "id": 469
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "438"
+   ],
+   "args": [
+    {
+     "ref": "438"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "463",
+   "id": 470
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "440"
+   ],
+   "args": [
+    {
+     "ref": "440"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "464",
+   "id": 471
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "442"
+   ],
+   "args": [
+    {
+     "ref": "442"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "465",
+   "id": 472
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "459",
+    "460"
+   ],
+   "dst": "466",
+   "id": 473
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "466"
+   ],
+   "dst": "467",
+   "splat": -8192,
+   "const": null,
+   "id": 474
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "467",
+    "461"
+   ],
+   "dst": "468",
+   "id": 475
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "468",
+    "462"
+   ],
+   "dst": "469",
+   "id": 476
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "469",
+    "463"
+   ],
+   "dst": "470",
+   "id": 477
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "470",
+    "464"
+   ],
+   "dst": "471",
+   "id": 478
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "471",
+    "465"
+   ],
+   "dst": "472",
+   "id": 479
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "458",
+   "ptr": "416",
+   "id": 480
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %416, i64 %3",
+   "dst": "473",
+   "id": 481
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "472",
+   "ptr": "473",
+   "id": 482
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %416, i64 %11",
+   "dst": "474",
+   "id": 483
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %417, i64 %10",
+   "dst": "475",
+   "id": 484
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "476",
+   "ptr": "475",
+   "id": 485
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 1",
+   "dst": "477",
+   "id": 486
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "478",
+   "ptr": "477",
+   "id": 487
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 2",
+   "dst": "479",
+   "id": 488
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "480",
+   "ptr": "479",
+   "id": 489
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 3",
+   "dst": "481",
+   "id": 490
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "482",
+   "ptr": "481",
+   "id": 491
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 4",
+   "dst": "483",
+   "id": 492
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "484",
+   "ptr": "483",
+   "id": 493
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 5",
+   "dst": "485",
+   "id": 494
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "486",
+   "ptr": "485",
+   "id": 495
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %475, i64 6",
+   "dst": "487",
+   "id": 496
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "488",
+   "ptr": "487",
+   "id": 497
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %475, i64 %1",
+   "dst": "489",
+   "id": 498
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "490",
+   "ptr": "489",
+   "id": 499
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 1",
+   "dst": "491",
+   "id": 500
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "492",
+   "ptr": "491",
+   "id": 501
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 2",
+   "dst": "493",
+   "id": 502
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "494",
+   "ptr": "493",
+   "id": 503
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 3",
+   "dst": "495",
+   "id": 504
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "496",
+   "ptr": "495",
+   "id": 505
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 4",
+   "dst": "497",
+   "id": 506
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "498",
+   "ptr": "497",
+   "id": 507
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 5",
+   "dst": "499",
+   "id": 508
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "500",
+   "ptr": "499",
+   "id": 509
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %489, i64 6",
+   "dst": "501",
+   "id": 510
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "502",
+   "ptr": "501",
+   "id": 511
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "488",
+   "dst": "503",
+   "id": 512
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "476",
+   "dst": "504",
+   "id": 513
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "478"
+   ],
+   "args": [
+    {
+     "ref": "478"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "505",
+   "id": 514
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "480"
+   ],
+   "args": [
+    {
+     "ref": "480"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "506",
+   "id": 515
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "482"
+   ],
+   "args": [
+    {
+     "ref": "482"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "507",
+   "id": 516
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "484"
+   ],
+   "args": [
+    {
+     "ref": "484"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "508",
+   "id": 517
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "486"
+   ],
+   "args": [
+    {
+     "ref": "486"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "509",
+   "id": 518
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "503",
+    "504"
+   ],
+   "dst": "510",
+   "id": 519
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "510"
+   ],
+   "dst": "511",
+   "splat": -8192,
+   "const": null,
+   "id": 520
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "511",
+    "505"
+   ],
+   "dst": "512",
+   "id": 521
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "512",
+    "506"
+   ],
+   "dst": "513",
+   "id": 522
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "513",
+    "507"
+   ],
+   "dst": "514",
+   "id": 523
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "514",
+    "508"
+   ],
+   "dst": "515",
+   "id": 524
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "515",
+    "509"
+   ],
+   "dst": "516",
+   "id": 525
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "502",
+   "dst": "517",
+   "id": 526
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "490",
+   "dst": "518",
+   "id": 527
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "492"
+   ],
+   "args": [
+    {
+     "ref": "492"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "519",
+   "id": 528
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "494"
+   ],
+   "args": [
+    {
+     "ref": "494"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "520",
+   "id": 529
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "496"
+   ],
+   "args": [
+    {
+     "ref": "496"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "521",
+   "id": 530
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "498"
+   ],
+   "args": [
+    {
+     "ref": "498"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "522",
+   "id": 531
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "500"
+   ],
+   "args": [
+    {
+     "ref": "500"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "523",
+   "id": 532
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "517",
+    "518"
+   ],
+   "dst": "524",
+   "id": 533
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "524"
+   ],
+   "dst": "525",
+   "splat": -8192,
+   "const": null,
+   "id": 534
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "525",
+    "519"
+   ],
+   "dst": "526",
+   "id": 535
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "526",
+    "520"
+   ],
+   "dst": "527",
+   "id": 536
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "527",
+    "521"
+   ],
+   "dst": "528",
+   "id": 537
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "528",
+    "522"
+   ],
+   "dst": "529",
+   "id": 538
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "529",
+    "523"
+   ],
+   "dst": "530",
+   "id": 539
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "516",
+   "ptr": "474",
+   "id": 540
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %474, i64 %3",
+   "dst": "531",
+   "id": 541
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "530",
+   "ptr": "531",
+   "id": 542
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %474, i64 %11",
+   "dst": "532",
+   "id": 543
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %475, i64 %10",
+   "dst": "533",
+   "id": 544
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "534",
+   "ptr": "533",
+   "id": 545
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 1",
+   "dst": "535",
+   "id": 546
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "536",
+   "ptr": "535",
+   "id": 547
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 2",
+   "dst": "537",
+   "id": 548
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "538",
+   "ptr": "537",
+   "id": 549
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 3",
+   "dst": "539",
+   "id": 550
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "540",
+   "ptr": "539",
+   "id": 551
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 4",
+   "dst": "541",
+   "id": 552
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "542",
+   "ptr": "541",
+   "id": 553
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 5",
+   "dst": "543",
+   "id": 554
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "544",
+   "ptr": "543",
+   "id": 555
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %533, i64 6",
+   "dst": "545",
+   "id": 556
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "546",
+   "ptr": "545",
+   "id": 557
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %533, i64 %1",
+   "dst": "547",
+   "id": 558
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "548",
+   "ptr": "547",
+   "id": 559
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 1",
+   "dst": "549",
+   "id": 560
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "550",
+   "ptr": "549",
+   "id": 561
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 2",
+   "dst": "551",
+   "id": 562
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "552",
+   "ptr": "551",
+   "id": 563
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 3",
+   "dst": "553",
+   "id": 564
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "554",
+   "ptr": "553",
+   "id": 565
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 4",
+   "dst": "555",
+   "id": 566
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "556",
+   "ptr": "555",
+   "id": 567
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 5",
+   "dst": "557",
+   "id": 568
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "558",
+   "ptr": "557",
+   "id": 569
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %547, i64 6",
+   "dst": "559",
+   "id": 570
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "560",
+   "ptr": "559",
+   "id": 571
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "546",
+   "dst": "561",
+   "id": 572
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "534",
+   "dst": "562",
+   "id": 573
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "536"
+   ],
+   "args": [
+    {
+     "ref": "536"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "563",
+   "id": 574
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "538"
+   ],
+   "args": [
+    {
+     "ref": "538"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "564",
+   "id": 575
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "540"
+   ],
+   "args": [
+    {
+     "ref": "540"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "565",
+   "id": 576
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "542"
+   ],
+   "args": [
+    {
+     "ref": "542"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "566",
+   "id": 577
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "544"
+   ],
+   "args": [
+    {
+     "ref": "544"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "567",
+   "id": 578
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "561",
+    "562"
+   ],
+   "dst": "568",
+   "id": 579
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "568"
+   ],
+   "dst": "569",
+   "splat": -8192,
+   "const": null,
+   "id": 580
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "569",
+    "563"
+   ],
+   "dst": "570",
+   "id": 581
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "570",
+    "564"
+   ],
+   "dst": "571",
+   "id": 582
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "571",
+    "565"
+   ],
+   "dst": "572",
+   "id": 583
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "572",
+    "566"
+   ],
+   "dst": "573",
+   "id": 584
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "573",
+    "567"
+   ],
+   "dst": "574",
+   "id": 585
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "560",
+   "dst": "575",
+   "id": 586
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "548",
+   "dst": "576",
+   "id": 587
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "550"
+   ],
+   "args": [
+    {
+     "ref": "550"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "577",
+   "id": 588
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "552"
+   ],
+   "args": [
+    {
+     "ref": "552"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "578",
+   "id": 589
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "554"
+   ],
+   "args": [
+    {
+     "ref": "554"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "579",
+   "id": 590
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "556"
+   ],
+   "args": [
+    {
+     "ref": "556"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "580",
+   "id": 591
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "558"
+   ],
+   "args": [
+    {
+     "ref": "558"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "581",
+   "id": 592
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "575",
+    "576"
+   ],
+   "dst": "582",
+   "id": 593
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "582"
+   ],
+   "dst": "583",
+   "splat": -8192,
+   "const": null,
+   "id": 594
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "583",
+    "577"
+   ],
+   "dst": "584",
+   "id": 595
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "584",
+    "578"
+   ],
+   "dst": "585",
+   "id": 596
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "585",
+    "579"
+   ],
+   "dst": "586",
+   "id": 597
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "586",
+    "580"
+   ],
+   "dst": "587",
+   "id": 598
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "587",
+    "581"
+   ],
+   "dst": "588",
+   "id": 599
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "574",
+   "ptr": "532",
+   "id": 600
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %532, i64 %3",
+   "dst": "589",
+   "id": 601
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "588",
+   "ptr": "589",
+   "id": 602
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %532, i64 %11",
+   "dst": "590",
+   "id": 603
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %533, i64 %10",
+   "dst": "591",
+   "id": 604
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "592",
+   "ptr": "591",
+   "id": 605
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 1",
+   "dst": "593",
+   "id": 606
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "594",
+   "ptr": "593",
+   "id": 607
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 2",
+   "dst": "595",
+   "id": 608
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "596",
+   "ptr": "595",
+   "id": 609
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 3",
+   "dst": "597",
+   "id": 610
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "598",
+   "ptr": "597",
+   "id": 611
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 4",
+   "dst": "599",
+   "id": 612
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "600",
+   "ptr": "599",
+   "id": 613
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 5",
+   "dst": "601",
+   "id": 614
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "602",
+   "ptr": "601",
+   "id": 615
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %591, i64 6",
+   "dst": "603",
+   "id": 616
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "604",
+   "ptr": "603",
+   "id": 617
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %591, i64 %1",
+   "dst": "605",
+   "id": 618
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "606",
+   "ptr": "605",
+   "id": 619
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 1",
+   "dst": "607",
+   "id": 620
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "608",
+   "ptr": "607",
+   "id": 621
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 2",
+   "dst": "609",
+   "id": 622
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "610",
+   "ptr": "609",
+   "id": 623
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 3",
+   "dst": "611",
+   "id": 624
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "612",
+   "ptr": "611",
+   "id": 625
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 4",
+   "dst": "613",
+   "id": 626
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "614",
+   "ptr": "613",
+   "id": 627
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 5",
+   "dst": "615",
+   "id": 628
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "616",
+   "ptr": "615",
+   "id": 629
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %605, i64 6",
+   "dst": "617",
+   "id": 630
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "618",
+   "ptr": "617",
+   "id": 631
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "604",
+   "dst": "619",
+   "id": 632
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "592",
+   "dst": "620",
+   "id": 633
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "594"
+   ],
+   "args": [
+    {
+     "ref": "594"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "621",
+   "id": 634
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "596"
+   ],
+   "args": [
+    {
+     "ref": "596"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "622",
+   "id": 635
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "598"
+   ],
+   "args": [
+    {
+     "ref": "598"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "623",
+   "id": 636
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "600"
+   ],
+   "args": [
+    {
+     "ref": "600"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "624",
+   "id": 637
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "602"
+   ],
+   "args": [
+    {
+     "ref": "602"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "625",
+   "id": 638
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "619",
+    "620"
+   ],
+   "dst": "626",
+   "id": 639
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "626"
+   ],
+   "dst": "627",
+   "splat": -8192,
+   "const": null,
+   "id": 640
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "627",
+    "621"
+   ],
+   "dst": "628",
+   "id": 641
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "628",
+    "622"
+   ],
+   "dst": "629",
+   "id": 642
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "629",
+    "623"
+   ],
+   "dst": "630",
+   "id": 643
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "630",
+    "624"
+   ],
+   "dst": "631",
+   "id": 644
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "631",
+    "625"
+   ],
+   "dst": "632",
+   "id": 645
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "618",
+   "dst": "633",
+   "id": 646
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "606",
+   "dst": "634",
+   "id": 647
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "608"
+   ],
+   "args": [
+    {
+     "ref": "608"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "635",
+   "id": 648
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "610"
+   ],
+   "args": [
+    {
+     "ref": "610"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "636",
+   "id": 649
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "612"
+   ],
+   "args": [
+    {
+     "ref": "612"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "637",
+   "id": 650
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "614"
+   ],
+   "args": [
+    {
+     "ref": "614"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "638",
+   "id": 651
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "616"
+   ],
+   "args": [
+    {
+     "ref": "616"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "639",
+   "id": 652
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "633",
+    "634"
+   ],
+   "dst": "640",
+   "id": 653
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "640"
+   ],
+   "dst": "641",
+   "splat": -8192,
+   "const": null,
+   "id": 654
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "641",
+    "635"
+   ],
+   "dst": "642",
+   "id": 655
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "642",
+    "636"
+   ],
+   "dst": "643",
+   "id": 656
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "643",
+    "637"
+   ],
+   "dst": "644",
+   "id": 657
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "644",
+    "638"
+   ],
+   "dst": "645",
+   "id": 658
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "645",
+    "639"
+   ],
+   "dst": "646",
+   "id": 659
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "632",
+   "ptr": "590",
+   "id": 660
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %590, i64 %3",
+   "dst": "647",
+   "id": 661
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "646",
+   "ptr": "647",
+   "id": 662
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %591, i64 %10",
+   "dst": "648",
+   "id": 663
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %590, i64 %11",
+   "dst": "649",
+   "id": 664
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "650",
+   "ptr": "648",
+   "id": 665
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 1",
+   "dst": "651",
+   "id": 666
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "652",
+   "ptr": "651",
+   "id": 667
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 2",
+   "dst": "653",
+   "id": 668
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "654",
+   "ptr": "653",
+   "id": 669
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 3",
+   "dst": "655",
+   "id": 670
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "656",
+   "ptr": "655",
+   "id": 671
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 4",
+   "dst": "657",
+   "id": 672
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "658",
+   "ptr": "657",
+   "id": 673
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 5",
+   "dst": "659",
+   "id": 674
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "660",
+   "ptr": "659",
+   "id": 675
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %648, i64 6",
+   "dst": "661",
+   "id": 676
+  },
+  {
+   "op": "load",
+   "type": "<8 x i8>",
+   "dst": "662",
+   "ptr": "661",
+   "id": 677
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "662",
+   "dst": "663",
+   "id": 678
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "650",
+   "dst": "664",
+   "id": 679
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "652"
+   ],
+   "args": [
+    {
+     "ref": "652"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "665",
+   "id": 680
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "654"
+   ],
+   "args": [
+    {
+     "ref": "654"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "666",
+   "id": 681
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "656"
+   ],
+   "args": [
+    {
+     "ref": "656"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "667",
+   "id": 682
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "658"
+   ],
+   "args": [
+    {
+     "ref": "658"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "668",
+   "id": 683
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "660"
+   ],
+   "args": [
+    {
+     "ref": "660"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "669",
+   "id": 684
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "663",
+    "664"
+   ],
+   "dst": "670",
+   "id": 685
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "670"
+   ],
+   "dst": "671",
+   "splat": -8192,
+   "const": null,
+   "id": 686
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "671",
+    "665"
+   ],
+   "dst": "672",
+   "id": 687
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "672",
+    "666"
+   ],
+   "dst": "673",
+   "id": 688
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "673",
+    "667"
+   ],
+   "dst": "674",
+   "id": 689
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "674",
+    "668"
+   ],
+   "dst": "675",
+   "id": 690
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "675",
+    "669"
+   ],
+   "dst": "676",
+   "id": 691
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "676",
+   "ptr": "649",
+   "id": 692
+  }
+ ],
+ "provenance": {
+  "recipe": "/home/chiro/projects/a64-simd-dyn-optimizer/seeds/interp8-hps-8x16-ext.yaml",
+  "compiler": "clang version 22.1.8",
+  "source_sha256": "4ebcbfbd6915f723f6ecc20d43efd6382af33aba773fb395d477d45d31ee404d",
+  "ir_sha256": "d313a197074479a6835a873ba5a2afb597d3d817afdf114ab2e3c9bceedfbd3d",
+  "target_function": {
+   "mangled": "dynopt_interp8_hps_8x16_ext_seed",
+   "demangled": "dynopt_interp8_hps_8x16_ext_seed"
+  }
+ }
+}

@@ -97,6 +97,8 @@ def main():
             "interp8": {"interp8", "interp8-16", "interp8-32",
                         "interp8vpp-16", "interp8vpp-32",
                         "interp8-hps-8", "interp8-hps-8x8-ext", "interp8-hps-8x16",
+                        "interp8-hps-8x16-ext", "interp8-hps-16x16-ext",
+                        "interp8-hps-32x32-ext",
                         "interp8-hps-16x16", "interp8-hps-32x32",
                         "interp8-vps-16x16", "interp8-vps-32x32"},
             "interp4": {"interp4", "interp4-8", "interp4-32",
