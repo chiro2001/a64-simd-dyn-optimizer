@@ -76,6 +76,7 @@ ISA_RANK = {"neon": 0, "sve1": 1, "sve2": 2, "sve2p1": 3, "sve2p2": 4,
 # `--isa neon` refuses other kernels instead of silently building SVE
 # source with a NEON-only -march.
 NEON_SUPPORTED_KERNELS = {
+    "cost-coeff-nxn",
     "find-pos-first-last",
     "pel-filter-luma-strong",
     "quant",

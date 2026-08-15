@@ -1,0 +1,48 @@
+# costCoeffNxN NEON 变体排查（2026-08-15 round-0024）
+
+## 动机
+
+costCoeffNxN 是 920B 最大可注入热点（perf ~3.82%）。旧 scalar 候选在
+真实分布校准微基准下慢 ~1.17×（上游 NEON asm 更紧凑）。
+
+## NEON 变体
+
+新增 `emit_neon()`（`tools/emit_cost_coeff_nxn_sve2_shared.py`）：
+
+- NEON 一次加载 4 行并 abs（vld1 + vabs）；
+- `vqtbl2q_u8` 把 abs 按 scan 顺序重排（32 字节表）、`vqtbl1q_u8` 重排
+  tabSigCtx，循环直接取落栈数组；
+- 删除参考里恒真的 `scanPosSigOff != 0 || ...` 分支；
+- 把 `posZeroMask`（只在 j=0 且 subPosBase=0 时有作用）提出循环，j=0
+  特例一次处理。
+
+QEMU 20k（旧语料）通过；真实分布校准微基准从 1.17× 慢改善到 **1.097×
+快**（11786 vs 12934）。
+
+## 注入后码流不一致（未解决，已放弃注入）
+
+NEON 变体注入 920B 后码流改变（09841f… vs 基线 ee5db7…），而旧 scalar
+注入码流一致。真实路径诊断抓到首个差异：
+
+```
+CCDIAG st=0 tr=32 soff=5 mask=0 off=24 sub=224 want=0001f1d3 got=00018de3
+       ctxd=1 absd=0 nz=1
+```
+
+即 mask=0（无任何非零）时 baseCtx 更新不同。但同参数下 QEMU 20k 三路
+（ref/scalar/NEON）一致。
+
+## 根因（推断）
+
+上游 `x265_costCoeffNxN_neon` asm 在 soff<15 时读取 `scan[15^soff..]`
+（源码注释明确 beyond-bound read），其行为依赖**构建布局**（读相邻
+内存内容）。QEMU/交叉 lib 的 ref 与云端 x265-8-gcc 的 ref 越界读到
+不同内容 → 云端真实 ref 与候选行为不同，但 QEMU 差分无法发现。
+
+## 结论
+
+- costCoeffNxN NEON 变体**不作为注入候选**（真实码流不一致）；
+- scalar 候选保留（注入码流一致，真实分布下 ~1.17× 慢）；
+- 方法论：含 beyond-bound read 的上游 asm 无法用 QEMU/交叉环境验证，
+  真实注入码流是唯一判据；这类 kernel 的优化需要先在真机用与生产相同
+  构建的 ref 做差分。

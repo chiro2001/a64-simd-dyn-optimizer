@@ -1653,13 +1653,27 @@ int main(int argc, char** argv)
     {
         const int scanType = (int)(rng() % 3);
         const uint16_t* scan = x265::g_scan4x4[scanType];
+        // Real 30-frame histogram (round-0024): trSize is 4/8/32 in
+        // ~8%/31%/60% of calls; scanPosSigOff is independent of the mask
+        // (56% at 15); offset ~24 is common.  The old corpus fixed
+        // trSize=4 and scanPosSigOff=highest set bit, which never
+        // exercised the real shapes.
+        static const int TRS[8] = { 4, 8, 8, 16, 16, 32, 32, 32 };
+        const int trSize = TRS[rng() % 8];
+        const int scanPosSigOff = (int)(rng() % 16);
+        // The scan starts at scanPosSigOff and walks down, so the mask's
+        // highest set bit must be <= scanPosSigOff in real calls (mask is
+        // rev16(nz) and scanPosSigOff >= last nonzero position).
         uint32_t scanFlagMask = (uint32_t)(rng() & 0xFFFF);
+        if (scanPosSigOff < 15)
+            scanFlagMask &= (1u << (scanPosSigOff + 1)) - 1;
         if (scanFlagMask == 0)
             scanFlagMask = 1;
-        alignas(16) int16_t coeff[16] = {};
+        alignas(16) int16_t coeff[4 * 32] = {};
         for (int j = 0; j < 16; j++)
             if ((scanFlagMask >> j) & 1)
-                coeff[scan[j]] = (int16_t)((int)(rng() % 65535) - 32768);
+                coeff[((scan[j] >> 2) * trSize) + (scan[j] & 3)] =
+                    (int16_t)((int)(rng() % 65535) - 32768);
         alignas(16) uint8_t tabSigCtx[16];
         uint8_t baseW[256], baseG[256];
         for (int j = 0; j < 16; j++)
@@ -1669,15 +1683,14 @@ int main(int argc, char** argv)
             baseW[j] = (uint8_t)(rng() % 128);
             baseG[j] = baseW[j];
         }
-        const int scanPosSigOff = 31 - __builtin_clz(scanFlagMask);
         const int subPosBase = (int)(rng() % 2);
-        const int offset = (int)(rng() % 16);
+        const int offset = (int)(rng() % 33);
         alignas(16) uint16_t aw[32] = {}, ag[32] = {};
         const uint32_t wsum = ${ref_call}(
-            scan, coeff, 4, aw + 8, tabSigCtx, scanFlagMask,
+            scan, coeff, trSize, aw + 8, tabSigCtx, scanFlagMask,
             baseW, offset, scanPosSigOff, subPosBase);
         const uint32_t gsum = ${cand_sym}(
-            scan, coeff, 4, ag + 8, tabSigCtx, scanFlagMask,
+            scan, coeff, trSize, ag + 8, tabSigCtx, scanFlagMask,
             baseG, offset, scanPosSigOff, subPosBase);
         int bad = (wsum != gsum);
         for (int j = 7; j < 24 && !bad; j++)

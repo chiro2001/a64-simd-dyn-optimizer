@@ -105,27 +105,34 @@ static int bench_cost(int which, int samples, int batch)
     std::vector<uint16_t> absbuf(32);
     std::vector<uint64_t> times;
     times.reserve(samples);
+    // Real 30-frame histogram (round-0024): 56% of calls start at
+    // scanPosSigOff=15 and 71% have <=4 nonzero (scanFlagMask popcount).
+    static const int S_OFF[10] = { 15, 15, 15, 15, 15, 15, 8, 4, 2, 0 };
+    static const int M_CNT[10] = { 1, 1, 2, 2, 3, 4, 6, 8, 12, 16 };
     for (int i = 0; i < 256; i++)
         base[i] = (uint8_t)(i % 128);
     for (int s = 0; s < samples; s++)
     {
+        const int soff = S_OFF[s % 10];
+        const int m = M_CNT[(s / 10) % 10];
         for (int i = 0; i < 16; i++)
         {
             coeff[i] = (int16_t)((int)(rng() % 200) - 100);
             tab[i] = (uint8_t)i;
         }
         std::memset(absbuf.data(), 0, absbuf.size() * 2);
+        const uint32_t mask = (1u << m) - 1;
         uint64_t t0 = rdtsc();
         for (int b = 0; b < batch; b++)
         {
             if (which == 0)
                 neon(SCAN, coeff.data(), 4,
                      absbuf.data() + 8, tab.data(),
-                    0x5555u, base.data(), 3, 15, 0);
+                     mask, base.data(), 3, soff, 0);
             else
                 dynopt_cost_coeff_nxn_sve2(SCAN, coeff.data(), 4,
                                            absbuf.data() + 8, tab.data(),
-                                           0x5555u, base.data(), 3, 15, 0);
+                                           mask, base.data(), 3, soff, 0);
         }
         uint64_t t1 = rdtsc();
         times.push_back(t1 - t0);

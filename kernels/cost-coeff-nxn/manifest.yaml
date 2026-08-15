@@ -31,3 +31,7 @@ corpus:
 
 layouts:
   compute: [scalar, vector, sve-gather]
+
+# Pure-NEON search axes (--isa neon).
+layouts_neon:
+  compute: [neon]

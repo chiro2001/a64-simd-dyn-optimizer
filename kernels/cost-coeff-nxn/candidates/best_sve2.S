@@ -1,4 +1,4 @@
-	.arch armv8.2-a+crc+sve2
+	.arch armv8.2-a+dotprod+crc+sve
 	.file	"best_sve2.cpp"
 	.text
 	.align	2
@@ -23,70 +23,70 @@ dynopt_cost_coeff_nxn_sve2:
 	ldr	w9, [sp, 64]
 	ldr	d29, [x1, x8]
 	adrp	x19, .LANCHOR0
-	ldr	d31, [x10, x8]
-	cmp	w9, 14
 	ldr	d30, [x2, x8]
+	cmp	w9, 14
+	ldr	d31, [x10, x8]
 	cset	w14, le
 	ldr	d28, [x1]
-	abs	v29.4h, v29.4h
-	abs	v31.4h, v31.4h
+	abs	v0.4h, v29.4h
+	abs	v1.4h, v30.4h
 	ldr	w18, [sp, 72]
-	abs	v30.4h, v30.4h
-	sxtw	x2, w9
-	abs	v28.4h, v28.4h
+	abs	v2.4h, v31.4h
 	mov	w10, w14
+	abs	v3.4h, v28.4h
+	sxtw	x2, w9
 	cmp	w18, 0
-	orr	w8, w10, w2
+	orr	w11, w10, w2
 	cset	w17, eq
 	uxtw	x1, w10
-	cmp	w8, 0
-	stp	d30, d31, [sp, 48]
+	cmp	w11, 0
+	stp	d1, d2, [sp, 48]
 	add	x19, x19, :lo12:.LANCHOR0
-	stp	d28, d29, [sp, 32]
+	stp	d3, d0, [sp, 32]
 	mov	x30, x14
 	ldrh	w11, [x0, x2, lsl 1]
-	sub	x1, x1, x14
 	and	w12, w5, 1
+	sub	x1, x1, x14
 	ccmp	w17, 0, 0, eq
 	mov	w13, 0
 	mov	w20, 34297
 	beq	.L9
 .L2:
-	ldrb	w8, [x4, w11, uxtw]
+	ldrb	w15, [x4, w11, uxtw]
 	cmn	w18, w2
-	add	w8, w8, w7
+	add	w8, w15, w7
 	csel	w8, w8, wzr, ne
 	ldrb	w9, [x6, w8, uxtw]
 	and	w15, w9, 1
 	eor	w9, w9, w12
 	cmp	w9, 1
 	beq	.L4
-	ldr	w9, [x19, w9, uxtw 2]
-	sub	x2, x2, #1
-	ldrh	w11, [x16, w11, uxtw 1]
 	add	w10, w10, w12
-	add	w13, w13, w9
-	add	w9, w15, w9, lsr 24
-	strb	w9, [x6, w8, uxtw]
+	ldr	w12, [x19, w9, uxtw 2]
+	ldrh	w11, [x16, w11, uxtw 1]
+	sub	x2, x2, #1
+	add	w13, w13, w12
+	add	w15, w15, w12, lsr 24
+	strb	w15, [x6, w8, uxtw]
 	strh	w11, [x3, x1, lsl 1]
 	tbnz	w2, #31, .L3
 	lsr	w5, w5, 1
 .L10:
-	orr	w8, w10, w2
+	orr	w11, w10, w2
 	uxtw	x1, w10
-	cmp	w8, 0
+	cmp	w11, 0
+	and	w12, w5, 1
 	ldrh	w11, [x0, x2, lsl 1]
 	sub	x1, x1, x14
-	and	w12, w5, 1
 	ccmp	w17, 0, 0, eq
 	bne	.L2
 .L9:
 	cmp	w30, 0
-	ubfiz	x11, x11, 1, 16
+	ubfiz	x4, x11, 1, 16
 	mov	x0, -2
-	csel	x0, x0, xzr, ne
-	ldrh	w1, [x16, x11]
-	strh	w1, [x3, x0]
+	csel	x5, x0, xzr, ne
+	ldrh	w6, [x16, x4]
+	strh	w6, [x3, x5]
 .L3:
 	ldp	x19, x20, [sp, 16]
 	and	w0, w13, 16777215
@@ -103,12 +103,12 @@ dynopt_cost_coeff_nxn_sve2:
 	.cfi_restore_state
 	uxtw	x1, w10
 	strb	w12, [x6, w8, uxtw]
-	sub	x1, x1, x14
+	sub	x9, x1, x14
 	ldrh	w8, [x16, w11, uxtw 1]
 	add	w10, w10, w12
 	add	w13, w13, w20
 	sub	x2, x2, #1
-	strh	w8, [x3, x1, lsl 1]
+	strh	w8, [x3, x9, lsl 1]
 	tbnz	w2, #31, .L3
 	lsr	w5, w5, 1
 	b	.L10
