@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 141 |
+| kernel 目录 | 143 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -144,8 +144,10 @@
 | interp4vpp-32x32 | 655/275 | vpp 首覆盖 |
 | interp4vpp-32x64 | 1295/520 | vpp 首覆盖 |
 | interp4vpp-8x32 | 330/151 | vpp 首覆盖 |
+| interp4vpp-8x64 | 650/272 | vpp 首覆盖 |
 | interp4vpp-16x64 | 650/272 | vpp 首覆盖 |
 | interp4vpp-32x8 | 175/91 | vpp 首覆盖 |
+| interp4vpp-16x4 | 50/43 | vpp 首覆盖 |
 
 ### 4.3 luma hpp 非方形形状（2026-08-15 补，20k 差分 0 失配）
 

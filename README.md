@@ -63,6 +63,8 @@
   0 失配（SVE2）。
 - **luma vpp 16x4 / 32x24**：79/60、712/419，均 20k 差分
   0 失配（SVE2）。
+- **chroma vpp 8x64 / 16x4**：650/272、50/43，均 20k 差分
+  0 失配（SVE2）。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。
