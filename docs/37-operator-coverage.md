@@ -12,7 +12,7 @@
 | --- | ---: | ---: | ---: |
 | dct/idct | 2（dct/idct 数组 + dst/idst4x4） | dct8/16/32、idct16/32 | 缺 idct8、dst4x4/idst4x4 |
 | sa8d/satd | （嵌套） | sa8d 8/16；**satd 19 形状 ✅（通用 hadamard 配方：4x4 37/57、4x8 63/62、8x4 47/43、8x8 52/53、8x16 102/69、8x32 202/91、16x4 36/43、16x8 72/53、16x16 140/74、16x32 276/106、16x64 548/174、32x8 141/68、32x16 281/101、32x32 561/166、32x64 1121/298、64x16 561/168、64x32 1121/298、48x64 1681/426、64x48 1681/427）** | 其余大形状（24x32、64x64 等） |
-| interp8 | （嵌套 luma_*） | hpp 8/16/32；**vpp 8/16/32 ✅（通用 vertical-fir 配方）**；**hps 8x8/8x16 ✅（fir-ps 配方：8x8 98/45、8x16 186/72，isRowExt=0 首切片）** | 缺 hps 16/32、vps/vsp/vss（docs/40 §33） |
+| interp8 | （嵌套 luma_*） | hpp 8/16/32；**vpp 8/16/32 ✅（通用 vertical-fir 配方）**；**hps 8x8/8x16/16x16/32x32 ✅（fir-ps 配方：8x8 98/45、8x16 186/72、16x16 362/117、32x32 1418/502，isRowExt=0 首切片）** | 缺 vps/vsp/vss 与 isRowExt=1 契约（docs/40 §35） |
 | interp4 | （嵌套 chroma filter_*） | hpp 16/32、vpp 16 | 缺 8x8/8x16/32x16 等 |
 | **quant** | 4（quant/nquant/dequant_scaling/dequant_normal） | **全部 ✅**：dequant_normal 130/57、dequant_scaling gt 210/75 / le 193/72、quant 508/169、nquant 329/131 | 纯汇编，走 C/ACLE seed 模式（docs/44） |
 | **sao** | 10（saoCuOrg*/Stats*） | **全族 ✅（10/10）**：saoCuOrg E0 305/133、B0 386/126、E1 610/171、E1_2Rows 306/103、E2 154/74、E3 135/73；Stats E0 block16 165/62（block32 101/70）、E1 block16 180/64（112/71）、E2 block16 181/65（112/71）、E3 block16 180/65（112/71）、BO 0vector/137（无优化空间） | docs/45 §10 |

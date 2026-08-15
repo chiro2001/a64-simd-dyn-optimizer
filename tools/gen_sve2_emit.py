@@ -96,14 +96,18 @@ def _fir_ps_derived(machine_ir):
     the wrapper function name interp_horiz_ps_neon<N,W,H>; rows=H and
     groups=W/8 (the emitter's 8-output unit width)."""
     nodes = machine_ir["nodes"]
-    m = re.search(r"interp_horiz_ps_neon<\d+,\s*(\d+),\s*(\d+)>",
-                  machine_ir.get("function") or "")
+    fn = machine_ir.get("function") or ""
+    m = re.search(r"interp_horiz_ps_neon<\d+,\s*(\d+),\s*(\d+)>", fn)
     if m:
         width, height = int(m.group(1)), int(m.group(2))
     else:
-        stores = [n for n in nodes if n.get("op") == "store"
-                  and n.get("type") == "<8 x i16>"]
-        width, height = 8, len(stores)
+        m = re.search(r"(\d+)x(\d+)", fn)
+        if m:
+            width, height = int(m.group(1)), int(m.group(2))
+        else:
+            stores = [n for n in nodes if n.get("op") == "store"
+                      and n.get("type") == "<8 x i16>"]
+            width, height = 8, len(stores)
     if width % 8:
         raise ValueError("fir-ps: width %d is not a multiple of 8" % width)
     filter_name = "g_lumaFilter"

@@ -147,7 +147,8 @@ int main(int argc, char** argv)
     for (int i = 0; i < cases; i++)
     {
         const intptr_t ss = strides[rng() % ${nstrides}];
-        const intptr_t ds = strides[rng() % ${nstrides}];
+        intptr_t ds = strides[rng() % ${nstrides}];
+        if (ds < ${n}) ds = ${n};  // dst rows must not overlap width
         const int coeffIdx = 1 + (int)(rng() % 3);
         uint8_t srcbuf[${rows} * 64 + 64];
         int16_t want[${rows} * 64 + ${n}], got[${rows} * 64 + ${n}];

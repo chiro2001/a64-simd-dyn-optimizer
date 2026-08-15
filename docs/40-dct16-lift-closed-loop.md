@@ -618,3 +618,19 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
 - 验收（20k 差分 0 失配）：**186 fused / MCA 72**，无手写基线。
 - 冒烟测试扩到 35 核。hps 16/32 的 wrapper 内仍有未展开循环，
   strip_switch 的 merge-phi 解析需支持内部循环 phi，留待 G2b 同款处理。
+
+## 35. hps 16x16 / 32x32：constant-shape wrapper 抽取（2026-08-15）
+
+- 问题：直接抽 wrapper 时，width>=16 的 case 内保留 LLVM 行循环，
+  `strip_switch_take_case` 会把内部循环 phi 误当 merge phi。
+- 方案：新增 constant-shape wrapper seed（kernels/interp8-hps-{16x16,
+  32x32}/seed.cpp），`#include "filter-prim.cpp"` 后以常量
+  `isRowExt == 0` 调用 `interp_horiz_ps_neon<8,W,H>`；clang 折叠常量并
+  完全展开行循环后，`strip_switch_case:1` 再取 phase1，得到 960 /
+  3840 节点直线 MachineIR。
+- `_fir_ps_derived` 增加 `WxH` 函数名回退解析；gen_verify hps 将
+  dstStride 约束为 `>= width`（dst 行不得重叠，32x32 首轮失败即此）。
+- 验收（各 20k 差分 0 失配）：
+  - hps 16x16：**362 fused / MCA 117**；
+  - hps 32x32：**1418 / 502**。
+- 冒烟测试扩到 37 核。
