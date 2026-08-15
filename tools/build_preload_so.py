@@ -887,7 +887,7 @@ def try_generate_specialized(kernel, isa, workdir):
             return []
     if kernel == "cost-coeff-remain":
         try:
-            from emit_cost_remain_sve2_shared import emit as emit_rem
+            from emit_cost_remain_sve2_shared import emit_dfa as emit_rem
             sym = SPECIAL_SYMBOLS[kernel]
             path = os.path.join(workdir, kernel + "-special-0.cpp")
             with open(path, "w") as f:

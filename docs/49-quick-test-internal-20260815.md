@@ -218,6 +218,10 @@ clz 压缩（回放 +27%，生产 432 万次 0 失配）；ccn soff 全展开为
 8210 ms（-1.9%），码流 ee5db7 一致**——当前最优可复现组合。内网复测
 命令：
 
+round-0032：costCoeffRemain 改用 DFA 表（5×3×256 ADD/NEXT，7.7KB），
+生产 239 万次 0 失配，回放 +20%；best6b（含 DFA remain）E2E 中位
+8061 vs 8210 ms，与 best6 持平。
+
 ```sh
 # 本地构建 best6 注入包
 python3 tools/build_preload_so.py --isa sve1 \
