@@ -1,0 +1,35 @@
+# Representative pu.addAvg slice: 16x16 weighted average of two planes.
+kernel: pu-addavg
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: pu_addavg
+  n: 16
+  rows: 16
+
+candidate:
+  symbol: dynopt_pu_addavg_16x16_sve2
+  trace_driver_src: kernels/pu-addavg/trace_driver.cpp
+  trace_driver_c: kernels/pu-addavg/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: addAvg_neon
+  symbol_mangled: _ZN12_GLOBAL__N_111addAvg_neonILi16ELi16EEEvPKsS2_Phlll
+  call: addAvg_neon<16, 16>
+  decl: |
+    template <int W, int H> void addAvg_neon(
+        const int16_t*, const int16_t*, uint8_t*, intptr_t, intptr_t,
+        intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/pu-addavg/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_111addAvg_neonILi16ELi16EEEvPKsS2_Phlll
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
