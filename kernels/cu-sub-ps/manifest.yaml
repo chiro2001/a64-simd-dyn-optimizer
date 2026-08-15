@@ -1,0 +1,35 @@
+# Representative cu.sub_ps slice: 16x16 pixel difference to int16.
+kernel: cu-sub-ps
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: cu_sub_ps
+  n: 16
+  rows: 16
+
+candidate:
+  symbol: dynopt_cu_sub_ps_16x16_sve2
+  trace_driver_src: kernels/cu-sub-ps/trace_driver.cpp
+  trace_driver_c: kernels/cu-sub-ps/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pixel_sub_ps_neon
+  symbol_mangled: _ZN12_GLOBAL__N_117pixel_sub_ps_neonILi16ELi16EEEvPslPKhS3_ll
+  call: pixel_sub_ps_neon<16, 16>
+  decl: |
+    template <int W, int H> void pixel_sub_ps_neon(
+        int16_t*, intptr_t, const uint8_t*, const uint8_t*,
+        intptr_t, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/cu-sub-ps/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_117pixel_sub_ps_neonILi16ELi16EEEvPslPKhS3_ll
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]

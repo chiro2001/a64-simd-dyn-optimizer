@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 161 |
+| kernel 目录 | 162 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -188,6 +188,7 @@
 | scan-pos-last | 4x4 scan walk | 0 vector/33 MCA（-O3；NEON 试验 80/121，暂不采用） |
 | cost-coeff-nxn | 4x4 sig-map cost | 10 vector/97 MCA（-O3 后较 12/109 改善） |
 | cu-copy-pp | 32x32 代表切片 | 64/43 |
+| cu-sub-ps | 16x16 代表切片 | 64/36 |
 | pu-copy-pp | 16x16 代表切片 | 32/26 |
 | pu-addavg | 16x16 代表切片 | 128/58 |
 | chroma-copy-pp | 16x16 代表切片 | 32/26 |

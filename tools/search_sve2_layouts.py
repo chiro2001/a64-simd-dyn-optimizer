@@ -649,6 +649,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "cu-sub-ps":
+        from emit_cu_sub_ps_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 
