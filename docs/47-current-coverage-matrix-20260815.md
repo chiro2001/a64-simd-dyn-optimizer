@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 128 |
+| kernel 目录 | 131 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -123,6 +123,9 @@
 | interp4-16x8 | 85/47 | hpp 首覆盖 |
 | interp4-16x32 | 325/109 | hpp 首覆盖 |
 | interp4-32x16 | 325/109 | hpp 首覆盖 |
+| interp4-8x32 | 325/109 | hpp 首覆盖 |
+| interp4-16x64 | 645/189 | hpp 首覆盖 |
+| interp4-32x8 | 165/67 | hpp 首覆盖 |
 | interp4vpp-8x8 | 90/57 | vpp 首覆盖 |
 | interp4vpp-8x16 | 170/92 | vpp 首覆盖 |
 | interp4vpp-16x8 | 90/57 | vpp 首覆盖 |
