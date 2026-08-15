@@ -115,7 +115,7 @@ def emit_combo(combo):
     return emit()
 
 
-def emit_neon(func_name="dynopt_cost_coeff_nxn_sve2"):
+def emit_neon(func_name="dynopt_cost_coeff_nxn_sve2", unroll=False):
     """NEON scan-order pre-reorder variant (round-0024).
 
     The scalar candidate leaves per-position table lookups in the hot
@@ -126,6 +126,105 @@ def emit_neon(func_name="dynopt_cost_coeff_nxn_sve2"):
     calls have <=4 nonzero and 56% start at scanPosSigOff=15, so the
     loop is short and the setup amortizes over many iterations.
     """
+    if unroll:
+        cases = []
+        for soff in range(16):
+            lines = ["    case %d:" % soff]
+            for j in range(soff, 0, -1):
+                lines += [
+                    "    {",
+                    "        const uint32_t sig = "
+                    "(scanFlagMask >> %d) & 1;" % (soff - j),
+                    "        const uint32_t ctxSig = "
+                    "(uint32_t)tab_scan[%d] + offset;" % j,
+                    "        const uint32_t mstate = baseCtx[ctxSig];",
+                    "        const uint32_t mps = mstate & 1;",
+                    "        const uint32_t stateBits = "
+                    "ENTROPY[mstate ^ sig];",
+                    "        uint32_t nextState = (stateBits >> 24) + mps;",
+                    "        if ((mstate ^ sig) == 1)",
+                    "            nextState = sig;",
+                    "        baseCtx[ctxSig] = (uint8_t)nextState;",
+                    "        sum += stateBits;",
+                    "        absCoeff[numNonZero] = abs_scan[%d];" % j,
+                    "        numNonZero += sig;",
+                    "    }",
+                ]
+            lines += [
+                "    {",
+                "        const uint32_t sig = "
+                "(scanFlagMask >> %d) & 1;" % soff,
+                "        const uint32_t cnt = "
+                "(uint32_t)tab_scan[0] + offset;",
+                "        const uint32_t ctxSig = subPosBase ? cnt : 0;",
+                "        if (subPosBase == 0 || numNonZero != 0)",
+                "        {",
+                "            const uint32_t mstate = baseCtx[ctxSig];",
+                "            const uint32_t mps = mstate & 1;",
+                "            const uint32_t stateBits = "
+                "ENTROPY[mstate ^ sig];",
+                "            uint32_t nextState = "
+                "(stateBits >> 24) + mps;",
+                "            if ((mstate ^ sig) == 1)",
+                "                nextState = sig;",
+                "            baseCtx[ctxSig] = (uint8_t)nextState;",
+                "            sum += stateBits;",
+                "        }",
+                "        absCoeff[numNonZero] = abs_scan[0];",
+                "    }",
+                "    break;",
+            ]
+            cases.append("\n".join(lines))
+        loop_src = ("    switch (scanPosSigOff)\n"
+                    "    {\n" + "\n".join(cases) + "\n    }\n")
+    else:
+        loop_src = """\
+    while (scanPosSigOff > 0)
+    {
+        const uint32_t sig = scanFlagMask & 1;
+        scanFlagMask >>= 1;
+        // The reference guard (scanPosSigOff != 0 || subPosBase == 0 ||
+        // numNonZero) is always true: numNonZero starts at 1 for
+        // scanPosSigOff < 15 and scanPosSigOff != 0 otherwise.  Dropping
+        // it removes one compare/branch per position (round-0024).
+        const uint32_t ctxSig = (uint32_t)*tp-- + offset;
+        const uint32_t mstate = baseCtx[ctxSig];
+        const uint32_t mps = mstate & 1;
+        const uint32_t stateBits = ENTROPY[mstate ^ sig];
+        uint32_t nextState = (stateBits >> 24) + mps;
+        if ((mstate ^ sig) == 1)
+            nextState = sig;
+        baseCtx[ctxSig] = (uint8_t)nextState;
+        sum += stateBits;
+        absCoeff[numNonZero] = *ap--;
+        numNonZero += sig;
+        scanPosSigOff--;
+    }
+    // Last position (scanPosSigOff == 0): ctx forced to 0 when
+    // subPosBase == 0, else cnt (upstream idx_zero path). The reference
+    // guard skips the update when subPosBase != 0 AND numNonZero == 0
+    // (single nonzero at the last scan position, soff=15): production
+    // asm exits via cbz x4 without touching baseCtx (round-0021 replay
+    // verify caught 92,999 soff=15 mismatches from the missing skip).
+    {
+        const uint32_t sig = scanFlagMask & 1;
+        const uint32_t cnt = (uint32_t)*tp + offset;
+        const uint32_t ctxSig = subPosBase ? cnt : 0;
+        if (subPosBase == 0 || numNonZero != 0)
+        {
+            const uint32_t mstate = baseCtx[ctxSig];
+            const uint32_t mps = mstate & 1;
+            const uint32_t stateBits = ENTROPY[mstate ^ sig];
+            uint32_t nextState = (stateBits >> 24) + mps;
+            if ((mstate ^ sig) == 1)
+                nextState = sig;
+            baseCtx[ctxSig] = (uint8_t)nextState;
+            sum += stateBits;
+        }
+        absCoeff[numNonZero] = *ap;
+    }
+"""
+
     return r"""\
 // Generated by tools/emit_cost_coeff_nxn_sve2_shared.py -- do not edit.
 #include <arm_neon.h>
@@ -222,56 +321,11 @@ extern "C" uint32_t %s(const uint16_t* scan, const int16_t* coeff,
     const uint8_t* tp = tab_scan + scanPosSigOff;
     const uint16_t* ap = abs_scan + scanPosSigOff;
 
-    // Main loop: positions soff..1 need no posZeroMask (the only masked
-    // position is j=0 when subPosBase==0); handle it once after.
-    while (scanPosSigOff > 0)
-    {
-        const uint32_t sig = scanFlagMask & 1;
-        scanFlagMask >>= 1;
-        // The reference guard (scanPosSigOff != 0 || subPosBase == 0 ||
-        // numNonZero) is always true: numNonZero starts at 1 for
-        // scanPosSigOff < 15 and scanPosSigOff != 0 otherwise.  Dropping
-        // it removes one compare/branch per position (round-0024).
-        const uint32_t ctxSig = (uint32_t)*tp-- + offset;
-        const uint32_t mstate = baseCtx[ctxSig];
-        const uint32_t mps = mstate & 1;
-        const uint32_t stateBits = ENTROPY[mstate ^ sig];
-        uint32_t nextState = (stateBits >> 24) + mps;
-        if ((mstate ^ sig) == 1)
-            nextState = sig;
-        baseCtx[ctxSig] = (uint8_t)nextState;
-        sum += stateBits;
-        absCoeff[numNonZero] = *ap--;
-        numNonZero += sig;
-        scanPosSigOff--;
-    }
-    // Last position (scanPosSigOff == 0): ctx forced to 0 when
-    // subPosBase == 0, else cnt (upstream idx_zero path). The reference
-    // guard skips the update when subPosBase != 0 AND numNonZero == 0
-    // (single nonzero at the last scan position, soff=15): production
-    // asm exits via cbz x4 without touching baseCtx (round-0021 replay
-    // verify caught 92,999 soff=15 mismatches from the missing skip).
-    {
-        const uint32_t sig = scanFlagMask & 1;
-        const uint32_t cnt = (uint32_t)*tp + offset;
-        const uint32_t ctxSig = subPosBase ? cnt : 0;
-        if (subPosBase == 0 || numNonZero != 0)
-        {
-            const uint32_t mstate = baseCtx[ctxSig];
-            const uint32_t mps = mstate & 1;
-            const uint32_t stateBits = ENTROPY[mstate ^ sig];
-            uint32_t nextState = (stateBits >> 24) + mps;
-            if ((mstate ^ sig) == 1)
-                nextState = sig;
-            baseCtx[ctxSig] = (uint8_t)nextState;
-            sum += stateBits;
-        }
-        absCoeff[numNonZero] = *ap;
-    }
+    %s
 
     return sum & 0xFFFFFF;
 }
-""" % func_name
+""" % (func_name, loop_src)
 
 
 def emit_vector(func_name="dynopt_cost_coeff_nxn_sve2"):

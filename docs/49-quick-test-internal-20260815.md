@@ -211,6 +211,23 @@ best5 批量（c1c2+ccn NEON+remain+sa8d16+satd8，19 槽）E2E 中位
 8166 vs 8193 ms，首次方向转正但仍在噪声内。详见
 reports/c1c2-r29-best5-20260815.txt。
 
+round-0030/0031：scanPosLast 用 512B L1 常驻 4-bit PEXT 表替代逐位
+clz 压缩（回放 +27%，生产 432 万次 0 失配）；ccn soff 全展开为负结果
+（+7.5% < 循环版 +9.7%，不采用）。**best6 批量（c1c2 r29 + ccn NEON
++ remain + sa8d16 + satd8 + scan r30，20 槽）配对 E2E 中位 8055 vs
+8210 ms（-1.9%），码流 ee5db7 一致**——当前最优可复现组合。内网复测
+命令：
+
+```sh
+# 本地构建 best6 注入包
+python3 tools/build_preload_so.py --isa sve1 \
+  --kernels cost-c1c2-flag,cost-coeff-nxn,cost-coeff-remain,sa8d16, \
+  satd-8,scan-pos-last --opt=-O3 --inject-outdir build/dynopt-inject-best6
+# 打包 out/ + work/ -> e2e-full.tar.gz，传到目标机后：
+bash scripts/cloud-e2e-inject.sh
+# 校验：码流 md5 必须等于基线 ee5db7…；计时用 5 次取中位
+```
+
 ## 7. 注意事项
 
 - CNTVCT 在内网/云端约为百 MHz 级，per-call 取整会把小 kernel 压成

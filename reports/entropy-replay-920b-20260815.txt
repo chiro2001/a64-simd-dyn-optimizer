@@ -126,3 +126,11 @@ absCoeff 输出与 baseCtx 上下文），链接云端生产静态库
 ~3.8%，E2E 折算 ~+0.3%，被共享节点噪声淹没。`build_preload_so.py` 的
 cost-coeff-nxn 默认改用 NEON 变体（码流一致、无回归）；不作为单独 E2E
 声明，保留在批量组合中。
+
+### round-0031 负结果：ccn soff 全展开
+
+生成 switch(soff) 16 个全展开 case（发射器 `emit_neon(unroll=True)`），
+生产 verify 0 失配，但回放计时 soff=15 +9.4%（与循环版持平）、soff!=15
+仅 +1.0%（循环版 +8.7%），总 +7.5% 反而低于循环版的 +9.7%。结论：
+ccn 循环本身已足够紧，switch 跳转表开销吃掉小 soff 的收益；**保留循环
+版为默认，不采用全展开**。
