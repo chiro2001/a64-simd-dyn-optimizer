@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 135 |
+| kernel 目录 | 136 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -79,6 +79,7 @@
 | interp8-hps-32x16 | 714/260 | isRowExt=0 首覆盖 |
 | interp8-hps-8x32 | 362/119 | isRowExt=0 首覆盖 |
 | interp8-hps-16x32 | 714/212 | isRowExt=0 首覆盖 |
+| interp8-hps-32x8 | 362/142 | isRowExt=0 首覆盖 |
 | interp8-hps-8x8-ext | 175/68 | isRowExt=1 |
 | interp8-hps-8x16-ext | 263/92 | isRowExt=1 |
 | interp8-hps-16x16-ext | 516/159 | isRowExt=1 |
