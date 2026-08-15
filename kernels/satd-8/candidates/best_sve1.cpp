@@ -129,6 +129,58 @@ extern "C" int dynopt_satd_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
 {
     return dynopt_satd_16x16_sve2_impl(pix1, sp1, pix2, sp2);
 }
+static int dynopt_satd_8x16_sve2_impl(const uint8_t* pix1, intptr_t sp1,
+                         const uint8_t* pix2, intptr_t sp2)
+{
+    int16x8_t diff[16];
+    for (int i = 0; i < 8; i++)
+    {
+        diff[i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + i * sp1 + 0),
+            vld1_u8(pix2 + i * sp2 + 0)));
+        diff[8 + i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + (i + 8) * sp1 + 0),
+            vld1_u8(pix2 + (i + 8) * sp2 + 0)));
+    }
+    uint16x8_t out[4];
+    hadamard_4x4_quad(diff, out);
+    hadamard_4x4_quad(diff + 8, out + 2);
+    uint16x8_t s0 = vaddq_u16(out[0], out[1]);
+    uint16x8_t s1 = vaddq_u16(out[2], out[3]);
+    return (int)vaddlvq_u16(vaddq_u16(s0, s1));
+}
+
+extern "C" int dynopt_satd_8x16_sve2(const uint8_t* pix1, intptr_t sp1,
+                        const uint8_t* pix2, intptr_t sp2)
+{
+    return dynopt_satd_8x16_sve2_impl(pix1, sp1, pix2, sp2);
+}
+static int dynopt_satd_16x8_sve2_impl(const uint8_t* pix1, intptr_t sp1,
+                         const uint8_t* pix2, intptr_t sp2)
+{
+    int16x8_t diff[16];
+    for (int i = 0; i < 8; i++)
+    {
+        diff[i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + i * sp1 + 0),
+            vld1_u8(pix2 + i * sp2 + 0)));
+        diff[8 + i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + (i + 0) * sp1 + 8),
+            vld1_u8(pix2 + (i + 0) * sp2 + 8)));
+    }
+    uint16x8_t out[4];
+    hadamard_4x4_quad(diff, out);
+    hadamard_4x4_quad(diff + 8, out + 2);
+    uint16x8_t s0 = vaddq_u16(out[0], out[1]);
+    uint16x8_t s1 = vaddq_u16(out[2], out[3]);
+    return (int)vaddlvq_u16(vaddq_u16(s0, s1));
+}
+
+extern "C" int dynopt_satd_16x8_sve2(const uint8_t* pix1, intptr_t sp1,
+                        const uint8_t* pix2, intptr_t sp2)
+{
+    return dynopt_satd_16x8_sve2_impl(pix1, sp1, pix2, sp2);
+}
 
 extern "C" int dynopt_satd_32x32_sve2(
     const uint8_t* pix1, intptr_t sp1,

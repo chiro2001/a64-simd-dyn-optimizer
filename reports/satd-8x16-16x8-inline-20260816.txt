@@ -1,0 +1,45 @@
+# satd 8x16 / 16x8 内联候选（2026-08-16）
+
+## 动机
+
+反汇编显示上游 pixel_satd_8x16_neon / pixel_satd_16x8_neon 在 920B
+libx265（GCC12）里对 hadamard_4x4_quad 各外链 2/1 次（bl + 栈往返），
+与 satd16 相同的外链缺陷（reports/satd16-inline-gain-analysis）。
+
+## 实现
+
+- tools/emit_satd_neon_shared.py：新增 `_dual_8x8_body`（两个 8x8 块，
+  全内联 hadamard_4x4_quad），`emit_8x16`（rowstep=8）/`emit_16x8`
+  （col0=0, col1=8），`emit_all` 追加两符号；
+- 修复 emit 模板 bug：第二块列偏移原来误用 coloff（16x8 左右两块都
+  偏移 8），改为独立 col1；
+- tools/build_preload_so.py：satd-8 槽注册 `pu[LUMA_8x16/16x8].satd`；
+- kernels/satd-8/candidates/best_sve1.cpp 重新生成（6 形状符号）；
+- benchmarks/satd_dual_verify.cpp：20k 三方对照（ref/dyn/独立 C
+  oracle，每 8x4 带 (s_left+s_right)>>1）；修复 verify 宏比较 bug
+  （`#if SATD_PU == LUMA_8x16` 枚举被预处理当 0，改为显式
+  SATD_ROWS/SATD_COLS）。
+
+## 验证与实测（920B）
+
+| 形状 | 20k 差分 | 上游 NEON ticks/4096 | 候选 ticks/4096 | 加速 |
+| --- | --- | ---: | ---: | ---: |
+| satd 8x16 | bad=0（QEMU+原生，三方一致） | 9040-9744 | 7214-7234 | **1.34x** |
+| satd 16x8 | bad=0（QEMU+原生，三方一致） | 8168-8580 | 6184-6188 | **1.33x** |
+
+## E2E（真实 1080p 30 帧，5+5 paired，码流 bit-exact ee5db7…）
+
+| 配置 | 中位 | 差 |
+| --- | ---: | ---: |
+| 干净基线 | 8200 ms | — |
+| best6b + satd8x16/16x8 注入（22 槽） | 8061 ms | **-1.76%** |
+
+bootstrap95 = [115, 164] ms。此前 best6b（无 8x16/16x8）= -1.61%，
+本轮净改善约 0.15 个百分点（两形状在 1080p 内容调用占比有限）。
+
+## 结论
+
+- GCC12 外链修复的收益在 satd 家族三个形状（16x16/8x16/16x8）全部
+  兑现（1.3-1.6x），且注入后 E2E 无回归、码流 bit-exact；
+- 下一步：扫描其它含 helper 外链的 NEON 函数（hadamard_4x4_dual/
+  8x8、sa8d/sad 家族），批量生成内联候选。

@@ -183,11 +183,68 @@ def emit_16x16(func_name="dynopt_satd_16x16_sve2"):
     return _helpers() + _16x16_body(func_name)
 
 
+def _dual_8x8_body(func_name, rowstep, coloff, note, col1=None):
+    """Two 8x8 blocks (rowstep=8: 8x16 stacked; coloff=8: 16x8 side by
+    side) with fully inlined hadamard_4x4_quad. The upstream
+    pixel_satd_8x16/16x8_neon call hadamard_4x4_quad through a `bl`
+    (GCC12 outlines it, stack round-trips per block); inlining recovers
+    the 1.5x observed for the 16x16 candidate."""
+    if col1 is None:
+        col1 = coloff  # 8x16: both blocks at column 0
+    return """\
+static int %(func)s_impl(const uint8_t* pix1, intptr_t sp1,
+                         const uint8_t* pix2, intptr_t sp2)
+{
+    int16x8_t diff[16];
+    for (int i = 0; i < 8; i++)
+    {
+        diff[i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + i * sp1 + %(coloff)d),
+            vld1_u8(pix2 + i * sp2 + %(coloff)d)));
+        diff[8 + i] = vreinterpretq_s16_u16(vsubl_u8(
+            vld1_u8(pix1 + (i + %(rowstep)d) * sp1 + %(col1)d),
+            vld1_u8(pix2 + (i + %(rowstep)d) * sp2 + %(col1)d)));
+    }
+    uint16x8_t out[4];
+    hadamard_4x4_quad(diff, out);
+    hadamard_4x4_quad(diff + 8, out + 2);
+    uint16x8_t s0 = vaddq_u16(out[0], out[1]);
+    uint16x8_t s1 = vaddq_u16(out[2], out[3]);
+    return (int)vaddlvq_u16(vaddq_u16(s0, s1));
+}
+
+extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
+                        const uint8_t* pix2, intptr_t sp2)
+{
+    return %(func)s_impl(pix1, sp1, pix2, sp2);
+}
+""" % {"func": func_name, "rowstep": rowstep, "coloff": coloff,
+       "col1": col1, "note": note}
+
+
+def emit_8x16(func_name="dynopt_satd_8x16_sve2"):
+    """SATD 8x16 NEON: two stacked 8x8 blocks, inlined helpers."""
+    return (_helpers() + _dual_8x8_body(
+        func_name, rowstep=8, coloff=0,
+        note="8x16: rows 0-7 and 8-15 at column 0"))
+
+
+def emit_16x8(func_name="dynopt_satd_16x8_sve2"):
+    """SATD 16x8 NEON: two side-by-side 8x8 blocks, inlined helpers."""
+    return (_helpers() + _dual_8x8_body(
+        func_name, rowstep=0, coloff=0, col1=8,
+        note="16x8: rows 0-7 at columns 0-7 and 8-15"))
+
+
 def emit_all(func_8="dynopt_satd_8x8_sve2", func_16="dynopt_satd_16x16_sve2",
              reduce="vpaddl"):
     """8x8 + 16x16 primitives + 32x32/64x64 wrappers for injection."""
     src = emit_8x8(func_name=func_8, reduce=reduce)
     src += _16x16_body(func_name=func_16)
+    src += _dual_8x8_body("dynopt_satd_8x16_sve2", rowstep=8, coloff=0,
+                          note="")
+    src += _dual_8x8_body("dynopt_satd_16x8_sve2", rowstep=0, coloff=0,
+                          col1=8, note="")
     for n in (32, 64):
         loops = []
         for y in range(0, n, 16):

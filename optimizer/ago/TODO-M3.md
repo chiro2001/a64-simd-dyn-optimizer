@@ -78,3 +78,13 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   收益）；20k 差分 + 920B paired + 注入 E2E；
 - [ ] 扫描 lib 其它 NEON helper 外链（hadamard_4x4_dual/8x8、
   sa8d/sad 家族），批量生成内联候选。
+
+## satd 8x16/16x8 内联候选（2026-08-16 完成）
+
+- [x] emit_8x16/emit_16x8（全内联）+ build_preload_so 注册 + best_sve1
+  重新生成（6 形状）；
+- [x] 20k 三方对照（ref/dyn/oracle）双机 bad=0；920B paired
+  8x16 1.34x / 16x8 1.33x；
+- [x] E2E 注入复测：-1.61% → **-1.76%**（8061 vs 8200 ms，bit-exact
+  ee5db7），报告 reports/satd-8x16-16x8-inline-20260816.txt；
+- [ ] 全库 helper 外链扫描（hadamard_4x4_dual/8x8、sa8d/sad 家族）。

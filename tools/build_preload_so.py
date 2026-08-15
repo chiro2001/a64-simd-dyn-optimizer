@@ -536,6 +536,12 @@ def entries_for_kernel(kernel, sym):
                 add("pu[%s].satd" % luma_pu(n, n), "int", params, sym)
                 add("chroma[X265_CSP_I444].pu[%s].satd"
                     % luma_pu(n, n), "int", params, sym)
+            # 8x16 / 16x8: upstream NEON also outlines hadamard_4x4_quad
+            # there (reports/satd16-inline-gain-analysis-20260816.txt),
+            # so the inlined candidates carry the same ~1.5x win.
+            for shape, sym in (((8, 16), "dynopt_satd_8x16_sve2"),
+                               ((16, 8), "dynopt_satd_16x8_sve2")):
+                add("pu[%s].satd" % luma_pu(*shape), "int", params, sym)
             return out
         shape = _shape_of(kernel)
         if shape and (shape[0], shape[1]) in I444_PU_SHAPES:

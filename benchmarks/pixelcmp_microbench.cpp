@@ -19,6 +19,10 @@ extern "C" int dynopt_sa8d_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 extern "C" int dynopt_satd_8x8_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+extern "C" int dynopt_satd_8x16_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+extern "C" int dynopt_satd_16x8_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
 static inline uint64_t rdtsc()
 {
@@ -61,6 +65,16 @@ int main(int argc, char** argv)
     {
         neon = primitives.pu[LUMA_8x8].satd;
         cand = dynopt_satd_8x8_sve2;
+    }
+    else if (!strcmp(op, "satd8x16"))
+    {
+        neon = primitives.pu[LUMA_8x16].satd;
+        cand = dynopt_satd_8x16_sve2;
+    }
+    else if (!strcmp(op, "satd16x8"))
+    {
+        neon = primitives.pu[LUMA_16x8].satd;
+        cand = dynopt_satd_16x8_sve2;
     }
     if (!neon || !cand)
         return 2;
