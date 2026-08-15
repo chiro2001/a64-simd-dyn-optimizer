@@ -1,0 +1,33 @@
+# scanPosLast: scan-order nonzero walk, packed sign/flag/num per CG.
+kernel: scan-pos-last
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: scan_pos_last
+  n: 16
+
+candidate:
+  symbol: dynopt_scan_pos_last_sve2
+  trace_driver_src: kernels/scan-pos-last/trace_driver.cpp
+  trace_driver_c: kernels/scan-pos-last/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: scanPosLast_neon
+  symbol_mangled: x265_scanPosLast_neon
+  call: x265_scanPosLast_neon
+  decl: |
+    extern "C" int x265_scanPosLast_neon(
+        const uint16_t*, const int16_t*, uint16_t*, uint16_t*, uint8_t*,
+        int, const uint16_t*, int);
+
+baselines:
+  neon:
+    driver: kernels/scan-pos-last/trace_driver.cpp
+    symbol_mangled: x265_scanPosLast_neon
+
+corpus:
+  cases: 20000
+
+layouts:
+  compute: [scalar]
