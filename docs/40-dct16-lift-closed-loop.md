@@ -569,3 +569,18 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - 32x16：**281 / 101**（pack=1 872/239，-68%/-58%）；
   - 32x32：**561 / 166**（pack=1 1739/441，-68%/-62%）。
 - 新增 kernels/seeds；冒烟测试扩到 28 核。
+
+## 31. satd 32x64 / 64x16 / 64x32：multi-unit 列组泛化（2026-08-15）
+
+- `_emit_hadamard_satd_wide32_natural` 泛化为
+  `_emit_hadamard_satd_multiunit_natural(func, rows, units)`：width 32/48/64
+  分别用 2/3/4 个 16-lane 列组，每个 4-row 组即时 `svaddv_u16` 归约
+  到标量 `uint32_t` 累加器。
+- 抽取同法（unroll + inline-threshold）：32x64=3999、64x16=2001、
+  64x32=3995 节点直线 MachineIR。
+- 验收（各 20k 差分 0 失配，对照上游 `satd8_sve2` 位级一致）：
+  - 32x64：pack=2 **1121 fused / MCA 298**（pack=1 3475/846，
+    -68%/-65%）；
+  - 64x16：**561 / 168**（pack=1 1752/450，-68%/-63%）；
+  - 64x32：**1121 / 298**（pack=1 3497/863，-68%/-65%）。
+- 新增 kernels/seeds；冒烟测试扩到 31 核。

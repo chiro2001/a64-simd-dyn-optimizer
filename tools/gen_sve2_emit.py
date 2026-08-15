@@ -1221,13 +1221,14 @@ extern "C" int __FUNC__(const uint8_t* pix1, intptr_t sp1,
 """
 
 
-def _emit_hadamard_satd_wide32_natural(func_name, rows):
-    """pack=2 natural lowering for SATD 32xH: two 16-lane column groups
-    per row, each reduced per 4-row group into a scalar u32 accumulator."""
+def _emit_hadamard_satd_multiunit_natural(func_name, rows, units):
+    """pack=2 natural lowering for SATD (16*units)xH: each 16-lane column
+    group is reduced per 4-row group into a scalar u32 accumulator, so
+    the total is exact for any registered height."""
     return (_HADAMARD_SATD_WIDE32_TEMPLATE
             .replace("__FUNC__", func_name)
             .replace("__ROWS__", str(rows))
-            .replace("__UNITS__", "2")
+            .replace("__UNITS__", str(units))
             .replace("__GROUPS__", str(max(1, rows // 4))))
 
 
@@ -1267,9 +1268,9 @@ def emit_hadamard(machine_ir, func_name, combo=None):
             width, height = shape
             if width == 16 and height in (4, 8, 16, 32, 64):
                 return _emit_hadamard_satd_wide_natural(func_name, height)
-            if width == 32 and height in (8, 16, 24, 32, 64):
-                return _emit_hadamard_satd_wide32_natural(
-                    func_name, height)
+            if width in (32, 48, 64) and height in (8, 16, 24, 32, 64):
+                return _emit_hadamard_satd_multiunit_natural(
+                    func_name, height, width // 16)
             if width == 8 and height in (8, 16, 32):
                 return _emit_hadamard_satd8_packed_natural(
                     func_name, height)
