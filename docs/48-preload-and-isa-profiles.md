@@ -39,10 +39,11 @@ CNTVCT 实测（920B，上游 NEON 基线 vs SVE1 候选，2000 次）：
 | --- | ---: | ---: | ---: |
 | sa8d-8x8 | 2428 | 5599 | 0.434 |
 | interp8-8x8 | 2517 | 4108 | 0.613 |
+| scale2D-64to32 | 13774 | 16957 | 0.812 |
 
-结论：920B 的 SVE1 单元对该类小形状明显弱于 NEON，当前 SVE1 候选适合做
-搜索/正确性验证，**不适合直接替换**；后续应针对 920B 增加 NEON-native
-候选或调整搜索目标 profile。
+结论：920B 的 SVE1 单元对这些形状弱于 NEON，当前 SVE1 候选适合做搜索/
+正确性验证，**不适合直接替换**；后续应针对 920B 增加 NEON-native 候选或
+调整搜索目标 profile。
 
 真机验证还发现并修复了 copy relocation 问题：x265 可执行文件会把
 `x265::primitives` copy 到自身地址空间，`dlsym(RTLD_DEFAULT)` 拿到的是

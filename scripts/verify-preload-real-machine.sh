@@ -19,7 +19,8 @@ case "$ISA" in sve1|sve2) ;; *) echo "bad isa $ISA" >&2; exit 2 ;; esac
 WORK="$(mktemp -d)"
 trap 'rm -r -- "$WORK"' EXIT
 python3 "$ROOT/tools/build_preload_so.py" --isa "$ISA" \
-  --out "$WORK/dynopt-preload.so" --kernels sa8d,interp8 --workdir "$WORK"
+  --out "$WORK/dynopt-preload.so" --kernels sa8d,interp8,scale2d \
+  --workdir "$WORK"
 
 scp -o BatchMode=yes -o ConnectTimeout=10 \
   "$WORK/dynopt-preload.so" "$HOST:/tmp/dynopt-preload-lib.so"
