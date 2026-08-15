@@ -12,65 +12,84 @@ dynopt_cost_coeff_nxn_sve2:
 	.cfi_def_cfa_offset 64
 	.cfi_offset 29, -64
 	.cfi_offset 30, -56
+	lsl	x8, x2, 1
+	add	x2, x1, x2, lsl 1
+	add	x10, x2, x8
 	mov	x29, sp
-	ldr	w9, [sp, 64]
-	add	x15, sp, 32
-	ldr	w16, [sp, 72]
-	cmp	w9, 14
-	mov	x8, x15
-	cset	w17, le
 	stp	x19, x20, [sp, 16]
 	.cfi_offset 19, -48
 	.cfi_offset 20, -40
-	mov	x18, x17
-	mov	w10, w17
-.L2:
-	ldr	d31, [x1]
-	add	x11, sp, 64
-	add	x1, x1, x2, lsl 1
-	abs	v31.4h, v31.4h
-	str	d31, [x8], 8
-	cmp	x11, x8
-	bne	.L2
-	cmp	w16, 0
+	add	x16, sp, 32
+	ldr	w9, [sp, 64]
+	ldr	d29, [x1, x8]
 	adrp	x19, .LANCHOR0
-	cset	w30, eq
-	sxtw	x1, w9
+	ldr	d31, [x10, x8]
+	cmp	w9, 14
+	ldr	d30, [x2, x8]
+	cset	w14, le
+	ldr	d28, [x1]
+	abs	v29.4h, v29.4h
+	abs	v31.4h, v31.4h
+	ldr	w18, [sp, 72]
+	abs	v30.4h, v30.4h
+	sxtw	x2, w9
+	abs	v28.4h, v28.4h
+	mov	w10, w14
+	cmp	w18, 0
+	orr	w8, w10, w2
+	cset	w17, eq
+	uxtw	x1, w10
+	cmp	w8, 0
+	stp	d30, d31, [sp, 48]
 	add	x19, x19, :lo12:.LANCHOR0
-	mov	w14, 0
-	.p2align 5,,15
-.L6:
-	orr	w2, w10, w1
-	ldrh	w11, [x0, x1, lsl 1]
-	cmp	w2, 0
-	ccmp	w30, 0, 0, eq
-	beq	.L13
-	ldrb	w2, [x4, w11, uxtw]
-	cmn	w16, w1
-	and	w8, w5, 1
-	sub	x1, x1, #1
-	add	w2, w2, w7
+	stp	d28, d29, [sp, 32]
+	mov	x30, x14
+	ldrh	w11, [x0, x2, lsl 1]
+	sub	x1, x1, x14
+	and	w12, w5, 1
+	ccmp	w17, 0, 0, eq
+	mov	w13, 0
+	mov	w20, 34297
+	beq	.L9
+.L2:
+	ldrb	w8, [x4, w11, uxtw]
+	cmn	w18, w2
+	add	w8, w8, w7
+	csel	w8, w8, wzr, ne
+	ldrb	w9, [x6, w8, uxtw]
+	and	w15, w9, 1
+	eor	w9, w9, w12
+	cmp	w9, 1
+	beq	.L4
+	ldr	w9, [x19, w9, uxtw 2]
+	sub	x2, x2, #1
+	ldrh	w11, [x16, w11, uxtw 1]
+	add	w10, w10, w12
+	add	w13, w13, w9
+	add	w9, w15, w9, lsr 24
+	strb	w9, [x6, w8, uxtw]
+	strh	w11, [x3, x1, lsl 1]
+	tbnz	w2, #31, .L3
 	lsr	w5, w5, 1
-	csel	w2, w2, wzr, ne
-	uxtw	x20, w2
-	ldrb	w9, [x6, w2, uxtw]
-	mov	w2, w8
-	eor	w12, w9, w8
-	and	w9, w9, 1
-	cmp	w12, 1
-	ldr	w13, [x19, w12, uxtw 2]
-	add	w14, w14, w13
-	add	w9, w9, w13, lsr 24
-	csel	w8, w8, w9, eq
-	strb	w8, [x6, x20]
-	uxtw	x8, w10
-	ldrh	w9, [x15, w11, uxtw 1]
-	sub	x8, x8, x17
-	add	w10, w10, w2
-	strh	w9, [x3, x8, lsl 1]
-	tbz	w1, #31, .L6
+.L10:
+	orr	w8, w10, w2
+	uxtw	x1, w10
+	cmp	w8, 0
+	ldrh	w11, [x0, x2, lsl 1]
+	sub	x1, x1, x14
+	and	w12, w5, 1
+	ccmp	w17, 0, 0, eq
+	bne	.L2
+.L9:
+	cmp	w30, 0
+	ubfiz	x11, x11, 1, 16
+	mov	x0, -2
+	csel	x0, x0, xzr, ne
+	ldrh	w1, [x16, x11]
+	strh	w1, [x3, x0]
+.L3:
 	ldp	x19, x20, [sp, 16]
-	and	w0, w14, 16777215
+	and	w0, w13, 16777215
 	ldp	x29, x30, [sp], 64
 	.cfi_remember_state
 	.cfi_restore 30
@@ -80,23 +99,19 @@ dynopt_cost_coeff_nxn_sve2:
 	.cfi_def_cfa_offset 0
 	ret
 	.p2align 2,,3
-.L13:
+.L4:
 	.cfi_restore_state
-	cmp	w18, 0
-	ubfiz	x11, x11, 1, 16
-	mov	x0, -2
-	csel	x0, x0, xzr, ne
-	ldrh	w1, [x15, x11]
-	strh	w1, [x3, x0]
-	and	w0, w14, 16777215
-	ldp	x19, x20, [sp, 16]
-	ldp	x29, x30, [sp], 64
-	.cfi_restore 30
-	.cfi_restore 29
-	.cfi_restore 19
-	.cfi_restore 20
-	.cfi_def_cfa_offset 0
-	ret
+	uxtw	x1, w10
+	strb	w12, [x6, w8, uxtw]
+	sub	x1, x1, x14
+	ldrh	w8, [x16, w11, uxtw 1]
+	add	w10, w10, w12
+	add	w13, w13, w20
+	sub	x2, x2, #1
+	strh	w8, [x3, x1, lsl 1]
+	tbnz	w2, #31, .L3
+	lsr	w5, w5, 1
+	b	.L10
 	.cfi_endproc
 .LFE0:
 	.size	dynopt_cost_coeff_nxn_sve2, .-dynopt_cost_coeff_nxn_sve2

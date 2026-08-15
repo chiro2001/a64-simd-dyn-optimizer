@@ -36,7 +36,7 @@
 - **scanPosLast 字段首覆盖**：4x4 三种 scan 20k 差分 0 失配
   （标量切片，0 vector/34 MCA，后续可向量化）；enumerate todo 降至 5。
 - **costCoeffNxN 字段首覆盖**：4x4 sig-map 代价 20k 差分 0 失配
-  （12 vector/109 MCA，首覆盖）；enumerate todo 降至 4。
+  （-O3 后 10 vector/97 MCA）；enumerate todo 降至 4。
 - **cu/pu/chroma 代表切片**：copy_pp 32x32/16x16/16x16
   （64/43、32/26、32/26），20k 差分 0 失配；enumerate todo 降至 1。
 - **pelFilterLumaStrong 字段首覆盖**：V/H 强滤波 20k 差分 0 失配

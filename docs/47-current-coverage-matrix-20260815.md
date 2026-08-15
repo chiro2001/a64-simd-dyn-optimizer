@@ -151,7 +151,7 @@
 | sign | sign 64 (variable endX) | 16/30 |
 | find-pos-first-last | 4x4 packed first/last | 12/25 |
 | scan-pos-last | 4x4 scan walk | 0 vector/34 MCA（标量 best；NEON 试验 80/121，暂不采用） |
-| cost-coeff-nxn | 4x4 sig-map cost | 12 vector/109 MCA（标量+局部向量化首覆盖） |
+| cost-coeff-nxn | 4x4 sig-map cost | 10 vector/97 MCA（-O3 后较 12/109 改善） |
 | cu-copy-pp | 32x32 代表切片 | 64/43 |
 | pu-copy-pp | 16x16 代表切片 | 32/26 |
 | chroma-copy-pp | 16x16 代表切片 | 32/26 |
