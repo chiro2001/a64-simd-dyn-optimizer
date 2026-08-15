@@ -1,0 +1,71 @@
+[
+ {
+  "tag": "pack-1_compute-sve",
+  "pack": 1,
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 1485,
+   "vector": 1141,
+   "movprfx": 9,
+   "vector_fused": 1132,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 39,
+   "vector_fused_uop": 1132
+  },
+  "range": [
+   "0x4007a0",
+   "0x401ee0"
+  ],
+  "cached": true,
+  "mca_cycles": 310,
+  "mca_uops": 1638
+ },
+ {
+  "tag": "pack-2_compute-sve",
+  "pack": 2,
+  "compute": "sve",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400ce0"
+  ],
+  "counts": {
+   "total": 1019,
+   "vector": 613,
+   "movprfx": 6,
+   "vector_fused": 607,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 607
+  },
+  "fusion": {
+   "eligible": 3,
+   "hw_supported": 0,
+   "pairs": [
+    "sabd+smax",
+    "abs+smax",
+    "sabd+smax"
+   ],
+   "counts": {
+    "store_insns": 51,
+    "scalar_insns": 186,
+    "load_insns": 51,
+    "simd_insns": 37,
+    "fused_pseudo": 1
+   }
+  },
+  "mca_cycles": 215,
+  "mca_uops": 1134
+ }
+]

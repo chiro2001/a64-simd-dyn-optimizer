@@ -710,3 +710,15 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   软流水，`svld1ub_u16` 加宽载入 + `svst1_s16` 输出。
 - 验收（20k 差分 0 失配）：**118 fused / MCA 78**。
 - 冒烟测试扩到 50 核。
+
+## 43. satd 24x32：8-wide 块分解 lowering（2026-08-15）
+
+- 新增 `_emit_hadamard_satd_8wide_blocks_natural`：width 为 8 的倍数
+  且 height%16==0 时按 upstream 同款分解为 8x16 块，块内复用
+  packed two-group 8x8 lowering，块间累计到 u32 标量。
+- 抽取：24x32 = 1498 节点直线 MachineIR。
+- 验收（20k 差分 0 失配）：
+  - pack=2：**607 fused / MCA 215**；
+  - pack=1：1132 / 310；
+  - 提升 -46% / -31%。
+- 冒烟测试扩到 51 核。

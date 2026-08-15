@@ -92,6 +92,7 @@ def main():
                           "satd-8x32", "satd-16x32", "satd-16x64",
                           "satd-32x8", "satd-32x16", "satd-32x32",
                           "satd-32x64", "satd-64x16", "satd-64x32",
+                          "satd-24x32",
                           "satd-48x64", "satd-64x48"},
             "sad": {"sad", "sad-32"},
             "interp8": {"interp8", "interp8-16", "interp8-32",
