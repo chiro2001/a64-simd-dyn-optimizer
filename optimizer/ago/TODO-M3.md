@@ -163,6 +163,8 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   报告 reports/sao-bo-inject-20260816.txt；
 - [x] N1 best9：-1.62%（11870 vs 12020 ms，bit-exact；BO 在 N1
   无明确收益，噪声内无回归）；
+- [x] sa8d8 SVE1 候选 920B 慢 1.55x（CADD90 模拟）→ 排除；
+  注入清单全部验证完毕，best9 为最终注入集；
 - [ ] SAO Stats E1/E2/E3（SVE2-only）留待 950 窗口。
 
 ## N1 端到端（2026-08-16 完成）
