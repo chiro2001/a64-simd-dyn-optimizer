@@ -34,6 +34,10 @@ pass 优化 → 按目标机指令成本表做有界 cover/布局选择 → 20k 
 - **best8 冻结发布（2026-08-16，28 槽）**：外链修复（satd 家族 +
   interp8 vps）+ 既有熵族/pixelcmp 赢点，双平台 E2E：920B **-1.92%**、
   N1 **-1.78%**（bit-exact；复现手册 [docs/55](docs/55-best8-release-20260816.md)）；
+- **best9 最终注入集（2026-08-16，29 槽）**：best8 + saoCuStatsBO，
+  双平台 E2E：920B **-2.10%**、N1 **-1.62%**（bit-exact）；950
+  SVE2 部署就绪（best9-950，41 槽）；项目全景见
+  [docs/57](docs/57-final-status-20260816.md)；
 - 顶级模型咨询：round-0023（AGO 规划条件 GO）与 round-0024
   （M2 拆分 + 排序门/N1 校准协议，decision 已落盘）见
   [expert-advice/](expert-advice/)。
