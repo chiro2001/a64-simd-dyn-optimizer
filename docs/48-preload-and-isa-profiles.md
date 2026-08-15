@@ -24,21 +24,47 @@
   不兼容 kernel 跳过并在 `--json` 报告中说明；
 - 支持 8-bit x265；候选源缺失时用 gen 通用发射器按 ISA 生成。
 
-已做最小验证：aarch64 测试程序链接 `libx265.so` + 注入库，调用
-`x265_setup_primitives` 后 `sa8d` slot 被替换为候选（QEMU SVE2 下
-`dynopt: patched ...`），说明符号拦截与运行时 patch 路径可用。
+已做两层验证：
 
-实测（2026-08-15）：
+1. QEMU SVE2 下，aarch64 测试程序链接 `libx265.so` + 注入库，调用
+   `x265_setup_primitives` 后 `sa8d` slot 被替换为候选；
+2. **920B 云端真机（SVE1）**：`scripts/verify-preload-real-machine.sh`
+   把 sve1 注入库和对比程序推到 `chiro@124.70.206.229`，在真实
+   `libx265.so` 上 patch 后跑 200 组随机差分，sa8d + interp8
+   **bad=0**。
+
+CNTVCT 实测（920B，上游 NEON 基线 vs SVE1 候选，2000 次）：
+
+| kernel | 上游 cycles | 候选 cycles | 比率（上游/候选） |
+| --- | ---: | ---: | ---: |
+| sa8d-8x8 | 2428 | 5599 | 0.434 |
+| interp8-8x8 | 2517 | 4108 | 0.613 |
+
+结论：920B 的 SVE1 单元对该类小形状明显弱于 NEON，当前 SVE1 候选适合做
+搜索/正确性验证，**不适合直接替换**；后续应针对 920B 增加 NEON-native
+候选或调整搜索目标 profile。
+
+真机验证还发现并修复了 copy relocation 问题：x265 可执行文件会把
+`x265::primitives` copy 到自身地址空间，`dlsym(RTLD_DEFAULT)` 拿到的是
+空副本；注入器现通过 `dl_iterate_phdr` 找到真实 `libx265.so` 对象再取
+符号，保证 patch 落到 x265 实际使用的表。
+
+实测（2026-08-15，全 kernel 扫描）：
 
 | 目标 | 成功 patch kernel 数 | 说明 |
 | --- | ---: | --- |
-| sve2（950） | 77 | 含 dct8/dct16/dct32、sa8d/sa8d16、interp8vpp、chroma 等 |
-| sve1（920B） | 27（原生） | 含 dct8、dct32(best_sve1)、copy 族、hps、scale2d、scan、sign 等 |
+| sve2（950） | 147 | 含 dct8/dct16/dct32、sa8d/sa8d16、interp8vpp、chroma、quant/dequant、sao、planecopy/weight/ssim 等 |
+| sve1（920B） | 74（原生） | 含 dct8、dct32(best_sve1)、copy 族、hps/vps、interp8/gen、satd、scale2d、ssim、planecopy、scan、sign 等 |
 
-跳过原因主要是：该 kernel 当前只有 SVE2p3 候选（如 interp8 path-B /
-interp4 hpp）、IDCT 当前 best 为 SVE2p1 sdot、或候选源只存在于搜索结果
-而 gen 发射器尚无对应配方。生成式 SVE1 候选（interp8/sa8d/satd/interp4
-等）已通过 20k 差分，可用 `--kernels` 明确指定纳入注入库。
+跳过原因主要是：该 kernel 当前只有 SVE2p3/SVE2p1 候选（interp8 path-B、
+interp4 非方形 hpp、IDCT）、`isRowExt` 变体不适用于通用 slot、sao-stats
+固定形状与 x265 多行 contract 不匹配、或 `dst4x4/idst4x4` 尚无本项目候选。
+生成式 SVE1 候选（interp8/sa8d/satd/interp4 等）已通过 20k 差分。
+
+固定形状字段（quant/nquant/dequant/dequant-scaling/sao/ssim）通过
+wrapper adapter 接入：完整 primitive 签名转发到候选，形状不匹配时回退到
+原始 x265 函数（sao B0 按 4 行分块循环；E2/E3 仅 patch width=64 的大块
+slot）。
 
 ### 2.2 `search_sve2_layouts.py --isa`
 
@@ -78,6 +104,9 @@ python3 tools/build_preload_so.py --isa sve2 \
 
 # 使用
 LD_PRELOAD=$PWD/build/dynopt-x265-sve2.so x265 ...
+
+# 真机一键验证（920B SVE1 / 950 SVE2）
+scripts/verify-preload-real-machine.sh <user@host> sve1
 ```
 
 ## 4. SVE1 原生候选示例（20k 差分 0 失配）
@@ -101,3 +130,24 @@ LD_PRELOAD=$PWD/build/dynopt-x265-sve2.so x265 ...
   候选。
 - 950 原生验收仍需在实机跑 paired；仓库已提供
   `scripts/quick-test-real-machine.sh` 与 `tools/parse_quick_report.py`。
+
+## 6. 编译进 x265（替代 LD_PRELOAD）
+
+对静态链接或不便使用 LD_PRELOAD 的环境，`build_preload_so.py
+--inject-outdir` 可生成编译期注入材料：
+
+- `dynopt_patch.cpp/.o`：直接修改 `x265::primitives`，不依赖
+  dlsym/dlopen；
+- `x265-dynopt-setup.patch`：在 `x265_setup_primitives` 的
+  `setupAliasPrimitives` 之后调用 `dynopt_patch_primitives()`；
+- 每个候选 kernel 的 `.o`。
+
+`scripts/build-x265-injected.sh` 一键完成：生成对象与补丁 → 仅重编
+`primitives.cpp` → `ar r` 替换/追加到 `libx265.a` → 恢复原始源码 →
+链接并运行 `benchmarks/injected_verify.cpp` 自检。已验证 QEMU 下
+`x265_setup_primitives` 从 x265 内部完成 patch，候选可执行。
+
+```sh
+scripts/build-x265-injected.sh --isa sve1 --kernels sa8d,interp8 \
+  --build-dir build/x265-8-cross-sve2 --inject-out build/dynopt-inject
+```

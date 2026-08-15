@@ -89,8 +89,20 @@ LD_PRELOAD=/abs/path/build/dynopt-x265-sve2.so x265 --input ... --output ...
 ```
 
 构建报告（`--json`）会列出实际 patch 的 kernel/slot 和跳过原因；当前只
-支持 8-bit x265。实现细节与 ISA 限制见
+支持 8-bit x265。全 kernel 扫描下 sve2 可 patch 147 个、sve1 原生 74 个
+（quant/dequant/sao/ssim 等固定形状字段经 adapter 接入）。实现细节与
+ISA 限制见
 [docs/48-preload-and-isa-profiles.md](docs/48-preload-and-isa-profiles.md)。
+
+对静态链接或不想用预加载的环境，可直接把候选编进 x265：
+
+```sh
+scripts/build-x265-injected.sh --isa sve1 --kernels sa8d,interp8 \
+  --build-dir build/x265-8-cross-sve2 --inject-out build/dynopt-inject
+```
+
+脚本会重编带 patch 的 `primitives.cpp`、把候选对象并入 `libx265.a`，
+再链接运行自检程序；源码随后恢复。
 
 ## 常用入口
 
@@ -104,6 +116,7 @@ python3 tools/search_sve2_layouts.py --kernel <k> --workers 4 \
   --mca-top 5 --mca-bin /home/chiro/llvm-src/build-mca/bin/llvm-mca
 python3 tools/build_preload_so.py --isa sve2 --out build/dynopt-x265.so
 python3 tools/check_isa_level.py --object <candidate.o> --level sve2
+scripts/verify-preload-real-machine.sh <user@host> sve1  # 920B 真机验证
 scripts/quick-test-real-machine.sh <950|920b> [report]  # 实机快速测试
 tools/parse_quick_report.py             # paired 结果回填/验收表
 ```

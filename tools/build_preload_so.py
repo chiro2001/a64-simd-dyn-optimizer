@@ -22,6 +22,7 @@ Usage:
 """
 
 import argparse
+import difflib
 import json
 import os
 import re
@@ -35,6 +36,181 @@ ISA_MARCH = {
     "sve2": "armv8.2-a+sve2",
     "sve2p1": "armv9.4-a+sve2p1",
     "sve2p3": "armv9.4-a+sve2p3",
+}
+
+# Fixed-shape candidates whose C signature omits one or more x265
+# primitive arguments. The wrapper installs an adapter that forwards the
+# full primitive contract and falls back to the original x265 function
+# when the shape does not match the candidate's fixed 64x*/256 shape.
+# The adapter body is a template with %SYM% replaced by the candidate
+# symbol and %ORIG% by the saved original pointer.
+ADAPTERS = {
+    "quant": {
+        "cand_decl": ("uint32_t %SYM%(const int16_t*, const int32_t*,"
+                      " int32_t*, int16_t*, int, int)"),
+        "orig_decl": "static quant_t dynopt_orig_quant = nullptr;",
+        "body": """
+static uint32_t dynopt_quant_adapter(
+    const int16_t* coef, const int32_t* qc, int32_t* du, int16_t* qo,
+    int qBits, int add, int numCoeff)
+{
+    if (dynopt_orig_quant && numCoeff != 256)
+        return dynopt_orig_quant(coef, qc, du, qo, qBits, add, numCoeff);
+    return %SYM%(coef, qc, du, qo, qBits, add);
+}
+""",
+        "save": "dynopt_orig_quant = P->quant;",
+        "adapter": "dynopt_quant_adapter",
+    },
+    "nquant": {
+        "cand_decl": ("uint32_t %SYM%(const int16_t*, const int32_t*,"
+                      " int16_t*, int, int)"),
+        "orig_decl": "static nquant_t dynopt_orig_nquant = nullptr;",
+        "body": """
+static uint32_t dynopt_nquant_adapter(
+    const int16_t* coef, const int32_t* qc, int16_t* qo,
+    int qBits, int add, int numCoeff)
+{
+    if (dynopt_orig_nquant && numCoeff != 256)
+        return dynopt_orig_nquant(coef, qc, qo, qBits, add, numCoeff);
+    return %SYM%(coef, qc, qo, qBits, add);
+}
+""",
+        "save": "dynopt_orig_nquant = P->nquant;",
+        "adapter": "dynopt_nquant_adapter",
+    },
+    "dequant": {
+        "cand_decl": ("void %SYM%(const int16_t*, int16_t*, int, int)"),
+        "orig_decl": "static dequant_normal_t dynopt_orig_dequant = nullptr;",
+        "body": """
+static void dynopt_dequant_adapter(
+    const int16_t* q, int16_t* c, int num, int scale, int shift)
+{
+    if (dynopt_orig_dequant && num != 256)
+        return dynopt_orig_dequant(q, c, num, scale, shift);
+    %SYM%(q, c, scale, shift);
+}
+""",
+        "save": "dynopt_orig_dequant = P->dequant_normal;",
+        "adapter": "dynopt_dequant_adapter",
+    },
+    "dequant-scaling-gt": {
+        "cand_decl": ("void %SYM%(const int16_t*, const int32_t*,"
+                      " int16_t*, int, int)"),
+        "orig_decl": "static dequant_scaling_t dynopt_orig_dqs = nullptr;",
+        "body": """
+static void dynopt_dqs_adapter(
+    const int16_t* q, const int32_t* dq, int16_t* c,
+    int num, int per, int shift)
+{
+    if (dynopt_orig_dqs && num != 256)
+        return dynopt_orig_dqs(q, dq, c, num, per, shift);
+    %SYM%(q, dq, c, shift, per);
+}
+""",
+        "save": "dynopt_orig_dqs = P->dequant_scaling;",
+        "adapter": "dynopt_dqs_adapter",
+    },
+    "ssim": {
+        "cand_decl": ("void %SYM%(const uint8_t*, intptr_t,"
+                      " const uint8_t*, intptr_t, int32_t*)"),
+        "orig_decl": None,
+        "body": """
+static void dynopt_ssim_adapter(
+    const uint8_t* p1, intptr_t s1, const uint8_t* p2, intptr_t s2,
+    int sums[2][4])
+{
+    %SYM%(p1, s1, p2, s2, (int32_t*)sums);
+}
+""",
+        "save": None,
+        "adapter": "dynopt_ssim_adapter",
+    },
+    "sao": {
+        "cand_decl": "void %SYM%(uint8_t*, int8_t*, int8_t*, intptr_t)",
+        "orig_decl": "static saoCuOrgE0_t dynopt_orig_sao_e0 = nullptr;",
+        "body": """
+static void dynopt_sao_e0_adapter(
+    uint8_t* rec, int8_t* offsetEo, int width,
+    int8_t* signLeft, intptr_t stride)
+{
+    if (dynopt_orig_sao_e0 && width != 64)
+        return dynopt_orig_sao_e0(rec, offsetEo, width, signLeft, stride);
+    %SYM%(rec, offsetEo, signLeft, stride);
+}
+""",
+        "save": "dynopt_orig_sao_e0 = P->saoCuOrgE0;",
+        "adapter": "dynopt_sao_e0_adapter",
+    },
+    "sao-b0": {
+        "cand_decl": "void %SYM%(uint8_t*, const int8_t*, intptr_t)",
+        "orig_decl": "static saoCuOrgB0_t dynopt_orig_sao_b0 = nullptr;",
+        "body": """
+static void dynopt_sao_b0_adapter(
+    uint8_t* rec, const int8_t* offset, int width, int height,
+    intptr_t stride)
+{
+    if (dynopt_orig_sao_b0 &&
+        (width != 64 || height <= 0 || (height & 3) != 0))
+        return dynopt_orig_sao_b0(rec, offset, width, height, stride);
+    for (int y = 0; y < height; y += 4)
+        %SYM%(rec + y * stride, offset, stride);
+}
+""",
+        "save": "dynopt_orig_sao_b0 = P->saoCuOrgB0;",
+        "adapter": "dynopt_sao_b0_adapter",
+    },
+    "sao-e1-2rows": {
+        "cand_decl": ("void %SYM%(uint8_t*, int8_t*, int8_t*, intptr_t)"),
+        "orig_decl": ("static saoCuOrgE1_t dynopt_orig_sao_e1_2 = nullptr;"),
+        "body": """
+static void dynopt_sao_e1_2rows_adapter(
+    uint8_t* rec, int8_t* upBuff1, int8_t* offsetEo,
+    intptr_t stride, int width)
+{
+    if (dynopt_orig_sao_e1_2 && width != 64)
+        return dynopt_orig_sao_e1_2(rec, upBuff1, offsetEo, stride, width);
+    %SYM%(rec, upBuff1, offsetEo, stride);
+}
+""",
+        "save": "dynopt_orig_sao_e1_2 = P->saoCuOrgE1_2Rows;",
+        "adapter": "dynopt_sao_e1_2rows_adapter",
+    },
+    "sao-e2": {
+        "cand_decl": ("void %SYM%(uint8_t*, int8_t*, int8_t*, int8_t*,"
+                      " intptr_t)"),
+        "orig_decl": "static saoCuOrgE2_t dynopt_orig_sao_e2 = nullptr;",
+        "body": """
+static void dynopt_sao_e2_adapter(
+    uint8_t* rec, int8_t* bufft, int8_t* buff1, int8_t* offsetEo,
+    int width, intptr_t stride)
+{
+    if (dynopt_orig_sao_e2 && width != 64)
+        return dynopt_orig_sao_e2(rec, bufft, buff1, offsetEo,
+                                  width, stride);
+    %SYM%(rec, bufft, buff1, offsetEo, stride);
+}
+""",
+        "save": "dynopt_orig_sao_e2 = P->saoCuOrgE2[1];",
+        "adapter": "dynopt_sao_e2_adapter",
+    },
+    "sao-e3": {
+        "cand_decl": "void %SYM%(uint8_t*, int8_t*, int8_t*, intptr_t)",
+        "orig_decl": "static saoCuOrgE3_t dynopt_orig_sao_e3 = nullptr;",
+        "body": """
+static void dynopt_sao_e3_adapter(
+    uint8_t* rec, int8_t* upBuff1, int8_t* offsetEo,
+    intptr_t stride, int startX, int endX)
+{
+    if (dynopt_orig_sao_e3 && (startX != 1 || endX != 64))
+        return dynopt_orig_sao_e3(rec, upBuff1, offsetEo, stride,
+                                  startX, endX);
+    %SYM%(rec, upBuff1, offsetEo, stride);
+}
+""",
+        "save": "dynopt_orig_sao_e3 = P->saoCuOrgE3[1];",
+        "adapter": "dynopt_sao_e3_adapter",
+    },
 }
 
 # x265 config dir that contains x265_config.h for the 8-bit build.
@@ -345,6 +521,58 @@ def entries_for_kernel(kernel, sym):
             add("pelFilterLumaStrong[%d]" % edge, "void",
                 "uint8_t*, intptr_t, intptr_t, int32_t, int32_t")
         return out
+    if kernel == "quant":
+        add("quant", "uint32_t",
+            "const int16_t*, const int32_t*, int32_t*, int16_t*,"
+            " int, int, int")
+        return out
+    if kernel == "nquant":
+        add("nquant", "uint32_t",
+            "const int16_t*, const int32_t*, int16_t*, int, int, int")
+        return out
+    if kernel == "dequant":
+        add("dequant_normal", "void",
+            "const int16_t*, int16_t*, int, int, int")
+        return out
+    if kernel == "dequant-scaling-gt":
+        add("dequant_scaling", "void",
+            "const int16_t*, const int32_t*, int16_t*, int, int, int")
+        return out
+    if kernel == "ssim":
+        add("ssim_4x4x2_core", "void",
+            "const uint8_t*, intptr_t, const uint8_t*, intptr_t,"
+            " int32_t*")
+        return out
+    if kernel == "planecopy-cp":
+        add("planecopy_cp", "void",
+            "const uint8_t*, intptr_t, uint8_t*, intptr_t,"
+            " int, int, int")
+        return out
+    if kernel == "weight-pp":
+        add("weight_pp", "void",
+            "const uint8_t*, uint8_t*, intptr_t, int, int, int,"
+            " int, int, int")
+        return out
+    if kernel == "sao":
+        add("saoCuOrgE0", "void",
+            "uint8_t*, int8_t*, int, int8_t*, intptr_t")
+        return out
+    if kernel == "sao-b0":
+        add("saoCuOrgB0", "void",
+            "uint8_t*, const int8_t*, int, int, intptr_t")
+        return out
+    if kernel == "sao-e1-2rows":
+        add("saoCuOrgE1_2Rows", "void",
+            "uint8_t*, int8_t*, int8_t*, intptr_t, int")
+        return out
+    if kernel == "sao-e2":
+        add("saoCuOrgE2[1]", "void",
+            "uint8_t*, int8_t*, int8_t*, int8_t*, int, intptr_t")
+        return out
+    if kernel == "sao-e3":
+        add("saoCuOrgE3[1]", "void",
+            "uint8_t*, int8_t*, int8_t*, intptr_t, int, int")
+        return out
     return out
 
 
@@ -375,7 +603,13 @@ def _load_best_combo(kernel):
             rows = json.load(open(os.path.join(dirpath, "results.json")))
         except (ValueError, OSError):
             continue
+        if isinstance(rows, dict):
+            rows = rows.get("results", [])
+        if not isinstance(rows, list):
+            continue
         for r in rows:
+            if not isinstance(r, dict):
+                continue
             counts = r.get("counts") or {}
             if not r.get("passed") or not counts:
                 continue
@@ -407,7 +641,10 @@ def try_generate_source(kernel, isa, workdir):
         man = load_manifest(kernel)
     except Exception:
         return []
-    emit = make_generic_emitter(kernel, isa=isa)
+    try:
+        emit = make_generic_emitter(kernel, isa=isa)
+    except Exception:
+        return []
     combos = []
     best = _load_best_combo(kernel)
     if best:
@@ -439,9 +676,136 @@ def try_generate_source(kernel, isa, workdir):
     return paths
 
 
+def try_generate_specialized(kernel, isa, workdir):
+    """Generate sources with the per-kernel specialized emitters (quant,
+    dequant, ssim, sao, ...) for kernels without a generic-recipe seed."""
+    if isa not in ("sve1", "sve2"):
+        return []
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    try:
+        import search_sve2_layouts as s
+        from kernel_manifest import load_manifest, layout_plans
+    except Exception:
+        return []
+    try:
+        s._ISA = isa
+        emit = s.make_emitter(kernel, "acle")
+        man = load_manifest(kernel)
+    except Exception:
+        return []
+    combos = []
+    best = _load_best_combo(kernel)
+    if best:
+        combos.append(dict(best))
+    for c in layout_plans(man):
+        if len(combos) >= 32:
+            break
+        combos.append(c)
+    if not combos:
+        combos = [{}]
+    paths = []
+    seen = set()
+    for combo in combos:
+        try:
+            src = emit(combo)
+        except Exception:
+            continue
+        key = repr(sorted(combo.items()))
+        if key in seen:
+            continue
+        seen.add(key)
+        path = os.path.join(workdir,
+                            kernel + "-special-%d.cpp" % len(paths))
+        with open(path, "w") as f:
+            f.write(src)
+        paths.append(path)
+        if len(paths) >= 6:
+            break
+    return paths
+
+
 def run(cmd, **kw):
     return subprocess.run(cmd, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT, text=True, **kw)
+
+
+def write_inject_patch(outdir, decls, saves, assigns, objs, cxx, common,
+                       includes, report):
+    """Write the compile-in variant: a patch source that directly mutates
+    x265::primitives, its object file, and a unified diff that calls
+    dynopt_patch_primitives() from x265_setup_primitives."""
+    os.makedirs(outdir, exist_ok=True)
+    src_path = os.path.join(outdir, "dynopt_patch.cpp")
+    obj_path = os.path.join(outdir, "dynopt_patch.o")
+    lines = [
+        "// Generated by tools/build_preload_so.py --inject-outdir -- do not",
+        "// edit. Compile-in alternative to LD_PRELOAD: no dlsym/dlopen,",
+        "// patches x265::primitives directly from inside the x265 build.",
+        "#include \"common/primitives.h\"",
+        "",
+        "using namespace X265_NS;",
+        "",
+    ]
+    lines += decls
+    lines += [
+        "",
+        "extern \"C\" void dynopt_patch_primitives(void)",
+        "{",
+        "    EncoderPrimitives& P = primitives;",
+        "    int n = 0;",
+    ]
+    lines += [s.replace("P->", "P.") for s in saves]
+    for a in assigns:
+        lines.append(a.replace("P->", "P."))
+        lines.append("    n++;")
+    lines += [
+        "    fprintf(stderr, \"dynopt: patched %d x265 dispatch slot(s)\\n\","
+        " n);",
+        "}",
+        "",
+    ]
+    with open(src_path, "w") as f:
+        f.write("\n".join(lines))
+    r = run([cxx, "-fPIC"] + common + includes +
+            ["-c", src_path, "-o", obj_path], timeout=180)
+    if r.returncode != 0:
+        raise SystemExit("inject patch compile failed:\n" + r.stdout[-3000:])
+
+    # Unified diff against third_party/x265/source/common/primitives.cpp.
+    prim = os.path.join(ROOT, "third_party/x265/source/common",
+                        "primitives.cpp")
+    src = open(prim).read().splitlines()
+    mod = list(src)
+    for i, line in enumerate(mod):
+        if line.strip() == "namespace X265_NS {" and \
+                mod[i + 1].strip().startswith("// x265 private namespace"):
+            mod.insert(i + 2, 'extern "C" void dynopt_patch_primitives();')
+            break
+    for i, line in enumerate(mod):
+        if line.strip() == "setupAliasPrimitives(primitives);":
+            mod.insert(i + 1, "        dynopt_patch_primitives();")
+            break
+    diff = difflib.unified_diff(
+        src, mod,
+        fromfile="a/source/common/primitives.cpp",
+        tofile="b/source/common/primitives.cpp", lineterm="")
+    patch_path = os.path.join(outdir, "x265-dynopt-setup.patch")
+    with open(patch_path, "w") as f:
+        f.write("\n".join(diff) + "\n")
+    with open(os.path.join(outdir, "objects.txt"), "w") as f:
+        f.write("\n".join(objs + [obj_path]) + "\n")
+    report["inject"] = {
+        "patch_source": src_path,
+        "patch_object": obj_path,
+        "diff": patch_path,
+        "objects": objs + [obj_path],
+    }
+    print("wrote compile-in patch: %s" % patch_path)
+    print("patch source: %s" % src_path)
+    print("objects (%d):" % (len(objs) + 1))
+    for o in objs:
+        print("  " + o)
+    return obj_path
 
 
 def main():
@@ -463,6 +827,12 @@ def main():
                     help="candidate compile flags (default -O2)")
     ap.add_argument("--workdir", default="build/preload-work",
                     help="scratch dir for per-kernel objects")
+    ap.add_argument("--inject-outdir", default=None,
+                    help="instead of linking an LD_PRELOAD .so, write a "
+                         "compile-in patch (dynopt_patch.cpp/.o + unified "
+                         "diff for third_party/x265 primitives.cpp) plus "
+                         "all candidate objects; use "
+                         "scripts/build-x265-injected.sh to integrate")
     ap.add_argument("--no-isa-gate", action="store_true",
                     help="skip check_isa_level.py (use only for diagnosis)")
     ap.add_argument("--json", default="",
@@ -495,6 +865,7 @@ def main():
     objs = []
     decls = []
     assigns = []
+    saves = []
     report = {"isa": args.isa, "patched": [], "skipped": []}
     used_syms = set()
 
@@ -520,6 +891,9 @@ def main():
         if not sources:
             sources = try_generate_source(kernel, args.isa, args.workdir)
             if not sources:
+                sources = try_generate_specialized(
+                    kernel, args.isa, args.workdir)
+            if not sources:
                 report["skipped"].append([kernel, "no candidate source"])
                 continue
         obj = os.path.join(args.workdir,
@@ -540,6 +914,14 @@ def main():
                 if r.returncode == 0:
                     compiled = True
                     break
+            if not compiled:
+                spec_sources = try_generate_specialized(
+                    kernel, args.isa, args.workdir)
+                for src in spec_sources:
+                    r = run(cc + ["-c", src, "-o", obj], timeout=180)
+                    if r.returncode == 0:
+                        compiled = True
+                        break
         if not compiled:
             report["skipped"].append(
                 [kernel, "compile fail: " +
@@ -564,9 +946,20 @@ def main():
             continue
         used_syms.add(sym)
         objs.append(obj)
+        adapter = ADAPTERS.get(kernel)
+        slot_sym = adapter["adapter"] if adapter else sym
+        if adapter:
+            decls.append("extern \"C\" " +
+                         adapter["cand_decl"].replace("%SYM%", sym) + ";")
+            if adapter.get("orig_decl"):
+                decls.append(adapter["orig_decl"])
+            decls.append(adapter["body"].replace("%SYM%", sym))
+            if adapter.get("save"):
+                saves.append("    " + adapter["save"])
         for slot, ret, params in entries:
-            decls.append("extern \"C\" %s %s(%s);" % (ret, sym, params))
-            assigns.append("    P->%s = %s;" % (slot, sym))
+            if not adapter:
+                decls.append("extern \"C\" %s %s(%s);" % (ret, sym, params))
+            assigns.append("    P->%s = %s;" % (slot, slot_sym))
         report["patched"].append(
             {"kernel": kernel, "symbol": sym,
              "slots": [s for s, _, _ in entries]})
@@ -574,12 +967,22 @@ def main():
     if not objs:
         raise SystemExit("no candidates survived the ISA/source filters")
 
+    if args.inject_outdir:
+        write_inject_patch(args.inject_outdir, decls, saves, assigns,
+                           objs, args.cxx, common, includes, report)
+        if args.json:
+            with open(args.json, "w") as f:
+                json.dump(report, f, indent=1)
+        return 0
+
     wrapper = os.path.join(args.workdir, "dynopt_patch.cpp")
     lines = [
         "// Generated by tools/build_preload_so.py -- do not edit.",
         "#include <dlfcn.h>",
+        "#include <link.h>",
         "#include <stdint.h>",
         "#include <stdio.h>",
+        "#include <string.h>",
         "#include \"common/primitives.h\"",
         "",
         "using namespace X265_NS;",
@@ -596,9 +999,30 @@ def main():
     lines += decls
     lines += [
         "",
+        "static int dynopt_find_x265_cb(struct dl_phdr_info* info,",
+        "                               size_t, void* ctx)",
+        "{",
+        "    const char* name = info->dlpi_name ? info->dlpi_name : \"\";",
+        "    if (!strstr(name, \"libx265\"))",
+        "        return 0;",
+        "    void* h = dlopen(name, RTLD_NOW | RTLD_LOCAL | RTLD_NOLOAD);",
+        "    if (!h)",
+        "        return 0;",
+        "    void* sym = dlsym(h, \"_ZN4x26510primitivesE\");",
+        "    if (sym)",
+        "    {",
+        "        *(void**)ctx = sym;",
+        "        return 1;",
+        "    }",
+        "    return 0;",
+        "}",
+        "",
         "static EncoderPrimitives* dynopt_primitives(void)",
         "{",
-        "    void* p = dlsym(RTLD_DEFAULT, \"_ZN4x26510primitivesE\");",
+        "    void* p = nullptr;",
+        "    dl_iterate_phdr(dynopt_find_x265_cb, &p);",
+        "    if (!p)",
+        "        p = dlsym(RTLD_DEFAULT, \"_ZN4x26510primitivesE\");",
         "    if (!p && &X265_NS::primitives)",
         "        p = &X265_NS::primitives;",
         "    return reinterpret_cast<EncoderPrimitives*>(p);",
@@ -611,6 +1035,7 @@ def main():
         "        return -1;",
         "    int n = 0;",
     ]
+    lines += saves
     for a in assigns:
         lines.append(a)
         lines.append("    n++;")
