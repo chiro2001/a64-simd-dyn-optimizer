@@ -509,8 +509,8 @@ def make_emitter(kernel, backend="acle"):
         if not m:
             raise ValueError("unrecognized interp8vpp kernel %r" % kernel)
         w, h = int(m.group(1)), int(m.group(2))
-        if w % 16:
-            raise ValueError("interp8vpp emitter requires width %% 16 == 0"
+        if w % 8:
+            raise ValueError("interp8vpp emitter requires width %% 8 == 0"
                              " (got %d)" % w)
         from emit_interp8_sve2_shared import emit_vpp
 

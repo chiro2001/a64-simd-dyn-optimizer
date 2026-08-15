@@ -303,7 +303,7 @@ def emit_vpp(func_name, width=16, height=16, acc_split=1, tile=None):
     (fewest instructions, 4-deep MLA chain); 2 = four 2-product
     accumulators (2-deep chains, more ILP, +2 adds/unit/row).
     """
-    units = width // 16
+    units = max(1, width // 16)
     rows = height
     n_rows = rows + 7
     coeff = {
@@ -333,6 +333,8 @@ def emit_vpp(func_name, width=16, height=16, acc_split=1, tile=None):
     lines.append("    const svbool_t p16 = svptrue_b16();")
     lines.append("    const svbool_t p8b = svwhilelt_b8((uint32_t)0, "
                  "(uint32_t)16);")
+    lines.append("    const svbool_t pout = svwhilelt_b8((uint32_t)0,"
+                 " (uint32_t)%d);" % min(16, width))
     lines.append("    const int ph = (coeffIdx >= 1 && coeffIdx <= 3) "
                  "? coeffIdx : 2;")
     for k in range(8):
@@ -383,7 +385,7 @@ def emit_vpp(func_name, width=16, height=16, acc_split=1, tile=None):
                 out.append("%s    svuint8_t u8 = svqrshrunb_n_s16("
                            "pixels, 6);" % ind)
                 out.append("%s    svuint8_t uz = svuzp1_u8(u8, u8);" % ind)
-                out.append("%s    svst1_u8(p8b, dst + (%s + %d) *"
+                out.append("%s    svst1_u8(pout, dst + (%s + %d) *"
                            " dstStride + %d, uz);"
                            % (ind, t0, i, u * 16))
                 out.append("%s}" % ind)
