@@ -1,0 +1,38 @@
+# 920B 真实视频端到端测试（2026-08-15）
+
+## 输入
+
+- 源视频：`1416529-hd_1920_1080_30fps.mp4`（367 帧，12.23s）
+- 测试切片：本地 ffmpeg 转前 30 帧 raw YUV420（89MB），scp 到 920B 云端
+  `/tmp/real_1080p_30f.yuv`
+
+## 命令
+
+```sh
+taskset -c 0 build/x265-8-gcc/x265 --input /tmp/real_1080p_30f.yuv \
+  --input-res 1920x1080 --fps 30 --frames 30 -o /dev/null \
+  --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0 --b-adapt 0
+```
+
+## 结果（各 3 次）
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 基线（未注入） | 8107 ms | 8129 ms | 8134 ms | 8129 ms |
+| 注入 79 个 SVE1 kernel | 8990 ms | 8983 ms | 8969 ms | 8983 ms |
+
+当前注入相对基线 **+10.5% 变慢**，与 640x360 随机 YUV 的 +4.5% 方向一致。
+
+## gprof 热点（优化版，30 帧）
+
+| 函数 | 占比 | 说明 |
+| --- | ---: | --- |
+| dynopt_cost_coeff_nxn_sve2 | 15.4% | 较上游 costCoeffNxN_neon（基线 18.1%）略快 |
+| dynopt_scan_pos_last_sve2 | 14.6% | 较上游 scanPosLast_neon（基线 11.9%）慢 ~35% |
+| Quant::signBitHidingHDQ | 9.8% | 非 dispatch，需源码级优化 |
+| costC1C2Flag_c | 7.7% | 仍是 C 标量 |
+| costCoeffRemain_c | 5.4% | 仍是 C 标量 |
+| Entropy::codeCoeffNxN | 5.7% | 熵编码主路径 |
+
+下一步优先级：scanPosLast 追平/超过上游、costC1C2Flag/costCoeffRemain
+NEON 化、signBitHidingHDQ 源码优化。

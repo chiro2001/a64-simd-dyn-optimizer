@@ -68,6 +68,21 @@ taskset -c 0 build/x265-8-gcc/x265 --input /tmp/input.yuv \
 adapter 的 `diff` 行距错误（应为 `MAX_CU_SIZE=64`，不是 `rec` 的
 `stride`），修复后 79 kernel 全量可稳定编码。
 
+### 7.1 真实 1080p 视频（2026-08-15）
+
+使用 `1416529-hd_1920_1080_30fps.mp4` 前 30 帧 raw YUV420 在 920B
+单核测试（各 3 次）：
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 基线 | 8107 ms | 8129 ms | 8134 ms | 8129 ms |
+| 注入 79 kernel | 8990 ms | 8983 ms | 8969 ms | 8983 ms |
+
+当前注入 +10.5% 变慢。gprof 显示热点集中在熵编码/量化路径：
+`costCoeffNxN`、`scanPosLast`、`signBitHidingHDQ`、`costC1C2Flag_c`、
+`costCoeffRemain_c`；这些是下一步优化的主目标。详细报告见
+[reports/real-1080p-e2e-20260815.txt](../reports/real-1080p-e2e-20260815.txt)。
+
 真机验证还发现并修复了 copy relocation 问题：x265 可执行文件会把
 `x265::primitives` copy 到自身地址空间，`dlsym(RTLD_DEFAULT)` 拿到的是
 空副本；注入器现通过 `dl_iterate_phdr` 找到真实 `libx265.so` 对象再取

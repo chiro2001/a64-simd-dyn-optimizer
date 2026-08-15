@@ -32,7 +32,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ISA_MARCH = {
-    "sve1": "armv8.2-a+sve",
+    "sve1": "armv8.2-a+sve+dotprod",
     "sve2": "armv8.2-a+sve2",
     "sve2p1": "armv9.4-a+sve2p1",
     "sve2p3": "armv9.4-a+sve2p3",

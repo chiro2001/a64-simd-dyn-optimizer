@@ -54,7 +54,7 @@ _OPT_EXTRA = ""
 _ISA = None
 
 ISA_MARCH = {
-    "sve1": "armv8.2-a+sve",
+    "sve1": "armv8.2-a+sve+dotprod",
     "sve2": "armv8.2-a+sve2",
     "sve2p1": "armv9.4-a+sve2p1",
     "sve2p3": "armv9.4-a+sve2p3",
