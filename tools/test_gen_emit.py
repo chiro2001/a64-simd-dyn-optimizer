@@ -33,6 +33,8 @@ KERNELS = {
     "satd-4": ("satd-4x4", "hadamard", {}),
     "satd-8": ("satd-8x8", "hadamard", {"pack": 2}),
     "satd-16": ("satd-16x16", "hadamard", {"pack": 2}),
+    "satd-16x32": ("satd-16x32", "hadamard", {"pack": 2}),
+    "satd-16x64": ("satd-16x64", "hadamard", {"pack": 2}),
     "satd-4x8": ("satd-4x8", "hadamard", {}),
     "satd-8x4": ("satd-8x4", "hadamard", {}),
     "satd-8x16": ("satd-8x16", "hadamard", {"pack": 2}),

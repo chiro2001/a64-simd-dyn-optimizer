@@ -541,3 +541,18 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - 对照上游 `satd8_sve2<8,32>` 位级一致。
 - `kernels/satd-8x32` + `seeds/satd-8x32.yaml` 建立，manifest 直接
   包含 `pack: [1,2]`；冒烟测试扩到 23 核。
+
+## 29. satd 16x32 / 16x64 同法覆盖（2026-08-15）
+
+- 抽取：wrapper `satd8_neon<16,H>` 会调用两次/四次
+  `pixel_satd_16x16_neon`；clang 需 `-mllvm -inline-threshold=100000`
+  才会强制内联（与 idct32 同款）。内联后 16x32 = 1007 节点、
+  16x64 = 2007 节点直线 MachineIR。
+- width-16 natural lowering 的 height 轴扩为 {4,8,16,32,64}；
+  16x64 的 16 个 4-row 组 u16 累计上界 65280，仍在 u16 可表示域。
+- 验收（各 20k 差分 0 失配，对照上游 `satd8_sve2` 位级一致）：
+  - satd-16x32：pack=2 **276 fused / MCA 106**（pack=1 872/234，
+    -68%/-55%）；
+  - satd-16x64：pack=2 **548 / 174**（pack=1 1740/438，
+    -69%/-60%）。
+- 新增 `kernels/satd-16x32|16x64` + seeds；冒烟测试扩到 25 核。
