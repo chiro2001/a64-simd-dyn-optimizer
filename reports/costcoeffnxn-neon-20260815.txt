@@ -46,3 +46,13 @@ CCDIAG st=0 tr=32 soff=5 mask=0 off=24 sub=224 want=0001f1d3 got=00018de3
 - 方法论：含 beyond-bound read 的上游 asm 无法用 QEMU/交叉环境验证，
   真实注入码流是唯一判据；这类 kernel 的优化需要先在真机用与生产相同
   构建的 ref 做差分。
+
+## round-0024b 补记
+
+排查中发现云端 build.ninja 链接行可能残留 `/tmp/<name>.o`（诊断实验
+对象），导致 relink 静默失败、编码使用旧 lib——早先一次“NEON 注入码流
+不一致”的读数由此存疑。清理全部 /tmp 对象后重新注入，**09841f… 稳定
+复现**（非假象），beyond-bound 环境差异结论成立。
+
+`scripts/cloud-e2e-inject.sh` 的链接行清理已改为删除所有 `/tmp/*.o`
+（防止残留对象再次污染 relink）。

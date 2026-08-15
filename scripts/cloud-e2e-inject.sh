@@ -31,9 +31,10 @@ lines = open(p).read().splitlines()
 for i, line in enumerate(lines):
     if line.startswith('build libx265.so.216:') and 'dynopt_patch.o' not in line:
         # Drop previously injected dynopt objects before adding this bundle.
-        line = re.sub(
-            r'(?: /tmp/e2e/work/[^ ]+\.o| /tmp/e2e/out/dynopt_patch\.o)+',
-            '', line)
+        # Strip every /tmp object: diagnostic experiments can leave
+        # stray /tmp/<name>.o in the link line (round-0024 found a
+        # /tmp/ccn-neon5.o3.o that made relinks fail silently).
+        line = re.sub(r'(?: /tmp/[^ ]+\.o)+', '', line)
         lines[i] = line.replace(' | x265.def', ' ' + objs + ' | x265.def')
         break
 open(p, 'w').write('\n'.join(lines) + '\n')
