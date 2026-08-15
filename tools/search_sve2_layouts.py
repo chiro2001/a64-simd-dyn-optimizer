@@ -630,6 +630,7 @@ def make_emitter(kernel, backend="acle"):
         "chroma-copy-pp": ("dynopt_chroma_copy_pp_sve2", 16, 16),
         "chroma-copy-pp-32x32": ("dynopt_chroma_copy_pp_32x32_sve2",
                                  32, 32),
+        "chroma-copy-pp-8x8": ("dynopt_chroma_copy_pp_8x8_sve2", 8, 8),
     }
     if kernel in _copy_shapes:
         from emit_blockcopy_pp_sve2_shared import emit_combo as _copy_emit
