@@ -1261,7 +1261,7 @@ def main():
                          "(default 0 = off)")
     ap.add_argument("--rank-by",
                     choices=("fused_uop", "mca", "cp", "lite", "vector-lb",
-                             "consensus", "bench920"),
+                             "consensus", "bench920", "ago"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
@@ -1584,6 +1584,46 @@ def main():
     ok = [r for r in results if r.get("passed") and r.get("counts")]
     fused_key = fu
     ok.sort(key=fused_key)
+    if args.rank_by == "ago" and ok:
+        # AGO M2 ranker: compile each candidate, extract final-object
+        # features, predict cycles from the target cost table.
+        import json as _json
+        import subprocess as _sp
+        _opt = os.path.join(ROOT, "optimizer")
+        if _opt not in sys.path:
+            sys.path.insert(0, _opt)
+        from ago.objfeatures import extract_features  # noqa: E402
+        from ago.predict import predict_from_features  # noqa: E402
+        if args.kernel == "satd-8":
+            from ago.covers_satd8 import cover_meta as _cmeta  # noqa: E402
+        else:
+            from ago.covers_sa8d8 import cover_meta as _cmeta  # noqa: E402
+        tgt = args.mca_target or "NP1"
+        table_path = {
+            "920B": os.path.join(
+                ROOT, "benchmarks/sve-timing-920b/timing-sve1-ago.json"),
+            "NP1": os.path.join(
+                ROOT, "benchmarks/neon-timing-n1/timing-n1.json"),
+        }.get(tgt, os.path.join(ROOT,
+                                "benchmarks/neon-timing-n1/timing-n1.json"))
+        table = _json.load(open(table_path))
+        meta = _cmeta()
+        for r in ok:
+            src = os.path.join(args.outdir, r["tag"] + ".cpp")
+            obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
+            _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++11",
+                     "-march=armv8.2-a+dotprod", "-c", src, "-o", obj],
+                    timeout=180, capture_output=True)
+            feats = extract_features(obj, src)
+            cover = r["tag"].split("-")[-1]
+            p = predict_from_features(meta, cover, table, feats)
+            r["ago_pred"] = p["predicted_cyc"]
+        print("rank by ago prediction (%s table):" % tgt)
+        for r in sorted(ok, key=lambda r: r.get("ago_pred") or 1e9):
+            print("  %-24s fused_uop=%d ago_pred=%.1f"
+                  % (r["tag"], fu(r), r.get("ago_pred") or 0.0))
+        ok.sort(key=lambda r: (r.get("ago_pred") is None,
+                               r.get("ago_pred") or 1e9, fu(r)))
     baseline = manifest.get("targets", {}).get("baseline_fused_uop")
     gate = manifest.get("targets", {}).get("halve_gate", 0.5)
     shape = manifest.get("shape", {})

@@ -56,4 +56,5 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
 
 - `--backend ago` 已接入 tools/search_sve2_layouts.py（satd-8 A-E /
   sa8d A-C cover 轴，端到端冒烟通过）；
-- 待办：`--rank-by ago`（M2 排序器接入搜索排序）。
+- `--rank-by ago` 已接入（M2 排序器：final-object 特征 + 目标成本表
+  预测排序，冒烟方向与实测一致）。
