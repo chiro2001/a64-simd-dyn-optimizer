@@ -97,3 +97,10 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [ ] **interp8 vps 内联候选**（filter8_u8x16 全内联）：20k + 920B
   paired + 注入；
 - [ ] interp4 filter4 / sa8d16 32/64 内联候选（次优先）。
+
+## interp8 filter8 外链验证（2026-08-16 完成）
+
+- [x] 微基准证实外链 vs 内联差距 **~2.0x**
+  （reports/filter8-inline-gain-920b-20260816.txt）；
+- [ ] interp8 vps/hps 内联候选（覆盖 luma_vps/luma_hps 热点形状）：
+  20k + 920B paired + 注入 E2E（下一轮主任务）。

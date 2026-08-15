@@ -1,0 +1,30 @@
+# interp8 filter8_u8x16 外链成本验证（2026-08-16）
+
+## 结论
+
+920B 上 GCC12 把 interp8 的 `filter8_u8x16` helper 外链为 `bl`
+（lib 中 244 处调用），实测外链 vs 内联差距 **~2.0x**：
+
+| 实现 | ticks/20000x8 行 | 相对 |
+| --- | ---: | ---: |
+| filter8 noinline（模拟 lib 外链） | 70564-73949 | 1.00 |
+| filter8 always_inline | 34530-36238 | **0.49（内联快 ~2.0x）** |
+
+（自包含微基准 benchmarks/filter8_inline_microbench.cpp，CNTVCT 中位，
+coeffIdx=3，8x16 宽行，batch=20000）
+
+## 影响面
+
+- 外链 helper：filter8_u8x16<1/2/3>（244 处）、filter8_u8x8；
+- 受影响函数：interp8_vert_ps_neon（luma_vps 槽）、
+  interp8_horiz_ps_neon（luma_hps 槽）、以及 h/v 组合路径；
+- perf 热点：interp8_horiz_ps 0.88%、vert_sp 0.94+0.82%、
+  interp_hv（dotprod）2.27%；interp 家族合计 ~5%。
+
+## 下一步
+
+- 生成 interp8 vps/hps 内联候选（复制上游模板 + always_inline，
+  语义 bit-exact，零算法改动）；
+- 先覆盖热点形状（16x16/32x32/8x8 等 luma_vps/luma_hps 槽），
+  20k 差分 + 920B paired + 注入 E2E；
+- filter8_u8x8（宽度 8）与 interp4 filter4 同型，后续覆盖。
