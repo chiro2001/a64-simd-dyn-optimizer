@@ -11,17 +11,17 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 112 |
+| kernel 目录 | 113 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
 | AArch64 已注册字段 | 29 |
-| 已覆盖字段 | 21 |
-| 字段级剩余 todo | 8 |
+| 已覆盖字段 | 22 |
+| 字段级剩余 todo | 7 |
 | 自动搜索 kernel 占比 | 69/94 ≈ 73.4% |
 
 剩余字段：`chroma`、`costCoeffNxN`、`cu`、`findPosFirstLast`、
-`pelFilterLumaStrong`、`pu`、`scanPosLast`、`sign`。
+`pelFilterLumaStrong`、`pu`、`scanPosLast`。
 
 ## 2. 自动搜索线：有上游/手写基线的追平情况
 
@@ -143,6 +143,7 @@
 | --- | --- | --- |
 | planecopy | planecopy_cp 64x32 | 128/60 |
 | weight-pp | weight_pp 64x32 branch-0 | 642/213 |
+| sign | sign 64 (variable endX) | 16/30 |
 
 ## 6. 手动/特化线
 

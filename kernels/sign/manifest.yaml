@@ -1,0 +1,31 @@
+# sign primitive: dst[i] = sign(src1[i]-src2[i]), variable endX <= 64.
+kernel: sign
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sign
+  n: 64
+
+candidate:
+  symbol: dynopt_sign_sve2
+  trace_driver_src: kernels/sign/trace_driver.cpp
+  trace_driver_c: kernels/sign/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: calSign_neon
+  symbol_mangled: calSign_neon
+  call: calSign_neon
+  decl: |
+    static void calSign_neon(int8_t*, const uint8_t*, const uint8_t*, int);
+
+baselines:
+  neon:
+    driver: kernels/sign/trace_driver.cpp
+    symbol_mangled: calSign_neon
+
+corpus:
+  cases: 20000
+
+layouts:
+  compute: [sve]

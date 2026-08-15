@@ -29,6 +29,8 @@
 - **luma hpp 非方形覆盖**：8x16/16x8/16x32/32x16 首覆盖
   （181/75、167/71、647/197、649/197），SVE2p3 path-B，20k 差分
   0 失配。
+- **sign 字段首覆盖**：SVE2 分块实现 16 fused / 30 MCA，20k 差分
+  0 失配；enumerate 字段级 todo 降至 7。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。

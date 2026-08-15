@@ -600,6 +600,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit(combo)
         return emit_fn
+    if kernel == "sign":
+        from emit_sign_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 
