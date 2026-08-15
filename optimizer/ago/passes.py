@@ -45,7 +45,7 @@ class Normalize(Pass):
 
     def check_post(self, g: Graph) -> bool:
         known = {"load", "sub_ext", "hadamard_v", "hadamard_h_abs",
-                 "add", "reduce_addv", "shift_rnd", "perm"}
+                 "max", "add", "reduce_addv", "shift_rnd", "perm"}
         outs = {op.out for op in g.ops.values()}
         for n, op in g.ops.items():
             if op.kind not in known:

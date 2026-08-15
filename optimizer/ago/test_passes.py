@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "optimizer"))
 
-from ago.frontend import SA8D8_DSL, parse_dsl  # noqa: E402
+from ago.frontend import SA8D8_DSL, SATD8_DSL, parse_dsl  # noqa: E402
 from ago.ir import Op  # noqa: E402
 from ago.passes import PassError, Pipeline, RemoveUnused, default_pipeline  # noqa: E402
 
@@ -36,6 +36,12 @@ class TestPasses(unittest.TestCase):
         g = parse_dsl(SA8D8_DSL)
         with self.assertRaises(PassError):
             Pipeline([RemoveUnused()]).run(g, budget=1, max_nodes=0)
+
+    def test_satd8_graph_accepted(self):
+        g = parse_dsl(SATD8_DSL)
+        g1 = default_pipeline().run(g)
+        g2 = default_pipeline().run(g1)
+        self.assertEqual(g1.canonical_hash(), g2.canonical_hash())
 
 
 if __name__ == "__main__":

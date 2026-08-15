@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from ago.ir import Graph, Op, Shape, Value
 
@@ -31,6 +31,9 @@ _ROW = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*sub_ext\(load\((\w+),\s*(\d+)\),"
                   r"\s*load\((\w+),\s*(\d+)\)\)$")
 _HV = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*hadamard_v\((\w+)\)$")
 _HH = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*hadamard_h_abs\((\w+)\)$")
+_V4 = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*hadamard4_v\((\w+)\)$")
+_H4 = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*hadamard4_h_abs\((\w+)\)$")
+_MAX = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*max\((\w+),\s*(\w+)\)$")
 _ADD = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*add\((\w+),\s*(\w+)\)$")
 _RED = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*reduce_addv\((\w+)\)$")
 _SHR = re.compile(r"^([a-zA-Z_]\w*)\s*=\s*shift_rnd\((\w+),\s*(\d+)\)$")
@@ -46,6 +49,8 @@ def parse_dsl(text: str) -> Graph:
         raise FrontendError("missing kernel name")
     name = lines[0].split()[1]
     g = Graph(name=name, inputs={}, outputs=(), ops={}, contract=text)
+    groups: Dict[str, Tuple[List[str], int]] = {}
+    hv_n = hh_n = max_n = 0
     i = 1
     while i < len(lines) and lines[i].startswith("input "):
         parts = lines[i].split()
@@ -75,8 +80,9 @@ def parse_dsl(text: str) -> Graph:
             load_b = "ld2_%s" % rb
             g.ops[load_a] = Op("load", (pa,), "p1r%s" % ra, {"row": int(ra)})
             g.ops[load_b] = Op("load", (pb,), "p2r%s" % rb, {"row": int(rb)})
-            g.ops[dst] = Op("sub_ext", ("p1r%s" % ra, "p2r%s" % rb), dst,
-                            {"elem": "s16"})
+            g.ops["diff_%s" % ra] = Op(
+                "sub_ext", ("p1r%s" % ra, "p2r%s" % rb), dst,
+                {"elem": "s16"})
             ids[dst] = dst
             i += 1
             continue
@@ -107,6 +113,55 @@ def parse_dsl(text: str) -> Graph:
                     tuple("t%d" % j for j in range(base, base + 4)),
                     "s%d" % k, {"group": k})
             ids[dst] = "s0"
+            i += 1
+            continue
+        m = _V4.match(ln)
+        if m:
+            dst, src = m.groups()
+            if not re.match(r"^d[0-7]$", src):
+                raise FrontendError(
+                    "hadamard4_v source %s must be a row diff (d0..d7)" % src)
+            row = int(src[1:])
+            if row not in (0, 4):
+                raise FrontendError(
+                    "hadamard4_v row group must start at d0 or d4")
+            q = 0 if row == 0 else 1
+            ins = tuple("d%d" % j for j in range(row, row + 4))
+            outs = [dst + str(k) for k in range(4)]
+            for k in range(4):
+                g.ops["h_v_%d" % (hv_n + k)] = Op(
+                    "hadamard_v", ins, outs[k],
+                    {"n": 4, "idx": k, "quad": q})
+            hv_n += 4
+            groups[dst] = (outs, q)
+            ids[dst] = outs[0]
+            i += 1
+            continue
+        m = _H4.match(ln)
+        if m:
+            dst, src = m.groups()
+            if src not in groups:
+                raise FrontendError(
+                    "hadamard4_h_abs source %s is not a 4-row group" % src)
+            ins, q = groups[src]
+            outs = [dst + str(k) for k in range(4)]
+            for k in range(4):
+                g.ops["h_h_%d" % (hh_n + k)] = Op(
+                    "hadamard_h_abs", tuple(ins), outs[k],
+                    {"n": 4, "group": hh_n + k, "quad": q})
+            hh_n += 4
+            groups[dst] = (outs, q)
+            ids[dst] = outs[0]
+            i += 1
+            continue
+        m = _MAX.match(ln)
+        if m:
+            dst, a, b = m.groups()
+            g.ops["max_%d" % max_n] = Op(
+                "max", (ids.get(a, a), ids.get(b, b)), dst,
+                {"elem": "u16"})
+            max_n += 1
+            ids[dst] = dst
             i += 1
             continue
         m = _ADD.match(ln)
@@ -155,6 +210,33 @@ o1 = add(s2, s3)
 accv = add(o0, o1)
 scalar = reduce_addv(accv)
 satd = shift_rnd(scalar, 1)
+output satd
+"""
+
+SATD8_DSL = """\
+kernel satd8
+input pix1 u8 8 64 stride 8
+input pix2 u8 8 64 stride 8
+d0 = sub_ext(load(pix1, 0), load(pix2, 0))
+d1 = sub_ext(load(pix1, 1), load(pix2, 1))
+d2 = sub_ext(load(pix1, 2), load(pix2, 2))
+d3 = sub_ext(load(pix1, 3), load(pix2, 3))
+d4 = sub_ext(load(pix1, 4), load(pix2, 4))
+d5 = sub_ext(load(pix1, 5), load(pix2, 5))
+d6 = sub_ext(load(pix1, 6), load(pix2, 6))
+d7 = sub_ext(load(pix1, 7), load(pix2, 7))
+t = hadamard4_v(d0)
+tB = hadamard4_v(d4)
+s = hadamard4_h_abs(t)
+sB = hadamard4_h_abs(tB)
+m0 = max(s0, s1)
+m1 = max(s2, s3)
+m2 = max(sB0, sB1)
+m3 = max(sB2, sB3)
+o0 = add(m0, m1)
+o1 = add(m2, m3)
+accv = add(o0, o1)
+satd = reduce_addv(accv)
 output satd
 """
 

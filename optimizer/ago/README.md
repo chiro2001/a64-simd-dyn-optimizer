@@ -1,7 +1,8 @@
 # AGO (AArch64 SIMD Graph Optimizer)
 
 Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代价指令选择
-→ 真机反馈。当前处于 **M0：SA8D 8x8 垂直切片**。
+→ 真机反馈。当前状态：**M0/M1 完成，M2（第二个数据流锚点 satd8 8x8
++ 有界 cover 搜索 + 留出集代价排序）进行中**。
 
 ## 语义权威原则（round-0023 P0）
 
@@ -20,9 +21,13 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
 ## 目录
 
 - `ir.py`：最小类型化 IR 契约（Shape/Op/Graph/contract_hash）。
-- `TODO-M0.md`：垂直切片任务清单。
+- `TODO-M0.md`：M0 垂直切片任务清单（已完成）；
+- `TODO-M2.md`：M2 第二个锚点与 cover 搜索/排序任务清单。
 
 ## 状态
 
-2026-08-16：规划与咨询完成（expert-advice/round-0023），骨架建立，M0
-待执行。
+2026-08-16：
+- M0 验收通过（SA8D 8x8，N1 0.985 / 920B 1.006，0 失配，提交 86ff2df）；
+- M1 通过（受限 DSL 前端 + pass 管线，提交 43dfc7e / 1accad9）；
+- M2 锚点进行中：satd8 8x8 契约/图/cover/20k 门禁/paired 微基准就绪；
+- round-0024 规划咨询已异步启动。
