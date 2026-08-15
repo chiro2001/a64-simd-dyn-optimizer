@@ -657,11 +657,13 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
-    if kernel == "cu-copy-ss":
+    if kernel in ("cu-copy-ss", "chroma-copy-ss-16x16"):
         from emit_cu_copy_ss_sve2_shared import emit_combo
+        _sym = ("dynopt_cu_copy_ss_16x16_sve2" if kernel == "cu-copy-ss"
+                else "dynopt_chroma_copy_ss_16x16_sve2")
 
         def emit_fn(combo):
-            return emit_combo(combo)
+            return emit_combo(combo, func_name=_sym)
         return emit_fn
     if kernel == "cu-add-ps":
         from emit_cu_add_ps_sve2_shared import emit_combo

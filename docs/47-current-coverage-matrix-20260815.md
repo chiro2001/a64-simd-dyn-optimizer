@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 176 |
+| kernel 目录 | 177 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -206,6 +206,7 @@
 | chroma-copy-pp-32x32 | 32x32 代表切片 | 64/43 |
 | chroma-addavg-8x8 | 8x8 代表切片 | 64/41 |
 | chroma-copy-pp-8x8 | 8x8 代表切片 | 16/18 |
+| chroma-copy-ss-16x16 | 16x16 代表切片 | 32/26 |
 | pel-filter-luma-strong | V/H 强滤波 | 81/53（NEON 版，优于标量 82 MCA） |
 
 ## 6. 手动/特化线
