@@ -68,6 +68,11 @@ python3 tools/search_sve2_layouts.py --kernel interp8 --target 950 \
 | satd-16x16 | 174/87 | gen hadamard，SVE1 |
 | interp4-16x16 | 295/104 | gen fir，SVE1 |
 
+920B 端到端实测（640x360/30 帧、单核单线程、输出 /dev/null）：注入全部
+79 个 SVE1 kernel 后中位 7476 ms vs 基线 7152 ms（约 +4.5% 变慢），当前
+SVE1 候选适合搜索/正确性验证，不适合直接替换；详见
+[docs/48](docs/48-preload-and-isa-profiles.md) §7。
+
 ## LD_PRELOAD 注入器
 
 `tools/build_preload_so.py` 一键生成动态库，加载后通过拦截

@@ -45,6 +45,29 @@ CNTVCT 实测（920B，上游 NEON 基线 vs SVE1 候选，2000 次）：
 正确性验证，**不适合直接替换**；后续应针对 920B 增加 NEON-native 候选或
 调整搜索目标 profile。
 
+## 7. 920B 端到端编码实测（2026-08-15）
+
+在云端 920B（SVE1）用编译进 `libx265.so` 的方式注入全部 79 个 SVE1
+kernel，跑单核单线程端到端编码：
+
+```sh
+taskset -c 0 build/x265-8-gcc/x265 --input /tmp/input.yuv \
+  --input-res 640x360 --fps 30 --frames 30 -o /dev/null \
+  --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0 --b-adapt 0
+```
+
+输入为 30 帧随机 640x360 YUV420；基线为同一 CLI + 未注入 `libx265.so`。
+
+| 配置 | run1 | run2 | run3 | 中位 |
+| --- | ---: | ---: | ---: | ---: |
+| 基线 | 7151 ms | 7152 ms | 7155 ms | 7152 ms |
+| 注入 79 kernel | 7481 ms | 7473 ms | 7476 ms | 7476 ms |
+
+结果：端到端 **+4.5% 变慢**，与单 kernel CNTVCT 方向一致。当前 SVE1
+候选不能带来 920B 端到端收益；注入全量时还发现并修复了 sao-stats
+adapter 的 `diff` 行距错误（应为 `MAX_CU_SIZE=64`，不是 `rec` 的
+`stride`），修复后 79 kernel 全量可稳定编码。
+
 真机验证还发现并修复了 copy relocation 问题：x265 可执行文件会把
 `x265::primitives` copy 到自身地址空间，`dlsym(RTLD_DEFAULT)` 拿到的是
 空副本；注入器现通过 `dl_iterate_phdr` 找到真实 `libx265.so` 对象再取

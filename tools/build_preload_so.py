@@ -139,7 +139,7 @@ static void dynopt_stats_bo_adapter(
         return dynopt_orig_stats_bo(diff, rec, stride, endX, endY,
                                     stats, count);
     for (int y = 0; y < endY; y++)
-        %SYM%(diff + y * stride, rec + y * stride, stride, stats, count);
+        %SYM%(diff + y * 64, rec + y * stride, stride, stats, count);
 }
 """,
         "save": "dynopt_orig_stats_bo = P->saoCuStatsBO;",
@@ -158,7 +158,7 @@ static void dynopt_stats_e0_adapter(
         return dynopt_orig_stats_e0(diff, rec, stride, endX, endY,
                                     stats, count);
     for (int y = 0; y < endY; y++)
-        %SYM%(diff + y * stride, rec + y * stride, stride, stats, count);
+        %SYM%(diff + y * 64, rec + y * stride, stride, stats, count);
 }
 """,
         "save": "dynopt_orig_stats_e0 = P->saoCuStatsE0;",
@@ -178,7 +178,7 @@ static void dynopt_stats_e1_adapter(
         return dynopt_orig_stats_e1(diff, rec, stride, upBuff1,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
-        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+        %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               stats, count);
 }
 """,
@@ -199,7 +199,7 @@ static void dynopt_stats_e2_adapter(
         return dynopt_orig_stats_e2(diff, rec, stride, upBuff1, upBuff,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
-        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+        %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               upBuff, stats, count);
 }
 """,
@@ -220,7 +220,7 @@ static void dynopt_stats_e3_adapter(
         return dynopt_orig_stats_e3(diff, rec, stride, upBuff1,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
-        %SYM%(diff + y * stride, rec + y * stride, stride, upBuff1,
+        %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               stats, count);
 }
 """,
