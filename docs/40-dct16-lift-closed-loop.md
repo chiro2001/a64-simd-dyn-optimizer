@@ -634,3 +634,17 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - hps 16x16：**362 fused / MCA 117**；
   - hps 32x32：**1418 / 502**。
 - 冒烟测试扩到 37 核。
+
+## 36. vertical-ps 配方：interp8 vps 16x16 / 32x32（2026-08-15）
+
+- 新增 `detect_vertical_ps`（umull + `<8 x i16>` stores + vert_ps 函数名）
+  与 `_emit_vertical_ps_native`：复用 vertical-fir 原生软流水，但
+  累加器零初始化（-IF_INTERNAL_OFFS 与 128 bias 抵消）并直接
+  `svst1_s16` 输出。
+- constant-shape wrapper seed 抽取：16x16=587 节点、32x32=2255 节点。
+- `gen_verify` 新增 `interp8_vps` 形状：垂直方向留 3 行余量、
+  dstStride>=width、coeffIdx 1..3 运行时扫描。
+- 验收（各 20k 差分 0 失配）：
+  - vps 16x16：**214 fused / MCA 136**；
+  - vps 32x32：**808 / 479**。
+- 冒烟测试扩到 39 核。

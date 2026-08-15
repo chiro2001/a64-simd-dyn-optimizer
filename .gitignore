@@ -191,3 +191,10 @@ experiments/m30-interp8-hps-search/gen-search-interp8-hps-16x16/*
 experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32/*
 !experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32/results.json
 !experiments/m30-interp8-hps-search/gen-search-interp8-hps-32x32/compute-*.cpp
+
+# interp8 vps artifacts (2026-08-15): keep results + generated candidate
+# sources; trace/log/verify/binaries regenerate.
+experiments/m30-interp8-vps-search/gen-search-*/*
+!experiments/m30-interp8-vps-search/gen-search-*/results.json
+!experiments/m30-interp8-vps-search/gen-search-*/*acc_split-1*.cpp
+!experiments/m30-interp8-vps-search/gen-search-*/compute-sve_acc_split-1.cpp
