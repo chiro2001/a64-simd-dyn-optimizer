@@ -779,3 +779,12 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
   - 其余形状 fused 显著下降；大形状 MCA 有轻微换向（vss 32x32
     1056→1096、vsp 32x32 1137→1178），保留在文档中如实记录。
 - 结果已重跑并回填 docs/46 表。
+
+## 50. planecopy_cp 首覆盖（2026-08-15）
+
+- 新配方 `planecopy`：从 constant-shape wrapper 抽取 510 节点纯
+  load/store MachineIR，发射固定 64x32 的 32 字节 SVE 行拷贝。
+- `gen_verify` 新增 `planecopy_cp` 形状，直接 include pixel-prim.cpp
+  以调用匿名 namespace 的 NEON 参考（sao_e0 同款方式）。
+- 验收（20k 差分 0 失配）：**128 fused / MCA 60**。
+- 冒烟测试扩到 68 核；enumerate todo 降至 9。

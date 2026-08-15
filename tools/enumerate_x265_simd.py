@@ -114,7 +114,10 @@ def main():
             "ssim/psnr": {"ssim"},
             "pixel-util": {"scale1d", "scale2d"},
         }
-        done = any(d in cov for d in fam_dirs.get(fam, set()))
+        if name == "planecopy_cp":
+            done = "planecopy-cp" in cov
+        else:
+            done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,
                      "aarch64": has_aarch64, "covered": done})
     by_family = {}

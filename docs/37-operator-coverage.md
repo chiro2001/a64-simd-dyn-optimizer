@@ -18,7 +18,7 @@
 | **sao** | 10（saoCuOrg*/Stats*） | **全族 ✅（10/10）**：saoCuOrg E0 305/133、B0 386/126、E1 610/171、E1_2Rows 306/103、E2 154/74、E3 135/73；Stats E0 block16 165/62（block32 101/70）、E1 block16 180/64（112/71）、E2 block16 181/65（112/71）、E3 block16 180/65（112/71）、BO 0vector/137（无优化空间） | docs/45 §10 |
 | pixel-util | 2（scale1D/2D） | **scale1D_128to64 ✅（24/21）；scale2D_64to32 ✅（1664/378，正确但结构劣于 NEON uaddlp）** | pixel-util 收齐（2026-08-15） |
 | ssim | 1（ssim_4x4x2_core） | **ssim ✅（45 fused / MCA 47）** | 简单（2026-08-15） |
-| misc | findPosFirstLast/costCoeffNxN/scanPosLast/weight_pp/planecopy | 无 | 小算子，收益低 |
+| misc | findPosFirstLast/costCoeffNxN/scanPosLast/weight_pp/**planecopy_cp ✅（planecopy 配方 64x32，128/60）** | 其余无 | 小算子，收益低 |
 | sad | （嵌套，aa64 有 dotprod 实现） | **sad 16x16/32x32 ✅**（80/160 fused，MCA 69/118） | 无优化空间，纯覆盖（2026-08-15） |
 | intra | （嵌套，aa64 有实现） | 无 | 复杂，收益不确定 |
 

@@ -1,0 +1,31 @@
+# planecopy_cp fixed 64x32, shift=0 slice (8-bit path is a memcpy).
+kernel: planecopy-cp
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: planecopy_cp
+  n: 64
+  rows: 32
+
+candidate:
+  symbol: dynopt_planecopy_cp_sve2
+  trace_driver_src: kernels/planecopy-cp/trace_driver.cpp
+  trace_driver_c: kernels/planecopy-cp/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: planecopy_cp_neon
+  symbol_mangled: _ZN12_GLOBAL__N_117planecopy_cp_neonEPKhlPhliii
+  call: planecopy_cp_neon
+
+corpus:
+  strides: [64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
+
+mca_target:
+  default: NP1
+  llvm_proxy_cpu: neoverse-v2
+  llvm_proxy_mattr: "+sve2"
