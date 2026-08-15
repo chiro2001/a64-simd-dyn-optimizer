@@ -125,6 +125,10 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
   kernel 在本编码 perf 占比 <1.1%，E2E 中性。best5 批量（c1c2 + ccn
   NEON + remain + sa8d16 + satd8，19 槽）码流 ee5db7 一致，中位
   8166 vs 8193 ms，首次方向转正（噪声内）。
+- **scanPosLast round-30 + best6 批量（首个可复现 E2E 收益）**：
+  4-bit 查表 PEXT 替代逐位 clz 压缩（回放 +27%，生产逐调用 432 万次
+  0 失配）；best6 批量（+scan r30，20 槽）码流 ee5db7 一致，配对中位
+  8055 vs 8210 ms，**-1.9%**。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
