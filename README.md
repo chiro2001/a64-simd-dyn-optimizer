@@ -196,6 +196,9 @@ tools/parse_quick_report.py             # paired 结果回填/验收表
 内网 920B/950 的快速实测流程、候选清单与已知问题见
 [docs/49](docs/49-quick-test-internal-20260815.md)。
 
+best6b 冻结发布（20 槽、双片段 CI、一键复现命令）见
+[docs/51-release-best6b-20260815.md](docs/51-release-best6b-20260815.md)。
+
 ## 目录
 
 - `docs/`：规划、评测规范、逐轮进展与交接
