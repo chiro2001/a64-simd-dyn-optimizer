@@ -45,8 +45,11 @@ round-0024 拆分为：
   参数、ISA、编译器版本/flags、源与 final-object hash、验证证据；
 - [ ] final-object 特征提取：反汇编指令数、峰值 live 向量、
   spill/reload 计数、对象 hash 去重（同对象不算多样性）；
-- [ ] N1 基线-自对比噪声探针，预注册 q_target / MDE；
-  920B 单独 q_920b（共享节点噪声大时记 inconclusive-noise）。
+- [x] N1/920B 基线-自对比噪声探针（2026-08-16，12 次独立启动、
+  batch=4096、taskset 单核）：
+  - q_N1 = 0.0000 → MDE_N1 = 1%（floor）；
+  - q_920b = 0.0009 → MDE_920b = 1%（floor）；
+  - 共享节点当前安静；若后续 MDE >5% 记 inconclusive-noise。
 
 ### 第二步：扩大的留出排序门（数值在探针后冻结）
 
