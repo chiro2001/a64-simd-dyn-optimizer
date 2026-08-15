@@ -680,6 +680,12 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    if kernel == "chroma-addavg-8x8":
+        from emit_chroma_addavg_sve2_shared import emit_combo
+
+        def emit_fn(combo):
+            return emit_combo(combo)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 

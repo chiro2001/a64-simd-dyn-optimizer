@@ -1,0 +1,35 @@
+# Representative chroma.addAvg slice: 8x8 weighted average.
+kernel: chroma-addavg-8x8
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: chroma_addavg
+  n: 8
+  rows: 8
+
+candidate:
+  symbol: dynopt_chroma_addavg_8x8_sve2
+  trace_driver_src: kernels/chroma-addavg-8x8/trace_driver.cpp
+  trace_driver_c: kernels/chroma-addavg-8x8/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: addAvg_neon
+  symbol_mangled: _ZN12_GLOBAL__N_111addAvg_neonILi8ELi8EEEvPKsS2_Phlll
+  call: addAvg_neon<8, 8>
+  decl: |
+    template <int W, int H> void addAvg_neon(
+        const int16_t*, const int16_t*, uint8_t*, intptr_t, intptr_t,
+        intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/chroma-addavg-8x8/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_111addAvg_neonILi8ELi8EEEvPKsS2_Phlll
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
