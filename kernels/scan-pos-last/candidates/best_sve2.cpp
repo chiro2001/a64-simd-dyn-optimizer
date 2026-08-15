@@ -58,24 +58,43 @@ static inline uint32_t masks_addp(uint8x16_t zero, uint8x16_t neg)
     return vgetq_lane_u32(vreinterpretq_u32_u8(p), 0);
 }
 
-static inline uint16_t pext_clz(uint16_t val, uint16_t mask)
+static const uint8_t DYNOPT_PEXT4[16][16] = {
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+    { 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 1, 2, 0, 0, 1, 2},
+    { 0, 1, 1, 3, 0, 1, 1, 3, 0, 1, 1, 3, 0, 1, 1, 3},
+    { 0, 0, 0, 0, 1, 2, 2, 4, 0, 0, 0, 0, 1, 2, 2, 4},
+    { 0, 1, 0, 1, 1, 3, 2, 5, 0, 1, 0, 1, 1, 3, 2, 5},
+    { 0, 0, 1, 2, 1, 2, 3, 6, 0, 0, 1, 2, 1, 2, 3, 6},
+    { 0, 1, 1, 3, 1, 3, 3, 7, 0, 1, 1, 3, 1, 3, 3, 7},
+    { 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 4, 2, 4, 4, 8},
+    { 0, 1, 0, 1, 0, 1, 0, 1, 1, 3, 2, 5, 2, 5, 4, 9},
+    { 0, 0, 1, 2, 0, 0, 1, 2, 1, 2, 3, 6, 2, 4, 5, 10},
+    { 0, 1, 1, 3, 0, 1, 1, 3, 1, 3, 3, 7, 2, 5, 5, 11},
+    { 0, 0, 0, 0, 1, 2, 2, 4, 1, 2, 2, 4, 3, 6, 6, 12},
+    { 0, 1, 0, 1, 1, 3, 2, 5, 1, 3, 2, 5, 3, 7, 6, 13},
+    { 0, 0, 1, 2, 1, 2, 3, 6, 1, 2, 3, 6, 3, 6, 7, 14},
+    { 0, 1, 1, 3, 1, 3, 3, 7, 1, 3, 3, 7, 3, 7, 7, 15 }
+};
+static const uint8_t DYNOPT_CNT4[16] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
+
+static inline uint16_t pext_nibble(uint16_t val, uint16_t mask,
+                                   uint8_t* cnt)
 {
-    uint32_t v = (uint32_t)val & mask;
-    uint32_t m = mask;
-    uint32_t out = 0;
-    while (m)
-    {
-        uint32_t sh;
-        __asm__ volatile("clz %w[sh], %w[m]"
-                         : [sh] "=r"(sh) : [m] "r"(m));
-        v <<= sh;
-        m <<= sh;
-        __asm__ volatile("extr %w[o], %w[o], %w[v], #31\n\t"
-                         "bfc %w[m], #31, #1"
-                         : [o] "+r"(out), [m] "+r"(m)
-                         : [v] "r"(v));
-    }
-    return (uint16_t)out;
+    const uint16_t c3 = DYNOPT_CNT4[(mask >> 12) & 15];
+    const uint16_t c2 = DYNOPT_CNT4[(mask >> 8) & 15];
+    const uint16_t c1 = DYNOPT_CNT4[(mask >> 4) & 15];
+    const uint16_t c0 = DYNOPT_CNT4[mask & 15];
+    const uint16_t out =
+        (uint16_t)DYNOPT_PEXT4[val & 15][mask & 15] |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 4) & 15][(mask >> 4) & 15])
+            << c0 |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 8) & 15][(mask >> 8) & 15])
+            << (c0 + c1) |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 12) & 15][(mask >> 12) & 15])
+            << (c0 + c1 + c2);
+    *cnt = (uint8_t)(c3 + c2 + c1 + c0);
+    return out;
 }
 
 extern "C" int dynopt_scan_pos_last_sve2(const uint16_t* scan, const int16_t* coeff,
@@ -114,11 +133,11 @@ extern "C" int dynopt_scan_pos_last_sve2(const uint16_t* scan, const int16_t* co
         const uint32_t spl = masks_addp(zero, neg);
         const uint16_t nz = (uint16_t)(spl >> 16);
         const uint16_t sn = (uint16_t)spl;
-        const uint8_t cnt = cnt_addv(zero);
+        uint8_t cnt;
         const uint32_t rb = rbit32((uint32_t)sn | ((uint32_t)nz << 16));
         *pf++ = (uint16_t)rb;
         rb_last = rb;
-        const uint16_t sig = pext_clz(sn, nz);
+        const uint16_t sig = pext_nibble(sn, nz, &cnt);
         
         *ps++ = sig;
         *pn++ = cnt;

@@ -97,7 +97,7 @@ def emit_neon(func_name="dynopt_scan_pos_last_sve2", mask="pack",
               pext="ctz", flag="branch", count="popcount"):
     if mask not in ("pack", "dot", "addp"):
         raise ValueError("unknown mask %r" % mask)
-    if pext not in ("ctz", "clz"):
+    if pext not in ("ctz", "clz", "nibble"):
         raise ValueError("unknown pext %r" % pext)
     if flag != "tail":
         raise ValueError("unknown flag %r" % flag)
@@ -161,7 +161,59 @@ static inline uint32_t masks_addp(uint8x16_t zero, uint8x16_t neg)
             "        const uint16_t nz = (uint16_t)(spl >> 16);\n"
             "        const uint16_t sn = (uint16_t)spl;")
 
-    if pext == "ctz":
+    if pext == "nibble":
+        # 4-bit table PEXT: two 256-byte L1-resident tables replace the
+        # per-set-bit clz/extr/bfc loop. Real 920B trace: tr8/16/32 calls
+        # average 6.6/15.4/38.7 nonzero per call, so the bit loop
+        # dominates; the nibble path also returns the nonzero count and
+        # replaces the addv/popcount chain (round-0030).
+        # The clz loop extracts bits in descending mask order and shifts
+        # `out` left each time, so the LAST extraction (lowest mask bit)
+        # lands at output bit 0 and each nibble segment keeps its lowest
+        # mask bit at the segment's bit 0. Pack ascending with
+        # `out |= bit << pos`; compose the low nibble first (round-0030
+        # empirical + exhaustive check).
+        pext_rows = []
+        for s in range(16):
+            row = []
+            for m in range(16):
+                out = 0
+                bit = 0
+                for i in range(4):
+                    if (m >> i) & 1:
+                        out |= ((s >> i) & 1) << bit
+                        bit += 1
+                row.append(out)
+            pext_rows.append(", ".join(str(x) for x in row))
+        cnt_lut = ", ".join(str(bin(m).count("1")) for m in range(16))
+        pext_src = """\
+static const uint8_t DYNOPT_PEXT4[16][16] = {
+    { %s }
+};
+static const uint8_t DYNOPT_CNT4[16] = { %s };
+
+static inline uint16_t pext_nibble(uint16_t val, uint16_t mask,
+                                   uint8_t* cnt)
+{
+    const uint16_t c3 = DYNOPT_CNT4[(mask >> 12) & 15];
+    const uint16_t c2 = DYNOPT_CNT4[(mask >> 8) & 15];
+    const uint16_t c1 = DYNOPT_CNT4[(mask >> 4) & 15];
+    const uint16_t c0 = DYNOPT_CNT4[mask & 15];
+    const uint16_t out =
+        (uint16_t)DYNOPT_PEXT4[val & 15][mask & 15] |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 4) & 15][(mask >> 4) & 15])
+            << c0 |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 8) & 15][(mask >> 8) & 15])
+            << (c0 + c1) |
+        (uint16_t)(DYNOPT_PEXT4[(val >> 12) & 15][(mask >> 12) & 15])
+            << (c0 + c1 + c2);
+    *cnt = (uint8_t)(c3 + c2 + c1 + c0);
+    return out;
+}
+""" % ("},\n    { ".join(pext_rows), cnt_lut)
+        pext_call = "pext_nibble(sn, nz, &cnt)"
+        count_src = "uint8_t cnt;"
+    elif pext == "ctz":
         pext_src = """\
 static inline uint16_t pext16(uint16_t val, uint16_t mask)
 {
@@ -202,7 +254,9 @@ static inline uint16_t pext_clz(uint16_t val, uint16_t mask)
 """
         pext_call = "pext_clz(sn, nz)"
 
-    if count == "popcount":
+    if pext == "nibble":
+        pass  # count comes from the pext tables above
+    elif count == "popcount":
         count_src = ("const uint8_t cnt = "
                      "(uint8_t)__builtin_popcount((unsigned)nz);")
     else:  # addv: zero-compare lanes are 0xFF, so the byte sum is
