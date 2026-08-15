@@ -1,0 +1,5957 @@
+{
+ "function": "dynopt_interp8_hps_16x8_seed",
+ "nodes": [
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 -3",
+   "dst": "7",
+   "id": 0
+  },
+  {
+   "op": "shl",
+   "type": "i64",
+   "src": [
+    "1"
+   ],
+   "dst": "8",
+   "amt": 1,
+   "id": 1
+  },
+  {
+   "op": "shl",
+   "type": "i64",
+   "src": [
+    "3"
+   ],
+   "dst": "9",
+   "amt": 2,
+   "id": 2
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "10",
+   "ptr": "7",
+   "id": 3
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 -2",
+   "dst": "11",
+   "id": 4
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "12",
+   "ptr": "11",
+   "id": 5
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %0, i64 -1",
+   "dst": "13",
+   "id": 6
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "14",
+   "ptr": "13",
+   "id": 7
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "15",
+   "ptr": "0",
+   "id": 8
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %0, i64 1",
+   "dst": "16",
+   "id": 9
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "17",
+   "ptr": "16",
+   "id": 10
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %0, i64 2",
+   "dst": "18",
+   "id": 11
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "19",
+   "ptr": "18",
+   "id": 12
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %0, i64 3",
+   "dst": "20",
+   "id": 13
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "21",
+   "ptr": "20",
+   "id": 14
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %7, i64 %1",
+   "dst": "22",
+   "id": 15
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "23",
+   "ptr": "22",
+   "id": 16
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 1",
+   "dst": "24",
+   "id": 17
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "25",
+   "ptr": "24",
+   "id": 18
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 2",
+   "dst": "26",
+   "id": 19
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "27",
+   "ptr": "26",
+   "id": 20
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 3",
+   "dst": "28",
+   "id": 21
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "29",
+   "ptr": "28",
+   "id": 22
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 4",
+   "dst": "30",
+   "id": 23
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "31",
+   "ptr": "30",
+   "id": 24
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 5",
+   "dst": "32",
+   "id": 25
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "33",
+   "ptr": "32",
+   "id": 26
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %22, i64 6",
+   "dst": "34",
+   "id": 27
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "35",
+   "ptr": "34",
+   "id": 28
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "21"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "36",
+   "id": 29
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "10"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "37",
+   "id": 30
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "36",
+   "dst": "38",
+   "id": 31
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "37",
+   "dst": "39",
+   "id": 32
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "12"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "40",
+   "id": 33
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "40"
+   ],
+   "args": [
+    {
+     "ref": "40"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "41",
+   "id": 34
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "14"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "42",
+   "id": 35
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "42"
+   ],
+   "args": [
+    {
+     "ref": "42"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "43",
+   "id": 36
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "15"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "44",
+   "id": 37
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "44"
+   ],
+   "args": [
+    {
+     "ref": "44"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "45",
+   "id": 38
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "17"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "46",
+   "id": 39
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "46"
+   ],
+   "args": [
+    {
+     "ref": "46"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "47",
+   "id": 40
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "19"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "48",
+   "id": 41
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "48"
+   ],
+   "args": [
+    {
+     "ref": "48"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "49",
+   "id": 42
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "38",
+    "39"
+   ],
+   "dst": "50",
+   "id": 43
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "50"
+   ],
+   "dst": "51",
+   "splat": -8192,
+   "const": null,
+   "id": 44
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "51",
+    "41"
+   ],
+   "dst": "52",
+   "id": 45
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "52",
+    "43"
+   ],
+   "dst": "53",
+   "id": 46
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "53",
+    "45"
+   ],
+   "dst": "54",
+   "id": 47
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "54",
+    "47"
+   ],
+   "dst": "55",
+   "id": 48
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "55",
+    "49"
+   ],
+   "dst": "56",
+   "id": 49
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "21"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "57",
+   "id": 50
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "10"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "58",
+   "id": 51
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "57",
+   "dst": "59",
+   "id": 52
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "58",
+   "dst": "60",
+   "id": 53
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "12"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "61",
+   "id": 54
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "61"
+   ],
+   "args": [
+    {
+     "ref": "61"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "62",
+   "id": 55
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "14"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "63",
+   "id": 56
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "63"
+   ],
+   "args": [
+    {
+     "ref": "63"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "64",
+   "id": 57
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "15"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "65",
+   "id": 58
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "65"
+   ],
+   "args": [
+    {
+     "ref": "65"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "66",
+   "id": 59
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "17"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "67",
+   "id": 60
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "67"
+   ],
+   "args": [
+    {
+     "ref": "67"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "68",
+   "id": 61
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "19"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "69",
+   "id": 62
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "69"
+   ],
+   "args": [
+    {
+     "ref": "69"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "70",
+   "id": 63
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "59",
+    "60"
+   ],
+   "dst": "71",
+   "id": 64
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "71"
+   ],
+   "dst": "72",
+   "splat": -8192,
+   "const": null,
+   "id": 65
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "72",
+    "62"
+   ],
+   "dst": "73",
+   "id": 66
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "73",
+    "64"
+   ],
+   "dst": "74",
+   "id": 67
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "74",
+    "66"
+   ],
+   "dst": "75",
+   "id": 68
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "75",
+    "68"
+   ],
+   "dst": "76",
+   "id": 69
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "76",
+    "70"
+   ],
+   "dst": "77",
+   "id": 70
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "35"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "78",
+   "id": 71
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "23"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "79",
+   "id": 72
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "78",
+   "dst": "80",
+   "id": 73
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "79",
+   "dst": "81",
+   "id": 74
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "25"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "82",
+   "id": 75
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "82"
+   ],
+   "args": [
+    {
+     "ref": "82"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "83",
+   "id": 76
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "27"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "84",
+   "id": 77
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "84"
+   ],
+   "args": [
+    {
+     "ref": "84"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "85",
+   "id": 78
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "29"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "86",
+   "id": 79
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "86"
+   ],
+   "args": [
+    {
+     "ref": "86"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "87",
+   "id": 80
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "31"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "88",
+   "id": 81
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "88"
+   ],
+   "args": [
+    {
+     "ref": "88"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "89",
+   "id": 82
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "33"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "90",
+   "id": 83
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "90"
+   ],
+   "args": [
+    {
+     "ref": "90"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "91",
+   "id": 84
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "80",
+    "81"
+   ],
+   "dst": "92",
+   "id": 85
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "92"
+   ],
+   "dst": "93",
+   "splat": -8192,
+   "const": null,
+   "id": 86
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "93",
+    "83"
+   ],
+   "dst": "94",
+   "id": 87
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "94",
+    "85"
+   ],
+   "dst": "95",
+   "id": 88
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "95",
+    "87"
+   ],
+   "dst": "96",
+   "id": 89
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "96",
+    "89"
+   ],
+   "dst": "97",
+   "id": 90
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "97",
+    "91"
+   ],
+   "dst": "98",
+   "id": 91
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "35"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "99",
+   "id": 92
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "23"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "100",
+   "id": 93
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "99",
+   "dst": "101",
+   "id": 94
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "100",
+   "dst": "102",
+   "id": 95
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "25"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "103",
+   "id": 96
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "103"
+   ],
+   "args": [
+    {
+     "ref": "103"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "104",
+   "id": 97
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "27"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "105",
+   "id": 98
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "105"
+   ],
+   "args": [
+    {
+     "ref": "105"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "106",
+   "id": 99
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "29"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "107",
+   "id": 100
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "107"
+   ],
+   "args": [
+    {
+     "ref": "107"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "108",
+   "id": 101
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "31"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "109",
+   "id": 102
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "109"
+   ],
+   "args": [
+    {
+     "ref": "109"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "110",
+   "id": 103
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "33"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "111",
+   "id": 104
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "111"
+   ],
+   "args": [
+    {
+     "ref": "111"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "112",
+   "id": 105
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "101",
+    "102"
+   ],
+   "dst": "113",
+   "id": 106
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "113"
+   ],
+   "dst": "114",
+   "splat": -8192,
+   "const": null,
+   "id": 107
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "114",
+    "104"
+   ],
+   "dst": "115",
+   "id": 108
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "115",
+    "106"
+   ],
+   "dst": "116",
+   "id": 109
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "116",
+    "108"
+   ],
+   "dst": "117",
+   "id": 110
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "117",
+    "110"
+   ],
+   "dst": "118",
+   "id": 111
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "118",
+    "112"
+   ],
+   "dst": "119",
+   "id": 112
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "56",
+   "ptr": "2",
+   "id": 113
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %2, i64 16",
+   "dst": "120",
+   "id": 114
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "77",
+   "ptr": "120",
+   "id": 115
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %2, i64 %3",
+   "dst": "121",
+   "id": 116
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "98",
+   "ptr": "121",
+   "id": 117
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %121, i64 16",
+   "dst": "122",
+   "id": 118
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "119",
+   "ptr": "122",
+   "id": 119
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %7, i64 %8",
+   "dst": "123",
+   "id": 120
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %2, i64 %9",
+   "dst": "124",
+   "id": 121
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "125",
+   "ptr": "123",
+   "id": 122
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 1",
+   "dst": "126",
+   "id": 123
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "127",
+   "ptr": "126",
+   "id": 124
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 2",
+   "dst": "128",
+   "id": 125
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "129",
+   "ptr": "128",
+   "id": 126
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 3",
+   "dst": "130",
+   "id": 127
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "131",
+   "ptr": "130",
+   "id": 128
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 4",
+   "dst": "132",
+   "id": 129
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "133",
+   "ptr": "132",
+   "id": 130
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 5",
+   "dst": "134",
+   "id": 131
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "135",
+   "ptr": "134",
+   "id": 132
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %123, i64 6",
+   "dst": "136",
+   "id": 133
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "137",
+   "ptr": "136",
+   "id": 134
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %123, i64 %1",
+   "dst": "138",
+   "id": 135
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "139",
+   "ptr": "138",
+   "id": 136
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 1",
+   "dst": "140",
+   "id": 137
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "141",
+   "ptr": "140",
+   "id": 138
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 2",
+   "dst": "142",
+   "id": 139
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "143",
+   "ptr": "142",
+   "id": 140
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 3",
+   "dst": "144",
+   "id": 141
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "145",
+   "ptr": "144",
+   "id": 142
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 4",
+   "dst": "146",
+   "id": 143
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "147",
+   "ptr": "146",
+   "id": 144
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 5",
+   "dst": "148",
+   "id": 145
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "149",
+   "ptr": "148",
+   "id": 146
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %138, i64 6",
+   "dst": "150",
+   "id": 147
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "151",
+   "ptr": "150",
+   "id": 148
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "137"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "152",
+   "id": 149
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "125"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "153",
+   "id": 150
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "152",
+   "dst": "154",
+   "id": 151
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "153",
+   "dst": "155",
+   "id": 152
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "127"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "156",
+   "id": 153
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "156"
+   ],
+   "args": [
+    {
+     "ref": "156"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "157",
+   "id": 154
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "129"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "158",
+   "id": 155
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "158"
+   ],
+   "args": [
+    {
+     "ref": "158"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "159",
+   "id": 156
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "131"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "160",
+   "id": 157
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "160"
+   ],
+   "args": [
+    {
+     "ref": "160"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "161",
+   "id": 158
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "133"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "162",
+   "id": 159
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "162"
+   ],
+   "args": [
+    {
+     "ref": "162"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "163",
+   "id": 160
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "135"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "164",
+   "id": 161
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "164"
+   ],
+   "args": [
+    {
+     "ref": "164"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "165",
+   "id": 162
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "154",
+    "155"
+   ],
+   "dst": "166",
+   "id": 163
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "166"
+   ],
+   "dst": "167",
+   "splat": -8192,
+   "const": null,
+   "id": 164
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "167",
+    "157"
+   ],
+   "dst": "168",
+   "id": 165
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "168",
+    "159"
+   ],
+   "dst": "169",
+   "id": 166
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "169",
+    "161"
+   ],
+   "dst": "170",
+   "id": 167
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "170",
+    "163"
+   ],
+   "dst": "171",
+   "id": 168
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "171",
+    "165"
+   ],
+   "dst": "172",
+   "id": 169
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "137"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "173",
+   "id": 170
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "125"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "174",
+   "id": 171
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "173",
+   "dst": "175",
+   "id": 172
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "174",
+   "dst": "176",
+   "id": 173
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "127"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "177",
+   "id": 174
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "177"
+   ],
+   "args": [
+    {
+     "ref": "177"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "178",
+   "id": 175
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "129"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "179",
+   "id": 176
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "179"
+   ],
+   "args": [
+    {
+     "ref": "179"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "180",
+   "id": 177
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "131"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "181",
+   "id": 178
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "181"
+   ],
+   "args": [
+    {
+     "ref": "181"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "182",
+   "id": 179
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "133"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "183",
+   "id": 180
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "183"
+   ],
+   "args": [
+    {
+     "ref": "183"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "184",
+   "id": 181
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "135"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "185",
+   "id": 182
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "185"
+   ],
+   "args": [
+    {
+     "ref": "185"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "186",
+   "id": 183
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "175",
+    "176"
+   ],
+   "dst": "187",
+   "id": 184
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "187"
+   ],
+   "dst": "188",
+   "splat": -8192,
+   "const": null,
+   "id": 185
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "188",
+    "178"
+   ],
+   "dst": "189",
+   "id": 186
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "189",
+    "180"
+   ],
+   "dst": "190",
+   "id": 187
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "190",
+    "182"
+   ],
+   "dst": "191",
+   "id": 188
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "191",
+    "184"
+   ],
+   "dst": "192",
+   "id": 189
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "192",
+    "186"
+   ],
+   "dst": "193",
+   "id": 190
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "151"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "194",
+   "id": 191
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "139"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "195",
+   "id": 192
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "194",
+   "dst": "196",
+   "id": 193
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "195",
+   "dst": "197",
+   "id": 194
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "141"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "198",
+   "id": 195
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "198"
+   ],
+   "args": [
+    {
+     "ref": "198"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "199",
+   "id": 196
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "143"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "200",
+   "id": 197
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "200"
+   ],
+   "args": [
+    {
+     "ref": "200"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "201",
+   "id": 198
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "145"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "202",
+   "id": 199
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "202"
+   ],
+   "args": [
+    {
+     "ref": "202"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "203",
+   "id": 200
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "147"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "204",
+   "id": 201
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "204"
+   ],
+   "args": [
+    {
+     "ref": "204"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "205",
+   "id": 202
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "149"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "206",
+   "id": 203
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "206"
+   ],
+   "args": [
+    {
+     "ref": "206"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "207",
+   "id": 204
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "196",
+    "197"
+   ],
+   "dst": "208",
+   "id": 205
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "208"
+   ],
+   "dst": "209",
+   "splat": -8192,
+   "const": null,
+   "id": 206
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "209",
+    "199"
+   ],
+   "dst": "210",
+   "id": 207
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "210",
+    "201"
+   ],
+   "dst": "211",
+   "id": 208
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "211",
+    "203"
+   ],
+   "dst": "212",
+   "id": 209
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "212",
+    "205"
+   ],
+   "dst": "213",
+   "id": 210
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "213",
+    "207"
+   ],
+   "dst": "214",
+   "id": 211
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "151"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "215",
+   "id": 212
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "139"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "216",
+   "id": 213
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "215",
+   "dst": "217",
+   "id": 214
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "216",
+   "dst": "218",
+   "id": 215
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "141"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "219",
+   "id": 216
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "219"
+   ],
+   "args": [
+    {
+     "ref": "219"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "220",
+   "id": 217
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "143"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "221",
+   "id": 218
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "221"
+   ],
+   "args": [
+    {
+     "ref": "221"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "222",
+   "id": 219
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "145"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "223",
+   "id": 220
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "223"
+   ],
+   "args": [
+    {
+     "ref": "223"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "224",
+   "id": 221
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "147"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "225",
+   "id": 222
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "225"
+   ],
+   "args": [
+    {
+     "ref": "225"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "226",
+   "id": 223
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "149"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "227",
+   "id": 224
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "227"
+   ],
+   "args": [
+    {
+     "ref": "227"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "228",
+   "id": 225
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "217",
+    "218"
+   ],
+   "dst": "229",
+   "id": 226
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "229"
+   ],
+   "dst": "230",
+   "splat": -8192,
+   "const": null,
+   "id": 227
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "230",
+    "220"
+   ],
+   "dst": "231",
+   "id": 228
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "231",
+    "222"
+   ],
+   "dst": "232",
+   "id": 229
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "232",
+    "224"
+   ],
+   "dst": "233",
+   "id": 230
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "233",
+    "226"
+   ],
+   "dst": "234",
+   "id": 231
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "234",
+    "228"
+   ],
+   "dst": "235",
+   "id": 232
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "172",
+   "ptr": "124",
+   "id": 233
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %124, i64 16",
+   "dst": "236",
+   "id": 234
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "193",
+   "ptr": "236",
+   "id": 235
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %124, i64 %3",
+   "dst": "237",
+   "id": 236
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "214",
+   "ptr": "237",
+   "id": 237
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %237, i64 16",
+   "dst": "238",
+   "id": 238
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "235",
+   "ptr": "238",
+   "id": 239
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %123, i64 %8",
+   "dst": "239",
+   "id": 240
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %124, i64 %9",
+   "dst": "240",
+   "id": 241
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "241",
+   "ptr": "239",
+   "id": 242
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 1",
+   "dst": "242",
+   "id": 243
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "243",
+   "ptr": "242",
+   "id": 244
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 2",
+   "dst": "244",
+   "id": 245
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "245",
+   "ptr": "244",
+   "id": 246
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 3",
+   "dst": "246",
+   "id": 247
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "247",
+   "ptr": "246",
+   "id": 248
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 4",
+   "dst": "248",
+   "id": 249
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "249",
+   "ptr": "248",
+   "id": 250
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 5",
+   "dst": "250",
+   "id": 251
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "251",
+   "ptr": "250",
+   "id": 252
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %239, i64 6",
+   "dst": "252",
+   "id": 253
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "253",
+   "ptr": "252",
+   "id": 254
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %239, i64 %1",
+   "dst": "254",
+   "id": 255
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "255",
+   "ptr": "254",
+   "id": 256
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 1",
+   "dst": "256",
+   "id": 257
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "257",
+   "ptr": "256",
+   "id": 258
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 2",
+   "dst": "258",
+   "id": 259
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "259",
+   "ptr": "258",
+   "id": 260
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 3",
+   "dst": "260",
+   "id": 261
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "261",
+   "ptr": "260",
+   "id": 262
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 4",
+   "dst": "262",
+   "id": 263
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "263",
+   "ptr": "262",
+   "id": 264
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 5",
+   "dst": "264",
+   "id": 265
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "265",
+   "ptr": "264",
+   "id": 266
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %254, i64 6",
+   "dst": "266",
+   "id": 267
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "267",
+   "ptr": "266",
+   "id": 268
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "253"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "268",
+   "id": 269
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "241"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "269",
+   "id": 270
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "268",
+   "dst": "270",
+   "id": 271
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "269",
+   "dst": "271",
+   "id": 272
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "243"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "272",
+   "id": 273
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "272"
+   ],
+   "args": [
+    {
+     "ref": "272"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "273",
+   "id": 274
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "245"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "274",
+   "id": 275
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "274"
+   ],
+   "args": [
+    {
+     "ref": "274"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "275",
+   "id": 276
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "247"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "276",
+   "id": 277
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "276"
+   ],
+   "args": [
+    {
+     "ref": "276"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "277",
+   "id": 278
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "249"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "278",
+   "id": 279
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "278"
+   ],
+   "args": [
+    {
+     "ref": "278"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "279",
+   "id": 280
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "251"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "280",
+   "id": 281
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "280"
+   ],
+   "args": [
+    {
+     "ref": "280"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "281",
+   "id": 282
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "270",
+    "271"
+   ],
+   "dst": "282",
+   "id": 283
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "282"
+   ],
+   "dst": "283",
+   "splat": -8192,
+   "const": null,
+   "id": 284
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "283",
+    "273"
+   ],
+   "dst": "284",
+   "id": 285
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "284",
+    "275"
+   ],
+   "dst": "285",
+   "id": 286
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "285",
+    "277"
+   ],
+   "dst": "286",
+   "id": 287
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "286",
+    "279"
+   ],
+   "dst": "287",
+   "id": 288
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "287",
+    "281"
+   ],
+   "dst": "288",
+   "id": 289
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "253"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "289",
+   "id": 290
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "241"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "290",
+   "id": 291
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "289",
+   "dst": "291",
+   "id": 292
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "290",
+   "dst": "292",
+   "id": 293
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "243"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "293",
+   "id": 294
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "293"
+   ],
+   "args": [
+    {
+     "ref": "293"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "294",
+   "id": 295
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "245"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "295",
+   "id": 296
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "295"
+   ],
+   "args": [
+    {
+     "ref": "295"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "296",
+   "id": 297
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "247"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "297",
+   "id": 298
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "297"
+   ],
+   "args": [
+    {
+     "ref": "297"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "298",
+   "id": 299
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "249"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "299",
+   "id": 300
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "299"
+   ],
+   "args": [
+    {
+     "ref": "299"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "300",
+   "id": 301
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "251"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "301",
+   "id": 302
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "301"
+   ],
+   "args": [
+    {
+     "ref": "301"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "302",
+   "id": 303
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "291",
+    "292"
+   ],
+   "dst": "303",
+   "id": 304
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "303"
+   ],
+   "dst": "304",
+   "splat": -8192,
+   "const": null,
+   "id": 305
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "304",
+    "294"
+   ],
+   "dst": "305",
+   "id": 306
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "305",
+    "296"
+   ],
+   "dst": "306",
+   "id": 307
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "306",
+    "298"
+   ],
+   "dst": "307",
+   "id": 308
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "307",
+    "300"
+   ],
+   "dst": "308",
+   "id": 309
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "308",
+    "302"
+   ],
+   "dst": "309",
+   "id": 310
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "267"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "310",
+   "id": 311
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "255"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "311",
+   "id": 312
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "310",
+   "dst": "312",
+   "id": 313
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "311",
+   "dst": "313",
+   "id": 314
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "257"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "314",
+   "id": 315
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "314"
+   ],
+   "args": [
+    {
+     "ref": "314"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "315",
+   "id": 316
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "259"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "316",
+   "id": 317
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "316"
+   ],
+   "args": [
+    {
+     "ref": "316"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "317",
+   "id": 318
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "261"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "318",
+   "id": 319
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "318"
+   ],
+   "args": [
+    {
+     "ref": "318"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "319",
+   "id": 320
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "263"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "320",
+   "id": 321
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "320"
+   ],
+   "args": [
+    {
+     "ref": "320"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "321",
+   "id": 322
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "265"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "322",
+   "id": 323
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "322"
+   ],
+   "args": [
+    {
+     "ref": "322"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "323",
+   "id": 324
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "312",
+    "313"
+   ],
+   "dst": "324",
+   "id": 325
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "324"
+   ],
+   "dst": "325",
+   "splat": -8192,
+   "const": null,
+   "id": 326
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "325",
+    "315"
+   ],
+   "dst": "326",
+   "id": 327
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "326",
+    "317"
+   ],
+   "dst": "327",
+   "id": 328
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "327",
+    "319"
+   ],
+   "dst": "328",
+   "id": 329
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "328",
+    "321"
+   ],
+   "dst": "329",
+   "id": 330
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "329",
+    "323"
+   ],
+   "dst": "330",
+   "id": 331
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "267"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "331",
+   "id": 332
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "255"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "332",
+   "id": 333
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "331",
+   "dst": "333",
+   "id": 334
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "332",
+   "dst": "334",
+   "id": 335
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "257"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "335",
+   "id": 336
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "335"
+   ],
+   "args": [
+    {
+     "ref": "335"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "336",
+   "id": 337
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "259"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "337",
+   "id": 338
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "337"
+   ],
+   "args": [
+    {
+     "ref": "337"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "338",
+   "id": 339
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "261"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "339",
+   "id": 340
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "339"
+   ],
+   "args": [
+    {
+     "ref": "339"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "340",
+   "id": 341
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "263"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "341",
+   "id": 342
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "341"
+   ],
+   "args": [
+    {
+     "ref": "341"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "342",
+   "id": 343
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "265"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "343",
+   "id": 344
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "343"
+   ],
+   "args": [
+    {
+     "ref": "343"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "344",
+   "id": 345
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "333",
+    "334"
+   ],
+   "dst": "345",
+   "id": 346
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "345"
+   ],
+   "dst": "346",
+   "splat": -8192,
+   "const": null,
+   "id": 347
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "346",
+    "336"
+   ],
+   "dst": "347",
+   "id": 348
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "347",
+    "338"
+   ],
+   "dst": "348",
+   "id": 349
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "348",
+    "340"
+   ],
+   "dst": "349",
+   "id": 350
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "349",
+    "342"
+   ],
+   "dst": "350",
+   "id": 351
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "350",
+    "344"
+   ],
+   "dst": "351",
+   "id": 352
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "288",
+   "ptr": "240",
+   "id": 353
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %240, i64 16",
+   "dst": "352",
+   "id": 354
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "309",
+   "ptr": "352",
+   "id": 355
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %240, i64 %3",
+   "dst": "353",
+   "id": 356
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "330",
+   "ptr": "353",
+   "id": 357
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %353, i64 16",
+   "dst": "354",
+   "id": 358
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "351",
+   "ptr": "354",
+   "id": 359
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %239, i64 %8",
+   "dst": "355",
+   "id": 360
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %240, i64 %9",
+   "dst": "356",
+   "id": 361
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "357",
+   "ptr": "355",
+   "id": 362
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 1",
+   "dst": "358",
+   "id": 363
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "359",
+   "ptr": "358",
+   "id": 364
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 2",
+   "dst": "360",
+   "id": 365
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "361",
+   "ptr": "360",
+   "id": 366
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 3",
+   "dst": "362",
+   "id": 367
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "363",
+   "ptr": "362",
+   "id": 368
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 4",
+   "dst": "364",
+   "id": 369
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "365",
+   "ptr": "364",
+   "id": 370
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 5",
+   "dst": "366",
+   "id": 371
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "367",
+   "ptr": "366",
+   "id": 372
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %355, i64 6",
+   "dst": "368",
+   "id": 373
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "369",
+   "ptr": "368",
+   "id": 374
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i8, ptr %355, i64 %1",
+   "dst": "370",
+   "id": 375
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "371",
+   "ptr": "370",
+   "id": 376
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 1",
+   "dst": "372",
+   "id": 377
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "373",
+   "ptr": "372",
+   "id": 378
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 2",
+   "dst": "374",
+   "id": 379
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "375",
+   "ptr": "374",
+   "id": 380
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 3",
+   "dst": "376",
+   "id": 381
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "377",
+   "ptr": "376",
+   "id": 382
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 4",
+   "dst": "378",
+   "id": 383
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "379",
+   "ptr": "378",
+   "id": 384
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 5",
+   "dst": "380",
+   "id": 385
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "381",
+   "ptr": "380",
+   "id": 386
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %370, i64 6",
+   "dst": "382",
+   "id": 387
+  },
+  {
+   "op": "load",
+   "type": "<16 x i8>",
+   "dst": "383",
+   "ptr": "382",
+   "id": 388
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "369"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "384",
+   "id": 389
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "357"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "385",
+   "id": 390
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "384",
+   "dst": "386",
+   "id": 391
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "385",
+   "dst": "387",
+   "id": 392
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "359"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "388",
+   "id": 393
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "388"
+   ],
+   "args": [
+    {
+     "ref": "388"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "389",
+   "id": 394
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "361"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "390",
+   "id": 395
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "390"
+   ],
+   "args": [
+    {
+     "ref": "390"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "391",
+   "id": 396
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "363"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "392",
+   "id": 397
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "392"
+   ],
+   "args": [
+    {
+     "ref": "392"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "393",
+   "id": 398
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "365"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "394",
+   "id": 399
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "394"
+   ],
+   "args": [
+    {
+     "ref": "394"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "395",
+   "id": 400
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "367"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "396",
+   "id": 401
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "396"
+   ],
+   "args": [
+    {
+     "ref": "396"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "397",
+   "id": 402
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "386",
+    "387"
+   ],
+   "dst": "398",
+   "id": 403
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "398"
+   ],
+   "dst": "399",
+   "splat": -8192,
+   "const": null,
+   "id": 404
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "399",
+    "389"
+   ],
+   "dst": "400",
+   "id": 405
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "400",
+    "391"
+   ],
+   "dst": "401",
+   "id": 406
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "401",
+    "393"
+   ],
+   "dst": "402",
+   "id": 407
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "402",
+    "395"
+   ],
+   "dst": "403",
+   "id": 408
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "403",
+    "397"
+   ],
+   "dst": "404",
+   "id": 409
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "369"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "405",
+   "id": 410
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "357"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "406",
+   "id": 411
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "405",
+   "dst": "407",
+   "id": 412
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "406",
+   "dst": "408",
+   "id": 413
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "359"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "409",
+   "id": 414
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "409"
+   ],
+   "args": [
+    {
+     "ref": "409"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "410",
+   "id": 415
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "361"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "411",
+   "id": 416
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "411"
+   ],
+   "args": [
+    {
+     "ref": "411"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "412",
+   "id": 417
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "363"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "413",
+   "id": 418
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "413"
+   ],
+   "args": [
+    {
+     "ref": "413"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "414",
+   "id": 419
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "365"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "415",
+   "id": 420
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "415"
+   ],
+   "args": [
+    {
+     "ref": "415"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "416",
+   "id": 421
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "367"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "417",
+   "id": 422
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "417"
+   ],
+   "args": [
+    {
+     "ref": "417"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "418",
+   "id": 423
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "407",
+    "408"
+   ],
+   "dst": "419",
+   "id": 424
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "419"
+   ],
+   "dst": "420",
+   "splat": -8192,
+   "const": null,
+   "id": 425
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "420",
+    "410"
+   ],
+   "dst": "421",
+   "id": 426
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "421",
+    "412"
+   ],
+   "dst": "422",
+   "id": 427
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "422",
+    "414"
+   ],
+   "dst": "423",
+   "id": 428
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "423",
+    "416"
+   ],
+   "dst": "424",
+   "id": 429
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "424",
+    "418"
+   ],
+   "dst": "425",
+   "id": 430
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "383"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "426",
+   "id": 431
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "371"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "427",
+   "id": 432
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "426",
+   "dst": "428",
+   "id": 433
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "427",
+   "dst": "429",
+   "id": 434
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "373"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "430",
+   "id": 435
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "430"
+   ],
+   "args": [
+    {
+     "ref": "430"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "431",
+   "id": 436
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "375"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "432",
+   "id": 437
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "432"
+   ],
+   "args": [
+    {
+     "ref": "432"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "433",
+   "id": 438
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "377"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "434",
+   "id": 439
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "434"
+   ],
+   "args": [
+    {
+     "ref": "434"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "435",
+   "id": 440
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "379"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "436",
+   "id": 441
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "436"
+   ],
+   "args": [
+    {
+     "ref": "436"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "437",
+   "id": 442
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "381"
+   ],
+   "mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "dst": "438",
+   "id": 443
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "438"
+   ],
+   "args": [
+    {
+     "ref": "438"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "439",
+   "id": 444
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "428",
+    "429"
+   ],
+   "dst": "440",
+   "id": 445
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "440"
+   ],
+   "dst": "441",
+   "splat": -8192,
+   "const": null,
+   "id": 446
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "441",
+    "431"
+   ],
+   "dst": "442",
+   "id": 447
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "442",
+    "433"
+   ],
+   "dst": "443",
+   "id": 448
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "443",
+    "435"
+   ],
+   "dst": "444",
+   "id": 449
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "444",
+    "437"
+   ],
+   "dst": "445",
+   "id": 450
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "445",
+    "439"
+   ],
+   "dst": "446",
+   "id": 451
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "383"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "447",
+   "id": 452
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "371"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "448",
+   "id": 453
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "447",
+   "dst": "449",
+   "id": 454
+  },
+  {
+   "op": "zext",
+   "type": "<8 x i16>",
+   "src": "448",
+   "dst": "450",
+   "id": 455
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "373"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "451",
+   "id": 456
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "451"
+   ],
+   "args": [
+    {
+     "ref": "451"
+    },
+    {
+     "imm": 4
+    }
+   ],
+   "dst": "452",
+   "id": 457
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "375"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "453",
+   "id": 458
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "453"
+   ],
+   "args": [
+    {
+     "ref": "453"
+    },
+    {
+     "imm": 10
+    }
+   ],
+   "dst": "454",
+   "id": 459
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "377"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "455",
+   "id": 460
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "455"
+   ],
+   "args": [
+    {
+     "ref": "455"
+    },
+    {
+     "imm": 58
+    }
+   ],
+   "dst": "456",
+   "id": 461
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "379"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "457",
+   "id": 462
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "457"
+   ],
+   "args": [
+    {
+     "ref": "457"
+    },
+    {
+     "imm": 17
+    }
+   ],
+   "dst": "458",
+   "id": 463
+  },
+  {
+   "op": "shuffle",
+   "type": "<8 x i8>",
+   "src": [
+    "381"
+   ],
+   "mask": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "dst": "459",
+   "id": 464
+  },
+  {
+   "op": "intrinsic",
+   "intrinsic": "umull",
+   "type": "<8 x i16>",
+   "src": [
+    "459"
+   ],
+   "args": [
+    {
+     "ref": "459"
+    },
+    {
+     "imm": 5
+    }
+   ],
+   "dst": "460",
+   "id": 465
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "449",
+    "450"
+   ],
+   "dst": "461",
+   "id": 466
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "461"
+   ],
+   "dst": "462",
+   "splat": -8192,
+   "const": null,
+   "id": 467
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "462",
+    "452"
+   ],
+   "dst": "463",
+   "id": 468
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "463",
+    "454"
+   ],
+   "dst": "464",
+   "id": 469
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "464",
+    "456"
+   ],
+   "dst": "465",
+   "id": 470
+  },
+  {
+   "op": "add",
+   "type": "<8 x i16>",
+   "src": [
+    "465",
+    "458"
+   ],
+   "dst": "466",
+   "id": 471
+  },
+  {
+   "op": "sub",
+   "type": "<8 x i16>",
+   "src": [
+    "466",
+    "460"
+   ],
+   "dst": "467",
+   "id": 472
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "404",
+   "ptr": "356",
+   "id": 473
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %356, i64 16",
+   "dst": "1517",
+   "id": 474
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "425",
+   "ptr": "1517",
+   "id": 475
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds i16, ptr %356, i64 %3",
+   "dst": "1518",
+   "id": 476
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "446",
+   "ptr": "1518",
+   "id": 477
+  },
+  {
+   "op": "addr",
+   "type": "ptr",
+   "rhs": "getelementptr inbounds nuw i8, ptr %1518, i64 16",
+   "dst": "1519",
+   "id": 478
+  },
+  {
+   "op": "store",
+   "type": "<8 x i16>",
+   "src": "467",
+   "ptr": "1519",
+   "id": 479
+  }
+ ],
+ "provenance": {
+  "recipe": "/home/chiro/projects/a64-simd-dyn-optimizer/seeds/interp8-hps-16x8.yaml",
+  "compiler": "clang version 22.1.8",
+  "source_sha256": "4301a6049e320d446e63edfd7e8fc9da413468c20c87e21209e8f7918a6cf5a7",
+  "ir_sha256": "034e2742c3dcd6a82f764c87a409575e888eeaa086017b258fa2f02bdff39985",
+  "target_function": {
+   "mangled": "dynopt_interp8_hps_16x8_seed",
+   "demangled": "dynopt_interp8_hps_16x8_seed"
+  }
+ }
+}

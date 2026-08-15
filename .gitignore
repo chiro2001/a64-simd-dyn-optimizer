@@ -394,3 +394,4 @@ experiments/m30-interp4-32x8-search/search-*/*
 
 # dct8 -O3 throwaway scan (2026-08-15, no metric change)
 experiments/m30-dct8-search/search-o3/
+experiments/m30-sa8d16-search/search-o3/

@@ -1,0 +1,28 @@
+[
+ {
+  "tag": "compute-sdot-d",
+  "compute": "sdot-d",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 1082,
+   "vector": 842,
+   "movprfx": 128,
+   "vector_fused": 714,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 134,
+   "vector_fused_uop": 714
+  },
+  "range": [
+   "0x4007a0",
+   "0x400860"
+  ],
+  "cached": true,
+  "mca_cycles": 260,
+  "mca_uops": 1321
+ }
+]
