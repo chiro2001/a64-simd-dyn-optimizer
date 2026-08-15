@@ -44,10 +44,13 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [x] gen 后端 --isa sve1 首轮搜索 satd-8（pack-1/pack-2，20k 0 失配，
   SVE1-only 反汇编）；
 - [x] 920B paired：pack-2 慢 1.87x（3609 vs 6731 ticks）→ 不可注入；
+- [x] pack-2b（并行 uaddv 尾部）20k 差分 0 失配，实测仍 1.82x 慢
+  （瓶颈在 cadd90/tbl/ld1ub 链）→ satd/sa8d 家族 920B 保持 NEON；
 - [x] 记录 AGO 预测器 SVE1 失效（SVE 表过乐观）：
   reports/sve1-satd8-search-920b-20260816.txt；
 - [x] 重建 920B SVE1 指令成本表 v1（sve1-class-timing.c ->
   timing-sve1-ago.json：add/sub/mul/abs/sabd/mla/uaddv/tbl/ld1b/sdot，
   依赖链 + 8 独立链，min-of-7）；
-- [ ] 用 v1 表 + CP 感知给 SVE1 候选加排序门（预注册后评测）；
+- [ ] SVE1 搜索转向宽行连续家族（dct/interp/quant 行），v1 表 +
+  CP 感知排序门（预注册后评测）；
 - [ ] AGO cover 层增加 sve1 发射模板（接 M2 排序器）。

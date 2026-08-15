@@ -24,9 +24,15 @@ ptrue/sel/mla，无 SVE2 mnemonic）。
 | --- | ---: | ---: |
 | 上游 NEON（x265_satd8） | 3608-3612 | 1.00 |
 | SVE1 pack-2 候选 | 6731-6806 | **1.87x 慢** |
+| SVE1 pack-2b（并行 uaddv 尾部） | 6555-6736 | **1.82x 慢** |
 
-结论：该 SVE1 候选**不可注入**（与历史 79-kernel SVE1 注入整体变慢
-一致：小 stride 非连续块 + 依赖链使 256-bit 宽度优势无法兑现）。
+pack-2b 用四个独立 uaddv + 标量累加替换串行 total+uaddv，20k 差分
+0 失配但实测无改善——瓶颈是 cadd90 模拟链（tbl+mul+add ×2 + tbl）
+与 ld1ub load-use（24cyc），不在尾部。
+
+结论：SVE1 satd8 的 CADD90 模拟 gen 配方**不可注入**（与历史 79-kernel
+SVE1 注入整体变慢一致：小 stride 非连续块 + 依赖链使 256-bit 宽度
+优势无法兑现）。satd8/sa8d 家族在 920B 应保持 NEON。
 
 ## AGO 预测器失效（重要证据）
 
@@ -55,8 +61,9 @@ ptrue/sel/mla，无 SVE2 mnemonic）。
 2. 教训：跨 ISA 排序不能只看指令吞吐和；CP（依赖链）必须按目标
    ISA 结构建模，SVE1 候选先以 920B CNTVCT paired 为准；
 3. objfeatures 增补 tbl 分类（此前 tbl 未被任何类捕获）；
-4. 下一步：用 v1 表给 gen 后端 SVE1 候选加 CP 感知排序（预注册
-   sve1 排序门），只在实测非劣/更快的候选进入注入。
+4. 下一步：SVE1 搜索转向“宽行连续访问”家族（dct 行、interp 横向、
+   quant 行），并用 v1 表做 CP 感知排序（预注册 sve1 排序门）；只在
+   实测非劣/更快的候选进入注入；satd/sa8d 8x8/16x16 留在 NEON。
 
 ## 产物
 
