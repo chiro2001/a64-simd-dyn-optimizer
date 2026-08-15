@@ -624,6 +624,18 @@ def make_emitter(kernel, backend="acle"):
         def emit_fn(combo):
             return emit_combo(combo)
         return emit_fn
+    _copy_shapes = {
+        "cu-copy-pp": ("dynopt_cu_copy_pp_sve2", 32, 32),
+        "pu-copy-pp": ("dynopt_pu_copy_pp_sve2", 16, 16),
+        "chroma-copy-pp": ("dynopt_chroma_copy_pp_sve2", 16, 16),
+    }
+    if kernel in _copy_shapes:
+        from emit_blockcopy_pp_sve2_shared import emit_combo as _copy_emit
+        _sym, _w, _h = _copy_shapes[kernel]
+
+        def emit_fn(combo):
+            return _copy_emit(combo, _sym, _w, _h)
+        return emit_fn
     if kernel == "ssim":
         from emit_ssim_sve2_shared import emit_combo
 

@@ -126,6 +126,12 @@ def main():
             done = "scan-pos-last" in cov
         elif name == "costCoeffNxN":
             done = "cost-coeff-nxn" in cov
+        elif name == "chroma":
+            done = "chroma-copy-pp" in cov
+        elif name == "cu":
+            done = "cu-copy-pp" in cov
+        elif name == "pu":
+            done = "pu-copy-pp" in cov
         else:
             done = any(d in cov for d in fam_dirs.get(fam, set()))
         rows.append({"field": name, "family": fam,

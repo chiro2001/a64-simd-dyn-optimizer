@@ -355,3 +355,11 @@ experiments/m30-scan-pos-last-search/search-*/*
 # costCoeffNxN search artifacts (2026-08-15)
 experiments/m30-cost-coeff-nxn-search/search-*/*
 !experiments/m30-cost-coeff-nxn-search/search-*/results.json
+
+# cu/pu/chroma copy_pp representative search artifacts (2026-08-15)
+experiments/m30-cu-copy-pp-search/search-*/*
+!experiments/m30-cu-copy-pp-search/search-*/results.json
+experiments/m30-pu-copy-pp-search/search-*/*
+!experiments/m30-pu-copy-pp-search/search-*/results.json
+experiments/m30-chroma-copy-pp-search/search-*/*
+!experiments/m30-chroma-copy-pp-search/search-*/results.json
