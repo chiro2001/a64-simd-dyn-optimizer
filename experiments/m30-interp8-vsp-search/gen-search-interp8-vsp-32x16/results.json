@@ -9,20 +9,20 @@
   "upstream_exact": true,
   "range": [
    "0x4007a0",
-   "0x402a60"
+   "0x402400"
   ],
   "counts": {
-   "total": 2200,
-   "vector": 1867,
-   "movprfx": 0,
-   "vector_fused": 1867,
+   "total": 1798,
+   "vector": 1238,
+   "movprfx": 38,
+   "vector_fused": 1200,
    "scatter_gather": 0,
    "scatter_gather_uops": 0,
-   "stack_vector": 512,
-   "vector_fused_uop": 1867
+   "stack_vector": 221,
+   "vector_fused_uop": 1200
   },
   "fusion": {
-   "eligible": 7,
+   "eligible": 46,
    "hw_supported": 0,
    "pairs": [
     "mov+mov",
@@ -31,16 +31,56 @@
     "mov+mov",
     "mov+mov",
     "mov+mov",
-    "mov+mov"
+    "mov+mov",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "uzp1+mov",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla"
    ],
    "counts": {
-    "store_insns": 40,
-    "scalar_insns": 1343,
-    "simd_insns": 150,
-    "load_insns": 613
+    "scalar_insns": 871,
+    "simd_insns": 620,
+    "store_insns": 62,
+    "load_insns": 159,
+    "fused_pseudo": 38
    }
   },
-  "mca_cycles": 594,
-  "mca_uops": 2317
+  "mca_cycles": 602,
+  "mca_uops": 1910
  }
 ]

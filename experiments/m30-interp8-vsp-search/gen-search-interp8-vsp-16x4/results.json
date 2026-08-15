@@ -9,17 +9,17 @@
   "upstream_exact": true,
   "range": [
    "0x4007a0",
-   "0x400c80"
+   "0x400aa0"
   ],
   "counts": {
-   "total": 289,
-   "vector": 241,
+   "total": 172,
+   "vector": 149,
    "movprfx": 0,
-   "vector_fused": 241,
+   "vector_fused": 149,
    "scatter_gather": 0,
    "scatter_gather_uops": 0,
-   "stack_vector": 64,
-   "vector_fused_uop": 241
+   "stack_vector": 0,
+   "vector_fused_uop": 149
   },
   "fusion": {
    "eligible": 7,
@@ -34,13 +34,11 @@
     "mov+mov"
    ],
    "counts": {
-    "store_insns": 1,
-    "scalar_insns": 187,
-    "simd_insns": 38,
-    "load_insns": 65
+    "scalar_insns": 79,
+    "simd_insns": 92
    }
   },
-  "mca_cycles": 110,
-  "mca_uops": 296
+  "mca_cycles": 99,
+  "mca_uops": 182
  }
 ]
