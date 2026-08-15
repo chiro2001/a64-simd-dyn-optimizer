@@ -62,4 +62,5 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [ ] dct16/interp8 SVE1 搜索被工具缺口阻塞：gen 无 dct recipe、
   op 后端 sve1 过滤后全部 BUILD FAIL；需先补 SVE1-safe 发射模板
   （AGO cover 层 sve1 发射器），再搜索宽行家族；
-- [ ] AGO cover 层增加 sve1 发射模板（接 M2 排序器）。
+- [x] **定位调整（docs/53）**：920B 全量 SVE1 证据均为负 → 920B 主攻
+  NEON；SVE1 降级为“实测非劣才注入”特例；SVE2 方向以 950 为准。
