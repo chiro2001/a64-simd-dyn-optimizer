@@ -1,0 +1,34 @@
+# Representative chroma.copy_pp slice: 32x32 pixel block copy.
+kernel: chroma-copy-pp-32x32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: blockcopy_pp
+  n: 32
+  rows: 32
+
+candidate:
+  symbol: dynopt_chroma_copy_pp_32x32_sve2
+  trace_driver_src: kernels/chroma-copy-pp-32x32/trace_driver.cpp
+  trace_driver_c: kernels/chroma-copy-pp-32x32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: blockcopy_pp_neon
+  symbol_mangled: _ZN12_GLOBAL__N_117blockcopy_pp_neonILi32ELi32EEEvPhlPKhl
+  call: blockcopy_pp_neon<32, 32>
+  decl: |
+    template <int W, int H> void blockcopy_pp_neon(
+        uint8_t*, intptr_t, const uint8_t*, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/chroma-copy-pp-32x32/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_117blockcopy_pp_neonILi32ELi32EEEvPhlPKhl
+
+corpus:
+  strides: [32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
