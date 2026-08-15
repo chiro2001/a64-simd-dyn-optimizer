@@ -246,19 +246,26 @@ extern "C" uint32_t %s(const uint16_t* scan, const int16_t* coeff,
         scanPosSigOff--;
     }
     // Last position (scanPosSigOff == 0): ctx forced to 0 when
-    // subPosBase == 0, else cnt (upstream idx_zero path).
+    // subPosBase == 0, else cnt (upstream idx_zero path). The reference
+    // guard skips the update when subPosBase != 0 AND numNonZero == 0
+    // (single nonzero at the last scan position, soff=15): production
+    // asm exits via cbz x4 without touching baseCtx (round-0021 replay
+    // verify caught 92,999 soff=15 mismatches from the missing skip).
     {
         const uint32_t sig = scanFlagMask & 1;
         const uint32_t cnt = (uint32_t)*tp + offset;
         const uint32_t ctxSig = subPosBase ? cnt : 0;
-        const uint32_t mstate = baseCtx[ctxSig];
-        const uint32_t mps = mstate & 1;
-        const uint32_t stateBits = ENTROPY[mstate ^ sig];
-        uint32_t nextState = (stateBits >> 24) + mps;
-        if ((mstate ^ sig) == 1)
-            nextState = sig;
-        baseCtx[ctxSig] = (uint8_t)nextState;
-        sum += stateBits;
+        if (subPosBase == 0 || numNonZero != 0)
+        {
+            const uint32_t mstate = baseCtx[ctxSig];
+            const uint32_t mps = mstate & 1;
+            const uint32_t stateBits = ENTROPY[mstate ^ sig];
+            uint32_t nextState = (stateBits >> 24) + mps;
+            if ((mstate ^ sig) == 1)
+                nextState = sig;
+            baseCtx[ctxSig] = (uint8_t)nextState;
+            sum += stateBits;
+        }
         absCoeff[numNonZero] = *ap;
     }
 

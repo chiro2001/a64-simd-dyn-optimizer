@@ -278,6 +278,159 @@ static int run_scan(const unsigned char* hdr, const unsigned char* vals,
     return trSize * 1000 + (numSig <= 4 ? 1 : 0);
 }
 
+// ---- verify modes: baseline vs candidate on the same record ----
+static int verify_c1(const unsigned char* b, long long* bad)
+{
+    int n = b[0];
+    if (n < 1 || n > 8)
+        return 0;
+    uint16_t abs[8];
+    memcpy(abs, b + 1, 16);
+    intptr_t off;
+    memcpy(&off, b + 81, 8);
+    uint8_t ctxA[64], ctxB[64];
+    memcpy(ctxA, b + 17, 64);
+    memcpy(ctxB, b + 17, 64);
+    costC1C2Flag_t fn = primitives.costC1C2Flag;
+    uint32_t rA = fn(abs, n, ctxA, off);
+    uint32_t rB = dynopt_cost_c1c2_flag_sve2(abs, n, ctxB, off);
+    if (rA != rB || memcmp(ctxA, ctxB, 64) != 0)
+    {
+        if (*bad < 5)
+            fprintf(stderr, "c1 verify: n=%d off=%ld rA=%08x rB=%08x "
+                            "ctxd=%d\n",
+                    n, (long)off, rA, rB,
+                    memcmp(ctxA, ctxB, 64));
+        (*bad)++;
+        return 1;
+    }
+    return 0;
+}
+
+static int verify_rem(const unsigned char* b, long long* bad)
+{
+    int nn = (int)((unsigned)b[0] | ((unsigned)b[1] << 8));
+    int idx = (int)((unsigned)b[2] | ((unsigned)b[3] << 8));
+    if (nn < 0 || nn > 64 || idx < 0 || idx > 32)
+        return 0;
+    uint16_t buf[64];
+    memset(buf, 0, sizeof(buf));
+    memcpy(buf + 16, b + 4, 32);
+    costCoeffRemain_t fn = primitives.costCoeffRemain;
+    uint32_t rA = fn(buf + 16 - idx, nn, idx);
+    uint32_t rB = dynopt_cost_coeff_remain_sve2(
+        buf + 16 - idx, nn, idx);
+    if (rA != rB)
+    {
+        if (*bad < 5)
+            fprintf(stderr, "rem verify: nn=%d idx=%d rA=%08x rB=%08x\n",
+                    nn, idx, rA, rB);
+        (*bad)++;
+        return 1;
+    }
+    return 0;
+}
+
+static int verify_ccn(const unsigned char* b, long long* bad)
+{
+    intptr_t trSize;
+    uint32_t mask;
+    int offset, soff, sub;
+    memcpy(&trSize, b, 8);
+    memcpy(&mask, b + 8, 4);
+    memcpy(&offset, b + 12, 4);
+    memcpy(&soff, b + 16, 4);
+    memcpy(&sub, b + 20, 4);
+    int16_t coeff[128];
+    memset(coeff, 0, sizeof(coeff));
+    for (int i = 0; i < 4; i++)
+        memcpy(coeff + i * trSize, b + 24 + 8 * i, 8);
+    uint8_t tab[16];
+    uint16_t scan[48];
+    memcpy(tab, b + 56, 16);
+    memset(scan, 0, sizeof(scan));
+    memcpy(scan, b + 136, 32);
+    uint8_t ctxA[256], ctxB[256];
+    memset(ctxA, 0, sizeof(ctxA));
+    memset(ctxB, 0, sizeof(ctxB));
+    memcpy(ctxA, b + 72, 64);
+    memcpy(ctxB, b + 72, 64);
+    uint16_t absA[32], absB[32];
+    memset(absA, 0, sizeof(absA));
+    memset(absB, 0, sizeof(absB));
+    costCoeffNxN_t fn = primitives.costCoeffNxN;
+    uint32_t rA = fn(scan, coeff, trSize, absA, tab, mask, ctxA, offset,
+                     soff, sub);
+    uint32_t rB = dynopt_cost_coeff_nxn_sve2(
+        scan, coeff, trSize, absB, tab, mask, ctxB, offset, soff, sub);
+    if (rA != rB || memcmp(absA, absB, 32) != 0 ||
+        memcmp(ctxA, ctxB, 128) != 0)
+    {
+        if (*bad < 5)
+            fprintf(stderr,
+                    "ccn verify: tr=%ld soff=%d mask=%x off=%d sub=%d "
+                    "rA=%08x rB=%08x absd=%d ctxd=%d\n",
+                    (long)trSize, soff, mask, offset, sub, rA, rB,
+                    memcmp(absA, absB, 32), memcmp(ctxA, ctxB, 128));
+        (*bad)++;
+        return 1;
+    }
+    return 0;
+}
+
+static int verify_scan(const unsigned char* hdr, const unsigned char* vals,
+                       const unsigned char* tail, long long* bad)
+{
+    int trSize = (int)((unsigned)hdr[0] | ((unsigned)hdr[1] << 8));
+    int numSig = (int)((unsigned)hdr[2] | ((unsigned)hdr[3] << 8));
+    int ncg = (int)((unsigned)hdr[4] | ((unsigned)hdr[5] << 8));
+    alignas(16) int16_t coeff[2048];
+    memset(coeff, 0, sizeof(coeff));
+    alignas(16) uint16_t scan[1024];
+    const int scanlen = trSize * trSize;
+    memcpy(scan, tail, (size_t)scanlen * 2);
+    for (int i = 0; i < ncg; i++)
+    {
+        const int off = scan[16 * i];
+        if (off < 0 || off + 3 * trSize + 3 >= 2048)
+            return 0;
+        for (int k = 0; k < 4; k++)
+            for (int j = 0; j < 4; j++)
+                memcpy(&coeff[off + k * trSize + j],
+                       vals + (i * 16 + k * 4 + j) * 2, 2);
+    }
+    alignas(16) uint16_t cg[16];
+    memcpy(cg, tail + (size_t)scanlen * 2, 32);
+    alignas(16) uint16_t csA[64], cfA[64], csB[64], cfB[64];
+    alignas(16) uint8_t cnA[64], cnB[64];
+    memset(csA, 0, sizeof(csA));
+    memset(cfA, 0, sizeof(cfA));
+    memset(csB, 0, sizeof(csB));
+    memset(cfB, 0, sizeof(cfB));
+    memset(cnA, 0, sizeof(cnA));
+    memset(cnB, 0, sizeof(cnB));
+    scanPosLast_t fn = primitives.scanPosLast;
+    int rA = fn(scan, coeff, csA, cfA, cnA, numSig, cg, trSize);
+    int rB = dynopt_scan_pos_last_sve2(
+        scan, coeff, csB, cfB, cnB, numSig, cg, trSize);
+    if (rA != rB || memcmp(csA, csB, sizeof(csA)) != 0 ||
+        memcmp(cfA, cfB, sizeof(cfA)) != 0 ||
+        memcmp(cnA, cnB, sizeof(cnA)) != 0)
+    {
+        if (*bad < 5)
+            fprintf(stderr,
+                    "scan verify: tr=%d ns=%d ncg=%d rA=%d rB=%d "
+                    "csd=%d cfd=%d cnd=%d\n",
+                    trSize, numSig, ncg, rA, rB,
+                    memcmp(csA, csB, sizeof(csA)),
+                    memcmp(cfA, cfB, sizeof(cfA)),
+                    memcmp(cnA, cnB, sizeof(cnA)));
+        (*bad)++;
+        return 1;
+    }
+    return 0;
+}
+
 // Time one bucket by loading its records into memory first, so the timed
 // window contains only kernel calls (round-0021: the earlier per-pass
 // design timed file IO and made scan buckets ~99% IO).
@@ -345,6 +498,65 @@ static void bench_file(const char* path, int kid, int which,
     *bucket_ok = 1;
 }
 
+static void verify_file(const char* path, int kid, const char* bname,
+                        int* any)
+{
+    FILE* f = fopen(path, "rb");
+    if (!f)
+        return;
+    std::vector<unsigned char> data;
+    data.reserve(64 << 20);
+    unsigned char buf[1 << 20];
+    size_t rd;
+    while ((rd = fread(buf, 1, sizeof(buf), f)) > 0)
+        data.insert(data.end(), buf, buf + rd);
+    fclose(f);
+    if (data.empty())
+        return;
+    long long bad = 0;
+    long long cnt = 0;
+    size_t pos = 0;
+    while (pos < data.size())
+    {
+        const unsigned char* p = &data[pos];
+        if (kid == K_SCAN)
+        {
+            if (data.size() - pos < 7)
+                break;
+            int ncg = (int)((unsigned)p[5] | ((unsigned)p[6] << 8));
+            int trSize = (int)((unsigned)p[1] | ((unsigned)p[2] << 8));
+            const int scanlen = trSize * trSize;
+            const int taillen = scanlen * 2 + 32;
+            size_t rec = 7 + (size_t)ncg * 32 + taillen;
+            if (data.size() - pos < rec)
+                break;
+            verify_scan(p + 1, p + 7, p + 7 + (size_t)ncg * 32, &bad);
+            pos += rec;
+            cnt++;
+        }
+        else
+        {
+            size_t rec = kid == K_C1 ? 90 :
+                         kid == K_REM ? 37 : 169;
+            if (data.size() - pos < rec)
+                break;
+            const unsigned char* b = p + 1;
+            if (kid == K_C1)
+                verify_c1(b, &bad);
+            else if (kid == K_REM)
+                verify_rem(b, &bad);
+            else
+                verify_ccn(b, &bad);
+            pos += rec;
+            cnt++;
+        }
+    }
+    printf("verify,%s,%s,bad=%lld,count=%lld\n",
+           KNAME(kid), bname, bad, cnt);
+    fflush(stdout);
+    *any = 1;
+}
+
 int main(int argc, char** argv)
 {
     if (argc < 3)
@@ -359,6 +571,7 @@ int main(int argc, char** argv)
     p.cpuid = getenv("REPLAY_C") ? 0 : X265_NS::cpu_detect(false);
     x265_setup_primitives(&p);
     int which = !strcmp(argv[2], "cand");
+    int do_verify = !strcmp(argv[2], "verify");
     std::string work = argc > 3 ? argv[3] : "/tmp";
     char spath[1024];
     bool have_split = true;
@@ -394,6 +607,34 @@ int main(int argc, char** argv)
     const char* buckets_scan[4] = { "tr4", "tr8", "tr16", "tr32" };
     char path[1024];
     int ok = 0;
+    if (do_verify)
+    {
+        for (int b = 1; b <= 8; b++)
+        {
+            snprintf(path, sizeof(path), "%s/replay-1-%d.bin",
+                     work.c_str(), b);
+            verify_file(path, K_C1, buckets_c1[b - 1], &ok);
+        }
+        for (int b = 0; b < 2; b++)
+        {
+            snprintf(path, sizeof(path), "%s/replay-2-%d.bin",
+                     work.c_str(), b);
+            verify_file(path, K_REM, buckets_rem[b], &ok);
+        }
+        for (int b = 0; b < 2; b++)
+        {
+            snprintf(path, sizeof(path), "%s/replay-3-%d.bin",
+                     work.c_str(), b);
+            verify_file(path, K_CCN, buckets_ccn[b], &ok);
+        }
+        for (int b = 0; b < 4; b++)
+        {
+            snprintf(path, sizeof(path), "%s/replay-4-%d.bin",
+                     work.c_str(), b);
+            verify_file(path, K_SCAN, buckets_scan[b], &ok);
+        }
+        return ok ? 0 : 4;
+    }
     for (int b = 1; b <= 8; b++)
     {
         snprintf(path, sizeof(path), "%s/replay-1-%d.bin",

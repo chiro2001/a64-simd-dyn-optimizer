@@ -116,6 +116,10 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
   候选 +6.3%，costC1C2Flag/scanPosLast/costCoeffRemain 全部持平，与
   已知 E2E 符号一致；均匀微基准对熵族的判断不可信
   （reports/entropy-replay-920b-20260815.txt）。
+- **costCoeffNxN NEON 变体通过生产验证**：回放 verify 模式对云端生产
+  静态库逐调用差分，修复 soff=15 尾部 ctx 跳过条件后 5,776,047 次调用
+  0 失配，真实分布回放 +9.7%；单算子注入码流 ee5db7 一致、E2E 中位
+  8200 vs 基线 8191 ms（噪声内）。已设为 cost-coeff-nxn 默认候选。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成

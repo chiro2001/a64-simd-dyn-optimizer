@@ -196,6 +196,14 @@ DYNOPT_TRACE_PATH=/path/trace.bin taskset -c 0 x265 --input ... -o out.mp4
 结果见 reports/entropy-replay-920b-20260815.txt：ccn 标量 +6.3%、
 c1c2/remain/scan 持平；与已知 E2E 符号一致。
 
+verify 模式（生产实现逐调用差分，round-0021b）：`<trace> verify
+<workdir>`，baseline 与候选各跑一次并比较返回值/输出/上下文。已用云端
+生产静态库验证：c1c2/remain/scan 全 0 失配；ccn NEON 变体首轮
+soff=15 有 92,999 失配（尾部 ctx 跳过条件缺失），修复后 5,776,047 全
+0 失配，回放计时 +9.7%。`build_preload_so.py` 的 cost-coeff-nxn 已默认
+改用该 NEON 变体（E2E 码流 ee5db7 一致，中位 8200 vs 8191 ms，噪声
+内持平）。
+
 ## 7. 注意事项
 
 - CNTVCT 在内网/云端约为百 MHz 级，per-call 取整会把小 kernel 压成

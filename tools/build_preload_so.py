@@ -895,6 +895,20 @@ def try_generate_specialized(kernel, isa, workdir):
             return [path]
         except Exception:
             return []
+    if kernel == "cost-coeff-nxn":
+        # NEON scan-order pre-reorder variant: validated bit-exact
+        # against the production 920B build on 5.77M real calls
+        # (reports/entropy-replay-920b-20260815.txt) and ~+10% in
+        # real-distribution replay. Supersedes the scalar candidate.
+        try:
+            from emit_cost_coeff_nxn_sve2_shared import emit_neon
+            sym = SPECIAL_SYMBOLS[kernel]
+            path = os.path.join(workdir, kernel + "-special-0.cpp")
+            with open(path, "w") as f:
+                f.write(emit_neon(sym))
+            return [path]
+        except Exception:
+            return []
     if kernel == "sao-e1":
         # The x265 saoCuOrgE1 slot is a single-row primitive; emit a
         # rows=1 variant of the same 64-wide E1 kernel (default emitter
