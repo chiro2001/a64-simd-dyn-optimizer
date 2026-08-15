@@ -129,6 +129,10 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
   4-bit 查表 PEXT 替代逐位 clz 压缩（回放 +27%，生产逐调用 432 万次
   0 失配）；best6 批量（+scan r30，20 槽）码流 ee5db7 一致，配对中位
   8055 vs 8210 ms，**-1.9%**。
+- **costCoeffRemain DFA + 端到端汇总**：DFA 表（5×3×256）回放 +20%、
+  生产 239 万次 0 失配；best6b 配对中位 8061 vs 8210 ms（-1.8%）。
+  完整端到端对比、全部生产验证证据与结论见
+  [reports/end-to-end-comparison-20260815.txt](reports/end-to-end-comparison-20260815.txt)。
 
 结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
 基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
