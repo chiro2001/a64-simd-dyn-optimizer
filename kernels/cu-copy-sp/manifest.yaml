@@ -1,0 +1,34 @@
+# Representative cu.copy_sp slice: 16x16 int16 plane -> pixel.
+kernel: cu-copy-sp
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: cu_copy_sp
+  n: 16
+  rows: 16
+
+candidate:
+  symbol: dynopt_cu_copy_sp_16x16_sve2
+  trace_driver_src: kernels/cu-copy-sp/trace_driver.cpp
+  trace_driver_c: kernels/cu-copy-sp/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: blockcopy_sp_neon
+  symbol_mangled: _ZN12_GLOBAL__N_117blockcopy_sp_neonILi16ELi16EEEvPhlPKsl
+  call: blockcopy_sp_neon<16, 16>
+  decl: |
+    template <int W, int H> void blockcopy_sp_neon(
+        uint8_t*, intptr_t, const int16_t*, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/cu-copy-sp/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_117blockcopy_sp_neonILi16ELi16EEEvPhlPKsl
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
