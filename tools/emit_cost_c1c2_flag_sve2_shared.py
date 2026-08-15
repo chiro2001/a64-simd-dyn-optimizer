@@ -249,7 +249,7 @@ def _small_n_body(n):
 
 def _small_n_functions():
     out = []
-    for n in range(1, 5):
+    for n in range(1, 9):
         out.append(
             "static uint32_t dynopt_c1_n%d(\n"
             "    uint16_t* a, uint8_t* base, intptr_t ctxOffset) "
@@ -270,45 +270,31 @@ extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
     const int n = (int)numC1Flag;
     if (n <= 0)
         return (0 << 26) + (8 << 28);
-    // Round-0026: real calls are dominated by n<=4 (82%); the C-loop
-    // clone lost ~25-30% there and the NEON run-cache only pays off at
-    // n>=5. Small-n bodies are separate noinline leaf functions so the
-    // hot path has no 160-byte frame/spills and no init-check branch;
-    // the direct if-chain is predictable (n==1 is ~41% of calls).
-    if (n == 1)
-        return dynopt_c1_n1(absCoeff, baseCtxMod, ctxOffset);
-    if (n == 2)
-        return dynopt_c1_n2(absCoeff, baseCtxMod, ctxOffset);
-    if (n == 3)
-        return dynopt_c1_n3(absCoeff, baseCtxMod, ctxOffset);
-    if (n == 4)
-        return dynopt_c1_n4(absCoeff, baseCtxMod, ctxOffset);
-    if (n > 8)
-        return dynopt_c1_scalar(absCoeff, n, baseCtxMod, ctxOffset);
-
-    // NEON masks for n=5..8 (restored from round-0024; the scalar mask
-    // build measured slower on the 920B for the full 8 lanes).
-    if (!dynopt_c1_ready)
-        dynopt_c1_init();
-    uint16x8_t a = vld1q_u16(absCoeff);
-    uint16x8_t one = vdupq_n_u16(1), two = vdupq_n_u16(2);
-    uint16x8_t s1 = vcgtq_u16(a, one);
-    uint16x8_t s2 = vcgtq_u16(a, two);
-    uint16_t s1a[8], s2a[8];
-    vst1q_u16(s1a, s1);
-    vst1q_u16(s2a, s2);
-    uint16_t m1 = 0, m2 = 0;
-    for (int i = 0; i < 8; i++)
+    // Round-0029: real calls are dominated by small n and the NEON
+    // run-cache path measured at parity-to-slower for n=5..8 on the real
+    // corpus (round-0028's faster mask build did not move it). The fully
+    // unrolled noinline leaves (which beat the C loop by 10-15% for
+    // n<=4) now cover n=1..8; one ctx update per coefficient, branchless
+    // ctx selection by `first`, no run-cache tables/init.
+    if (n >= 1 && n <= 8)
     {
-        m1 |= (uint16_t)((s1a[i] ? 1 : 0) << i);
-        m2 |= (uint16_t)((s2a[i] ? 1 : 0) << i);
+        if (n == 1)
+            return dynopt_c1_n1(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 2)
+            return dynopt_c1_n2(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 3)
+            return dynopt_c1_n3(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 4)
+            return dynopt_c1_n4(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 5)
+            return dynopt_c1_n5(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 6)
+            return dynopt_c1_n6(absCoeff, baseCtxMod, ctxOffset);
+        if (n == 7)
+            return dynopt_c1_n7(absCoeff, baseCtxMod, ctxOffset);
+        return dynopt_c1_n8(absCoeff, baseCtxMod, ctxOffset);
     }
-    if (n < 8)
-    {
-        m1 &= (uint16_t)((1u << n) - 1);
-        m2 &= (uint16_t)((1u << n) - 1);
-    }
-    return dynopt_c1_mask_core(m1, m2, n, baseCtxMod, ctxOffset);
+    return dynopt_c1_scalar(absCoeff, n, baseCtxMod, ctxOffset);
 }
 """
 
