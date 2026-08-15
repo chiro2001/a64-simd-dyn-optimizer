@@ -30,4 +30,4 @@ corpus:
   cases: 20000
 
 layouts:
-  impl: [addp-rshr]
+  impl: [addp-rshr, neon-paddl, neon-paddl-pair, neon-paddl-loop]

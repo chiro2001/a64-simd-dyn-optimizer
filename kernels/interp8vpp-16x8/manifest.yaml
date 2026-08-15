@@ -1,0 +1,36 @@
+# 8-bit vertical 8-tap luma filter (interp8 vpp), 16x8, SVE2 (VL=256).
+kernel: interp8vpp-16x8
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: interp8vpp
+  n: 16
+  rows: 8
+
+candidate:
+  symbol: dynopt_interp8_16x8_sve2_vpp
+  trace_driver_src: kernels/interp8vpp-16x8/trace_driver.cpp
+  trace_driver_c: kernels/interp8vpp-16x8/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: interp_vert_pp_neon
+  symbol_mangled: _ZN4x26519interp_vert_pp_neonILi8ELi16ELi8EEEvPKhlPhli
+  call: x265::interp_vert_pp_neon<8, 16, 8>
+  decl: |
+    namespace x265 {
+    template <int N, int W, int H> void interp_vert_pp_neon(
+        const uint8_t*, intptr_t, uint8_t*, intptr_t, int);
+    }
+
+baselines:
+  neon:
+    driver: kernels/interp8vpp-16x8/trace_driver.cpp
+    symbol_mangled: _ZN4x26519interp_vert_pp_neonILi8ELi16ELi8EEEvPKhlPhli
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  acc_split: [1, 2]

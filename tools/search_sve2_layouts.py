@@ -487,6 +487,23 @@ def make_emitter(kernel, backend="acle"):
             return emit_vpp_32x32(
                 acc_split=combo.get("acc_split", 1))
         return emit_fn
+    if kernel.startswith("interp8vpp-") and \
+            kernel not in ("interp8vpp-16", "interp8vpp-32"):
+        m = re.fullmatch(r"interp8vpp-(\d+)x(\d+)", kernel)
+        if not m:
+            raise ValueError("unrecognized interp8vpp kernel %r" % kernel)
+        w, h = int(m.group(1)), int(m.group(2))
+        if w % 16:
+            raise ValueError("interp8vpp emitter requires width %% 16 == 0"
+                             " (got %d)" % w)
+        from emit_interp8_sve2_shared import emit_vpp
+
+        def emit_fn(combo):
+            return emit_vpp(
+                func_name="dynopt_interp8_%dx%d_sve2_vpp" % (w, h),
+                width=w, height=h,
+                acc_split=combo.get("acc_split", 1))
+        return emit_fn
     if kernel == "interp4":
         from emit_interp4_sve2_shared import emit_16x16
 

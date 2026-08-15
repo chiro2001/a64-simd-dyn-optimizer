@@ -1,0 +1,106 @@
+[
+ {
+  "tag": "impl-addp-rshr",
+  "impl": "addp-rshr",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 1974,
+   "vector": 1664,
+   "movprfx": 0,
+   "vector_fused": 1664,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 1664
+  },
+  "range": [
+   "0x400794",
+   "0x402680"
+  ],
+  "cached": true,
+  "mca_cycles": 378,
+  "mca_uops": 2101
+ },
+ {
+  "tag": "impl-neon-paddl",
+  "impl": "neon-paddl",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 891,
+   "vector": 768,
+   "movprfx": 0,
+   "vector_fused": 768,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 256,
+   "vector_fused_uop": 768
+  },
+  "range": [
+   "0x400794",
+   "0x401580"
+  ],
+  "cached": true,
+  "mca_cycles": 239,
+  "mca_uops": 1210
+ },
+ {
+  "tag": "impl-neon-paddl-pair",
+  "impl": "neon-paddl-pair",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 731,
+   "vector": 608,
+   "movprfx": 0,
+   "vector_fused": 608,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 224,
+   "vector_fused_uop": 608
+  },
+  "range": [
+   "0x400794",
+   "0x401300"
+  ],
+  "cached": true,
+  "mca_cycles": 216,
+  "mca_uops": 1050
+ },
+ {
+  "tag": "impl-neon-paddl-loop",
+  "impl": "neon-paddl-loop",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 741,
+   "vector": 576,
+   "movprfx": 0,
+   "vector_fused": 576,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 160,
+   "vector_fused_uop": 576
+  },
+  "range": [
+   "0x400794",
+   "0x400820"
+  ],
+  "cached": true,
+  "mca_cycles": 215,
+  "mca_uops": 1092
+ }
+]

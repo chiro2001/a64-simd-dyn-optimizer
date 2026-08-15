@@ -18,6 +18,10 @@
   1487/462）；dct8 289 / MCA 77（8x8 小形状，实机暂落后 NEON）。
 - **SA8D16 过减半门**：fused 186（< 186.5），20k/lite PASS；cadd
   为 SVE2-only，920B 不可测，等 950/960。
+- **scale2D_64to32 性能翻新**：fused 1664→576、MCA 378→215
+  （neon-paddl loop + clang -O3，20k 差分 0 失配）；luma vpp 补
+  16x8/16x32/32x16/32x64/64x32 五个非方形形状（135/91、
+  471/286、488/288、1832/1063、2367/1118）。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。

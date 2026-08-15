@@ -314,3 +314,12 @@ experiments/m30-planecopy-search/gen-search-*/*
 experiments/m30-weight-pp-search/gen-search-*/*
 !experiments/m30-weight-pp-search/gen-search-*/results.json
 !experiments/m30-weight-pp-search/gen-search-*/compute-sve.cpp
+
+# interp8vpp non-square search artifacts (2026-08-15)
+experiments/m30-interp8vpp-search/search-*/*
+!experiments/m30-interp8vpp-search/search-*/results.json
+experiments/m30-interp8vpp-search/recheck-*/
+
+# scale2D neon-paddl search artifacts (2026-08-15)
+experiments/m30-scale2d-search/search-*/*
+!experiments/m30-scale2d-search/search-*/results.json

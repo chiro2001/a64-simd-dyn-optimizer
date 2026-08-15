@@ -11,7 +11,7 @@
 
 | 指标 | 值 |
 | --- | --- |
-| kernel 目录 | 94 |
+| kernel 目录 | 99 |
 | seed recipe | 93 |
 | 通用发射器冒烟核数 | 69/69 通过 |
 | 通用配方数 | 10 |
@@ -104,6 +104,16 @@
 | interp8-vss-32x16 | 1045/558 | 行预加载 |
 | interp8-vss-32x32 | 2046/1096 | 行预加载 |
 
+### 4.1 luma vpp 非方形形状（2026-08-15 补，20k 差分 0 失配）
+
+| 算子 | 自动候选 fused/MCA | 备注 |
+| --- | --- | --- |
+| interp8vpp-16x8 | 135/91 | 首覆盖 |
+| interp8vpp-16x32 | 471/286 | 首覆盖 |
+| interp8vpp-32x16 | 488/288 | 首覆盖 |
+| interp8vpp-32x64 | 1832/1063 | 首覆盖 |
+| interp8vpp-64x32 | 2367/1118 | 首覆盖 |
+
 ## 5. 自动搜索线：misc 首覆盖
 
 | 配方 | 算子 | 自动候选 fused/MCA |
@@ -137,7 +147,7 @@
 | saoStatsE3 block16 | 180/65 | - | 特化 emitter + 搜索 |
 | saoStatsBO | 0/137 | - | 无优化空间 |
 | scale1D_128to64 | 24/21 | - | 特化 emitter + 搜索 |
-| scale2D_64to32 | 1664/378 | - | 特化 emitter + 搜索 |
+| scale2D_64to32 | 576/215 | - | 特化 emitter + 搜索；2026-08-15 从 1664/378 降至 576/215（neon-paddl-loop + clang -O3，20k 0 失配） |
 | ssim_4x4x2_core | 45/47 | - | 特化 emitter + 搜索 |
 
 ## 7. 工具链完成度
