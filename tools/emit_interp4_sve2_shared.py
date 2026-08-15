@@ -34,7 +34,7 @@ def emit(func_name=None, width=16, height=16):
     blocks store only the low 8 bytes."""
     if func_name is None:
         func_name = "dynopt_interp4_%dx%d_sve2" % (width, height)
-    units = max(1, width // 16)
+    units = max(1, (width + 15) // 16)
     coeff_lines = ["static const int8_t CHROMA_C[8][4] = {"]
     for ph in range(8):
         coeff_lines.append("    { %d, %d, %d, %d },"
@@ -139,7 +139,7 @@ def emit_vpp(func_name, width=16, height=16):
     offset, sqrshrunb+uzp1+st1b. Per row: 1 load + 1 sub + 4 mla + 1 add
     + 3 tail = 9 counted.
     """
-    units = max(1, width // 16)
+    units = max(1, (width + 15) // 16)
     rows = height
     n_rows = rows + 3
     coeff = {
@@ -170,6 +170,7 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
     const svbool_t p16 = svptrue_b16();
     const svbool_t p16b = svwhilelt_b8((uint32_t)0, (uint32_t)16);
     const svbool_t p8b = svwhilelt_b8((uint32_t)0, (uint32_t)8);
+%(pout_lines)s
     const int ph = coeffIdx & 7;
     const int8_t* cf = (const int8_t*)CHROMA_C[ph];
     const svint16_t c0 = svdup_n_s16(cf[0]);
@@ -201,13 +202,19 @@ extern "C" void %(func_name)s(const uint8_t* src, intptr_t srcStride,
                          " 8192);")
             lines.append("        svuint8_t u8 = svqrshrunb_n_s16(acc, 6);")
             lines.append("        svuint8_t uz = svuzp1_u8(u8, u8);")
-            lines.append("        svst1_u8(%s, dst + %d * dstStride + %d,"
-                         " uz);"
-                         % ("p8b" if width < 16 else "p16b", r, u * 16))
+            lines.append("        svst1_u8(pout%d, dst + %d * dstStride + %d,"
+                         " uz);" % (u, r, u * 16))
             lines.append("    }")
     lines.append("}")
+    pout_lines = []
+    for u in range(units):
+        n = min(16, width - u * 16)
+        pout_lines.append(
+            "    const svbool_t pout%d = svwhilelt_b8((uint32_t)0,"
+            " (uint32_t)%d);" % (u, n))
     body = head % {"func_name": func_name, "width": width,
-                   "height": height} + "\n".join(lines)
+                   "height": height,
+                   "pout_lines": "\n".join(pout_lines)} + "\n".join(lines)
     coeff_lines = ["static const int8_t CHROMA_C[8][4] = {"]
     for ph in range(8):
         coeff_lines.append("    { %d, %d, %d, %d },"
