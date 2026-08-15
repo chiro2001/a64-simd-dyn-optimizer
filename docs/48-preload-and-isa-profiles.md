@@ -316,6 +316,21 @@ hook 缺 `-static`、忽略 `--opt-extra` 的问题）。
 1.07）。全部 6 变体 20k 差分 0 失配；最优 vaddlv-pair 已写入
 `kernels/sa8d16/candidates/best_sve1.{cpp,S}`（920B 槽位，-O3）。
 
+### 9.2b 混合布局（SVE1 宽装载 + NEON Hadamard）为负结果
+
+试过 SVE1 16-lane 装载/差分 + NEON-SVE bridge 拆半 + NEON 8x8 Hadamard
+（`emit_16x16_mixed`）：920B 延迟 58 vs 上游 55（0.95×）、吞吐 103 vs
+95（0.92×）——SVE 装载节省被 bridge/tbl 拆分开销吃掉，不如纯 NEON pair。
+该轴保留在搜索空间里供其它形状参考。
+
+### 9.2c 统一 920B 搜索（SVE1+NEON 双管线）
+
+sa8d16 的 sve1 搜索轴并入 `load: [sve, mixed, neon]` +
+`reduce_mix` + `quad`；`--rank-by bench920` 按 920B CNTVCT 比率排序。
+端到端验证（6 个候选 20k 通过 + 8 个候选真机回填）自动把
+`load-neon/quad-pair` 排到第一（1.0566），mixed 排末（0.98–0.99），
+与手工中位数一致。
+
 ### 9.3 920B 聚焦 E2E（真实 1080p 30 帧，sa8d16 单算子注入）
 
 | 配置 | run1 | run2 | run3 | 中位 |

@@ -460,8 +460,20 @@ def make_emitter(kernel, backend="acle"):
                     quad=combo.get("quad", "seq"))
         else:
             from emit_sa8d_sve2_shared import emit_16x16
+            from emit_sa8d_neon_shared import emit_16x16 as emit_16x16_neon
+            from emit_sa8d_neon_shared import emit_16x16_mixed
 
             def emit_fn(combo):
+                load = combo.get("load", "sve")
+                if load == "neon":
+                    return emit_16x16_neon(
+                        func_name="dynopt_sa8d_16x16_sve2",
+                        reduce=combo.get("reduce_mix", "vaddlv"),
+                        quad=combo.get("quad", "seq"))
+                if load == "mixed":
+                    return emit_16x16_mixed(
+                        func_name="dynopt_sa8d_16x16_sve2",
+                        reduce=combo.get("reduce_mix", "vaddlv"))
                 return emit_16x16(
                     reduce_tail=combo.get("reduce_tail", "saddv"))
         return emit_fn

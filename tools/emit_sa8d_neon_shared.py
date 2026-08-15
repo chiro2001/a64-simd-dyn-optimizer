@@ -210,3 +210,79 @@ extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
 }
 """ % {"reduce": reduce, "quad": quad, "func": func_name,
        "qbody": qbody}
+
+
+def emit_16x16_mixed(func_name="dynopt_sa8d_16x16_sve2", reduce="vaddlv"):
+    """SVE1 16-lane loads/diff + NEON 8x8 Hadamard (920B mixed layout).
+
+    A 16x16 row is exactly one 16-lane SVE register, so loading and
+    differencing the whole row costs one SVE instruction pair per image
+    instead of two NEON 8-byte loads + vsubl each.  The SVE diff register
+    is split into the two 8-lane NEON halves (NEON-SVE bridge) and the
+    8x8 Hadamard runs entirely on the NEON pipe, which 920B executes
+    faster than the SVE1 CADD/TBL pipeline used by the natural-row
+    candidate.
+    """
+    if reduce == "vaddlv":
+        red_init = "    uint16x8_t tot = vaddq_u16(r0, r1);"
+        red_acc = "    tot = vaddq_u16(tot, r0);\n    tot = vaddq_u16(tot, r1);"
+        red_end = ("    return (int)((vaddlvq_u16(tot) + 1) >> 1);")
+    elif reduce == "vpadal":
+        red_init = ("    uint32x4_t sum0 = vpaddlq_u16(r0);\n"
+                    "    uint32x4_t sum1 = vpaddlq_u16(r1);")
+        red_acc = ("    sum0 = vpadalq_u16(sum0, r0);\n"
+                   "    sum1 = vpadalq_u16(sum1, r1);")
+        red_end = ("    sum0 = vaddq_u32(sum0, sum1);\n"
+                   "    return (int)((vaddvq_u32(sum0) + 1) >> 1);")
+    else:  # vaddv
+        red_init = ("    uint32_t total = (uint32_t)vaddvq_u16("
+                    "vaddq_u16(r0, r1));")
+        red_acc = ("    total += (uint32_t)vaddvq_u16(vaddq_u16(r0, r1));")
+        red_end = "    return (int)((total + 1) >> 1);"
+
+    # Reuse the pure-NEON Hadamard helpers by splicing the source of
+    # emit_16x16 up to the extern function.
+    pure = emit_16x16(reduce=reduce, quad="seq")
+    head = pure.split('extern "C" int ')[0]
+    head = head.replace('#include <arm_neon.h>',
+                        '#include <arm_sve.h>\n#include <arm_neon.h>\n'
+                        '#include <arm_neon_sve_bridge.h>')
+    return head + """\
+static const uint16_t HAD_IDX_HI16[16] =
+    { 8, 9, 10, 11, 12, 13, 14, 15, 8, 9, 10, 11, 12, 13, 14, 15 };
+
+extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
+                        const uint8_t* pix2, intptr_t sp2)
+{
+    const svbool_t p16 = svptrue_b16();
+    const svuint16_t hi_idx = svld1_u16(p16, HAD_IDX_HI16);
+    int16x8_t dl[8], dr[8];
+    uint16x8_t r0, r1;
+
+    #define loadpair(yo, dl, dr)                                           \\
+        do {                                                               \\
+            for (int yy = 0; yy < 8; yy++)                                 \\
+            {                                                              \\
+                const svint16_t d = svreinterpret_s16_u16(                 \\
+                    svsub_u16_x(p16,                                       \\
+                        svld1ub_u16(p16, pix1 + (yo + yy) * sp1),          \\
+                        svld1ub_u16(p16, pix2 + (yo + yy) * sp2)));        \\
+                dl[yy] = svget_neonq_s16(d);                               \\
+                dr[yy] = svget_neonq_s16(svtbl_s16(d, hi_idx));            \\
+            }                                                              \\
+        } while (0)
+
+    loadpair(0, dl, dr);
+    hadamard_8x8(dl, &r0, &r1);
+    %(red_init)s
+    hadamard_8x8(dr, &r0, &r1);
+    %(red_acc)s
+    loadpair(8, dl, dr);
+    hadamard_8x8(dl, &r0, &r1);
+    %(red_acc)s
+    hadamard_8x8(dr, &r0, &r1);
+    %(red_acc)s
+    %(red_end)s
+}
+""" % {"func": func_name, "red_init": red_init, "red_acc": red_acc,
+       "red_end": red_end}
