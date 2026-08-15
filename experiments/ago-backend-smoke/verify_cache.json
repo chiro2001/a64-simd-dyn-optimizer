@@ -1,0 +1,97 @@
+{
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|ago|7b5fd36f93b7b29679f618c6f21834a21e0f4f7c0f086c6a6df3f0f1c7990ce0": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ },
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|ago|fdc4e043e6af8476818f371de6a298bbf7a78882460957f340ed80d65888d723": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ },
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|ago|6dff8abc0ca9961083528deecc622718a7719f4cdafae3f5705ff999104de63d": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 92,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ },
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|ago|4d9fd656a17a119555ca39c3705b964cc8b88f44583754da761c848785af0a57": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 142,
+   "vector": 102,
+   "movprfx": 0,
+   "vector_fused": 102,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 4,
+   "vector_fused_uop": 102
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ },
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|ago|a93d4f4488eef685d228edb99042be55381c9b1eb9b0b3aa0267c47eb8211645": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ }
+}

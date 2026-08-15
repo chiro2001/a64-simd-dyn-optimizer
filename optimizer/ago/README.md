@@ -51,3 +51,9 @@ Round-0023 规划（docs/52）：自动建图 → pass 管线 → 目标机代�
   bad=0、微基准 N1 1.24x / 920B 1.38x；
 - 发射器（scan/remain）已改为委托 AGO 模板，输出与冻结候选逐字节
   一致。
+
+## M4 集成
+
+- `--backend ago` 已接入 tools/search_sve2_layouts.py（satd-8 A-E /
+  sa8d A-C cover 轴，端到端冒烟通过）；
+- 待办：`--rank-by ago`（M2 排序器接入搜索排序）。

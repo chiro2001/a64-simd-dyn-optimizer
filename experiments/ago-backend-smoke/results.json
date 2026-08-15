@@ -1,0 +1,216 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ],
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "fusion": {
+   "eligible": 11,
+   "hw_supported": 0,
+   "pairs": [
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "umax+add",
+    "umax+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 14,
+    "simd_insns": 59
+   }
+  }
+ },
+ {
+  "tag": "cover-B",
+  "cover": "B",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ],
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "fusion": {
+   "eligible": 11,
+   "hw_supported": 0,
+   "pairs": [
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "umax+add",
+    "umax+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 14,
+    "simd_insns": 59
+   }
+  }
+ },
+ {
+  "tag": "cover-C",
+  "cover": "C",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ],
+  "counts": {
+   "total": 92,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "fusion": {
+   "eligible": 7,
+   "hw_supported": 0,
+   "pairs": [
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "trn1+umax",
+    "trn1+umax",
+    "umax+add"
+   ],
+   "counts": {
+    "scalar_insns": 17,
+    "simd_insns": 58
+   }
+  }
+ },
+ {
+  "tag": "cover-D",
+  "cover": "D",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ],
+  "counts": {
+   "total": 142,
+   "vector": 102,
+   "movprfx": 0,
+   "vector_fused": 102,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 4,
+   "vector_fused_uop": 102
+  },
+  "fusion": {
+   "eligible": 6,
+   "hw_supported": 0,
+   "pairs": [
+    "usubl+sub",
+    "usubl+add",
+    "add+abs",
+    "trn2+umax",
+    "add+abs",
+    "trn2+umax"
+   ],
+   "counts": {
+    "scalar_insns": 27,
+    "simd_insns": 36,
+    "store_insns": 4,
+    "load_insns": 4,
+    "branch_insns": 1
+   }
+  }
+ },
+ {
+  "tag": "cover-E",
+  "cover": "E",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ],
+  "counts": {
+   "total": 90,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 76
+  },
+  "fusion": {
+   "eligible": 11,
+   "hw_supported": 0,
+   "pairs": [
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "trn2+umax",
+    "umax+add",
+    "umax+add",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 14,
+    "simd_insns": 59
+   }
+  }
+ }
+]

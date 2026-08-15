@@ -410,6 +410,28 @@ def true_dynamic(binary, start, end, log, timeout=None, counts_only=True,
 
 def make_emitter(kernel, backend="acle"):
     """Return emit(combo) for the kernel's manifest layout axes."""
+    if backend == "ago":
+        # AGO sidecar backend (M4): covers come from optimizer/ago
+        # cover templates; the layout axis is the cover id (A/B/C/...).
+        _ago_opt = os.path.join(ROOT, "optimizer")
+        if _ago_opt not in sys.path:
+            sys.path.insert(0, _ago_opt)
+        if kernel == "satd-8":
+            from ago.covers_satd8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_8x8_sve2")
+            return emit_fn
+        if kernel == "sa8d":
+            from ago.covers_sa8d8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_sa8d_8x8_sve2")
+            return emit_fn
+        raise ValueError("AGO backend: kernel %s has no cover template"
+                         % kernel)
     if backend == "gen":
         from gen_sve2_emit import make_generic_emitter
         return make_generic_emitter(kernel, isa=_ISA)
@@ -1147,7 +1169,7 @@ def measure_layout_candidate(task):
 def main():
     install_memguard()
     ap = argparse.ArgumentParser()
-    ap.add_argument("--backend", choices=("acle", "asm", "op", "gen"),
+    ap.add_argument("--backend", choices=("acle", "asm", "op", "gen", "ago"),
                     default="acle")
     ap.add_argument("--isa", "--target-isa", default=None,
                     choices=("neon", "sve1", "sve2", "sve2p1", "sve2p3"),
@@ -1397,6 +1419,15 @@ def main():
 
     # P2: the manifest's layout_prune rules replace per-kernel hardcoded
     # axis-dependency chains; only derived normalization stays here.
+    if args.backend == "ago":
+        ago_covers = {
+            "satd-8": ["A", "B", "C", "D", "E"],
+            "sa8d": ["A", "B", "C"],
+        }
+        if args.kernel not in ago_covers:
+            raise SystemExit("AGO backend: no cover axis for kernel %s"
+                             % args.kernel)
+        manifest["layouts"] = {"cover": ago_covers[args.kernel]}
     combos = layout_plans(manifest)
     if _ISA:
         before = 0

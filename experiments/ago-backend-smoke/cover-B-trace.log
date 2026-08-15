@@ -1,0 +1,455 @@
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007a0:  fc616806  ldr      d6, [x0, x1]
+
+Trace 0: 0x7fbb98132640 [80081009311/00000000004007a0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007a4:  8b010005  add      x5, x0, x1
+
+Trace 0: 0x7fbb98132780 [80081009311/00000000004007a4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007a8:  fd400010  ldr      d16, [x0]
+
+Trace 0: 0x7fbb981328c0 [80081009311/00000000004007a8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007ac:  8b030044  add      x4, x2, x3
+
+Trace 0: 0x7fbb98132a00 [80081009311/00000000004007ac/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007b0:  fc63685c  ldr      d28, [x2, x3]
+
+Trace 0: 0x7fbb98132b40 [80081009311/00000000004007b0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007b4:  8b010400  add      x0, x0, x1, lsl #1
+
+Trace 0: 0x7fbb98132c80 [80081009311/00000000004007b4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007b8:  fd40005e  ldr      d30, [x2]
+
+Trace 0: 0x7fbb98132dc0 [80081009311/00000000004007b8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007bc:  8b030442  add      x2, x2, x3, lsl #1
+
+Trace 0: 0x7fbb98132f00 [80081009311/00000000004007bc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007c0:  fc6168bb  ldr      d27, [x5, x1]
+
+Trace 0: 0x7fbb98133040 [80081009311/00000000004007c0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007c4:  8b000025  add      x5, x1, x0
+
+Trace 0: 0x7fbb98133180 [80081009311/00000000004007c4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007c8:  2e3c20dc  usubl    v28.8h, v6.8b, v28.8b
+
+Trace 0: 0x7fbb981332c0 [80081009311/00000000004007c8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007cc:  fc606839  ldr      d25, [x1, x0]
+
+Trace 0: 0x7fbb981334c0 [80081009311/00000000004007cc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007d0:  fc63689a  ldr      d26, [x4, x3]
+
+Trace 0: 0x7fbb98133600 [80081009311/00000000004007d0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007d4:  8b010400  add      x0, x0, x1, lsl #1
+
+Trace 0: 0x7fbb98133740 [80081009311/00000000004007d4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007d8:  fc626878  ldr      d24, [x3, x2]
+
+Trace 0: 0x7fbb98133880 [80081009311/00000000004007d8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007dc:  8b020064  add      x4, x3, x2
+
+Trace 0: 0x7fbb981339c0 [80081009311/00000000004007dc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007e0:  8b030442  add      x2, x2, x3, lsl #1
+
+Trace 0: 0x7fbb98133b00 [80081009311/00000000004007e0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007e4:  fc656825  ldr      d5, [x1, x5]
+
+Trace 0: 0x7fbb98133c40 [80081009311/00000000004007e4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007e8:  fc606835  ldr      d21, [x1, x0]
+
+Trace 0: 0x7fbb98133d80 [80081009311/00000000004007e8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007ec:  8b000025  add      x5, x1, x0
+
+Trace 0: 0x7fbb98133ec0 [80081009311/00000000004007ec/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007f0:  fc646876  ldr      d22, [x3, x4]
+
+Trace 0: 0x7fbb98134000 [80081009311/00000000004007f0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007f4:  8b010400  add      x0, x0, x1, lsl #1
+
+Trace 0: 0x7fbb98134140 [80081009311/00000000004007f4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007f8:  fc626867  ldr      d7, [x3, x2]
+
+Trace 0: 0x7fbb98134280 [80081009311/00000000004007f8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004007fc:  8b020064  add      x4, x3, x2
+
+Trace 0: 0x7fbb981343c0 [80081009311/00000000004007fc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400800:  8b030442  add      x2, x2, x3, lsl #1
+
+Trace 0: 0x7fbb98134500 [80081009311/0000000000400800/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400804:  fc656824  ldr      d4, [x1, x5]
+
+Trace 0: 0x7fbb98134640 [80081009311/0000000000400804/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400808:  2e3a237a  usubl    v26.8h, v27.8b, v26.8b
+
+Trace 0: 0x7fbb98134780 [80081009311/0000000000400808/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040080c:  fc606823  ldr      d3, [x1, x0]
+
+Trace 0: 0x7fbb98134980 [80081009311/000000000040080c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400810:  2e3e221e  usubl    v30.8h, v16.8b, v30.8b
+
+Trace 0: 0x7fbb98134ac0 [80081009311/0000000000400810/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400814:  fc646872  ldr      d18, [x3, x4]
+
+Trace 0: 0x7fbb98134cc0 [80081009311/0000000000400814/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400818:  2e3620b6  usubl    v22.8h, v5.8b, v22.8b
+
+Trace 0: 0x7fbb98134e00 [80081009311/0000000000400818/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040081c:  fc62687f  ldr      d31, [x3, x2]
+
+Trace 0: 0x7fbb98135000 [80081009311/000000000040081c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400820:  2e382338  usubl    v24.8h, v25.8b, v24.8b
+
+Trace 0: 0x7fbb98135140 [80081009311/0000000000400820/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400824:  2e322092  usubl    v18.8h, v4.8b, v18.8b
+
+Trace 0: 0x7fbb98135340 [80081009311/0000000000400824/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400828:  2e2722a7  usubl    v7.8h, v21.8b, v7.8b
+
+Trace 0: 0x7fbb98135540 [80081009311/0000000000400828/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040082c:  2e3f207f  usubl    v31.8h, v3.8b, v31.8b
+
+Trace 0: 0x7fbb98135740 [80081009311/000000000040082c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400830:  4e7c87c2  add      v2.8h, v30.8h, v28.8h
+
+Trace 0: 0x7fbb98135940 [80081009311/0000000000400830/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400834:  4e788740  add      v0.8h, v26.8h, v24.8h
+
+Trace 0: 0x7fbb98135a80 [80081009311/0000000000400834/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400838:  6e7c87dc  sub      v28.8h, v30.8h, v28.8h
+
+Trace 0: 0x7fbb98135bc0 [80081009311/0000000000400838/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040083c:  4e6786d0  add      v16.8h, v22.8h, v7.8h
+
+Trace 0: 0x7fbb98135d00 [80081009311/000000000040083c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400840:  4e7f8653  add      v19.8h, v18.8h, v31.8h
+
+Trace 0: 0x7fbb98135e40 [80081009311/0000000000400840/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400844:  6e788758  sub      v24.8h, v26.8h, v24.8h
+
+Trace 0: 0x7fbb98135f80 [80081009311/0000000000400844/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400848:  6e6786c7  sub      v7.8h, v22.8h, v7.8h
+
+Trace 0: 0x7fbb981360c0 [80081009311/0000000000400848/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040084c:  6e7f865f  sub      v31.8h, v18.8h, v31.8h
+
+Trace 0: 0x7fbb98136200 [80081009311/000000000040084c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400850:  4e608441  add      v1.8h, v2.8h, v0.8h
+
+Trace 0: 0x7fbb98136340 [80081009311/0000000000400850/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400854:  4e788797  add      v23.8h, v28.8h, v24.8h
+
+Trace 0: 0x7fbb98136480 [80081009311/0000000000400854/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400858:  6e608440  sub      v0.8h, v2.8h, v0.8h
+
+Trace 0: 0x7fbb981365c0 [80081009311/0000000000400858/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040085c:  4e738611  add      v17.8h, v16.8h, v19.8h
+
+Trace 0: 0x7fbb98136700 [80081009311/000000000040085c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400860:  4e7f84fd  add      v29.8h, v7.8h, v31.8h
+
+Trace 0: 0x7fbb98136840 [80081009311/0000000000400860/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400864:  6e788798  sub      v24.8h, v28.8h, v24.8h
+
+Trace 0: 0x7fbb98136980 [80081009311/0000000000400864/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400868:  6e738613  sub      v19.8h, v16.8h, v19.8h
+
+Trace 0: 0x7fbb98136ac0 [80081009311/0000000000400868/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040086c:  6e7f84ff  sub      v31.8h, v7.8h, v31.8h
+
+Trace 0: 0x7fbb98136c00 [80081009311/000000000040086c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400870:  4e572826  trn1     v6.8h, v1.8h, v23.8h
+
+Trace 0: 0x7fbb98136d40 [80081009311/0000000000400870/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400874:  4e582805  trn1     v5.8h, v0.8h, v24.8h
+
+Trace 0: 0x7fbb98136f00 [80081009311/0000000000400874/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400878:  4e5d2a24  trn1     v4.8h, v17.8h, v29.8h
+
+Trace 0: 0x7fbb981370c0 [80081009311/0000000000400878/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040087c:  4e5f2a63  trn1     v3.8h, v19.8h, v31.8h
+
+Trace 0: 0x7fbb98137280 [80081009311/000000000040087c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400880:  4e576837  trn2     v23.8h, v1.8h, v23.8h
+
+Trace 0: 0x7fbb98137440 [80081009311/0000000000400880/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400884:  4e586818  trn2     v24.8h, v0.8h, v24.8h
+
+Trace 0: 0x7fbb98137600 [80081009311/0000000000400884/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400888:  4e5d6a3d  trn2     v29.8h, v17.8h, v29.8h
+
+Trace 0: 0x7fbb981377c0 [80081009311/0000000000400888/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040088c:  4e5f6a7f  trn2     v31.8h, v19.8h, v31.8h
+
+Trace 0: 0x7fbb98137980 [80081009311/000000000040088c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400890:  4e7784db  add      v27.8h, v6.8h, v23.8h
+
+Trace 0: 0x7fbb98137b40 [80081009311/0000000000400890/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400894:  4e7884b5  add      v21.8h, v5.8h, v24.8h
+
+Trace 0: 0x7fbb98137c80 [80081009311/0000000000400894/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400898:  4e7d8499  add      v25.8h, v4.8h, v29.8h
+
+Trace 0: 0x7fbb98137dc0 [80081009311/0000000000400898/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x0040089c:  4e7f8474  add      v20.8h, v3.8h, v31.8h
+
+Trace 0: 0x7fbb98137f00 [80081009311/000000000040089c/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008a0:  4e60bb7b  abs      v27.8h, v27.8h
+
+Trace 0: 0x7fbb98138040 [80081009311/00000000004008a0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008a4:  4e7774d7  sabd     v23.8h, v6.8h, v23.8h
+
+Trace 0: 0x7fbb98138180 [80081009311/00000000004008a4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008a8:  4e7874b8  sabd     v24.8h, v5.8h, v24.8h
+
+Trace 0: 0x7fbb981382c0 [80081009311/00000000004008a8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008ac:  4e60bb39  abs      v25.8h, v25.8h
+
+Trace 0: 0x7fbb98138400 [80081009311/00000000004008ac/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008b0:  4e7d749d  sabd     v29.8h, v4.8h, v29.8h
+
+Trace 0: 0x7fbb98138540 [80081009311/00000000004008b0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008b4:  4e7f747f  sabd     v31.8h, v3.8h, v31.8h
+
+Trace 0: 0x7fbb98138680 [80081009311/00000000004008b4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008b8:  4e60bab5  abs      v21.8h, v21.8h
+
+Trace 0: 0x7fbb981387c0 [80081009311/00000000004008b8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008bc:  4e60ba94  abs      v20.8h, v20.8h
+
+Trace 0: 0x7fbb98138900 [80081009311/00000000004008bc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008c0:  4e982ae1  trn1     v1.4s, v23.4s, v24.4s
+
+Trace 0: 0x7fbb98138a40 [80081009311/00000000004008c0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008c4:  4e9f2bbc  trn1     v28.4s, v29.4s, v31.4s
+
+Trace 0: 0x7fbb98138bc0 [80081009311/00000000004008c4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008c8:  4e952b62  trn1     v2.4s, v27.4s, v21.4s
+
+Trace 0: 0x7fbb98138d40 [80081009311/00000000004008c8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008cc:  4e942b20  trn1     v0.4s, v25.4s, v20.4s
+
+Trace 0: 0x7fbb98138ec0 [80081009311/00000000004008cc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008d0:  4e956b75  trn2     v21.4s, v27.4s, v21.4s
+
+Trace 0: 0x7fbb98139040 [80081009311/00000000004008d0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008d4:  4e986af8  trn2     v24.4s, v23.4s, v24.4s
+
+Trace 0: 0x7fbb981391c0 [80081009311/00000000004008d4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008d8:  4e946b34  trn2     v20.4s, v25.4s, v20.4s
+
+Trace 0: 0x7fbb98139340 [80081009311/00000000004008d8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008dc:  4e9f6bbf  trn2     v31.4s, v29.4s, v31.4s
+
+Trace 0: 0x7fbb981394c0 [80081009311/00000000004008dc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008e0:  6e756455  umax     v21.8h, v2.8h, v21.8h
+
+Trace 0: 0x7fbb98139640 [80081009311/00000000004008e0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008e4:  6e786438  umax     v24.8h, v1.8h, v24.8h
+
+Trace 0: 0x7fbb98139780 [80081009311/00000000004008e4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008e8:  6e746414  umax     v20.8h, v0.8h, v20.8h
+
+Trace 0: 0x7fbb981398c0 [80081009311/00000000004008e8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008ec:  6e7f679f  umax     v31.8h, v28.8h, v31.8h
+
+Trace 0: 0x7fbb98139a00 [80081009311/00000000004008ec/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008f0:  4e7886b8  add      v24.8h, v21.8h, v24.8h
+
+Trace 0: 0x7fbb98139b40 [80081009311/00000000004008f0/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008f4:  4e7f869f  add      v31.8h, v20.8h, v31.8h
+
+Trace 0: 0x7fbb98139c80 [80081009311/00000000004008f4/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008f8:  4e7f871f  add      v31.8h, v24.8h, v31.8h
+
+Trace 0: 0x7fbb98139dc0 [80081009311/00000000004008f8/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x004008fc:  6e703bff  uaddlv   s31, v31.8h
+
+Trace 0: 0x7fbb98139f00 [80081009311/00000000004008fc/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400900:  1e2603e0  fmov     w0, s31
+
+Trace 0: 0x7fbb9813a080 [80081009311/0000000000400900/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: dynopt_satd_8x8_sve2
+0x00400904:  d65f03c0  ret      
+
+Trace 0: 0x7fbb9813a1c0 [80081009311/0000000000400904/00000001/00000201] dynopt_satd_8x8_sve2
+----------------
+IN: call_fini
+0x00400920:  a9be7bfd  stp      x29, x30, [sp, #-0x20]!
+
+Trace 0: 0x7fbb98141140 [80081009b11/0000000000400920/00000001/00000201] call_fini
