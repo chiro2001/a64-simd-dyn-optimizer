@@ -107,3 +107,12 @@ experiments/m30-interp8-search/gen-search-sdoth-interp8-16/*
 experiments/m30-interp8-search/gen-search-sdoth-interp8-32/*
 !experiments/m30-interp8-search/gen-search-sdoth-interp8-32/results.json
 !experiments/m30-interp8-search/gen-search-sdoth-interp8-32/pairsum-*_compute-sdot-h_*.cpp
+
+# satd16 pack=2 artifacts (2026-08-15): keep results + pack=2 sources;
+# trace/log/verify/binaries regenerate.
+experiments/m30-satd-search/gen-search-pack2-*/*
+!experiments/m30-satd-search/gen-search-pack2-*/results.json
+!experiments/m30-satd-search/gen-search-pack2-*/*pack-2*.cpp
+experiments/m30-satd-search/gen-search-full-pack-*/*
+!experiments/m30-satd-search/gen-search-full-pack-*/results.json
+!experiments/m30-satd-search/gen-search-full-pack-*/*pack-2*.cpp

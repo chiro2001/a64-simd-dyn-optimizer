@@ -499,3 +499,19 @@ upstream-exact 的 0 失配；手写 699 同样走该契约。上游 exact 契�
 - `tools/test_gen_emit.py` 的 6 个 fir 核切到 sdot-h 最佳 combo，并按
   kernel 使用 `-march=armv9.4-a+sve2p3` 做 syntax-only 编译。
   docs/46 §7 的“sdot.h 未进通用配方”限制消除。
+
+## 27. hadamard pack=2：satd 16x16 自然 16-lane lowering（2026-08-15）
+
+- 结构签名 `_hadamard_natural_satd16_rows`：32 个 `<16 x i8>` load
+  （16 行 × 2 plane）+ uaddlp/vecreduce_add，与 sa8d16 的 64 个
+  `<8 x i8>` 四象限形状区分。
+- lowering `_emit_hadamard_satd16_natural`：4 行一组，每行一个
+  16-lane z.h 差分向量；行 4-point Hadamard 用两段
+  `svcadd + svtbl(HAD_IDX16)`；列折叠为 abs(sum)/abd 对 + `svmax`；
+  4 组 u16 和累加后 `svaddv_u16`。
+- 验收（20k 差分 0 失配，experiments/m30-satd-search/
+  gen-search-full-pack-16x16/results.json）：
+  - pack=2：**140 fused / MCA 74**（原 DAG 直译 441/133，-68%/-44%）；
+  - 对照上游 `satd8_sve2<16,16>` 位级一致。
+- `kernels/satd-16/manifest.yaml` 增加 `pack: [1,2]`；冒烟测试切
+  pack=2。satd 大形状（8x32 等）仍待循环/helper 内联。

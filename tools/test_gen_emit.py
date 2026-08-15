@@ -32,7 +32,7 @@ KERNELS = {
                {"pack": 2, "reduce_tail": "saddv"}),
     "satd-4": ("satd-4x4", "hadamard", {}),
     "satd-8": ("satd-8x8", "hadamard", {}),
-    "satd-16": ("satd-16x16", "hadamard", {}),
+    "satd-16": ("satd-16x16", "hadamard", {"pack": 2}),
     "satd-4x8": ("satd-4x8", "hadamard", {}),
     "satd-8x4": ("satd-8x4", "hadamard", {}),
     "satd-8x16": ("satd-8x16", "hadamard", {}),
