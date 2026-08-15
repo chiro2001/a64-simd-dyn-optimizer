@@ -419,6 +419,10 @@ experiments/m30-interp4-8x4-search/search-*/*
 !experiments/m30-interp4-8x4-search/search-*/results.json
 experiments/m30-interp4-32x64-search/search-*/*
 !experiments/m30-interp4-32x64-search/search-*/results.json
+experiments/m30-interp4-8x64-search/search-*/*
+!experiments/m30-interp4-8x64-search/search-*/results.json
+experiments/m30-interp4-32x48-search/search-*/*
+!experiments/m30-interp4-32x48-search/search-*/results.json
 
 # dct8 -O3 throwaway scan (2026-08-15, no metric change)
 experiments/m30-dct8-search/search-o3/

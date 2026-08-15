@@ -72,6 +72,8 @@
   0 失配（SVE2p3 path-B）。
 - **chroma hpp 8x4 / 32x64**：45/37、1285/349，均 20k 差分
   0 失配（SVE2p3 path-B）。
+- **chroma hpp 8x64 / 32x48**：645/189、965/269，均 20k 差分
+  0 失配（SVE2p3 path-B）。
 - **interp8（SVE2p3 path-B，QEMU 已解锁）**：hpp 8x8/16x16/32x32 =
   fused 93/327/1289（-30~34%）、MCA 53/114/369；vpp 16x16/32x32 =
   247/936；TestBenchLite（hpp 三形状 + vpp 两形状）PASS。
