@@ -1,0 +1,154 @@
+# 算子覆盖与性能矩阵（commit #625，2026-08-15 12:04 +0800）
+
+> 时间点：HEAD `49dccd4c7506e5e43c704743874f93bedcf8085c`，commit 序号 625。
+> 口径：fused = QEMU 动态 trace 的 fused vector uop（VL=256）；
+> MCA = LLVM-MCA Neoverse-V2 代理 cycle；“自动搜索” =
+> `search_sve2_layouts.py --backend gen` 由 `gen_sve2_emit.py` 配方从
+> MachineIR 自动生成候选；“手动/特化” = per-kernel emitter 或 op/asm
+> 后端，但复用同一搜索/验证漏斗；“无基线” = 该形状首次覆盖。
+
+## 1. 总览
+
+| 指标 | 值 |
+| --- | --- |
+| kernel 目录 | 94 |
+| seed recipe | 93 |
+| 通用发射器冒烟核数 | 69/69 通过 |
+| 通用配方数 | 10 |
+| AArch64 已注册字段 | 29 |
+| 已覆盖字段 | 21 |
+| 字段级剩余 todo | 8 |
+| 自动搜索 kernel 占比 | 69/94 ≈ 73.4% |
+
+剩余字段：`chroma`、`costCoeffNxN`、`cu`、`findPosFirstLast`、
+`pelFilterLumaStrong`、`pu`、`scanPosLast`、`sign`。
+
+## 2. 自动搜索线：有上游/手写基线的追平情况
+
+| 配方 | 算子 | 自动候选 fused/MCA | 上游/手写 fused/MCA | 评价 |
+| --- | --- | --- | --- | --- |
+| diff-sum | sad-16x16 | 80/69 | 上游 68/- | 覆盖项，无优化空间 |
+| diff-sum | sad-32x32 | 160/118 | 上游 197/- | 覆盖项 |
+| hadamard | sa8d-8x8 | 79/71 | 上游 97/- | 追平手写 |
+| hadamard | sa8d-16x16 | 186/73 | 上游 373/- | 追平手写 |
+| fir | interp8-8x8 | 93/53 | 上游 141/- | 追平手写 93/53 |
+| fir | interp8-16x16 | 327/114 | 上游 467/- | 追平手写 327/114 |
+| fir | interp8-32x32 | 1289/367 | 上游 1829/- | MCA 略优 |
+| fir(4tap) | interp4-8x8 | 85/47 | 上游 63/- | 追平手写 |
+| fir(4tap) | interp4-16x16 | 165/70 | 上游 345/- | 追平手写 |
+| fir(4tap) | interp4-32x32 | 645/189 | 上游 1353/- | 追平手写 |
+| vertical-fir | interp8vpp-16 | 247/157 | 上游 400/- | 追平手写 |
+| vertical-fir | interp8vpp-32 | 936/547 | 上游 1572/- | 追平手写 |
+| vertical-fir(4tap) | interp4vpp-16 | 171/96 | 上游 231/- | 追平手写 |
+
+## 3. 自动搜索线：satd 首次覆盖
+
+| 算子 | 自动候选 fused/MCA | 相对 DAG 直译 |
+| --- | --- | --- |
+| satd-4x4 | 37/57 | 首覆盖 |
+| satd-4x8 | 63/62 | 首覆盖 |
+| satd-8x4 | 47/43 | 首覆盖 |
+| satd-8x8 | 93/51 | 首覆盖 |
+| satd-8x16 | 102/69 | -45%/-1.4% |
+| satd-8x32 | 202/91 | -45%/-18% |
+| satd-16x4 | 36/43 | -60%/-12% |
+| satd-16x8 | 72/53 | -61%/-23% |
+| satd-16x16 | 140/74 | -68%/-44% |
+| satd-16x32 | 276/106 | -68%/-55% |
+| satd-16x64 | 548/174 | -69%/-60% |
+| satd-24x32 | 607/215 | -46%/-31% |
+| satd-32x8 | 141/68 | -62%/-41% |
+| satd-32x16 | 281/101 | -68%/-58% |
+| satd-32x32 | 561/166 | -68%/-62% |
+| satd-32x64 | 1121/298 | -68%/-65% |
+| satd-48x64 | 1681/426 | -68%/-66% |
+| satd-64x16 | 561/168 | -68%/-63% |
+| satd-64x32 | 1121/298 | -68%/-65% |
+| satd-64x48 | 1681/427 | -68%/-66% |
+| satd-64x64 | 2241/554 | -68%/-67% |
+
+## 4. 自动搜索线：interp8 short 变体首覆盖
+
+| 算子 | 自动候选 fused/MCA | 备注 |
+| --- | --- | --- |
+| interp8-hps-8x8 | 98/45 | isRowExt=0 |
+| interp8-hps-8x16 | 186/72 | isRowExt=0 |
+| interp8-hps-16x16 | 362/117 | isRowExt=0 |
+| interp8-hps-32x32 | 1418/502 | isRowExt=0 |
+| interp8-hps-8x8-ext | 175/68 | isRowExt=1 |
+| interp8-hps-8x16-ext | 263/92 | isRowExt=1 |
+| interp8-hps-16x16-ext | 516/159 | isRowExt=1 |
+| interp8-hps-32x32-ext | 1726/606 | isRowExt=1 |
+| interp8-vps-8x4 | 70/50 | 首覆盖 |
+| interp8-vps-16x4 | 70/50 | 首覆盖 |
+| interp8-vps-8x8 | 118/78 | 首覆盖 |
+| interp8-vps-8x16 | 214/135 | 首覆盖 |
+| interp8-vps-16x16 | 214/136 | 首覆盖 |
+| interp8-vps-16x32 | 406/248 | 首覆盖 |
+| interp8-vps-32x16 | 424/252 | 首覆盖 |
+| interp8-vps-32x32 | 808/479 | 首覆盖 |
+| interp8-vsp-8x4 | 83/67 | 行预加载 |
+| interp8-vsp-16x4 | 149/99 | 行预加载 |
+| interp8-vsp-8x8 | 143/101 | 行预加载 |
+| interp8-vsp-8x16 | 271/172 | 行预加载 |
+| interp8-vsp-16x16 | 517/311 | 原 938/317 |
+| interp8-vsp-16x32 | 1013/578 | 行预加载 |
+| interp8-vsp-32x16 | 1200/602 | 行预加载 |
+| interp8-vsp-32x32 | 2350/1178 | 行预加载 |
+| interp8-vss-8x4 | 74/57 | 行预加载 |
+| interp8-vss-16x4 | 132/93 | 行预加载 |
+| interp8-vss-8x8 | 126/89 | 行预加载 |
+| interp8-vss-8x16 | 238/151 | 行预加载 |
+| interp8-vss-16x16 | 450/291 | 原 872/297 |
+| interp8-vss-16x32 | 882/539 | 行预加载 |
+| interp8-vss-32x16 | 1045/558 | 行预加载 |
+| interp8-vss-32x32 | 2046/1096 | 行预加载 |
+
+## 5. 自动搜索线：misc 首覆盖
+
+| 配方 | 算子 | 自动候选 fused/MCA |
+| --- | --- | --- |
+| planecopy | planecopy_cp 64x32 | 128/60 |
+| weight-pp | weight_pp 64x32 branch-0 | 642/213 |
+
+## 6. 手动/特化线
+
+| 算子 | 候选 fused/MCA | 上游 fused | 生成方式 |
+| --- | --- | --- | --- |
+| dct8 | 289/77 | 146 | 特化 emitter + 布局搜索 |
+| dct16 | 847/220 | 1808 | 特化 emitter / op 后端 699/212 |
+| dct32 | 4014/1041 | 12710 | 特化 emitter / op 后端 |
+| idct16 | 980/246 | 1487 | 特化 emitter + 布局搜索 |
+| idct32 | 5085/1164 | 10214 | 特化 emitter + 布局搜索 |
+| dequant_normal | 130/57 | - | 特化 emitter + 搜索 |
+| dequant_scaling gt | 210/75 | - | 特化 emitter + 搜索 |
+| dequant_scaling le | 193/72 | - | 特化 emitter + 搜索 |
+| quant | 508/169 | - | 特化 emitter + 搜索 |
+| nquant | 329/131 | - | 特化 emitter + 搜索 |
+| saoCuOrgE0 | 305/133 | - | 特化 emitter + 搜索 |
+| saoCuOrgB0 | 386/126 | - | 特化 emitter + 搜索 |
+| saoCuOrgE1 | 610/171 | - | 特化 emitter + 搜索 |
+| saoCuOrgE1_2Rows | 306/103 | - | 特化 emitter + 搜索 |
+| saoCuOrgE2 | 154/74 | - | 特化 emitter + 搜索 |
+| saoCuOrgE3 | 135/73 | - | 特化 emitter + 搜索 |
+| saoStatsE0 block16 | 165/62 | - | 特化 emitter + 搜索 |
+| saoStatsE1 block16 | 180/64 | - | 特化 emitter + 搜索 |
+| saoStatsE2 block16 | 181/65 | - | 特化 emitter + 搜索 |
+| saoStatsE3 block16 | 180/65 | - | 特化 emitter + 搜索 |
+| saoStatsBO | 0/137 | - | 无优化空间 |
+| scale1D_128to64 | 24/21 | - | 特化 emitter + 搜索 |
+| scale2D_64to32 | 1664/378 | - | 特化 emitter + 搜索 |
+| ssim_4x4x2_core | 45/47 | - | 特化 emitter + 搜索 |
+
+## 7. 工具链完成度
+
+| 阶段 | 工具 | 完成度 |
+| --- | --- | --- |
+| 覆盖清点 | enumerate_x265_simd.py | 可用，字段级 todo=8 |
+| 抽取 | extract_seed.py | flat/structured、分支剥离、constant-shape wrapper |
+| 配方检测/发射 | gen_sve2_emit.py | 10 配方，未知族报错 |
+| 差分验证 | gen_verify.py + QEMU | 2k/20k 两级，include 式 verify |
+| 性能代理 | search_sve2_layouts.py | fused/MCA/cost/cp/consensus |
+| 实机验证 | 950/920B 流程 | 部分；新增 short 变体待实测 |
+| 回归护栏 | test_gen_emit.py | 69/69 通过 |
+| 单命令流水线 | seed_pipeline.py | seed→检测→搜索→summary |
