@@ -135,6 +135,14 @@ precondition、递减/有界度量、参数规范序列化、fallback。
 - [ ] 下一阶段：算法级优化（dct16/32、quant、ME 子核）或维持
   -1.92% 现状并等待 950 SVE2 窗口。
 
+## SVE1 quant 可行性（2026-08-16 负结论）
+
+- [x] 分析：quant 需 s16 x s32 展宽乘；SVE1 无 SMULL/SMLAL，且
+  SXTH/SXTW 段内采样打乱索引 → **SVE1 quant 不可行**；
+- [x] 920B 剩余可注入大头的算法级路径（quant/dct32/dct16）在
+  SVE1 上证据不可行；等待 950 SVE2 实测窗口（SVE2 有 smull/smlal/
+  zip/trn/cadd，且已有 dct8 +48%、ivpp16 +47% 等实测赢点）。
+
 ## N1 端到端（2026-08-16 完成）
 
 - [x] best8 注入 N1 实测：基线 11976 vs 11831 ms，**-1.78%**
