@@ -1,0 +1,54 @@
+[
+ {
+  "tag": "acc_split-1",
+  "acc_split": 1,
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 7676,
+   "vector": 5089,
+   "movprfx": 374,
+   "vector_fused": 4715,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 1274,
+   "vector_fused_uop": 4715
+  },
+  "range": [
+   "0x400820",
+   "0x408060"
+  ],
+  "cached": true,
+  "mca_cycles": 2183,
+  "mca_uops": 8156
+ },
+ {
+  "tag": "acc_split-2",
+  "acc_split": 2,
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 8947,
+   "vector": 6088,
+   "movprfx": 743,
+   "vector_fused": 5345,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 1403,
+   "vector_fused_uop": 5345
+  },
+  "range": [
+   "0x400820",
+   "0x409440"
+  ],
+  "cached": true,
+  "mca_cycles": 2284,
+  "mca_uops": 9444
+ }
+]

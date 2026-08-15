@@ -377,3 +377,5 @@ experiments/m30-interp8-64x64-search/search-*/*
 !experiments/m30-interp8-64x64-search/search-*/results.json
 experiments/m30-interp4vpp-32x64-search/search-*/*
 !experiments/m30-interp4vpp-32x64-search/search-*/results.json
+experiments/m30-interp8vpp-64x64-search/search-*/*
+!experiments/m30-interp8vpp-64x64-search/search-*/results.json
