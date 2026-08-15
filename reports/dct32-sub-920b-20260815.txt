@@ -1,0 +1,45 @@
+# dct32 形状替换微基准（920B，2026-08-15，git 8d14b5b+dirty）
+
+环境：云端 920B（0xd02，SVE1 2x256，无 PMU），CNTVCT paired，
+taskset -c 0；`neon/cand` >1 表示候选更快。
+
+目的：dct32 是 79-kernel SVE1 批量注入里最大的负贡献之一（此前
+substituted 候选 0.60–0.73×）。本轮把搜索工具生成的
+`best_op_mca` / `best_op_r16`（SVE2 布局）扩展替换表后，在 920B
+跑 CNTVCT paired，看生成的 dct32 布局在 SVE1 形状替换下是否已
+追平 NEON。
+
+## 替换表扩展（tools/substitute_unsupported.py，docs/29 §2）
+
+新增 SVE2-only → SVE1/NEON 形状替换（仅 --target sve1，值不保真，
+仅性能预估）：
+
+| 原指令 | 替换 | 形状 |
+| --- | --- | --- |
+| rshrnb zD.h, zS.s, #imm | asr zS.s + uzp1 zD.h | 移位+窄化 1def/2use |
+| saddlb/saddlt zD.s, zA.h, zB.h | NEON saddl vD.4s, vA.4h, vB.4h | 长加 1def/2use（宽度减半，见下） |
+| addp zD.s, Pg/m, zD.s, zD.s | NEON addp vD.4s, vA.4s, vB.4s | 逐对加 1def/2use |
+| tbl zD.s, {zA1.s-zA2.s}, zB.s | SVE1 tbl zD.s, zA1.s, zB.s | 查找流水（少一个源） |
+
+注意：saddl/addp 替换为 128-bit NEON 形态，若以 SVE 256-bit 数据流
+估算，每指令工作量减半 → **对原生 SVE1 移植是乐观估计**；本组数字
+可作方向/排序参考，不可作绝对值验收。
+
+## 结果（paired，latency/throughput）
+
+| 候选 | 延迟 neon/cand | 吞吐 neon/cand | 结论 |
+| --- | ---: | ---: | ---: |
+| best_op_mca | 0.9715（150 对） | 1.0149（80 对） | 基本持平，略偏慢 |
+| best_op_r16 | 0.9295（150 对） | 1.0000（80 对） | 延迟慢 ~7.6%，吞吐持平 |
+
+对照：此前 dct32 substituted 候选 0.60–0.73×（慢 27–40%）。
+
+## 结论
+
+1. 搜索质量显著进步：dct32 从慢 27–40% 收敛到 ±8% 内（mca 延迟
+   -2.9%，吞吐 +1.5%），但**仍未反超 NEON**。
+2. 考虑替换表的乐观偏差（NEON 128-bit 替 SVE 256-bit），真实
+   SVE1 移植大概率更慢；这两个布局在 920B 上**不推荐注入**。
+3. 下一轮可把 920B 替换微基准接入 dct32 搜索排序（--rank-by
+   bench920 的 dct32 分支），用真机方向淘汰负贡献布局；或改走
+   NEON-only dct32 搜索，与上游 NEON 同宽度竞争。

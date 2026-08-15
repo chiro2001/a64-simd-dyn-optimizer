@@ -1,22 +1,38 @@
 #!/usr/bin/env bash
-# Build a shape-substituted IDCT microbenchmark for older targets
-# (docs/29): SVE2p1/SVE2p3 instructions are replaced by same-shape
-# instructions so the kernel runs on 950 (SVE2) / 920B (SVE1).
+# Build a shape-substituted microbenchmark for older targets (docs/29):
+# SVE2/SVE2p1/SVE2p3 instructions are replaced by same-shape instructions
+# so the kernel runs on 950 (SVE2) / 920B (SVE1).
 # 数值不保真——仅用于 CNTVCT 性能预估，禁止用作正确性验收。
 #
 # Usage:
-#   scripts/build-substituted-microbench.sh <idct16|idct32> <sve1|sve2>
-#       [out]
+#   scripts/build-substituted-microbench.sh <idct16|idct32|dct32> <sve1|sve2>
+#       [candidate.cpp] [out]
 set -euo pipefail
 KERNEL="${1:?usage: ... <idct16|idct32> <sve1|sve2> [out]}"
 TARGET="${2:?target sve1 or sve2}"
-OUT="${3:-build/${KERNEL}_microbench_${TARGET}}"
+CAND_OR_OUT="${3:-best_sve2.cpp}"
+OUT="${4:-}"
+# Backward compatible: 3rd arg was OUT; with 4 args it is candidate source.
+if [[ -z "$OUT" && "$CAND_OR_OUT" == *.cpp && -e "$CAND_OR_OUT" ]]; then
+  CAND="$CAND_OR_OUT"
+  OUT="build/${KERNEL}_microbench_${TARGET}"
+elif [[ -z "$OUT" ]]; then
+  CAND="best_sve2.cpp"
+  OUT="$CAND_OR_OUT"
+else
+  CAND="$CAND_OR_OUT"
+fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-case "$KERNEL" in idct16|idct32) ;; *) echo bad kernel >&2; exit 2 ;; esac
+case "$KERNEL" in idct16|idct32|dct32) ;; *) echo bad kernel >&2; exit 2 ;; esac
 case "$TARGET" in sve1|sve2) ;; *) echo bad target >&2; exit 2 ;; esac
 
-SRC="$ROOT/kernels/${KERNEL}/candidates/best_sve2.cpp"
+if [[ "$CAND" = /* ]]; then
+  SRC="$CAND"
+else
+  SRC="$ROOT/kernels/${KERNEL}/candidates/${CAND}"
+fi
+[[ -f "$SRC" ]] || { echo "missing candidate $SRC" >&2; exit 2; }
 TMP="$ROOT/build/${KERNEL}_sub_${TARGET}"
 mkdir -p "$(dirname "$TMP")"
 

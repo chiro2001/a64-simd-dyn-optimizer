@@ -90,6 +90,28 @@ NEON（vaddlv-pair 1.12×/1.15×，20k 差分 0 失配）；单算子注入 E2E 
 一致但差异落在噪声内（热点占比 ~2.3%）。`--rank-by bench920` 支持按真机
 CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）。
 
+### 最新实机结论（2026-08-15）
+
+- **920B 内网共享节点复测**：sa8d16 NEON 的 1.12×/1.15× 收益不重现
+  （延迟/吞吐 ~1.00–1.03×），scanPosLast 方向相反（候选慢 14%）；
+  costC1C2Flag 约 2.1× 快、costCoeffRemain 中性。共享节点竞争噪声大，
+  单点云端收益需专用节点复验（reports/920b-internal-quick-test-20260815.txt）。
+- **dct32 搜索布局收敛**：此前 79-kernel 注入里 dct32 慢 27–40%；扩展
+  替换表后，best_op_mca/r16 在 920B 上收敛到延迟 0.97/0.93、吞吐
+  1.01/1.00（替换为 128-bit NEON 形态，是乐观估计），**仍不注入**。
+- **批量注入（batch4：sa8d16+satd8+costCoeffNxN+costCoeffRemain）**：
+  码流与基线一致，E2E 5 次中位 8.14–8.18 s vs 基线 8.15–8.19 s，
+  **完全持平**——单 kernel 微基准收益 ≤15% 时 E2E 提升 <0.3%，淹没在
+  噪声内。
+- **950**：costC1C2Flag +81%（20k 干净，保留）；costCoeffRemain ~中性；
+  scanPosLast SVE2 候选慢 4.5×，950 不注入；sa8d16 的 SVE2 候选正确性
+  FAIL，950 沿用 NEON 版本（reports/950-quick-test-20260815.txt）。
+
+结论：搜索有效性已在 NEON→NEON 方向验证（sa8d16/satd8/scanPosLast 微
+基准反超、20k 差分干净），但微基准反超 → E2E 收益的转化率不足；达成
+端到端 +15% 需要一批大热点同时显著反超，或单个 ≥5% 占比热点大幅反超。
+当前证据下该目标不可达，仍在继续扩大覆盖与转化率。
+
 ## LD_PRELOAD 注入器
 
 `tools/build_preload_so.py` 一键生成动态库，加载后通过拦截

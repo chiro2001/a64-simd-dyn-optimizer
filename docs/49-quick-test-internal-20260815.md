@@ -112,9 +112,20 @@ python3 tools/build_preload_so.py --isa sve1 --kernels sa8d16 \
 | --- | --- | --- |
 | sa8d16（NEON vaddlv-pair，best_sve1） | 延迟 1.12× / 吞吐 1.15× | 20k 差分 0 失配，可注入 |
 | scanPosLast（NEON tail，best_sve2） | 单 CG 1.04×；多 CG ~1.10–1.14× | 码流一致，可注入 |
+| dct32（best_op_mca / r16，sve1 替换） | 延迟 0.9715 / 0.9295，吞吐 1.0149 / 1.0000 | 形状替换持平~慢 8%，**不注入**；替换表已扩展（saddlb/t、addp、rshrnb、tbl2），见 docs/29 |
 | costC1C2Flag（run-cache） | 微基准 ~1.68× vs C 标量 | 200k 差分 0 失配，但**该槽位被替换为任何实现（含与 C 参考逐字相同的标量副本）都会改变编码输出**（基线确定性 3 次 md5 一致，注入后 7974.26 kb/s / QP 33.78 vs 基线 7981.54/33.77）；原因未明，暂不用于 E2E 注入 |
 | costCoeffRemain | 微基准 ~1.02× | 与基线码流一致（ee5db7…），可注入；早前“码流改变”为云端构建状态混乱导致的误判 |
 | sa8d16 mixed（SVE1 宽装载+NEON H） | 0.92–0.95× | 负结果，保留为搜索轴 |
+
+替换微基准构建现支持 dct32 与任意候选源（第三个参数传候选文件名，
+第四个参数传输出路径）：
+
+```sh
+bash scripts/build-substituted-microbench.sh dct32 sve1 best_op_mca.cpp \
+  /tmp/dct32-mca-sub-bench
+bash scripts/bench-dct32-paired.sh /tmp/dct32-mca-sub-bench neon cand \
+  30 5 /tmp/dct32-mca-pair latency 8 50
+```
 
 ### costC1C2Flag 槽位替换现象（待查）
 

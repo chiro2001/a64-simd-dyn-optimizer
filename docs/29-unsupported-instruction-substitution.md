@@ -33,6 +33,10 @@ python3 tools/check_flow_independence.py idct16 --seeds 1,2,3,4,5
 | `sdot zD.h, zA.b, zB.b`（SVE2p3 BtoH） | `sdot zD.s, zA.b, zB.b` | 3 寄存器 dot（1 def/2 use） | 目标宽度 h→s 不同，依赖形状保留；BtoS 每 lane 4 乘积 vs BtoH 2 乘积，**高估更显著**（见 §4 interp8 行） |
 | `sqrshrnb zD.h, zS.s, #imm`（仅 sve1 目标） | `asr zS.s, zS.s, #imm` + `uzp1 zD.h, zS.h, zS.h` | 移位 + 1 def/2 use 窄化形状 | SVE1 无饱和窄化；仅保依赖形状 |
 | `sqrshrunb zD.b, zS.h, #imm`（仅 sve1 目标） | `asr zS.h, zS.h, #imm` + `uzp1 zD.b, zS.b, zS.b` | 移位 + 1 def/2 use 窄化形状 | 同 sqrshrnb 处理（interp8 path B 用） |
+| `rshrnb zD.h, zS.s, #imm`（仅 sve1 目标） | `asr zS.s, zS.s, #imm` + `uzp1 zD.h, zS.h, zS.h` | 移位 + 1 def/2 use 窄化形状 | 非饱和窄化，同 sqrshrnb（dct32 候选 64/128 处） |
+| `saddlb/saddlt zD.s, zA.h, zB.h`（仅 sve1 目标） | `saddl vD.4s, vA.4h, vB.4h` | 1 def/2 use 长加 | SVE1 无宽化加；NEON 128-bit 形态，**宽度减半，对 256-bit 数据流是乐观估计** |
+| `addp zD.s, Pg/m, zD.s, zD.s`（仅 sve1 目标） | `addp vD.4s, vA.4s, vB.4s` | 1 def/2 use 逐对加 | SVE1 无谓词逐对加；同 saddl 宽度偏差 |
+| `tbl zD.s, {zA1.s-zA2.s}, zB.s`（仅 sve1 目标） | `tbl zD.s, zA1.s, zB.s` | 单向量查找流水 | 少一个源向量输入，值不保真 |
 
 ## 3. 流程
 
@@ -65,6 +69,8 @@ bash scripts/bench-dct32-paired.sh /tmp/mb neon cand
 | interp8 path-B（BtoH→BtoS） | **0.5425**（60 对，min 0.348/max 0.783） | 替换版比 NEON 慢 ~1.84x，**高估上界**：BtoS 每 lane 4 乘积 vs 真实 BtoH 2 乘积，dot 工作量翻倍；真实 SVE2p3 kernel 应显著更好（指令数 -28%，MCA 与 NEON 持平），需 950/960 确认 |
 | interp8 path-B 16x16（BtoH→BtoS） | **0.8715**（50 对，min 0.587/max 1.150） | 替换版慢 ~1.15x；大形状 load 收益（ldur 112→22）开始显现，扣除 dot 高估后 16x16 实机有望反超 NEON |
 | interp8 path-B 32x32（BtoH→BtoS） | **0.5911**（50 对，min 0.470/max 0.891） | 替换版慢 ~1.69x；置换（tbl/uzp 256/384 条）成为主导，dot 高估只能解释一部分；真实 32x32 仍需 950/960 判断 |
+| dct32 best_op_mca（2026-08-15，sve1 替换） | 延迟 **0.9715** / 吞吐 **1.0149** | 基本持平略偏慢；相比此前 dct32 0.60–0.73× 已大幅收敛，仍未反超 |
+| dct32 best_op_r16（2026-08-15，sve1 替换） | 延迟 **0.9295** / 吞吐 **1.0000** | 延迟慢 ~7.6%；不考虑注入，见 reports/dct32-sub-920b-20260815.txt |
 
 保守性：BtoS 每 lane 的乘积数可能多于 HtoS（byte 4-way vs halfword
 2-way 语义），替换版可能**高估**真实工作量——因此 idct32 的 +13%
