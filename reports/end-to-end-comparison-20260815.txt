@@ -19,12 +19,16 @@
 
 | kernel | 真实回放 | 生产 verify 调用数 | 注入 |
 | --- | ---: | ---: | --- |
-| costC1C2Flag r29（n1-8 展开叶子） | +30%（n8 +49%） | 6,472,176 | best6b |
-| scanPosLast r30（4-bit PEXT 表） | +27%（tr16 +33%） | 4,325,107 | best6b |
-| costCoeffRemain r32（DFA 表） | +20% | 2,391,308 | best6b |
-| costCoeffNxN NEON（尾部修复后） | +9.7% | 5,776,047 | best6b |
-| satd8（NEON 搜索） | +8%（微基准） | 20k | best6b |
-| sa8d16 NEON | ~1.0（共享节点） | 20k | best6b |
+| costC1C2Flag r29（n1-8 展开叶子） | +30%（n8 +49%） | 6,472,176* | best6b |
+| scanPosLast r30（4-bit PEXT 表） | +27%（tr16 +33%） | 4,325,107* | best6b |
+| costCoeffRemain r32（DFA 表） | +20% | 2,391,308* | best6b |
+| costCoeffNxN NEON（尾部修复后） | +9.7% | 5,776,047* | best6b |
+| satd8（NEON 搜索） | +8%（微基准） | 20k 差分 + E2E 码流一致 | best6b |
+| sa8d16 NEON | ~1.0（共享节点） | 20k 差分 + E2E 码流一致 | best6b |
+
+*：生产逐调用差分覆盖 **4 个熵内核**（c1c2/scan/remain/ccn，合计 1896
+万次调用）；satd8/sa8d16 为 20k 差分 + 批量注入后 E2E 码流一致
+（round-0022 审计修正，不等同于逐调用覆盖）。
 
 负结果（保留文档，不注入）：ccn soff 全展开 +7.5%（< 循环版）、
 costC1C2Flag run-cache/NEON 掩码路径、dct32 替换候选（0.93-0.97）、
@@ -54,6 +58,8 @@ CNTVCT 仍 12 vs 上游 9 ticks，不注入。
    收益合计覆盖运行时约 14%，-1.9% 与份额折算一致；剩余大热点
    （quant 2.7%、dct32 2.3%、interp/intra ~6%、motionEstimate 4.6%）
    的搜索候选在 920B 上仍无法反超上游 NEON。
+   专家核算（round-0022）：剩余 14.6% 算子集即使全部 1.20×，也只增加
+   2.43 个 E2E 点；算子级 +15% 在 920B 不可信。
 3. 工具链已具备：真实轨迹录制/回放、生产逐调用差分、ISA 受限搜索、
    LD_PRELOAD/编译期注入；sve2（950）档对 6 个内核构建/ISA 门禁全部
    通过（不限制 ISA 结果不劣化的回归成立）。
