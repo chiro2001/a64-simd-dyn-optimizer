@@ -1,0 +1,35 @@
+# Representative cu.add_ps slice: 16x16 pixel+short -> pixel.
+kernel: cu-add-ps
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: cu_add_ps
+  n: 16
+  rows: 16
+
+candidate:
+  symbol: dynopt_cu_add_ps_16x16_sve2
+  trace_driver_src: kernels/cu-add-ps/trace_driver.cpp
+  trace_driver_c: kernels/cu-add-ps/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pixel_add_ps_neon
+  symbol_mangled: _ZN12_GLOBAL__N_117pixel_add_ps_neonILi16ELi16EEEvPhlPKhPKsll
+  call: pixel_add_ps_neon<16, 16>
+  decl: |
+    template <int W, int H> void pixel_add_ps_neon(
+        uint8_t*, intptr_t, const uint8_t*, const int16_t*,
+        intptr_t, intptr_t);
+
+baselines:
+  neon:
+    driver: kernels/cu-add-ps/trace_driver.cpp
+    symbol_mangled: _ZN12_GLOBAL__N_117pixel_add_ps_neonILi16ELi16EEEvPhlPKhPKsll
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]
