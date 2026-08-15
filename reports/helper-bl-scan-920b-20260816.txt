@@ -83,3 +83,13 @@ helper 的 `bl` 调用（GCC12 外链 static inline 的栈往返缺陷）。
   实测 latency 32-33 vs 上游 NEON 21-22 ticks（**0.65x，慢 1.55x**，
   checksum 一致）→ 不注入；
 - 至此 920B/N1 注入候选清单全部验证完毕，best9 为最终注入集。
+
+## 更新 6（2026-08-16 pel-filter 排除）
+
+- 最后核查发现 pelFilterLumaStrong（deblock 强滤波，edgeFilterLuma
+  0.82% 调用）有纯 NEON 候选但 best9 未注入；
+- 920B paired（V 方向）：上游 162-163 vs 候选 162 ticks（**1.00x**，
+  20k 差分 0 失配）——无收益（MCA 的“优于标量”是对 C 标量而非
+  上游 NEON asm），不注入；
+- 至此 build_preload_so 支持的全部 dispatch kernel 均已验证
+  （注入或排除），920B/N1 dispatch 级优化最终封顶。

@@ -165,6 +165,9 @@ precondition、递减/有界度量、参数规范序列化、fallback。
   无明确收益，噪声内无回归）；
 - [x] sa8d8 SVE1 候选 920B 慢 1.55x（CADD90 模拟）→ 排除；
   注入清单全部验证完毕，best9 为最终注入集；
+- [x] pelFilterLumaStrong 候选 920B 1.00x（无收益）→ 排除；
+  全部 dispatch kernel 验证完毕，920B/N1 最终封顶
+  （-2.10% / -1.62%），等待 950 SVE2 窗口；
 - [ ] SAO Stats E1/E2/E3（SVE2-only）留待 950 窗口。
 
 ## N1 端到端（2026-08-16 完成）
