@@ -21,6 +21,8 @@ extern "C" int dynopt_scan_pos_last_sve2(
 extern "C" uint32_t dynopt_cost_coeff_nxn_sve2(
     const uint16_t*, const int16_t*, intptr_t, uint16_t*,
     const uint8_t*, uint32_t, uint8_t*, int, int, int);
+extern "C" uint32_t dynopt_cost_c1c2_flag_sve2(
+    uint16_t*, intptr_t, uint8_t*, intptr_t);
 static inline uint64_t rdtsc()
 {
     uint64_t t;
@@ -145,7 +147,13 @@ static int bench_flag(int which, int samples, int batch)
             ctx[i] = (uint8_t)(rng() & 0x3F);
         uint64_t t0 = rdtsc();
         for (int b = 0; b < batch; b++)
-            fn(absbuf.data(), 16, ctx.data(), 16);
+        {
+            if (which == 0)
+                fn(absbuf.data(), 16, ctx.data(), 16);
+            else
+                dynopt_cost_c1c2_flag_sve2(
+                    absbuf.data(), 16, ctx.data(), 16);
+        }
         uint64_t t1 = rdtsc();
         uint64_t per = (t1 - t0) / (uint64_t)batch;
         times.push_back(per);

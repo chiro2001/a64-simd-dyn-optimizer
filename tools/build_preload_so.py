@@ -330,6 +330,11 @@ static void dynopt_sao_e3_adapter(
     },
 }
 
+# Kernels without a manifest yet but with a fixed candidate symbol.
+SPECIAL_SYMBOLS = {
+    "cost-c1c2-flag": "dynopt_cost_c1c2_flag_sve2",
+}
+
 # x265 config dir that contains x265_config.h for the 8-bit build.
 CONFIG_DIRS = [
     os.path.join(ROOT, "build/x265-8-cross-make"),
@@ -638,6 +643,10 @@ def entries_for_kernel(kernel, sym):
             add("pelFilterLumaStrong[%d]" % edge, "void",
                 "uint8_t*, intptr_t, intptr_t, int32_t, int32_t")
         return out
+    if kernel == "cost-c1c2-flag":
+        add("costC1C2Flag", "uint32_t",
+            "uint16_t*, intptr_t, uint8_t*, intptr_t")
+        return out
     if kernel == "quant":
         add("quant", "uint32_t",
             "const int16_t*, const int32_t*, int32_t*, int16_t*,"
@@ -837,7 +846,17 @@ def try_generate_specialized(kernel, isa, workdir):
         s._ISA = isa
         man = load_manifest(kernel)
     except Exception:
-        return []
+        man = {}
+    if kernel == "cost-c1c2-flag":
+        try:
+            from emit_cost_c1c2_flag_sve2_shared import emit as emit_c1
+            sym = SPECIAL_SYMBOLS[kernel]
+            path = os.path.join(workdir, kernel + "-special-0.cpp")
+            with open(path, "w") as f:
+                f.write(emit_c1(sym))
+            return [path]
+        except Exception:
+            return []
     if kernel == "sao-e1":
         # The x265 saoCuOrgE1 slot is a single-row primitive; emit a
         # rows=1 variant of the same 64-wide E1 kernel (default emitter
@@ -1034,15 +1053,17 @@ def main():
 
     for kernel in wanted:
         man_path = os.path.join(ROOT, "kernels", kernel, "manifest.yaml")
-        if not os.path.exists(man_path):
+        if not os.path.exists(man_path) and kernel not in SPECIAL_SYMBOLS:
             report["skipped"].append([kernel, "no manifest"])
             continue
         try:
             import yaml
-            man = yaml.safe_load(open(man_path))
+            man = yaml.safe_load(open(man_path)) if os.path.exists(man_path) \
+                else {}
         except Exception:
             man = {}
-        sym = (man.get("candidate") or {}).get("symbol")
+        sym = (man.get("candidate") or {}).get("symbol") or \
+            SPECIAL_SYMBOLS.get(kernel)
         if not sym:
             report["skipped"].append([kernel, "no candidate symbol"])
             continue
