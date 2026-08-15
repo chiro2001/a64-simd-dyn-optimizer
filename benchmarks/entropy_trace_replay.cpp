@@ -279,6 +279,26 @@ static int run_scan(const unsigned char* hdr, const unsigned char* vals,
 }
 
 // ---- verify modes: baseline vs candidate on the same record ----
+static void set_canary(uint8_t* p, size_t n)
+{
+    for (size_t i = 0; i < n; i++)
+        p[i] = (uint8_t)(0x5A + i);
+}
+
+static int check_canary(const uint8_t* p, size_t n, const char* tag,
+                        long long* bad)
+{
+    for (size_t i = 0; i < n; i++)
+        if (p[i] != (uint8_t)(0x5A + i))
+        {
+            if (*bad < 5)
+                fprintf(stderr, "canary[%s] at %zu\n", tag, i);
+            (*bad)++;
+            return 1;
+        }
+    return 0;
+}
+
 static int verify_c1(const unsigned char* b, long long* bad)
 {
     int n = b[0];
@@ -288,13 +308,17 @@ static int verify_c1(const unsigned char* b, long long* bad)
     memcpy(abs, b + 1, 16);
     intptr_t off;
     memcpy(&off, b + 81, 8);
-    uint8_t ctxA[64], ctxB[64];
+    alignas(16) uint8_t ctxA[72], ctxB[72];
     memcpy(ctxA, b + 17, 64);
     memcpy(ctxB, b + 17, 64);
+    set_canary(ctxA + 64, 8);
+    set_canary(ctxB + 64, 8);
     costC1C2Flag_t fn = primitives.costC1C2Flag;
     uint32_t rA = fn(abs, n, ctxA, off);
     uint32_t rB = dynopt_cost_c1c2_flag_sve2(abs, n, ctxB, off);
-    if (rA != rB || memcmp(ctxA, ctxB, 64) != 0)
+    int canA = check_canary(ctxA + 64, 8, "c1A", bad);
+    int canB = check_canary(ctxB + 64, 8, "c1B", bad);
+    if (rA != rB || memcmp(ctxA, ctxB, 64) != 0 || canA || canB)
     {
         if (*bad < 5)
             fprintf(stderr, "c1 verify: n=%d off=%ld rA=%08x rB=%08x "
@@ -350,21 +374,29 @@ static int verify_ccn(const unsigned char* b, long long* bad)
     memcpy(tab, b + 56, 16);
     memset(scan, 0, sizeof(scan));
     memcpy(scan, b + 136, 32);
-    uint8_t ctxA[256], ctxB[256];
+    alignas(16) uint8_t ctxA[264], ctxB[264];
     memset(ctxA, 0, sizeof(ctxA));
     memset(ctxB, 0, sizeof(ctxB));
     memcpy(ctxA, b + 72, 64);
     memcpy(ctxB, b + 72, 64);
-    uint16_t absA[32], absB[32];
+    alignas(16) uint16_t absA[40], absB[40];
     memset(absA, 0, sizeof(absA));
     memset(absB, 0, sizeof(absB));
+    set_canary((uint8_t*)ctxA + 256, 8);
+    set_canary((uint8_t*)ctxB + 256, 8);
+    set_canary((uint8_t*)absA + 64, 16);
+    set_canary((uint8_t*)absB + 64, 16);
     costCoeffNxN_t fn = primitives.costCoeffNxN;
     uint32_t rA = fn(scan, coeff, trSize, absA, tab, mask, ctxA, offset,
                      soff, sub);
     uint32_t rB = dynopt_cost_coeff_nxn_sve2(
         scan, coeff, trSize, absB, tab, mask, ctxB, offset, soff, sub);
+    int canA = check_canary((uint8_t*)ctxA + 256, 8, "ccnA", bad);
+    int canB = check_canary((uint8_t*)ctxB + 256, 8, "ccnB", bad);
+    int cabsA = check_canary((uint8_t*)absA + 64, 16, "ccnabsA", bad);
+    int cabsB = check_canary((uint8_t*)absB + 64, 16, "ccnabsB", bad);
     if (rA != rB || memcmp(absA, absB, 32) != 0 ||
-        memcmp(ctxA, ctxB, 128) != 0)
+        memcmp(ctxA, ctxB, 128) != 0 || canA || canB || cabsA || cabsB)
     {
         if (*bad < 5)
             fprintf(stderr,
@@ -401,21 +433,32 @@ static int verify_scan(const unsigned char* hdr, const unsigned char* vals,
     }
     alignas(16) uint16_t cg[16];
     memcpy(cg, tail + (size_t)scanlen * 2, 32);
-    alignas(16) uint16_t csA[64], cfA[64], csB[64], cfB[64];
-    alignas(16) uint8_t cnA[64], cnB[64];
+    alignas(16) uint16_t csA[72], cfA[72], csB[72], cfB[72];
+    alignas(16) uint8_t cnA[72], cnB[72];
     memset(csA, 0, sizeof(csA));
     memset(cfA, 0, sizeof(cfA));
     memset(csB, 0, sizeof(csB));
     memset(cfB, 0, sizeof(cfB));
     memset(cnA, 0, sizeof(cnA));
     memset(cnB, 0, sizeof(cnB));
+    set_canary((uint8_t*)csA + 128, 16);
+    set_canary((uint8_t*)cfA + 128, 16);
+    set_canary((uint8_t*)csB + 128, 16);
+    set_canary((uint8_t*)cfB + 128, 16);
+    set_canary((uint8_t*)cnA + 64, 8);
+    set_canary((uint8_t*)cnB + 64, 8);
     scanPosLast_t fn = primitives.scanPosLast;
     int rA = fn(scan, coeff, csA, cfA, cnA, numSig, cg, trSize);
     int rB = dynopt_scan_pos_last_sve2(
         scan, coeff, csB, cfB, cnB, numSig, cg, trSize);
+    int canA = check_canary((uint8_t*)csA + 128, 16, "scanA", bad);
+    int canB = check_canary((uint8_t*)csB + 128, 16, "scanB", bad);
+    int canC = check_canary((uint8_t*)cnA + 64, 8, "scanA", bad);
+    int canD = check_canary((uint8_t*)cnB + 64, 8, "scanB", bad);
     if (rA != rB || memcmp(csA, csB, sizeof(csA)) != 0 ||
         memcmp(cfA, cfB, sizeof(cfA)) != 0 ||
-        memcmp(cnA, cnB, sizeof(cnA)) != 0)
+        memcmp(cnA, cnB, sizeof(cnA)) != 0 || canA || canB ||
+        canC || canD)
     {
         if (*bad < 5)
             fprintf(stderr,

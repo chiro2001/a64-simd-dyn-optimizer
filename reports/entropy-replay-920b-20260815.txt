@@ -144,3 +144,10 @@ ccn 循环本身已足够紧，switch 跳转表开销吃掉小 soff 的收益；
 **+20%**。E2E（best6b 批量含 DFA remain）：中位 8061 vs 8210 ms
 （-1.8%，与 best6 持平，remain 份额太小）。已设为 cost-coeff-remain
 默认候选。
+
+### round-0035：红区/canary 越界检查（P2）
+
+回放 verify 模式给每个输出缓冲（c1c2 ctx、ccn absCoeff/baseCtx、scan
+coeffSign/Flag/Num）加 canary 红区，baseline 与候选调用后检查。云端
+生产静态库 + 1896 万次真实调用：**0 越界写、0 输出失配**（16 个桶全
+bad=0）。补上了“逐调用差分只比较逻辑输出”的盲区。
