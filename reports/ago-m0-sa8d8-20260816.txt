@@ -1,0 +1,38 @@
+# AGO M0：SA8D 8x8 垂直切片验收（2026-08-16）
+
+## 验收对照（round-0023 M0 门禁）
+
+- 基线可选：上游 NEON（primitives.cu[BLOCK_8x8].sa8d）始终作为
+  microbench 的 neon 侧，AGO cover 产物为 cand 侧；
+- 合法 final object：交叉编译链接通过；objdump 确认函数体纯 NEON、
+  无外部调用（117 行，usubl/abs/smax/tbl/trn 等）；
+- ABI/正确性：QEMU 20k 差分（C 参考 oracle）0 失配；N1/920B paired
+  microbench 内 1000 例 verify_bad=0；
+- 基线性能复现：见下表（不要求加速）。
+
+## 双平台 paired（CNTVCT，batch 总节拍中位，3 次重复）
+
+| 平台 | 上游 NEON | AGO cover | neon/cand |
+| --- | ---: | ---: | ---: |
+| Neoverse-N1（25MHz cnt） | 6759 | 6861 | 0.985（慢 1.5%） |
+| 920B（100MHz cnt） | 19830 | 19718 | 1.006（快 0.6%） |
+
+三次重复各自完全稳定；差异在噪声带内，判定 **M0 通过**。
+
+## 交付物
+
+- `optimizer/ago/contracts/sa8d8.py`：语义权威契约；
+- `optimizer/ago/graphs/sa8d8_graph.py`：上游 NEON 数据流导入图；
+- `optimizer/ago/cover_neon.py`：图 → 自包含 C intrinsics（内联
+  NEON helper）；
+- `scripts/verify-ago-sa8d8.sh`：20k oracle 门禁；
+- `benchmarks/ago_sa8d_microbench.cpp`：paired 微基准（batch 总节拍
+  口径，避免 25MHz 计数器 per-call 取整）。
+
+## 备注
+
+- N1 侧 AGO 慢 1.5%、920B 侧快 0.6%：差异来自 GCC 对 cover 生成的
+  外层代码布局，后续 M1+ 的指令选择/调度将把 N1 与 920B 分别作为
+  优化目标；
+- 测量工具前置（round-0023 审计项）已完成：PMU 脚本 field 修复、
+  920B SVE 表重建、N1 NEON 表首版。
