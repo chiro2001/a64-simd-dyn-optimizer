@@ -134,6 +134,32 @@ acc_split ∈ {1,2}），全部经 QEMU 20k 差分 + 真动态轨迹，0 失配�
 =1 全面劣化。搜索方案（canonical → select → flags → 发射 → 测量）
 已闭环且可复现。
 
+### op 后端结构轴 + TestBenchLite 黄金标准（2026-08-16）
+
+grouped 发射器网格已穷尽（best 7820）。op 后端
+（`dct32_op_emit.emit_from_plan`，支持 k0 向量化/共享乘/索引 dot/
+odd 打包等结构轴）接入同一 QEMU 测量链（自定义 trace 范围
+`_ZL9op_pass_4PKsPsl` → `dynopt_dct32_sve2_shared`）：
+
+| 变体 | fused_uop | 20k 失配（lanes） | TestBenchLite 5 seed |
+| --- | ---: | ---: | --- |
+| base（op 后端） | 8114 | 0 | 全 PASS |
+| legacy（ex+k4） | 7482 | 7268 | 全 PASS |
+| k0even | 6880 | 7268 | 全 PASS |
+| k0shared | 6844 | 7268 | 全 PASS |
+| sdoti | 6994 | 7268 | 全 PASS |
+| **oddpack** | **6584** | 7268 | **全 PASS** |
+
+- legacy 变体的 20k 差分（0.035% lanes）来自 k2/k4 s16 切片的稀有
+  回绕/结构分歧；按用户裁定（2026-08-13），legacy-internal-exact
+  的黄金标准 = TestBenchLite，**5 seed（1/2/0x12345678/0xDEADBEEF/
+  987654321）全部 PASS → 可接受**；
+- 因此 op 后端结构轴是**已验证**的收益：**oddpack 6584** 相对
+  upstream 8292 降 **-20.6%**、相对 grouped legacy 最优 7820 再降
+  **-15.8%**；
+- 测量链新增能力：`measure(allow_mismatch, range_start_syms,
+  range_end_sym)` 支持契约族变体与 op 后端 trace 范围。
+
 ## 5. 使用示例
 
 ```python

@@ -70,7 +70,8 @@ def all_plans():
 
 
 def measure(manifest, verify_src, src, workdir, tag,
-            allow_mismatch=False):
+            allow_mismatch=False, range_start_syms=None,
+            range_end_sym=None):
     """Compile -> 20k differential -> true-dynamic counts. Returns
     (passed, mismatches, counts) or (False, reason, None)."""
     obj = os.path.join(workdir, tag + ".o")
@@ -107,7 +108,7 @@ def measure(manifest, verify_src, src, workdir, tag,
              obj, "-o", driver])
     if d.returncode != 0:
         return False, "trace driver link failed", None
-    start_syms = manifest["candidate"].get(
+    start_syms = range_start_syms or manifest["candidate"].get(
         "range_start", manifest["candidate"]["symbol"])
     if isinstance(start_syms, str):
         start_syms = [start_syms]
@@ -118,7 +119,7 @@ def measure(manifest, verify_src, src, workdir, tag,
             break
     if rng is None:
         return False, "no trace range", None
-    end_sym = manifest["candidate"].get("range_end")
+    end_sym = range_end_sym or manifest["candidate"].get("range_end")
     if end_sym:
         rng_end = symbol_range(driver, end_sym)
         if rng_end is None:
