@@ -29,8 +29,17 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | filter | interp8-vps | 16x16 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps | 32x32 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps | 8x8 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
+| filter | interp8-vps-16x32 | 16x32 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
+| filter | interp8-vps-16x4 | 16x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
+| filter | interp8-vps-32x16 | 32x16 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
+| filter | interp8-vps-8x4 | 8x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | pixel | sa8d16 | 16x16 | read 2 planes; write int | none | exact | none | 128;256 | hadamard+reduce | upstream-exact | 20k vq=1/2 | measured |
+| pixel | satd-16 | 16x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-16x8 | 16x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-32x32 | 32x32 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-64x64 | 64x64 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8 | 8x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-8x16 | 8x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | sao | sao-stats-bo | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
 | sao | sao-stats-e0 | 64x1 | read int16 coeff + uint8 rec; accumulate int32 stats (stateful) | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k vq=1/2 | measured |
 | sao | sao-stats-e1 | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
