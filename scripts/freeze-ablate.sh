@@ -17,10 +17,12 @@ cd "$ROOT"
 EXPECT_MD5="${FREEZE_MD5:-ee5db7384df974ba25e4f1df8178dcb6}"
 INPUT="${FREEZE_INPUT:-/tmp/real_1080p_30f.yuv}"
 FRAMES="${FREEZE_FRAMES:-30}"
-REPO="/home/chiro/projects/a64-simd-dyn-optimizer"
+REPO="${REPO:-/home/chiro/projects/a64-simd-dyn-optimizer}"
+INJECT_SCRIPT="${AGO_INJECT_SCRIPT:-cloud-e2e-inject.sh}"
 
 echo "[ablate:$LABEL] building inject bundle"
-python3 tools/build_preload_so.py --isa sve1 \
+python3 tools/build_preload_so.py --isa "${AGO_ISA:-sve1}" \
+  --vl "${AGO_VL:-16}" \
   --kernels "$KERNELS" \
   --opt=-O3 \
   ${AGO_SKIP_SATD_SMALL:+--skip-satd-small} \
@@ -39,7 +41,7 @@ tar -C "$PKG" -czf "/tmp/e2e-${LABEL}.tar.gz" out work
 
 echo "[ablate:$LABEL] pushing bundle to $HOST"
 scp -o BatchMode=yes -o ServerAliveInterval=30 "/tmp/e2e-${LABEL}.tar.gz" \
-  scripts/strip-dynopt-link.py scripts/cloud-e2e-inject.sh \
+  scripts/strip-dynopt-link.py "scripts/$INJECT_SCRIPT" \
   "$HOST":/tmp/
 
 ENC="taskset -c 0 ./x265 --input $INPUT \
@@ -50,7 +52,7 @@ echo "[ablate:$LABEL] injecting"
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO && git -C third_party/x265 checkout -- \
    source/common/primitives.cpp 2>/dev/null; \
-   bash /tmp/cloud-e2e-inject.sh >/tmp/ablate-${LABEL}-inject.log 2>&1"
+   bash "/tmp/$INJECT_SCRIPT" >/tmp/ablate-${LABEL}-inject.log 2>&1"
 
 echo "[ablate:$LABEL] optimized encode (md5)"
 OPT_MD5=$(ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \

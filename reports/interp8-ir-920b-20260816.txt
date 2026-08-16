@@ -1,0 +1,36 @@
+# 920B interp8 hpp IR 9 形状 E2E 消融（2026-08-16）
+
+## 方法
+
+- 机器：920B 共享节点（SVE1 VL256，无 PMU），30f 与真实 100f
+  （`/tmp/real_1080p_100f_b.yuv`），单线程 taskset -c 0；
+- 候选：`AGO_IR_FILTER=1` 全 9 形状 interp8 hpp IR（纯 NEON，
+  `kernels/<shape>/candidates/best_ir.cpp`，宽度无关 DAG 发射），
+  替换 `pu[LUMA_WxH].luma_hpp` 槽位（8x8/8x16/16x8/16x16/16x32/
+  32x16/32x32/64x32/64x64）；
+- 协议：`scripts/freeze-ablate.sh`，5 opt + 5 base，paired
+  bootstrap95；diff = base - opt，>0 候选更快；
+- 门禁：same-machine md5 全等（bit-exact）。
+
+## 结果
+
+| 段 | base 中位 | opt 中位 | diff | Δ% | bootstrap95 | md5 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 30f | 8179 | 8048 | 123 | -1.50% | [105,144] ms | ee5db7384df974ba25e4f1df8178dcb6 |
+| 100f | 22370 | 21994 | 346 | -1.55% | [319,474] ms | 1600c2fac1294b5ffb19512f6615b31d |
+
+## 结论
+
+1. interp8 hpp IR 9 形状在 920B 双段显著（CI 不跨零）、bit-exact、
+   方向一致——通过统一晋级门；这是 best9 之外新确认的 E2E 收益源
+   （单家族 ~1.5%，接近 best9 整包的一半）。
+2. 与 best9 是否叠加待组合测试（下一步）。
+3. 710/950 上该纯 NEON 候选与上游 SVE/i8mm 的对比待测（历史上
+   sdoth path-B 在 VL128 上更慢，不能外推）。
+
+## 产物
+
+- bundle：`build/ablate-interp8-ir-920b-30f-inject` /
+  `build/ablate-interp8-ir-920b-100f-inject`
+- 接线：`tools/emit_interp8_ir_candidates.py` + `AGO_IR_FILTER=1`
+  （commit e3d6412）

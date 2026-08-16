@@ -96,6 +96,10 @@ Ampere 类 NEON-only（ENABLE_SVE=OFF），LD_PRELOAD bundle
 - kernel 级周期：dct16 11→8（**-27.3%**）、dct32 74→73（-1.3%）；
 - 30f E2E 3+3：12129→11996ms 中位（**-1.10%**），bit-exact md5 一致。
 
+> **修正（2026-08-16 晚）**：N1 上 LD_PRELOAD 未拦截（核查见
+> reports/ld-preload-interception-check-20260816.txt），上述 30f E2E
+> 数字无效；kernel 级周期（11→8）为直接调用微基准，仍然有效。
+
 ### 3.1.3 920B 实机（2026-08-16）
 
 Kunpeng 920（SVE1+dotprod，x265 NEON-only 构建），LD_PRELOAD A/B：
@@ -107,6 +111,10 @@ Kunpeng 920（SVE1+dotprod，x265 NEON-only 构建），LD_PRELOAD A/B：
   bit-exact md5 一致（ee5db7…，与冻结哈希相同）。结论：kernel
   微基准赢面未转 E2E，920B 上现候选不发布，留作后续 k 族结构轴
   再评估。
+
+> **修正（2026-08-16 晚）**：920B 上 LD_PRELOAD 未拦截，上述 30f
+> E2E（+0.28%）无效；kernel 级周期（19→17/150→127）为直接调用
+> 微基准，仍然有效。
 - 因此注入默认改为：`--isa sve1 --vl 16` → NEON 版（920B）；
   `--isa sve2 --vl 16` → sdot.d 版（710/950）；`AGO_NEON_DCT=1`
   可强制 NEON（N1/任意）。

@@ -1,0 +1,40 @@
+# LD_PRELOAD 拦截核查（2026-08-16，重要修正）
+
+## 问题
+
+2026-08-16 晚的 N1 四臂 100f、920B 三臂 100f 均用 LD_PRELOAD bundle，
+结论为“中性/未叠加”。核查发现 **LD_PRELOAD 在 N1 与 920B 上并未真正
+拦截**：运行 encode 时 stderr 没有 `dynopt: patched N x265 dispatch
+slot(s)` 输出（该输出由 .so 的 `x265_setup_primitives` interposer +
+constructor 触发，见 tools/build_preload_so.py）。
+
+## 核查（30f encode，LD_PRELOAD=/tmp/n1-arm-best9.so）
+
+| 机器 | grep -c dynopt | 拦截 |
+| --- | ---: | --- |
+| N1 | 0 | 否 |
+| 920B | 0 | 否 |
+| 710 | 1 | 是 |
+
+710 的 libx265 构建允许符号 interpose；N1/920B 的构建（可能
+-fvisibility=hidden 或内部调用不经 PLT）使 preload 失效。
+
+## 有效性地图
+
+无效（LD_PRELOAD no-op，编码实际跑基线）：
+- N1 四臂 100f（best9/ir-dct/best9-ir-dct）→ reports/four-arm-n1-100f
+  作废；
+- N1 dct16/32 手写/IR 的 30f E2E（-0.93%/-1.80%）与 920B dct NEON
+  E2E（+0.28%）；
+- N1/920B 的 7-kernel IR-all E2E（+0.08%/+0.02%）。
+
+有效（注入法或确认拦截）：
+- 全部 compile-in inject E2E（best9、熵族消融、interp8 IR 920B
+  -1.50%/-1.55%、920B 内网 best9 复测）；
+- 710 三臂 100f（拦截确认，结论保留）；
+- kernel 级微基准（直接调用符号，不经 interpose）。
+
+## 后续
+
+- N1/920B 需要注入法（cloud-e2e-inject-*.sh）重做组合测试；
+- 或修复 LD_PRELOAD .so 的拦截（先确认 N1/920B libx265 编译选项）。

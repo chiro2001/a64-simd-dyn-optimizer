@@ -26,6 +26,7 @@ so_for() {
     best9) echo "${SO_BEST9:-build/n1-best9.so}" ;;
     ir-dct) echo "${SO_IR_DCT:-build/n1-ir-dct.so}" ;;
     best9-ir-dct) echo "${SO_BEST9_IR_DCT:-build/n1-best9-ir-dct.so}" ;;
+    best9-ir-hpp) echo "${SO_BEST9_IR_HPP:-build/n1-best9-ir-dct.so}" ;;
     *) echo "" ;;
   esac
 }
