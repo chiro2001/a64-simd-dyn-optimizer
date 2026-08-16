@@ -233,6 +233,27 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
   门禁”；其余形状（8x8/16x8/32x32 等）与 i8mm/dotprod 目标按
   同法继续。
 
+### filter per-coeff 全形状推广（2026-08-16 晚，round-0025 远期主线）
+
+`interp8_op_ir.py` 的 DAG 构建器参数化为 `interp8_hpp_dag(width,
+height)`（按 16 字节列块分块；16x16 入口保持不变），
+`interp8_emit.py` 相应支持列偏移；同一宽度无关 DAG 发射 7 个
+upstream 形状，`dag_pipeline` 全部 vq=1/2 20k **0 失配**：
+
+| 形状 | DAG ops | fused_uop | 门禁 |
+| --- | ---: | ---: | ---: |
+| 16x8 | 1120 | 429 | vq=1/2 0 |
+| 16x16 | 2240 | 1013 | vq=1/2 0（原 PoC） |
+| 16x32 | 4480 | 1895 | vq=1/2 0 |
+| 32x16 | 4480 | 1872 | vq=1/2 0 |
+| 32x32 | 8960 | 3275 | vq=1/2 0 |
+| 64x32 | 17920 | 6209 | vq=1/2 0 |
+| 64x64 | 35840 | 12001 | vq=1/2 0 |
+
+工具：`tools/test_interp8_op_ir.py` 覆盖 16x8/16x16/32x32 的
+def-use 与发射计数。宽度 8（u8x8 路径）与 i8mm/dotprod 目标留待
+后续。
+
 ### DAG 最优 kernel 集 N1 E2E（2026-08-16 更新）
 
 组合 bundle：satd-8 + sa8d16 + sao-stats-e0 + sad（均 IR 生成候选，

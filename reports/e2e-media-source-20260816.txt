@@ -1,0 +1,39 @@
+AGO / x265 E2E 测试媒体（2026-08-16 归档）
+
+源文件：1416529-hd_1920_1080_30fps.mp4
+  md5   f081565cbee2ba7a43a0550035bd4099
+  格式  h264, 1920x1080, 30fps, 367 帧（12.23s）
+
+历史 yuv 均由本文件生成（已逐字节验证）：
+  /tmp/real_1080p_30f.yuv       = 帧 0..29
+    (yuv md5 e20e4c9e5e82f338c6cdf05787cf6cd3)
+  /tmp/real_1080p_100f_b.yuv    = 帧 100..199
+    (yuv md5 0f0c65c1f54a19ca53927f6efd430016)
+
+用 ffmpeg 重新生成 yuv（下载 mp4 后在本机/目标机执行）：
+
+  30f：
+  ffmpeg -y -i 1416529-hd_1920_1080_30fps.mp4 \
+    -frames:v 30 -pix_fmt yuv420p -f rawvideo real_1080p_30f.yuv
+
+  100f：
+  ffmpeg -y -i 1416529-hd_1920_1080_30fps.mp4 \
+    -vf "select='gte(n\\,100)'" -frames:v 100 \
+    -pix_fmt yuv420p -f rawvideo real_1080p_100f_b.yuv
+
+注意：select 过滤器中逗号需按 shell 转义；生成后建议 md5 校验，
+目标 md5 见上。
+
+x265 E2E 编码命令（单核单线程，bit-exact A/B）：
+
+  taskset -c 0 ./x265 --input real_1080p_30f.yuv \
+    --input-res 1920x1080 --fps 30 --frames 30 \
+    --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0 \
+    --b-adapt 0 -o /dev/null
+
+  100f 时 --frames 100 且输入换 real_1080p_100f_b.yuv。
+
+公网下载（内网 950/920B 测试用）：
+  920B: 124.70.206.229, 文件 /home/chiro/e2e-media/
+  710:  47.96.166.168, 文件 /root/e2e-media/
+  scp -P 22 chiro@124.70.206.229:e2e-media/1416529-hd_1920_1080_30fps.mp4 .

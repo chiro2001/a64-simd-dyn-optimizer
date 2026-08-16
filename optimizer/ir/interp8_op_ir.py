@@ -1,7 +1,8 @@
-"""interp8 horizontal 8-tap 16x16 width-independent op DAG.
+"""interp8 horizontal 8-tap width-independent op DAG.
 
-Mirrors upstream interp_horiz_pp_neon<8,16,16> (filter-prim.cpp):
-per row 8 shifted u8x16 windows (src - 3 + i), per-coeff filter forms
+Mirrors upstream interp_horiz_pp_neon<8,W,H> (filter-prim.cpp):
+per row, per 16-byte column chunk, 8 shifted u8x16 windows
+(src - 3 + i + col), per-coeff filter forms
 (coeffIdx 1/2/3 differ structurally - docs/66), saturating narrow,
 combine + store. The per-coeff lowering is the filter family's
 width-independent representation.
@@ -109,28 +110,62 @@ def _phase3(fresh, s, row, half, tile):
     return r.out
 
 
-def interp8_hpp_16x16_dag() -> List[Op]:
+def interp8_hpp_dag(width: int = 16, height: int = 16) -> List[Op]:
     ops, fresh = _builder()
+    chunks = (width + 15) // 16
     windows = {}
-    for row in range(16):
+    for row in range(height):
         w = []
-        for i in range(8):
-            v = fresh("load_u8x16", "f.r%d.w%d" % (row, i),
-                      attrs={"row": row, "off": i - 3})
-            w.append(v)
+        for c in range(chunks):
+            for i in range(8):
+                v = fresh("load_u8x16", "f.r%d.c%d.w%d" % (row, c, i),
+                          attrs={"row": row, "col": c * 16, "off": i - 3})
+                w.append(v)
         windows[row] = w
     for ph, fn in ((1, _phase1), (2, _phase2), (3, _phase3)):
-        for row in range(16):
-            d0 = fn(fresh, windows[row], row, "lo",
-                    "f.ph%d.r%d.lo" % (ph, row))
-            d1 = fn(fresh, windows[row], row, "hi",
-                    "f.ph%d.r%d.hi" % (ph, row))
-            n0 = fresh("vqrshrun", "f.ph%d.r%d.n0" % (ph, row), (d0,),
-                       attrs={"shift": 6, "elem": "s16"})
-            n1 = fresh("vqrshrun", "f.ph%d.r%d.n1" % (ph, row), (d1,),
-                       attrs={"shift": 6, "elem": "s16"})
-            c = fresh("combine_u8", "f.ph%d.r%d.c" % (ph, row),
-                      (n0.out, n1.out), attrs={"elem": "u8"})
-            fresh("store_u8x16", "f.ph%d.r%d.st" % (ph, row), (c.out,),
-                  attrs={"base": "dst", "row": row, "phase": ph})
+        for row in range(height):
+            for c in range(chunks):
+                w = windows[row][c * 8:(c + 1) * 8]
+                d0 = fn(fresh, w, row, "lo",
+                        "f.ph%d.r%d.c%d.lo" % (ph, row, c))
+                d1 = fn(fresh, w, row, "hi",
+                        "f.ph%d.r%d.c%d.hi" % (ph, row, c))
+                n0 = fresh("vqrshrun", "f.ph%d.r%d.c%d.n0" % (ph, row, c),
+                           (d0,), attrs={"shift": 6, "elem": "s16"})
+                n1 = fresh("vqrshrun", "f.ph%d.r%d.c%d.n1" % (ph, row, c),
+                           (d1,), attrs={"shift": 6, "elem": "s16"})
+                cc = fresh("combine_u8", "f.ph%d.r%d.c%d.c" % (ph, row, c),
+                           (n0.out, n1.out), attrs={"elem": "u8"})
+                fresh("store_u8x16", "f.ph%d.r%d.c%d.st" % (ph, row, c),
+                      (cc.out,),
+                      attrs={"base": "dst", "row": row, "col": c * 16,
+                             "phase": ph})
     return annotate(ops)
+
+
+def interp8_hpp_16x8_dag() -> List[Op]:
+    return interp8_hpp_dag(16, 8)
+
+
+def interp8_hpp_16x16_dag() -> List[Op]:
+    return interp8_hpp_dag(16, 16)
+
+
+def interp8_hpp_16x32_dag() -> List[Op]:
+    return interp8_hpp_dag(16, 32)
+
+
+def interp8_hpp_32x16_dag() -> List[Op]:
+    return interp8_hpp_dag(32, 16)
+
+
+def interp8_hpp_32x32_dag() -> List[Op]:
+    return interp8_hpp_dag(32, 32)
+
+
+def interp8_hpp_64x32_dag() -> List[Op]:
+    return interp8_hpp_dag(64, 32)
+
+
+def interp8_hpp_64x64_dag() -> List[Op]:
+    return interp8_hpp_dag(64, 64)
