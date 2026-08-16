@@ -34,6 +34,23 @@ VARIANTS = [
                                legacy=True, even_sve=True)),
     ("q+k4+m16", dict(pass1="quarter", pass1_k_tile=4, pass2="odd-quarter",
                       store_merge16=True)),
+    ("q2", dict(pass1="quarter", pass1_k_tile=2, pass2="odd-quarter")),
+    ("q4+k2", dict(pass1="quarter", pass1_k_tile=4, pass2="odd-quarter",
+                   pass2_k_tile=2)),
+    ("q4+nozip", dict(pass1="quarter", pass1_k_tile=4, pass1_pack_zip=False,
+                      pass2="odd-quarter")),
+    ("q4+p2nozip", dict(pass1="quarter", pass1_k_tile=4,
+                        pass2="odd-quarter", pass2_pack_zip=False)),
+    ("q4+noef", dict(pass1="quarter", pass1_k_tile=4, pass1_even_factor=False,
+                     pass2="odd-quarter")),
+    ("q4+nom16", dict(pass1="quarter", pass1_k_tile=4,
+                      pass2="odd-quarter", store_merge16=False)),
+    ("q2+legacy+sve", dict(pass1="quarter", pass1_k_tile=2,
+                           pass2="odd-quarter", legacy=True,
+                           even_sve=True)),
+    ("q4+k2+legacy+sve", dict(pass1="quarter", pass1_k_tile=4,
+                              pass2="odd-quarter", pass2_k_tile=2,
+                              legacy=True, even_sve=True)),
 ]
 
 

@@ -292,6 +292,18 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - 全管线验证：`--isa sve2 --vl 32 --kernels dct16` 构建通过（ISA
   门禁 OK，bundle 生成）。
 
+### DCT16 网格收敛（2026-08-16）
+
+扩展网格（pass1/pass2 k_tile、pack_zip、even_factor、store_merge16、
+legacy/even_sve 组合）：
+
+- 零 scatter 的 upstream-exact 最优仍为 **quarter+oddq = 895**
+  （q2/q4+k2/q4+nozip 等配置并列 895；noef 923、p2nozip 957、
+  nom16 903 均不更优）——dct16 干净可注入路径已收敛；
+- legacy+even_sve 全部 699 fused_uop 但 **4 个 scatter**（st1d
+  scatter 写偶行），消除需把偶/奇输出合并成连续行存储的结构改造，
+  记为后续项；当前不采用。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线
