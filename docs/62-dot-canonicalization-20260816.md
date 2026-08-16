@@ -304,6 +304,21 @@ legacy/even_sve 组合）：
   scatter 写偶行），消除需把偶/奇输出合并成连续行存储的结构改造，
   记为后续项；当前不采用。
 
+### 950 bundle 部署就绪验证（2026-08-16）
+
+全量 best9-950（23 kernel，`--isa sve2 --vl 32`）用新 op 后端候选
+构建通过：dct16 → op895（8392B）、dct32 → opbase（12600B），ISA
+门禁全过、0 skip。950 窗口打开后即可直接跑 freeze-best9-950 首轮
+E2E（fused_uop 收益转周期/E2E 的实机裁决）。
+
+### legacy scatter 修复机制（后续项）
+
+dct16 legacy+even_sve 的 4 个 `st1d_scatter_s16` 把 n16_0..3（各含
+4 行 × 2 列的偶行 quarter）写入 dst+0/4/8/12。消除 scatter 需把这
+4 个向量按行转置合并成 4 条完整 16 列行向量后连续 svst1（偶/奇行
+合并），属于 op-DAG 结构改写（类似 merge_narrow8 的布局），当前
+未实现。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线
