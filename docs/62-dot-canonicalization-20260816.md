@@ -182,6 +182,24 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - merge_narrow8 rewrite 在该 plan 下编译失败（记录为 measure-fail，
   后续排查）；k0_epack 在 pass2 仍劣化（6554）。
 
+### 第二轮 rg16 网格：超越内部参考（2026-08-16）
+
+围绕 row_group=16 + odd_from_k0packs 的组合网格：
+
+| 变体 | fused_uop | TestBenchLite 5 seed |
+| --- | ---: | --- |
+| **rg16+k2k4（+k2k4_from_packs）** | **4650** | **全 PASS** |
+| rg16+sdoti | 4718 | — |
+| rg16+k0ep | 4735 | — |
+| rg16+k0sm | 4861 | — |
+| rg16+k0m8 | 4868 | — |
+| odd+rg16 | 4898 | 全 PASS |
+
+- **rg16+k2k4 = 4650 fused_uop**：已**低于内部参考 4827（-3.7%）**，
+  相对 upstream grouped 8292 **-44%**；TestBenchLite 5 seed 全 PASS
+  （legacy-internal-exact 黄金标准）；
+- 确定性已复跑确认（两次一致）。
+
 ### 跨 kernel：interp8 的 filter8 接入同一 dot 节点（2026-08-16）
 
 “同一算法、不同指令实现”不止 dct16/32：interp8 的 8-tap 滤波在
