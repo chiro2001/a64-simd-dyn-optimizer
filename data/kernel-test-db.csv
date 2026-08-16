@@ -40,6 +40,7 @@ interp8-hpp-64x64,2026-08-16,014b997,interp8-hpp-64x64,filter,ir,c/neon,neon,opt
 interp8-hpp-8x16,2026-08-16,044705c,interp8-hpp-8x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,626,716,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-8x8,2026-08-16,044705c,interp8-hpp-8x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,243,275,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-ir-9shapes-ir-hpp-100f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,,-1.55,319..474,yes,reports/interp8-ir-920b-20260816.txt
+interp8-ir-9shapes-ir-hpp-100f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,,-1.13,239..533,yes,reports/interp8-ir-710-20260816.txt
 interp8-ir-9shapes-ir-hpp-30f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,-1.50,,105..144,yes,reports/interp8-ir-920b-20260816.txt
 interp8-ir-9shapes-ir-hpp-30f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,-1.59,,104..196,yes,reports/interp8-ir-710-20260816.txt
 ir-all-7k-n1,2026-08-16,72c8a08,ir-all-7k,bundle,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,,yes,docs/59-handoff-20260816.md
