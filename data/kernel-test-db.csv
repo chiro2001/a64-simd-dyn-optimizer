@@ -1,4 +1,5 @@
 id,date,commit,kernel,family,variant,input_isa,output_isa,candidate_file,mca_fused_uop,mca_total,gate_vq,gate_cases,gate_mismatch,testbench,machine,kernel_metric,kernel_value,e2e_30f_pct,e2e_100f_pct,e2e_ci_ms,bit_exact,report
+best10-iab-100f-920b-920B-2026-08-16-88e016d,2026-08-16,88e016d,best10,,iab-100f-920b,mixed,mixed,build/ablate-best10-920b-iab-inject,,,,,,,920B,,,,+0.40,-149..-63,yes,reports/interp8-ir-920b-20260816.txt
 best9-920b,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-2.06,-2.02,356..509 (100f),yes,docs/59-handoff-20260816.md
 best9-n1,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,,,,,,,,N1,,,-1.60,-1.52,226..706 (100f),yes,docs/59-handoff-20260816.md
 best9-710,2026-08-16,72c8a08,best9,bundle,best9-128,mixed,mixed,,,,,,,,710,,,,-1.53,279..415 (100f),yes,docs/59-handoff-20260816.md
@@ -6,6 +7,7 @@ best9-best9-internal-100f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best
 best9-best9-internal-30f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best9-internal-30f,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-1.85,,157..167,yes,reports/best9-920b-internal-20260816.txt
 four-arm-n1-best9,2026-08-16,42bd449,best9,bundle,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,-93.5..121,yes,reports/four-arm-n1-100f-20260816.txt
 best9-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,best9,,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
+best9-iab-100f-920b-920B-2026-08-16-88e016d,2026-08-16,88e016d,best9,,iab-100f-920b,mixed,mixed,build/ablate-best9-920b-iab-inject,,,,,,,920B,,,,-2.17,455..500,yes,reports/interp8-ir-920b-20260816.txt
 best9-ldpreload-100f-710-710-2026-08-16-53a14de,2026-08-16,53a14de,best9,,ldpreload-100f-710,mixed,mixed,build/710-best9.so,,,,,,,710,,,,+0.23,-133.5..-3.0,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
 three-arm-710-best9,2026-08-16,42bd449,best9,bundle,three-arm-100f,mixed,mixed,build/710-best9.so,,,,,,,710,,,,-0.16,-100..143,yes,reports/710-three-arm-100f-20260816.txt
 four-arm-n1-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,-85..322,yes,reports/four-arm-n1-100f-20260816.txt
@@ -41,10 +43,10 @@ interp8-hpp-64x32,2026-08-16,014b997,interp8-hpp-64x32,filter,ir,c/neon,neon,opt
 interp8-hpp-64x64,2026-08-16,014b997,interp8-hpp-64x64,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,12001,13614,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-8x16,2026-08-16,044705c,interp8-hpp-8x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,626,716,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-8x8,2026-08-16,044705c,interp8-hpp-8x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,243,275,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-interp8-ir-9shapes-ir-hpp-100f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,,-1.55,319..474,yes,reports/interp8-ir-920b-20260816.txt
-interp8-ir-9shapes-ir-hpp-100f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,,-1.13,239..533,yes,reports/interp8-ir-710-20260816.txt
-interp8-ir-9shapes-ir-hpp-30f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,-1.50,,105..144,yes,reports/interp8-ir-920b-20260816.txt
-interp8-ir-9shapes-ir-hpp-30f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,-1.59,,104..196,yes,reports/interp8-ir-710-20260816.txt
+interp8-ir-9shapes-ir-hpp-100f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,,-1.55,UNCONFIRMED,yes,reports/interp8-ir-920b-20260816.txt
+interp8-ir-9shapes-ir-hpp-100f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,,-1.13,UNCONFIRMED,yes,reports/interp8-ir-710-20260816.txt
+interp8-ir-9shapes-ir-hpp-30f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,-1.50,,UNCONFIRMED,yes,reports/interp8-ir-920b-20260816.txt
+interp8-ir-9shapes-ir-hpp-30f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,-1.59,,UNCONFIRMED,yes,reports/interp8-ir-710-20260816.txt
 ir-all-7k-n1,2026-08-16,72c8a08,ir-all-7k,bundle,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,,yes,docs/59-handoff-20260816.md
 ir-all-7k-ir-all-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,ir-all-7k,,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 four-arm-n1-ir-dct,2026-08-16,42bd449,ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,-114.5..151,yes,reports/four-arm-n1-100f-20260816.txt
