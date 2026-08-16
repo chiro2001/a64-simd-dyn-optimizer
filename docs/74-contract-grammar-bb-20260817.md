@@ -181,3 +181,13 @@ emit+编译+fused_uop 计数（tools/dct32_axis_bb_accept.py）：
 - 两个已过数据集经通用引擎复现：satd 24 候选 4.80x、dct32 6 组合
   2.00x（test_lattice_bb.py 入回归）——后续新空间（saoCuOrg 布局
   等）只需产出组合表即可复用同一验收。
+
+## 11. 第三个真实空间：saoCuOrg 布局（2026-08-17 晚）
+
+- 组合表：6 kernel（E0/E1/E1_2Rows/E2/E3/B0）× 布局
+  {neon-seed, sve2-tbl} = 12 组合（DB 已测 fused_uop），
+  experiments/m33-sao-layout-bb/results.json；
+- 通用引擎验收：同最优 33（E2 sve2）、探索 3 状态、剪枝 6、
+  **节点减少 4.00x**、0 误剪——**验收门达成**；
+- 说明：该表直接复用通用引擎（无需新代码），验证了 §10 的可复用
+  性；sao sve2 布局整体优于 neon-seed（成本方差大），剪枝显著。

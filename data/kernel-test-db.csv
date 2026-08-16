@@ -145,6 +145,7 @@ sa8d-8-sa8d8_C-920B,,,sa8d-8,pixel,sa8d8_C,neon,neon,experiments/ago-m2-expanded
 sa8d-8-sa8d8_C-N1,,,sa8d-8,pixel,sa8d8_C,neon,neon,experiments/ago-m2-expanded/src/sa8d8_C.cpp,100,,1,20000,0,20k-native,N1,ticks,1728,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 sa8d16-ir,2026-08-16,72c8a08,sa8d16,pixel,ir,c/neon,neon,optimizer/ir/sa8d_emit.py,404,485,1;2,20000,0,,920B,ratio_neon_cand,1.04,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sao-layout-bb-accept,2026-08-17,,sao,sao,layout-bb,,,tools/lattice_bb.py,33,,,12,0,generic-accept-sao-layout,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 sao-neon-bundle-710-30f,2026-08-17,,sao,bundle,neon-slot-710,,,,,,,,,,710,,,+0.15,,-22..50,yes,reports/sao-neon-710-e2e-20260817.txt
 sao-cuorg-b0-neon-seed,,,sao-cuorg-b0,,neon-seed,,,kernels/sao/candidates/best_b0.cpp,219,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-b0-neon-slot,2026-08-17,,sao-cuorg-b0,,neon-slot,,,kernels/sao/candidates/best_neon_b0.cpp,219,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt

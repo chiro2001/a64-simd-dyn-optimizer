@@ -1,0 +1,86 @@
+[
+ {
+  "combo": [
+   "E0",
+   "neon"
+  ],
+  "fused": 269
+ },
+ {
+  "combo": [
+   "E0",
+   "sve2"
+  ],
+  "fused": 65
+ },
+ {
+  "combo": [
+   "E1",
+   "neon"
+  ],
+  "fused": 517
+ },
+ {
+  "combo": [
+   "E1",
+   "sve2"
+  ],
+  "fused": 129
+ },
+ {
+  "combo": [
+   "E1_2Rows",
+   "neon"
+  ],
+  "fused": 261
+ },
+ {
+  "combo": [
+   "E1_2Rows",
+   "sve2"
+  ],
+  "fused": 65
+ },
+ {
+  "combo": [
+   "E2",
+   "neon"
+  ],
+  "fused": 133
+ },
+ {
+  "combo": [
+   "E2",
+   "sve2"
+  ],
+  "fused": 33
+ },
+ {
+  "combo": [
+   "E3",
+   "neon"
+  ],
+  "fused": 117
+ },
+ {
+  "combo": [
+   "E3",
+   "sve2"
+  ],
+  "fused": 101
+ },
+ {
+  "combo": [
+   "B0",
+   "neon"
+  ],
+  "fused": 219
+ },
+ {
+  "combo": [
+   "B0",
+   "sve2"
+  ],
+  "fused": 57
+ }
+]

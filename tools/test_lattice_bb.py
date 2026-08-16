@@ -31,6 +31,15 @@ class LatticeBBTest(unittest.TestCase):
         self.assertGreaterEqual(rep["node_reduction"], 2.0)
         self.assertTrue(rep["gate_met"])
 
+    def test_sao_layout_dataset(self):
+        combos = load_combos(os.path.join(
+            ROOT, "experiments", "m33-sao-layout-bb", "results.json"))
+        rep = acceptance(combos)
+        self.assertTrue(rep["same_best"])
+        self.assertEqual(rep["full_best"], 33)
+        self.assertGreaterEqual(rep["node_reduction"], 4.0)
+        self.assertTrue(rep["gate_met"])
+
 
 if __name__ == "__main__":
     unittest.main()
