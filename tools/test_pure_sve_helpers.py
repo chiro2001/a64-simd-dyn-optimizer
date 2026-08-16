@@ -92,7 +92,7 @@ extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
                             int16_t* o, int64_t* s)
 {
     svint16_t x = psv16_load(a), y = psv16_load(b);
-    psv16_store(o, psv16_rev(x));
+    psv16_store(o, psv16_dual_rev16(x));
     svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
     svst1_s64(svptrue_b64(), s, acc);
 }
@@ -116,6 +116,19 @@ int main()
         if (s[i] != e[i]) { bad++; printf("sdot[%d]=%lld exp %lld\n",
                                           i, (long long)s[i],
                                           (long long)e[i]); }
+    psv16_store(r, psv16_dual_rev16(v));
+    const int16_t er[16] = {7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8};
+    for (int i = 0; i < 16; i++)
+        if (r[i] != er[i]) { bad++; printf("dual_rev[%d]=%d exp %d\n",
+                                           i, r[i], er[i]); }
+    psv16_store(r, psv16_dual_vget_lo4(v));
+    if (r[0] != 0 || r[1] != 1 || r[2] != 2 || r[3] != 3 ||
+        r[8] != 8 || r[9] != 9 || r[10] != 10 || r[11] != 11)
+        { bad++; printf("dual_vget_lo4 bad\n"); }
+    psv16_store(r, psv16_dual_vget_hi4(v));
+    if (r[0] != 4 || r[1] != 5 || r[2] != 6 || r[3] != 7 ||
+        r[8] != 12 || r[9] != 13 || r[10] != 14 || r[11] != 15)
+        { bad++; printf("dual_vget_hi4 bad\n"); }
     printf(bad ? "FAILED %ld\n" : "PASS\n", bad);
     return bad != 0;
 }

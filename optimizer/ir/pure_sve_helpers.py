@@ -223,6 +223,34 @@ static inline svint32_t psv16_rshrn_s64_12(svint64_t x)
 {
     return svrshrnb_n_s64(x, 12);
 }
+
+// Packed dual-group 16-lane primitives for the VL=256 emitter: each
+// 16-lane register carries two independent 8-lane groups (lanes 0-7,
+// 8-15). Operations below act on both groups simultaneously.
+static inline svint16_t psv16_dual_rev16(svint16_t x)
+{
+    static const uint16_t idx[16] =
+        { 7, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
+}
+
+static inline svint16_t psv16_dual_vget_lo4(svint16_t x)
+{
+    // low 4 lanes of each 8-lane group -> lanes 0-3 and 8-11.
+    static const uint16_t idx[16] =
+        { 0, 1, 2, 3, 0, 0, 0, 0, 8, 9, 10, 11, 0, 0, 0, 0 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
+}
+
+static inline svint16_t psv16_dual_vget_hi4(svint16_t x)
+{
+    static const uint16_t idx[16] =
+        { 4, 5, 6, 7, 0, 0, 0, 0, 12, 13, 14, 15, 0, 0, 0, 0 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
+}
 """
 
 
