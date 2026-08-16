@@ -85,6 +85,10 @@ interp8-ir-9shapes-ir-hpp-100f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp
 interp8-ir-9shapes-ir-hpp-100f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,,-1.13,REFUTED,yes,reports/interp8-ir-710-20260816.txt
 interp8-ir-9shapes-ir-hpp-30f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,-1.50,,UNCONFIRMED,yes,reports/interp8-ir-920b-20260816.txt
 interp8-ir-9shapes-ir-hpp-30f-710-710-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-30f-710,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,710,,,-1.59,,REFUTED,yes,reports/interp8-ir-710-20260816.txt
+interp8-vsp-16x16-inline-sve2,,,interp8-vsp-16x16,,inline-sve2,,,kernels/interp8-vsp-16x16/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
+interp8-vsp-32x16-inline-sve2,,,interp8-vsp-32x16,,inline-sve2,,,kernels/interp8-vsp-32x16/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
+interp8-vsp-32x32-inline-sve2,,,interp8-vsp-32x32,,inline-sve2,,,kernels/interp8-vsp-32x32/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
+interp8-vsp-8x8-inline-sve2,,,interp8-vsp-8x8,,inline-sve2,,,kernels/interp8-vsp-8x8/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
 ir-all-7k-n1,2026-08-16,72c8a08,ir-all-7k,bundle,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,,yes,docs/59-handoff-20260816.md
 ir-all-7k-ir-all-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,ir-all-7k,,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 four-arm-n1-ir-dct,2026-08-16,42bd449,ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,-114.5..151,yes,reports/four-arm-n1-100f-20260816.txt

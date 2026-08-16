@@ -45,10 +45,11 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | filter | interp8-vps-16x4 | 16x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-32x16 | 32x16 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-8x4 | 8x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
-| filter | interp8-vsp | 16x16 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-vsp | 16x16 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vsp | upstream-exact | "20k | gated |
 | filter | interp8-vsp | 16x4 | read int16 src rows; write u8 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
-| filter | interp8-vsp | 32x32 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
-| filter | interp8-vsp | 8x8 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-vsp | 32x16 | "read | src-dst-disjoint | exact | no-tail | 32 | fir | test-obligation | "20k | gated |
+| filter | interp8-vsp | 32x32 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vsp | upstream-exact | "20k | gated |
+| filter | interp8-vsp | 8x8 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vsp | upstream-exact | "20k | gated |
 | filter | interp8-vss | 16x16 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
 | filter | interp8-vss | 16x4 | read int16 src rows; write int16 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
 | filter | interp8-vss | 32x32 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |

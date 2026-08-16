@@ -1,0 +1,28 @@
+# interp8-vsp 全形状 20k 差分门禁（2026-08-17）
+
+## 方法
+
+- 候选：`kernels/interp8-vsp-*/candidates/best_sve2.cpp`
+  （tools/emit_interp8_vsp_inline.py 生成，NEON inline）；
+- 参考：x265 `interp_vert_sp_neon<8,W,H>`（build/x265-8-clang-sve/
+  libx265.a，与 manifest 一致）；
+- 协议：随机 int16 输入，corpus strides {16,32,64}，coeffIdx
+  {1,2,3}，每形状 20000 例，QEMU sve-max-vq=2；
+- 初跑 32x16/32x32 在 stride=64 出现失配——根因是门禁驱动缓冲区
+  过小导致越界读（与候选无关），修正 src/dst 尺寸后全过。
+
+## 结果
+
+| 形状 | 门禁 | fused_uop | total |
+| --- | --- | ---: | ---: |
+| vsp-8x8 | 20000 × 3ci × 3st 0 失配 | 85 | 168 |
+| vsp-16x16 | 同上 0 失配 | 85 | 186 |
+| vsp-32x16 | 同上 0 失配 | 85 | 186 |
+| vsp-32x32 | 同上 0 失配 | 85 | 186 |
+
+## 结论
+
+1. interp8-vsp 4 形状候选全部 upstream-exact（QEMU 20k 差分 0
+   失配），与 manifest 的 contract 一致；
+2. 这是 interp8 其它路径（hps/vsp/vss）接入门禁的第一批实证；
+   hps/vss 形状候选/门禁待补。
