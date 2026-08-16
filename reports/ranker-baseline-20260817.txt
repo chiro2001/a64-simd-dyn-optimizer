@@ -1,0 +1,18 @@
+# Ranker baseline (round-0026 P3a, 2026-08-16)
+
+Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 48/101; groups: 5
+
+## A) MCA rank baseline
+
+groups=5 pair_acc=0.859 tau=0.697 top1_regret=1.79 pp
+
+## B) residual OLS (family held-out)
+
+| held-out family | groups | pair_acc | tau | top1_regret pp |
+| --- | --- | ---: | ---: | ---: |
+| dct | 3 | 0.556 | 0.111 | 0.92 |
+| pixel | 2 | 0.980 | 0.909 | 4.00 |
+
+aggregate: groups=5 pair_acc=0.725 tau=0.430 top1_regret=2.15 pp
+
+Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp - NOT met yet on this seed corpus.

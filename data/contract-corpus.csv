@@ -69,12 +69,18 @@ misc-scale2d-2d,2026-08-17,misc,scale2d,2d,neon,neon,128;256,read src; write dst
 misc-sign-1d,2026-08-17,misc,sign,1d,neon,neon,128;256,read src; write dst,none,exact,none,sign,upstream-exact,20k,gated,docs/37/45 representative slice
 misc-ssim-4x4x2,2026-08-17,misc,ssim,4x4x2,neon,neon,128;256,read 2 planes; write stats,none,exact,none,reduce,upstream-exact,20k,gated,docs/37/45 representative slice
 misc-weight-pp-16x16,2026-08-17,misc,weight-pp,16x16,neon,neon,128;256,read src; write dst (weighted),none,exact,none,elementwise,upstream-exact,20k,gated,docs/37/45 representative slice
+pixel-sa8d-8-cover-sa8d8_A,,pixel,sa8d-8,cover-sa8d8_A,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-sa8d-8-cover-sa8d8_B,,pixel,sa8d-8,cover-sa8d8_B,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-sa8d-8-cover-sa8d8_C,,pixel,sa8d-8,cover-sa8d8_C,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
 pixel-sa8d16-16x16,,pixel,sa8d16,16x16,c/neon,neon,128;256,read 2 planes; write int,none,exact,none,hadamard+reduce,upstream-exact,20k vq=1/2,measured,920B kernel +4% (cloud +12% not reproduced)
 pixel-satd-16-16x16,2026-08-16,pixel,satd-16,16x16,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,docs/66 all-shape coverage
 pixel-satd-16x32-16x32,,pixel,satd-16x32,16x32,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-16x4-16x4,2026-08-17,pixel,satd-16x4,16x4,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-16x64-16x64,2026-08-17,pixel,satd-16x64,16x64,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-16x8-16x8,2026-08-16,pixel,satd-16x8,16x8,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,docs/66 all-shape coverage
+pixel-satd-16x8-cover-satd16x8_A,,pixel,satd-16x8,cover-satd16x8_A,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-16x8-cover-satd16x8_B,,pixel,satd-16x8,cover-satd16x8_B,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-16x8-cover-satd16x8_C,,pixel,satd-16x8,cover-satd16x8_C,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
 pixel-satd-32x32-32x32,2026-08-16,pixel,satd-32x32,32x32,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,docs/66 all-shape coverage
 pixel-satd-32x64-32x64,2026-08-17,pixel,satd-32x64,32x64,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-32x8-32x8,2026-08-17,pixel,satd-32x8,32x8,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
@@ -82,9 +88,20 @@ pixel-satd-48x64-48x64,2026-08-17,pixel,satd-48x64,48x64,c/neon,neon,128;256,rea
 pixel-satd-64x48-64x48,2026-08-17,pixel,satd-64x48,64x48,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-64x64-64x64,2026-08-16,pixel,satd-64x64,64x64,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,docs/66 all-shape coverage
 pixel-satd-8-8x8,,pixel,satd-8,8x8,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,IR candidate 77 fused
+pixel-satd-8-cover-satd8_A,,pixel,satd-8,cover-satd8_A,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8-cover-satd8_B,,pixel,satd-8,cover-satd8_B,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8-cover-satd8_C,,pixel,satd-8,cover-satd8_C,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8-cover-satd8_D,,pixel,satd-8,cover-satd8_D,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8-cover-satd8_E,,pixel,satd-8,cover-satd8_E,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
 pixel-satd-8x16-8x16,2026-08-16,pixel,satd-8x16,8x16,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,docs/66 all-shape coverage
+pixel-satd-8x16-cover-satd8x16_A,,pixel,satd-8x16,cover-satd8x16_A,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8x16-cover-satd8x16_B,,pixel,satd-8x16,cover-satd8x16_B,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8x16-cover-satd8x16_C,,pixel,satd-8x16,cover-satd8x16_C,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
 pixel-satd-8x32-8x32,2026-08-17,pixel,satd-8x32,8x32,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
 pixel-satd-8x4-8x4,,pixel,satd-8x4,8x4,c/neon,neon,128;256,read 2 planes; write int,none,exact (hadamard),none,hadamard,upstream-exact,20k,gated,docs/37 mixed shapes
+pixel-satd-8x4-cover-satd8x4_A,,pixel,satd-8x4,cover-satd8x4_A,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8x4-cover-satd8x4_B,,pixel,satd-8x4,cover-satd8x4_B,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
+pixel-satd-8x4-cover-satd8x4_C,,pixel,satd-8x4,cover-satd8x4_C,neon,neon,128,"""read",src-dst-disjoint,exact,no-tail,hadamard,test-obligation,20k-native,gated,"""M2"
 psy-psy-cost-16x16-16x16,2026-08-16,psy,psy-cost-16x16,16x16,neon,neon,128;256,read 2 planes; write int cost,none,exact (hadamard satd),none,hadamard,upstream-exact,20k,gated,docs/47 representative; no outer-link E2E gain
 psy-psy-cost-32x32-32x32,2026-08-16,psy,psy-cost-32x32,32x32,neon,neon,128;256,read 2 planes; write int cost,none,exact (hadamard satd),none,hadamard,upstream-exact,20k,gated,docs/47 representative; no outer-link E2E gain
 psy-psy-cost-64x64-64x64,2026-08-16,psy,psy-cost-64x64,64x64,neon,neon,128;256,read 2 planes; write int cost,none,exact (hadamard satd),none,hadamard,upstream-exact,20k,gated,docs/47 representative; no outer-link E2E gain

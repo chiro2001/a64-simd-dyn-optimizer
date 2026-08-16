@@ -107,8 +107,8 @@ def ols(features, labels):
 def main():
     rows = list(csv.DictReader(open(SRC)))
     used = []
-    KERNEL_METRICS = {"ticks_pct", "ratio_neon_cand", "ratio_vs_sve",
-                      "ratio_vs_neon", "replay_ratio"}
+    KERNEL_METRICS = {"ticks", "ticks_pct", "ratio_neon_cand",
+                      "ratio_vs_sve", "ratio_vs_neon", "replay_ratio"}
     for r in rows:
         lt = r["label_type"]
         if lt not in ("e2e_100f", "e2e_30f") and not (

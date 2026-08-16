@@ -76,12 +76,18 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | misc | sign | 1d | read src; write dst | none | exact | none | 128;256 | sign | upstream-exact | 20k | gated |
 | misc | ssim | 4x4x2 | read 2 planes; write stats | none | exact | none | 128;256 | reduce | upstream-exact | 20k | gated |
 | misc | weight-pp | 16x16 | read src; write dst (weighted) | none | exact | none | 128;256 | elementwise | upstream-exact | 20k | gated |
+| pixel | sa8d-8 | cover-sa8d8_A | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | sa8d-8 | cover-sa8d8_B | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | sa8d-8 | cover-sa8d8_C | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
 | pixel | sa8d16 | 16x16 | read 2 planes; write int | none | exact | none | 128;256 | hadamard+reduce | upstream-exact | 20k vq=1/2 | measured |
 | pixel | satd-16 | 16x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-16x32 | 16x32 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-16x4 | 16x4 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-16x64 | 16x64 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-16x8 | 16x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-16x8 | cover-satd16x8_A | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-16x8 | cover-satd16x8_B | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-16x8 | cover-satd16x8_C | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
 | pixel | satd-32x32 | 32x32 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-32x64 | 32x64 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-32x8 | 32x8 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
@@ -89,9 +95,20 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | pixel | satd-64x48 | 64x48 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-64x64 | 64x64 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8 | 8x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-8 | cover-satd8_A | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8 | cover-satd8_B | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8 | cover-satd8_C | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8 | cover-satd8_D | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8 | cover-satd8_E | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
 | pixel | satd-8x16 | 8x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-8x16 | cover-satd8x16_A | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8x16 | cover-satd8x16_B | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8x16 | cover-satd8x16_C | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
 | pixel | satd-8x32 | 8x32 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-8x4 | 8x4 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-8x4 | cover-satd8x4_A | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8x4 | cover-satd8x4_B | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
+| pixel | satd-8x4 | cover-satd8x4_C | "read | src-dst-disjoint | exact | no-tail | 128 | hadamard | test-obligation | 20k-native | gated |
 | psy | psy-cost-16x16 | 16x16 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | psy | psy-cost-32x32 | 32x32 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | psy | psy-cost-64x64 | 64x64 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
