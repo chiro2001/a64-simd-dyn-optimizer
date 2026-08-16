@@ -382,7 +382,23 @@ SOURCE_OVERRIDES = {
 # SVE2 VL=128 cross-validation (2026-08-16, reports/vl128-best9-950-
 # correctness-20260816.txt) found these best9-950 SVE2 candidates contain
 # VL=256 assumptions and must not be injected on a VL=128 machine.
-VL128_SKIP = {"interp8vpp-16", "interp8vpp-32"}
+VL128_SKIP = {
+    # VL=256-only SVE2 candidates (reports/vl128-best9-950-correctness).
+    "interp8vpp-16", "interp8vpp-32",
+    # sdoth luma_hpp candidates are 1.6-1.7x SLOWER than upstream
+    # interp8_horiz_pp_i8mm on VL=128 (Yitian microbench 2026-08-16;
+    # profile: baseline i8mm 32x32 0.56% -> injected dynopt 0.95%).
+    "interp8-16", "interp8-32",
+}
+
+VL128_SKIP_REASON = {
+    "interp8vpp-16": "VL=128 skip: candidate assumes VL=256",
+    "interp8vpp-32": "VL=128 skip: candidate assumes VL=256",
+    "interp8-16": "VL=128 skip: sdoth candidate 1.6x slower than "
+                  "upstream interp8_horiz_pp_i8mm",
+    "interp8-32": "VL=128 skip: sdoth candidate 1.7x slower than "
+                  "upstream interp8_horiz_pp_i8mm",
+}
 
 # Kernels where the checked-in best_sve1.cpp is a pure-NEON / VL-safe
 # implementation and should be used instead of the VL=256 SVE2 recipe when
@@ -1200,7 +1216,7 @@ def main():
         sources = candidate_sources(kernel, args.isa, args.vl)
         if not sources and args.vl == 128 and kernel in VL128_SKIP:
             report["skipped"].append(
-                [kernel, "VL=128 skip: candidate assumes VL=256"])
+                [kernel, VL128_SKIP_REASON.get(kernel, "VL=128 skip")])
             continue
         if not sources:
             sources = try_generate_source(kernel, args.isa, args.workdir)

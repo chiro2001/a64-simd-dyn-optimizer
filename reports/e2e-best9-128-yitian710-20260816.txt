@@ -76,6 +76,26 @@ the 15% goal, consistent with the dct32/quant/ME entropy analysis.
     full-bundle 20k bit-exact PASS; 100f E2E 25538 -> 25146 ms
     (-1.43%, CI [287,451] ms) - unchanged within noise, no regression.
 
+2026-08-16 interp8-16/32 (luma_hpp sdoth) exclusion:
+  - Microbench vs upstream (benchmarks/interp8_hpp_microbench.cpp,
+    valid phases 1..3, strides 16/32/64):
+      16x16: i8mm 2.12 ticks vs sdoth cand 3.36 (1.58x slower)
+      32x32: i8mm 7.83 ticks vs sdoth cand 13.13 (1.68x slower)
+    Official VL=16 verifiers (NEON reference) pass 20k/0 for both, so
+    the candidates are CORRECT but slower than the runtime i8mm hpp.
+  - perf: baseline interp8_horiz_pp_i8mm<32,32> 0.56% -> injected
+    dynopt 0.95% (the runtime dispatch uses i8mm hpp, not SVE/dotprod).
+  - Action: add interp8-16/32 to VL128_SKIP (docs/32's sdoth
+    overestimate warning confirmed). 100f E2E 25474 -> 25074 ms
+    (-1.53%, CI [279,415] ms significant); opt absolute -72 ms vs
+    previous bundle.
+
+psyCost feasibility (2026-08-16):
+  - benchmarks/psy_cost_microbench.cpp: upstream psyCost_pp_sve2<2>
+    5.42 ticks/call vs fused+hoisted-table candidate 5.50 (-1.5%, no
+    win). calc_energy already uses SVE2 CADD90 throughout; a bit-exact
+    rewrite has no evident structural gain at VL=128. Not pursued.
+
 100-frame confirmation (same host, /tmp/real_1080p_100f_b.yuv, 100f)
 ---------------------------------------------------------------------
 Optimized md5: 21500eb459ae1c60db47eb5abd71227a
@@ -118,6 +138,9 @@ benchmarks/dct16_microbench.cpp - dct16 SVE vs NEON CNTVCT A/B
 benchmarks/satd_sa8d_microbench.cpp - satd/sa8d candidate-vs-upstream
                                   CNTVCT A/B + variant search
 benchmarks/cost_coeff_microbench.cpp - costCoeffNxN variant search
+benchmarks/interp8_hpp_microbench.cpp - luma_hpp i8mm/dotprod/NEON/SVE
+                                  vs sdoth candidate A/B
+benchmarks/psy_cost_microbench.cpp - psyCost candidate feasibility A/B
 tools/gen_verify.py --vl      - override manifest vl_bytes (VL=16 hosts)
 
 Residual
