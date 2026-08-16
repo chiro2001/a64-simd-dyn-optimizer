@@ -49,6 +49,18 @@ Compared with 920B/N1 best9 (-2.10%/-1.62% over NEON baseline), this is
 the first positive SVE2-128 E2E signal; absolute gain remains far below
 the 15% goal, consistent with the dct32/quant/ME entropy analysis.
 
+100-frame confirmation (same host, /tmp/real_1080p_100f_b.yuv, 100f)
+---------------------------------------------------------------------
+Optimized md5: 21500eb459ae1c60db47eb5abd71227a
+Baseline md5:  21500eb459ae1c60db47eb5abd71227a  (bit-exact PASS)
+Timing (ms):
+  baseline: 25572 25535 25614 25603 25684  -> median 25603
+  optimized: 25664 25430 25458 25470 25440  -> median 25458
+  diff = 133 ms (+0.52%), bootstrap95 CI = [-92, 244] ms (includes 0)
+The 100-frame point estimate is positive but not significant; the
+SVE2-128 gain concentrates in the first segment / SAO-heavy content and
+does not extrapolate to a robust long-clip win with this bundle.
+
 Issue found and fixed (2026-08-16)
 ----------------------------------
 First full-bundle E2E FAILED the bit-exact gate:
