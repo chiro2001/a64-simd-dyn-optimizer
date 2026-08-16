@@ -1,0 +1,29 @@
+# 710 interp8 hpp IR 9 形状 E2E（2026-08-16）
+
+## 方法
+
+- 机器：710（Yitian Neoverse-N2，SVE2 VL=128），30f 1080p 单线程
+  （taskset -c 0，注入法 cloud-e2e-inject-710.sh）；
+- 候选：`AGO_IR_FILTER=1` 全 9 形状 interp8 hpp IR（纯 NEON，
+  best_ir.cpp），替换 `pu[LUMA_WxH].luma_hpp`；
+- 协议：scripts/freeze-ablate.sh（AGO_ISA=sve2 AGO_VL=16），5 opt +
+  5 base，paired bootstrap95；diff = base - opt，>0 候选更快。
+
+## 结果（30f）
+
+| base 中位 | opt 中位 | diff | Δ% | bootstrap95 | md5 |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| 9373 | 9217 | 149 | -1.59% | [104,196] ms | 2ce69750c8c2f29cfdfbd3c9ac208cf4 |
+
+bit-exact（opt == base，md5 与 710 历史 30f 冻结哈希一致）。
+
+## 结论
+
+1. 710 上 interp8 IR 9 形状 30f 显著（CI 不跨零）、bit-exact；
+2. 与 920B（30f -1.50% / 100f -1.55%）同向——跨机确认；
+3. 100f 复测待补（后台运行中）。
+
+## 备注
+
+- 修复 freeze-ablate.sh 在 710 上的恢复步骤（third_party/x265 非
+  git 可 checkout 路径时容错），该修复同时保留。

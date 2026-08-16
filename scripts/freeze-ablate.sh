@@ -70,7 +70,8 @@ ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
 echo "[ablate:$LABEL] restoring clean baseline"
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO && python3 /tmp/strip-dynopt-link.py && \
-   git -C third_party/x265 checkout -- source/common/primitives.cpp && \
+   (git -C third_party/x265 checkout -- source/common/primitives.cpp \
+    2>/dev/null || true) && \
    touch third_party/x265/source/common/primitives.cpp && \
    ninja -C build/x265-8-gcc \
      common/CMakeFiles/common.dir/primitives.cpp.o libx265.so.216 \
