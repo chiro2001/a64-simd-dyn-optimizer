@@ -925,12 +925,16 @@ def candidate_sources(kernel, isa, vl=None):
         p = os.path.join(d, "best_ir.cpp")
         if os.path.exists(p):
             return [p]
-    if kernel in ("dct16", "dct32") and vl == 16 and \
+    if kernel in ("dct16", "dct32") and \
+            (vl in (16, 32) or vl is None) and \
             os.environ.get("AGO_IR_DCT") == "1":
         # IR-driven candidates (optimizer/ir neon8/fused8 emitters):
         # same DAG lowered to SVE2 bridge (best_ir_sve8) or pure NEON
         # (best_ir_neon8); instruction-count parity or better than the
         # hand-written fused candidates (docs/65 step 5-7).
+        # vl==32 (920B SVE1 2x256 / 950): best_ir_neon8 is 128-bit
+        # NEON-fixed and VL-safe on any machine; best_ir_sve8 uses
+        # low-lane SVE2 patterns and needs an SVE2-capable ISA.
         if isa == "sve1" and not os.environ.get("AGO_IR_SVE1"):
             # 920B default: pure NEON beats sdot.d (Kunpeng throughput).
             name = "best_ir_neon8.cpp"

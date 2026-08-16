@@ -83,3 +83,13 @@ family 留出在可评家族（dct+entropy）上 **acc=0.958 / tau=0.917 /
 regret=0.33pp——达门**；pixel 留出因训练对 9<10 暂不可评。MCA 基线
 0.931/0.684/1.04pp（tau 差 0.016）。详见
 `reports/ranker-baseline-20260817.txt`。
+
+**同日再更新**：`export_ranker_data` 改为一行多标签都导出（DB 行可
+同时带 E2E 100f/30f 与 kernel metric），并补 dct16 N1 kernel ticks
+（hand-neon -27.3%，docs/64 直接调用微基准）+ 熵族 mca_total；
+训练集 110 行、62 行含特征、18 组（14 组可评）。pairwise-logistic
+family 留出：dct 0.800/0.600、entropy 0.833/0.667、pixel
+1.000/0.735 → aggregate **0.917 / 0.682 / 1.53pp**（acc、regret
+达门；tau 差 0.018——熵族 E2E 标签噪声级（ccn/c1c2 CI 跨零）且
+remain 是特征上的 Pareto 最优点却实测最差，线性模型在该组存在
+固有上界）。MCA 基线 0.869/0.587/1.54pp。

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Export kernel-test-db rows as a flat ranker training set (P3 prep).
 
-One row per machine measurement with a numeric label: E2E 100f % first,
-then 30f %, then numeric kernel metric. Rows marked INVALID are skipped.
+One training row per machine measurement label: a DB row may carry an
+E2E 100f %, an E2E 30f % AND a kernel metric at once; each numeric
+label becomes its own training row (E2E 100f first, then 30f, then
+kernel).  Rows marked INVALID are skipped.
 Output: data/ranker-training.csv.
 
 Usage:
@@ -37,8 +39,7 @@ def main():
             continue
         if not r.get("machine"):
             continue
-        label = None
-        label_type = ""
+        emitted = False
         for ltype, key in (("e2e_100f", "e2e_100f_pct"),
                            ("e2e_30f", "e2e_30f_pct"),
                            ("kernel", "kernel_value")):
@@ -46,17 +47,22 @@ def main():
                     "INVALID" in (r.get("e2e_ci_ms") or "").upper():
                 continue
             v = to_num(r.get(key))
-            if v is not None:
-                label, label_type = v, ltype
-                break
-        if label is None:
-            continue
-        row = {f: (r.get(f) or "") for f in FEATURES}
-        row.update(label=label, label_type=label_type,
-                   kernel_metric=r.get("kernel_metric") or "",
-                   bit_exact=r.get("bit_exact") or "",
-                   report=r.get("report") or "")
-        out.append(row)
+            if v is None:
+                continue
+            row = {f: (r.get(f) or "") for f in FEATURES}
+            row.update(label=v, label_type=ltype,
+                       kernel_metric=r.get("kernel_metric") or "",
+                       bit_exact=r.get("bit_exact") or "",
+                       report=r.get("report") or "")
+            out.append(row)
+            emitted = True
+        if not emitted and r.get("machine") and \
+                any(to_num(r.get(k)) is not None
+                    for k in ("e2e_100f_pct", "e2e_30f_pct",
+                              "kernel_value")):
+            # machine row with no parseable label: keep it out, but
+            # let the count reflect the skip reason in the caller.
+            pass
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     fields = FEATURES + ["label", "label_type", "kernel_metric",
                          "bit_exact", "report"]
