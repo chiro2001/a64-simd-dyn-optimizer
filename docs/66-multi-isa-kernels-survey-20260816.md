@@ -279,6 +279,11 @@ bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
 
 ### 目标矩阵扩展（2026-08-16）
 
+> 注：当前“SVE1/SVE2/SVE2p3”目标是兼容上限门禁（check_isa_level
+> 只拒绝高于目标级别的指令，NEON 是 baseline 放行），**不代表纯
+> SVE 指令**。纯 SVE 发射模式（开关禁 NEON 生成 + 禁 NEON 门禁）已
+> 列入 docs/59 §9 item 4，先落地 dct16/32 再推广。
+
 `dag_pipeline --march` 把 NEON/SVE1/SVE2/SVE2p3 门禁推广到全部家族
 （每个候选按 march 编译，QEMU vq=1/2 差分）：
 
