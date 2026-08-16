@@ -28,8 +28,9 @@
 1. 6 形状（16x16/16x32/16x8/32x16/32x32/8x16）通过完整生产契约
    （含 ext=1），可入库为 gated；x265 的 hps 调用路径始终传 ext=1；
 2. 2 形状（32x8/8x32——恰好是 SVE 变体候选）在
-   `isRowExt=1 + stride=16 + coeffIdx=1` 与参考失配（整块 256 失配）
-   ——候选侧 SVE 行扩展路径 bug，登记为已知问题，修复点
-   `tools/emit_interp8_vps_inline.py` 的 hps SVE/ext 分支；
+   `isRowExt=1` 下与参考全部失配——根因是 SVE 候选显式
+   `(void)isRowExt`（只实现 ext=0 契约，注释自证），非算法细节 bug；
+   两形状 manifest 已改注 `isRowExt==0 only`，**生产路径不可分派**
+   （x265 恒传 ext=1），待实现 ext=1 后再入生产集；
 3. 初跑 32x32 的 112 失配为驱动缓冲区过小假阳性（ext=1 需
    (H+7) 行输出），修正后通过；ext=0 下 8 形状全过。
