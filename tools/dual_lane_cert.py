@@ -80,6 +80,7 @@ static inline svint32_t ref_addp_s32(svint32_t a, svint32_t b)
 }
 
 // ---- group extraction ----
+static volatile int16_t g_pa[8], g_pb[8];
 static inline svint16_t g0_s16(svint16_t x)
 {
     static const uint16_t idx[8] = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -286,6 +287,227 @@ int main()
             }
     }
     printf("rshrn OK\n");
+
+    // 5. dual combine4_s16
+    for (int it = 0; it < 200; it++)
+    {
+        int16_t a[8], b[8], c[8], d[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int16_t)(rand() % 60000 - 30000);
+            b[i] = (int16_t)(rand() % 60000 - 30000);
+            c[i] = (int16_t)(rand() % 60000 - 30000);
+            d[i] = (int16_t)(rand() % 60000 - 30000);
+        }
+        svint16_t da = psv16_dual_load8_safe(a, b);
+        svint16_t db = psv16_dual_load8_safe(c, d);
+        svint16_t got = psv16_dual_combine4_s16(da, db);
+        int16_t wa[8], wb[8];
+        svst1_s16(svptrue_pat_b16(SV_VL8), wa,
+                  psv_combine4_s16(psv_load8(a), psv_load8(c)));
+        svst1_s16(svptrue_pat_b16(SV_VL8), wb,
+                  psv_combine4_s16(psv_load8(b), psv_load8(d)));
+        int16_t g[16];
+        svst1_s16(svptrue_b16(), g, got);
+        for (int i = 0; i < 4; i++)
+            if (g[i] != wa[i] || g[8 + i] != wb[i])
+            {
+                printf("combine4 mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("combine4 OK\n");
+
+    // 6. dual addp4_s32 == per-group ref_addp_s32
+    for (int it = 0; it < 200; it++)
+    {
+        int32_t a[8], b[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int32_t)(rand() % 2000000 - 1000000);
+            b[i] = (int32_t)(rand() % 2000000 - 1000000);
+        }
+        svint32_t da = svld1_s32(svptrue_b32(), a);
+        svint32_t db = svld1_s32(svptrue_b32(), b);
+        svint32_t got = psv16_dual_addp4_s32(da, db);
+        int32_t g[8];
+        svst1_s32(svptrue_b32(), g, got);
+        // g0 = [a0+a1, a2+a3, b0+b1, b2+b3],
+        // g1 = [a4+a5, a6+a7, b4+b5, b6+b7].
+        int32_t want0[4] = {a[0] + a[1], a[2] + a[3],
+                            b[0] + b[1], b[2] + b[3]};
+        int32_t want1[4] = {a[4] + a[5], a[6] + a[7],
+                            b[4] + b[5], b[6] + b[7]};
+        for (int i = 0; i < 4; i++)
+            if (g[i] != want0[i] || g[4 + i] != want1[i])
+            {
+                printf("addp4 mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("addp4 OK\n");
+
+    // 7. dual sdot == per-group psv_sdot
+    for (int it = 0; it < 200; it++)
+    {
+        int16_t a[8], b[8], c[8], d[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int16_t)(rand() % 4000 - 2000);
+            b[i] = (int16_t)(rand() % 4000 - 2000);
+            c[i] = (int16_t)(rand() % 4000 - 2000);
+            d[i] = (int16_t)(rand() % 4000 - 2000);
+        }
+        svint16_t dx = psv16_dual_load8_safe(a, b);
+        svint16_t dy = psv16_dual_load8_safe(c, d);
+        svint64_t got = psv16_sdot(psv_zero_s64(), dx, dy);
+        svint64_t wa = psv_sdot(psv_zero_s64(), psv_load8(a),
+                                psv_load8(c));
+        svint64_t wb = psv_sdot(psv_zero_s64(), psv_load8(b),
+                                psv_load8(d));
+        int64_t g[4], h[4], k[4];
+        svst1_s64(svptrue_b64(), g, got);
+        svst1_s64(svptrue_b64(), h, wa);
+        svst1_s64(svptrue_b64(), k, wb);
+        for (int i = 0; i < 2; i++)
+            if (g[i] != h[i] || g[2 + i] != k[i])
+            {
+                printf("sdot mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("sdot OK\n");
+
+    // 8. dup8/dup4: both groups equal the 8-lane load
+    for (int it = 0; it < 200; it++)
+    {
+        int16_t a[8];
+        for (int i = 0; i < 8; i++)
+            a[i] = (int16_t)(rand() % 60000 - 30000);
+        svint16_t got = psv16_dup8_s16(a);
+        int16_t g[16], w[8];
+        svst1_s16(svptrue_b16(), g, got);
+        svst1_s16(svptrue_pat_b16(SV_VL8), w, psv_load8(a));
+        for (int i = 0; i < 8; i++)
+            if (g[i] != w[i] || g[8 + i] != w[i])
+            {
+                printf("dup8 mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    for (int it = 0; it < 200; it++)
+    {
+        int32_t a[4];
+        for (int i = 0; i < 4; i++)
+            a[i] = (int32_t)(rand() % 2000000 - 1000000);
+        svint32_t got = psv16_dup4_s32(a);
+        int32_t g[8], w[4];
+        svst1_s32(svptrue_b32(), g, got);
+        svst1_s32(svptrue_pat_b32(SV_VL4), w, psv_load4_s32(a));
+        for (int i = 0; i < 4; i++)
+            if (g[i] != w[i] || g[4 + i] != w[i])
+            {
+                printf("dup4 mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("dup8/dup4 OK\n");
+
+    // 9. pairwise_add_s32 == per-group ref_addp_s32
+    for (int it = 0; it < 200; it++)
+    {
+        int32_t a[8], b[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int32_t)(rand() % 2000000 - 1000000);
+            b[i] = (int32_t)(rand() % 2000000 - 1000000);
+        }
+        svint32_t da = svld1_s32(svptrue_b32(), a);
+        svint32_t db = svld1_s32(svptrue_b32(), b);
+        svint32_t got = psv16_pairwise_add_s32(da, db);
+        svint32_t want = ref_addp_s32(da, db);
+        int32_t g[8], w[8];
+        svst1_s32(svptrue_b32(), g, got);
+        svst1_s32(svptrue_b32(), w, want);
+        for (int i = 0; i < 8; i++)
+            if (g[i] != w[i])
+            {
+                printf("pairwise_add mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("pairwise_add OK\n");
+
+    // 10. quad_pack / combine_g0 layout
+    for (int it = 0; it < 200; it++)
+    {
+        int16_t a[16], b[16];
+        for (int i = 0; i < 16; i++)
+        {
+            a[i] = (int16_t)(rand() % 60000 - 30000);
+            b[i] = (int16_t)(rand() % 60000 - 30000);
+        }
+        svint16_t da = svld1_s16(svptrue_b16(), a);
+        svint16_t db = svld1_s16(svptrue_b16(), b);
+        svint16_t q = psv16_quad_pack_s16(da, db);
+        int16_t g[16];
+        svst1_s16(svptrue_b16(), g, q);
+        // lanes: [a.g0(0-3), a.g1(4-7), b.g0(8-11), b.g1(12-15)]
+        for (int i = 0; i < 4; i++)
+            if (g[i] != a[i] || g[4 + i] != a[8 + i] ||
+                g[8 + i] != b[i] || g[12 + i] != b[8 + i])
+            {
+                printf("quad_pack mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    for (int it = 0; it < 200; it++)
+    {
+        int32_t a[8], b[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int32_t)(rand() % 2000000 - 1000000);
+            b[i] = (int32_t)(rand() % 2000000 - 1000000);
+        }
+        svint32_t da = svld1_s32(svptrue_b32(), a);
+        svint32_t db = svld1_s32(svptrue_b32(), b);
+        svint32_t got = psv16_combine_g0_s32(da, db);
+        int32_t g[8];
+        svst1_s32(svptrue_b32(), g, got);
+        for (int i = 0; i < 4; i++)
+            if (g[i] != a[i] || g[4 + i] != b[i])
+            {
+                printf("combine_g0 mismatch it=%d lane=%d\n", it, i);
+                return 1;
+            }
+    }
+    printf("quad_pack/combine_g0 OK\n");
+
+    // 11. dual_store4 footprint: pa[0..3] = v lanes 0-3,
+    //     pb[0..3] = v lanes 8-11.
+    for (int it = 0; it < 200; it++)
+    {
+        int16_t a[8], b[8];
+        for (int i = 0; i < 8; i++)
+        {
+            a[i] = (int16_t)(rand() % 60000 - 30000);
+            b[i] = (int16_t)(rand() % 60000 - 30000);
+        }
+        svint16_t dual = psv16_dual_load8_safe(a, b);
+        for (int i = 0; i < 8; i++)
+            g_pa[i] = g_pb[i] = 0;
+        psv16_dual_store4_s16((int16_t*)g_pa, (int16_t*)g_pb, dual);
+        __asm__ __volatile__("" ::: "memory");
+        for (int i = 0; i < 4; i++)
+            if (g_pa[i] != a[i] || g_pb[i] != b[i])
+            {
+                printf("store4 footprint mismatch it=%d lane=%d: "
+                       "pa=%d/%d pb=%d/%d\n", it, i, g_pa[i], a[i],
+                       g_pb[i], b[i]);
+                return 1;
+            }
+    }
+    printf("store4 footprint OK\n");
 
     printf("CERT PASS\n");
     return 0;
