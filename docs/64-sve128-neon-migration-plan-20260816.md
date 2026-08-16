@@ -64,6 +64,25 @@ VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
 4. 下一步：dct32 继续叠加 k 族结构轴（k0_epack/k2k4 的 8-lane
    版），以及 NEON lowering（920B/N1）。
 
+### 3.1.1 NEON lowering（2026-08-16 已落地）
+
+`tools/emit_dct16_vl128.py --isa neon` / `tools/emit_dct32_vl128.py
+--isa neon`：fused quarter 的 sdot.d 换成 NEON vmull/vmlal + vpadd
+树，无任何 SVE 指令（objdump 验证 0 sdot），`-march=armv8.2-a+dotprod`
+编译。门禁：200k 差分 0 失配 + TestBenchLite 5-seed PASS（QEMU vq=1）。
+候选：`kernels/dct16/candidates/best_neon_vl128.cpp`（1946 fused_uop）、
+`kernels/dct32/candidates/best_neon_vl128.cpp`（12245）。
+注入：`AGO_NEON_DCT=1` + `--isa sve1 --vl 16` 选中（N1 用）；默认
+sdot.d 版在 `--isa sve1|sve2 --vl 16` 下选中（920B/710/950 用）。
+
+### 3.1.2 N1 实机（2026-08-16）
+
+Ampere 类 NEON-only（ENABLE_SVE=OFF），LD_PRELOAD bundle
+（`AGO_NEON_DCT=1 --isa sve1 --vl 16 --opt=-O3`）：
+- 槽位替换确认，契约内（[-255,255]）200 轮差分 0 失配；
+- kernel 级周期：dct16 11→8（**-27.3%**）、dct32 74→73（-1.3%）；
+- 30f E2E 3+3：12129→11996ms 中位（**-1.10%**），bit-exact md5 一致。
+
 ### 3.2 NEON（920B/N1）
 
 1. 为 op DAG 增加 **NEON lowering**（canonical dot 表已列

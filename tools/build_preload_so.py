@@ -845,6 +845,15 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel in ("dct16", "dct32") and vl == 16 and \
+            os.environ.get("AGO_NEON_DCT") == "1":
+        # Pure-NEON fused quarter (best_neon_vl128.cpp): vmull/vmlal,
+        # no SVE at all - required on NEON-only hosts (N1). The sdot.d
+        # variant below needs SVE1+dotprod (920B/710), so this is an
+        # explicit opt-in per machine.
+        p = os.path.join(d, "best_neon_vl128.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "dct16" and isa == "sve2" and (vl is None or vl == 32):
         # Op-backend DCT16 candidate (VL=256, upstream-exact): 895
         # fused_uop, 0 mismatch, 0 scatter, TestBenchLite 5-seed PASS
@@ -871,15 +880,6 @@ def candidate_sources(kernel, isa, vl=None):
         # dct16 1392 / dct32 8421 fused_uop (-O3), 20k+200k diff 0,
         # TestBenchLite 5-seed PASS at QEMU sve-max-vq=1.
         p = os.path.join(d, "best_sve2_vl128.cpp")
-        if os.path.exists(p):
-            return [p]
-    if kernel in ("dct16", "dct32") and vl == 16 and \
-            os.environ.get("AGO_NEON_DCT") == "1":
-        # Pure-NEON fused quarter (best_neon_vl128.cpp): vmull/vmlal,
-        # no SVE at all - required on NEON-only hosts (N1). The sdot.d
-        # variant above needs SVE1+dotprod (920B/710), so this is an
-        # explicit opt-in per machine.
-        p = os.path.join(d, "best_neon_vl128.cpp")
         if os.path.exists(p):
             return [p]
     if vl == 16:

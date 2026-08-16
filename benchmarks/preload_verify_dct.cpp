@@ -99,8 +99,10 @@ int main(int argc, char** argv)
     int16_t src[64 * 64], want[64 * 64], got[64 * 64];
     for (int it = 0; it < 200; it++)
     {
+        // Contract range [-255, 255] (8-bit residuals); larger inputs can
+        // wrap differently between NEON asm and intrinsic code.
         for (int i = 0; i < 64 * 64; i++)
-            src[i] = (int16_t)((i * 37 + it * 131 + 5) & 1023) - 512;
+            src[i] = (int16_t)((i * 37 + it * 131 + 5) & 511) - 256;
         std::memset(want, 0, sizeof(want));
         std::memset(got, 0, sizeof(got));
         o16(src, want, 16);
