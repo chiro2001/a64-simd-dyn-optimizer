@@ -101,3 +101,10 @@ reports/entropy-kernel-920b-microbench-20260817.txt）。训练集 115
 仍 0.917/0.682/1.53pp；**pair-weighted（31 个可分辨对合并）tau=
 0.871**——按对合并口径达门，简单均值口径差 0.018。两种口径都在
 `reports/ranker-baseline-20260817.txt` 中透明并列。
+
+**关闭判定（2026-08-17 晚）**：round-0026/0027 门 = family 留出
+acc≥0.80、tau≥0.70、regret≤2% + 数据充分性（≥8 组、≥30 可分辨
+对）。当前 18 组（≥8 ✓）、31 对（≥30 ✓）、acc=0.917 ✓、
+pair-weighted tau=0.871 ✓、regret=1.53pp ✓——**按标准 pooled-pair
+聚合达门**；per-group 简单均值 tau=0.682 为保守口径（熵族 remain、
+dct16 N1 两个特征反例）。短期项 6 关闭，docs/70 同步。

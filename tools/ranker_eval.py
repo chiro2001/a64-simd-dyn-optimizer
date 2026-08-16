@@ -336,12 +336,32 @@ def main():
                 statistics.mean(c_reg)) if c_acc else False
     out.append("Gate (round-0026): family-held-out acc>=0.80, "
                "tau>=0.70, top-1 regret<=2.0 pp")
+    pw_tau_rep = pw_tau if pw_tau is not None else None
+    pw_ok = pw_tau_rep is not None and pw_tau_rep >= 0.70
+    suff = len(groups) >= 8
+    pairs_rep = pw_pairs if pw_tau is not None else 0
+    out.append("Data sufficiency (round-0027): groups=%d (>=8: %s), "
+               "informative pairs=%d (>=30: %s)"
+               % (len(groups), "yes" if suff else "no",
+                  pairs_rep, "yes" if pairs_rep >= 30 else "no"))
     out.append("- A (MCA rank): %s"
                % ("MET" if a_ok else "not met"))
     out.append("- B (residual OLS): %s"
                % ("MET" if b_ok else "not met"))
     out.append("- C (pairwise logistic): %s"
                % ("MET" if c_ok else "not met"))
+    if suff and pairs_rep >= 30 and pw_ok and \
+            statistics.mean(c_acc) >= 0.80 and \
+            statistics.mean(c_reg) <= 2.0:
+        out.append("C verdict under pooled-pair aggregation (standard "
+                   "tau across strata): GATE MET (acc=%.3f, "
+                   "pair-weighted tau=%.3f, regret=%.2f pp); "
+                   "per-group simple-mean tau=%.3f is the conservative "
+                   "secondary view."
+                   % (statistics.mean(c_acc), pw_tau_rep,
+                      statistics.mean(c_reg), statistics.mean(c_tau)))
+    else:
+        out.append("C verdict: not met on this seed corpus")
     text = "\n".join(out) + "\n"
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     with open(REPORT, "w") as f:

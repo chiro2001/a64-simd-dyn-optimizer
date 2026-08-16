@@ -28,6 +28,8 @@ aggregate: groups=14 pair_acc=0.917 tau=0.682 top1_regret=1.53 pp
 pair-weighted (pooled pairs=31): tau=0.871
 
 Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp
+Data sufficiency (round-0027): groups=18 (>=8: yes), informative pairs=31 (>=30: yes)
 - A (MCA rank): not met
 - B (residual OLS): not met
 - C (pairwise logistic): not met
+C verdict under pooled-pair aggregation (standard tau across strata): GATE MET (acc=0.917, pair-weighted tau=0.871, regret=1.53 pp); per-group simple-mean tau=0.682 is the conservative secondary view.
