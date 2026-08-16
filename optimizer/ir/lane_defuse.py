@@ -182,3 +182,24 @@ def defuse_report(ops: List[Op]) -> Dict:
         "issues": issues,
         "ok": not issues,
     }
+
+
+def annotate(ops: List[Op]) -> List[Op]:
+    """Return ops with explicit lane edges attached as attributes.
+
+    Each op gains `n_out` (output lane count) and `lane_in` (per input
+    value, per output lane: list of consumed input lane indices), making
+    the lane-granular def-use edges part of the DAG representation.
+    """
+    out = []
+    for op in ops:
+        try:
+            n_out, im = lane_semantics(op)
+        except ValueError:
+            n_out, im = 0, ()
+        attrs = dict(op.attrs)
+        attrs["n_out"] = n_out
+        attrs["lane_in"] = [[list(l) for l in m] for m in im]
+        out.append(Op(op.op_id, op.kind, op.tile_id, op.out, op.inputs,
+                      attrs))
+    return out

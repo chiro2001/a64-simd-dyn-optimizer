@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
+from lane_defuse import annotate  # noqa: E402
 from op_ir import Op
 from width_expr import PERMUTES as WIDTH_PERMUTES, resolve as resolve_permute
 
@@ -275,7 +276,7 @@ def lower_pass1_fused8(shift: int = 4) -> List[Op]:
                          "index": "32*k + 4*g",
                          "lanes": tuple((1, k, r) for r in rows),
                          "topology": "contiguous", "n_lanes": 4})
-    return b.ops
+    return annotate(b.ops)
 
 
 def lower_pass2_fused8(shift: int = 11) -> List[Op]:
@@ -401,7 +402,7 @@ def lower_pass2_fused8(shift: int = 11) -> List[Op]:
                          "index": "32*k + 4*g",
                          "lanes": tuple((2, k, r) for r in rows),
                          "topology": "contiguous", "n_lanes": 4})
-    return b.ops
+    return annotate(b.ops)
 
 
 def fused8_provenance(ops: List[Op], vl_bits: int = 128) -> Dict:

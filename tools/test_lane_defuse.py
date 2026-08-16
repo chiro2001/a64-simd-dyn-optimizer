@@ -21,6 +21,8 @@ def main():
             ("dct32 pass1", d32_p1()),
             ("dct32 pass2", d32_p2()),
             ("dct32 full", d32_p1() + d32_p2())):
+        assert all("n_out" in o.attrs and "lane_in" in o.attrs
+                   for o in ops), "missing explicit lane attrs (%s)" % tag
         r = defuse_report(ops)
         assert r["ok"], (tag, r["issues"][:5])
         assert r["stores"] > 0

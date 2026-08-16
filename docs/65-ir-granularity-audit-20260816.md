@@ -169,4 +169,7 @@ zip1q/zip2q/rev64q、vget/widen_add、dot 4-term 分组、reduce/padd
 
 测试：`tools/test_lane_defuse.py`（6 个正向 + 1 个负向）。这是
 「元素为最小单元」从“lane 元数据”推进到“可验证的 lane 级 def-use
-证明”；下一步可把这些映射写回 op attrs 作为显式边。
+证明”。**映射已写回 op attrs 作为显式边**：四个 fused8 构建器
+（dct16/dct32 的 pass1/pass2）在返回前调用 `lane_defuse.annotate`，
+每个 op 携带 `n_out` 与 `lane_in`（每输入值、每输出 lane 的消费
+lane 列表）——DAG 自描述，无需重新推导；发射器输出逐字节不变。
