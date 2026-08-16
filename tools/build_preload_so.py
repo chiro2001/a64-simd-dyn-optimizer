@@ -846,6 +846,16 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
     if kernel in ("dct16", "dct32") and vl == 16 and \
+            os.environ.get("AGO_IR_DCT") == "1":
+        # IR-driven candidates (optimizer/ir neon8/fused8 emitters):
+        # same DAG lowered to SVE2 bridge (best_ir_sve8) or pure NEON
+        # (best_ir_neon8); instruction-count parity or better than the
+        # hand-written fused candidates (docs/65 step 5-7).
+        name = "best_ir_sve8.cpp" if isa == "sve2" else "best_ir_neon8.cpp"
+        p = os.path.join(d, name)
+        if os.path.exists(p):
+            return [p]
+    if kernel in ("dct16", "dct32") and vl == 16 and \
             os.environ.get("AGO_NEON_DCT") == "1":
         # Pure-NEON fused quarter (best_neon_vl128.cpp): vmull/vmlal,
         # no SVE at all - required on NEON-only hosts (N1). The sdot.d

@@ -138,3 +138,16 @@ IR 版在 fused_uop 上优于手写基线（SVE2 -23、NEON -335），stack 略�
 链路全部落地并通过黄金标准门禁。调试中发现的关键差异：dct32 的 k2
 族常量是 `g_t32[k][0..7]`（GT32A），不是 dct16 的 t8_odd；k4 族常量
 表与 k2 的 s32 表需区分（GT32S32A4）。
+
+**IR 生成候选实机复核（2026-08-16）**：`AGO_IR_DCT=1` 接入注入链
+（`build_preload_so.py` 选 `best_ir_sve8/neon8.cpp`），两机 LD_PRELOAD
+A/B：
+
+| 机器 | 目标 | kernel 级（原→IR） | 30f E2E 中位 | bit-exact |
+| --- | --- | --- | --- | --- |
+| N1 | 纯 NEON | dct16 -18.2%、dct32 -6.9% | ≈0（噪声内） | md5 一致 |
+| 710 | SVE2 | dct16 -15.4%、dct32 **-13.6%**（手写 -6.8%） | ≈0（同手写） | md5 一致 |
+
+结论：IR 驱动候选实机 bit-exact，kernel 周期与手写同级或更优（710
+dct32 翻倍），E2E 与手写候选在噪声内一致——「自动重 lowering」链路
+从计数对齐推进到实机等效。

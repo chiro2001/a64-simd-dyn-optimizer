@@ -709,7 +709,7 @@ def lower_pass2_fused8(shift: int = 10) -> List[Op]:
                          "lanes": tuple((2, k, r) for r in rows),
                          "topology": "contiguous", "n_lanes": 4})
         for k in K2_K:
-            tid = "p2.k2.k%d.g%d" % (k, g)
+            tid = "p2.f2.k%d.g%d" % (k, g)
             b.new("load", tid, "c0_%d_%d" % (k, g),
                   attrs={"arch": "neon-const", "elem": "s32",
                          "const": "GT16_S32[%d]" % ((k - 2) // 4)})
