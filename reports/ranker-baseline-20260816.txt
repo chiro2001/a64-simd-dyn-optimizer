@@ -1,0 +1,15 @@
+# Ranker baseline (round-0026 P3a, 2026-08-16)
+
+Data: data/ranker-training.csv; rows with e2e label and MCA features: 0/36; groups (family,machine,label): 0
+
+## A) MCA rank baseline
+
+no evaluable groups: need >=2 candidates with MCA + E2E label per (family, machine, label_type)
+
+## B) residual OLS (family held-out)
+
+| held-out family | groups | pair_acc | tau | top1_regret pp |
+| --- | --- | ---: | ---: | ---: |
+no held-out groups evaluable on this seed corpus
+
+Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp - NOT met yet on this seed corpus.

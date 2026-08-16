@@ -1,5 +1,12 @@
 # 710 interp8 hpp IR 9 形状 E2E（2026-08-16）
 
+> **重要修正（2026-08-16 晚，交错复核后）**：下表为顺序计时，
+> **结论撤回**。三臂交错（base/best9/interp8-only，10 轮 100f，
+> LD_PRELOAD 在 710 有效，全部 bit-exact）：
+> best9 vs base -0.09%（CI [-101,+37.5]）、interp8-only vs base
+> -0.08%（CI [-90,+119]）、interp8-only vs best9 +0.06%（CI
+> [-31,+91.5]）——全部中性。interp8 hpp IR 在 710 无收益、无回归。
+
 ## 方法
 
 - 机器：710（Yitian Neoverse-N2，SVE2 VL=128），30f 1080p 单线程
@@ -20,8 +27,8 @@
 
 ## 结论
 
-1. 710 上 interp8 IR 9 形状 30f/100f 均显著（CI 不跨零）、bit-exact；
-2. 与 920B（30f -1.50% / 100f -1.55%）同向——跨机双段确认。
+1. **撤回**：顺序计时结论不成立；710 交错下 interp8 IR 中性。
+2. 结合 920B（-3.08% 回归）：interp8 hpp IR **不发布**。
 
 ## 备注
 
