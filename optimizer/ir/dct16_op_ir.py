@@ -22,6 +22,7 @@ from __future__ import annotations
 from typing import Dict, List, Tuple
 
 from op_ir import Op
+from width_expr import PERMUTES as WIDTH_PERMUTES, resolve as resolve_permute
 
 
 # DCT16 k families (16x16): odd k=1..15, k2=2,6,10,14, k4=4,12, k0=0,8.
@@ -419,6 +420,179 @@ def lower_pass2_upstream(shift: int = 10) -> List[Op]:
                   attrs={"arch": "neon", "base": "dst",
                          "index": "16*k + 4*g",
                          "lanes": tuple((2, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+    return b.ops
+
+
+def lower_pass1_fused8(shift: int = 3) -> List[Op]:
+    """8-lane fused quarter pass1 (VL=128 / NEON baseline).
+
+    Mirrors tools/emit_dct16_vl128.py --pass1 fused:
+      - rowpair E/O leaf: NEON 8-lane loads, rev16 on the high half only
+        (width_expr: rev16 at 8 lanes/segment = identity(low) + rev8(hi));
+      - combined s16 EO per rowpair for the k2 sdot;
+      - EEE/EEO s32 rowpair chain (same as pass2 upstream);
+      - odd k: NEON-bridge sdot.d over O (8 terms), reduce-narrow, store;
+      - k2 (2,6,10,14): sdot.d over combined EO (4 terms), pair-narrow;
+      - even k (0,4,8,12): vmul/vpadd/vrshrn over EEE/EEO (neon_mul
+        carries the 4 coefficient terms for provenance).
+    """
+    b = _Builder("d16")
+
+    def _g(k, j):
+        return "G[%d][%d]" % (k, j)
+
+    o16: Dict[int, str] = {}
+    eo_comb: Dict[int, str] = {}
+    eee: Dict[int, str] = {}
+    eeo: Dict[int, str] = {}
+    for i in range(0, 16, 2):
+        tid = "p1.leaf.rowpair%d" % (i // 2)
+        s: Dict[int, Tuple[str, str]] = {}
+        E: Dict[str, str] = {}
+        for r in (i, i + 1):
+            rtid = "p1.leaf.row%d" % r
+            lo = b.new("load", rtid, "s%d_lo" % r,
+                       attrs={"arch": "neon", "elem": "s16", "row": r,
+                              "half": "lo", "base": "src",
+                              "index": "r*stride"})
+            hi = b.new("load", rtid, "s%d_hi_raw" % r,
+                       attrs={"arch": "neon", "elem": "s16", "row": r,
+                              "half": "hi", "base": "src",
+                              "index": "r*stride+8"})
+            hi_r = b.new("permute", rtid, "s%d_hi" % r, (hi.out,),
+                         attrs={"kind": "rev16", "arch": "neon",
+                                "idx": "rev8", "seg": 1})
+            s[r] = (lo.out, hi_r.out)
+            o16[r] = b.new("sub", rtid, "O_%d" % r, (lo.out, hi_r.out),
+                           attrs={"elem": "s16", "arch": "neon"}).out
+            for half, tag in (("lo", "0"), ("hi", "1")):
+                a = b.new("vget", rtid, "g%s_%d_a" % (tag, r), (lo.out,),
+                          attrs={"which": half, "elem": "s16"})
+                c = b.new("vget", rtid, "g%s_%d_c" % (tag, r),
+                          (hi_r.out,), attrs={"which": half,
+                                               "elem": "s16"})
+                E["%s%d" % (tag, r)] = b.new(
+                    "widen_add", rtid, "E%s_%d" % (tag, r), (a.out, c.out),
+                    attrs={"elem": "s32"}).out
+        p = i // 2
+        eo_a = b.new("sub", tid, "EOa_%d" % p,
+                     (E["0%d" % i],
+                      b.new("permute", tid, "Er_%d" % i, (E["1%d" % i],),
+                            attrs={"kind": "rev32", "arch": "neon"}).out),
+                     attrs={"elem": "s32", "arch": "neon"}).out
+        eo_b = b.new("sub", tid, "EOb_%d" % p,
+                     (E["0%d" % (i + 1)],
+                      b.new("permute", tid, "Er_%d" % (i + 1),
+                            (E["1%d" % (i + 1)],),
+                            attrs={"kind": "rev32", "arch": "neon"}).out),
+                     attrs={"elem": "s32", "arch": "neon"}).out
+        nn_a = b.new("neon_narrow4", tid, "EOn_%d_a" % p, (eo_a,),
+                     attrs={"mode": "vmovn"})
+        nn_b = b.new("neon_narrow4", tid, "EOn_%d_b" % p, (eo_b,),
+                     attrs={"mode": "vmovn"})
+        eo_comb[p] = b.new("neon_combine", tid, "EO_%d" % p,
+                           (nn_a.out, nn_b.out),
+                           attrs={"elem": "s16", "n_lanes": 8}).out
+        ee_i = b.new("add", tid, "EE_%d" % i,
+                     (E["0%d" % i],
+                      b.new("permute", tid, "EEr_%d" % i, (E["1%d" % i],),
+                            attrs={"kind": "rev32", "arch": "neon"}).out),
+                     attrs={"elem": "s32", "arch": "neon"})
+        ee_j = b.new("add", tid, "EE_%d" % (i + 1),
+                     (E["0%d" % (i + 1)],
+                      b.new("permute", tid, "EEr_%d" % (i + 1),
+                            (E["1%d" % (i + 1)],),
+                            attrs={"kind": "rev32", "arch": "neon"}).out),
+                     attrs={"elem": "s32", "arch": "neon"})
+        t0 = b.new("permute", tid, "t0_%d" % i, (ee_i.out, ee_j.out),
+                   attrs={"kind": "zip1q", "arch": "neon"})
+        z2 = b.new("permute", tid, "z2_%d" % i, (ee_i.out, ee_j.out),
+                   attrs={"kind": "zip2q", "arch": "neon"})
+        t1 = b.new("permute", tid, "t1_%d" % i, (z2.out,),
+                   attrs={"kind": "rev64q", "arch": "neon"})
+        eee[p] = b.new("add", tid, "EEE_%d" % p, (t0.out, t1.out),
+                       attrs={"elem": "s32", "arch": "neon",
+                              "lane_owner": "partial"}).out
+        eeo[p] = b.new("sub", tid, "EEO_%d" % p, (t0.out, t1.out),
+                       attrs={"elem": "s32", "arch": "neon",
+                              "lane_owner": "partial"}).out
+
+    for g in range(4):
+        rows = tuple(4 * g + m for m in range(4))
+        for k in ODD_K:
+            tid = "p1.odd.k%d.g%d" % (k, g)
+            b.new("load", tid, "ck_%d_%d" % (k, g),
+                  attrs={"arch": "neon-const", "elem": "s16",
+                         "const": "GT16[%d]" % k})
+            dots = []
+            for r in rows:
+                dots.append(b.new(
+                    "dot_segment", tid, "t_%d_%d" % (k, r), (o16[r],),
+                    attrs={"arch": "neon-bridge", "acc_bits": 64,
+                           "lane_owner": "partial",
+                           "terms": tuple(_g(k, j) for j in range(8)),
+                           "const_src": "GT16[%d]" % k}).out)
+            nn = b.new("neon_reduce_narrow", tid, "nn_%d_%d" % (k, g),
+                       tuple(dots),
+                       attrs={"shift": shift, "mode": "rshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((1, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+        for k in K2_K:
+            tid = "p1.f2.k%d.g%d" % (k, g)
+            b.new("load", tid, "ck_%d_%d" % (k, g),
+                  attrs={"arch": "neon-const", "elem": "s16",
+                         "const": "T8ODD16[%d]" % ((k - 2) // 4)})
+            dots = [b.new(
+                "dot_segment", tid, "t_%d_%d" % (k, p), (eo_comb[p],),
+                attrs={"arch": "neon-bridge", "acc_bits": 64,
+                       "lane_owner": "partial",
+                       "terms": tuple(_g(k, j) for j in range(4)),
+                       "const_src": "T8ODD16[%d]" % ((k - 2) // 4)}).out
+                for p in (2 * g, 2 * g + 1)]
+            nn = b.new("neon_reduce_narrow", tid, "nn_%d_%d" % (k, g),
+                       tuple(dots),
+                       attrs={"shift": shift, "mode": "pair"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((1, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+        for k, fam, use_eee in ((0, 0, True), (4, 1, False),
+                                (8, 2, True), (12, 3, False)):
+            tid = "p1.k%d.k%d.g%d" % (k, fam, g)
+            src = eee if use_eee else eeo
+            pa, pb = 2 * g, 2 * g + 1
+            b.new("load", tid, "c_%d_%d_%d" % (k, fam, g),
+                  attrs={"arch": "neon-const", "elem": "s32",
+                         "const": "T8E[%d]" % fam})
+            terms = tuple(_g(k, j) for j in range(4))
+            if k == 0:
+                pp = b.new("neon_padd", tid, "pp_%d_%d" % (k, g),
+                           (src[pa], src[pb]), attrs={}).out
+                m = b.new("neon_mul", tid, "m_%d_%d" % (k, g), (pp,),
+                          attrs={"const_src": "T8E[%d]" % fam,
+                                 "terms": terms}).out
+            else:
+                m0 = b.new("neon_mul", tid, "m0_%d_%d" % (k, g),
+                           (src[pa],),
+                           attrs={"const_src": "T8E[%d]" % fam,
+                                  "terms": terms}).out
+                m1 = b.new("neon_mul", tid, "m1_%d_%d" % (k, g),
+                           (src[pb],),
+                           attrs={"const_src": "T8E[%d]" % fam,
+                                  "terms": terms}).out
+                m = b.new("neon_padd", tid, "m_%d_%d" % (k, g),
+                          (m0, m1), attrs={}).out
+            nn = b.new("neon_narrow", tid, "nn_%d_%d" % (k, g), (m,),
+                       attrs={"shift": shift, "mode": "rshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((1, k, r) for r in rows),
                          "topology": "contiguous", "n_lanes": 4})
     return b.ops
 
@@ -1060,18 +1234,11 @@ def dct16_upstream_provenance(ops: List[Op]) -> Dict:
                     issues.append("duplicate output lane %r (%s vs %s)"
                                   % (lane, stores[lane].op_id, op.op_id))
                 stores[lane] = op
-        if op.kind == "dot_segment":
+        if op.kind in ("dot_segment", "dot_accum", "neon_mul"):
             tid = op.tile_id
             parts = tid.split(".")
             pass_id = int(parts[0][1:])
             # tile shape: p<pass>.odd.k<k>.g<g> (or p<pass>.<fam>.k<k>...)
-            k = next(int(p[1:]) for p in parts if p.startswith("k"))
-            dot_terms.setdefault((pass_id, k), set()).update(
-                op.attrs.get("terms", ()))
-        if op.kind == "dot_accum":
-            tid = op.tile_id
-            parts = tid.split(".")
-            pass_id = int(parts[0][1:])
             k = next(int(p[1:]) for p in parts if p.startswith("k"))
             dot_terms.setdefault((pass_id, k), set()).update(
                 op.attrs.get("terms", ()))
@@ -1109,6 +1276,45 @@ def dct16_upstream_provenance(ops: List[Op]) -> Dict:
         "expected_lanes": len(expected),
         "coverage": len(stores) / len(expected) if expected else 0.0,
         "scatter_stores": scatter,
+        "issues": issues,
+        "ok": not issues,
+    }
+
+
+def dct16_width_provenance(ops: List[Op], vl_bits: int = 128) -> Dict:
+    """Check that every named permute resolves to per-segment lane tables
+    at the requested width (width_expr), i.e. the DAG is width-independent
+    for the permute layer."""
+    issues: List[str] = []
+    resolved: Dict[str, List] = {}
+    for op in ops:
+        if op.kind != "permute":
+            continue
+        idx = op.attrs.get("idx")
+        if idx and idx in WIDTH_PERMUTES:
+            try:
+                tables = resolve_permute(idx, vl_bits)
+                resolved.setdefault(idx, []).append(tables)
+            except (KeyError, ValueError) as e:
+                issues.append("%s: permute %s unresolved at VL=%d: %s"
+                              % (op.op_id, idx, vl_bits, e))
+        elif op.attrs.get("kind") in ("rev32", "rev64q") and \
+                idx not in WIDTH_PERMUTES:
+            # rev32 on 4-lane s32 and rev64q on 2-lane s64 are NEON
+            # fixed-128 permutes (width_expr covers rev32/rev64 names).
+            if op.attrs.get("kind") == "rev32":
+                resolved.setdefault("rev32", []).append(
+                    resolve_permute("rev32", vl_bits))
+    if vl_bits == 128:
+        # 8-lane fused leaf: high-half rev16 must decompose to rev8.
+        rev16_ops = [o for o in ops
+                     if o.attrs.get("idx") == "rev16"
+                     or (o.attrs.get("kind") == "rev16"
+                         and o.attrs.get("idx") == "rev8")]
+        if not rev16_ops:
+            issues.append("no rev16 leaf permute found at VL=128")
+    return {
+        "resolved": resolved,
         "issues": issues,
         "ok": not issues,
     }

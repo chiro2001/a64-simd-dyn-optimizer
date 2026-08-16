@@ -8,7 +8,8 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from dct16_op_ir import (  # noqa: E402
     dct16_leaf_provenance, dct16_pass1_provenance,
-    dct16_upstream_provenance, lower_pass1_leaf, lower_pass1_odd,
+    dct16_upstream_provenance, dct16_width_provenance,
+    lower_pass1_fused8, lower_pass1_leaf, lower_pass1_odd,
     lower_pass1_perrow, lower_pass1_quarter, lower_pass2_odd_quarter,
     lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_upstream)
 from dct16_rewrites import apply_rewrites  # noqa: E402
@@ -87,6 +88,20 @@ def main():
     except ValueError:
         pass
     print("DCT16 rewrites OK (tbl2_to_zip / merge_narrow8)")
+    # 8-lane fused pass1 (VL=128/NEON baseline) + pass2 upstream.
+    f8 = lower_pass1_fused8() + lower_pass2_upstream()
+    r8 = dct16_upstream_provenance(f8)
+    assert r8["ok"], r8["issues"]
+    assert r8["store_count"] == 512
+    assert r8["expected_lanes"] == 512
+    assert r8["scatter_stores"] == 0
+    w8 = dct16_width_provenance(f8, 128)
+    assert w8["ok"], w8["issues"]
+    assert "rev32" in w8["resolved"]
+    w256 = dct16_width_provenance(f8, 256)
+    assert w256["ok"], w256["issues"]
+    print("DCT16 fused8 DAG OK: ops=%d stores=%d width_resolved=%d"
+          % (len(f8), r8["store_count"], len(w8["resolved"])))
     return 0
 
 

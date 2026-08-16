@@ -59,3 +59,23 @@ VL=128/NEON 迁移的本质是 IR 宽度参数化。第一步（本仓库已实�
 
 测试：`optimizer/ir/test_width_expr.py`（10 项：各 VL 的 rev8/16/32/64
 解析、dct16 op IR 的 leaf/per-row permute 符号覆盖）。
+
+## 5. 第三步已落地：8-lane fused pass1 的宽度无关 DAG（2026-08-16）
+
+`dct16_op_ir.lower_pass1_fused8()`：把已验证的 8-lane fused quarter
+（`tools/emit_dct16_vl128.py --pass1 fused`）编码成 op DAG，作为
+该 C++ 基线的 IR 规格：
+
+- 行对 E/O 叶子：NEON 8-lane load（lo/hi 两半），高半 rev16
+  （`idx="rev8", seg=1`，即 width_expr 的 VL=128 分解）；
+- k2 族（2,6,10,14）：sdot.d 作用在合并 s16 EO 上（4 terms/输出列）；
+- 偶数 k（0,4,8,12）：vmul/vpadd/vrshrn，`neon_mul` 携带 4 个
+  coefficient terms（provenance 现在从 dot_segment/dot_accum/neon_mul
+  统一收集 terms）；
+- 新增 `dct16_width_provenance(ops, vl_bits)`：所有符号 permute 必须能
+  被 width_expr 在目标宽度解析（VL=128/256 均验证）。
+
+门禁：`tools/test_dct16_op_ir.py` 新增 fused8 用例——512 输出 lane
+全覆盖、0 scatter、op 数 1424、宽度解析 OK。这是「同一计算图在不同
+宽度下可重 lowering」的 DAG 层证明；发射器（8-lane codegen）作为
+下一步消费该 DAG。
