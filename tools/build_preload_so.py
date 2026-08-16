@@ -658,7 +658,19 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
                            (16, "dynopt_satd_16x16_sve2"),
                            (32, "dynopt_satd_32x32_sve2"),
                            (64, "dynopt_satd_64x64_sve2")):
-                if (vl == 16 or skip_satd_small) and n in (8, 16):
+                if kernel == "satd-8" and \
+                        os.environ.get("AGO_PURE_SVE") == "1" and \
+                        os.environ.get("AGO_SATD_PURE8") == "1":
+                    # Real-machine measurement config: pure-SVE satd8
+                    # wins on 710 (+9.4% kernel), satd16 loses (-40%),
+                    # so only the 8x8 slot is patched.
+                    if n != 8:
+                        continue
+                if (vl == 16 or skip_satd_small) and n in (8, 16) and not (
+                        kernel == "satd-8" and
+                        os.environ.get("AGO_PURE_SVE") == "1" and
+                        os.environ.get("AGO_SATD_PURE8") == "1" and
+                        n == 8):
                     # VL=128: upstream SVE2 satd8/16 beats the pure-NEON
                     # candidate (Yitian microbench, 2026-08-16); the
                     # 32/64 wrappers are still kept because they avoid

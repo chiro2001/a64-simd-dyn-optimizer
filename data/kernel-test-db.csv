@@ -157,6 +157,7 @@ sao-cuorg-e3-neon-seed,,,sao-cuorg-e3,,neon-seed,,,kernels/sao/candidates/best_e
 sao-cuorg-e3-neon-slot,2026-08-17,,sao-cuorg-e3,,neon-slot,,,kernels/sao/candidates/best_neon_e3.cpp,101,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt
 sao-cuorg-e3-sve2-tbl,2026-08-17,,sao-cuorg-e3,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e3.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+satd16-pure-sve-710-kernel,2026-08-17,,satd-16,,pure-sve-710,,,,,,,,,,710,ratio_vs_satd8_sve2,0.596,,,,yes,reports/satd-pure-sve-710-20260817.txt
 satd-16x8-satd16x8_A-920B,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,920B,ticks,6037,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_A-N1,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,N1,ticks,2266,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_B-920B,,,satd-16x8,pixel,satd16x8_B,neon,neon,experiments/ago-m2-expanded/src/satd16x8_B.cpp,154,,1,20000,0,20k-native,920B,ticks,6634,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -176,6 +177,8 @@ satd8-pure-sve-8x8,2026-08-17,,satd-8,,pure-sve,,,optimizer/ir/satd8_pure_sve_em
 satd-16x16-pure-sve,2026-08-17,,satd-8,,pure-sve-16x16,,,optimizer/ir/satd8_pure_sve_emit.py,0,,1;2,200,0,0neon+eq-neon200,,,,,,,,reports/satd8-pure-sve-20260817.txt
 satd-32x32-pure-sve,2026-08-17,,satd-8,,pure-sve-32x32,,,optimizer/ir/satd8_pure_sve_emit.py,0,,1;2,200,0,0neon+eq-neon200,,,,,,,,reports/satd8-pure-sve-20260817.txt
 satd-64x64-pure-sve,2026-08-17,,satd-8,,pure-sve-64x64,,,optimizer/ir/satd8_pure_sve_emit.py,0,,1;2,200,0,0neon+eq-neon200,,,,,,,,reports/satd8-pure-sve-20260817.txt
+satd8-pure-sve-710-kernel,2026-08-17,,satd-8,,pure-sve-710,,,,,,,,,,710,ratio_vs_satd8_sve2,1.094,,,,yes,reports/satd-pure-sve-710-20260817.txt
+satd8-pure-sve-710-30f,2026-08-17,,satd-8,bundle,pure-sve-8x8-710,,,,,,,,,,710,,,+1.8,,65..187,yes,reports/satd-pure-sve-710-20260817.txt
 satd-8-satd8_A-920B,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,920B,ticks,3634,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_A-N1,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,N1,ticks,1204,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_B-920B,,,satd-8,pixel,satd8_B,neon,neon,experiments/ago-m2-expanded/src/satd8_B.cpp,76,,1,20000,0,20k-native,920B,ticks,3630,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

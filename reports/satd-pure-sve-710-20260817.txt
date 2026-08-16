@@ -1,0 +1,48 @@
+# satd 纯 SVE 710 实机验证（2026-08-17）
+
+## 背景
+
+纯 SVE satd 家族（8x8/16x16/32x32/64x64，0 NEON）本地验证通过后，
+按测量纪律上 710（SVE2 VL128）做 kernel 与 E2E 两级实机验证。
+
+## 1. kernel 级配对 CNTVCT（vs x265::satd8_sve2，500 轮交错）
+
+| kernel | 纯 SVE ticks | x265 sve2 ticks | ratio(ref/cand) |
+| --- | ---: | ---: | ---: |
+| satd8 | 457 | 500 | 1.094（+9.4%） |
+| satd16 | 1508 | 899 | 0.596（-40%） |
+
+结论：只有 satd8 静态胜出；satd16 大幅落后。据此只把 8x8 槽位接
+入 E2E（工具新增 AGO_SATD_PURE8=1，只 patch LUMA_8x8.satd +
+chroma I444 8x8）。
+
+## 2. E2E（710，30f，5+5 交错，compile-in 注入）
+
+| 轮 | 变体 | ms | md5 |
+| --- | --- | ---: | --- |
+| 1 | base | 9313 | 47743992d14675f4bcb88a320392824e |
+| 2 | inj | 9483 | 同 |
+| 3 | base | 9351 | 同 |
+| 4 | inj | 9416 | 同 |
+| 5 | inj | 9464 | 同 |
+| 6 | base | 9312 | 同 |
+| 7 | base | 9355 | 同 |
+| 8 | inj | 9531 | 同 |
+| 9 | inj | 9503 | 同 |
+| 10 | base | 9316 | 同 |
+
+`dynopt: patched 2` 确认拦截；10/10 md5 bit-exact。base 中位
+9316 ms vs inj 中位 9483 ms——**inj 慢 +1.8%**（配对差中位
+152 ms，范围 65..187 ms，方向一致）。
+
+## 结论
+
+- 纯 SVE satd8 的 kernel 级 +9.4%（vs satd8_sve2 参考）**未传导到
+  E2E**：真实调度/调用上下文（stride、调用频率、每调用 index 表
+  载入与 guard 分支）下反而慢 1.8%——与纯 SVE dct（E2E -2.63%）
+  同一模式：**纯 SVE 功能成立、实机不占优**；
+- 按 round-0028 验收纪律**归档，默认不注入**；AGO_SATD_PURE8
+  配置保留为测量工具；satd16/32/64 纯 SVE 同样不注入；
+- 方法论教训：kernel 微基准的参考实现必须与目标机真实 dispatch
+  一致（710 实机 dispatch 可能与 satd8_sve2 参考不同），且单一
+  kernel 的静态/隔离收益需以 E2E 为准。
