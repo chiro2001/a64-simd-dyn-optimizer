@@ -96,6 +96,15 @@ psyCost feasibility (2026-08-16):
     win). calc_energy already uses SVE2 CADD90 throughout; a bit-exact
     rewrite has no evident structural gain at VL=128. Not pursued.
 
+Machine-aware cost-coeff selection (2026-08-16):
+  - Yitian (VL=128, Neoverse-N2): unroll variant wins (1.11 vs 1.25 vs
+    upstream 1.23 ticks).
+  - 920B (Kunpeng 920, sve1 bundle): non-unroll wins (2.28 vs upstream
+    2.51; unroll 2.68 is a regression). tools/build_preload_so.py now
+    picks best_sve2_unroll.cpp only for vl=128, else non-unroll.
+  - 920B freeze with the fixed bundle: bit-exact ee5db7..., -2.06%
+    (CI [160,212] ms), matching the historical best9 level.
+
 100-frame confirmation (same host, /tmp/real_1080p_100f_b.yuv, 100f)
 ---------------------------------------------------------------------
 Optimized md5: 21500eb459ae1c60db47eb5abd71227a

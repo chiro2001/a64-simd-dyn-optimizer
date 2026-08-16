@@ -846,6 +846,19 @@ def candidate_sources(kernel, isa, vl=None):
             p = os.path.join(d, "best_sve1.cpp")
             if os.path.exists(p):
                 return [p]
+    if kernel == "cost-coeff-nxn":
+        # Machine-dependent variant: the unrolled NEON lowering wins on
+        # Yitian (VL=128, Neoverse-N2; microbench 1.11 vs 1.25 ticks),
+        # but loses on 920B (Kunpeng 920; 2.68 vs 2.28 vs upstream 2.51)
+        # and on N1 profile. Default = non-unroll (historical +10%
+        # replay win); VL=128 SVE2 hosts use the unroll file.
+        if vl == 128:
+            p = os.path.join(d, "best_sve2_unroll.cpp")
+            if os.path.exists(p):
+                return [p]
+        p = os.path.join(d, "best_sve2.cpp")
+        if os.path.exists(p):
+            return [p]
     if isa == "sve1" and os.path.exists(os.path.join(d, "best_sve1.cpp")):
         return [os.path.join(d, "best_sve1.cpp")]
     if kernel in SOURCE_OVERRIDES:
