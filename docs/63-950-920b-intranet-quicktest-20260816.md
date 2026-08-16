@@ -65,10 +65,31 @@ perf record -e cpu-clock -F 999 -- ./build/x265-8-gcc/x265 ...（注入后）
 bash scripts/freeze-best9.sh chiro@124.70.206.229
 #   期望：bit-exact（ee5db7…），30f ~ -2.06%，CI 显著
 
-# NEON dct16/dct32 迁移候选就绪后（docs/64 §3.2）再追加：
-#   python3 tools/build_preload_so.py --isa sve1 --kernels dct16,dct32 ...
-#   + freeze-best9.sh 复测
+# NEON dct16/dct32 迁移候选已就绪（docs/64 §3.1.1），但 920B 实机
+# 3+3 中位 8179→8202ms（+0.28%）——kernel 微基准赢面未转 E2E，
+# **920B 本版不发布 dct 候选**，维持 best9 回归。若后续 k 族结构轴
+# 反转，再追加：
+#   AGO_NEON_DCT=1 python3 tools/build_preload_so.py \
+#     --isa sve1 --vl 16 --kernels dct16,dct32 --opt=-O3 ...
 ```
+
+## 2.5 N1 快速测试（已实测，2026-08-16）
+
+N1（NEON-only，ENABLE_SVE=OFF）可发布 dct16/dct32 纯 NEON fused
+候选：30f E2E 3+3 中位 12129→11996ms（**-1.10%**），bit-exact
+（md5 一致）。
+
+```sh
+AGO_NEON_DCT=1 python3 tools/build_preload_so.py \
+  --isa sve1 --vl 16 --kernels dct16,dct32 --opt=-O3 \
+  --out build/dynopt-vl128-dct-neon.so
+LD_PRELOAD=$PWD/build/dynopt-vl128-dct-neon.so ./x265 ...  # A/B 同 710
+# kernel 级（benchmarks/preload_verify_dct.cpp）：
+#   dct16 11→8（-27.3%）、dct32 74→73（-1.3%），契约内 0 失配
+```
+
+注意：N1 工作树有用户暂存的批量删除，勿在 N1 上 checkout/reset；
+本地交叉编译 .so 后 scp 到 N1 即可（不依赖 N1 的 tools/）。
 
 ## 3. 输出与记录
 - 每台机器：md5（bit-exact 门）、base/opt 中位、paired CI；
