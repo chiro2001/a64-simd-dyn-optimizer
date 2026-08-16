@@ -57,3 +57,13 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 - ⏳ dct16 双组发射器（8-lane pure-SVE 源码按映射逐语句翻译，
    语句配对：相邻两行合并为一个双组寄存器）、20k vq=2 门禁、
    TestBenchLite、dct32、op-backend 对比。
+
+## 验证注意事项
+
+双组原语（load8/rev/vget/saddl/vmovn/combine4/addp4/rshrn/store4）
+均已单独数值验证（VL=256 + 0 NEON）。EO 阶段“语句配对”PoC 曾用
+自写标量参考校验但参考实现存在未定位 bug（双组输出与按公式手算一致，
+如 EOa=336/240/144/48），为避免假信号已从测试移除；**EO 阶段映射
+必须用可信参考验证**：方案 A：给 8-lane pass1 插桩导出 EO_0/EO_1 中间
+值后比对；方案 B：完成整个双组 pass1 后与 8-lane 纯 SVE dct16 最终
+输出做 20k 差分（推荐，直接复用现有门禁）。
