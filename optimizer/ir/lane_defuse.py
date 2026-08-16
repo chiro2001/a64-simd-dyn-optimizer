@@ -75,6 +75,14 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
             m0 = ((2,), (3,), (), (), (6,), (7,), (), ())
             m1 = ((), (), (2,), (3,), (), (), (6,), (7,))
             return 8, (m0, m1)
+        if pk == "trn1q_s64":
+            m0 = ((0,), (1,), (2,), (3,), (), (), (), ())
+            m1 = ((), (), (), (), (0,), (1,), (2,), (3,))
+            return 8, (m0, m1)
+        if pk == "trn2q_s64":
+            m0 = ((), (), (), (), (4,), (5,), (6,), (7,))
+            m1 = ((), (), (), (), (4,), (5,), (6,), (7,))
+            return 8, (m0, m1)
         raise ValueError("lane semantics: permute %s" % pk)
     if kind == "vget":
         base = 0 if attrs["which"] == "lo" else 4
@@ -127,6 +135,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (_e(4), ((0, 1), (2, 3), (4, 5), (6, 7)))
     if kind == "vaddv":
         return 1, (((0, 1, 2, 3),),)
+    if kind == "vaddlv":
+        return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
     if kind == "store":
         # store consumes all 4 input lanes (output lane coords in attrs).
         return 4, (_e(4),)

@@ -16,7 +16,13 @@ def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
         ins = list(op.inputs)
         if kind == "load_diff":
             y = attrs["row"]
-            if attrs.get("half"):
+            if attrs.get("xo") is not None:
+                xo, yo = attrs["xo"], attrs["yo"]
+                body.append("    int16x8_t %s = vreinterpretq_s16_u16("
+                            "vsubl_u8(vld1_u8(pix1 + (%d + %d) * sp1 + %d), "
+                            "vld1_u8(pix2 + (%d + %d) * sp2 + %d)));"
+                            % (out, yo, y, xo, yo, y, xo))
+            elif attrs.get("half"):
                 vg = "low" if attrs["half"] == "lo" else "high"
                 body.append("    int16x8_t %s = vreinterpretq_s16_u16("
                             "vsubl_u8(vget_%s_u8(vld1q_u8(pix1 + %d * sp1)), "
@@ -53,6 +59,16 @@ def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
                             "vtrn2q_s32(vreinterpretq_s32_s16(%s), "
                             "vreinterpretq_s32_s16(%s)));"
                             % (out, ins[0], ins[1]))
+            elif pk == "trn1q_s64":
+                body.append("    int16x8_t %s = vreinterpretq_s16_s64("
+                            "vtrn1q_s64(vreinterpretq_s64_s16(%s), "
+                            "vreinterpretq_s64_s16(%s)));"
+                            % (out, ins[0], ins[1]))
+            elif pk == "trn2q_s64":
+                body.append("    int16x8_t %s = vreinterpretq_s16_s64("
+                            "vtrn2q_s64(vreinterpretq_s64_s16(%s), "
+                            "vreinterpretq_s64_s16(%s)));"
+                            % (out, ins[0], ins[1]))
             else:
                 raise ValueError("satd permute %s" % pk)
         elif kind == "abs":
@@ -74,6 +90,9 @@ def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
                         % (out, ins[0], ins[1]))
         elif kind == "vaddv":
             body.append("    int satd = (int)vaddvq_u32(%s);" % ins[0])
+        elif kind == "vaddlv":
+            body.append("    int sa8d = (int)((vaddlvq_u16(%s) + 1) >> 1);"
+                        % ins[0])
         else:
             raise ValueError("satd emit: %s" % kind)
     return """\
@@ -86,6 +105,7 @@ extern "C" int %s(const uint8_t* pix1, intptr_t sp1,
                   const uint8_t* pix2, intptr_t sp2)
 {
 %s
-    return satd;
+    return %s;
 }
-""" % (func_name, "\n".join(body))
+""" % (func_name, "\n".join(body),
+       "satd" if any(o.kind == "vaddv" for o in ops) else "sa8d")

@@ -8,6 +8,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from lane_defuse import defuse_report  # noqa: E402
+from sa8d16_op_ir import sa8d16_dag  # noqa: E402
 from satd8_emit import emit_satd8  # noqa: E402
 from satd8_op_ir import satd8_dag, satd16_dag  # noqa: E402
 
@@ -51,6 +52,19 @@ def main():
     assert src16.count("vpaddlq_u16") == 1
     assert src16.count("vaddvq_u32") == 1
     print("SATD16 IR DAG OK: ops=%d" % len(ops16))
+
+    opsa = sa8d16_dag()
+    assert all("n_out" in o.attrs and "lane_in" in o.attrs for o in opsa)
+    ra = defuse_report(opsa)
+    assert ra["ok"], ra["issues"][:5]
+    srca = emit_satd8(opsa, func_name="dynopt_sa8d_16x16_sve2")
+    assert srca.count("vsubl_u8") == 32
+    assert srca.count("vtrn1q_s16") == 16
+    assert srca.count("vtrn1q_s64") == 16
+    assert srca.count("vmaxq_u16") == 16
+    assert srca.count("vaddlvq_u16") == 1
+    assert ">> 1" in srca
+    print("SA8D16 IR DAG OK: ops=%d" % len(opsa))
     return 0
 
 

@@ -42,6 +42,17 @@ VL 无关纯 NEON（此前 best9-950 的 satd-8 SVE2 候选有 VL=256 假设，
 - 动态计数：IR **273/308** vs 现有候选 **275/311**（-2 ops）；
 - def-use（标量根）通过。
 
+### SA8D 16x16（2026-08-16 完成）
+
+- `sa8d16_op_ir.py`：4 个 8x8 块 × hadamard_8x8（hadamard_8_v +
+  hadamard_8_h，含 trn s16/s32/s64 置换、abs/sumsub、vmax），跨块
+  u16 累加，`vaddlv` + (x+1)>>1 收尾；336 ops；
+- 发射器新增 trn1q/trn2q_s64 与 vaddlv（含 +1>>1）支持；
+- 差分：vs 上游 `sa8d16_sve2<16,16>`（QEMU vq=1/2 20k）0 失配；
+- 动态计数：IR **404/485** vs 现有纯 NEON 候选 **411/495**（-7 ops）；
+  上游 128-bit 基线 373（仍有优化空间）；
+- def-use 通过。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；
