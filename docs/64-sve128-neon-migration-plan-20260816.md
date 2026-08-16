@@ -51,11 +51,18 @@ VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
    `kernels/dct32/candidates/best_sve2_vl128.cpp`（需 `-O3` 编译）；
    `build_preload_so.py --vl 16 --isa sve2` 已接入选择（并修正
    VL128 过滤的字节/位单位不一致）；
-3. 下一步：dct32 继续叠加 k 族结构轴（k0_epack/k2k4 的 8-lane
-   版），以及 710 实机 E2E 裁决；
-4. 实机：Yitian710 E2E（dct16/dct32 在该机 profile 占比：dct32
-   ~1.4%、dct16 上游 SVE1 已快于 NEON，SVE2 VL=128 是否有结构赢点
-   需实测裁决）。
+3. **Yitian710 实机已测（2026-08-16）**：Neoverse-N2、SVE2
+   VL=128（svcntb=16，即 4×128 NEON / 2×s64 SVE lane）；
+   LD_PRELOAD bundle（`--isa sve2 --vl 16 --opt=-O3`）：
+   - 槽位替换确认（`benchmarks/preload_verify_dct.cpp`）：
+     dct16/dct32 slot changed=1，200 轮差分 0 失配；
+   - kernel 级周期（cntvct，原→候选）：dct16 13→11
+     （**-15.4%**）、dct32 88→82（**-6.8%**）；
+   - 30f E2E（taskset -c0，3+3）：9248→9241ms 中位，**≈0**
+     （bit-exact md5 一致）；符合预期——dct16 上游已很快、
+     dct32 该机占比 ~1.4%，E2E 期望收益 ~0.1% 在噪声内。
+4. 下一步：dct32 继续叠加 k 族结构轴（k0_epack/k2k4 的 8-lane
+   版），以及 NEON lowering（920B/N1）。
 
 ### 3.2 NEON（920B/N1）
 
