@@ -1,0 +1,33 @@
+# interp8-hps 8 形状 20k 差分门禁（2026-08-17）
+
+## 方法
+
+- 候选：`kernels/interp8-hps-*/candidates/best_sve2.cpp`
+  （tools/emit_interp8_vps_inline.py 生成）；
+- 参考：x265 `interp_horiz_ps_neon<8,W,H>`（build/x265-8-clang-sve/
+  libx265.a，`isRowExt` 语义与 manifest 一致：参考内部 `src -= 3`，
+  ext=1 时回退 3 行并扩展高度）；
+- 协议：随机 uint8 输入，strides {16,32,64}，coeffIdx {1,2,3}，
+  isRowExt {0,1}，每形状 20000 例，QEMU sve-max-vq=2。
+
+## 结果
+
+| 形状 | ext=0 门禁 | ext=1 门禁（生产路径） | fused_uop |
+| --- | --- | --- | ---: |
+| hps-16x16 | 0 失配 | **0 失配** | 93 |
+| hps-16x32 | 0 失配 | **0 失配** | 93 |
+| hps-16x8 | 0 失配 | **0 失配** | 93 |
+| hps-32x16 | 0 失配 | **0 失配** | 96 |
+| hps-8x16 | 0 失配 | **0 失配** | 61 |
+| hps-32x32 | 0 失配 | **FAIL（ci=1 ext=1 st=16，112 失配）** | 96 |
+| hps-32x8 | 0 失配 | **FAIL（同上，256 失配）** | 21 |
+| hps-8x32 | 0 失配 | **FAIL（同上，256 失配）** | 21 |
+
+## 结论
+
+1. 5 形状（16x16/16x32/16x8/32x16/8x16）通过完整生产契约（含
+   ext=1），可入库为 gated；x265 的 hps 调用路径始终传 ext=1；
+2. 3 形状（32x32/32x8/8x32）在 `isRowExt=1 + stride=16 + coeffIdx=1`
+   与参考失配——候选侧行扩展路径 bug，登记为已知问题，修复点
+   `tools/emit_interp8_vps_inline.py` 的 hps 行扩展分支；
+3. ext=0 下 8 形状全过，说明主滤波路径正确，问题限定在扩展分支。
