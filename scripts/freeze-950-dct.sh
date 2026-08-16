@@ -5,6 +5,9 @@
 #
 # Usage:
 #   scripts/freeze-950-dct.sh [user@host]
+#   AGO_IR_SVE16=1 scripts/freeze-950-dct.sh user@host  # dct16/32
+#     use the 16-lane dual-group IR candidates (docs/72) instead of
+#     op895/opbase; bundle/work dirs default to *-sve16-950.
 #
 # Target prerequisites (docs/63): repo at /home/chiro/... with clean
 # build/x265-8-gcc (SVE2, I8MM=ON), /tmp/real_1080p_30f.yuv, and
@@ -19,6 +22,10 @@ cd "$ROOT"
 
 BUNDLE_DIR="${BUNDLE_DIR:-build/dynopt-best9-950-new}"
 WORK_DIR="${WORK_DIR:-build/preload-work-best9-950-new}"
+if [ "${AGO_IR_SVE16:-0}" = "1" ]; then
+    BUNDLE_DIR="${BUNDLE_DIR:-build/dynopt-sve16-950}"
+    WORK_DIR="${WORK_DIR:-build/preload-work-sve16-950}"
+fi
 INPUT="${FREEZE_INPUT:-/tmp/real_1080p_30f.yuv}"
 FRAMES="${FREEZE_FRAMES:-30}"
 REPO="/home/chiro/projects/a64-simd-dyn-optimizer"
