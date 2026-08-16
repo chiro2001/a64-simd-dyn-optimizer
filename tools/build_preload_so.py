@@ -495,6 +495,8 @@ def _shape_of(kernel):
 def _interp_field(kernel):
     if kernel.startswith("interp8vpp"):
         return "luma_vpp"
+    if kernel.startswith("interp8-hvpp"):
+        return "luma_hvpp"
     if kernel.startswith("interp8-hps"):
         return "luma_hps"
     if kernel.startswith("interp8-vps"):
@@ -516,6 +518,9 @@ def _interp_field(kernel):
 
 def _interp_type(kernel):
     field = _interp_field(kernel)
+    if field == "luma_hvpp":
+        return ("void", "const uint8_t*, intptr_t, uint8_t*, intptr_t,"
+                " int, int")
     if field == "luma_hps":
         return ("void", "const uint8_t*, intptr_t, int16_t*, intptr_t,"
                 " int, int")
