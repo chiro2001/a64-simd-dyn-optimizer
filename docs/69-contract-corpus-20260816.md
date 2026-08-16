@@ -73,3 +73,13 @@ MCA 排序 acc=0.859 / tau=0.697 / top-1 regret=1.79pp（acc、regret
 达门，tau 差 0.003）；family 留出 OLS 仍不达门（单位混用：ticks/
 ratio/E2E %），下一步需同单位逐 kernel 标签（注入法）或按组归一
 化的残差模型。
+
+**2026-08-17 更新**：104 行、58 行含 MCA+label、16 组（12 组可评）；
+修复分组口径——kernel-metric 标签必须按 (family, kernel, machine,
+metric) 分组（dct16 与 dct32 的 ratio/ticks 不在同一刻度），E2E
+消融标签保持 family 级（同一编码里逐个 kernel 注入，delta 可比）。
+新增 `pairwise logistic`（按组内两两偏好拟合，天然与单位无关）：
+family 留出在可评家族（dct+entropy）上 **acc=0.958 / tau=0.917 /
+regret=0.33pp——达门**；pixel 留出因训练对 9<10 暂不可评。MCA 基线
+0.931/0.684/1.04pp（tau 差 0.016）。详见
+`reports/ranker-baseline-20260817.txt`。

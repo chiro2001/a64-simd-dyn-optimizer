@@ -104,6 +104,61 @@ def ols(features, labels):
     return coef
 
 
+def group_key(r):
+    if r["label_type"] == "kernel":
+        # Kernel-metric labels are only comparable within the same
+        # kernel (e.g. dct16 ratio_vs_sve vs dct32 ratio_vs_sve are on
+        # different workloads/scales).  E2E ablation labels stay
+        # family-level: each row is one kernel injected into the same
+        # encode, so deltas are directly comparable.
+        return (r["family"], r["kernel"], r["machine"], r["label_type"],
+                r.get("kernel_metric"))
+    return (r["family"], r["machine"], r["label_type"])
+
+
+def feature_vec(r):
+    return [1.0,
+            log1p(to_num(r.get("mca_fused_uop"))),
+            log1p(to_num(r.get("mca_total")) or 0.0)]
+
+
+def pairwise_logistic(rows):
+    """Fit a linear rank score by logistic regression on within-group
+    pairwise preferences (lower label = better).  Unit-free: labels are
+    only compared inside the same (family, machine, label_type,
+    kernel_metric) group, so mixing ticks/ratios/E2E % is harmless."""
+    groups = {}
+    for r in rows:
+        groups.setdefault(group_key(r), []).append(r)
+    pairs = []
+    for grp in groups.values():
+        n = len(grp)
+        for i in range(n):
+            for j in range(i + 1, n):
+                li = to_num(grp[i]["label"])
+                lj = to_num(grp[j]["label"])
+                if li == lj:
+                    continue
+                a, b = (i, j) if li < lj else (j, i)
+                fa = feature_vec(grp[a])
+                fb = feature_vec(grp[b])
+                pairs.append(([fa[k] - fb[k] for k in range(3)], 1.0))
+    if len(pairs) < 10:
+        return None
+    w = [0.0, 0.0, 0.0]
+    for _ in range(400):
+        g = [0.0, 0.0, 0.0]
+        for x, y in pairs:
+            z = sum(w[k] * x[k] for k in range(3))
+            p = 1.0 / (1.0 + math.exp(-z))
+            err = y - p
+            for k in range(3):
+                g[k] += err * x[k]
+        for k in range(3):
+            w[k] += 0.02 * g[k] / len(pairs)
+    return w
+
+
 def main():
     rows = list(csv.DictReader(open(SRC)))
     used = []
@@ -124,18 +179,13 @@ def main():
             # ratio metrics: >1 = faster; negate so lower = better.
             r["label"] = str(-to_num(r["label"]))
         used.append(r)
-    def key(r):
-        if r["label_type"] == "kernel":
-            return (r["family"], r["machine"], r["label_type"],
-                    r.get("kernel_metric"))
-        return (r["family"], r["machine"], r["label_type"])
     groups = {}
     for r in used:
-        groups.setdefault(key(r), []).append(r)
+        groups.setdefault(group_key(r), []).append(r)
     groups = {k: v for k, v in groups.items() if len(v) >= 2}
 
     out = []
-    out.append("# Ranker baseline (round-0026 P3a, 2026-08-16)")
+    out.append("# Ranker evaluation (P3, kernel-test-db derived)")
     out.append("")
     out.append("Data: data/ranker-training.csv; rows with label and "
                "MCA features (incl. kernel metrics): %d/%d; groups: %d"
@@ -204,9 +254,60 @@ def main():
                       statistics.mean(all_tau), statistics.mean(all_reg)))
     else:
         out.append("no held-out groups evaluable on this seed corpus")
+
+    # Baseline C: unit-free pairwise logistic rank score (family held-out)
     out.append("")
-    out.append("Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, "
-               "top-1 regret<=2.0 pp - NOT met yet on this seed corpus.")
+    out.append("## C) pairwise logistic (family held-out)")
+    out.append("")
+    out.append("| held-out family | groups | pair_acc | tau | top1_regret pp |")
+    out.append("| --- | --- | ---: | ---: | ---: |")
+    c_acc, c_tau, c_reg, c_grp = [], [], [], 0
+    for fam in fams:
+        train = [r for r in used if r["family"] != fam]
+        w = pairwise_logistic(train)
+        if w is None:
+            continue
+        accs3, taus3, regs3, ng = [], [], [], 0
+        for k, grp in groups.items():
+            if k[0] != fam:
+                continue
+            pred = [sum(w[j] * feature_vec(r)[j] for j in range(3))
+                    for r in grp]
+            meas = [to_num(r["label"]) for r in grp]
+            acc, tau, regret, npairs = pair_stats(pred, meas)
+            if acc is not None:
+                accs3.append(acc); taus3.append(tau); regs3.append(regret)
+                ng += 1
+        if accs3:
+            out.append("| %s | %d | %.3f | %.3f | %.2f |"
+                       % (fam, ng, statistics.mean(accs3),
+                          statistics.mean(taus3), statistics.mean(regs3)))
+            c_acc += accs3; c_tau += taus3; c_reg += regs3; c_grp += ng
+    if c_acc:
+        out.append("")
+        out.append("aggregate: groups=%d pair_acc=%.3f tau=%.3f "
+                   "top1_regret=%.2f pp"
+                   % (c_grp, statistics.mean(c_acc),
+                      statistics.mean(c_tau), statistics.mean(c_reg)))
+    else:
+        out.append("no held-out groups evaluable on this seed corpus")
+    out.append("")
+    def gate(acc, tau, reg):
+        return acc >= 0.80 and tau >= 0.70 and reg <= 2.0
+    a_ok = gate(statistics.mean(accs), statistics.mean(taus),
+                statistics.mean(regs)) if accs else False
+    b_ok = gate(statistics.mean(all_acc), statistics.mean(all_tau),
+                statistics.mean(all_reg)) if all_acc else False
+    c_ok = gate(statistics.mean(c_acc), statistics.mean(c_tau),
+                statistics.mean(c_reg)) if c_acc else False
+    out.append("Gate (round-0026): family-held-out acc>=0.80, "
+               "tau>=0.70, top-1 regret<=2.0 pp")
+    out.append("- A (MCA rank): %s"
+               % ("MET" if a_ok else "not met"))
+    out.append("- B (residual OLS): %s"
+               % ("MET" if b_ok else "not met"))
+    out.append("- C (pairwise logistic): %s"
+               % ("MET" if c_ok else "not met"))
     text = "\n".join(out) + "\n"
     os.makedirs(os.path.dirname(REPORT), exist_ok=True)
     with open(REPORT, "w") as f:
