@@ -1,0 +1,29 @@
+# 920B 冻结发布集（best9-minus-remain + dct IR）交错 E2E（2026-08-17）
+
+## 方法
+
+- 机器：920B（SVE1 VL=256，共享 Kunpeng 节点），真实 100f
+  （/tmp/real_1080p_100f_b.yuv），单核 taskset -c 0；
+- 注入法交错（interleaved-inject-ab.sh，直接换 libx265.so.216），
+  6 对随机交错；same-machine md5 全等
+  （1600c2fac1294b5ffb19512f6615b31d，bit-exact）；
+- 臂：base / best9-noremain-ir-dct（12 kernel best9 去 remain +
+  dct16/32 IR NEON，AGO_IR_DCT=1 在 --isa sve1 --vl 32 下选
+  best_ir_neon8（VL-safe NEON，docs/73）；共 14 kernel）；
+- 原始计时：build/tmp-iab-ms.txt（round,label,ms 交错）。
+
+## 结果（diff = base - opt，>0 = 候选更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain-ir-dct vs base | +584.0 | **+2.63%** | [510.5, 672.5] |
+
+## 结论
+
+1. 冻结组合（best9-minus-remain + dct IR）在 920B 确认 **+2.63%**，
+   CI 不跨零、bit-exact——首条 920B 冻结集数字；
+2. 同日同法 best9-noremain 单臂为 +2.20% [472.0, 534.5]
+   （reports/best9-noremain-920b-interleaved-20260817.txt）；
+   dct IR 增量约 +0.4pp（跨轮次对比，非同一轮三臂）；
+3. 四机证据现状：N1 +2.14~2.25%、710 +2.03~2.36%、920B +2.63%
+   （各双批或单批交错、bit-exact、CI 不跨零）；950 待用户侧。

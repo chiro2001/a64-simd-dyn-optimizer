@@ -25,13 +25,16 @@ diff = base − opt，>0 = 候选更快；Δ% = 相对 base。
 | N1 | 2 | +705 | **+2.14%** | [603.5, 959.5] | 07450372… |
 | 710 | 1 | +515.5 | **+2.03%** | [474.5, 641.5] | 21500eb4… |
 | 710 | 2 | +602.5 | **+2.36%** | [489.0, 677.5] | 21500eb4… |
+| 920B | 1 | +584.0 | **+2.63%** | [510.5, 672.5] | 1600c2fa… |
 
 可加性（dct IR 相对 best9-noremain 的增量）：N1 第二批
 +0.82% [222, 653]；710 第一批 +0.71% [61, 245]、第二批 +1.10%
-[133, 331]——CI 均不含 0。
+[133, 331]——CI 均不含 0。920B 同日同法 best9-noremain 单臂
++2.20%，组合 +2.63%（约 +0.4pp，跨轮次对比）。
 
 来源：`reports/n1-best9-noremain-ir-dct-freeze-20260817.txt`、
-`reports/710-best9-noremain-ir-dct-freeze-20260817.txt`。
+`reports/710-best9-noremain-ir-dct-freeze-20260817.txt`、
+`reports/920b-best9-noremain-ir-dct-interleaved-20260817.txt`。
 
 ## 3. 发布规则
 
