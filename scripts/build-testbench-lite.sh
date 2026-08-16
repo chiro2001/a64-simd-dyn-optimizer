@@ -146,7 +146,8 @@ if [ "${RUN_MODE:-qemu}" = native ]; then
     echo "running testbench-lite natively..."
     "$LITE/TestBenchLite" "${@:3}"
 else
-    echo "running testbench-lite under QEMU (VL=256)..."
-    qemu-aarch64 -L /usr/aarch64-linux-gnu -cpu max,sve-max-vq=2 \
+    echo "running testbench-lite under QEMU (VL=${RUN_VQ:-2}x128)..."
+    qemu-aarch64 -L /usr/aarch64-linux-gnu \
+        -cpu max,sve-max-vq=${RUN_VQ:-2} \
         "$LITE/TestBenchLite" "${@:3}"
 fi
