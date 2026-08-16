@@ -16,6 +16,10 @@
 ~99.97% 失配（legacy+sve 1079 fused_uop 但 5.1M lanes 失配）——
 与单点测量一致，迁移缺口覆盖全部结构轴。
 
+dct32 同样全量确认：op 轴全部变体（含最佳 r16k2epsi+m8 等）在
+VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
+缺口全景已齐（QEMU `sve-max-vq=1` + VL=16 verifier，可复现）。
+
 ## 2. 为什么“同一算法”但代码不可直接迁移
 
 - 计算图（dot/butterfly/round/narrow）与 VL 无关——这是统一的前提；
