@@ -11,7 +11,8 @@
 - 专题：docs/63（950/920B 内网测试）、docs/64（SVE128/NEON 迁移）、
   docs/65（IR 粒度审计）、docs/66（多 ISA 家族全景）、docs/67
   （kernel 测试数据库）、docs/68（工具用法手册，含稳定性标注）、
-  docs/69（契约语料库，round-0026 P2）、docs/52（AGO 规划）。
+  docs/69（契约语料库，round-0026 P2）、docs/70（遗留事项 backlog）、
+  docs/71（ISA 转换能力：NEON→SVE 优化路径）、docs/52（AGO 规划）。
 - 实测报告：`reports/`；顶级模型建议：`expert-advice/round-NNNN/`
   （含 `decision.md`，执行 agent 必须处理每条建议的 accept/reject/
   defer）。

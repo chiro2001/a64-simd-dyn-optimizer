@@ -284,6 +284,9 @@ bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
 > SVE 指令**。纯 SVE 发射模式（开关禁 NEON 生成 + 禁 NEON 门禁）已
 > 列入 docs/59 §9 item 4，先落地 dct16/32 再推广。
 
+> 输入/输出 ISA 转换能力矩阵与 NEON→SVE 快速路径见
+> [docs/71](docs/71-isa-conversion-capability-20260817.md)。
+
 `dag_pipeline --march` 把 NEON/SVE1/SVE2/SVE2p3 门禁推广到全部家族
 （每个候选按 march 编译，QEMU vq=1/2 差分）：
 
