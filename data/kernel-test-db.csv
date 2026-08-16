@@ -172,6 +172,7 @@ satd8-axis-r_vpaddl_a_subabs,2026-08-17,,satd-8,,axis-r_vpaddl_a_subabs,,,experi
 satd8-axis-vaddlv-abd-920b,2026-08-17,,satd-8,,axis-vaddlv-abd,,,,,,,,,,920B,ratio_vs_satd8_A,0.82,,,,yes,reports/satd8-axis-search-20260817.txt
 satd8-axis-vaddv-abd-920b,2026-08-17,,satd-8,,axis-vaddv-abd,,,,,,,,,,920B,ratio_vs_satd8_A,0.99,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-8-ir,2026-08-16,72c8a08,satd-8,pixel,ir,c/neon,neon,optimizer/ir/satd8_emit.py,77,91,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+satd8-pure-sve-8x8,2026-08-17,,satd-8,,pure-sve,,,optimizer/ir/satd8_pure_sve_emit.py,0,,1;2,200,0,0neon+eq-neon200,,,,,,,,reports/satd8-pure-sve-20260817.txt
 satd-8-satd8_A-920B,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,920B,ticks,3634,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_A-N1,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,N1,ticks,1204,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_B-920B,,,satd-8,pixel,satd8_B,neon,neon,experiments/ago-m2-expanded/src/satd8_B.cpp,76,,1,20000,0,20k-native,920B,ticks,3630,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
