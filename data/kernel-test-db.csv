@@ -169,6 +169,8 @@ satd8-axis-r_vaddv_a_abd,2026-08-17,,satd-8,,axis-r_vaddv_a_abd,,,experiments/m3
 satd8-axis-r_vaddv_a_subabs,2026-08-17,,satd-8,,axis-r_vaddv_a_subabs,,,experiments/m31-satd8-axis-search/r_vaddv_a_subabs.cpp,64,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-r_vpaddl_a_abd,2026-08-17,,satd-8,,axis-r_vpaddl_a_abd,,,experiments/m31-satd8-axis-search/r_vpaddl_a_abd.cpp,61,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-r_vpaddl_a_subabs,2026-08-17,,satd-8,,axis-r_vpaddl_a_subabs,,,experiments/m31-satd8-axis-search/r_vpaddl_a_subabs.cpp,65,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
+satd8-axis-vaddlv-abd-920b,2026-08-17,,satd-8,,axis-vaddlv-abd,,,,,,,,,,920B,ratio_vs_satd8_A,0.82,,,,yes,reports/satd8-axis-search-20260817.txt
+satd8-axis-vaddv-abd-920b,2026-08-17,,satd-8,,axis-vaddv-abd,,,,,,,,,,920B,ratio_vs_satd8_A,0.99,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-8-ir,2026-08-16,72c8a08,satd-8,pixel,ir,c/neon,neon,optimizer/ir/satd8_emit.py,77,91,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 satd-8-satd8_A-920B,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,920B,ticks,3634,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_A-N1,,,satd-8,pixel,satd8_A,neon,neon,experiments/ago-m2-expanded/src/satd8_A.cpp,76,,1,20000,0,20k-native,N1,ticks,1204,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

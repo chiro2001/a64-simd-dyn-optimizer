@@ -101,3 +101,8 @@ grammar。合法操作按族划分：
   experiments/m31-satd8-axis-search/results.json（DB 6 行）；
 - 该 6 候选空间即 §4 验收的第一例“小域全枚举”基线：B&B 需与其
   最优哈希一致、无误剪枝、节点减少（或同 regret 少测 30%）。
+- **920B kernel 微基准（2026-08-17 晚）**：最优静态候选
+  （vaddlv+abd 60 uop）实机比 satd8_A 慢 ~22%（457 vs 376 ticks），
+  vaddv+abd 持平（0.99）——fused_uop 优势未转实机，按验收纪律
+  归档默认不注入；m31 枚举保留为 B&B/ranker 的“全枚举×实机”双列
+  数据基线（reports/satd8-axis-search-20260817.txt，DB 200 行）。
