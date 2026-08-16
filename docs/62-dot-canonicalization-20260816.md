@@ -160,6 +160,28 @@ odd 打包等结构轴）接入同一 QEMU 测量链（自定义 trace 范围
 - 测量链新增能力：`measure(allow_mismatch, range_start_syms,
   range_end_sym)` 支持契约族变体与 op 后端 trace 范围。
 
+### op 结构轴扩展网格：命中内部参考（2026-08-16）
+
+扩展 op 轴网格（row_group/slice_kind/k0_merge8/k0_epack/
+k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
+（legacy 变体 20k 失配 7268 lanes，TestBenchLite 门禁）：
+
+| 变体 | fused_uop | TestBenchLite 5 seed |
+| --- | ---: | --- |
+| **odd+rg16（row_group=16 + odd_from_k0packs）** | **4898** | **全 PASS** |
+| odd+rg8 | 5348 | — |
+| odd+k2k4pk | 6251 | — |
+| odd+zip / odd+tblzip | 6396 | — |
+| oddpack | 6584 | 全 PASS |
+| base（op 后端） | 8114 | 全 PASS |
+
+- **odd+rg16 = 4898 fused_uop**：命中内部参考（4827，差 1.5%），
+  相对 upstream grouped 8292 **-41%**，相对 grouped legacy 7820
+  **-37%**；两次测量确定性一致，TestBenchLite 5 seed 全 PASS
+  （legacy-internal-exact 黄金标准）；
+- merge_narrow8 rewrite 在该 plan 下编译失败（记录为 measure-fail，
+  后续排查）；k0_epack 在 pass2 仍劣化（6554）。
+
 ## 5. 使用示例
 
 ```python
