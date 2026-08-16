@@ -1,7 +1,8 @@
 # interp8 luma_hps 32x8: pixel -> int16 horizontal 8-tap filter.
 kernel: interp8-hps-32x8
-contract: upstream-exact, isRowExt==0 only (SVE candidate ignores
-  isRowExt; ext=1 production path unsupported - not dispatchable)
+contract: upstream-exact (isRowExt 0/1, NEON inline candidate from
+  tools/emit_interp8_vps_inline.py; 2026-08-17: ext=1 production path
+  gated, replacing the ext=0-only SVE candidate)
 vl_bytes: 32
 shape:
   kind: interp8_hps

@@ -25,12 +25,11 @@
 
 ## 结论
 
-1. 6 形状（16x16/16x32/16x8/32x16/32x32/8x16）通过完整生产契约
-   （含 ext=1），可入库为 gated；x265 的 hps 调用路径始终传 ext=1；
-2. 2 形状（32x8/8x32——恰好是 SVE 变体候选）在
-   `isRowExt=1` 下与参考全部失配——根因是 SVE 候选显式
-   `(void)isRowExt`（只实现 ext=0 契约，注释自证），非算法细节 bug；
-   两形状 manifest 已改注 `isRowExt==0 only`，**生产路径不可分派**
-   （x265 恒传 ext=1），待实现 ext=1 后再入生产集；
+1. 8 形状全部通过完整生产契约（含 ext=1）：6 个原有 NEON inline
+   候选 + 2 个（32x8/8x32）由 `tools/emit_interp8_vps_inline.py`
+   （emit_hps，正确处理 isRowExt）重新生成并替换原 SVE 候选——
+   36 配置（3st × 3ci × 2ext，含 H+7 全行比较）**0 失配**；
+2. 原 SVE 候选显式 `(void)isRowExt` 只实现 ext=0，已替换并在
+   manifest 中记录；hps 家族门禁 **8/8 闭环**；
 3. 初跑 32x32 的 112 失配为驱动缓冲区过小假阳性（ext=1 需
-   (H+7) 行输出），修正后通过；ext=0 下 8 形状全过。
+   (H+7) 行输出），修正后通过。
