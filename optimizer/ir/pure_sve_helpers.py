@@ -323,6 +323,66 @@ static inline svint32_t psv16_dual_addp4_s32(svint32_t a, svint32_t b)
     svuint32_t i = svld1_u32(svptrue_b32(), idx);
     return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(s), i));
 }
+
+// Pack two 8-lane loads (from a and b) into one 16-lane register.
+static inline svint16_t psv16_dual_load8(const int16_t* a, const int16_t* b)
+{
+    static const uint16_t idx[16] =
+        { 0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    svuint16x2_t t = svcreate2_u16(
+        svreinterpret_u16_s16(psv16_load(a)),
+        svreinterpret_u16_s16(psv16_load(b)));
+    return svreinterpret_s16_u16(svtbl2_u16(t, i));
+}
+
+static inline svint32_t psv16_dual_rev32_s32(svint32_t x)
+{
+    static const uint32_t idx[8] = { 3, 2, 1, 0, 7, 6, 5, 4 };
+    svuint32_t i = svld1_u32(svptrue_b32(), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
+}
+
+static inline svint32_t psv16_dual_rev64_s32(svint32_t x)
+{
+    static const uint32_t idx[8] = { 1, 0, 3, 2, 5, 4, 7, 6 };
+    svuint32_t i = svld1_u32(svptrue_b32(), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
+}
+
+// Truncating narrow of both s64 groups (input lanes 0-1 / 2-3) to a
+// dual s32 result (group0 lanes 0-1, group1 lanes 2-3).
+static inline svint32_t psv16_dual_vmovn_s64(svint64_t x)
+{
+    svint32_t r = svreinterpret_s32_s64(x);
+    static const uint32_t idx[8] = { 0, 2, 4, 6, 0, 0, 0, 0 };
+    svuint32_t i = svld1_u32(svptrue_b32(), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(r), i));
+}
+
+template <int S>
+static inline svint16_t psv16_dual_rshrn_s32(svint32_t x)
+{
+    svint32_t r = svasr_n_s32_x(svptrue_b32(),
+                                svadd_s32_x(svptrue_b32(), x,
+                                            svdup_s32_x(svptrue_b32(),
+                                                        1 << (S - 1))), S);
+    return psv16_dual_vmovn_s32(r);
+}
+
+// Store a dual 4-lane s16 value: group0 (lanes 0-3) -> *pa, group1
+// (lanes 8-11) -> *pb.
+static inline void psv16_dual_store4_s16(int16_t* pa, int16_t* pb,
+                                         svint16_t v)
+{
+    psv_store4_s16(pa, v);
+    static const uint16_t idx[16] =
+        { 8, 9, 10, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    svint16_t g = svreinterpret_s16_u16(
+        svtbl_u16(svreinterpret_u16_s16(v), i));
+    psv_store4_s16(pb, g);
+}
 """
 
 

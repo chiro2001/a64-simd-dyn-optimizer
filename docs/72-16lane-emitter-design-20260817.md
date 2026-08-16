@@ -18,6 +18,9 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 - `psv16_rev_lo/hi`：只反转低/高 8-lane 组（O = lo - rev(hi) 需要）
 - `psv16_dual_saddl`：双组加宽加（s16 双组 → s32 双组，lanes 0-3 /
   4-7，svunpklo/hi + svtbl2 打包）
+- `psv16_dual_load8`（两 8-lane 加载打包）、`dual_rev32/rev64_s32`、
+  `dual_vmovn_s64`、`dual_rshrn_s32<S>`、`dual_store4_s16`（2026-08-17
+  补齐，VL=256 数值自检 + 0 NEON）
 
 ## 8-lane op → 双组 op 映射（待实现）
 
@@ -49,8 +52,8 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 
 ## 状态
 
-- ✅ 双组原语集全部就绪（dual_rev16/vget_lo4/hi4、rev_lo/hi、
-   dual_saddl/vmovn_s32/combine4_s16/addp4_s32 + psv16_*，VL=256
-   数值自检 + 0 NEON）；
-- ⏳ dct16 双组发射器（8-lane pure-SVE 源码按映射逐语句翻译）、
-   20k vq=2 门禁、TestBenchLite、dct32、op-backend 对比。
+- ✅ 双组原语集全部就绪（含 load8/rev32/rev64/vmovn_s64/rshrn/store4；
+   zip1/2_s64 用全宽 svzip 天然满足双组语义）；
+- ⏳ dct16 双组发射器（8-lane pure-SVE 源码按映射逐语句翻译，
+   语句配对：相邻两行合并为一个双组寄存器）、20k vq=2 门禁、
+   TestBenchLite、dct32、op-backend 对比。

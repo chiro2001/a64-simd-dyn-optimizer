@@ -91,7 +91,8 @@ PSV16_SRC = r"""
 extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
                             int16_t* o, int64_t* s)
 {
-    svint16_t x = psv16_load(a), y = psv16_load(b);
+    svint16_t x = psv16_dual_load8(a, b);
+    svint16_t y = psv16_load(b);
     psv16_store(o, psv16_rev_hi(x));
     svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
     svst1_s64(svptrue_b64(), s, acc);
@@ -169,6 +170,45 @@ int main()
     if (r[0] != 16 || r[1] != 18 || r[2] != 20 || r[3] != 22 ||
         r[8] != 32 || r[9] != 34 || r[10] != 36 || r[11] != 38)
         { bad++; printf("dual_vmovn_s32 bad\n"); }
+    const int16_t p0[8] = {0,1,2,3,4,5,6,7};
+    const int16_t p1[8] = {8,9,10,11,12,13,14,15};
+    psv16_store(r, psv16_dual_load8(p0, p1));
+    for (int i = 0; i < 16; i++)
+        if (r[i] != i) { bad++; printf("dual_load8[%d]=%d exp %d\n",
+                                       i, r[i], i); }
+    const int32_t s8[8] = {1,2,3,4,5,6,7,8};
+    svint32_t s32v = svld1_s32(svptrue_b32(), s8);
+    svst1_s32(svptrue_b32(), z, psv16_dual_rev32_s32(s32v));
+    { const int32_t e2[8] = {4,3,2,1,8,7,6,5};
+      for (int i = 0; i < 8; i++)
+          if (z[i] != e2[i]) { bad++; printf("dual_rev32[%d]=%d exp %d\n",
+                                             i, z[i], e2[i]); } }
+    svst1_s32(svptrue_b32(), z, psv16_dual_rev64_s32(s32v));
+    { const int32_t e2[8] = {2,1,4,3,6,5,8,7};
+      for (int i = 0; i < 8; i++)
+          if (z[i] != e2[i]) { bad++; printf("dual_rev64[%d]=%d exp %d\n",
+                                             i, z[i], e2[i]); } }
+    { const int64_t q[4] = {0x100000001LL, 0x200000002LL,
+                            0x300000003LL, 0x400000004LL};
+      svint64_t qv = svld1_s64(svptrue_b64(), q);
+      svst1_s32(svptrue_b32(), z, psv16_dual_vmovn_s64(qv));
+      const int32_t e2[4] = {1,2,3,4};
+      for (int i = 0; i < 4; i++)
+          if (z[i] != e2[i]) { bad++; printf("dual_vmovn_s64[%d]=%d exp %d\n",
+                                             i, z[i], e2[i]); } }
+    { const int32_t q[8] = {64,128,256,-64,32,96,160,224};
+      svint32_t qv = svld1_s32(svptrue_b32(), q);
+      psv16_store(r, psv16_dual_rshrn_s32<6>(qv));
+      if (r[0] != 1 || r[1] != 2 || r[2] != 4 || r[3] != -1 ||
+          r[8] != 1 || r[9] != 2 || r[10] != 3 || r[11] != 4)
+          { bad++; printf("dual_rshrn bad\n"); } }
+    { int16_t ga[4], gb[4];
+      svint16_t dv = psv16_dual_vget_lo4(v);
+      psv16_dual_store4_s16(ga, gb, dv);
+      const int16_t e2a[4] = {0,1,2,3}, e2b[4] = {8,9,10,11};
+      for (int i = 0; i < 4; i++)
+          if (ga[i] != e2a[i] || gb[i] != e2b[i])
+              { bad++; printf("dual_store4 bad\n"); } }
     printf(bad ? "FAILED %ld\n" : "PASS\n", bad);
     return bad != 0;
 }
