@@ -49,6 +49,23 @@ Compared with 920B/N1 best9 (-2.10%/-1.62% over NEON baseline), this is
 the first positive SVE2-128 E2E signal; absolute gain remains far below
 the 15% goal, consistent with the dct32/quant/ME entropy analysis.
 
+2026-08-16 bundle revision (profiling-driven, 19 kernels / 29 slots):
+  - CNTVCT microbench vs upstream (benchmarks/satd_sa8d_microbench.cpp,
+    Yitian VL=128, ticks/call): our NEON satd8/16/8x16/16x8 were 6-10%
+    SLOWER than upstream SVE2; our sa8d16 vaddlv_pair was +6%; our
+    sa8d32 wrapper was -19% (kept); upstream satd32/64's calc_energy
+    path (4.06% baseline) is avoided by the kept NEON 32/64 wrappers.
+  - Action: on VL=128 leave satd 8x8/16x16/8x16/16x8 to upstream SVE2
+    (build_preload_so.py VL128 shape skip); switch sa8d16 to the
+    vaddlv_seq variant (ties upstream 2.87 vs 2.86).
+  - Revised 30f: bit-exact, base 9371 -> opt 9203 ms, -1.57%,
+    bootstrap95 [141,194] ms (significant; absolute opt is the fastest
+    recorded for this clip).
+  - Revised 100f: bit-exact (md5 21500eb4...), base 25531 -> opt
+    25145 ms, **-1.44%**, bootstrap95 **[281,468] ms (significant)**,
+    vs old bundle +0.52% (CI included 0). The profiling-driven slot
+    selection made the long-clip win robust.
+
 100-frame confirmation (same host, /tmp/real_1080p_100f_b.yuv, 100f)
 ---------------------------------------------------------------------
 Optimized md5: 21500eb459ae1c60db47eb5abd71227a
@@ -87,9 +104,20 @@ scripts/cloud-e2e-inject-710.sh - inject variant for non-git x265 tree
                                   (patch(1), clean /tmp/e2e, idempotent
                                   link-line rewrite)
 tools/bisect_vl128_e2e.sh     - E2E-level kernel bisection helper
+benchmarks/dct16_microbench.cpp - dct16 SVE vs NEON CNTVCT A/B
+benchmarks/satd_sa8d_microbench.cpp - satd/sa8d candidate-vs-upstream
+                                  CNTVCT A/B + variant search
+tools/gen_verify.py --vl      - override manifest vl_bytes (VL=16 hosts)
 
 Residual
 --------
 - interp8vpp-16/32 still need a VL=128 variant (svptrue_b16 loads only
   8 pixels at VL=128) or stay excluded.
-- 100-frame confirmation on the same host is a follow-up.
+- dct16/idct32 SVE2 candidates are VL=256-only; upstream dct16_sve is
+  already fast at VL=128 (12.9 vs NEON 17.0 ticks) and NEON is NOT
+  bit-exact with it (8/20000), so a VL-safe SVE2 dct16 rewrite is the
+  only viable route there.
+- psyCost/calc_energy remains the largest uncovered dispatch target
+  (~3.8% + 0.5% of runtime): pure-NEON upstream, requires a bit-exact
+  faster rewrite (SVE2 CADD90 structure is a candidate).
+- 100-frame confirmation is now DONE and significant (above).

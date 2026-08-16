@@ -514,7 +514,7 @@ def _interp_type(kernel):
     return ("void", "const uint8_t*, intptr_t, uint8_t*, intptr_t, int")
 
 
-def entries_for_kernel(kernel, sym):
+def entries_for_kernel(kernel, sym, vl=None):
     """Return [(slot_expr, ret, params)] for the x265 dispatch table."""
     out = []
 
@@ -575,6 +575,12 @@ def entries_for_kernel(kernel, sym):
                            (16, "dynopt_satd_16x16_sve2"),
                            (32, "dynopt_satd_32x32_sve2"),
                            (64, "dynopt_satd_64x64_sve2")):
+                if vl == 128 and n in (8, 16):
+                    # VL=128: upstream SVE2 satd8/16 beats the pure-NEON
+                    # candidate (Yitian microbench, 2026-08-16); the
+                    # 32/64 wrappers are still kept because they avoid
+                    # upstream's calc_energy path.
+                    continue
                 add("pu[%s].satd" % luma_pu(n, n), "int", params, sym)
                 add("chroma[X265_CSP_I444].pu[%s].satd"
                     % luma_pu(n, n), "int", params, sym)
@@ -583,6 +589,8 @@ def entries_for_kernel(kernel, sym):
             # so the inlined candidates carry the same ~1.5x win.
             for shape, sym in (((8, 16), "dynopt_satd_8x16_sve2"),
                                ((16, 8), "dynopt_satd_16x8_sve2")):
+                if vl == 128:
+                    continue
                 add("pu[%s].satd" % luma_pu(*shape), "int", params, sym)
             return out
         shape = _shape_of(kernel)
@@ -1185,7 +1193,7 @@ def main():
         if not sym:
             report["skipped"].append([kernel, "no candidate symbol"])
             continue
-        entries = entries_for_kernel(kernel, sym)
+        entries = entries_for_kernel(kernel, sym, args.vl)
         if not entries:
             report["skipped"].append([kernel, "no dispatch mapping"])
             continue

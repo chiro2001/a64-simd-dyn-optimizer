@@ -3503,11 +3503,16 @@ def main():
     ap.add_argument("--manifest", default="kernels/dct16/manifest.yaml")
     ap.add_argument("--out", default="build/dct16_generated_verify.cpp")
     ap.add_argument("--contract", default=None)
+    ap.add_argument("--vl", type=int, default=None,
+                    help="override manifest vl_bytes (bytes), e.g. 16 "
+                         "for an SVE2 VL=128 host")
     args = ap.parse_args()
     manifest = load_manifest(
         os.path.basename(os.path.dirname(args.manifest)))
     if args.contract:
         manifest["contract"] = args.contract
+    if args.vl:
+        manifest["vl_bytes"] = args.vl
     src = generate(manifest)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as f:
