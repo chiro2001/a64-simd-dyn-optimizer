@@ -34,12 +34,25 @@ VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
 
 ### 3.1 SVE128（Yitian710）
 
-1. 扩展 dct16/dct32 op 发射器：新增 `lanes_per_row=8` 模式——
-   每 16 元素行拆成 2 个 8-lane 向量（load/store 拆半、蝶形置换表
-   换 8-lane 版本、dot 项数相应调整）；
-2. 在 QEMU `sve-max-vq=1`（VL=128）下重跑 dct16/dct32 op 轴网格
-   （复用 search_dct*_axes.py），找 VL=128 最优；
-3. 门禁：20k 差分（`gen_verify --vl 16`）+ TestBenchLite（VL=16）；
+1. **基线已落地（2026-08-16）**：`tools/emit_dct16_vl128.py` /
+   `tools/emit_dct32_vl128.py` 直接提取上游 8-lane E/O+sdot 结构
+   （upstream-exact 于任意 SVE VL），并实现 fused 四行 quarter
+   变体（单循环、无中间 O/EO/EEE 数组）；
+2. 在 QEMU `sve-max-vq=1`（VL=128）下已测：
+
+   | 候选 | 结构 | fused_uop (-O3) | stack_vector | 20k/200k 差分 | TestBenchLite 5-seed |
+   | --- | --- | ---: | ---: | --- | --- |
+   | dct16 | upstream | 1565 | 270 | 0 | - |
+   | dct16 | fused | **1392** | 95 | 0 / 0（51.2M lanes） | **PASS**（QEMU vq=1） |
+   | dct32 | upstream | 10130 | 2959 | 0 | - |
+   | dct32 | fused | **8421** | 844 | 0 / 0（204.8M lanes） | **PASS**（QEMU vq=1） |
+
+   候选文件：`kernels/dct16/candidates/best_sve2_vl128.cpp`、
+   `kernels/dct32/candidates/best_sve2_vl128.cpp`（需 `-O3` 编译）；
+   `build_preload_so.py --vl 16 --isa sve2` 已接入选择（并修正
+   VL128 过滤的字节/位单位不一致）；
+3. 下一步：dct32 继续叠加 k 族结构轴（k0_epack/k2k4 的 8-lane
+   版），以及 710 实机 E2E 裁决；
 4. 实机：Yitian710 E2E（dct16/dct32 在该机 profile 占比：dct32
    ~1.4%、dct16 上游 SVE1 已快于 NEON，SVE2 VL=128 是否有结构赢点
    需实测裁决）。

@@ -596,7 +596,7 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
                            (16, "dynopt_satd_16x16_sve2"),
                            (32, "dynopt_satd_32x32_sve2"),
                            (64, "dynopt_satd_64x64_sve2")):
-                if (vl == 128 or skip_satd_small) and n in (8, 16):
+                if (vl == 16 or skip_satd_small) and n in (8, 16):
                     # VL=128: upstream SVE2 satd8/16 beats the pure-NEON
                     # candidate (Yitian microbench, 2026-08-16); the
                     # 32/64 wrappers are still kept because they avoid
@@ -611,7 +611,7 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
             # so the inlined candidates carry the same ~1.5x win.
             for shape, sym in (((8, 16), "dynopt_satd_8x16_sve2"),
                                ((16, 8), "dynopt_satd_16x8_sve2")):
-                if vl == 128 or skip_satd_small:
+                if vl == 16 or skip_satd_small:
                     continue
                 add("pu[%s].satd" % luma_pu(*shape), "int", params, sym)
             return out
@@ -865,7 +865,14 @@ def candidate_sources(kernel, isa, vl=None):
             p = os.path.join(d, "best_sve2_opbase.cpp")
         if os.path.exists(p):
             return [p]
-    if vl == 128:
+    if kernel in ("dct16", "dct32") and isa == "sve2" and vl == 16:
+        # VL=128 fused quarter candidates (tools/emit_dct*_vl128.py):
+        # dct16 1392 / dct32 8421 fused_uop (-O3), 20k+200k diff 0,
+        # TestBenchLite 5-seed PASS at QEMU sve-max-vq=1.
+        p = os.path.join(d, "best_sve2_vl128.cpp")
+        if os.path.exists(p):
+            return [p]
+    if vl == 16:
         if kernel in VL128_SKIP:
             return []
         if kernel in VL128_NEON_PREFER:
@@ -878,7 +885,7 @@ def candidate_sources(kernel, isa, vl=None):
         # but loses on 920B (Kunpeng 920; 2.68 vs 2.28 vs upstream 2.51)
         # and on N1 profile. Default = non-unroll (historical +10%
         # replay win); VL=128 SVE2 hosts use the unroll file.
-        if vl == 128:
+        if vl == 16:
             p = os.path.join(d, "best_sve2_unroll.cpp")
             if os.path.exists(p):
                 return [p]
@@ -1257,7 +1264,7 @@ def main():
             report["skipped"].append([kernel, "no dispatch mapping"])
             continue
         sources = candidate_sources(kernel, args.isa, args.vl)
-        if not sources and args.vl == 128 and kernel in VL128_SKIP:
+        if not sources and args.vl == 16 and kernel in VL128_SKIP:
             report["skipped"].append(
                 [kernel, VL128_SKIP_REASON.get(kernel, "VL=128 skip")])
             continue
