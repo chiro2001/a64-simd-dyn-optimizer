@@ -32,6 +32,16 @@ VL 无关纯 NEON（此前 best9-950 的 satd-8 SVE2 候选有 VL=256 假设，
   与手写候选逐项一致；
 - 测试：`tools/test_satd8_op_ir.py`。
 
+### SATD 16x16（2026-08-16 完成）
+
+- `satd16_dag()`：4 组 × (4 行 lo/hi 半加载 → hadamard 蝶形 → 置换
+  +abs → vmax/vadd)，跨组 u16 累加，再统一 reduce；241 ops；
+- 发射器支持 `half` 加载（vget_low/high_u8 + vsubl）；
+- 差分：vs 上游 `satd8_sve2<16,16>`（QEMU vq=1/2 20k）0 失配；
+  vs 现有可信候选 5000 例 0 失配；
+- 动态计数：IR **273/308** vs 现有候选 **275/311**（-2 ops）；
+- def-use（标量根）通过。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；

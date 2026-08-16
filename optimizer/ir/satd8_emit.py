@@ -16,9 +16,16 @@ def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
         ins = list(op.inputs)
         if kind == "load_diff":
             y = attrs["row"]
-            body.append("    int16x8_t %s = vreinterpretq_s16_u16("
-                        "vsubl_u8(vld1_u8(pix1 + %d * sp1), "
-                        "vld1_u8(pix2 + %d * sp2)));" % (out, y, y))
+            if attrs.get("half"):
+                vg = "low" if attrs["half"] == "lo" else "high"
+                body.append("    int16x8_t %s = vreinterpretq_s16_u16("
+                            "vsubl_u8(vget_%s_u8(vld1q_u8(pix1 + %d * sp1)), "
+                            "vget_%s_u8(vld1q_u8(pix2 + %d * sp2))));"
+                            % (out, vg, y, vg, y))
+            else:
+                body.append("    int16x8_t %s = vreinterpretq_s16_u16("
+                            "vsubl_u8(vld1_u8(pix1 + %d * sp1), "
+                            "vld1_u8(pix2 + %d * sp2)));" % (out, y, y))
         elif kind in ("add", "sub"):
             if attrs["elem"] == "u16":
                 fn = "vaddq_u16" if kind == "add" else "vsubq_u16"

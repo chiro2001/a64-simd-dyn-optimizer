@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from lane_defuse import defuse_report  # noqa: E402
 from satd8_emit import emit_satd8  # noqa: E402
-from satd8_op_ir import satd8_dag  # noqa: E402
+from satd8_op_ir import satd8_dag, satd16_dag  # noqa: E402
 
 
 def main():
@@ -38,6 +38,19 @@ def main():
     assert len(stmts) == len([o for o in ops if o.kind != "vaddv"])
     print("SATD8 IR DAG OK: ops=%d statements=%d"
           % (len(ops), len(stmts)))
+
+    ops16 = satd16_dag()
+    assert all("n_out" in o.attrs and "lane_in" in o.attrs for o in ops16)
+    r16 = defuse_report(ops16)
+    assert r16["ok"], r16["issues"][:5]
+    src16 = emit_satd8(ops16, func_name="dynopt_satd_16x16_sve2")
+    assert src16.count("vsubl_u8") == 32
+    assert src16.count("vget_low_u8") == 32
+    assert src16.count("vget_high_u8") == 32
+    assert src16.count("vmaxq_u16") == 16
+    assert src16.count("vpaddlq_u16") == 1
+    assert src16.count("vaddvq_u32") == 1
+    print("SATD16 IR DAG OK: ops=%d" % len(ops16))
     return 0
 
 
