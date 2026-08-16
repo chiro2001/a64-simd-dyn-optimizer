@@ -182,6 +182,24 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - merge_narrow8 rewrite 在该 plan 下编译失败（记录为 measure-fail，
   后续排查）；k0_epack 在 pass2 仍劣化（6554）。
 
+### 跨 kernel：interp8 的 filter8 接入同一 dot 节点（2026-08-16）
+
+“同一算法、不同指令实现”不止 dct16/32：interp8 的 8-tap 滤波在
+NEON（vmull/vmlal）、SVE2（smullb/smlalb）与 SVE2p3（sdot.h
+B→H 点积）下也是同一张 `dot` 图。dot_ir 已扩展：
+
+| 子图 | dot 类型 | NEON | SVE2 | SVE2p3（960） |
+| --- | --- | --- | --- | --- |
+| interp8 水平 8-tap（u8×s8→s16） | dot(u8,s8,s16) | vmull_u8_s8 | smullb_smlalb_u8 | **sdot_h_b2h**（1 uop） |
+| interp8 垂直 8-tap（s16×s16→s32） | dot(s16,s16,s32) | vmull_vmlal | smullb_smlalb | smullb_smlalb |
+| dct32 k2/k4（s16 切片→s64） | dot(s16,s16,s64) | — | sdot.d | sdot.d |
+
+- `legal_lowerings` 新增 SVE2p3 目标（sve2p3 ⊇ sve2 ⊇ sve1，且带
+  NEON）：同一 filter8 节点在三个目标上自动选不同 lowering；
+- 测试：`test_interp8_filter8_dot_cross_isa` 验证
+  neon→vmull_u8_s8、sve2→smullb_smlalb_u8、
+  sve2p3→sdot_h_b2h（代价最优）。
+
 ## 5. 使用示例
 
 ```python

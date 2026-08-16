@@ -76,6 +76,21 @@ class TestLegalLowerings(unittest.TestCase):
         self.assertEqual(legal_lowerings(d, "sve2", "both", sve2=True),
                          [("sdot.d", 1)])
 
+    def test_interp8_filter8_dot_cross_isa(self):
+        # Same graph node (u8 x s8 -> s16): different lowerings per ISA.
+        d = make_dot("f", "interp8.filter8", tuple(range(8)),
+                     "s16", "u8", "s8", "vmull_u8_s8")
+        self.assertEqual(
+            legal_lowerings(d, "neon", "both"),
+            [("vmull_u8_s8", 2)])
+        self.assertEqual(
+            legal_lowerings(d, "sve2", "both", sve2=True),
+            [("smullb_smlalb_u8", 2)])
+        self.assertEqual(
+            legal_lowerings(d, "sve2p3", "both"),
+            [("sdot_h_b2h", 1), ("vmull_u8_s8", 2),
+             ("smullb_smlalb_u8", 2)])
+
     def test_legacy_contract_opens_sdot_on_s16_slices(self):
         d = make_dot("d", "t", ("a",), "s64", "s16", "s16", "sdot.d")
         self.assertEqual(legal_lowerings(d, "sve1", "legacy-internal-exact"),

@@ -32,6 +32,14 @@ DOT_LOWERINGS: Dict[str, Tuple[str, str, str, int, str, str, int]] = {
     "unpk_svmul":  ("s16", "s16", "s32", 1, "sve1", "both", 2),
     # Generic s32 multiply + horizontal add (pass2 E chain keeps s32).
     "mul_saddv":   ("s32", "s32", "s32", 4, "any", "upstream-exact", 4),
+    # interp8 horizontal 8-tap (u8 sample x s8 coefficient -> s16):
+    # NEON widening mul, SVE2 widening mul, SVE2p3 B->H dot.
+    "vmull_u8_s8": ("u8", "s8", "s16", 4, "neon", "both", 2),
+    "smullb_smlalb_u8": ("u8", "s8", "s16", 2, "sve2", "both", 2),
+    "sdot_h_b2h":  ("u8", "s8", "s16", 4, "sve2p3", "both", 1),
+    # interp8 vertical 8-tap (s16 sample x s16 coefficient -> s32)
+    # reuses the dct s16/s16 -> s32 entries (vmull_vmlal /
+    # smullb_smlalb / unpk_svmul).
 }
 
 # Which contract family a lowering satisfies.  `sdot.d` on pass2 s16
@@ -91,17 +99,21 @@ def legal_lowerings(dot: Op, isa: str, contract: str,
     a_ty = dot.attrs.get("a_ty", "s16")
     b_ty = dot.attrs.get("b_ty", "s16")
     acc_ty = dot.attrs.get("acc_ty", "s64")
+    sve2_eff = sve2 or isa in ("sve2", "sve2p3")
     res = []
     for name, (la, lb, lacc, _n, lisa, lcontract, uop) in \
             sorted(DOT_LOWERINGS.items(), key=lambda kv: kv[1][-1]):
         if la != a_ty or lb != b_ty or lacc != acc_ty:
             continue
-        if lisa == "sve2" and not sve2:
+        if lisa == "sve2p3" and isa != "sve2p3":
             continue
-        if lisa == "neon" and isa not in ("neon", "sve1"):
+        if lisa == "sve2" and not sve2_eff:
             continue
-        # SVE2 is a superset of SVE1: sdot.d legal on both.
-        if lisa == "sve1" and isa not in ("sve1", "sve2"):
+        # NEON exists on all aarch64 targets (SVE2p3 machines too).
+        if lisa == "neon" and isa not in ("neon", "sve1", "sve2p3"):
+            continue
+        # SVE2 is a superset of SVE1; SVE2p3 of SVE2.
+        if lisa == "sve1" and isa not in ("sve1", "sve2", "sve2p3"):
             continue
         # legacy-internal-exact is a superset: upstream-exact lowerings
         # remain legal under it (mul_saddv still allowed, sdot.d added).
