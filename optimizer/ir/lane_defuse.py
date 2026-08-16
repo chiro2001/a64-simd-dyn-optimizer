@@ -39,6 +39,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
 
     if kind == "load":
         return 8, ()
+    if kind == "load_diff":
+        return 8, ()
     if kind == "permute":
         pk = attrs["kind"]
         if pk == "rev16":
@@ -57,14 +59,36 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         if pk == "rev64q":
             m = tuple((i,) for i in (1, 0, 3, 2))
             return 4, (m,)
+        if pk == "trn1q_s16":
+            m0 = ((0,), (), (1,), (), (2,), (), (3,), ())
+            m1 = ((), (0,), (), (1,), (), (2,), (), (3,))
+            return 8, (m0, m1)
+        if pk == "trn2q_s16":
+            m0 = ((4,), (), (5,), (), (6,), (), (7,), ())
+            m1 = ((), (4,), (), (5,), (), (6,), (), (7,))
+            return 8, (m0, m1)
+        if pk == "trn1q_s32":
+            m0 = ((0,), (1,), (), (), (4,), (5,), (), ())
+            m1 = ((), (), (0,), (1,), (), (), (4,), (5,))
+            return 8, (m0, m1)
+        if pk == "trn2q_s32":
+            m0 = ((2,), (3,), (), (), (6,), (7,), (), ())
+            m1 = ((), (), (2,), (3,), (), (), (6,), (7,))
+            return 8, (m0, m1)
         raise ValueError("lane semantics: permute %s" % pk)
     if kind == "vget":
         base = 0 if attrs["which"] == "lo" else 4
         return 4, (tuple((base + i,) for i in range(4)),)
     if kind == "widen_add":
         return 4, (_e(4), _e(4))
+    if kind == "abs":
+        return 8, (_e(8),)
+    if kind == "abd":
+        return 8, (_e(8), _e(8))
+    if kind == "max":
+        return 8, (_e(8), _e(8))
     if kind in ("add", "sub"):
-        n = 8 if attrs["elem"] == "s16" else 4
+        n = 8 if attrs["elem"] in ("s16", "u16") else 4
         return n, (_e(n), _e(n))
     if kind == "neon_narrow4":
         return 4, (_e(4),)
@@ -97,6 +121,12 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (m0, m1)
     if kind == "neon_narrow":
         return 4, (_e(4),)
+    if kind == "vpaddl":
+        return 4, (((0, 1), (2, 3), (4, 5), (6, 7)),)
+    if kind == "vpadal":
+        return 4, (_e(4), ((0, 1), (2, 3), (4, 5), (6, 7)))
+    if kind == "vaddv":
+        return 1, (((0, 1, 2, 3),),)
     if kind == "store":
         # store consumes all 4 input lanes (output lane coords in attrs).
         return 4, (_e(4),)
@@ -166,11 +196,20 @@ def defuse_report(ops: List[Op]) -> Dict:
         return None
 
     stores = [op for op in ops if op.kind == "store"]
-    if not stores:
-        issues.append("no stores to validate")
-    for op in stores:
+    if stores:
+        roots = stores
+    else:
+        # Scalar-return kernels (e.g. satd): root is the terminal op.
+        consumed = {name for op in ops for name in op.inputs if name}
+        roots = [op for op in ops if op.out and op.out not in consumed]
+        if not roots:
+            roots = [op for op in ops if op.kind == "vaddv"]
+    if not roots:
+        issues.append("no stores or terminal ops to validate")
+    for op in roots:
         _, im = lane_semantics(op)
-        for lane in range(len(im[0])):
+        n_l = len(im[0]) if im else 1
+        for lane in range(n_l):
             err = trace2(op.inputs[0], lane, frozenset())
             if err:
                 issues.append("%s: store lane %d: %s"
