@@ -12,6 +12,7 @@ Usage:
   python3 tools/search_op_axes.py
 """
 
+import argparse
 import os
 import sys
 
@@ -151,7 +152,13 @@ VARIANTS = [
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--vq", type=int, default=2,
+                    help="QEMU sve-max-vq (2=VL256, 1=VL128)")
+    args = ap.parse_args()
     manifest = load_manifest("dct32")
+    if args.vq == 1:
+        manifest["vl_bytes"] = 16
     workdir = "/tmp/dct32-op-axes"
     os.makedirs(workdir, exist_ok=True)
     verify_src = os.path.join(workdir, "verify_generated.cpp")
@@ -174,7 +181,8 @@ def main():
             manifest, verify_src, src_path, workdir, "op-%s" % tag,
             allow_mismatch=True,
             range_start_syms=["_ZL9op_pass_4PKsPsl"],
-            range_end_sym="dynopt_dct32_sve2_shared")
+            range_end_sym="dynopt_dct32_sve2_shared",
+            qemu_vq=args.vq)
         if not passed:
             rows.append((tag, "measure-fail", why))
             continue

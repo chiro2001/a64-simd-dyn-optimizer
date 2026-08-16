@@ -9,6 +9,7 @@ Usage:
   python3 tools/search_dct16_axes.py
 """
 
+import argparse
 import os
 import sys
 
@@ -55,7 +56,13 @@ VARIANTS = [
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--vq", type=int, default=2,
+                    help="QEMU sve-max-vq (2=VL256, 1=VL128)")
+    args = ap.parse_args()
     manifest = load_manifest("dct16")
+    if args.vq == 1:
+        manifest["vl_bytes"] = 16
     workdir = "/tmp/dct16-op-axes"
     os.makedirs(workdir, exist_ok=True)
     verify_src = os.path.join(workdir, "verify_generated.cpp")
@@ -77,7 +84,7 @@ def main():
             allow_mismatch=kw.get("legacy", False),
             range_start_syms=["_ZL9op_pass_4PKsPsl"],
             range_end_sym="dynopt_dct16_sve2_shared",
-            cxx_flags_extra="-fno-tree-pre")
+            cxx_flags_extra="-fno-tree-pre", qemu_vq=args.vq)
         if not passed:
             rows.append((tag, "measure-fail", why))
             continue

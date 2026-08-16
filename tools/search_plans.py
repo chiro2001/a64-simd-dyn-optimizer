@@ -71,7 +71,7 @@ def all_plans():
 
 def measure(manifest, verify_src, src, workdir, tag,
             allow_mismatch=False, range_start_syms=None,
-            range_end_sym=None, cxx_flags_extra=""):
+            range_end_sym=None, cxx_flags_extra="", qemu_vq=2):
     """Compile -> 20k differential -> true-dynamic counts. Returns
     (passed, mismatches, counts) or (False, reason, None)."""
     obj = os.path.join(workdir, tag + ".o")
@@ -89,7 +89,13 @@ def measure(manifest, verify_src, src, workdir, tag,
              "-Wl,--end-group", "-lpthread", "-ldl", "-o", verify])
     if v.returncode != 0:
         return False, "verify link failed", None
-    r = run(QEMU + [verify, "20000"])
+    qemu = QEMU[:]
+    if qemu_vq != 2:
+        for i, a in enumerate(qemu):
+            if "sve-max-vq=" in a:
+                qemu[i] = a.replace("sve-max-vq=2",
+                                    "sve-max-vq=%d" % qemu_vq)
+    r = run(qemu + [verify, "20000"])
     if "mismatches=" not in r.stdout:
         return False, "verify produced no mismatch line", None
     mism = 0

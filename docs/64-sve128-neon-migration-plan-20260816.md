@@ -12,6 +12,10 @@
 原因：op 发射器把「16 元素行」固化为 16-lane 向量（`svptrue_b16`
 全宽）；VL=128 下 SVE 只有 8 个 s16 lane，每行只算了一半。
 
+全量确认（2026-08-16）：dct16 op 轴全部变体在 VL=128 下均
+~99.97% 失配（legacy+sve 1079 fused_uop 但 5.1M lanes 失配）——
+与单点测量一致，迁移缺口覆盖全部结构轴。
+
 ## 2. 为什么“同一算法”但代码不可直接迁移
 
 - 计算图（dot/butterfly/round/narrow）与 VL 无关——这是统一的前提；
@@ -49,8 +53,9 @@
 ### 3.3 工具侧
 
 - `gen_verify --vl 16` 已就绪（VL=128 验证）；
-- 需为测量链增加 QEMU `sve-max-vq=1` 参数（measure() 的 qemu cpu
-  覆盖），使 VL=128 网格可自动化；
+- 测量链已支持 VL=128：`measure(qemu_vq=1)` 替换 QEMU
+  `sve-max-vq=1`，`search_dct*_axes.py --vq 1` 自动生成 VL=16
+  verifier 并测量（fused_uop 仍有效，20k 门禁按 VL=16 判定）；
 - emit_dct*_best.py 增加 `--vl 16`/`--neon` 输出模式。
 
 ## 4. 预期与风险
