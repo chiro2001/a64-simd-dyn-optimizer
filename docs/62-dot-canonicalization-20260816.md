@@ -237,6 +237,18 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - 鲁棒性：`rewrite_merge_narrow8` 对非 8-row-bank 布局（rg16）优雅
   跳过（不再中断搜索）；rg4 下 merge_narrow8 仍编译失败（待修）。
 
+### 注入链路接入（2026-08-16）
+
+- `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线
+  `best_sve2_opbase.cpp`**（8114 fused_uop，20k diff 0，可 bit-exact
+  注入）——比 grouped 8292 少 2.1% 且安全；
+- `build_preload_so.candidate_sources`：dct32 + sve2 + VL=256 默认选
+  opbase；`AGO_LEGACY_DCT32=1` 时选黄金标准最佳 `best_sve2_op4100.cpp`
+  （4100，TestBenchLite 全 PASS，但非 bit-exact，E2E 门禁需政策
+  决策）；VL=128 与 sve1 路径不变；
+- 全管线验证：`--isa sve2 --vl 32 --kernels dct32` 构建通过（ISA
+  门禁 OK，bundle 生成）。
+
 ### 跨 kernel：interp8 的 filter8 接入同一 dot 节点（2026-08-16）
 
 “同一算法、不同指令实现”不止 dct16/32：interp8 的 8-tap 滤波在

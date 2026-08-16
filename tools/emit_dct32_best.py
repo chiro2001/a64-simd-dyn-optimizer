@@ -37,18 +37,34 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(
         ROOT, "kernels/dct32/candidates/best_sve2_op4100.cpp"))
+    ap.add_argument("--base", action="store_true",
+                    help="emit the upstream-exact op-backend baseline "
+                         "(8114 fused_uop, 20k diff 0) instead of the "
+                         "legacy golden-gated best")
     args = ap.parse_args()
     p = dct32_v31_plan()
-    p.lowering.update(BEST_FLAGS)
+    flags = {} if args.base else BEST_FLAGS
+    p.lowering.update(flags)
     src = emit_from_plan(p, "dynopt_dct32_sve2_shared")
-    header = ("// Best golden-gated DCT32 candidate (2026-08-16):\n"
-              "// flags %r -> 4216 fused_uop, TestBenchLite 5-seed PASS\n"
-              "// Regenerate with tools/emit_dct32_best.py\n\n"
-              % (BEST_FLAGS,))
-    os.makedirs(os.path.dirname(args.out), exist_ok=True)
-    with open(args.out, "w") as f:
+    if args.base:
+        out = os.path.join(ROOT, "kernels/dct32/candidates/"
+                           "best_sve2_opbase.cpp")
+        header = ("// Upstream-exact op-backend DCT32 baseline "
+                  "(2026-08-16):\n"
+                  "// 8114 fused_uop, 20k diff 0 (injectable, bit-exact "
+                  "safe)\n"
+                  "// Regenerate with tools/emit_dct32_best.py --base\n\n")
+    else:
+        out = args.out
+        header = ("// Best golden-gated DCT32 candidate (2026-08-16):\n"
+                  "// flags %r -> 4100 fused_uop, TestBenchLite 5-seed "
+                  "PASS\n"
+                  "// Regenerate with tools/emit_dct32_best.py\n\n"
+                  % (BEST_FLAGS,))
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, "w") as f:
         f.write(header + src)
-    print("wrote %s (%d bytes)" % (args.out, len(src) + len(header)))
+    print("wrote %s (%d bytes)" % (out, len(src) + len(header)))
     return 0
 
 

@@ -845,6 +845,19 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel == "dct32" and isa == "sve2" and (vl is None or vl == 32):
+        # Op-backend DCT32 candidates (VL=256, armv8.2-a+sve2):
+        #   best_sve2_opbase.cpp  - upstream-exact, 8114 fused_uop,
+        #     20k diff 0 (safe for bit-exact E2E injection);
+        #   best_sve2_op4100.cpp  - legacy-internal-exact golden-gated
+        #     best, 4100 fused_uop (TestBenchLite 5-seed PASS; NOT
+        #     bit-exact - opt in via AGO_LEGACY_DCT32=1).
+        if os.environ.get("AGO_LEGACY_DCT32") == "1":
+            p = os.path.join(d, "best_sve2_op4100.cpp")
+        else:
+            p = os.path.join(d, "best_sve2_opbase.cpp")
+        if os.path.exists(p):
+            return [p]
     if vl == 128:
         if kernel in VL128_SKIP:
             return []
