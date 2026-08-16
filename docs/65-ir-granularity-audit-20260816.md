@@ -40,3 +40,22 @@ VL=128/NEON 迁移的本质是 IR 宽度参数化。第一步（本仓库已实�
 
 测试：`optimizer/ir/test_ir_width.py`（Shape/ValueLayout 的 vscale 推导与
 后向兼容）。
+
+## 4. 第二步已落地：permute 索引 → lane 索引表达式（2026-08-16）
+
+`optimizer/ir/width_expr.py`：符号 permute 名（rev8/rev16/rev32/rev64）
+按目标宽度解析为「每 128-bit 段的 concrete lane 索引表」：
+
+- `resolve("rev16", 256)` → 单段 16-lane 全反转（现有 VL=256 lowering）；
+- `resolve("rev16", 128)` → identity(low) + rev8(high)，正是 8-lane
+  fused 基线（`tools/emit_dct16_vl128.py` 的 rev16 助手）使用的分解，
+  即 E = lo + rev(hi) 的对折语义；
+- `resolve("rev8", 256)` → [7..0, 15..8]（每段内反转）；
+- rev32/rev64 按 128-bit 段推导。
+
+这样同一 permute 节点携带的是「逻辑 lane 映射 f(i)」，concrete 表由
+宽度解析器生成，而不是写死在 16-lane 常量里——与 vscale 第一步衔接，
+为 op 发射器的 8-lane 重 lowering 提供索引层。
+
+测试：`optimizer/ir/test_width_expr.py`（10 项：各 VL 的 rev8/16/32/64
+解析、dct16 op IR 的 leaf/per-row permute 符号覆盖）。
