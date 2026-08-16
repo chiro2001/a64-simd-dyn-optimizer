@@ -77,7 +77,8 @@ def main():
             mm, vs, src, args.workdir, "%s-%d" % (args.kernel, vq),
             range_start_syms=[args.func], range_end_sym=args.func,
             cxx_flags_extra="-O3", qemu_vq=vq,
-            verify_cxx_flags=args.verify_flags)
+            verify_cxx_flags=args.verify_flags,
+            cxx_march=args.march)
         c = counts or {}
         print("vq=%d passed=%s why=%r fused=%s total=%s"
               % (vq, passed, why, c.get("vector_fused_uop"),
