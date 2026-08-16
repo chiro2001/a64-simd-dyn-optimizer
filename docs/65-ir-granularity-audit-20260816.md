@@ -121,3 +121,20 @@ neon_dot=True)` 用同一个 fused8 DAG 发射纯 NEON（vmull/vmlal）变体
 
 同一宽度无关 DAG 在 SVE2 与 NEON 两个目标上都达到/超过手写候选的
 关键指标——「自动重 lowering」从链路可用推进到生产同级。
+
+**DCT32 同链路覆盖（2026-08-16）**：`dct32_fused8_op_ir.py` +
+`dct32_fused8_emit.py` 把同一机制扩展到 dct32（32 行 × 32 k × 2 pass
+= 2048 lane；fused8 provenance 全覆盖、0 scatter）：
+
+| 目标 | 发射方式 | fused_uop | stack | total | 200k 差分 | TestBenchLite |
+| --- | --- | ---: | ---: | ---: | --- | --- |
+| SVE2 | 手写 fused C++ | 8421 | 844 | 11041 | 0 | PASS |
+| SVE2 | IR fused8 | **8398** | 1404 | 11435 | **0** | **PASS** |
+| 纯 NEON | 手写 fused C++ | 12245 | 1394 | 13909 | 0 | PASS |
+| 纯 NEON | IR fused8 | **11910** | 1395 | 13658 | **0** | **PASS** |
+
+IR 版在 fused_uop 上优于手写基线（SVE2 -23、NEON -335），stack 略高
+（SVE2 +560）。dct16/dct32 的「宽度无关 DAG → 多目标自动 lowering」
+链路全部落地并通过黄金标准门禁。调试中发现的关键差异：dct32 的 k2
+族常量是 `g_t32[k][0..7]`（GT32A），不是 dct16 的 t8_odd；k4 族常量
+表与 k2 的 s32 表需区分（GT32S32A4）。
