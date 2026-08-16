@@ -103,6 +103,10 @@ TWO_REG_TABLE = re.compile(
     r"\{\s*z\d+\.[bhsd]\s*(?:-|,)\s*z\d+\.[bhsd]\s*\}"
 )
 NEON_REG = re.compile(r"\b[vdq][0-9]+(?:\.[0-9]+[bhsd])?")
+# Compiler stack spills of 128-bit SVE vectors at VL=128 are emitted as
+# NEON memory encodings (ldr/str/ldp/stp with q/d registers). These are
+# not SIMD computation; pure-SVE mode only forbids NEON data/arithmetic.
+NEON_MEM_MNEMONICS = {"ldr", "str", "ldp", "stp"}
 
 
 def operand_level(mnemonic, operands):
@@ -285,7 +289,8 @@ def main():
         if effective > target:
             violations.append((addr, mnem, effective, sym))
         if args.no_neon and NEON_REG.search(operands):
-            neon_violations.append((addr, mnem, sym))
+            if mnem not in NEON_MEM_MNEMONICS:
+                neon_violations.append((addr, mnem, sym))
 
     # Ambiguous multi-level mnemonics worth a human look at the lower level:
     # any mnemonic whose per-encoding ranks include a higher level than the

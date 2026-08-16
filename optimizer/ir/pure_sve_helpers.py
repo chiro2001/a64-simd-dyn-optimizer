@@ -95,6 +95,15 @@ static inline svint32_t psv_load4_s32(const int32_t* p)
     return v;
 }
 
+static inline svint32_t psv_ld1sh_s32(const int16_t* p)
+{
+    svint32_t v;
+    asm volatile("ld1sh {%0.s}, %1/z, [%2]"
+                 : "=w"(v)
+                 : "Upl"(svptrue_pat_b32(SV_VL4)), "r"(p));
+    return v;
+}
+
 static inline void psv_store4_s16(int16_t* p, svint16_t v)
 {
     asm volatile("st1h {%0.h}, %1, [%2]"

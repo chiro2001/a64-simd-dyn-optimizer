@@ -81,7 +81,10 @@ def _body_subs(body: str) -> str:
                       if _split_args(s)[0].strip() == "0"
                       else "svdup_s64_x(psv_pg2_s64(), %s)" % s)
     b = _replace_call(b, "vmulq_s32", args1("svmul_s32_x(psv_pg4_s32(), %s, %s)"))
+    b = _replace_call(b, "vmlaq_s32",
+                      args1("svmla_s32_x(psv_pg4_s32(), %s, %s, %s)"))
     b = _replace_call(b, "vpaddq_s32", args1("psv_addp4_s32(%s, %s)"))
+    b = _replace_call(b, "vld1sh_s32", lambda s: "psv_ld1sh_s32(%s)" % s)
     b = _replace_call(b, "vrev64q_s32", lambda s: "psv_rev64_s32(%s)" % s)
     b = _replace_call(b, "vzip1q_s64", args1("svzip1_s64(%s, %s)"))
     b = _replace_call(b, "vzip2q_s64", args1("svzip2_s64(%s, %s)"))

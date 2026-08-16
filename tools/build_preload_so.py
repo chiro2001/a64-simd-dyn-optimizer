@@ -903,6 +903,13 @@ def candidate_sources(kernel, isa, vl=None):
         p = os.path.join(d, "best_ir_pure_sve.cpp")
         if os.path.exists(p):
             return [p]
+    if kernel == "dct32" and vl == 16 and \
+            os.environ.get("AGO_PURE_SVE") == "1":
+        # Pure-SVE fused8 candidate (VL=128-fixed, zero NEON SIMD;
+        # validated in tools/test_dct32_pure_sve.py).
+        p = os.path.join(d, "best_ir_pure_sve.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "sao-stats-e0" and os.environ.get("AGO_IR_SAO") == "1":
         # IR-driven SAO E0 candidates (docs/66): same DAG lowered to
         # pure NEON (best_ir.cpp) or SVE2 (best_ir_sve2.cpp, histseg+
