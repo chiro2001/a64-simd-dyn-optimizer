@@ -18,9 +18,10 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from ago.templates.butterfly_quarter import (  # noqa: E402
-    emit_quarter_pass, emit_quarter_pass32)
+    coef_c_arrays, emit_quarter_pass, emit_quarter_pass2_16,
+    emit_quarter_pass2_32, emit_quarter_pass32)
 from dct32_constants import GT32  # noqa: E402
-from dct16_op_ir import G16, T8E  # noqa: E402
+from dct16_op_ir import G16, GT16_S32, T8E  # noqa: E402
 from dct16_pure_sve_emit import emit_pure_sve  # noqa: E402
 from dct32_pure_sve_emit import emit_pure_sve as emit_pure_sve32  # noqa: E402
 from pure_sve_helpers import PURE_SVE_HELPERS  # noqa: E402
@@ -68,6 +69,58 @@ int main()
             src[i] = (int16_t)(rand() % 60000 - 30000);
         tpl_pass4_32(src, a, 32);
         dbg_pass4_32(src, b, 32);
+        for (int i = 0; i < 1024; i++)
+            if (a[i] != b[i]) mism++;
+    }
+    printf(mism ? "FAILED %ld\n" : "PASS\n", mism);
+    return mism != 0;
+}
+"""
+
+DRIVER_FULL = r"""
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+extern "C" void tpl_dct16(const int16_t*, int16_t*, intptr_t);
+extern "C" void dynopt_dct16_sve8_anyvl(
+    const int16_t*, int16_t*, intptr_t);
+int main()
+{
+    int16_t src[16 * 16 + 8], a[256], b[256];
+    long mism = 0;
+    srand(0xF111);
+    for (int it = 0; it < 200; it++)
+    {
+        for (int i = 0; i < 16 * 16 + 8; i++)
+            src[i] = (int16_t)(rand() % 60000 - 30000);
+        tpl_dct16(src, a, 16);
+        dynopt_dct16_sve8_anyvl(src, b, 16);
+        for (int i = 0; i < 256; i++)
+            if (a[i] != b[i]) mism++;
+    }
+    printf(mism ? "FAILED %ld\n" : "PASS\n", mism);
+    return mism != 0;
+}
+"""
+
+DRIVER_FULL32 = r"""
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+extern "C" void tpl_dct32(const int16_t*, int16_t*, intptr_t);
+extern "C" void dynopt_dct32_sve8_anyvl(
+    const int16_t*, int16_t*, intptr_t);
+int main()
+{
+    int16_t src[32 * 32 + 16], a[1024], b[1024];
+    long mism = 0;
+    srand(0xF322);
+    for (int it = 0; it < 80; it++)
+    {
+        for (int i = 0; i < 32 * 32 + 16; i++)
+            src[i] = (int16_t)(rand() % 60000 - 30000);
+        tpl_dct32(src, a, 32);
+        dynopt_dct32_sve8_anyvl(src, b, 32);
         for (int i = 0; i < 1024; i++)
             if (a[i] != b[i]) mism++;
     }
@@ -177,6 +230,89 @@ class ButterflyTemplateGate(unittest.TestCase):
             capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertIn("PASS", run.stdout)
+
+    def _full_gate(self, name, n, tpl_src, arrays, wrapper, driver_src,
+                   ref_sym, n_out, iters, seed_src):
+        body = "\n".join(l for l in tpl_src.splitlines()
+                         if not l.startswith("#include"))
+        src = ("#include <arm_sve.h>\n#include <cstdint>\n\n"
+               + PURE_SVE_HELPERS + "\n" + arrays + "\n" + body
+               + "\n" + wrapper)
+        tpl_s = self.write("tmp-tpl-%s.cpp" % name, src)
+        tpl_o = os.path.join(ROOT, "build", "tmp-tpl-%s.o" % name)
+        self.build(tpl_s, tpl_o)
+        pure = seed_src.replace("    if (svcntb() != 16) return;\n", "")
+        ref_s = self.write("tmp-tpl-%s-ref.cpp" % name, pure)
+        ref_o = os.path.join(ROOT, "build", "tmp-tpl-%s-ref.o" % name)
+        self.build(ref_s, ref_o)
+        drv = self.write("tmp-tpl-%s-driver.cpp" % name, driver_src)
+        binp = os.path.join(ROOT, "build", "tmp-tpl-%s-driver" % name)
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-O2", "-o", binp, drv,
+             tpl_o, ref_o], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+        qemu = os.environ.get("QEMU") or os.path.join(
+            ROOT, "build", "qemu-build", "qemu-aarch64")
+        run = subprocess.run(
+            [qemu, "-L", "/usr/aarch64-linux-gnu",
+             "-cpu", "max,sve-max-vq=1", binp],
+            capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("PASS", run.stdout)
+
+    def test_template_full_dct16_matches_golden(self):
+        p1 = emit_quarter_pass(n=16, coefs={
+            "gt": G16,
+            "t8odd": [row[:4] + row[:4]
+                      for row in (G16[2], G16[6], G16[10], G16[14])],
+            "t8e": T8E}, fn="quarter_pass1", include_coefs=False)
+        p2 = emit_quarter_pass2_16(coefs={
+            "gt": G16, "gt16s32": GT16_S32, "t8e": T8E},
+            include_coefs=False)
+        wrapper = ('extern "C" void tpl_dct16(const int16_t* s, '
+                   "int16_t* d, intptr_t st)\n{\n"
+                   "    int16_t coef[256];\n"
+                   "    quarter_pass1(s, coef, st);\n"
+                   "    quarter_pass2_16(coef, d);\n}\n")
+        arrays = coef_c_arrays({
+            "gt": G16,
+            "t8odd": [row[:4] + row[:4]
+                      for row in (G16[2], G16[6], G16[10], G16[14])],
+            "gt16s32": GT16_S32, "t8e": T8E})
+        self._full_gate("full16", 16, p1 + "\n" + p2, arrays, wrapper,
+                        DRIVER_FULL, "dynopt_dct16_sve8_anyvl",
+                        256, 200,
+                        emit_pure_sve("dynopt_dct16_sve8_anyvl"))
+
+    def test_template_full_dct32_matches_golden(self):
+        p1 = emit_quarter_pass32(coefs={
+            "gt32a": [GT32[k][:8] for k in range(32)],
+            "gt32b": [GT32[k][8:16] for k in range(32)],
+            "k4": [GT32[k][:4] for k in range(4, 32, 8)],
+            "t8e": T8E}, fn="quarter_pass1_32", include_coefs=False)
+        p2 = emit_quarter_pass2_32(coefs={
+            "gt32a": [GT32[k][:8] for k in range(32)],
+            "gt32b": [GT32[k][8:16] for k in range(32)],
+            "gt32s32a": [GT32[k][:4] for k in range(2, 32, 4)],
+            "gt32s32b": [GT32[k][4:8] for k in range(2, 32, 4)],
+            "k4": [GT32[k][:4] for k in range(4, 32, 8)],
+            "t8e": T8E}, include_coefs=False)
+        wrapper = ('extern "C" void tpl_dct32(const int16_t* s, '
+                   "int16_t* d, intptr_t st)\n{\n"
+                   "    int16_t coef[1024];\n"
+                   "    quarter_pass1_32(s, coef, st);\n"
+                   "    quarter_pass2_32(coef, d);\n}\n")
+        arrays = coef_c_arrays({
+            "gt32a": [GT32[k][:8] for k in range(32)],
+            "gt32b": [GT32[k][8:16] for k in range(32)],
+            "gt32s32a": [GT32[k][:4] for k in range(2, 32, 4)],
+            "gt32s32b": [GT32[k][4:8] for k in range(2, 32, 4)],
+            "k4": [GT32[k][:4] for k in range(4, 32, 8)],
+            "t8e": T8E})
+        self._full_gate("full32", 32, p1 + "\n" + p2, arrays, wrapper,
+                        DRIVER_FULL32, "dynopt_dct32_sve8_anyvl",
+                        1024, 80,
+                        emit_pure_sve32("dynopt_dct32_sve8_anyvl"))
 
 
 if __name__ == "__main__":
