@@ -262,6 +262,25 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - 结论：merge_narrow8 需先修语义（row 寻址与 g 循环），暂不参与
   注入；当前最佳仍为 **r16k2epsi+m8 4032**。
 
+### DCT16 接入同一 op 轴搜索（2026-08-16）
+
+`tools/search_dct16_axes.py`：复用同一 QEMU 差分 + 真动态测量链
+（`-fno-tree-pre` 编译契约，op_pass_4 → wrapper trace 范围）：
+
+| 变体 | fused_uop | sg | 20k 失配 | TestBenchLite 5 seed |
+| --- | ---: | ---: | ---: | --- |
+| perrow+upstream（基线） | 1471 | 0 | 0 | — |
+| **quarter+oddq** | **895（-39%）** | 0 | 0 | **全 PASS** |
+| legacy+sve | 699（-52%） | **4** | 2300 | 全 PASS（但 scatter 违反零 scatter 门禁，不可直接采用） |
+| quarter+upstream | 1097 | 0 | 0 | — |
+
+- **dct16 quarter+oddq = 895**：upstream-exact、零失配、零 scatter、
+  TestBenchLite 全 PASS——相对 op 基线 1471 **-39%**，可安全注入；
+- legacy+sve（699）黄金标准通过但因 4 个 scatter 不满足零 scatter
+  门禁，需修 scatter 后才可考虑；
+- 同一套「canonical/op 轴搜索 + 黄金标准门禁」从 dct32 直接迁移到
+  dct16，验证了方案的跨 kernel 可复用性。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线
