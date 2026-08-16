@@ -69,7 +69,12 @@ class TestLegalLowerings(unittest.TestCase):
             [("vmull_vmlal", 2), ("unpk_svmul", 2)])
         # SVE2 target: only the native widening multiply.
         self.assertEqual(legal_lowerings(d, "sve2", "both", sve2=True),
-                         [("smullb_smlalb", 2)])
+                         [("smullb_smlalb", 2), ("unpk_svmul", 2)])
+
+    def test_sdot_legal_on_sve2(self):
+        d = make_dot("d", "t", ("a",), "s64", "s16", "s16", "sdot.d")
+        self.assertEqual(legal_lowerings(d, "sve2", "both", sve2=True),
+                         [("sdot.d", 1)])
 
     def test_legacy_contract_opens_sdot_on_s16_slices(self):
         d = make_dot("d", "t", ("a",), "s64", "s16", "s16", "sdot.d")

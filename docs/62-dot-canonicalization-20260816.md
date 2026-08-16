@@ -94,6 +94,23 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
 **fused_uop 8292**（与 docs/20 v3.1 full-call 一致），20k 差分 0、
 零 scatter。下一步即可在该链路上跑规范化 dot 驱动的 lowering 枚举。
 
+### canonical 驱动的 lowering 枚举已闭环（2026-08-16）
+
+`tools/search_dot_lowerings.py`：v3.1 plan → op DAG → canonicalize →
+`select_dot_lowerings`（按合同族）→ `derive_dot_lowering_flags` →
+发射器 `legacy_ex` → `measure()`（QEMU 20k 差分 + 真动态轨迹）：
+
+| 合同族 | dot lowering flags | fused_uop | 20k 失配 |
+| --- | --- | ---: | ---: |
+| upstream-exact | legacy_ex=0 | **8292** | 0 |
+| legacy-internal-exact | legacy_ex=1（canonical 选出 sdot.d） | **7989（-303）** | 0（稀有回绕由 TestBenchLite 门禁） |
+
+- `measure()` 新增 `allow_mismatch`：契约族变体可在稀有失配下继续
+  出 fused_uop（verify 退出码 1 放行），供 legacy 族测量；
+- 已知缺口：`legacy_k4` 尚未参数化进 grouped 发射器（op 级 rewrite
+  已有）；source-proof 期望表需 legacy 感知 plan 模型（当前 legacy
+  变体跳过该静态层，由编译+差分+轨迹兜底）。
+
 ## 5. 使用示例
 
 ```python

@@ -100,7 +100,8 @@ def legal_lowerings(dot: Op, isa: str, contract: str,
             continue
         if lisa == "neon" and isa not in ("neon", "sve1"):
             continue
-        if lisa not in ("any", isa, "sve2", "neon") and isa != "sve1":
+        # SVE2 is a superset of SVE1: sdot.d legal on both.
+        if lisa == "sve1" and isa not in ("sve1", "sve2"):
             continue
         # legacy-internal-exact is a superset: upstream-exact lowerings
         # remain legal under it (mul_saddv still allowed, sdot.d added).

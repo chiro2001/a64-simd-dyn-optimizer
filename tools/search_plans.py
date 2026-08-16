@@ -69,7 +69,8 @@ def all_plans():
     return plans
 
 
-def measure(manifest, verify_src, src, workdir, tag):
+def measure(manifest, verify_src, src, workdir, tag,
+            allow_mismatch=False):
     """Compile -> 20k differential -> true-dynamic counts. Returns
     (passed, mismatches, counts) or (False, reason, None)."""
     obj = os.path.join(workdir, tag + ".o")
@@ -93,7 +94,9 @@ def measure(manifest, verify_src, src, workdir, tag):
         mism = int(r.stdout.split("mismatches=", 1)[1].split()[0])
     except (ValueError, IndexError):
         return False, "unparseable mismatch line", None
-    if r.returncode != 0 or mism != 0:
+    if r.returncode != 0 and not (allow_mismatch and mism > 0):
+        return False, "mismatches=%d" % mism, None
+    if mism != 0 and not allow_mismatch:
         return False, "mismatches=%d" % mism, None
 
     driver = os.path.join(workdir, tag + "-trace-driver")

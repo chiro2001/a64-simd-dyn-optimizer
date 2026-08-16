@@ -167,7 +167,8 @@ def lower(plan: Plan) -> str:
         pass1_k2_slice=lo.get("pass1_k2_slice", 0),
         odd_lowering=lo.get("odd_lowering", "row-reduce"),
         narrow_batch=lo.get("narrow_batch", 1),
-        constant_layout=lo.get("constant_layout", "canonical"))
+        constant_layout=lo.get("constant_layout", "canonical"),
+        legacy_ex=lo.get("legacy_ex", 0))
 
 
 def dct32_v31_plan() -> Plan:
