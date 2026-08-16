@@ -50,6 +50,7 @@ cost-coeff-remain-kernel-bench-920b-920B,,,cost-coeff-remain,entropy,kernel-benc
 dct16-best_ir_sve16,,,dct16,,best_ir_sve16,,,,,,2,51200,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct16-best_ir_sve16-static-vq2,,,dct16,,best_ir_sve16-static-vq2,,,,640,,2,,,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct16-best_sve2-sve256-2026-08-16-96bc310,2026-08-16,96bc310,dct16,dct,best_sve2-sve256,sve2,sve2,kernels/dct16/candidates/best_sve2.cpp,847,220,1;2,20000,0,,,,,,,,yes,docs/47-current-coverage-matrix-20260815.md
+dct16-composition-cert,2026-08-17,,dct16,,composition-cert,,,optimizer/ir/dct16_dual_sve_emit.py,,,,,,static-op-whitelist,,,,,,,,docs/75-two-group-equivalence-20260817.md
 dct16-dual-lane-cert,2026-08-17,,dct16,,dual-lane-cert,,,optimizer/ir/pure_sve_helpers.py,,,2,200,0,dual-lane-cert,,,,,,,,docs/75-two-group-equivalence-20260817.md
 dct16-hand-neon,,,dct16,dct,hand-neon,sve2,neon,,1946,,1;2,20000,0,PASS,N1,ticks_pct,-27.3,-0.93,,,yes,docs/64-sve128-neon-migration-plan-20260816.md
 dct16-hand-neon-N1-2026-08-16-72c8a08,,,dct16,,hand-neon,sve2,neon,,1946,,1;2,20000,0,PASS,N1,ticks_pct,-27.3,-0.93,,INVALID,yes,docs/64-sve128-neon-migration-plan-20260816.md
