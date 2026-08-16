@@ -1,0 +1,44 @@
+# 920B internal-node best9 E2E（2026-08-16，git 4f00b9a）
+
+Machine: internal shared Kunpeng 920B node (256 cores, strict SVE1
+VL=256, no PMU). Media via GitHub release e2e-media-20260816 (mp4 md5
+f081565c...), yuv regenerated with ffmpeg and byte-verified:
+
+  real_1080p_30f.yuv    (30f, md5 e20e4c9e...)
+  real_1080p_100f_b.yuv (100f genuine, md5 0f0c65c1...)
+
+Build: fresh build/x265-8-gcc from third_party/x265 b81f650, GCC 12.3.1,
+-march=armv8.2-a+sve, NEON/DOTPROD/I8MM/SVE ON, SVE2 ON (disabled at
+runtime by CPU), CLI+SHARED ON.
+
+Bundle: tools/build_preload_so.py --isa sve1 -O3, 13-kernel best9 set
+(c1c2/ccn/remain/sa8d16/satd-8/scan/interp8-vps x6/sao-bo). 14 objects,
+0 ISA violations (SVE1 gate). Injection: cloud-e2e-inject-710.sh with
+AGO_REPO override (local relink of libx265.so.216).
+
+Encode: taskset -c 0 ./x265 --input <yuv> --input-res 1920x1080 --fps 30
+--frames <N> --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0
+--b-adapt 0
+
+## Results (5+5 paired, identical cmd)
+
+| segment | base 中位 | opt 中位 | diff | Δ% | bootstrap95 | md5 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 30f | 8693 | 8535 | 161 | -1.85% | [157,167] ms | d3d7771bf356f798ddf6a43ea9f94ca4 |
+| 100f | 23747 | 23298 | 428 | -1.80% | [401,519] ms | 501c4f9354596bb31dbf0a739fad0fba4 |
+
+Both segments: significant (CI excludes 0), same-machine opt==base
+(bitstream byte-identical). Consistent with historical 920B best9
+(-2.06% 30f / -2.02% 100f on public cloud); slightly smaller here on the
+shared node but same direction.
+
+## Notes
+
+- build_preload_so.py ISA gate needs 'aarch64-linux-gnu-objdump' on PATH;
+  on this box it does not exist -> symlink
+  ~/.local/bin/aarch64-linux-gnu-objdump -> /usr/bin/objdump (GNU
+  binutils 2.41, disassembles aarch64) unblocked it.
+- Sweep/probe runs before the paired runs showed heavier contention; the
+  5+5 runs above are clean and stable.
+- Baseline lib restored after the run (strip-dynopt-link.py + ninja
+  relink).

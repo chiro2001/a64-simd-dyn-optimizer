@@ -1,44 +1,46 @@
 id,date,commit,kernel,family,variant,input_isa,output_isa,candidate_file,mca_fused_uop,mca_total,gate_vq,gate_cases,gate_mismatch,testbench,machine,kernel_metric,kernel_value,e2e_30f_pct,e2e_100f_pct,e2e_ci_ms,bit_exact,report
-dct16-op895-950,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_sve,1.2917,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
-dct16-op895-950-neon,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8750,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+best9-920b,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-2.06,-2.02,356..509 (100f),yes,docs/59-handoff-20260816.md
+best9-n1,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,,,,,,,,N1,,,-1.60,-1.52,226..706 (100f),yes,docs/59-handoff-20260816.md
+best9-710,2026-08-16,72c8a08,best9,bundle,best9-128,mixed,mixed,,,,,,,,710,,,,-1.53,279..415 (100f),yes,docs/59-handoff-20260816.md
+best9-best9-internal-100f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best9-internal-100f,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,,-1.80,401..519,yes,reports/best9-920b-internal-20260816.txt
+best9-best9-internal-30f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best9-internal-30f,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-1.85,,157..167,yes,reports/best9-920b-internal-20260816.txt
+four-arm-n1-best9,2026-08-16,42bd449,best9,bundle,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,-93.5..121,yes,reports/four-arm-n1-100f-20260816.txt
+three-arm-710-best9,2026-08-16,42bd449,best9,bundle,three-arm-100f,mixed,mixed,build/710-best9.so,,,,,,,710,,,,-0.16,-100..143,yes,reports/710-three-arm-100f-20260816.txt
+four-arm-n1-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,-85..322,yes,reports/four-arm-n1-100f-20260816.txt
+three-arm-710-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,three-arm-100f,mixed,mixed,build/710-best9-ir-dct.so,,,,,,,710,,,,-0.24,-18.5..109,yes,reports/710-three-arm-100f-20260816.txt
+cost-c1c2-flag-920b,2026-08-16,72c8a08,cost-c1c2-flag,entropy,round27,c,neon,tools/emit_cost_c1c2_flag_sve2_shared.py,,,replay,6472176,0,,920B,replay_ratio,0.998,,,,yes,reports/entropy-replay-920b-20260815.txt
+cost-coeff-nxn-neon-920b,2026-08-16,72c8a08,cost-coeff-nxn,entropy,neon,c,neon,tools/emit_cost_coeff_nxn_sve2_shared.py,,,replay,5776047,0,,920B,replay_ratio,1.097,-0.1,,,yes,reports/entropy-replay-920b-20260815.txt
+cost-coeff-remain-dfa-920b,2026-08-16,7e9dfe9,cost-coeff-remain,entropy,dfa-table,c,neon,tools/emit_cost_remain_sve2_shared.py,,,replay,2391308,0,,920B,replay_ratio,1.20,-0.25 (pp),,,yes,reports/entropy-replay-920b-20260815.txt
+dct16-hand-neon,2026-08-16,72c8a08,dct16,dct,hand-neon,sve2,neon,kernels/dct16/candidates/best_neon_vl128.cpp,1946,,1;2,20000,0,PASS,N1,ticks_base_cand,11/8,-0.93,,,yes,docs/64-sve128-neon-migration-plan-20260816.md
 dct16-hand-sve128,2026-08-16,72c8a08,dct16,dct,hand-vl128,sve2,sve2,kernels/dct16/candidates/best_sve2_vl128.cpp,1392,,1;2,20000,0,PASS,,,,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct16-ir-sve8,2026-08-16,72c8a08,dct16,dct,ir-fused8,sve2,sve2,kernels/dct16/candidates/best_ir_sve8.cpp,1393,,1;2,20000,0,PASS,,,,,,,yes,docs/65-ir-granularity-audit-20260816.md
-dct16-hand-neon,2026-08-16,72c8a08,dct16,dct,hand-neon,sve2,neon,kernels/dct16/candidates/best_neon_vl128.cpp,1946,,1;2,20000,0,PASS,N1,ticks_base_cand,11/8,-0.93,,,yes,docs/64-sve128-neon-migration-plan-20260816.md
-dct16-ir-neon,2026-08-16,72c8a08,dct16,dct,ir-neon,sve2,neon,kernels/dct16/candidates/best_ir_neon8.cpp,1941,,1;2,20000,0,PASS,N1,ticks_pct,-18.2,-1.80,-0.02,-114.5..151 (100f 4arm),yes,reports/four-arm-n1-100f-20260816.txt
 dct16-ir-neon-710,2026-08-16,72c8a08,dct16,dct,ir-neon,sve2,neon,kernels/dct16/candidates/best_ir_neon8.cpp,1941,,1;2,20000,0,PASS,710,ticks_pct,-15.4,,,,yes,docs/65-ir-granularity-audit-20260816.md
-dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
-dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
-dct32-op4032-950,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_sve,1.7143,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
-dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_neon,1.4015,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
+dct16-ir-neon,2026-08-16,72c8a08,dct16,dct,ir-neon,sve2,neon,kernels/dct16/candidates/best_ir_neon8.cpp,1941,,1;2,20000,0,PASS,N1,ticks_pct,-18.2,-1.80,-0.02,-114.5..151 (100f 4arm),yes,reports/four-arm-n1-100f-20260816.txt
+dct16-op895-950,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_sve,1.2917,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+dct16-op895-950-neon,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8750,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-hand-sve128,2026-08-16,72c8a08,dct32,dct,hand-vl128,sve2,sve2,kernels/dct32/candidates/best_sve2_vl128.cpp,8421,11041,1;2,20000,0,PASS,710,ticks_pct,-6.8,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct32-ir-sve8-710,2026-08-16,72c8a08,dct32,dct,ir-fused8,sve2,sve2,kernels/dct32/candidates/best_ir_sve8.cpp,8398,11435,1;2,20000,0,PASS,710,ticks_pct,-13.6,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct32-ir-neon,2026-08-16,72c8a08,dct32,dct,ir-neon,sve2,neon,kernels/dct32/candidates/best_ir_neon8.cpp,11910,13658,1;2,20000,0,PASS,N1,ticks_pct,-6.9,,,,yes,docs/65-ir-granularity-audit-20260816.md
-scan-pos-last-920b,2026-08-16,7e9dfe9,scan-pos-last,entropy,rbit-pext,neon,neon,kernels/scan-pos-last/candidates/best_sve2.cpp,,,real-20k,20000,0,,920B,ratio_neon_cand,1.50,-1.61,-1.80,114..148 (30f); 333..420 (100f),yes,reports/entropy-ablation-920b-20260816.txt
-cost-coeff-remain-dfa-920b,2026-08-16,7e9dfe9,cost-coeff-remain,entropy,dfa-table,c,neon,tools/emit_cost_remain_sve2_shared.py,,,replay,2391308,0,,920B,replay_ratio,1.20,-0.25 (pp),,,yes,reports/entropy-replay-920b-20260815.txt
-cost-coeff-nxn-neon-920b,2026-08-16,72c8a08,cost-coeff-nxn,entropy,neon,c,neon,tools/emit_cost_coeff_nxn_sve2_shared.py,,,replay,5776047,0,,920B,replay_ratio,1.097,-0.1,,,yes,reports/entropy-replay-920b-20260815.txt
-cost-c1c2-flag-920b,2026-08-16,72c8a08,cost-c1c2-flag,entropy,round27,c,neon,tools/emit_cost_c1c2_flag_sve2_shared.py,,,replay,6472176,0,,920B,replay_ratio,0.998,,,,yes,reports/entropy-replay-920b-20260815.txt
-satd-8-ir,2026-08-16,72c8a08,satd-8,pixel,ir,c/neon,neon,optimizer/ir/satd8_emit.py,77,91,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-sa8d16-ir,2026-08-16,72c8a08,sa8d16,pixel,ir,c/neon,neon,optimizer/ir/sa8d_emit.py,404,485,1;2,20000,0,,920B,ratio_neon_cand,1.04,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-ssd-16-ir,2026-08-16,72c8a08,ssd-16,asm,ir,neon,neon,optimizer/ir/ssd_emit.py,132,169,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-interp8-hpp-8x8,2026-08-16,044705c,interp8-hpp-8x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,243,275,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-interp8-hpp-8x16,2026-08-16,044705c,interp8-hpp-8x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,626,716,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-interp8-hpp-16x8,2026-08-16,014b997,interp8-hpp-16x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,429,463,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+dct32-op4032-950,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_sve,1.7143,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
+dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_neon,1.4015,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
+dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 interp8-hpp-16x16,2026-08-16,014b997,interp8-hpp-16x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1013,1105,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-16x32,2026-08-16,014b997,interp8-hpp-16x32,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1895,2194,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+interp8-hpp-16x8,2026-08-16,014b997,interp8-hpp-16x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,429,463,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-32x16,2026-08-16,014b997,interp8-hpp-32x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1872,2043,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-32x32,2026-08-16,014b997,interp8-hpp-32x32,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,3275,3771,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-64x32,2026-08-16,014b997,interp8-hpp-64x32,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,6209,6908,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-64x64,2026-08-16,014b997,interp8-hpp-64x64,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,12001,13614,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
-best9-920b,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-2.06,-2.02,356..509 (100f),yes,docs/59-handoff-20260816.md
-best9-n1,2026-08-16,72c8a08,best9,bundle,best9,mixed,mixed,,,,,,,,N1,,,-1.60,-1.52,226..706 (100f),yes,docs/59-handoff-20260816.md
-best9-710,2026-08-16,72c8a08,best9,bundle,best9-128,mixed,mixed,,,,,,,,710,,,,-1.53,279..415 (100f),yes,docs/59-handoff-20260816.md
+interp8-hpp-8x16,2026-08-16,044705c,interp8-hpp-8x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,626,716,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+interp8-hpp-8x8,2026-08-16,044705c,interp8-hpp-8x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,243,275,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 ir-all-7k-n1,2026-08-16,72c8a08,ir-all-7k,bundle,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,,yes,docs/59-handoff-20260816.md
-four-arm-n1-best9,2026-08-16,42bd449,best9,bundle,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,-93.5..121,yes,reports/four-arm-n1-100f-20260816.txt
 four-arm-n1-ir-dct,2026-08-16,42bd449,ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,-114.5..151,yes,reports/four-arm-n1-100f-20260816.txt
-four-arm-n1-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,-85..322,yes,reports/four-arm-n1-100f-20260816.txt
-three-arm-710-best9,2026-08-16,42bd449,best9,bundle,three-arm-100f,mixed,mixed,build/710-best9.so,,,,,,,710,,,,-0.16,-100..143,yes,reports/710-three-arm-100f-20260816.txt
-three-arm-710-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,three-arm-100f,mixed,mixed,build/710-best9-ir-dct.so,,,,,,,710,,,,-0.24,-18.5..109,yes,reports/710-three-arm-100f-20260816.txt
+mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sa8d16-ir,2026-08-16,72c8a08,sa8d16,pixel,ir,c/neon,neon,optimizer/ir/sa8d_emit.py,404,485,1;2,20000,0,,920B,ratio_neon_cand,1.04,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+satd-8-ir,2026-08-16,72c8a08,satd-8,pixel,ir,c/neon,neon,optimizer/ir/satd8_emit.py,77,91,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+scan-pos-last-920b,2026-08-16,7e9dfe9,scan-pos-last,entropy,rbit-pext,neon,neon,kernels/scan-pos-last/candidates/best_sve2.cpp,,,real-20k,20000,0,,920B,ratio_neon_cand,1.50,-1.61,-1.80,114..148 (30f); 333..420 (100f),yes,reports/entropy-ablation-920b-20260816.txt
+ssd-16-ir,2026-08-16,72c8a08,ssd-16,asm,ir,neon,neon,optimizer/ir/ssd_emit.py,132,169,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
