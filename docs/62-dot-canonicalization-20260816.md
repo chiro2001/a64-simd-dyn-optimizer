@@ -281,6 +281,17 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - 同一套「canonical/op 轴搜索 + 黄金标准门禁」从 dct32 直接迁移到
   dct16，验证了方案的跨 kernel 可复用性。
 
+### DCT16 注入接入（2026-08-16）
+
+- `tools/emit_dct16_best.py` 固化 **`best_sve2_op895.cpp`**（quarter+
+  oddq，895 fused_uop，upstream-exact、0 失配、0 scatter、
+  TestBenchLite 5 seed 全 PASS）——相对 dct16 op 基线 1471 **-39%**，
+  可 bit-exact 注入；
+- `build_preload_so.candidate_sources`：dct16 + sve2 + VL=256 默认选
+  op895（VL=128 与 sve1 路径不变）；
+- 全管线验证：`--isa sve2 --vl 32 --kernels dct16` 构建通过（ISA
+  门禁 OK，bundle 生成）。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线

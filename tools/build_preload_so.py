@@ -845,6 +845,13 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel == "dct16" and isa == "sve2" and (vl is None or vl == 32):
+        # Op-backend DCT16 candidate (VL=256, upstream-exact): 895
+        # fused_uop, 0 mismatch, 0 scatter, TestBenchLite 5-seed PASS
+        # (tools/search_dct16_axes.py quarter+oddq).
+        p = os.path.join(d, "best_sve2_op895.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "dct32" and isa == "sve2" and (vl is None or vl == 32):
         # Op-backend DCT32 candidates (VL=256, armv8.2-a+sve2):
         #   best_sve2_opbase.cpp  - upstream-exact, 8114 fused_uop,
