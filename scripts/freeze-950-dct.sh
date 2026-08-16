@@ -8,6 +8,9 @@
 #   AGO_IR_SVE16=1 scripts/freeze-950-dct.sh user@host  # dct16/32
 #     use the 16-lane dual-group IR candidates (docs/72) instead of
 #     op895/opbase; bundle/work dirs default to *-sve16-950.
+#   FROZEN=1 scripts/freeze-950-dct.sh user@host  # frozen release set
+#     best9-minus-remain + dct IR (docs/73): 14 kernels, dct16/32 via
+#     AGO_IR_DCT=1 (best_ir_sve8 low-lane SVE2 bridge on 950).
 #
 # Target prerequisites (docs/63): repo at /home/chiro/... with clean
 # build/x265-8-gcc (SVE2, I8MM=ON), /tmp/real_1080p_30f.yuv, and
@@ -26,18 +29,31 @@ if [ "${AGO_IR_SVE16:-0}" = "1" ]; then
     BUNDLE_DIR="${BUNDLE_DIR:-build/dynopt-sve16-950}"
     WORK_DIR="${WORK_DIR:-build/preload-work-sve16-950}"
 fi
+if [ "${FROZEN:-0}" = "1" ]; then
+    BUNDLE_DIR="${BUNDLE_DIR:-build/dynopt-frozen-950}"
+    WORK_DIR="${WORK_DIR:-build/preload-work-frozen-950}"
+    export AGO_IR_DCT=1
+fi
 INPUT="${FREEZE_INPUT:-/tmp/real_1080p_30f.yuv}"
 FRAMES="${FREEZE_FRAMES:-30}"
 REPO="/home/chiro/projects/a64-simd-dyn-optimizer"
 
 if [ ! -d "$BUNDLE_DIR" ]; then
-  echo "[950] bundle missing; building 23-kernel SVE2 bundle"
-  python3 tools/build_preload_so.py --isa sve2 --vl 32 \
-    --kernels cost-c1c2-flag,cost-coeff-nxn,cost-coeff-remain,sa8d16,\
+  if [ "${FROZEN:-0}" = "1" ]; then
+    KERNELS="cost-c1c2-flag,cost-coeff-nxn,sa8d16,satd-8,scan-pos-last,\
+interp8-vps-8x8,interp8-vps-8x16,interp8-vps-16x16,interp8-vps-16x32,\
+interp8-vps-32x16,interp8-vps-32x32,sao-stats-bo,dct16,dct32"
+    echo "[950] bundle missing; building FROZEN 14-kernel SVE2 bundle"
+  else
+    KERNELS="cost-c1c2-flag,cost-coeff-nxn,cost-coeff-remain,sa8d16,\
 satd-8,scan-pos-last,interp8-vps-8x8,interp8-vps-8x16,interp8-vps-16x16,\
 interp8-vps-16x32,interp8-vps-32x16,interp8-vps-32x32,sao-stats-bo,\
 sao-stats-e1,sao-stats-e2,sao-stats-e3,dct8,dct16,dct32,\
-interp8vpp-16,interp8vpp-32,interp8-16,interp8-32 \
+interp8vpp-16,interp8vpp-32,interp8-16,interp8-32"
+    echo "[950] bundle missing; building 23-kernel SVE2 bundle"
+  fi
+  python3 tools/build_preload_so.py --isa sve2 --vl 32 \
+    --kernels "$KERNELS" \
     --opt=-O3 --inject-outdir "$BUNDLE_DIR" --workdir "$WORK_DIR" \
     --json "$BUNDLE_DIR/report.json"
 fi

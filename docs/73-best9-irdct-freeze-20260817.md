@@ -71,3 +71,19 @@ round-0026 M4 门：**四机均不回退，且至少两机相对 best9 额外
 三机已满足“不回退 + 额外 ≥0.5pp + CI 不跨零”；950 用冻结集跑
 30f/100f（`AGO_IR_SVE16` 或既有 23-kernel 流程）后即可按 docs/52
 撰写 M4 独立声明。
+
+## 6. 950 一键测试（用户侧）
+
+冻结集在 950（SVE2 2x256）上的 30f/100f A/B：
+
+```sh
+# 冻结集（best9-minus-remain + dct IR，14 kernel；dct 用
+# best_ir_sve8 低 lane SVE2 桥接，AGO_IR_DCT=1）
+FROZEN=1 scripts/freeze-950-dct.sh user@host
+
+# 或 sve16 16-lane 候选（dct16/32 换成 best_ir_sve16，docs/72）
+AGO_IR_SVE16=1 scripts/freeze-950-dct.sh user@host
+```
+
+`GATE=1` 附带原生 TestBenchLite（dct16/dct32）。100f 需
+`FREEZE_INPUT=/tmp/real_1080p_100f_b.yuv FREEZE_FRAMES=100`。
