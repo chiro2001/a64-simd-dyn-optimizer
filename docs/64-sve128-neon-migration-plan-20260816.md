@@ -83,6 +83,21 @@ Ampere 类 NEON-only（ENABLE_SVE=OFF），LD_PRELOAD bundle
 - kernel 级周期：dct16 11→8（**-27.3%**）、dct32 74→73（-1.3%）；
 - 30f E2E 3+3：12129→11996ms 中位（**-1.10%**），bit-exact md5 一致。
 
+### 3.1.3 920B 实机（2026-08-16）
+
+Kunpeng 920（SVE1+dotprod，x265 NEON-only 构建），LD_PRELOAD A/B：
+- sdot.d 版（`--isa sve1 --vl 16` 默认选中前）：kernel 级反而更慢
+  （dct16 +33%、dct32 +20%）——Kunpeng 的 sdot.d 吞吐差；
+- **纯 NEON 版**（`AGO_NEON_DCT=1`）：kernel 级 dct16 19→17
+  （-10.5%）、dct32 150→127（-15.3%），契约内 0 失配；
+- 30f E2E 3+3：8179→8202ms 中位（**+0.28%**，轻微变慢）；
+  bit-exact md5 一致（ee5db7…，与冻结哈希相同）。结论：kernel
+  微基准赢面未转 E2E，920B 上现候选不发布，留作后续 k 族结构轴
+  再评估。
+- 因此注入默认改为：`--isa sve1 --vl 16` → NEON 版（920B）；
+  `--isa sve2 --vl 16` → sdot.d 版（710/950）；`AGO_NEON_DCT=1`
+  可强制 NEON（N1/任意）。
+
 ### 3.2 NEON（920B/N1）
 
 1. 为 op DAG 增加 **NEON lowering**（canonical dot 表已列

@@ -854,6 +854,13 @@ def candidate_sources(kernel, isa, vl=None):
         p = os.path.join(d, "best_neon_vl128.cpp")
         if os.path.exists(p):
             return [p]
+    if kernel in ("dct16", "dct32") and isa == "sve1" and vl == 16:
+        # Kunpeng 920B: sdot.d throughput is poor (measured +20..33%
+        # cycles vs upstream NEON asm), the pure-NEON fused quarter
+        # wins (-10.5% dct16 / -15.3% dct32 kernel cycles).
+        p = os.path.join(d, "best_neon_vl128.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "dct16" and isa == "sve2" and (vl is None or vl == 32):
         # Op-backend DCT16 candidate (VL=256, upstream-exact): 895
         # fused_uop, 0 mismatch, 0 scatter, TestBenchLite 5-seed PASS
@@ -874,8 +881,7 @@ def candidate_sources(kernel, isa, vl=None):
             p = os.path.join(d, "best_sve2_opbase.cpp")
         if os.path.exists(p):
             return [p]
-    if kernel in ("dct16", "dct32") and isa in ("sve1", "sve2") and \
-            vl == 16:
+    if kernel in ("dct16", "dct32") and isa == "sve2" and vl == 16:
         # VL=128 fused quarter candidates (tools/emit_dct*_vl128.py):
         # dct16 1392 / dct32 8421 fused_uop (-O3), 20k+200k diff 0,
         # TestBenchLite 5-seed PASS at QEMU sve-max-vq=1.
