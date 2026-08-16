@@ -1,0 +1,30 @@
+# dct16/32 SVE256 对比（内部算子 vs op-backend vs AGO IR）
+
+## 对比表
+
+| 目标 | 候选 | 来源 | fused_uop | MCA cycles | 950 kernel ratio | 其它实测 |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| dct16 SVE256 | best_sve2.cpp | 内部手写/搜索（docs/47） | 847 | 220 | - | 历史覆盖 |
+| dct16 SVE256 | best_sve2_op895.cpp | op-backend（AGO op DAG） | 895 | - | 1.29 vs SVE | 950 门禁 PASS |
+| dct16 VL128 | best_ir_sve8.cpp | AGO IR fused8（8-lane） | 1393 | - | 不适用 | 710 kernel -15.4% |
+| dct32 SVE256 | best_sve2.cpp | 内部手写/搜索（docs/47） | 4014 | 1041 | - | 历史覆盖 |
+| dct32 SVE256 | best_sve2_opbase.cpp | op-backend | 8114 | - | 1.00（平价） | 950 门禁 PASS |
+| dct32 SVE256 | best_sve2_op4032.cpp | op-backend | 4032 | - | 1.71 vs SVE / 1.40 vs NEON | 非 bit-exact，策略 |
+| dct32 VL128 | best_ir_sve8.cpp | AGO IR fused8（8-lane） | 8398 | - | 不适用 | 710 kernel -13.6% |
+
+950 E2E：dct8+dct16(op895)+dct32(opbase) 30f **+0.79%**（CI [54,98]，
+bit-exact，perf 命中）。
+
+## 结论
+
+1. “内部算子 dct16/32 SVE256”= `kernels/<dct>/candidates/best_sve2.cpp`
+   （dct16 847/220、dct32 4014/1041，docs/47 覆盖矩阵）；
+2. AGO 目前在 SVE256 侧的生成器是 **op-backend**（op895/opbase/
+   op4032/op4100），已在 950 实测（op895 +29%、op4032 +71% 需策略、
+   opbase 平价）；
+3. **AGO IR（fused8）目前只发射 8-lane（VL128）**：宽度无关 DAG 和
+   lane 溯源已参数化，但 `emit_neon8_ops` 是 8-lane 固定发射；
+   与 SVE256 op 候选不是同宽，fused_uop 不能直接横向比；
+4. 要“用 AGO IR 生成 SVE256”需新增 **16-lane 发射路径**
+   （emit_acle vl=32），属于 P4 范畴；完成后可与 op 候选在 950
+   同宽对比（门禁 vq=2 已覆盖，只缺发射器与实机）。
