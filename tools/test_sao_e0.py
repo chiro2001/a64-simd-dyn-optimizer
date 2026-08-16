@@ -37,7 +37,7 @@ def main():
     assert r2["ok"], r2["issues"][:5]
     src2 = emit_sao_e0_64(ops2, target="sve2")
     assert src2.count("svhistseg_s8") == 4
-    assert src2.count("sdotq_s16") == 40
+    assert src2.count("sdotq_s16(") == 41  # 40 calls + helper definition
     assert src2.count("vmulq_s16") == 0
     assert src2.count("vaddvq_s64") == 1
     print("SAO E0 SVE2 DAG OK: ops=%d" % len(ops2))
