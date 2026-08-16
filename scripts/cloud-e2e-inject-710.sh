@@ -24,10 +24,13 @@ cd "$REPO"
 ninja -C build/x265-8-gcc common/CMakeFiles/common.dir/primitives.cpp.o
 
 python3 - <<'PY'
+import os
 import glob
 import re
 
-p = '/root/projects/a64-simd-dyn-optimizer/build/x265-8-gcc/build.ninja'
+p = os.path.join(
+    os.environ.get('AGO_REPO', '/root/projects/a64-simd-dyn-optimizer'),
+    'build/x265-8-gcc/build.ninja')
 objs = ' '.join(sorted(glob.glob('/tmp/e2e/work/*.o')) +
                 ['/tmp/e2e/out/dynopt_patch.o'])
 lines = open(p).read().splitlines()
