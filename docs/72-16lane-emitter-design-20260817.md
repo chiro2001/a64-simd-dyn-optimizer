@@ -66,8 +66,24 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
    （`--gate dct32-sve16`）。dct32 每行 4 个 8-lane 块，EO 本身是
    8-lane，pair-form 双组寄存器直接喂 sdot（无需 dct16 的 quad-pack）；
    pass2 保留每行两个 s32 EO（EO_*0/EO_*1）供 mla 使用。
-- ⏳ 与 op-backend（op895/opbase/op4032）同宽指令数/周期对比、
-   950 实机注入定稿。
+- ✅ 与 op-backend 同宽静态对比（同编译 `-O3 -march=armv8.2-a+sve2`，
+  按 kernel 函数集计 `vector_fused_uop`，VL=256）：
+
+  | kernel | sve16 | op-backend | 差 |
+  | --- | --- | --- | --- |
+  | dct16 | **640** | op895 952 | −33% |
+  | dct32 | **897** | opbase 1129 / op4032 2110 | −21% / −57% |
+
+  （注：op895/opbase/op4032 的历史 DB 数字 895/8114/4032 出自另一
+  计数路径，与本表同口径数字不同；本表命令：
+  `aarch64-linux-gnu-g++ -O3 -march=armv8.2-a+sve2 -c <cand>.cpp` +
+  `tools/static_counts.py`/按符号计数。）
+- ⏳ 950 实机 kernel 周期/注入 E2E：候选已接入
+  `AGO_IR_SVE16=1`（`tools/build_preload_so.py` 在
+  `--isa sve2 --vl 32` 时优先选 `best_ir_sve16.cpp`）。950 侧命令：
+  `AGO_IR_SVE16=1 python3 tools/build_preload_so.py --isa sve2 --vl 32
+  --kernels dct16,dct32 --opt=-O3 --out build/dct-sve16.so`，再按
+  docs/63 的注入法 A/B。
 
 ## 实现要点（dct16）
 

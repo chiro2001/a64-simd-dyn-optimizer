@@ -957,6 +957,13 @@ def candidate_sources(kernel, isa, vl=None):
         if os.path.exists(p):
             return [p]
     if kernel == "dct16" and isa == "sve2" and (vl is None or vl == 32):
+        if os.environ.get("AGO_IR_SVE16") == "1":
+            # 16-lane dual-group IR candidate (VL=256, zero NEON;
+            # docs/72): 640 fused_uop (same-flag static count) vs
+            # op895 952. TestBenchLite vq=2 6-seed PASS.
+            p = os.path.join(d, "best_ir_sve16.cpp")
+            if os.path.exists(p):
+                return [p]
         # Op-backend DCT16 candidate (VL=256, upstream-exact): 895
         # fused_uop, 0 mismatch, 0 scatter, TestBenchLite 5-seed PASS
         # (tools/search_dct16_axes.py quarter+oddq).
@@ -964,6 +971,14 @@ def candidate_sources(kernel, isa, vl=None):
         if os.path.exists(p):
             return [p]
     if kernel == "dct32" and isa == "sve2" and (vl is None or vl == 32):
+        if os.environ.get("AGO_IR_SVE16") == "1":
+            # 16-lane dual-group IR candidate (VL=256, zero NEON;
+            # docs/72): 897 fused_uop (same-flag static count) vs
+            # opbase 1129 / op4032 2110. TestBenchLite vq=2 6-seed
+            # PASS.
+            p = os.path.join(d, "best_ir_sve16.cpp")
+            if os.path.exists(p):
+                return [p]
         # Op-backend DCT32 candidates (VL=256, armv8.2-a+sve2):
         #   best_sve2_opbase.cpp  - upstream-exact, 8114 fused_uop,
         #     20k diff 0 (safe for bit-exact E2E injection);
