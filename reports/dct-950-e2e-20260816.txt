@@ -1,0 +1,44 @@
+# 950 (920G) E2E regression - inject dct8/dct16/dct32 (opbase) vs base
+
+date: 2026-08-16 (Asia/Shanghai)
+git: c06b638 (round-0026)
+
+## 环境
+
+- uname: Linux 6.6.0-145.3.22.153.oe2403sp3.aarch64 aarch64, 384 核；
+- ISA: SVE2 2x256 / NEON 4x128（hwcap sve2，无 sve2p1+）；
+- ref x265 b81f650，build/x265-8-gcc（gcc-16 native，
+  -march=armv8.2-a+sve2 -O3，Release，ENABLE_SHARED=ON）；
+- inject bundle: dct8+dct16+dct32（dct16=op895、dct32=opbase
+  bit-exact）；active libx265.so.216 == .inject-dct（md5
+  51b5eed3...），baseline .base（md5 c9a6f0c3...，0 dynopt syms）；
+- method: interleaved randomized A/B（直接换 libx265.so.216），
+  taskset -c 0，30f 1080p，date +%s%N 计墙钟。
+
+## 门禁与结果
+
+md5 gate: base 9ab91797cfa4e329c0fe7bfb5f63e2eb == inj
+9ab91797cfa4e329c0fe7bfb5f63e2eb（IDENTICAL，bit-exact）。
+
+| 统计 | base | inj | diff | Δ | bootstrap95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 30f，8 交错对 | 8956.5 | 8864.5 | 71.0 | +0.79% | [54.0, 98.0] ms |
+
+diff = base - inj > 0 → inject 更快，CI 不含 0。
+
+## perf 确认（注入确实生效）
+
+- inj profile（perf cpu-clock -F999，30f）：dynopt_dct8 0.81%、
+  dynopt_dct16 0.03%、dynopt_dct32 0.01%；helpers op_pass_4/op_pass_11
+  （dct16/dct32 内部）~1.7%+2.0%；“patched 3 slots”可见；
+- base profile：0 dynopt / op_pass 采样。
+
+## 结论
+
+1. dct8/16/32 opbase bundle 在 950 上 30f bit-exact 且 **+0.79%**
+   E2E（小但显著，CI 不跨零）；
+2. perf 证明 dispatch 确实命中注入的 dct8/16/32；base 无 dynopt
+   符号；
+3. dct32 opbase 单 kernel 平价（4bb48e3），此处收益是真实码流上
+   dct8+16+32 的合计；
+4. 100f 复测与 op4032 策略放行仍待办。
