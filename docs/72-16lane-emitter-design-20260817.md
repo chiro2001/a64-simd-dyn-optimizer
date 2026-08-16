@@ -60,8 +60,14 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
    （vq1 8-lane pure-SVE 参考 vs vq2 16-lane，分进程同输入，0 失配；
    `tools/test_dct16_sve16.py`）、TestBenchLite vq=2 六 seed 全过
    （`--gate dct16-sve16`）。
-- ⏳ dct32 双组发射器（同法）、与 op-backend（op895/opbase/op4032）
-   同宽对比、950 实机注入定稿。
+- ✅ **dct32 双组发射器完成**（`optimizer/ir/dct32_dual_sve_emit.py`
+   → `kernels/dct32/candidates/best_ir_sve16.cpp`）：0 NEON、41k
+   跨 VQ 差分 0 失配、TestBenchLite vq=2 六 seed 全过
+   （`--gate dct32-sve16`）。dct32 每行 4 个 8-lane 块，EO 本身是
+   8-lane，pair-form 双组寄存器直接喂 sdot（无需 dct16 的 quad-pack）；
+   pass2 保留每行两个 s32 EO（EO_*0/EO_*1）供 mla 使用。
+- ⏳ 与 op-backend（op895/opbase/op4032）同宽指令数/周期对比、
+   950 实机注入定稿。
 
 ## 实现要点（dct16）
 
