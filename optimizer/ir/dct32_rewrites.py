@@ -676,6 +676,9 @@ REWRITES["k0_even_sve"] = rewrite_k0_even_sve
 
 def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
     """Merge two 4-row groups into one 8-row super-group (odd path)."""
+    # Only the legacy row_group=4 leaf layout provides 8-row banks
+    # (rows b*8..b*8+7 under one g). Other layouts (e.g. row_group=16)
+    # must skip this rewrite instead of crashing mid-search.
     base = _op_id_base(ops)
     counter = [base]
 
@@ -695,6 +698,12 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
         if o.tile_id.startswith("p%d.leaf.row" % pid(o)):
             row = int(o.tile_id.rsplit("row", 1)[1])
             leaf.setdefault((pid(o), o.attrs.get("g", 0), row), {})[o.out] = o
+    has_8row_bank = any(
+        len([r for (pp, gg, r) in leaf
+             if pp == p and gg == b and b * 8 <= r < b * 8 + 8]) == 8
+        for p in (1, 2) for b in range(4))
+    if not has_8row_bank:
+        return ops
 
     remove = set()
     insert_at = {}
