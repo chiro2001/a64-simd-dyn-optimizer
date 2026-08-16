@@ -18,8 +18,9 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from ago.templates.butterfly_quarter import (  # noqa: E402
-    coef_c_arrays, emit_quarter_pass, emit_quarter_pass2_16,
-    emit_quarter_pass2_32, emit_quarter_pass32)
+    _NEON_HEADER, coef_c_arrays, emit_quarter_pass, emit_quarter_pass2_16,
+    emit_quarter_pass2_32, emit_quarter_pass32,
+    emit_quarter_pass2_neon16)
 from dct32_constants import GT32  # noqa: E402
 from dct16_op_ir import G16, GT16_S32, T8E  # noqa: E402
 from dct16_pure_sve_emit import emit_pure_sve  # noqa: E402
@@ -377,6 +378,99 @@ class ButterflyTemplateGate(unittest.TestCase):
 
         drv = self.write("tmp-tpl-neon-driver.cpp", DRIVER_NEON)
         binp = os.path.join(ROOT, "build", "tmp-tpl-neon-driver")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-O2", "-o", binp, drv,
+             tpl_obj, ref_obj], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+        qemu = os.environ.get("QEMU") or os.path.join(
+            ROOT, "build", "qemu-build", "qemu-aarch64")
+        run = subprocess.run(
+            [qemu, "-L", "/usr/aarch64-linux-gnu",
+             "-cpu", "max,sve-max-vq=1", binp],
+            capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("PASS", run.stdout)
+
+    def test_template_neon_full_dct16_matches_golden(self):
+        coefs = {"gt": G16,
+                 "t8odd": [row[:4] + row[:4]
+                           for row in (G16[2], G16[6], G16[10], G16[14])],
+                 "gt16s16": [row[:4] for row in (G16[2], G16[6], G16[10],
+                                                  G16[14])],
+                 "t8e": T8E}
+        p1 = emit_quarter_pass(n=16, coefs=coefs, target="neon",
+                               fn="quarter_pass1_neon",
+                               include_coefs=False)
+        p2 = emit_quarter_pass2_neon16(coefs=coefs, include_coefs=False,
+                                       include_header=False)
+        # drop the duplicate dq_rev helper block from pass1 (pass2
+        # provides it via _NEON_HEADER)
+        p1_body = []
+        skip = False
+        for l in p1.splitlines():
+            if "DQ_REV16_TBL" in l:
+                skip = True
+            if skip and l.startswith("static inline void quarter_pass1_neon"):
+                skip = False
+            if not skip:
+                p1_body.append(l)
+        body = "\n".join(p1_body + p2.splitlines())
+        body = "\n".join(l for l in body.splitlines()
+                         if not l.startswith("#include"))
+        arrays = coef_c_arrays(coefs)
+        tpl = ("#include <arm_neon.h>\n#include <cstdint>\n\n"
+               + arrays + "\n" + _NEON_HEADER + "\n" + body +
+               '\nextern "C" void tpl_dct16_neon(const int16_t* s, '
+               "int16_t* d, intptr_t st)\n{\n"
+               "    int16_t coef[256];\n"
+               "    quarter_pass1_neon(s, coef, st);\n"
+               "    quarter_pass2_neon16(coef, d);\n}\n")
+        tpl_src = self.write("tmp-tpl-neon-full.cpp", tpl)
+        tpl_obj = os.path.join(ROOT, "build", "tmp-tpl-neon-full.o")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-c", "-O2",
+             "-march=armv8.2-a+dotprod", "-o", tpl_obj, tpl_src],
+            capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+
+        with open(os.path.join(
+                ROOT, "kernels", "dct16", "candidates",
+                "best_neon_vl128.cpp")) as f:
+            golden = f.read()
+        ref_src = self.write("tmp-tpl-neon-full-ref.cpp", golden)
+        ref_obj = os.path.join(ROOT, "build", "tmp-tpl-neon-full-ref.o")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-c", "-O2",
+             "-march=armv8.2-a+dotprod", "-o", ref_obj, ref_src],
+            capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+
+        drv = self.write("tmp-tpl-neon-full-driver.cpp", r"""
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+extern "C" void tpl_dct16_neon(const int16_t*, int16_t*, intptr_t);
+extern "C" void dynopt_dct16_sve2_shared(
+    const int16_t*, int16_t*, intptr_t);
+int main()
+{
+    int16_t src[16 * 16 + 8], a[256], b[256];
+    long mism = 0;
+    srand(0x5EED);
+    for (int it = 0; it < 200; it++)
+    {
+        for (int i = 0; i < 16 * 16 + 8; i++)
+            src[i] = (int16_t)(rand() % 60000 - 30000);
+        tpl_dct16_neon(src, a, 16);
+        dynopt_dct16_sve2_shared(src, b, 16);
+        for (int i = 0; i < 256; i++)
+            if (a[i] != b[i]) mism++;
+    }
+    printf(mism ? "FAILED %ld\n" : "PASS\n", mism);
+    return mism != 0;
+}
+""")
+        binp = os.path.join(ROOT, "build", "tmp-tpl-neon-full-driver")
         r = subprocess.run(
             ["aarch64-linux-gnu-g++", "-O2", "-o", binp, drv,
              tpl_obj, ref_obj], capture_output=True, text=True)
