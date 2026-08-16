@@ -232,3 +232,17 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
 - filter 从“评估后延期”推进到“首个 per-coeff DAG + 上游 exact
   门禁”；其余形状（8x8/16x8/32x32 等）与 i8mm/dotprod 目标按
   同法继续。
+
+### DAG 最优 kernel 集 N1 E2E（2026-08-16 更新）
+
+组合 bundle：satd-8 + sa8d16 + sao-stats-e0 + sad（均 IR 生成候选，
+`AGO_IR_PIXEL/AGO_IR_SAO/AGO_IR_ASM`），N1 5+5+5 交错 30f：
+
+| 组 | 中位（ms） | 相对 base |
+| --- | ---: | ---: |
+| base | 12088 | — |
+| 现有候选集 | 12014 | -0.61% |
+| **DAG 最优集（IR）** | **12002** | **-0.71%** |
+
+bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
+不劣于现有候选（-0.71% vs -0.61%，噪声内）；加入 sao/sad 无回归。
