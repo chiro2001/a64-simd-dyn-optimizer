@@ -13,6 +13,12 @@
 - 用户侧动作保持一键：`FROZEN=1 scripts/freeze-950-dct.sh user@host`
   （可选 `AGO_IR_SVE16=1` / `GATE=1`），跑完后
   `python3 tools/m4_declaration.py` 出最终 M4 声明。
+- 结果入库与复判：把 30f/100f 配对结果整理成 JSON
+  （frames/base_median_ms/opt_median_ms/ci_low_ms/ci_high_ms/
+  base_md5/opt_md5/yuv_md5），执行
+  `python3 tools/finalize_950.py --results /tmp/950-30f.json`
+  校验 bit-exact 与 100f 媒体真伪 → 自动入库（kernel_db）→
+  重跑 m4_declaration.py；`--dry-run` 可先预览。
 
 ## 0. 内网 E2E 测试媒体（2026-08-16 更新）
 
