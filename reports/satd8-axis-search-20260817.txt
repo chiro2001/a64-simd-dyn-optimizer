@@ -1,0 +1,43 @@
+# satd8 8x8 小域轴枚举（m31，2026-08-17）——docs/74 B&B 验收基线
+
+## 方法
+
+- grammar 轴：reduce × abs =
+  {vaddlv, vpaddl, vaddv} × {abd, subabs} = 6 候选
+  （tools/emit_satd_neon_shared.emit_8x8 新增 abs 轴；load 轴对 8x8
+  不成立——每行 8 像素按 stride 分隔，16B 宽载入无对应语义）；
+- 每个候选：emit → aarch64-linux-gnu-g++ -O2 -march=armv8.2-a →
+  static_counts（fused_uop oracle）→ QEMU 20k 差分（3 strides ×
+  随机输入，vs x265::satd8_sve2<8,8>，build/x265-8-clang-sve）；
+- 脚本：tools/satd8_axis_search.py，结果：
+  experiments/m31-satd8-axis-search/results.json。
+
+## 结果（6/6 PASS，0 失配）
+
+| tag | reduce | abs | fused_uop |
+| --- | --- | --- | ---: |
+| r_vaddlv_a_abd | vaddlv | abd | **60** |
+| r_vaddlv_a_subabs | vaddlv | subabs | 64 |
+| r_vpaddl_a_abd | vpaddl | abd | 61 |
+| r_vpaddl_a_subabs | vpaddl | subabs | 65 |
+| r_vaddv_a_abd | vaddv | abd | **60** |
+| r_vaddv_a_subabs | vaddv | subabs | 64 |
+
+## 发现
+
+1. abs 轴效应干净：subabs（vsubq+vabsq）比 abd（vabdq）恒多 4
+   fused_uop（每 hadamard_abs4_h 多 1 op × 4 处），6 候选全一致；
+2. reduce 轴：vaddlv 与 vaddv 并列最优（60），vpaddl +1（61）；
+3. 最优候选（vaddlv+abd / vaddv+abd，60 fused_uop）低于现有 IR
+   候选（optimizer/ir/satd8_emit.py，77）与 m30 SVE 变体（93），
+   静态口径 -22%/-35%；
+4. 本数据集即 docs/74 验收所需的“小域全枚举”基线（6 唯一候选、
+   全门禁、fused_uop oracle 可复算）。
+
+## 下一步
+
+- 把最优候选（r_vaddlv_a_abd / r_vaddv_a_abd）上 920B/N1 kernel
+  微基准（沿用 ago-m2 satd8_A/B/C 的 ticks 口径），确认静态优势
+  是否转成实机优势；赢则接入 satd-8 注入并 E2E；
+- B&B 对照：在 6 候选轴空间上验证 B&B（与全枚举最优哈希一致、
+  节点减少），作为 docs/74 §4 验收的第一例。

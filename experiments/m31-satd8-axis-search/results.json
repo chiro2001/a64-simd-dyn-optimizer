@@ -1,0 +1,110 @@
+[
+ {
+  "tag": "r_vaddlv_a_abd",
+  "reduce": "vaddlv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 69,
+   "vector": 60,
+   "movprfx": 0,
+   "vector_fused": 60,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 60
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vaddlv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "r_vaddlv_a_subabs",
+  "reduce": "vaddlv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 73,
+   "vector": 64,
+   "movprfx": 0,
+   "vector_fused": 64,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 64
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vaddlv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "r_vpaddl_a_abd",
+  "reduce": "vpaddl",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 70,
+   "vector": 61,
+   "movprfx": 0,
+   "vector_fused": 61,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 61
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vpaddl_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "r_vpaddl_a_subabs",
+  "reduce": "vpaddl",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 74,
+   "vector": 65,
+   "movprfx": 0,
+   "vector_fused": 65,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 65
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vpaddl_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "r_vaddv_a_abd",
+  "reduce": "vaddv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 71,
+   "vector": 60,
+   "movprfx": 0,
+   "vector_fused": 60,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 60
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vaddv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "r_vaddv_a_subabs",
+  "reduce": "vaddv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 75,
+   "vector": 64,
+   "movprfx": 0,
+   "vector_fused": 64,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 64
+  },
+  "obj": "experiments/m31-satd8-axis-search/r_vaddv_a_subabs.o",
+  "mismatches": 0
+ }
+]

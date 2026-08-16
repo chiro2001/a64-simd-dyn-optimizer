@@ -87,3 +87,17 @@ grammar。合法操作按族划分：
 3. 跑 §4 验收（satd8 8x8 小域），产出对照报告并入库；
 4. 通过后推广到 dct16/32 的 butterfly-quarter 模板空间与 saoCuOrg
    布局空间。
+
+## 6. 首个真实小域基线：satd8 8x8 轴枚举（2026-08-17）
+
+- 已显式化轴：reduce {vaddlv,vpaddl,vaddv} × abs {abd,subabs} = 6
+  候选（tools/emit_satd_neon_shared.emit_8x8 + abs 轴；load 轴对
+  8x8 不成立，已注明）；
+- 全部 20k QEMU 门禁 PASS（vs x265 satd8_sve2<8,8>）；
+  fused_uop：60/64/61/65/60/64，最佳 vaddlv+abd / vaddv+abd = 60
+  （低于现有 IR 77、m30 SVE 93）；abs 轴效应 +4 恒定、reduce 轴
+  vaddlv==vaddv<vpaddl；
+- 数据：reports/satd8-axis-search-20260817.txt +
+  experiments/m31-satd8-axis-search/results.json（DB 6 行）；
+- 该 6 候选空间即 §4 验收的第一例“小域全枚举”基线：B&B 需与其
+  最优哈希一致、无误剪枝、节点减少（或同 regret 少测 30%）。
