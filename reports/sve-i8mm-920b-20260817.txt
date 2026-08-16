@@ -1,0 +1,51 @@
+# SVE I8MM (svmmla) interp8 hpp 16x16 — 920B 实机门禁与 kernel 计时（2026-08-17）
+
+## 背景
+
+- 920B（Kunpeng 920）CPU Features 含 `i8mm` 与 `svei8mm`，但上游
+  libx265 baseline 对 luma_hpp 只 dispatch `interp8_horiz_pp_dotprod`
+  （无 i8mm 符号）——若 SVE svmmla 更快，则是真实赢点；
+- QEMU 无 `sve-i8mm` 属性，SVE I8MM 无法本地门禁，必须实机验证；
+- 候选：`kernels/interp8-16/candidates/best_sve_i8mm.cpp`
+  （svusmmla，逐 128-bit 段镜像 NEON i8mm 操作数/顺序；SVE1 专用：
+  svasr+clamp+uzp1 完成 vqrshrun 语义）。
+
+## 方法
+
+- 交叉编译静态 aarch64 二进制（-march=armv8.2-a+sve+i8mm+dotprod），
+  scp 至 920B，taskset -c 0；
+- 正确性：20k 随机（3 coeffIdx × 4 strides）候选 vs x265 C 语义
+  （interp_horiz_pp_c<8,16,16>），同时校验嵌入的 dotprod 基线自身；
+- 计时：CNTVCT，2000 轮交替（候选→dotprod），取总 ticks。
+
+## 结果
+
+| 项 | 值 |
+| --- | ---: |
+| 正确性（vs C，20k） | **0 失配 PASS** |
+| dotprod 基线（vs C，20k） | 0 失配 |
+| sve_i8mm 总 ticks（2000 轮） | 30667 |
+| dotprod 总 ticks（2000 轮） | 9588 |
+| ratio dot/cand | 0.31（svmmla 慢 ~3.2x） |
+
+## 调试记录
+
+1. `svusmmla` 与 `vusmmla` 每 128-bit 段语义/ lane 顺序一致（探针
+   实证：lane = r0c0, r0c1, r1c0, r1c1）；
+2. 初版 permute 表抄错（把 x265 matmul_permute_tbl 的 16B 行误写成
+   4 行交错），导致全部输出错位；用完整 32B 表 + ci>>1 选择后通过；
+3. 初版 C 参考未按行前进 src、g_lumaFilter[2] 表抄错——测试 harness
+   问题，非候选问题；
+4. 窄化链：svqxtunb_s32/s16 均为 SVE2，920B 需 SVE1 路径
+   （uzp1 截断 + max/min 夹取 + uzp1 取低字节）。
+
+## 结论
+
+- SVE I8MM 候选**功能成立**（C-exact，实机 20k 0 失配），但
+  kernel 级比 920B 的 dotprod 基线慢 ~3.2x——逐块镜像 NEON 布局
+  需要大量 svtbl/zip/uzp 重排，抵消了 svmmla 的矩阵吞吐；
+- 按 round-0028 验收纪律**归档**（ratio CI 下界>1 未达），默认不
+  注入；若要做 SVE i8mm，需要从零设计 SVE 原生 32B 数据布局
+  （每 128-bit 段直接构成 2×8 矩阵、免跨 lane 重排）——列为远期
+  研究项（docs/70 §5），不做进一步投入；
+- 基础设施结论：SVE I8MM 的验证通道 = 920B 实机差分（QEMU 不支持）。
