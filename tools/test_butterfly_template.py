@@ -129,6 +129,31 @@ int main()
 }
 """
 
+DRIVER_NEON = r"""
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+extern "C" void tpl_pass4_neon(const int16_t*, int16_t*, intptr_t);
+extern "C" void dbg_pass4_neon(const int16_t*, int16_t*, intptr_t);
+int main()
+{
+    int16_t src[16 * 16 + 8], a[256], b[256];
+    long mism = 0;
+    srand(0x4E0F);
+    for (int it = 0; it < 200; it++)
+    {
+        for (int i = 0; i < 16 * 16 + 8; i++)
+            src[i] = (int16_t)(rand() % 60000 - 30000);
+        tpl_pass4_neon(src, a, 16);
+        dbg_pass4_neon(src, b, 16);
+        for (int i = 0; i < 256; i++)
+            if (a[i] != b[i]) mism++;
+    }
+    printf(mism ? "FAILED %ld\n" : "PASS\n", mism);
+    return mism != 0;
+}
+"""
+
 
 class ButterflyTemplateGate(unittest.TestCase):
 
@@ -313,6 +338,57 @@ class ButterflyTemplateGate(unittest.TestCase):
                         DRIVER_FULL32, "dynopt_dct32_sve8_anyvl",
                         1024, 80,
                         emit_pure_sve32("dynopt_dct32_sve8_anyvl"))
+
+    def test_template_neon_pass1_matches_golden(self):
+        coefs = {"gt": G16,
+                 "t8odd": [row[:4] + row[:4]
+                           for row in (G16[2], G16[6], G16[10], G16[14])],
+                 "t8e": T8E}
+        src = emit_quarter_pass(n=16, coefs=coefs, target="neon",
+                                fn="quarter_pass1_neon")
+        body = "\n".join(l for l in src.splitlines()
+                         if not l.startswith("#include"))
+        tpl = ("#include <arm_neon.h>\n#include <cstdint>\n\n"
+               + body +
+               '\nextern "C" void tpl_pass4_neon(const int16_t* s, '
+               "int16_t* d, intptr_t st) { quarter_pass1_neon(s, d, st); }\n")
+        tpl_src = self.write("tmp-tpl-neon.cpp", tpl)
+        tpl_obj = os.path.join(ROOT, "build", "tmp-tpl-neon.o")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-c", "-O2",
+             "-march=armv8.2-a+dotprod", "-o", tpl_obj, tpl_src],
+            capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+
+        with open(os.path.join(
+                ROOT, "kernels", "dct16", "candidates",
+                "best_neon_vl128.cpp")) as f:
+            golden = f.read()
+        golden += ('\nextern "C" void dbg_pass4_neon(const int16_t* s, '
+                   "int16_t* d, intptr_t st) "
+                   "{ pass1Butterfly16_sve(s, d, st); }\n")
+        ref_src = self.write("tmp-tpl-neon-ref.cpp", golden)
+        ref_obj = os.path.join(ROOT, "build", "tmp-tpl-neon-ref.o")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-c", "-O2",
+             "-march=armv8.2-a+dotprod", "-o", ref_obj, ref_src],
+            capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+
+        drv = self.write("tmp-tpl-neon-driver.cpp", DRIVER_NEON)
+        binp = os.path.join(ROOT, "build", "tmp-tpl-neon-driver")
+        r = subprocess.run(
+            ["aarch64-linux-gnu-g++", "-O2", "-o", binp, drv,
+             tpl_obj, ref_obj], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+        qemu = os.environ.get("QEMU") or os.path.join(
+            ROOT, "build", "qemu-build", "qemu-aarch64")
+        run = subprocess.run(
+            [qemu, "-L", "/usr/aarch64-linux-gnu",
+             "-cpu", "max,sve-max-vq=1", binp],
+            capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("PASS", run.stdout)
 
 
 if __name__ == "__main__":
