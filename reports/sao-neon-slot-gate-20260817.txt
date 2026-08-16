@@ -40,8 +40,17 @@ x265 原语槽位语义（loopfilter.cpp / primitives.h）：
 | saoCuOrgE1 | 1 | 20 | best_neon_e1.cpp |
 | saoCuOrgE1_2Rows | 2 | 20 | best_neon_e1_2rows.cpp |
 | saoCuOrgE2 | 1 | 20 | best_neon_e2.cpp |
-| saoCuOrgE3 | 1 | 117 | best_neon_e3.cpp |
+| saoCuOrgE3 | 1 | 101 | best_neon_e3.cpp |
 | saoCuOrgB0 | 4 | 219 | best_neon_b0.cpp |
+
+## E3 语义修正（2026-08-17 晚，710 E2E 门抓到）
+
+- sao.cpp SAO_EO_3 对内部 CTU 传 startX=1/endX=64：调用方手动处理
+  x=1（用 tmpL 左邻），原语只处理 x=2..63；初版 kernel 处理
+  x=1..63 在真实编码中失配（x=1 用错邻居）；
+- 执行顺序：向量块 x=9 写 upBuff1[8..15]，必须先于标量头 x=2..8；
+- 修正后 20k 0 失配，fused_uop 101；710 E2E 10/10 md5 bit-exact
+  （reports/sao-neon-710-e2e-20260817.txt）。
 
 ## 注入 bundle
 

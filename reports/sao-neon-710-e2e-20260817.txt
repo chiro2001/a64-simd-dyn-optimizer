@@ -1,0 +1,59 @@
+# saoCuOrg NEON 槽位安全 bundle 710 E2E A/B（2026-08-17）
+
+## 方法
+
+- 机器：Yitian 710（root@47.96.166.168，SVE2 VL=128），共享节点，
+  taskset -c 0，单核 30f 1080p；
+- 候选：6 个 saoCuOrg NEON 槽位安全变体（E0/E1/E12/E2/E3/B0，
+  best_neon_*.cpp + best_sve2.cpp），compile-in 注入
+  （cloud-e2e-inject-710.sh，patch primitives.cpp + relink
+  libx265.so.216）；`dynopt: patched 6` 确认拦截；
+- baseline：同源 x265 b81f650（build/x265-8-gcc），恢复链接行后
+  重链原始 libx265.so.216（md5 1eb32459... vs 注入版
+  8534e30f...）；
+- 协议：5+5 交错（随机顺序），每轮 swap libx265.so.216，
+  `date +%s%N` 计时，md5 校验码流；
+- 命令：`taskset -c 0 ./x265 --input /tmp/real_1080p_30f.yuv
+  --input-res 1920x1080 --fps 30 --frames 30 --pools 0
+  --frame-threads 1 --no-wpp --lookahead-threads 0 --b-adapt 0`。
+
+## 结果
+
+| 轮 | 变体 | ms | md5 |
+| --- | --- | ---: | --- |
+| 1 | base | 9324 | 47743992d14675f4bcb88a320392824e |
+| 2 | inj | 9346 | 同 |
+| 3 | inj | 9343 | 同 |
+| 4 | base | 9357 | 同 |
+| 5 | base | 9383 | 同 |
+| 6 | inj | 9333 | 同 |
+| 7 | base | 9327 | 同 |
+| 8 | inj | 9332 | 同 |
+| 9 | inj | 9282 | 同 |
+| 10 | base | 9324 | 同 |
+
+base 中位 9327 ms；inj 中位 9333 ms；差（base-inj）中位 +14 ms
+（inj +0.15% 慢），bootstrap95 [-22, +50] ms（含 0，不显著）。
+
+## 调试记录（bit-exact 门槛抓到两个真 bug）
+
+1. **E3 槽位语义**：sao.cpp SAO_EO_3 对内部 CTU 传 startX=1/
+   endX=64，调用方先手动处理 x=1（用左邻 tmpL），原语只处理
+   x=2..63。初版 kernel 处理 x=1..63 会多用 rec[1+stride] 重算
+   x=1 → 码流失配；改为 x=2..63（标量头 2..8 + 向量块 9..49 +
+   标量尾 57..63）。
+2. **执行顺序**：向量块 x=9 会写 upBuff1[8..15]，必须先于标量
+   头 x=2..8（x=8 读 upBuff1[8]）；初版顺序错误导致 x=8 失配。
+
+修复后 20k 门禁 0 失配、E2E 10/10 md5 与 baseline 完全一致。
+
+## 结论
+
+- saoCuOrg NEON bundle 在 710 30f **bit-exact**（10/10 md5 同），
+  但 E2E 中位 +0.15% 慢、bootstrap95 含 0——**未达 round-0028
+  验收（ratio CI 下界>1、E2E ≥0.2pp）**，按决策归档（默认不注入）；
+- 与预期一致：NEON seed 与上游 NEON asm 同算法，静态 fused_uop
+  相近（E0 269 / E1 20 / E12 20 / E2 20 / E3 101 / B0 219），
+  无 kernel 级优势；
+- N1/920B 同 bundle 实机复核列为可选（预期同样不占优，避免共享
+  节点空耗）；SVE2 32B 版保持 QEMU-only。
