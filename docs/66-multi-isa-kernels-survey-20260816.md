@@ -246,3 +246,18 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
 
 bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
 不劣于现有候选（-0.71% vs -0.61%，噪声内）；加入 sao/sad 无回归。
+
+### 目标矩阵扩展（2026-08-16）
+
+`dag_pipeline --march` 把 NEON/SVE1/SVE2/SVE2p3 门禁推广到全部家族
+（每个候选按 march 编译，QEMU vq=1/2 差分）：
+
+| 家族 | sve1+dotprod | sve2p3 |
+| --- | --- | --- |
+| satd-8 / sa8d16 | PASS | PASS |
+| sad / mc / ssd / interp8-16 | PASS | PASS |
+| sao E0 (NEON 变体) | PASS | PASS |
+| sao E0 (SVE2 变体) | —（histseg 为 SVE2 专属，编译失败属预期） | PASS |
+
+26 个 march×VL 组合除 sao-sve1（预期排除）外全部 0 失配——同一
+宽度无关 DAG 在多 ISA 目标矩阵上自动重 lowering 覆盖全部家族。
