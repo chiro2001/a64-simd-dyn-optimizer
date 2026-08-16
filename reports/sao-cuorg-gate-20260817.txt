@@ -36,14 +36,17 @@
 ## SVE2 版（2026-08-17 晚）
 
 - `kernels/sao/candidates/best_sve2_e0.cpp`：saoCuOrgE0 的纯 SVE2
-  实现（docs/45 tbl-u16 布局）——u8 比较得 sign、`svinsr` 位移插入
-  实现 sign 递推、`svtbl` 查 offset 表、`svqxtunb`+`svuzp1` 饱和窄化；
+  实现。横向 sign 递推 sl_i = -sr_{i-1} 改写为 1-lag 差分：
+  edge_i = 2 + sr_i - sr_{i-1}，用 `svindex`+`svinsr` 构造 TBL2
+  移位向量 [-sl, sr_0, ..., sr_30]（lane0 来自 dup(-sl)），整条
+  32B 并行处理；
+- 进位用 `svlastb` 取最高活跃 lane（`svlasta` 语义是**首个**活跃
+  lane，此前 8-lane 版用 `svdup_lane`+全真谓词绕开）；TBL2 索引
+  用 GPR 常数 + `insr wzr`，无 NEON `movi`；
+- clip 用 128 偏置 + 回绕 u8 加法（与 B0/E1 家族同）；
 - 20k 差分（4 strides × 随机 offset/signLeft）**0 失配**；
-  fused_uop=168（对比 NEON seed 版 269；2026-08-17 复核计数，此前
-  报告的 22 为误记——`tools/static_counts.py` 全函数静态计数）；
-- 调试记录：VL=256 下 `svmovlb_s16`/`svqxtunb_s16` 是交错展开（需
-  `svunpklo_s16`/`svuzp1` 复原）；`svlasta` 配 `whilelt` 谓词返回
-  异常，改用 `svdup_lane` + 全真谓词提取 lane7。
+  fused_uop=65（对比 NEON seed 版 269；此前 8-lane 版为 168，
+  且 22 为误记——2026-08-17 复核修正）；
 - 修正：offset 表原先用 `svld1_s8(svptrue_b8(), offs)` 从 16 字节
   局部数组读 32 字节（越界 UB，仅因 tbl 索引 0..4 未暴露），改为
   `svwhilelt_b8(0,16)` 谓词加载。
@@ -90,3 +93,6 @@
 
 - **saoCuOrg 六个 kernel 的 SVE2 版全部闭环**（E0/E1/E1_2Rows/
   E2/E3/B0，QEMU vq=2 各 20k 0 失配）；DB 177 行。
+- **纯 SVE 核验**：`check_isa_level --no-neon --level sve2` 六个
+  kernel 全部 0 NEON 违规（E0 亦无 umov/D 寄存器存取；未知
+  mnemonic 仅 catalog 缺 cmphi/sunpklo 等 SVE2 指令，非违规）。
