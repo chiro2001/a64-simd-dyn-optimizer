@@ -1,0 +1,22 @@
+# 四机成本模型校准（2026-08-17）
+
+拟合：log1p(fused_uop) -> ticks / ticks_pct（OLS + Spearman + LOOCV）。数据：M2 17 cover（N1/920B ticks）与 dct 各机 kernel ticks_pct。小样本，仅作排序参考，不做绝对值承诺。
+
+## 710 / ticks_pct
+rows=4 slope=1.268 intercept=-22.452 R2=0.341 Spearman=0.800 LOOCV-Spearman=0.000
+
+## 920B / ticks
+rows=17 slope=3507.900 intercept=-11220.136 R2=0.941 Spearman=0.985 LOOCV-Spearman=0.907
+
+## N1 / ticks
+rows=17 slope=1322.296 intercept=-4324.252 R2=0.929 Spearman=0.972 LOOCV-Spearman=0.884
+
+## N1 / ticks_pct
+rows=5 slope=8.736 intercept=-88.903 R2=0.707 Spearman=0.111 LOOCV-Spearman=-1.000
+
+## 结论
+
+1. N1/920B 的 M2 ticks 语料给出每机成本斜率（正 = 更多 uop 更慢）与 LOOCV 排序质量；
+2. 710/920B 的 dct ticks_pct 行数少（3-4），仅报告 Spearman 不作拟合承诺；
+3. 950 缺 ticks 实测，待用户侧 950 数据后补表。
+
