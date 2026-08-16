@@ -91,6 +91,25 @@ count 的 vpadal 路径与 reduce）。
   sdot.d；同一 DAG 的 SVE dot 降级与 histseg 优化列为下一增量；
 - 测试：`tools/test_sao_e0.py`。
 
+### SAO E0 SVE2 目标模式（2026-08-16 完成）
+
+同一 DAG 加 `target="sve2"` 变体（165 ops）：
+
+- count：4× `svhistseg_s8`（替代 NEON 20× vpadal_s8）；
+- stats：40× `sdotq_s16` 链式累加（替代 NEON vmul/vmla/vpadal）；
+- reduce：vmovn_combine + vpadd + vaddv_s64（SVE 2×64 语义）；
+
+门禁与计数：
+
+| 变体 | vs 上游 NEON（vq=1/2 20k） | fused_uop |
+| --- | --- | ---: |
+| IR NEON | 0 失配 | 213 |
+| IR SVE2 | **0 失配** | **167** |
+| 现有手写 SVE2 | 0 失配 | 165 |
+
+同一宽度无关 DAG 的 mul↔sdot 双目标 lowering 在 SAO 上落地，SVE2
+计数与手写候选仅差 2 ops（histseg count 已复用）。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；

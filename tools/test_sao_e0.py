@@ -31,6 +31,16 @@ def main():
     assert src.count("vpaddq_s16") == 3
     assert src.count("vst1q_s32") == 2
     print("SAO E0 IR DAG OK: ops=%d" % len(ops))
+
+    ops2 = sao_e0_64_dag(target="sve2")
+    r2 = defuse_report(ops2)
+    assert r2["ok"], r2["issues"][:5]
+    src2 = emit_sao_e0_64(ops2, target="sve2")
+    assert src2.count("svhistseg_s8") == 4
+    assert src2.count("sdotq_s16") == 40
+    assert src2.count("vmulq_s16") == 0
+    assert src2.count("vaddvq_s64") == 1
+    print("SAO E0 SVE2 DAG OK: ops=%d" % len(ops2))
     return 0
 
 

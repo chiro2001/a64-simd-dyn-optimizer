@@ -47,6 +47,10 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 8, ()
     if kind == "dup32":
         return 4, ()
+    if kind == "dup8":
+        return 16, ()
+    if kind == "dup64":
+        return 2, ()
     if kind == "edge":
         return 16, ()
     if kind == "load32":
@@ -119,9 +123,24 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         m1 = tuple((8 + j // 2,) if j % 2 == 1 else () for j in range(16))
         return 16, (m0, m1)
     if kind == "dot_stats":
+        if op.attrs.get("target") == "sve":
+            pairs = ((0, 1, 2, 3), (4, 5, 6, 7))
+            return 2, (_e(2), pairs, pairs)
         if len(op.inputs) == 3:
             return 8, (_e(8), _e(8), _e(8))
         return 8, (_e(8), _e(8))
+    if kind == "histseg_count":
+        return 16, (_e(16), _e(16))
+    if kind == "hist_count_reduce":
+        return 4, (((0, 1), (2, 3), (4, 5), (6, 7)),)
+    if kind == "store_add32":
+        return 4, (_e(4), _e(4))
+    if kind == "scalar_add_lane":
+        return 1, (((8, 9),),)
+    if kind == "vmovn_combine":
+        return 4, (((0,), (1,), (), ()), ((), (), (0,), (1,)))
+    if kind == "vaddv_s64":
+        return 1, (((0, 1),),)
     if kind == "vpadal_s16":
         pairs = tuple((2 * j, 2 * j + 1) for j in range(4))
         return 4, (_e(4), pairs, pairs)
