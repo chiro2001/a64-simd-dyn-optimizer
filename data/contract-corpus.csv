@@ -43,10 +43,14 @@ filter-interp8-vsp-16x4,2026-08-17,filter,interp8-vsp,16x4,neon,neon,128;256,rea
 filter-interp8-vsp-32x16,,filter,interp8-vsp,32x16,c,neon,32,"""read",src-dst-disjoint,exact,no-tail,fir,test-obligation,"""20k",gated,"""inline"
 filter-interp8-vsp-32x32,,filter,interp8-vsp,32x32,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vsp,upstream-exact,"""20k",gated,docs/37/45
 filter-interp8-vsp-8x8,,filter,interp8-vsp,8x8,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vsp,upstream-exact,"""20k",gated,docs/37/45
-filter-interp8-vss-16x16,2026-08-17,filter,interp8-vss,16x16,neon,neon,128;256,read int16 src rows (off -3..+4); write int16 dst,src/dst disjoint,exact (int16 intermediate),vertical edge guard,fir-8tap-vss,upstream-exact,20k vq=1/2,gated,docs/37/45 representative slice
-filter-interp8-vss-16x4,2026-08-17,filter,interp8-vss,16x4,neon,neon,128;256,read int16 src rows; write int16 dst,src/dst disjoint,exact,vertical edge guard,fir-8tap-vert,upstream-exact,20k,gated,docs/37/45 representative slice
-filter-interp8-vss-32x32,2026-08-17,filter,interp8-vss,32x32,neon,neon,128;256,read int16 src rows (off -3..+4); write int16 dst,src/dst disjoint,exact (int16 intermediate),vertical edge guard,fir-8tap-vss,upstream-exact,20k vq=1/2,gated,docs/37/45 representative slice
-filter-interp8-vss-8x8,2026-08-17,filter,interp8-vss,8x8,neon,neon,128;256,read int16 src rows (off -3..+4); write int16 dst,src/dst disjoint,exact (int16 intermediate),vertical edge guard,fir-8tap-vss,upstream-exact,20k vq=1/2,gated,docs/37/45 representative slice
+filter-interp8-vss-16x16,,filter,interp8-vss,16x16,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vss,upstream-exact,"""20k",gated,docs/37/45
+filter-interp8-vss-16x32,,filter,interp8-vss,16x32,c,sve2,32,"""read",src-dst-disjoint,"""truncating",no-tail,fir,test-obligation,"""20k",gated,"""generic"
+filter-interp8-vss-16x4,,filter,interp8-vss,16x4,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vert,upstream-exact,"""20k",gated,docs/37/45
+filter-interp8-vss-32x16,,filter,interp8-vss,32x16,c,sve2,32,"""read",src-dst-disjoint,"""truncating",no-tail,fir,test-obligation,"""20k",gated,"""generic"
+filter-interp8-vss-32x32,,filter,interp8-vss,32x32,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vss,upstream-exact,"""20k",gated,docs/37/45
+filter-interp8-vss-8x16,,filter,interp8-vss,8x16,c,sve2,32,"""read",src-dst-disjoint,"""truncating",no-tail,fir,test-obligation,"""20k",gated,"""generic"
+filter-interp8-vss-8x4,,filter,interp8-vss,8x4,c,sve2,32,"""read",src-dst-disjoint,"""truncating",no-tail,fir,test-obligation,"""20k",gated,"""generic"
+filter-interp8-vss-8x8,,filter,interp8-vss,8x8,neon,neon,128;256,read,src/dst,exact,vertical,fir-8tap-vss,upstream-exact,"""20k",gated,docs/37/45
 misc-chroma-copy-pp-16x16,2026-08-17,misc,chroma-copy-pp,16x16,neon,neon,128;256,read src; write dst,none,exact,none,copy,upstream-exact,20k,gated,docs/37/45 representative slice
 misc-chroma-copy-pp-32x32,2026-08-17,misc,chroma-copy-pp,32x32,neon,neon,128;256,read src; write dst,none,exact,none,copy,upstream-exact,20k,gated,docs/37/45 representative slice
 misc-chroma-copy-pp-8x8,2026-08-17,misc,chroma-copy-pp,8x8,neon,neon,128;256,read src; write dst,none,exact,none,copy,upstream-exact,20k,gated,docs/37/45 representative slice

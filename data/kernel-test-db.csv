@@ -97,6 +97,14 @@ interp8-vsp-16x16-inline-sve2,,,interp8-vsp-16x16,,inline-sve2,,,kernels/interp8
 interp8-vsp-32x16-inline-sve2,,,interp8-vsp-32x16,,inline-sve2,,,kernels/interp8-vsp-32x16/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
 interp8-vsp-32x32-inline-sve2,,,interp8-vsp-32x32,,inline-sve2,,,kernels/interp8-vsp-32x32/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
 interp8-vsp-8x8-inline-sve2,,,interp8-vsp-8x8,,inline-sve2,,,kernels/interp8-vsp-8x8/candidates/best_sve2.cpp,85,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vsp-gate-20260817.txt
+interp8-vss-16x16-generic-sve2,,,interp8-vss-16x16,,generic-sve2,,,kernels/interp8-vss-16x16/candidates/best_sve2.cpp,466,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-16x32-generic-sve2,,,interp8-vss-16x32,,generic-sve2,,,kernels/interp8-vss-16x32/candidates/best_sve2.cpp,898,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-16x4-generic-sve2,,,interp8-vss-16x4,,generic-sve2,,,kernels/interp8-vss-16x4/candidates/best_sve2.cpp,148,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-32x16-generic-sve2,,,interp8-vss-32x16,,generic-sve2,,,kernels/interp8-vss-32x16/candidates/best_sve2.cpp,1061,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-32x32-generic-sve2,,,interp8-vss-32x32,,generic-sve2,,,kernels/interp8-vss-32x32/candidates/best_sve2.cpp,2062,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-8x16-generic-sve2,,,interp8-vss-8x16,,generic-sve2,,,kernels/interp8-vss-8x16/candidates/best_sve2.cpp,254,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-8x4-generic-sve2,,,interp8-vss-8x4,,generic-sve2,,,kernels/interp8-vss-8x4/candidates/best_sve2.cpp,90,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
+interp8-vss-8x8-generic-sve2,,,interp8-vss-8x8,,generic-sve2,,,kernels/interp8-vss-8x8/candidates/best_sve2.cpp,142,,2,20000,0,20k-diff,,,,,,,,reports/interp8-vss-gate-20260817.txt
 ir-all-7k-n1,2026-08-16,72c8a08,ir-all-7k,bundle,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,,yes,docs/59-handoff-20260816.md
 ir-all-7k-ir-all-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,ir-all-7k,,ir-all,mixed,mixed,build/dynopt-ir-all.so,,,,,,,N1,,,-0.48,,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 four-arm-n1-ir-dct,2026-08-16,42bd449,ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,-114.5..151,yes,reports/four-arm-n1-100f-20260816.txt

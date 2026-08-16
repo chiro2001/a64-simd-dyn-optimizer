@@ -50,10 +50,14 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | filter | interp8-vsp | 32x16 | "read | src-dst-disjoint | exact | no-tail | 32 | fir | test-obligation | "20k | gated |
 | filter | interp8-vsp | 32x32 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vsp | upstream-exact | "20k | gated |
 | filter | interp8-vsp | 8x8 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vsp | upstream-exact | "20k | gated |
-| filter | interp8-vss | 16x16 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
-| filter | interp8-vss | 16x4 | read int16 src rows; write int16 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
-| filter | interp8-vss | 32x32 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
-| filter | interp8-vss | 8x8 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-vss | 16x16 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vss | upstream-exact | "20k | gated |
+| filter | interp8-vss | 16x32 | "read | src-dst-disjoint | "truncating | no-tail | 32 | fir | test-obligation | "20k | gated |
+| filter | interp8-vss | 16x4 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vert | upstream-exact | "20k | gated |
+| filter | interp8-vss | 32x16 | "read | src-dst-disjoint | "truncating | no-tail | 32 | fir | test-obligation | "20k | gated |
+| filter | interp8-vss | 32x32 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vss | upstream-exact | "20k | gated |
+| filter | interp8-vss | 8x16 | "read | src-dst-disjoint | "truncating | no-tail | 32 | fir | test-obligation | "20k | gated |
+| filter | interp8-vss | 8x4 | "read | src-dst-disjoint | "truncating | no-tail | 32 | fir | test-obligation | "20k | gated |
+| filter | interp8-vss | 8x8 | read | src/dst | exact | vertical | 128;256 | fir-8tap-vss | upstream-exact | "20k | gated |
 | misc | chroma-copy-pp | 16x16 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
 | misc | chroma-copy-pp | 32x32 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
 | misc | chroma-copy-pp | 8x8 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
