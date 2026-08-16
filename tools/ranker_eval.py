@@ -115,9 +115,9 @@ def main():
                 lt == "kernel" and r.get("kernel_metric") in KERNEL_METRICS):
             continue
         mca = to_num(r.get("mca_fused_uop"))
-        tot = to_num(r.get("mca_total"))
-        if mca is None or tot is None:
+        if mca is None:
             continue
+        tot = to_num(r.get("mca_total")) or 0.0
         if lt == "kernel" and (
                 r.get("kernel_metric", "").startswith("ratio") or
                 r.get("kernel_metric") == "replay_ratio"):
@@ -173,7 +173,7 @@ def main():
         if len(train) < 3:
             continue
         X = [[log1p(to_num(r["mca_fused_uop"])),
-              log1p(to_num(r["mca_total"]))] for r in train]
+              log1p(to_num(r["mca_total"]) or 0.0)] for r in train]
         y = [to_num(r["label"]) for r in train]
         coef = ols(X, y)
         if coef is None:
@@ -183,7 +183,8 @@ def main():
             if k[0] != fam:
                 continue
             pred = [coef[0] + coef[1] * log1p(to_num(r["mca_fused_uop"])) +
-                    coef[2] * log1p(to_num(r["mca_total"])) for r in grp]
+                    coef[2] * log1p(to_num(r["mca_total"]) or 0.0)
+                    for r in grp]
             meas = [to_num(r["label"]) for r in grp]
             acc, tau, regret, npairs = pair_stats(pred, meas)
             if acc is not None:
