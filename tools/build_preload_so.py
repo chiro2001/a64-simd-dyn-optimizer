@@ -913,6 +913,18 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel == "satd-8" and isa == "sve2" and vl == 16 and \
+            os.environ.get("AGO_PURE_SVE") == "1":
+        # Pure-SVE satd 8x8/16x16/32x32/64x64 (zero NEON, any VL;
+        # docs/70 pure-SVE rollout).  Emitted here because the source
+        # must NOT be compiled with -msve-vector-bits=128 (it would fold
+        # the svcntb guards).
+        sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
+        from satd8_pure_sve_emit import emit_satd_pure_sve
+        path = os.path.join(ROOT, "build", "satd-pure-sve.cpp")
+        with open(path, "w") as f:
+            f.write(emit_satd_pure_sve("dynopt_satd"))
+        return [path]
     if kernel in INTERP8_HPP_I8MM_KERNELS and \
             os.environ.get("AGO_I8MM") == "1":
         # Gated NEON I8MM candidates (vusmmlaq).  Square shapes have
@@ -1470,7 +1482,7 @@ def main():
                     k in INTERP8_HPP_I8MM_KERNELS for k in wanted):
                 march += "+i8mm"
             cc += ["-march=" + march]
-        if os.environ.get("AGO_PURE_SVE") == "1":
+        if os.environ.get("AGO_PURE_SVE") == "1" and kernel != "satd-8":
             cc += ["-msve-vector-bits=128"]
         compiled = False
         for src in sources:

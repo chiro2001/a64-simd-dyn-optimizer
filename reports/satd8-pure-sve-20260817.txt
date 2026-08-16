@@ -1,23 +1,27 @@
-# satd8 8x8 纯 SVE 发射器（2026-08-17）——纯 SVE 模式推广首个非 dct kernel
+# satd 纯 SVE 发射器（2026-08-17）——纯 SVE 模式推广首个非 dct kernel 家族
 
 ## 候选
 
-- `optimizer/ir/satd8_pure_sve_emit.py`：与 satd8_op_ir.satd8_dag()
-  同一宽度无关 DAG，纯 SVE2 ACLE 发射（零 NEON）：
+- `optimizer/ir/satd8_pure_sve_emit.py`：satd 8x8/16x16/32x32/64x64
+  纯 SVE2 ACLE 发射（零 NEON），与 satd8_op_ir 的 DAG 同一结构：
   - u8 载入：svld1_u8（SV_VL8）+ svunpklo_u16 扩宽；
   - 16/32-bit 转置：svtbl2 固定索引表（NEON TRN 是偶/奇位交错，
     SVE TRN 语义不同，显式 lane 表保证逐值一致）；
   - abs/abd：svabs_s16_x / svabd_s16_x；
   - 归约：uzp 成对加 + svunpklo_u32 + 两级 uzp 加 + SVE LASTA
     （svaddv 会降级成 NEON uaddv、svlasta 降级成 NEON mov，均已避开）；
+  - 16x16 = 4 行组 ×（lo/hi quad，SV_VL16 载入 + unpklo/unpkhi），
+    u16 累加；32/64 = 16x16 包装；
   - 运行时 svcntb()!=16 回退到独立标量转录（no-tree-vectorize，
-    防 GCC 自动向量化引入 NEON），任何 VL 数值一致。
+    防 GCC 自动向量化引入 NEON；guard 放在每个 extern 入口，防
+    GCC 克隆出 NEON 向量化的 .part.0 轮廓），任何 VL 数值一致。
 
-## 验证（tools/test_satd8_pure_sve.py，2 项全过）
+## 验证（tools/test_satd_pure_sve.py，2 项全过）
 
 1. `check_isa_level --no-neon --level sve2`：**0 NEON 违规、0 违规**；
 2. QEMU vq=1（SVE 路径）与 vq=2（标量回退）各 200 例随机输入，
-   与 NEON DAG 候选**逐例数值一致**（vq=2 验证回退可达且正确）。
+   **4 形状全部**与 NEON DAG 候选（8x8/16x16 直接 DAG，32/64 用
+   同构包装）**逐例数值一致**（vq=2 验证回退可达且正确）。
 
 ## 关键排错记录
 
@@ -28,11 +32,14 @@
 - NEON vtrn1q_s16/s32 是**偶/奇位交错**（QEMU 探针实证），初版
   相邻交错索引错误；标量转录与 SVE tbl2 索引按偶/奇位修正后一致；
 - svaddv→NEON uaddv、svlasta→NEON mov：均改用纯 SVE 替代
-  （uzp 成对加 + 内联 asm LASTA）。
+  （uzp 成对加 + 内联 asm LASTA）；svdup/svindex 零向量→NEON
+  movi：改用内联 asm `mov z.d, #0`；GCC 会把带 guard 的 16x16
+  克隆成 `.part.0` 并自动向量化回退→guard 移入 extern 入口。
 
 ## 状态
 
-- satd-8 的 8x8 纯 SVE 发射器落地并验证（纯 SVE 模式推广首个非
-  dct kernel）；16x16/32x32/64x64 纯 SVE 与注入接线、710 实机
-  对比列为后续（纯 SVE dct 实机 E2E -2.63% 的教训：实机不占优
-  则默认不注入）。
+- satd 4 形状纯 SVE 发射器落地并验证（纯 SVE 模式推广首个非 dct
+  kernel 家族）；build_preload_so 已接入 AGO_PURE_SVE（satd-8，
+  sve2/vl16），本地 bundle 构建通过（4 符号、0 未定义、0 NEON）；
+  710 实机 kernel/E2E 对比列为后续（纯 SVE dct 实机 E2E -2.63%
+  的教训：实机不占优则默认不注入）。
