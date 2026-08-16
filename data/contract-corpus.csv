@@ -116,6 +116,12 @@ quant-dequant-scaling-gt-256 (branch gt),2026-08-16,quant,dequant-scaling-gt,256
 quant-dequant-scaling-le-256 (branch le),2026-08-17,quant,dequant-scaling-le,256 (branch le),sve2,sve2,128;256,read coeff+scale table; write out,src/dst disjoint,exact multiply+shift,none,elementwise,upstream-exact,20k,gated,docs/44/47
 quant-nquant-256,2026-08-16,quant,nquant,256,sve2,sve2,128;256,read coeff+quant table; write out coeffs; return count,src/dst disjoint,rounding shift + dead-zone (upstream-exact),none (256 elems),elementwise+scan,upstream-exact,20k,gated,docs/44/47 representative slice
 quant-quant-256,2026-08-16,quant,quant,256,sve2,sve2,128;256,read coeff+quant table; write out coeffs; return count,src/dst disjoint,rounding shift + dead-zone (upstream-exact),none (256 elems),elementwise+scan,upstream-exact,20k,gated,docs/44/47 representative slice
+sao-sao-cuorg-b0-saoCuOrgB0,,sao,sao-cuorg-b0,saoCuOrgB0,c,neon,32,"""read-write","""rec","""saturating",no-tail,band,test-obligation,"""20k",gated,"""NEON"
+sao-sao-cuorg-e0-saoCuOrgE0,,sao,sao-cuorg-e0,saoCuOrgE0,c,neon,32,"""read-write","""rec","""saturating",no-tail,edge-offset,test-obligation,"""20k",gated,"""NEON"
+sao-sao-cuorg-e1-saoCuOrgE1,,sao,sao-cuorg-e1,saoCuOrgE1,c,neon,32,"""read-write","""rec","""saturating",no-tail,edge-offset,test-obligation,"""20k",gated,"""NEON"
+sao-sao-cuorg-e1-2rows-saoCuOrgE1_2Rows,,sao,sao-cuorg-e1-2rows,saoCuOrgE1_2Rows,c,neon,32,"""read-write","""rec","""saturating",no-tail,edge-offset,test-obligation,"""20k",gated,"""NEON"
+sao-sao-cuorg-e2-saoCuOrgE2,,sao,sao-cuorg-e2,saoCuOrgE2,c,neon,32,"""read-write","""rec","""saturating",no-tail,edge-offset,test-obligation,"""20k",gated,"""NEON"
+sao-sao-cuorg-e3-saoCuOrgE3,,sao,sao-cuorg-e3,saoCuOrgE3,c,neon,32,"""read-write","""rec","""saturating",no-tail,edge-offset,test-obligation,"""20k",gated,"""NEON"
 sao-sao-stats-bo-64x1,2026-08-16,sao,sao-stats-bo,64x1,sve2,sve2,128;256,read int16 coeff + uint8 rec (+offsets); accumulate int32 stats,none,exact,adapter guard width!=64 fallback,stats,upstream-exact,20k,injected,in best9 bundles
 sao-sao-stats-e0-64x1,,sao,sao-stats-e0,64x1,sve2,sve2,128;256,read int16 coeff + uint8 rec; accumulate int32 stats (stateful),none,exact,adapter guard width!=64 fallback,stats,upstream-exact,20k vq=1/2,measured,710 kernel -15.0%
 sao-sao-stats-e1-64x1,2026-08-16,sao,sao-stats-e1,64x1,sve2,sve2,128;256,read int16 coeff + uint8 rec (+offsets); accumulate int32 stats,none,exact,adapter guard width!=64 fallback,stats,upstream-exact,20k,injected,in best9 bundles

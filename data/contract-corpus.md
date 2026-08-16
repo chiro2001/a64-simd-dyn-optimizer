@@ -123,6 +123,12 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | quant | dequant-scaling-le | 256 (branch le) | read coeff+scale table; write out | src/dst disjoint | exact multiply+shift | none | 128;256 | elementwise | upstream-exact | 20k | gated |
 | quant | nquant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
 | quant | quant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
+| sao | sao-cuorg-b0 | saoCuOrgB0 | "read-write | "rec | "saturating | no-tail | 32 | band | test-obligation | "20k | gated |
+| sao | sao-cuorg-e0 | saoCuOrgE0 | "read-write | "rec | "saturating | no-tail | 32 | edge-offset | test-obligation | "20k | gated |
+| sao | sao-cuorg-e1 | saoCuOrgE1 | "read-write | "rec | "saturating | no-tail | 32 | edge-offset | test-obligation | "20k | gated |
+| sao | sao-cuorg-e1-2rows | saoCuOrgE1_2Rows | "read-write | "rec | "saturating | no-tail | 32 | edge-offset | test-obligation | "20k | gated |
+| sao | sao-cuorg-e2 | saoCuOrgE2 | "read-write | "rec | "saturating | no-tail | 32 | edge-offset | test-obligation | "20k | gated |
+| sao | sao-cuorg-e3 | saoCuOrgE3 | "read-write | "rec | "saturating | no-tail | 32 | edge-offset | test-obligation | "20k | gated |
 | sao | sao-stats-bo | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
 | sao | sao-stats-e0 | 64x1 | read int16 coeff + uint8 rec; accumulate int32 stats (stateful) | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k vq=1/2 | measured |
 | sao | sao-stats-e1 | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
