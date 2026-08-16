@@ -1,6 +1,7 @@
 [
  {
-  "tag": "r_vaddlv_a_abd",
+  "tag": "s8x8_r_vaddlv_a_abd",
+  "shape": "8x8",
   "reduce": "vaddlv",
   "abs": "abd",
   "passed": true,
@@ -14,11 +15,12 @@
    "stack_vector": 5,
    "vector_fused_uop": 60
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vaddlv_a_abd.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vaddlv_a_abd.o",
   "mismatches": 0
  },
  {
-  "tag": "r_vaddlv_a_subabs",
+  "tag": "s8x8_r_vaddlv_a_subabs",
+  "shape": "8x8",
   "reduce": "vaddlv",
   "abs": "subabs",
   "passed": true,
@@ -32,11 +34,12 @@
    "stack_vector": 5,
    "vector_fused_uop": 64
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vaddlv_a_subabs.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vaddlv_a_subabs.o",
   "mismatches": 0
  },
  {
-  "tag": "r_vpaddl_a_abd",
+  "tag": "s8x8_r_vpaddl_a_abd",
+  "shape": "8x8",
   "reduce": "vpaddl",
   "abs": "abd",
   "passed": true,
@@ -50,11 +53,12 @@
    "stack_vector": 5,
    "vector_fused_uop": 61
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vpaddl_a_abd.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vpaddl_a_abd.o",
   "mismatches": 0
  },
  {
-  "tag": "r_vpaddl_a_subabs",
+  "tag": "s8x8_r_vpaddl_a_subabs",
+  "shape": "8x8",
   "reduce": "vpaddl",
   "abs": "subabs",
   "passed": true,
@@ -68,11 +72,12 @@
    "stack_vector": 5,
    "vector_fused_uop": 65
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vpaddl_a_subabs.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vpaddl_a_subabs.o",
   "mismatches": 0
  },
  {
-  "tag": "r_vaddv_a_abd",
+  "tag": "s8x8_r_vaddv_a_abd",
+  "shape": "8x8",
   "reduce": "vaddv",
   "abs": "abd",
   "passed": true,
@@ -86,11 +91,12 @@
    "stack_vector": 5,
    "vector_fused_uop": 60
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vaddv_a_abd.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vaddv_a_abd.o",
   "mismatches": 0
  },
  {
-  "tag": "r_vaddv_a_subabs",
+  "tag": "s8x8_r_vaddv_a_subabs",
+  "shape": "8x8",
   "reduce": "vaddv",
   "abs": "subabs",
   "passed": true,
@@ -104,7 +110,349 @@
    "stack_vector": 5,
    "vector_fused_uop": 64
   },
-  "obj": "experiments/m31-satd8-axis-search/r_vaddv_a_subabs.o",
+  "obj": "experiments/m31-satd8-axis-search/s8x8_r_vaddv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vaddlv_a_abd",
+  "shape": "8x16",
+  "reduce": "vaddlv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 131,
+   "vector": 120,
+   "movprfx": 0,
+   "vector_fused": 120,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 120
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vaddlv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vaddlv_a_subabs",
+  "shape": "8x16",
+  "reduce": "vaddlv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 139,
+   "vector": 128,
+   "movprfx": 0,
+   "vector_fused": 128,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 128
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vaddlv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vpaddl_a_abd",
+  "shape": "8x16",
+  "reduce": "vpaddl",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 132,
+   "vector": 121,
+   "movprfx": 0,
+   "vector_fused": 121,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 121
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vpaddl_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vpaddl_a_subabs",
+  "shape": "8x16",
+  "reduce": "vpaddl",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 140,
+   "vector": 129,
+   "movprfx": 0,
+   "vector_fused": 129,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 129
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vpaddl_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vaddv_a_abd",
+  "shape": "8x16",
+  "reduce": "vaddv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 133,
+   "vector": 120,
+   "movprfx": 0,
+   "vector_fused": 120,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 120
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vaddv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s8x16_r_vaddv_a_subabs",
+  "shape": "8x16",
+  "reduce": "vaddv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 141,
+   "vector": 128,
+   "movprfx": 0,
+   "vector_fused": 128,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 128
+  },
+  "obj": "experiments/m31-satd8-axis-search/s8x16_r_vaddv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vaddlv_a_abd",
+  "shape": "16x8",
+  "reduce": "vaddlv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 129,
+   "vector": 118,
+   "movprfx": 0,
+   "vector_fused": 118,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 118
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vaddlv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vaddlv_a_subabs",
+  "shape": "16x8",
+  "reduce": "vaddlv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 137,
+   "vector": 126,
+   "movprfx": 0,
+   "vector_fused": 126,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 126
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vaddlv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vpaddl_a_abd",
+  "shape": "16x8",
+  "reduce": "vpaddl",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 130,
+   "vector": 119,
+   "movprfx": 0,
+   "vector_fused": 119,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 119
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vpaddl_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vpaddl_a_subabs",
+  "shape": "16x8",
+  "reduce": "vpaddl",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 138,
+   "vector": 127,
+   "movprfx": 0,
+   "vector_fused": 127,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 127
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vpaddl_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vaddv_a_abd",
+  "shape": "16x8",
+  "reduce": "vaddv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 131,
+   "vector": 118,
+   "movprfx": 0,
+   "vector_fused": 118,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 118
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vaddv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x8_r_vaddv_a_subabs",
+  "shape": "16x8",
+  "reduce": "vaddv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 139,
+   "vector": 126,
+   "movprfx": 0,
+   "vector_fused": 126,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 126
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x8_r_vaddv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vaddlv_a_abd",
+  "shape": "16x16",
+  "reduce": "vaddlv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 97,
+   "vector": 72,
+   "movprfx": 0,
+   "vector_fused": 72,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 72
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vaddlv_a_subabs",
+  "shape": "16x16",
+  "reduce": "vaddlv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 101,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 76
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vpaddl_a_abd",
+  "shape": "16x16",
+  "reduce": "vpaddl",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 98,
+   "vector": 73,
+   "movprfx": 0,
+   "vector_fused": 73,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 73
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vpaddl_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vpaddl_a_subabs",
+  "shape": "16x16",
+  "reduce": "vpaddl",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 102,
+   "vector": 77,
+   "movprfx": 0,
+   "vector_fused": 77,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 77
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vpaddl_a_subabs.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vaddv_a_abd",
+  "shape": "16x16",
+  "reduce": "vaddv",
+  "abs": "abd",
+  "passed": true,
+  "counts": {
+   "total": 99,
+   "vector": 72,
+   "movprfx": 0,
+   "vector_fused": 72,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 72
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vaddv_a_abd.o",
+  "mismatches": 0
+ },
+ {
+  "tag": "s16x16_r_vaddv_a_subabs",
+  "shape": "16x16",
+  "reduce": "vaddv",
+  "abs": "subabs",
+  "passed": true,
+  "counts": {
+   "total": 103,
+   "vector": 76,
+   "movprfx": 0,
+   "vector_fused": 76,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 13,
+   "vector_fused_uop": 76
+  },
+  "obj": "experiments/m31-satd8-axis-search/s16x16_r_vaddv_a_subabs.o",
   "mismatches": 0
  }
 ]

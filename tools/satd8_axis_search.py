@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""SATD 8x8 small-domain axis enumeration (docs/74 B&B acceptance data).
+"""SATD axis enumeration (docs/74 B&B acceptance data).
 
-Enumerates the explicit satd8 NEON grammar axes on top of
-tools/emit_satd_neon_shared.emit_8x8:
-  reduce x abs = {vaddlv, vpaddl, vaddv} x {abd, subabs} = 6 candidates
+Enumerates the explicit satd NEON grammar axes on top of
+tools/emit_satd_neon_shared:
+  shape x reduce x abs =
+    {8x8, 8x16, 16x8, 16x16} x {vaddlv, vpaddl, vaddv} x {abd, subabs}
+    = 24 candidates
 Each candidate is compiled, counted (static fused_uop oracle), and
-gated 20k vs x265 satd8_sve2<8,8> under QEMU.  This is the
-"小域全枚举" baseline the bounded B&B will be compared against
-(docs/74 acceptance: same best hash, no mis-pruning, node reduction).
+gated 20k vs x265 satd8_sve2<W,H> under QEMU.  This is the "小域全枚举"
+baseline the bounded B&B is compared against (docs/74 acceptance).
 
 Usage:
   python3 tools/satd8_axis_search.py
@@ -30,6 +31,7 @@ QEMU = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu",
         "-cpu", "max,sve-max-vq=2"]
 LIB = os.path.join(ROOT, "build", "x265-8-clang-sve", "libx265.a")
 
+SHAPES = [(8, 8), (8, 16), (16, 8), (16, 16)]
 REDUCES = ["vaddlv", "vpaddl", "vaddv"]
 ABSES = ["abd", "subabs"]
 
@@ -38,35 +40,41 @@ def run(cmd, **kw):
     return subprocess.run(cmd, capture_output=True, text=True, **kw)
 
 
+def emit(w, h, func_name, reduce, abs_kind):
+    from emit_satd_neon_shared import (emit_8x8, emit_8x16, emit_16x8,
+                                       emit_16x16)
+    fn = {(8, 8): emit_8x8, (8, 16): emit_8x16,
+          (16, 8): emit_16x8, (16, 16): emit_16x16}[(w, h)]
+    return fn(func_name=func_name, reduce=reduce, abs_kind=abs_kind)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
-    from emit_satd_neon_shared import emit_8x8
-
     results = []
-    verifier_decls = []
-    verifier_calls = []
+    decls = []
+    calls = []
     objs = []
-    for reduce, abs_kind in product(REDUCES, ABSES):
-        tag = "r_%s_a_%s" % (reduce, abs_kind)
-        sym = "dynopt_satd_8x8_%s" % tag
+    for (w, h), reduce, abs_kind in product(SHAPES, REDUCES, ABSES):
+        tag = "s%dx%d_r_%s_a_%s" % (w, h, reduce, abs_kind)
+        sym = "dynopt_satd_%s" % tag
         src = os.path.join(OUT, tag + ".cpp")
         obj = os.path.join(OUT, tag + ".o")
         with open(src, "w") as f:
-            f.write(emit_8x8(func_name=sym, reduce=reduce,
-                             abs_kind=abs_kind))
+            f.write(emit(w, h, sym, reduce, abs_kind))
         c = run([CXX, "-O2", "-std=c++11", "-march=armv8.2-a",
                  "-c", src, "-o", obj])
         if c.returncode != 0:
-            results.append({"tag": tag, "reduce": reduce, "abs": abs_kind,
+            results.append({"tag": tag, "shape": "%dx%d" % (w, h),
+                            "reduce": reduce, "abs": abs_kind,
                             "passed": False, "reason": "compile failed"})
             continue
         counts = static_counts(obj)
-        verifier_decls.append(
-            'extern "C" int %s(const uint8_t*, intptr_t,'
-            " const uint8_t*, intptr_t);" % sym)
-        verifier_calls.append('    check("%s", %s);' % (tag, sym))
+        decls.append('extern "C" int %s(const uint8_t*, intptr_t,'
+                     " const uint8_t*, intptr_t);" % sym)
+        calls.append('    check<%d, %d>("%s", %s);' % (w, h, tag, sym))
         objs.append(obj)
-        results.append({"tag": tag, "reduce": reduce, "abs": abs_kind,
+        results.append({"tag": tag, "shape": "%dx%d" % (w, h),
+                        "reduce": reduce, "abs": abs_kind,
                         "passed": None, "counts": counts,
                         "obj": os.path.relpath(obj, ROOT)})
 
@@ -87,18 +95,19 @@ template <int W, int H> int satd8_sve2(
 extern "C" {
 typedef int (*cfn_t)(const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 }
+template <int W, int H>
 static void check(const char* tag, cfn_t CAND)
 {
     long mm = 0;
     const int sts[] = {16, 32, 64};
-    static uint8_t a[9 * 64 + 16], b[9 * 64 + 16];
+    static uint8_t a[(24 + 8) * 64 + 64], b[(24 + 8) * 64 + 64];
     for (int it = 0; it < 20000 && mm < 4; it++)
     {
         int st = sts[it % 3];
         for (int i = 0; i < (int)(sizeof(a) / sizeof(a[0])); i++)
             a[i] = b[i] = (uint8_t)(rand() % 256);
         int got = CAND(a + 3 * st + 8, st, b + 3 * st + 8, st);
-        int want = x265::satd8_sve2<8, 8>(
+        int want = x265::satd8_sve2<W, H>(
             a + 3 * st + 8, st, b + 3 * st + 8, st);
         if (got != want)
         {
@@ -116,15 +125,15 @@ __CALLS__
     return 0;
 }
 """
-        f.write(body.replace("__DECLS__", "\n".join(verifier_decls))
-                .replace("__CALLS__", "\n".join(verifier_calls)))
+        f.write(body.replace("__DECLS__", "\n".join(decls))
+                .replace("__CALLS__", "\n".join(calls)))
 
     v = run([CXX, "-O2", "-std=c++11", verifier_src] + objs +
             ["-Wl,--start-group", LIB, "-Wl,--end-group",
              "-lpthread", "-ldl", "-o",
              os.path.join(OUT, "verify")])
     if v.returncode != 0:
-        print("verifier build failed", v.stderr[-500:])
+        print("verifier build failed", v.stderr[-800:])
         return 1
     r = run(QEMU + [os.path.join(OUT, "verify"), "20000"])
     mism = {}
@@ -140,14 +149,15 @@ __CALLS__
     with open(os.path.join(OUT, "results.json"), "w") as f:
         json.dump(results, f, indent=1)
 
-    print("%-24s %-8s %-8s %6s %6s" %
-          ("tag", "reduce", "abs", "fused", "gate"))
+    print("%-30s %-7s %-8s %-8s %6s %6s" %
+          ("tag", "shape", "reduce", "abs", "fused", "gate"))
     best = None
     for row in results:
         fused = (row.get("counts") or {}).get("vector_fused_uop", "-")
         gate = "PASS" if row.get("passed") else "FAIL"
-        print("%-24s %-8s %-8s %6s %6s" %
-              (row["tag"], row["reduce"], row["abs"], fused, gate))
+        print("%-30s %-7s %-8s %-8s %6s %6s" %
+              (row["tag"], row["shape"], row["reduce"], row["abs"],
+               fused, gate))
         if row.get("passed") and isinstance(fused, int):
             if best is None or fused < best[1]:
                 best = (row["tag"], fused)

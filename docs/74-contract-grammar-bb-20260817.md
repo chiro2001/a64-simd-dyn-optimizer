@@ -120,3 +120,24 @@ grammar。合法操作按族划分：
 下一轮需把 grammar 扩到 ≥24 候选（例如给 8x16/16x8 形状同样加
 reduce/abs 轴，或引入 transpose/load 批处理轴），再跑 §4 验收；
 在此之前不宣称 B&B 在真实域成立。
+
+## 8. 第二次验收运行：24 候选空间（2026-08-17 晚）
+
+grammar 扩为 shape × reduce × abs = {8x8, 8x16, 16x8, 16x16} ×
+{vaddlv, vpaddl, vaddv} × {abd, subabs} = **24 候选**（发射器
+emit_8x16/16x8/16x16 增加 reduce/abs 轴），全部 20k QEMU 门禁
+PASS（vs x265 satd8_sve2<W,H>），fused_uop 60..129：
+- abs=subabs 恒 +4..8；reduce 轴 vaddlv==vaddv<vpaddl（+1）；
+- 轴格 B&B（tools/axis_bb_accept.py，下界 = 部分赋值下已测最小
+  fused_uop，可采纳）：
+  | 指标 | 值 |
+  | --- | ---: |
+  | 全枚举 | 24 候选，最优 60 |
+  | B&B 最优 | 60（**同最优**） |
+  | B&B 状态数 | 5（**节点减少 4.8x**） |
+  | 剪枝 | 7 分支 |
+  | 误剪 | 0 |
+- **验收门全部达成**（最优哈希一致、无误剪枝、节点 ≥2x 减半）；
+  首次在真实测量空间上验证了有限 B&B 的剪枝价值；
+- 数据：experiments/m31-satd8-axis-search/results.json（24 行），
+  tools/test_axis_bb_accept.py 入回归。

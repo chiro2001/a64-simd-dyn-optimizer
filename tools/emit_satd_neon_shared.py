@@ -138,12 +138,22 @@ def emit_combo(combo):
                     abs_kind=combo.get("abs", "abd"))
 
 
-def _helpers():
-    """Reusable NEON helper preamble (transposes + hadamard)."""
-    return emit_8x8().split('extern "C" int ')[0]
+def _helpers(abs_kind="abd"):
+    """Reusable NEON helper preamble (transposes + hadamard) with the
+    chosen abs variant (abd vs subabs)."""
+    return emit_8x8(abs_kind=abs_kind).split('extern "C" int ')[0]
 
 
-def _16x16_body(func_name="dynopt_satd_16x16_sve2"):
+def _16x16_body(func_name="dynopt_satd_16x16_sve2", reduce="vpaddl"):
+    if reduce == "vaddlv":
+        red = ("    return (int)vaddlvq_u16(vaddq_u16(sum[0], sum[1]));")
+    elif reduce == "vpaddl":
+        red = ("    uint32x4_t s0 = vpaddlq_u16(sum[0]);\n"
+               "    uint32x4_t s1 = vpaddlq_u16(sum[1]);\n"
+               "    return (int)vaddvq_u32(vaddq_u32(s0, s1));")
+    else:
+        red = ("    return (int)(vaddvq_u16(sum[0]) + "
+               "vaddvq_u16(sum[1]));")
     return """\
 static int %(func)s_impl(const uint8_t* pix1, intptr_t sp1,
                          const uint8_t* pix2, intptr_t sp2)
@@ -175,9 +185,7 @@ static int %(func)s_impl(const uint8_t* pix1, intptr_t sp1,
             sum[1] = vaddq_u16(sum[1], out[1]);
         }
     }
-    uint32x4_t s0 = vpaddlq_u16(sum[0]);
-    uint32x4_t s1 = vpaddlq_u16(sum[1]);
-    return (int)vaddvq_u32(vaddq_u32(s0, s1));
+%(red)s
 }
 
 extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
@@ -185,16 +193,19 @@ extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
 {
     return %(func)s_impl(pix1, sp1, pix2, sp2);
 }
-""" % {"func": func_name}
+""" % {"func": func_name, "red": red}
 
 
-def emit_16x16(func_name="dynopt_satd_16x16_sve2"):
+def emit_16x16(func_name="dynopt_satd_16x16_sve2", reduce="vpaddl",
+               abs_kind="abd"):
     """SATD 16x16 NEON: 4 row-groups x (left/right 4x4 quad), u16 lane
-    accumulation + vpaddl/vaddvq (upstream pixel_satd_16x16_neon)."""
-    return _helpers() + _16x16_body(func_name)
+    accumulation + parametrized reduce (upstream pixel_satd_16x16_neon
+    uses vpaddl/vaddvq)."""
+    return (_helpers(abs_kind) + _16x16_body(func_name, reduce))
 
 
-def _dual_8x8_body(func_name, rowstep, coloff, note, col1=None):
+def _dual_8x8_body(func_name, rowstep, coloff, note, col1=None,
+                   reduce="vaddlv"):
     """Two 8x8 blocks (rowstep=8: 8x16 stacked; coloff=8: 16x8 side by
     side) with fully inlined hadamard_4x4_quad. The upstream
     pixel_satd_8x16/16x8_neon call hadamard_4x4_quad through a `bl`
@@ -202,6 +213,14 @@ def _dual_8x8_body(func_name, rowstep, coloff, note, col1=None):
     the 1.5x observed for the 16x16 candidate."""
     if col1 is None:
         col1 = coloff  # 8x16: both blocks at column 0
+    if reduce == "vaddlv":
+        red = ("    return (int)vaddlvq_u16(vaddq_u16(s0, s1));")
+    elif reduce == "vpaddl":
+        red = ("    uint32x4_t p0 = vpaddlq_u16(s0);\n"
+               "    uint32x4_t p1 = vpaddlq_u16(s1);\n"
+               "    return (int)vaddvq_u32(vaddq_u32(p0, p1));")
+    else:
+        red = ("    return (int)(vaddvq_u16(s0) + vaddvq_u16(s1));")
     return """\
 static int %(func)s_impl(const uint8_t* pix1, intptr_t sp1,
                          const uint8_t* pix2, intptr_t sp2)
@@ -221,7 +240,7 @@ static int %(func)s_impl(const uint8_t* pix1, intptr_t sp1,
     hadamard_4x4_quad(diff + 8, out + 2);
     uint16x8_t s0 = vaddq_u16(out[0], out[1]);
     uint16x8_t s1 = vaddq_u16(out[2], out[3]);
-    return (int)vaddlvq_u16(vaddq_u16(s0, s1));
+%(red)s
 }
 
 extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
@@ -230,21 +249,23 @@ extern "C" int %(func)s(const uint8_t* pix1, intptr_t sp1,
     return %(func)s_impl(pix1, sp1, pix2, sp2);
 }
 """ % {"func": func_name, "rowstep": rowstep, "coloff": coloff,
-       "col1": col1, "note": note}
+       "col1": col1, "note": note, "red": red}
 
 
-def emit_8x16(func_name="dynopt_satd_8x16_sve2"):
+def emit_8x16(func_name="dynopt_satd_8x16_sve2", reduce="vaddlv",
+              abs_kind="abd"):
     """SATD 8x16 NEON: two stacked 8x8 blocks, inlined helpers."""
-    return (_helpers() + _dual_8x8_body(
+    return (_helpers(abs_kind) + _dual_8x8_body(
         func_name, rowstep=8, coloff=0,
-        note="8x16: rows 0-7 and 8-15 at column 0"))
+        note="8x16: rows 0-7 and 8-15 at column 0", reduce=reduce))
 
 
-def emit_16x8(func_name="dynopt_satd_16x8_sve2"):
+def emit_16x8(func_name="dynopt_satd_16x8_sve2", reduce="vaddlv",
+              abs_kind="abd"):
     """SATD 16x8 NEON: two side-by-side 8x8 blocks, inlined helpers."""
-    return (_helpers() + _dual_8x8_body(
-        func_name, rowstep=0, coloff=0, col1=8,
-        note="16x8: rows 0-7 at columns 0-7 and 8-15"))
+    return (_helpers(abs_kind) + _dual_8x8_body(
+        func_name, rowstep=0, coloff=8, col1=0,
+        note="16x8: rows 0-7, columns 0-7 and 8-15", reduce=reduce))
 
 
 def emit_all(func_8="dynopt_satd_8x8_sve2", func_16="dynopt_satd_16x16_sve2",
