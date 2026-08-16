@@ -1,0 +1,29 @@
+# 920B 三臂交错：base / best9-noremain / +dct IR（2026-08-17）
+
+## 方法
+
+- 机器：920B（SVE1 VL=256，共享 Kunpeng 节点），真实 100f，单核
+  taskset -c 0；注入法交错（interleaved-inject-ab.sh，LABEL_C
+  三臂），6 对随机交错；
+- 臂：base / best9-noremain（12 kernel）/ best9-noremain-ir-dct
+  （14 kernel，dct16/32 IR NEON，AGO_IR_DCT=1）；
+- md5 全等：1600c2fac1294b5ffb19512f6615b31d（三臂 bit-exact）。
+
+## 结果（diff = 前者 - 后者，>0 = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain-ir-dct vs base | +591.5 | **+2.66%** | [558.0, 647.0] |
+| best9-noremain vs base | +485.5 | +2.19% | [424.0, 516.0] |
+| best9-noremain vs best9-noremain-ir-dct | -127.5 | **-0.59%** | [-169.0, -74.5] |
+
+第三行：noremain 比组合慢 127.5 ms → dct IR 在同一轮交错中给
+best9-noremain 增加 **+0.59%**（CI 不含 0，bit-exact）。
+
+## 结论
+
+1. 920B 冻结组合（best9-minus-remain + dct IR）= **+2.66%**；
+2. dct IR 可加性在 920B 同一轮三臂中确认：+0.59% CI [74.5, 169.0]
+   （此前跨轮次估算 +0.4pp 方向一致、本轮更精确）；
+3. 四机汇总：N1 +2.14~2.25%、710 +2.03~2.36%、920B +2.63~2.66%，
+   950 待用户侧。
