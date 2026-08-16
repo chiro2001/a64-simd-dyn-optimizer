@@ -37,3 +37,11 @@ python3 tools/kernel_db.py export-md
 约定：E2E % 统一“负=更快”；CI 为空/0 表示未计算；bit_exact 为
 same-machine md5 门（op4032 这类策略放行项记 `no (policy)`）。每次
 新测试落盘后，把结果行 `add` 进 CSV、`export-md`、随报告一起提交。
+
+## 维护契约（agents 强制，见根目录 AGENTS.md）
+
+- 任何测量都必须入库：门禁/MCA、实机 kernel、E2E、消融、bundle
+  A/B 各一行（gate-only 行 machine 留空）；
+- 入库行与报告/代码同一 commit；CSV 用 CLI 维护，MD 是生成物；
+- 新报告落盘后同步执行：
+  `add` → `export-md` → 更新 docs/59 相应小节 → commit → 三端推送。

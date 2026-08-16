@@ -8,6 +8,11 @@ LLVM-MCA / 实机 CNTVCT 多级代理评估，最后通过 `LD_PRELOAD` 快速�
 
 规划与完整文档见 [docs/README.md](docs/README.md)。
 
+给 Codex/agent 的操作契约见 [AGENTS.md](AGENTS.md)（入口文档、机器
+红线、工作流）；全部测试结果统一记录在
+[data/kernel-test-db.csv](data/kernel-test-db.csv)，用法与维护约定见
+[docs/67](docs/67-kernel-test-db-20260816.md)。
+
 ## AGO：自动图优化 sidecar（2026-08-16 起的新主方向）
 
 在既有“布局搜索 + 专用发射器”之上，新增 **AGO（AArch64 SIMD Graph
