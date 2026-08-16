@@ -251,6 +251,42 @@ static inline svint16_t psv16_dual_vget_hi4(svint16_t x)
     svuint16_t i = svld1_u16(svptrue_b16(), idx);
     return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
 }
+
+static inline svint16_t psv16_rev_hi(svint16_t x)
+{
+    static const uint16_t idx[16] =
+        { 0, 1, 2, 3, 4, 5, 6, 7, 15, 14, 13, 12, 11, 10, 9, 8 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
+}
+
+static inline svint16_t psv16_rev_lo(svint16_t x)
+{
+    static const uint16_t idx[16] =
+        { 7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(x), i));
+}
+
+// Dual widening add: group0 (s16 lanes 0-7) and group1 (s16 lanes
+// 8-15); each group's low-4 widen to s32 -> result s32 lanes 0-3
+// (group0) and 4-7 (group1).
+static inline svint32_t psv16_dual_saddl(svint16_t a, svint16_t b)
+{
+    svint16_t al = psv16_dual_vget_lo4(a);
+    svint16_t bl = psv16_dual_vget_lo4(b);
+    svint32_t a0 = svunpklo_s32(al);  // lanes 0-3 = a[0..3] widened
+    svint32_t a1 = svunpkhi_s32(al);  // lanes 0-3 = a[8..11] widened
+    svint32_t b0 = svunpklo_s32(bl);
+    svint32_t b1 = svunpkhi_s32(bl);
+    svint32_t s0 = svadd_s32_x(svptrue_b32(), a0, b0);
+    svint32_t s1 = svadd_s32_x(svptrue_b32(), a1, b1);
+    static const uint32_t idx[8] = { 0, 1, 2, 3, 8, 9, 10, 11 };
+    svuint32_t i = svld1_u32(svptrue_b32(), idx);
+    svuint32x2_t t = svcreate2_u32(svreinterpret_u32_s32(s0),
+                                   svreinterpret_u32_s32(s1));
+    return svreinterpret_s32_u32(svtbl2_u32(t, i));
+}
 """
 
 

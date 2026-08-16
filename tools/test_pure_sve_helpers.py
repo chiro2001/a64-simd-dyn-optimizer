@@ -92,14 +92,16 @@ extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
                             int16_t* o, int64_t* s)
 {
     svint16_t x = psv16_load(a), y = psv16_load(b);
-    psv16_store(o, psv16_dual_rev16(x));
+    psv16_store(o, psv16_rev_hi(x));
     svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
     svst1_s64(svptrue_b64(), s, acc);
+    svst1_s32(svptrue_b32(), (int32_t*)s, psv16_dual_saddl(x, y));
 }
 int main()
 {
     const int16_t x[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    int16_t r[16]; int64_t s[4];
+    const int16_t y[16] = {16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
+    int16_t r[16]; int64_t s[4]; int32_t z[8];
     svint16_t v = psv16_load(x);
     psv16_store(r, v);
     long bad = 0;
@@ -129,6 +131,21 @@ int main()
     if (r[0] != 4 || r[1] != 5 || r[2] != 6 || r[3] != 7 ||
         r[8] != 12 || r[9] != 13 || r[10] != 14 || r[11] != 15)
         { bad++; printf("dual_vget_hi4 bad\n"); }
+    psv16_store(r, psv16_rev_hi(v));
+    const int16_t erh[16] = {0,1,2,3,4,5,6,7,15,14,13,12,11,10,9,8};
+    for (int i = 0; i < 16; i++)
+        if (r[i] != erh[i]) { bad++; printf("rev_hi[%d]=%d exp %d\n",
+                                            i, r[i], erh[i]); }
+    psv16_store(r, psv16_rev_lo(v));
+    const int16_t erl[16] = {7,6,5,4,3,2,1,0,8,9,10,11,12,13,14,15};
+    for (int i = 0; i < 16; i++)
+        if (r[i] != erl[i]) { bad++; printf("rev_lo[%d]=%d exp %d\n",
+                                            i, r[i], erl[i]); }
+    svst1_s32(svptrue_b32(), z, psv16_dual_saddl(v, psv16_load(y)));
+    const int32_t es[8] = {16,18,20,22,32,34,36,38};
+    for (int i = 0; i < 8; i++)
+        if (z[i] != es[i]) { bad++; printf("dual_saddl[%d]=%d exp %d\n",
+                                           i, z[i], es[i]); }
     printf(bad ? "FAILED %ld\n" : "PASS\n", bad);
     return bad != 0;
 }
