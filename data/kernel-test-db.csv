@@ -170,12 +170,14 @@ satd-axis-s16x8,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve
 satd-axis-s16x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd16-pure-sve-710-kernel,2026-08-17,,satd-16,,pure-sve-710,,,,,,,,,,710,ratio_vs_satd8_sve2,0.596,,,,yes,reports/satd-pure-sve-710-20260817.txt
 satd8-axis-s16x16_r_vaddlv_a_abd,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_abd,,,experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_abd.cpp,72,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
+satd-axis-s16x16_r_vaddlv_a_abd-710-ticks,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_abd,,,,72,,,,,,710,ticks,1185,,,,yes,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vaddlv_a_subabs,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_subabs,,,experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_subabs.cpp,76,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vaddv_a_abd,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddv_a_abd,,,experiments/m31-satd8-axis-search/s16x16_r_vaddv_a_abd.cpp,72,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vaddv_a_subabs,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddv_a_subabs,,,experiments/m31-satd8-axis-search/s16x16_r_vaddv_a_subabs.cpp,76,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vpaddl_a_abd,2026-08-17,,satd-16x16,,axis-s16x16_r_vpaddl_a_abd,,,experiments/m31-satd8-axis-search/s16x16_r_vpaddl_a_abd.cpp,73,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vpaddl_a_subabs,2026-08-17,,satd-16x16,,axis-s16x16_r_vpaddl_a_subabs,,,experiments/m31-satd8-axis-search/s16x16_r_vpaddl_a_subabs.cpp,77,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x8_r_vaddlv_a_abd,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddlv_a_abd,,,experiments/m31-satd8-axis-search/s16x8_r_vaddlv_a_abd.cpp,118,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
+satd-axis-s16x8_r_vaddlv_a_abd-710-ticks,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddlv_a_abd,,,,118,,,,,,710,ticks,518,,,,yes,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x8_r_vaddlv_a_subabs,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddlv_a_subabs,,,experiments/m31-satd8-axis-search/s16x8_r_vaddlv_a_subabs.cpp,126,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x8_r_vaddv_a_abd,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddv_a_abd,,,experiments/m31-satd8-axis-search/s16x8_r_vaddv_a_abd.cpp,118,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x8_r_vaddv_a_subabs,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddv_a_subabs,,,experiments/m31-satd8-axis-search/s16x8_r_vaddv_a_subabs.cpp,126,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
@@ -213,6 +215,7 @@ satd-8-satd8_D-N1,,,satd-8,pixel,satd8_D,neon,neon,experiments/ago-m2-expanded/s
 satd-8-satd8_E-920B,,,satd-8,pixel,satd8_E,neon,neon,experiments/ago-m2-expanded/src/satd8_E.cpp,76,,1,20000,0,20k-native,920B,ticks,3630,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8-satd8_E-N1,,,satd-8,pixel,satd8_E,neon,neon,experiments/ago-m2-expanded/src/satd8_E.cpp,76,,1,20000,0,20k-native,N1,ticks,1203,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd8-axis-s8x16_r_vaddlv_a_abd,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddlv_a_abd,,,experiments/m31-satd8-axis-search/s8x16_r_vaddlv_a_abd.cpp,120,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
+satd-axis-s8x16_r_vaddlv_a_abd-710-ticks,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddlv_a_abd,,,,120,,,,,,710,ticks,515,,,,yes,reports/satd8-axis-search-20260817.txt
 satd8-axis-s8x16_r_vaddlv_a_subabs,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddlv_a_subabs,,,experiments/m31-satd8-axis-search/s8x16_r_vaddlv_a_subabs.cpp,128,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s8x16_r_vaddv_a_abd,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddv_a_abd,,,experiments/m31-satd8-axis-search/s8x16_r_vaddv_a_abd.cpp,120,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s8x16_r_vaddv_a_subabs,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddv_a_subabs,,,experiments/m31-satd8-axis-search/s8x16_r_vaddv_a_subabs.cpp,128,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
