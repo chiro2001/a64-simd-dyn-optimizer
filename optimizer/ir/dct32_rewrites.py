@@ -690,9 +690,18 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
     def pid(o):
         return int(o.tile_id.split(".")[0][1:])
 
-    retagged = [Op(o.op_id, o.kind, o.tile_id, o.out, o.inputs,
-                   dict(o.attrs, g=o.attrs.get("g", 0) // 2))
-                for o in ops]
+    # Merging two 4-row groups into one 8-row super-group makes the
+    # emitter emit both banks in one loop body, so names must be unique
+    # across the merged group.  Keep internal lookups on the original
+    # names; remember the source bank and rename "_b1" at the end.
+    retagged = []
+    for o in ops:
+        g = o.attrs.get("g", 0)
+        attrs = dict(o.attrs)
+        attrs["g"] = g // 2
+        attrs["bank1"] = g % 2
+        retagged.append(Op(o.op_id, o.kind, o.tile_id, o.out, o.inputs,
+                           attrs))
     leaf = {}
     for o in retagged:
         if o.tile_id.startswith("p%d.leaf.row" % pid(o)):
@@ -1008,7 +1017,20 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
         if o.op_id in emitted or o.op_id in remove:
             continue
         result.append(o)
-    return result
+    # Unique names across the merged 8-row group: suffix the second
+    # bank's outputs with "_b1" and remap consumers.
+    renamed: Dict[str, str] = {}
+    out = []
+    for o in result:
+        attrs = dict(o.attrs)
+        bank1 = attrs.pop("bank1", 0)
+        oo = o.out
+        if bank1 and oo:
+            oo = oo + "_b1"
+            renamed[o.out] = oo
+        out.append(Op(o.op_id, o.kind, o.tile_id, oo,
+                      tuple(renamed.get(x, x) for x in o.inputs), attrs))
+    return out
 
 
 REWRITES["merge_narrow8"] = rewrite_merge_narrow8

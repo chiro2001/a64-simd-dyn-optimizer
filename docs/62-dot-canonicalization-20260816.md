@@ -251,6 +251,17 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
   best_sve2_op4032.cpp`（可编译）；`build_preload_so` 的
   `AGO_LEGACY_DCT32=1` 已指向 op4032。
 
+### merge_narrow8 修复进展（2026-08-16）
+
+- 命名冲突已修：合并 8 行超组时给第二 bank 输出加 `_b1` 后缀并重
+  映射输入（不再编译崩溃）；
+- 但 rg4 下 `odd+narrow8` 实测 **5826 fused_uop、4,803,450 lanes
+  失配（23%）**——合并结构语义错误（row_group=8 地址/切片与发射器
+  g 循环不匹配），**不可采用**；测量门禁正确拦截；
+- rg16 下该 rewrite 因无 8-row bank 而优雅跳过（no-op）；
+- 结论：merge_narrow8 需先修语义（row 寻址与 g 循环），暂不参与
+  注入；当前最佳仍为 **r16k2epsi+m8 4032**。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线
