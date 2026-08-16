@@ -23,10 +23,12 @@ bundle,best9-ir-dct,four-arm-100f,mixed,mixed,,,N1,-0.1,e2e_100f,,yes,reports/fo
 bundle,best9-ir-dct,three-arm-100f,mixed,mixed,,,710,-0.24,e2e_100f,,yes,reports/710-three-arm-100f-20260816.txt
 ,best9-ir-hpp,ldpreload-100f-710,mixed,mixed,,,710,0.12,e2e_100f,,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
 ,best9-noremain,inject-100f-710-freeze,mixed,mixed,,,710,-1.63,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
+,best9-noremain,inject-100f-710-freeze-r2,mixed,mixed,,,710,-1.42,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain,inject-100f-920b,mixed,mixed,,,920B,-2.2,e2e_100f,,yes,reports/best9-noremain-920b-interleaved-20260817.txt
 ,best9-noremain,inject-100f-n1-freeze,mixed,mixed,,,N1,-0.12,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain,ldpreload-100f-710,mixed,mixed,,,710,-0.2,e2e_100f,,yes,reports/best9-noremain-710-interleaved-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-710-freeze,mixed,mixed,,,710,-2.03,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
+,best9-noremain-ir-dct,inject-100f-710-freeze-r2,mixed,mixed,,,710,-2.36,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-n1-freeze,mixed,mixed,,,N1,-2.25,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,cost-c1c2-flag,inject-100f-920b,c,neon,,,920B,0.16,e2e_100f,,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
 entropy,cost-c1c2-flag,round27,c,neon,,,920B,0.998,kernel,replay_ratio,yes,reports/entropy-replay-920b-20260815.txt
@@ -58,6 +60,7 @@ bundle,ir-dct,four-arm-100f,mixed,mixed,,,N1,-0.02,e2e_100f,,yes,reports/four-ar
 ,ir-dct,inject-100f-710,mixed,mixed,,,710,-1.15,e2e_100f,,yes,reports/710-dct-ir-additivity-20260816.txt
 ,ir-dct,inject-100f-710-r2,mixed,mixed,,,710,-1.07,e2e_100f,,yes,reports/710-dct-ir-additivity-20260816.txt
 ,ir-dct,inject-100f-n1,mixed,mixed,,,N1,-1.4,e2e_100f,,yes,reports/n1-four-arm-inject-20260816.txt
+,pure-sve-dct,inject-100f-710,sve2,sve2,,,710,2.63,e2e_100f,,yes,reports/pure-sve-dct-710-20260817.txt
 pixel,sa8d16,ir,c/neon,neon,404,485,920B,1.04,kernel,ratio_neon_cand,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sao,sao-stats-e0,ir,sve2,sve2,167,184,710,-15.0,kernel,ticks_pct,yes,docs/66-multi-isa-kernels-survey-20260816.md
 ,scan-pos-last,inject-100f-920b,neon,neon,,,920B,-1.23,e2e_100f,,yes,reports/entropy-scan-920b-interleaved-20260817.txt

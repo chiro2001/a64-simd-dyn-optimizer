@@ -22,3 +22,14 @@
    710 +2.03%，均 bit-exact、CI 不跨零——推荐冻结发布集；
 4. 注：本轮数字来自修复后的 interleaved 脚本（打包路径与 e2e-full
    同步），不受 freeze-ablate stale-bundle bug 影响。
+
+## 第二批复测（2026-08-17，同 bundle，6 对 100f）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain vs base | +381.5 | +1.16% | [52.0, 693.0] |
+| best9-noremain-ir-dct vs base | +705 | +2.14% | [603.5, 959.5] |
+| best9-noremain-ir-dct vs best9-noremain | +266.5 | +0.82% | [222.0, 653.0] |
+
+两批方向与量级一致：冻结组合 **best9-minus-remain + dct IR**
+（N1 +2.14~2.25%、710 +2.03~2.36%，均 bit-exact、CI 不跨零）。

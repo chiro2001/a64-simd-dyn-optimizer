@@ -1,6 +1,6 @@
 # Ranker baseline (round-0026 P3a, 2026-08-16)
 
-Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 14/62; groups: 3
+Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 14/65; groups: 3
 
 ## A) MCA rank baseline
 
