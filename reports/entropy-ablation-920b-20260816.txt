@@ -1,0 +1,46 @@
+# 920B 熵族消融（2026-08-16，expert-advice round-0025 P2 执行）
+
+## 方法
+
+- 机器：920B（SVE1 VL256，共享节点，无 PMU），30f 1080p 单线程
+  （taskset -c 0，--pools 0 --frame-threads 1 --no-wpp
+  --lookahead-threads 0 --b-adapt 0）；
+- 工具：新增 `scripts/freeze-ablate.sh`（freeze-best9.sh 的参数化
+  kernel 子集版本），本地构建 inject bundle → 推送 920B →
+  cloud-e2e-inject → 5 次 opt 计时 → strip 恢复 → 5 次 base 计时 →
+  same-machine md5 门 + paired CI；
+- 三个变体：scan-only（仅 scan-pos-last）、no-remain（best9 除
+  cost-coeff-remain）、with-remain（完整 best9，含 remain DFA）；
+- 基线 md5 = opt md5 = ee5db7384df974ba25e4f1df8178dcb6（bit-exact
+  门全部通过）。
+
+## 结果（30f，中位 ms；diff = base - opt，>0 为候选更快）
+
+| 变体 | base 中位 | opt 中位 | diff | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| scan-only | 8189 | 8055 | 132 | -1.61% | [114, 148] ms |
+| no-remain | 8179 | 8053 | 123 | -1.50% | [110, 139] ms |
+| with-remain | 8180 | 8037 | 143 | -1.75% | [123, 173] ms |
+
+## 结论
+
+1. scanPosLast 的 30f E2E A/B 确认：**-1.61%，CI 不跨零**，与 08-16
+   快测的 ~1.5x kernel 提升同向；是当前单算子最大且可复现的 E2E 收益，
+   保持注入。
+2. remain DFA 消融：with-remain 比 no-remain 多约 0.25pp
+   （143 vs 123 ms，方向与 08-15 真实分布回放 +20% 一致）。均匀合成
+   语料的 -35% 是分布敏感的伪信号，不构成停用理由；继续保留 DFA 变体。
+3. 全部变体 bit-exact（ee5db7…），无码流回归。
+
+## 局限
+
+- 采用 freeze 系列脚本的“5 opt 后 5 base”顺序计时，非交错随机序；
+  共享节点逐轮噪声约 ±5-10 ms，但三组 CI 均不跨零，方向可信。
+- 未做 100f 复测（共享节点占用考虑）；如需晋级发布，建议 5+5 交错
+  100f 复核。
+
+## 产物
+
+- 脚本：`scripts/freeze-ablate.sh`
+- 本轮 bundle：`build/ablate-scan-only-*`、`build/ablate-no-remain-*`、
+  `build/ablate-with-remain-*`（本地保留）
