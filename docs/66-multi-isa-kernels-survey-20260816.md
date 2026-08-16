@@ -53,6 +53,29 @@ VL 无关纯 NEON（此前 best9-950 的 satd-8 SVE2 候选有 VL=256 假设，
   上游 128-bit 基线 373（仍有优化空间）；
 - def-use 通过。
 
+### SATD 全形状候选（2026-08-16 完成）
+
+- `satd_rect_dag("8x16"/"16x8")`：两段 quad + vaddlv reduce；
+  `satd_multi_emit.py` 产出 6 形状完整候选（8x8/8x16/16x8/16x16 +
+  32x32/64x64 包装）；
+- 对拍 vs 现有候选：6 形状 × 3000 例 **0 失配**；
+- 动态计数（IR vs 现有）：8x8 77==77；8x16 **152/182** vs 152/198；
+  16x8 **140/154** vs 150/183；16x16 **273/308** vs 275/311；
+- 8x8 另经上游 `satd8_sve2<8,8>` 差分（vq=1/2）门禁。
+
+### SAO 同图证据（2026-08-16 确认）
+
+sao-prim.cpp（NEON）/ sao-prim-sve.cpp / sao-prim-sve2.cpp 三版本
+共享 `compute_eo_stats`/`reduce_eo_stats` 图：mask（vceq）→
+zip 扩展 → 与 diff 的 5 类统计。差异仅在 dot 降级：
+
+- NEON：`vmulq_s16 + vmlaq_s16 + vpadalq_s16`（mul 路径）；
+- SVE/SVE2：`x265_sdotq_s16`（sdot.d bridge，2×64 累加）；
+
+即与 dct 相同的“同图 mul↔sdot”结构，可直接复用 dot 节点双目标
+lowering。完整 saoCuStatsE0 DAG 提取列为下一增量（含 sign/edge、
+count 的 vpadal 路径与 reduce）。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；

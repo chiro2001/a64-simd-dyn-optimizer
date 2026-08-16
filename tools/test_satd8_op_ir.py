@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 from lane_defuse import defuse_report  # noqa: E402
 from sa8d16_op_ir import sa8d16_dag  # noqa: E402
 from satd8_emit import emit_satd8  # noqa: E402
-from satd8_op_ir import satd8_dag, satd16_dag  # noqa: E402
+from satd8_op_ir import satd8_dag, satd16_dag, satd_rect_dag  # noqa: E402
+from satd_multi_emit import emit_satd_candidates  # noqa: E402
 
 
 def main():
@@ -52,6 +53,21 @@ def main():
     assert src16.count("vpaddlq_u16") == 1
     assert src16.count("vaddvq_u32") == 1
     print("SATD16 IR DAG OK: ops=%d" % len(ops16))
+
+    for mode in ("8x16", "16x8"):
+        opm = satd_rect_dag(mode)
+        rm = defuse_report(opm)
+        assert rm["ok"], (mode, rm["issues"][:3])
+        srcm = emit_satd8(opm, func_name="x")
+        assert "vaddlvq_u16" in srcm and ">> 1" not in srcm
+        print("SATD %s IR DAG OK: ops=%d" % (mode, len(opm)))
+
+    multi = emit_satd_candidates()
+    for sym in ("dynopt_satd_8x8_sve2", "dynopt_satd_8x16_sve2",
+                "dynopt_satd_16x8_sve2", "dynopt_satd_16x16_sve2",
+                "dynopt_satd_32x32_sve2", "dynopt_satd_64x64_sve2"):
+        assert ("extern \"C\" int %s(" % sym) in multi
+    print("SATD multi-shape candidate OK")
 
     opsa = sa8d16_dag()
     assert all("n_out" in o.attrs and "lane_in" in o.attrs for o in opsa)

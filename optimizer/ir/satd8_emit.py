@@ -9,6 +9,7 @@ from op_ir import Op
 
 def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
     body: List[str] = []
+    ret = "satd"
     for op in ops:
         kind = op.kind
         attrs = op.attrs
@@ -91,8 +92,12 @@ def emit_satd8(ops, func_name: str = "dynopt_satd_8x8_sve2") -> str:
         elif kind == "vaddv":
             body.append("    int satd = (int)vaddvq_u32(%s);" % ins[0])
         elif kind == "vaddlv":
-            body.append("    int sa8d = (int)((vaddlvq_u16(%s) + 1) >> 1);"
-                        % ins[0])
+            if attrs.get("add1_shift1"):
+                body.append("    int sa8d = (int)((vaddlvq_u16(%s) + 1) >> 1);"
+                            % ins[0])
+                ret = "sa8d"
+            else:
+                body.append("    int satd = (int)vaddlvq_u16(%s);" % ins[0])
         else:
             raise ValueError("satd emit: %s" % kind)
     return """\
@@ -107,5 +112,4 @@ extern "C" int %s(const uint8_t* pix1, intptr_t sp1,
 %s
     return %s;
 }
-""" % (func_name, "\n".join(body),
-       "satd" if any(o.kind == "vaddv" for o in ops) else "sa8d")
+""" % (func_name, "\n".join(body), ret)

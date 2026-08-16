@@ -116,6 +116,15 @@ def _reduce(fresh, out0, out1):
           attrs={"from": "u32", "to": "s32"})
 
 
+def _reduce_vaddlv(fresh, outs):
+    t = outs[0]
+    for o in outs[1:]:
+        t = fresh("add", "s.reduce", (t, o),
+                  attrs={"elem": "u16", "arch": "neon"}).out
+    fresh("vaddlv", "s.reduce", (t,),
+          attrs={"from": "u16", "to": "s32", "add1_shift1": False})
+
+
 def satd8_dag() -> List[Op]:
     ops, fresh = _builder()
     diff = _load_diffs(fresh, list(range(8)))
@@ -172,4 +181,40 @@ def satd16_dag() -> List[Op]:
             sum1 = fresh("add", "s16.acc%d" % g, (sum1, o1.out),
                          attrs={"elem": "u16", "arch": "neon"}).out
     _reduce(fresh, sum0, sum1)
+    return annotate(ops)
+
+
+def satd_rect_dag(mode: str) -> List[Op]:
+    """SATD 8x16 or 16x8: two quads (row groups or lo/hi halves) + vaddlv.
+    """
+    ops, fresh = _builder()
+    outs = []
+    if mode == "8x16":
+        groups = [(list(range(8)), None), (list(range(8, 16)), None)]
+    elif mode == "16x8":
+        groups = [(list(range(8)), "lo"), (list(range(8)), "hi")]
+    else:
+        raise ValueError("mode %s" % mode)
+    for gi, (rows, half) in enumerate(groups):
+        diff = _load_diffs(fresh, rows, half)
+        t = _hadamard4_v(fresh, [diff[y] for y in rows],
+                         "s.%d.v.a" % gi)
+        t += _hadamard4_v(fresh, [diff[y] for y in rows[4:]],
+                          "s.%d.v.b" % gi)
+        h = _hadamard_abs4_h(fresh, t[0:4], "s.%d.h.a" % gi)
+        h += _hadamard_abs4_h(fresh, t[4:8], "s.%d.h.b" % gi)
+        max0 = fresh("max", "s.%d" % gi, (h[0], h[1]),
+                     attrs={"elem": "u16"})
+        max1 = fresh("max", "s.%d" % gi, (h[2], h[3]),
+                     attrs={"elem": "u16"})
+        max2 = fresh("max", "s.%d" % gi, (h[4], h[5]),
+                     attrs={"elem": "u16"})
+        max3 = fresh("max", "s.%d" % gi, (h[6], h[7]),
+                     attrs={"elem": "u16"})
+        o0 = fresh("add", "s.%d" % gi, (max0.out, max1.out),
+                   attrs={"elem": "u16", "arch": "neon"})
+        o1 = fresh("add", "s.%d" % gi, (max2.out, max3.out),
+                   attrs={"elem": "u16", "arch": "neon"})
+        outs.extend((o0.out, o1.out))
+    _reduce_vaddlv(fresh, outs)
     return annotate(ops)
