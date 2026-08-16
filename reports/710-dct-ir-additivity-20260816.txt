@@ -1,0 +1,29 @@
+# 710 dct IR 可加性测试（注入法，2026-08-16）
+
+## 方法
+
+- 机器：710（SVE2 VL128），真实 100f，注入法（cloud-e2e-inject-710
+  .sh），直接换 libx265.so.216 随机交错（interleaved-inject-ab.sh）；
+- 臂：base / best9（best9-128，17 kernel）/ ir-dct（AGO_IR_DCT=1，
+  dct16/32 IR sve8）/ best9-ir-dct（19 kernel 组合）；
+- 6 对，same-machine md5 全等（21500eb459ae1c60db47eb5abd71227a）。
+
+## 结果（ms；pos = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9 vs base | +364 | +1.43% | [295.5, 481.5] |
+| ir-dct vs base | +292 | +1.15% | [206, 348] |
+| ir-dct vs best9 | -87 | -0.35% | [-173.5, -34.5] |
+| best9-ir-dct vs base | +592 | +2.32% | [540, 640.5] |
+| best9-ir-dct vs best9 | +235 | +0.94% | [123.5, 273] |
+| best9-ir-dct vs ir-dct | +303.5 | +1.20% | [257, 366] |
+
+## 结论
+
+1. best9 与 dct IR 各自显著（+1.43% / +1.15%）；
+2. **组合 +2.32%，显著高于任一单独臂**——dct IR 在 710 上与 best9
+   可叠加（额外 +0.94%，CI 不含 0）；
+3. 与 N1（best9 +1.44%、IR-DCT +1.40%、组合 +2.93%）跨机一致：
+   **dct IR + best9 是有效的叠加发布集**（920B 因 VL=256 不适用
+   IR-dct 路径，dct 候选仍不发布）。
