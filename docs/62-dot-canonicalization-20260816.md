@@ -104,15 +104,25 @@ print(rep["selected"], rep["total_uop"])
 
 ## 6. 验证
 
-- `optimizer/ir/test_dot_ir.py`：8 用例（legacy→typed 转换、summary、
-  sve1/sve2/neon 合法性、合同族过滤、superset、选择器）全 PASS；
+- `optimizer/ir/test_dot_ir.py`（8 用例）+ `test_dot_dag.py`（真实
+  dct32/dct16 DAG 5 用例）全 PASS；
+- **真实 dct32 spec DAG 量化**（7168 ops）：
+  - canonical 后 1024×`sdot.d/s64` + 1024×`mul_saddv/s32`；
+  - upstream-exact 选择器总 uop = 5120；
+  - 应用 `legacy_k2/k4`（同一图的 lowering 切换）后 1216×sdot +
+    512×mul，legacy 选择器总 uop = **3264（-36%）**——op 级验证
+    了搜索轴收益（full fused_uop 由 search_plans 另行测量）；
+- 真实 dct16 DAG：256×`dot_segment` + 92×`neon_mul` 归一为同一
+  `dot` 节点，SVE1 上均有合法 lowering；
 - 现有回归：`cd optimizer && python3 -m unittest discover -s ago -q`、
-  `python3 -m unittest discover -s tools -p 'test_check_isa_level.py' -q`。
+  `python3 -m unittest discover -s tools -p 'test_check_isa_level.py' -q`、
+  `cd optimizer/ir && python3 -m unittest test_dot_ir test_dot_dag -q`。
 
 ## 7. 后续路线
 
 1. 把 dct32 的 `legacy_k2/k4` 搜索轴改造成规范化 dot 的 lowering
-   枚举，跑 `tools/search_plans.py` 验证 fused_uop 向 4827 收敛；
+   枚举，跑 `tools/search_plans.py` 验证 fused_uop 向内部参考 4827
+   收敛（环境已具备 qemu-aarch64 + 交叉 g++，下一轮执行）；
 2. dct16/interp/quant 的同构点积子图接入同一 `dot` 节点与代价表；
 3. 实机（950/960）验证 legacy lowering 的 TestBenchLite 门禁与周期
    收益；920B 上 v2 已实测指令数最优不转周期（+3~4%），统一的主要

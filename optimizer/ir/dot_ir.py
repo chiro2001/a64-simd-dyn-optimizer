@@ -157,3 +157,28 @@ def select_dot_lowerings(ops: List[Op], isa: str, contract: str,
         report["selected"][op.tile_id] = best[0]
         report["total_uop"] += best[1]
     return canon, report
+
+
+def dot_lowering_report(ops: List[Op]) -> Dict:
+    """Per-dot lowering counts plus legal alternatives for reporting."""
+    canon = canonicalize_dot_ops(ops)
+    report = {"dots": dot_summary(canon)}
+    report["alternatives"] = {}
+    for op in canon:
+        if op.kind != "dot":
+            continue
+        key = "%s/%s/%s" % (op.attrs["a_ty"], op.attrs["b_ty"],
+                            op.attrs["acc_ty"])
+        report["alternatives"].setdefault(key, set()).add(
+            op.attrs["lowering"])
+    report["alternatives"] = {
+        k: sorted(v) for k, v in report["alternatives"].items()}
+    return report
+
+
+def register_canonicalize_dot(rewrites: Dict):
+    """Register the canonicalize_dot pass into a REWRITES registry."""
+    def rewrite(ops: List[Op]) -> List[Op]:
+        return canonicalize_dot_ops(ops)
+    rewrites["canonicalize_dot"] = rewrite
+    return rewrite

@@ -18,6 +18,7 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 from op_ir import Op
+from dot_ir import dot_lowering_report, register_canonicalize_dot
 
 
 def _op_id_base(ops: List[Op]) -> int:
@@ -447,6 +448,8 @@ REWRITES = {
     "merge_narrow8": rewrite_merge_narrow8,
     "legacy_even_sve": rewrite_legacy_even_sve,
 }
+
+register_canonicalize_dot(REWRITES)
 
 
 def apply_rewrites(ops: List[Op], names: List[str]) -> List[Op]:
