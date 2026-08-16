@@ -32,3 +32,14 @@
    tbl-u16 SVE2 布局生成 SVE2 版本再实测；
 3. 门禁初跑 E1/E12/B0 失配为门禁参考未按 stride 前进行指针的
    harness bug（已修正），非候选问题。
+
+## SVE2 版（2026-08-17 晚）
+
+- `kernels/sao/candidates/best_sve2_e0.cpp`：saoCuOrgE0 的纯 SVE2
+  实现（docs/45 tbl-u16 布局）——u8 比较得 sign、`svinsr` 位移插入
+  实现 sign 递推、`svtbl` 查 offset 表、`svqxtunb`+`svuzp1` 饱和窄化；
+- 20k 差分（4 strides × 随机 offset/signLeft）**0 失配**；
+  fused_uop=22（对比 NEON seed 版 269）；
+- 调试记录：VL=256 下 `svmovlb_s16`/`svqxtunb_s16` 是交错展开（需
+  `svunpklo_s16`/`svuzp1` 复原）；`svlasta` 配 `whilelt` 谓词返回
+  异常，改用 `svdup_lane` + 全真谓词提取 lane7。
