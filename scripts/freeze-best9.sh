@@ -26,6 +26,7 @@ echo "[freeze] building best9 inject bundle"
 python3 tools/build_preload_so.py --isa sve1 \
   --kernels cost-c1c2-flag,cost-coeff-nxn,cost-coeff-remain,sa8d16,satd-8,scan-pos-last,interp8-vps-8x8,interp8-vps-8x16,interp8-vps-16x16,interp8-vps-16x32,interp8-vps-32x16,interp8-vps-32x32,sao-stats-bo \
   --opt=-O3 \
+  ${AGO_SKIP_SATD_SMALL:+--skip-satd-small} \
   --inject-outdir build/dynopt-inject-best9-freeze \
   --workdir build/preload-work-best9-freeze \
   --json build/dynopt-inject-best9-freeze/report.json

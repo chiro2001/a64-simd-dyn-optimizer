@@ -25,6 +25,7 @@ WORK_DIR="${WORK_DIR:-build/preload-work-best9-n1-freeze}"
 echo "[freeze-n1] building best9 inject bundle ($KERNELS)"
 python3 tools/build_preload_so.py --isa sve1 \
   --kernels "$KERNELS" --opt=-O3 \
+  ${AGO_SKIP_SATD_SMALL:+--skip-satd-small} \
   --inject-outdir "$BUNDLE_DIR" --workdir "$WORK_DIR" \
   --json "$BUNDLE_DIR/report.json"
 
