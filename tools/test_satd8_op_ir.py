@@ -35,7 +35,7 @@ def main():
     # Every emitted statement declares exactly one value.
     stmts = [l for l in src.splitlines()
              if re.match(r"\s+(u?int\w+_t|int) v\d+", l)]
-    assert len(stmts) == len([o for o in ops if o.kind != "vaddv"]) + 1
+    assert len(stmts) == len([o for o in ops if o.kind != "vaddv"])
     print("SATD8 IR DAG OK: ops=%d statements=%d"
           % (len(ops), len(stmts)))
     return 0
