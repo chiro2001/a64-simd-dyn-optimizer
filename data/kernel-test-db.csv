@@ -134,6 +134,7 @@ ir-dct-on-noremain-increment-100f-710-710,,,ir-dct-on-noremain,,increment-100f-7
 ir-dct-on-noremain-increment-100f-920b-920B,,,ir-dct-on-noremain,,increment-100f-920b,,,,,,,,,,920B,,,,-0.59,74.5..169.0,yes,reports/920b-best9-noremain-ir-dct-3arm-20260817.txt
 ir-dct-on-noremain-increment-100f-n1-N1,,,ir-dct-on-noremain,,increment-100f-n1,,,,,,,,,,N1,,,,-0.82,222.0..653.0,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+lattice-bb-generic-accept,2026-08-17,,multi,,lattice-bb-generic,,,tools/lattice_bb.py,,,,,,generic-accept-satd+dct32,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
 sa8d-8-sa8d8_A-920B,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,920B,ticks,5069,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

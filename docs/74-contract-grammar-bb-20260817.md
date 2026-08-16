@@ -171,3 +171,13 @@ emit+编译+fused_uop 计数（tools/dct32_axis_bb_accept.py）：
 - 对照记录：初版 3 二进制轴子格（legacy_ex × k0_even_sve ×
   k0_shared_mul）成本平坦（仅 1087/1053），节点减少仅 1.20x
   未达门——**教训：B&B 验收必须选成本有方差的轴**，已按此修正。
+
+## 10. 通用轴格 B&B 引擎（2026-08-17 晚）
+
+- `tools/lattice_bb.py`：由测量组合表隐式定义轴格（无需手写轴值/
+  合法性谓词），best-first + 可采纳下界（部分赋值下已测最小 cost）；
+- `tools/lattice_bb_accept.py <results.json>`：对任意该 schema 的
+  组合表跑完整验收（同最优/无误剪/节点减少/gate）；
+- 两个已过数据集经通用引擎复现：satd 24 候选 4.80x、dct32 6 组合
+  2.00x（test_lattice_bb.py 入回归）——后续新空间（saoCuOrg 布局
+  等）只需产出组合表即可复用同一验收。
