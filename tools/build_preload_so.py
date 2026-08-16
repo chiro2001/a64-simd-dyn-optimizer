@@ -178,8 +178,16 @@ static void dynopt_stats_e1_adapter(
         return dynopt_orig_stats_e1(diff, rec, stride, upBuff1,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
+    {
         %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               stats, count);
+        // The single-row kernel negates upBuff1 at entry, but upstream
+        // negates once before the row loop and keeps the raw sign buffer
+        // between rows. Flip it back so repeated calls stay upstream-exact.
+        if (y + 1 < endY)
+            for (int x = 0; x < 64; x++)
+                upBuff1[x] = (int8_t)-upBuff1[x];
+    }
 }
 """,
         "save": "dynopt_orig_stats_e1 = P->saoCuStatsE1;",
@@ -199,8 +207,19 @@ static void dynopt_stats_e2_adapter(
         return dynopt_orig_stats_e2(diff, rec, stride, upBuff1, upBuff,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
+    {
         %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               upBuff, stats, count);
+        // Upstream swaps upBuff1/upBuff after every row and the kernel
+        // expects a negated up-buffer on entry; emulate both so repeated
+        // single-row calls stay upstream-exact.
+        if (y + 1 < endY)
+        {
+            std::swap(upBuff1, upBuff);
+            for (int x = 0; x < 64; x++)
+                upBuff1[x] = (int8_t)-upBuff1[x];
+        }
+    }
 }
 """,
         "save": "dynopt_orig_stats_e2 = P->saoCuStatsE2;",
@@ -220,8 +239,14 @@ static void dynopt_stats_e3_adapter(
         return dynopt_orig_stats_e3(diff, rec, stride, upBuff1,
                                     endX, endY, stats, count);
     for (int y = 0; y < endY; y++)
+    {
         %SYM%(diff + y * 64, rec + y * stride, stride, upBuff1,
               stats, count);
+        // Same single-row negation contract as sao-stats-e1.
+        if (y + 1 < endY)
+            for (int x = 0; x < 64; x++)
+                upBuff1[x] = (int8_t)-upBuff1[x];
+    }
 }
 """,
         "save": "dynopt_orig_stats_e3 = P->saoCuStatsE3;",

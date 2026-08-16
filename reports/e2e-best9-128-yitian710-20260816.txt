@@ -1,0 +1,83 @@
+best9-128 E2E on Yitian 710 (Neoverse-N2, SVE2, VL=128)
+=========================================================
+Date: 2026-08-16
+Host: root@47.96.166.168 (2 cores @ 3 GHz, GCC 15.2, g++ 15.2)
+Repo: /root/projects/a64-simd-dyn-optimizer @ e821ab1+ (git push target)
+
+Baseline x265
+-------------
+Source: third_party/x265 4.2+3-e444744 (pinned submodule)
+Build:  build/x265-8-gcc (fresh Ninja, GCC 15.2, Release)
+  -DENABLE_SHARED=ON -DENABLE_TESTS=OFF
+  -DENABLE_NEON=ON -DENABLE_NEON_DOTPROD=ON -DENABLE_NEON_I8MM=ON
+  -DENABLE_SVE=ON -DENABLE_SVE2=ON -DENABLE_SVE2_BITPERM=OFF
+Runtime caps: NEON SVE SVE2 Neon_DotProd Neon_I8MM
+Note: x265 CMake forces SVE/SVE2 off when ENABLE_NEON_I8MM=OFF;
+      I8MM must be ON for an SVE2 baseline.
+
+Inject bundle
+-------------
+build/dynopt-inject-best9-128: 19 kernels / 35 slots, 0 skip
+  (--isa sve2 --vl 128)
+  - interp8vpp-16/32 excluded (VL=256-only, reports/
+    vl128-best9-950-correctness-20260816.txt)
+  - satd-8 uses pure-NEON best_sve1.cpp (VL-safe)
+  - sao-stats-e1/e2/e3 SVE2 candidates with fixed multi-row adapters
+    (see issue note below)
+
+Measurements
+------------
+Input: /tmp/real_1080p_30f.yuv (1920x1080@30, 30 frames, single thread,
+  taskset -c 0, --pools 0 --frame-threads 1 --no-wpp
+  --lookahead-threads 0 --b-adapt 0)
+Protocol: 5+5 paired (scripts/freeze-best9-128.sh), wall clock ms,
+  same-machine bit-exact md5 gate.
+
+Optimized md5: 2ce69750c8c2f29cfdfbd3c9ac208cf4
+Baseline md5:  2ce69750c8c2f29cfdfbd3c9ac208cf4  (bit-exact PASS)
+
+Timing (ms):
+  baseline: 9463 9644 9531 9575 9458  -> median 9531
+  optimized: 9212 9198 9229 9336 9298  -> median 9229
+  diff = 251 ms (-2.63%), bootstrap95 CI = [160, 446] ms (excludes 0)
+
+Result
+------
+best9-128 is bit-exact and 2.63% faster than the clean SVE2 upstream
+baseline on SVE2-128 (median, 30-frame clip; CI significant).
+Compared with 920B/N1 best9 (-2.10%/-1.62% over NEON baseline), this is
+the first positive SVE2-128 E2E signal; absolute gain remains far below
+the 15% goal, consistent with the dct32/quant/ME entropy analysis.
+
+Issue found and fixed (2026-08-16)
+----------------------------------
+First full-bundle E2E FAILED the bit-exact gate:
+  optimized md5 505d205dc98620b7622daf3a52c564fb != baseline
+  (stable; reproduced via injection bisect).
+Bisection (tools/bisect_vl128_e2e.sh, one-kernel-at-a-time E2E):
+  every kernel except sao-stats-e1 passed; sao-stats-e1 alone reproduced
+  the exact failing md5.
+Root cause: generated adapters for sao-stats-e1/e2/e3 called a
+single-row SVE2 kernel per row, but the kernel negates upBuff1 at entry;
+upstream negates once before the row loop. For endY > 1 the adapter
+double-negated, computing edge = D_y + D_{y-1} instead of D_y - D_{y-1}.
+  - e1/e3: negate the 64-byte upBuff1 between rows;
+  - e2: swap upBuff1/upBuff and negate between rows (upstream swaps).
+The 20k manifest verifiers used endY=1 (single-invocation drivers), so
+they did not catch the multi-row state bug.
+Fix landed in tools/build_preload_so.py (adapter templates); bundle
+regenerated; full 19-kernel E2E now bit-exact PASS.
+
+Tooling added
+-------------
+scripts/freeze-best9-128.sh   - 30/100-frame freeze runner for Yitian
+scripts/cloud-e2e-inject-710.sh - inject variant for non-git x265 tree
+                                  (patch(1), clean /tmp/e2e, idempotent
+                                  link-line rewrite)
+tools/bisect_vl128_e2e.sh     - E2E-level kernel bisection helper
+
+Residual
+--------
+- interp8vpp-16/32 still need a VL=128 variant (svptrue_b16 loads only
+  8 pixels at VL=128) or stay excluded.
+- 100-frame confirmation on the same host is a follow-up.

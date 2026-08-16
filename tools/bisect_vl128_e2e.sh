@@ -34,6 +34,7 @@ tar -C "$PKG" -czf /tmp/e2e-full.tar.gz out work
 
 echo "[bisect] pushing and injecting"
 scp -o BatchMode=yes -o ServerAliveInterval=30 /tmp/e2e-full.tar.gz \
+  scripts/cloud-e2e-inject-710.sh \
   "$HOST":/tmp/
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO && bash /tmp/cloud-e2e-inject-710.sh \
