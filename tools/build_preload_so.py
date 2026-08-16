@@ -1418,6 +1418,24 @@ def main():
                 report["skipped"].append(
                     [kernel, "ISA violation (%d)" % len(viol)])
                 continue
+            if os.environ.get("AGO_PURE_SVE") == "1":
+                # Pure-SVE mode: reject any NEON (v/d/q register)
+                # instruction in the candidate object.
+                g2 = run([sys.executable,
+                          os.path.join(ROOT, "tools/check_isa_level.py"),
+                          "--object", obj, "--level", args.isa, "--json",
+                          "--no-neon",
+                          "--objdump", "aarch64-linux-gnu-objdump"],
+                         timeout=120)
+                try:
+                    gj2 = json.loads(g2.stdout)
+                    nviol = gj2.get("neon_violations") or []
+                except (ValueError, KeyError):
+                    nviol = [{"mnemonic": "unknown"}]
+                if nviol:
+                    report["skipped"].append(
+                        [kernel, "pure-SVE NEON violation (%d)" % len(nviol)])
+                    continue
         if sym in used_syms:
             # e.g. sao vs sao-e0 may share a symbol/source; keep the first.
             continue
