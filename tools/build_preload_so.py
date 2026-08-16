@@ -399,6 +399,15 @@ X265_INC = [
 SOURCE_OVERRIDES = {
     "interp8-16": "kernels/interp8/candidates/best_sve2_sdoth_16x16.cpp",
     "interp8-32": "kernels/interp8/candidates/best_sve2_sdoth_32x32.cpp",
+    # SAO cuOrg real-machine candidates: VL-safe NEON seeds with the
+    # manifest (SVE2-named) symbols.  The 32B SVE2 versions
+    # (best_sve2_*.cpp) are QEMU-only (VL=256) and must not be injected
+    # on real machines (round-0028: static/QEMU evidence only).
+    "sao-b0": "kernels/sao/candidates/best_neon_b0.cpp",
+    "sao-e1": "kernels/sao/candidates/best_neon_e1.cpp",
+    "sao-e1-2rows": "kernels/sao/candidates/best_neon_e1_2rows.cpp",
+    "sao-e2": "kernels/sao/candidates/best_neon_e2.cpp",
+    "sao-e3": "kernels/sao/candidates/best_neon_e3.cpp",
 }
 
 # SVE2 VL=128 cross-validation (2026-08-16, reports/vl128-best9-950-

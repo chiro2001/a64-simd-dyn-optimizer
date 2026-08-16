@@ -1,0 +1,55 @@
+# saoCuOrg NEON 槽位安全变体门禁（2026-08-17）
+
+## 背景
+
+x265 原语槽位语义（loopfilter.cpp / primitives.h）：
+- saoCuOrgE0：**2 行**/次（processSaoCUE0, y<2）
+- saoCuOrgE1：**1 行**/次（processSaoCUE1）——此前 NEON seed
+  best_e1.cpp 是 64x4 批量版，**不可直接注入**
+- saoCuOrgE1_2Rows：2 行/次
+- saoCuOrgE2：1 行/次
+- saoCuOrgE3：1 行/次（encoder 传 startX=1/endX=64，C 原语处理
+  x=2..63，调用方预处 x=1；总效果等价于 x=1..63，seed 幂等）
+- saoCuOrgB0：多行/次（ctuHeight）
+
+## 候选（VL 无关 NEON，沿用 manifest SVE2 符号名）
+
+- `best_sve2.cpp`：E0 2 行（既有，符号 dynopt_sao_e0_64_sve2）
+- `best_neon_e1.cpp`：E1 **1 行**（dynopt_sao_e1_64x4_sve2）
+- `best_neon_e1_2rows.cpp`：E12 2 行
+- `best_neon_e2.cpp`：E2 1 行
+- `best_neon_e3.cpp`：E3 1 行（向量 x=1..49 + 标量尾 x=57..63，
+  避免整块 vst1 多写 upBuff1[63]——调用方会在原语后写该字节）
+- `best_neon_b0.cpp`：B0 4 行（vtbl4 32 字节表，idx=p>>3∈[0,31]；
+  初版用 vtbl1 8 字节表致 p≥64 索引越界返回 0，已修）
+
+## 协议
+
+- 参考：x265 C 语义（processSaoCUE0/1/1_2Rows/2/3 + processSaoCUB0
+  直接移植），**rec 与 buff（upBuff1/bufft）双端对比**——旧 gate
+  只比 rec，未发现 E3 的 upBuff1[63] 越界写；
+- 随机输入 [0,255]、offset [-31,31]、buff {-1,0,1}、strides
+  {64,65,96,128}、每 kernel 20000 例、QEMU sve-max-vq=2；
+- 编译：aarch64-linux-gnu-g++ -O2 -march=armv8.2-a+dotprod（NEON）。
+
+## 结果（全部 0 失配）
+
+| kernel | 槽位行数 | fused_uop(-O2) | 候选文件 |
+| --- | ---: | ---: | --- |
+| saoCuOrgE0 | 2 | 269 | best_sve2.cpp |
+| saoCuOrgE1 | 1 | 20 | best_neon_e1.cpp |
+| saoCuOrgE1_2Rows | 2 | 20 | best_neon_e1_2rows.cpp |
+| saoCuOrgE2 | 1 | 20 | best_neon_e2.cpp |
+| saoCuOrgE3 | 1 | 117 | best_neon_e3.cpp |
+| saoCuOrgB0 | 4 | 219 | best_neon_b0.cpp |
+
+## 注入 bundle
+
+- `tools/build_preload_so.py` SOURCE_OVERRIDES 将 sao-b0/e1/e1-2rows/
+  e2/e3 指向上述 NEON 文件（sao 默认即 best_sve2.cpp）；
+- 本地构建 `--kernels sao,sao-b0,sao-e1-2rows,sao-e1,sao-e2,sao-e3
+  --isa sve1 --vl 16`：6 kernel 全 patched、6 符号导出、
+  check_isa_level sve1 0 违规——**实机 bundle 就绪**
+  （build/sao-neon-test.so）；
+- 32B SVE2 版（best_sve2_*.cpp）为 QEMU-only（VL=256），不注入实机
+  （round-0028 决策：不冒充实机证据）。
