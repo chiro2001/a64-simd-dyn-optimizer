@@ -28,6 +28,7 @@ so_for() {
     best9-ir-dct) echo "${SO_BEST9_IR_DCT:-build/n1-best9-ir-dct.so}" ;;
     best9-ir-hpp) echo "${SO_BEST9_IR_HPP:-build/n1-best9-ir-dct.so}" ;;
     interp8-only) echo "${SO_INTERP8_ONLY:-build/710-interp8-only.so}" ;;
+    best9-noremain) echo "${SO_BEST9_NOREMAIN:-build/710-best9-noremain.so}" ;;
     *) echo "" ;;
   esac
 }

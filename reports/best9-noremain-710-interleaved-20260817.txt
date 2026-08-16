@@ -1,0 +1,22 @@
+# 710 best9 vs best9-minus-remain 交错对比（2026-08-17）
+
+## 方法
+
+- 机器：710（SVE2 VL128），真实 100f，LD_PRELOAD 三臂随机交错
+  （710 拦截已验证），两批共 10 轮，全部 bit-exact
+  （21500eb459ae1c60db47eb5abd71227a）。
+
+## 结果（diff = 前者 - 后者，>0 = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9 vs base | -17 | -0.07% | [-31.5, 88.0] |
+| best9-noremain vs base | +51.5 | +0.20% | [-32.0, 75.5] |
+| best9-noremain vs best9 | -4 | -0.02% | [-40.5, 92.0] |
+
+## 结论
+
+1. 710 上移除 remain DFA 为 **E2E 中性**（CI 跨零），与 920B
+   （-0.19% 改善）不同——remain 回归是 920B 特有；
+2. 统一发布集建议：best9-minus-remain（remain 从不产生 E2E 正收益，
+   默认不注入，保留为候选）。

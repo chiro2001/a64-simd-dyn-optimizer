@@ -1,0 +1,23 @@
+# 920B ccn / c1c2 单 kernel 交错复核（2026-08-17）
+
+## 方法
+
+- 机器：920B，真实 100f，注入法交错（interleaved-inject-ab.sh）；
+- 单候选：cost-coeff-nxn（NEON）、cost-c1c2-flag（round-27）；
+- 各 6 对随机交错，全部 bit-exact
+  （1600c2fac1294b5ffb19512f6615b31d）。
+
+## 结果（diff = base - opt，>0 = 候选更快）
+
+| kernel | diff 中位 | Δ% | bootstrap95 | 结论 |
+| --- | ---: | ---: | ---: | --- |
+| cost-coeff-nxn | -19 | -0.09% | [-39.5, 351.0] | 中性 |
+| cost-c1c2-flag | -36 | -0.16% | [-78.0, 40.5] | 中性 |
+
+## 结论
+
+1. ccn 与 c1c2 在 920B 交错注入下均为 E2E 中性（CI 跨零），与历史
+   “噪声内”结论一致；
+2. 920B 熵族逐 kernel 复核完成：scan +1.23%（赢）、remain -0.23%
+   （回归，从发布集移除）、ccn/c1c2 中性；
+3. 三个中性/回归项保留为候选，不单独注入。
