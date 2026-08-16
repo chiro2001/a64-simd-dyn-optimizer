@@ -165,6 +165,9 @@ sao-cuorg-e3-neon-seed,,,sao-cuorg-e3,,neon-seed,,,kernels/sao/candidates/best_e
 sao-cuorg-e3-neon-slot,2026-08-17,,sao-cuorg-e3,,neon-slot,,,kernels/sao/candidates/best_neon_e3.cpp,101,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt
 sao-cuorg-e3-sve2-tbl,2026-08-17,,sao-cuorg-e3,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e3.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+satd-axis-s8x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
+satd-axis-s16x8,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
+satd-axis-s16x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd16-pure-sve-710-kernel,2026-08-17,,satd-16,,pure-sve-710,,,,,,,,,,710,ratio_vs_satd8_sve2,0.596,,,,yes,reports/satd-pure-sve-710-20260817.txt
 satd8-axis-s16x16_r_vaddlv_a_abd,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_abd,,,experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_abd.cpp,72,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x16_r_vaddlv_a_subabs,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_subabs,,,experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_subabs.cpp,76,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
