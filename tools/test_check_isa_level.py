@@ -77,7 +77,7 @@ class OperandLevelTest(unittest.TestCase):
 
 class GateRegressionTest(unittest.TestCase):
 
-    def run_gate(self, disasm_text, level):
+    def run_gate(self, disasm_text, level, extra_args=None):
         with tempfile.NamedTemporaryFile("w", suffix=".s", delete=False) as f:
             f.write(disasm_text)
             path = f.name
@@ -85,7 +85,7 @@ class GateRegressionTest(unittest.TestCase):
             proc = subprocess.run(
                 [sys.executable, os.path.join(ROOT, "tools",
                                               "check_isa_level.py"),
-                 "--disasm", path, "--level", level],
+                 "--disasm", path, "--level", level] + (extra_args or []),
                 capture_output=True, text=True)
             return proc
         finally:
@@ -122,6 +122,19 @@ class GateRegressionTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 1)
         proc = self.run_gate(DISASM % ("sdot", "z0.s, z1.h, z2.h"),
                              "sve2p1")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+
+    def test_no_neon_flags_neon_instruction(self):
+        text = DISASM % ("addp", "v0.16b, v1.16b, v2.16b")
+        proc = self.run_gate(text, "sve2", ["--no-neon"])
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("NEON-VIOLATIONS", proc.stdout)
+        self.assertIn("addp", proc.stdout)
+
+    def test_no_neon_passes_pure_sve(self):
+        text = DISASM % ("addp", "z0.s, z1.s, z2.s")
+        text += DISASM % ("sdot", "z0.d, z1.h, z2.h")
+        proc = self.run_gate(text, "sve2", ["--no-neon"])
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         proc = self.run_gate(DISASM % ("sdot", "z0.h, z1.b, z2.b"),
                              "sve2p3")

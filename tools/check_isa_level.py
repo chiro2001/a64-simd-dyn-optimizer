@@ -102,6 +102,7 @@ ATOM_RANK = {
 TWO_REG_TABLE = re.compile(
     r"\{\s*z\d+\.[bhsd]\s*(?:-|,)\s*z\d+\.[bhsd]\s*\}"
 )
+NEON_REG = re.compile(r"\b[vdq][0-9]+(?:\.[0-9]+[bhsd])?")
 
 
 def operand_level(mnemonic, operands):
@@ -237,6 +238,9 @@ def main():
                     help="disassembler binary")
     ap.add_argument("--disasm", help="disassembly text file ('-' = stdin)")
     ap.add_argument("--symbols", help="comma-separated symbol allowlist")
+    ap.add_argument("--no-neon", action="store_true",
+                    help="pure-SVE mode: any NEON (v/d/q register) "
+                         "instruction is a violation")
     ap.add_argument("--json", action="store_true", help="emit JSON summary")
     args = ap.parse_args()
 
@@ -262,6 +266,7 @@ def main():
         ap.error("provide --object or --disasm")
 
     violations = []
+    neon_violations = []
     ambiguous = []
     unknown_mnems = set()
     counts = defaultdict(int)
@@ -279,6 +284,8 @@ def main():
             continue
         if effective > target:
             violations.append((addr, mnem, effective, sym))
+        if args.no_neon and NEON_REG.search(operands):
+            neon_violations.append((addr, mnem, sym))
 
     # Ambiguous multi-level mnemonics worth a human look at the lower level:
     # any mnemonic whose per-encoding ranks include a higher level than the
@@ -286,6 +293,8 @@ def main():
     # Approximate by tracking catalog entries, not per-disassembly lines.
     if not args.json:
         print("target_level=%s rank=%d" % (args.level, target))
+        if args.no_neon:
+            print("pure_sve=no-neon (any NEON v/d/q register = violation)")
         print("instructions_scanned=%d" % sum(counts.values()))
         if violations:
             print("VIOLATIONS (%d):" % len(violations))
@@ -295,20 +304,30 @@ def main():
         if unknown_mnems:
             print("unknown-mnemonics: %s"
                   % ",".join(sorted(unknown_mnems)))
+        if neon_violations:
+            print("NEON-VIOLATIONS (%d):" % len(neon_violations))
+            for addr, mnem, sym in neon_violations[:50]:
+                print("  %s: %s [%s]" % (addr, mnem, sym or "-"))
+            if len(neon_violations) > 50:
+                print("  ... (%d more)" % (len(neon_violations) - 50))
         if unknown_atoms:
             print("note: catalog atoms treated as baseline: %s"
                   % ",".join(sorted(unknown_atoms)[:12]))
-        print("verdict=%s" % ("FAIL" if violations else "PASS"))
+        print("verdict=%s" % ("FAIL" if (violations or neon_violations)
+                              else "PASS"))
     else:
         print(json.dumps({
             "target_level": args.level,
             "violations": [
                 {"addr": a, "mnemonic": m, "required_rank": r, "symbol": s}
                 for a, m, r, s in violations],
+            "neon_violations": [
+                {"addr": a, "mnemonic": m, "symbol": s}
+                for a, m, s in neon_violations],
             "unknown_mnemonics": sorted(unknown_mnems),
             "scanned": sum(counts.values()),
         }))
-    return 1 if violations else 0
+    return 1 if (violations or neon_violations) else 0
 
 
 if __name__ == "__main__":

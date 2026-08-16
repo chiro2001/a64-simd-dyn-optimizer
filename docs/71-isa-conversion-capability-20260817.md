@@ -29,15 +29,15 @@
 | 1. 建 DAG | 从上游 NEON asm/C 提取宽度无关、lane 粒度 DAG（defuse 自描述） | ✅ 通用管线（dag_pipeline / lane_defuse） |
 | 2. 选目标 | 指定 SVE1 / SVE2 / SVE2p3 | ✅ 目标矩阵已通（26 组合门禁） |
 | 3. 发射 | 当前 = NEON+SVE 混合（sv* + NEON bridge）；纯 SVE 模式 = 开关禁 NEON | ⚠️ 混合版已实现；纯 SVE 待做（docs/70） |
-| 4. 门禁 | 20k 差分 vq=1/2 + TestBenchLite；（纯 SVE 时）禁 NEON 指令检查 | ✅ 门禁体系已有；禁 NEON 检查待加 |
+| 4. 门禁 | 20k 差分 vq=1/2 + TestBenchLite；（纯 SVE 时）禁 NEON 指令检查 | ✅ 门禁体系已有；禁 NEON 检查已落地（check_isa_level --no-neon，2026-08-17） |
 | 5. 实机 | 注入法交错 A/B（bit-exact + bootstrap CI） | ✅ 流程就绪（interleaved-inject-ab.sh） |
 
 ## 当前限制与缺口
 
-1. **纯 SVE 发射模式**：现有“SVE 目标”产物允许 NEON 指令（NEON 是
-   baseline，check_isa_level 只做上限检查）。需要发射器开关只生成
-   sv* ACLE / Z 寄存器代码，并在门禁加“禁 NEON”（FEAT_AdvSIMD
-   违规）检查。
+1. **纯 SVE 发射模式**：现有“SVE 目标”产物允许 NEON 指令（实测
+   dct 全部候选含 82–578 条 NEON 指令）。禁 NEON 门禁已落地
+   （`check_isa_level --no-neon`），**发射器开关仍待实现**（只生成
+   sv* ACLE / Z 寄存器代码）。
 2. **16-lane 发射器**：dct fused8 发射器固定 8-lane（VL128）；VL256
    宽度需要 emit_acle(vl=32) 参数化（同图不同宽）。
 3. **SVE2p3 实机验证**：目前只有 QEMU vq=2 门禁，无对应实机；按

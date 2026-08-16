@@ -10,6 +10,7 @@ best9-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,best9,,four-arm-100
 best9-iab-100f-920b-920B-2026-08-16-88e016d,2026-08-16,88e016d,best9,,iab-100f-920b,mixed,mixed,build/ablate-best9-920b-iab-inject,,,,,,,920B,,,,-2.17,455..500,yes,reports/interp8-ir-920b-20260816.txt
 best9-iab-100f-920b-920B-2026-08-16-a529ee6,2026-08-16,a529ee6,best9,,iab-100f-920b,mixed,mixed,build/ablate-best9-920b-iab-inject,,,,,,,920B,,,,-2.32,468..557,yes,reports/interp8-ir-920b-20260816.txt
 best9-inject-100f-710-710-2026-08-16-a5a0f0d,2026-08-16,a5a0f0d,best9,,inject-100f-710,mixed,mixed,build/ablate-best9-710-iab-inject,,,,,,,710,,,,-1.43,295.5..481.5,yes,reports/710-dct-ir-additivity-20260816.txt
+best9-inject-100f-710-r2-710-2026-08-17-ee1f2a7,2026-08-17,ee1f2a7,best9,,inject-100f-710-r2,mixed,mixed,build/ablate-best9-710-iab-inject,,,,,,,710,,,,-1.69,292..480,yes,reports/710-dct-ir-additivity-20260816.txt
 best9-inject-100f-n1-N1-2026-08-16-93ae996,2026-08-16,93ae996,best9,,inject-100f-n1,mixed,mixed,build/ablate-best9-n1-iab-inject,,,,,,,N1,,,,-1.44,228..934,yes,reports/n1-four-arm-inject-20260816.txt
 best9-interleaved-100f-710-710-2026-08-16-cb644a4,2026-08-16,cb644a4,best9,,interleaved-100f-710,mixed,mixed,build/710-best9.so,,,,,,,710,,,,+0.09,-101..37.5,yes,reports/interp8-ir-710-20260816.txt
 best9-ldpreload-100f-710-710-2026-08-16-53a14de,2026-08-16,53a14de,best9,,ldpreload-100f-710,mixed,mixed,build/710-best9.so,,,,,,,710,,,,+0.23,-133.5..-3.0,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
@@ -17,6 +18,7 @@ three-arm-710-best9,2026-08-16,42bd449,best9,bundle,three-arm-100f,mixed,mixed,b
 four-arm-n1-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,-85..322,yes,reports/four-arm-n1-100f-20260816.txt
 best9-ir-dct-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,best9-ir-dct,,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 best9-ir-dct-inject-100f-710-710-2026-08-16-a5a0f0d,2026-08-16,a5a0f0d,best9-ir-dct,,inject-100f-710,mixed,mixed,build/ablate-best9-ir-dct-710-iab-inject,,,,,,,710,,,,-2.32,540..640.5,yes,reports/710-dct-ir-additivity-20260816.txt
+best9-ir-dct-inject-100f-710-r2-710-2026-08-17-ee1f2a7,2026-08-17,ee1f2a7,best9-ir-dct,,inject-100f-710-r2,mixed,mixed,build/ablate-best9-ir-dct-710-iab-inject,,,,,,,710,,,,-2.39,525.5..648,yes,reports/710-dct-ir-additivity-20260816.txt
 best9-ir-dct-inject-100f-n1-N1-2026-08-16-93ae996,2026-08-16,93ae996,best9-ir-dct,,inject-100f-n1,mixed,mixed,build/ablate-best9-ir-dct-n1-iab-inject,,,,,,,N1,,,,-2.93,765..1383,yes,reports/n1-four-arm-inject-20260816.txt
 three-arm-710-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,three-arm-100f,mixed,mixed,build/710-best9-ir-dct.so,,,,,,,710,,,,-0.24,-18.5..109,yes,reports/710-three-arm-100f-20260816.txt
 best9-ir-hpp-ldpreload-100f-710-710-2026-08-16-53a14de,2026-08-16,53a14de,best9-ir-hpp,,ldpreload-100f-710,mixed,mixed,build/710-best9-ir-hpp.so,,,,,,,710,,,,+0.12,-115.0..103.0,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
@@ -62,6 +64,7 @@ ir-all-7k-ir-all-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,ir-all-7k,,ir-all,mixe
 four-arm-n1-ir-dct,2026-08-16,42bd449,ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,-114.5..151,yes,reports/four-arm-n1-100f-20260816.txt
 ir-dct-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,ir-dct,,four-arm-100f,mixed,mixed,build/n1-ir-dct.so,,,,,,,N1,,,,-0.02,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 ir-dct-inject-100f-710-710-2026-08-16-a5a0f0d,2026-08-16,a5a0f0d,ir-dct,,inject-100f-710,mixed,mixed,build/ablate-ir-dct-710-iab-inject,,,,,,,710,,,,-1.15,206..348,yes,reports/710-dct-ir-additivity-20260816.txt
+ir-dct-inject-100f-710-r2-710-2026-08-17-ee1f2a7,2026-08-17,ee1f2a7,ir-dct,,inject-100f-710-r2,mixed,mixed,build/ablate-ir-dct-710-iab-inject,,,,,,,710,,,,-1.07,225..294.5,yes,reports/710-dct-ir-additivity-20260816.txt
 ir-dct-inject-100f-n1-N1-2026-08-16-93ae996,2026-08-16,93ae996,ir-dct,,inject-100f-n1,mixed,mixed,build/ablate-ir-dct-n1-iab-inject,,,,,,,N1,,,,-1.40,195..721,yes,reports/n1-four-arm-inject-20260816.txt
 mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
