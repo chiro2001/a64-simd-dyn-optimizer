@@ -1,0 +1,40 @@
+# interp8 hpp i8mm 非方形形状门禁（16x8/8x16/32x16/16x32/32x8/8x32，2026-08-17）
+
+## 方法
+
+- 候选：`kernels/interp8/candidates/best_sve2_i8mm_extra.cpp`（与旧
+  8x8/16x16/32x32 同源的通用 interp8_horiz_pp_matmul_wh 模板，新增
+  6 个 x265 LUMA_I8MM 调度的非方形 wrapper；`-march=armv8.2-a+i8mm`
+  + `-O2` 编译，与旧行同口径计数）；
+- 参考双仲裁：
+  1) x265 `interp8_horiz_pp_dotprod<W,H>`（build/x265-8-clang-sve/
+     libx265.a，旧报告同款）；
+  2) x265 标量 C 参考 `interp_horiz_pp_c<8,W,H>`（ipfilter.cpp，
+     黄金 oracle）；
+- 协议：随机 u8，独立 src/dst 缓冲区（避免原地重叠），strides
+  W=8/16: {16,32,64}、W=32: {32,48,64}，coeffIdx {1,2,3}，每形状
+  20000 例，QEMU sve-max-vq=2。
+
+## 结果（双参考均 0 失配）
+
+| 形状 | dotprod 参考 | C 参考 | fused_uop（-O2） |
+| --- | --- | --- | ---: |
+| hpp-16x8 | 0 失配 | 0 失配 | 33 |
+| hpp-8x16 | 0 失配 | 0 失配 | 34 |
+| hpp-32x16 | 0 失配 | 0 失配 | 62 |
+| hpp-16x32 | 0 失配 | 0 失配 | 33 |
+| hpp-32x8 | 0 失配 | 0 失配 | 62 |
+| hpp-8x32 | 0 失配 | 0 失配 | 33 |
+
+## 结论
+
+1. i8mm 非方形 6 形状全部 upstream-exact 且与 C 语义一致
+   （20k × 3ci × 3st × 2 参考，0 失配）；fused_uop 33-62，与
+   旧 8x8/16x16/32x32（35/33/62）同口径可比；
+2. 调试记录：初跑 W32H16/W32H8 在 ci=2 的“失配”为门禁 harness
+   同缓冲区（src=a+3st+8、dst=a）原地重叠所致——与旧报告 32x32
+   的 in-place 教训相同；改用独立 src/dst 后双参考全过；候选与
+   上游 i8mm<W,H> 逐符号再确认 0 失配；
+3. x265 LUMA_I8MM 其余形状（4x/12x16/16x12/24x32/32x24/16x64/
+   32x64/48x64/64x*）同模板可机械生成，按需再补；SVE i8mm
+   （svmmla）与实机对比仍为后续。
