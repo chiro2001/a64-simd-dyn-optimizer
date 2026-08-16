@@ -21,7 +21,7 @@ CAND="${1:-$ROOT/kernels/dct16/candidates/best_sve2.o}"
 OUT="${2:-$ROOT/build/x265-8-testbench}"
 LITE="$ROOT/build/testbench-lite"
 SRC="$ROOT/third_party/x265/source"
-CXX=/usr/bin/aarch64-linux-gnu-g++
+CXX="${CXX:-aarch64-linux-gnu-g++}"
 
 CAND="$(readlink -f "$CAND")"
 # The lite binary hosts the DCT16 and SA8D (8x8/16x16) gates; link the
@@ -142,6 +142,11 @@ INCS=(-I"$SRC" -I"$SRC/common" -I"$SRC/encoder" -I"$SRC/test" \
     "$LITE/ipfilterharness.o" \
     -o "$LITE/TestBenchLite" "$OUT/libx265.a" -lpthread -lrt -ldl
 
-echo "running testbench-lite under QEMU (VL=256)..."
-qemu-aarch64 -L /usr/aarch64-linux-gnu -cpu max,sve-max-vq=2 \
+if [ "${RUN_MODE:-qemu}" = native ]; then
+    echo "running testbench-lite natively..."
     "$LITE/TestBenchLite" "${@:3}"
+else
+    echo "running testbench-lite under QEMU (VL=256)..."
+    qemu-aarch64 -L /usr/aarch64-linux-gnu -cpu max,sve-max-vq=2 \
+        "$LITE/TestBenchLite" "${@:3}"
+fi

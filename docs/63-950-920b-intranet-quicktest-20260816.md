@@ -22,6 +22,13 @@ cmake -S third_party/x265/source -B build/x265-8-gcc -G Ninja \
 cmake --build build/x265-8-gcc --parallel "$(nproc)"
 ```
 
+> 一键流程（2026-08-16 晚补充）：23-kernel bundle
+> `build/dynopt-best9-950-new` 已预构建；拿到 950 访问后直接跑
+> `scripts/freeze-950-dct.sh user@host`（5+5 A/B + md5 门 + paired CI；
+> `GATE=1` 附加 dct16/dct32 原生 TestBenchLite）。原生门禁脚本为
+> `scripts/build-testbench-lite-native.sh`（`build-testbench-lite.sh`
+> 的 `RUN_MODE=native` 变体，CXX 可用 `g++`）。
+
 ### 步骤
 ```sh
 # 1) 构建 23-kernel bundle（dct16=op895、dct32=opbase，默认 upstream-exact）
