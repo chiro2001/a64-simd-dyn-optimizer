@@ -845,6 +845,13 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel in ("satd-8", "sa8d16") and \
+            os.environ.get("AGO_IR_PIXEL") == "1":
+        # IR-driven satd/sa8d candidates (docs/66): width-independent
+        # DAG -> pure-NEON emission, VL-safe, counts <= hand-written.
+        p = os.path.join(d, "best_ir.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel in ("dct16", "dct32") and vl == 16 and \
             os.environ.get("AGO_IR_DCT") == "1":
         # IR-driven candidates (optimizer/ir neon8/fused8 emitters):

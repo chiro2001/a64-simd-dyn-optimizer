@@ -110,6 +110,21 @@ count 的 vpadal 路径与 reduce）。
 同一宽度无关 DAG 的 mul↔sdot 双目标 lowering 在 SAO 上落地，SVE2
 计数与手写候选仅差 2 ops（histseg count 已复用）。
 
+### filter/ipfilter 评估（2026-08-16）
+
+四套实现（NEON / NEON-dotprod / NEON-i8mm / SVE）都含 interp8_*：
+结构是 8-tap FIR（滑窗抽头乘加），非蝶形/dot 块变换，但仍是
+“同图不同 dot”：
+
+- NEON：vmul/vadd 链；
+- NEON-dotprod：SDOT（8-bit）；
+- NEON-i8mm：SMLAL（8-bit 宽乘）；
+- SVE：svdot（16-bit）；
+
+宽度无关 DAG 可行（抽头 = dot 节点，滑窗偏移 = load index 表达式），
+但非 dct 类结构，优先级低于 satd/sa8d/sao；列为后续增量，先做
+近端实机 kernel/E2E 实测。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；
