@@ -43,10 +43,11 @@ kernel/region 的语义事实：读写足迹（effects）、允许的别名（al
 
 ## 现状与目标
 
-种子 17 行 / 6 家族（dct、pixel、sao、asm、filter、entropy）。目标
-（round-0026 P2）：≥4 家族 ✅，≥50 region，≥100 唯一 final-object；
-覆盖缺口：interp8 其余 6 形状、sao E1–E3、satd/asm 其它形状、
-quant/dequant/psy-cost 等。
+种子 30 行 / 6 家族（dct、pixel、sao、asm、filter、entropy）：
+interp8 hpp 9 形状 + interp8-vps 3 形状 + sao-stats BO/E0–E3 全覆盖。
+目标（round-0026 P2）：≥4 家族 ✅，≥50 region，≥100 唯一
+final-object；覆盖缺口：sao E1–E3 重建 kernel（saoCuOrg*）、
+satd/asm 其它形状、quant/dequant/psy-cost、entropy 更多 region。
 
 ## 与后续步骤的关系
 
@@ -54,3 +55,11 @@ quant/dequant/psy-cost 等。
   VL 相同的 region 共享残差模型）；
 - P4 有界搜索：`effects/alias/tail` 是安全重写的前提，`proof_type`
   决定剪枝证书义务。
+
+## P3 准备：ranker 训练集
+
+`tools/export_ranker_data.py` 把 kernel 测试库导出为扁平特征矩阵
+`data/ranker-training.csv`（family/kernel/variant/input/output ISA/
+MCA/机器 + 数值 label：优先 100f E2E %，其次 30f，再次 kernel
+metric；INVALID 行跳过）。当前 36 行；P3 的弃权残差 ranker 用
+family 留出，目标 acc≥0.80 / tau≥0.70 / top-1 regret≤2%。
