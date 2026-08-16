@@ -43,12 +43,13 @@ kernel/region 的语义事实：读写足迹（effects）、允许的别名（al
 
 ## 现状与目标
 
-种子 50 行 / 9 家族（dct、pixel、sao、asm、filter、entropy、quant、
-psy、misc）：interp8 hpp 9 形状 + interp8-vps 7 形状 + satd 8 形状 +
-sao-stats BO/E0–E3 + quant/nquant/dequant/dequant-scaling + psy-cost
-4 形状 + find-pos。
+种子 66 行 / 9 家族（dct、pixel、sao、asm、filter、entropy、quant、
+psy、misc）：interp8 hpp 9 形状 + interp8-vps 7 形状 + interp8-hps/
+vsp/vss 9 形状 + satd 11 形状 + sao-stats BO/E0–E3 + quant/
+nquant/dequant/dequant-scaling + psy-cost 4 形状 + chroma/cu/pu +
+find-pos。
 目标（round-0026 P2）：≥4 家族 ✅，≥50 region ✅，≥100 唯一
-final-object 待补（现 48 行训练特征）；覆盖缺口：sao E1–E3 重建
+final-object 待补（现 62 行训练特征）；覆盖缺口：sao E1–E3 重建
 kernel（saoCuOrg*）、asm 更多形状、chroma/copy 族。
 
 ## 与后续步骤的关系
