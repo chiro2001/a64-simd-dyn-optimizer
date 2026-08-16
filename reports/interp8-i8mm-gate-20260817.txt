@@ -1,29 +1,36 @@
-# interp8 hpp 16x16 i8mm 候选门禁（2026-08-17）
+# interp8 hpp i8mm 候选门禁（8x8/16x16/32x32，2026-08-17）
 
 ## 方法
 
-- 候选：`kernels/interp8-16x16/candidates/best_sve2_i8mm.cpp`
-  （自 x265 common/aarch64/filter-neon-i8mm.cpp 提取的最小化
-  interp8_horiz_pp_matmul<*,16,16>，vusmmlaq_s32 矩阵乘）；
+- 候选：`kernels/{interp8,interp8-16,interp8-32}/candidates/
+  best_sve2_i8mm.cpp`（自 x265 common/aarch64/filter-neon-i8mm.cpp
+  提取的通用 interp8_horiz_pp_matmul<*,W,H>，vusmmlaq_s32 矩阵乘；
+  每个文件只含对应形状 wrapper）；
   `-march=armv8.2-a+i8mm` 编译；
 - 参考：x265 `interp8_horiz_pp_dotprod<16,16>`
   （build/x265-8-clang-sve/libx265.a）；
-- 协议：随机 u8 输入，strides {16,32,64}，coeffIdx {1,2,3}，
-  20000 例，QEMU sve-max-vq=2。
+- 协议：随机 u8 输入，独立 dst 缓冲区，strides ≥ 宽度
+  （W=8/16: {16,32,64}；W=32: {32,48,64}），coeffIdx {1,2,3}，
+  每形状 20000 例，QEMU sve-max-vq=2。
 
 ## 结果
 
 | 指标 | 值 |
 | --- | ---: |
-| 20k 差分 | **0 失配** |
-| fused_uop（16x16 kernel） | 88 |
-| total insns | 158 |
+| 形状 | 20k 差分 | fused_uop | total |
+| --- | --- | ---: | ---: |
+| hpp-8x8 | **0 失配** | 35 | 101 |
+| hpp-16x16 | **0 失配** | 33 | 107 |
+| hpp-32x32 | **0 失配** | 62 | 178 |
 
 ## 结论
 
-1. 首个 i8mm 目标候选（interp8 hpp 16x16）upstream-exact（0
-   失配），fused_uop 88——比同形状 sdot-h 候选（此前 ~100+）更少；
-2. backlog “filter i8mm/dotprod” 第一块落地：i8mm 计算路径可用
-   （920B/950 有 I8MM，待实机 kernel/E2E 对比）；
-3. 其余形状（8x8/32x32 等）与 NEON i8mm、SVE i8mm（svmmla）目标
-   按同法推广。
+1. i8mm 目标三形状（hpp 8x8/16x16/32x32）全部 upstream-exact
+   （20k × 3ci × 3st，0 失配）；fused_uop 33-62，低于同形状
+   sdot-h/IR 候选（对比 DB：IR 版 243/1013/3275）；
+2. 调试记录：32x32 初跑失配均为 harness 问题（stride < 宽度导致
+   原地处理行重叠、in-place 下候选/参考分组顺序差异、C 参考未按
+   行前进），改用独立 dst + 合法 stride + 修正 C 参考后全过；并
+   用 C 语义仲裁确认 i8mm 与 dotprod 参考完全一致；
+3. backlog “filter i8mm/dotprod” 落地（首个目标家族）；SVE i8mm
+   （svmmla）与实机 kernel/E2E 对比列为后续。
