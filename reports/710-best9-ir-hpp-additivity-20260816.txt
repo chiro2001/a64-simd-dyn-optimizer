@@ -1,0 +1,28 @@
+# 710 best9 + interp8 IR 可加性测试（2026-08-16）
+
+## 方法
+
+- 机器：710（SVE2 VL128），真实 100f，三臂随机交错（LD_PRELOAD，
+  710 上拦截已验证：stderr 有 `dynopt: patched`）；
+- 臂：base / best9（best9-128，17 kernel）/ best9-ir-hpp（best9 +
+  AGO_IR_FILTER 9 形状 interp8 hpp IR）；
+- 两批各 5 轮，共 10 轮；same-machine md5 全等
+  （21500eb459ae1c60db47eb5abd71227a）；paired bootstrap95。
+
+## 结果（ms；pos = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9 vs base | -60.0 | -0.23% | [-133.5, -3.0] |
+| best9-ir-hpp vs base | -30.5 | -0.12% | [-115.0, +103.0] |
+| best9-ir-hpp vs best9 | +41.0 | +0.16% | [-26.0, +137.5] |
+
+## 结论
+
+1. 该 LD_PRELOAD best9-128 bundle 在 710 100f 下比 base 慢 0.23%
+   （CI 不含 0）——与历史注入法 -1.53% 方向相反，可能与 bundle
+   构成/噪声有关；
+2. 加 interp8 IR 后组合回到中性（-0.12%，CI 跨零），相对 best9
+   中位快 41ms（+0.16%），方向有利但 10 轮未显著；
+3. interp8 IR 单独注入（30f -1.59% / 100f -1.13%，注入法）显著；
+   可加性证据为“有利未定论”，需更多轮次或注入法复测。

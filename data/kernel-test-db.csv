@@ -6,10 +6,12 @@ best9-best9-internal-100f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best
 best9-best9-internal-30f-920B-2026-08-16-4f00b9a,2026-08-16,4f00b9a,best9,,best9-internal-30f,mixed,mixed,build/dynopt-inject-best9-freeze,,,,,,,920B,,,-1.85,,157..167,yes,reports/best9-920b-internal-20260816.txt
 four-arm-n1-best9,2026-08-16,42bd449,best9,bundle,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,-93.5..121,yes,reports/four-arm-n1-100f-20260816.txt
 best9-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,best9,,four-arm-100f,mixed,mixed,build/n1-best9.so,,,,,,,N1,,,,-0.25,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
+best9-ldpreload-100f-710-710-2026-08-16-53a14de,2026-08-16,53a14de,best9,,ldpreload-100f-710,mixed,mixed,build/710-best9.so,,,,,,,710,,,,+0.23,-133.5..-3.0,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
 three-arm-710-best9,2026-08-16,42bd449,best9,bundle,three-arm-100f,mixed,mixed,build/710-best9.so,,,,,,,710,,,,-0.16,-100..143,yes,reports/710-three-arm-100f-20260816.txt
 four-arm-n1-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,-85..322,yes,reports/four-arm-n1-100f-20260816.txt
 best9-ir-dct-four-arm-100f-N1-2026-08-16-42bd449,2026-08-16,42bd449,best9-ir-dct,,four-arm-100f,mixed,mixed,build/n1-best9-ir-dct.so,,,,,,,N1,,,,-0.10,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 three-arm-710-best9-ir-dct,2026-08-16,42bd449,best9-ir-dct,bundle,three-arm-100f,mixed,mixed,build/710-best9-ir-dct.so,,,,,,,710,,,,-0.24,-18.5..109,yes,reports/710-three-arm-100f-20260816.txt
+best9-ir-hpp-ldpreload-100f-710-710-2026-08-16-53a14de,2026-08-16,53a14de,best9-ir-hpp,,ldpreload-100f-710,mixed,mixed,build/710-best9-ir-hpp.so,,,,,,,710,,,,+0.12,-115.0..103.0,yes,reports/710-best9-ir-hpp-additivity-20260816.txt
 cost-c1c2-flag-920b,2026-08-16,72c8a08,cost-c1c2-flag,entropy,round27,c,neon,tools/emit_cost_c1c2_flag_sve2_shared.py,,,replay,6472176,0,,920B,replay_ratio,0.998,,,,yes,reports/entropy-replay-920b-20260815.txt
 cost-coeff-nxn-neon-920b,2026-08-16,72c8a08,cost-coeff-nxn,entropy,neon,c,neon,tools/emit_cost_coeff_nxn_sve2_shared.py,,,replay,5776047,0,,920B,replay_ratio,1.097,-0.1,,,yes,reports/entropy-replay-920b-20260815.txt
 cost-coeff-remain-dfa-920b,2026-08-16,7e9dfe9,cost-coeff-remain,entropy,dfa-table,c,neon,tools/emit_cost_remain_sve2_shared.py,,,replay,2391308,0,,920B,replay_ratio,1.20,-0.25 (pp),,,yes,reports/entropy-replay-920b-20260815.txt
