@@ -1,0 +1,33 @@
+# freeze-ablate 注入 bug：远端 bundle 未同步（2026-08-17 发现）
+
+## 问题
+
+`scripts/freeze-ablate.sh` 把 `e2e-<label>.tar.gz` scp 到远端 /tmp
+后，**没有复制成 `/tmp/e2e-full.tar.gz`** 就调用注入脚本
+（cloud-e2e-inject.sh 固定解包 e2e-full.tar.gz）。因此每次注入实际
+使用的是远端**上一次遗留的 e2e-full.tar.gz**（通常是更早
+freeze-best9.sh 留下的 best9 bundle），而不是本次 label 的 bundle。
+
+## 影响（标记 INVALID）
+
+- 920B 熵族消融（reports/entropy-ablation-920b-20260816.txt）：
+  scan-only / no-remain / with-remain 的 30f/100f 数字全部无效
+  （很可能都在注入同一个旧 best9 bundle，这解释了数字过于接近）；
+- interp8 IR 顺序计时“收益”（-1.5%）同源无效（已因交错复核撤回）；
+- ccn/c1c2 消融 E2E 数字无效（replay 数字仍有效）。
+
+## 不受影响（有效）
+
+- interleaved-inject-ab.sh 的 6 对交错结果（脚本明确
+  `cp /tmp/e2e-<label>.tar.gz /tmp/e2e-full.tar.gz`）：920B scan
+  +1.23%、remain -0.23%、best9-noremain +0.19%、710 系列、N1 四臂
+  注入、950 手动 lib 交换；
+- freeze-best9.sh 系列（自己打包并 scp /tmp/e2e-full.tar.gz）；
+- kernel 级微基准与真实回放。
+
+## 修复
+
+freeze-ablate.sh 注入前增加 `cp /tmp/e2e-<label>.tar.gz
+/tmp/e2e-full.tar.gz`（已修复并提交）。需要重跑的消融：熵族四个
+kernel 的单 kernel 交错复核（scan/remain 已用交错脚本重跑，
+ccn/c1c2 已重跑；其余旧消融表格作废）。

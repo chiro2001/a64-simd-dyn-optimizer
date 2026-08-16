@@ -27,11 +27,12 @@ FRAMES="${FRAMES:-100}"
 INPUT="${FREEZE_INPUT:-/tmp/real_1080p_100f_b.yuv}"
 REPO="${REPO:-/home/chiro/projects/a64-simd-dyn-optimizer}"
 INJECT_SCRIPT="${AGO_INJECT_SCRIPT:-cloud-e2e-inject.sh}"
+MS="$ROOT/build/tmp-iab-ms.txt"
 
 package() { # package <label>
   local label="$1"
-  local pkg="/tmp/e2e-${label}.tar.gz"
-  local p=$(mktemp -d /tmp/e2e-pack.XXXXXX)
+  local pkg="$ROOT/build/e2e-${label}.tar.gz"
+  local p=$(mktemp -d "$ROOT/build/tmp-e2e-pack.XXXXXX")
   mkdir -p "$p/out" "$p/work"
   cp "build/ablate-${label}-inject/"*.patch \
      "build/ablate-${label}-inject/"*.cpp \
@@ -98,12 +99,12 @@ ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
        s=\$(date +%s%N); $ENC -o /dev/null >/dev/null 2>&1; \
        e=\$(date +%s%N); echo \"\$arm,\$(( (e-s)/1000000 ))\"; \
      done; \
-   done" > /tmp/iab-ms.txt
+   done" > "$MS"
 
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && cp /tmp/lib-base.so.216 libx265.so.216"
 
-python3 - /tmp/iab-ms.txt "$LABEL_A" "$LABEL_B" "$LABEL_C" <<'PY'
+python3 - "$MS" "$LABEL_A" "$LABEL_B" "$LABEL_C" <<'PY'
 import csv, random, statistics, sys
 rows = list(csv.reader(open(sys.argv[1])))
 a, b, c = sys.argv[2], sys.argv[3] or "", sys.argv[4] or ""

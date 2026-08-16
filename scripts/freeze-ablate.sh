@@ -30,17 +30,18 @@ python3 tools/build_preload_so.py --isa "${AGO_ISA:-sve1}" \
   --workdir "build/ablate-${LABEL}-work" \
   --json "build/ablate-${LABEL}-inject/report.json"
 
-PKG=$(mktemp -d /tmp/e2e-pack.XXXXXX)
+PKG=$(mktemp -d "$ROOT/build/tmp-e2e-pack.XXXXXX")
 mkdir -p "$PKG/out" "$PKG/work"
 cp "build/ablate-${LABEL}-inject/"*.patch \
    "build/ablate-${LABEL}-inject/"*.cpp \
    "build/ablate-${LABEL}-inject/"*.o \
    "build/ablate-${LABEL}-inject/objects.txt" "$PKG/out/"
 cp "build/ablate-${LABEL}-work/"*.o "$PKG/work/"
-tar -C "$PKG" -czf "/tmp/e2e-${LABEL}.tar.gz" out work
+tar -C "$PKG" -czf "$ROOT/build/e2e-${LABEL}.tar.gz" out work
 
 echo "[ablate:$LABEL] pushing bundle to $HOST"
-scp -o BatchMode=yes -o ServerAliveInterval=30 "/tmp/e2e-${LABEL}.tar.gz" \
+scp -o BatchMode=yes -o ServerAliveInterval=30 \
+  "$ROOT/build/e2e-${LABEL}.tar.gz" \
   scripts/strip-dynopt-link.py "scripts/$INJECT_SCRIPT" \
   "$HOST":/tmp/
 
@@ -50,7 +51,8 @@ ENC="taskset -c 0 ./x265 --input $INPUT \
 
 echo "[ablate:$LABEL] injecting"
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
-  "cd $REPO && git -C third_party/x265 checkout -- \
+  "cd $REPO && cp /tmp/e2e-${LABEL}.tar.gz /tmp/e2e-full.tar.gz && \
+   git -C third_party/x265 checkout -- \
    source/common/primitives.cpp 2>/dev/null; \
    bash "/tmp/$INJECT_SCRIPT" >/tmp/ablate-${LABEL}-inject.log 2>&1"
 
