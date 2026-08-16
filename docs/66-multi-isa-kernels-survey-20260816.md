@@ -138,6 +138,12 @@ IR 版与手写 SVE2 的差距（-15% vs -19%）与指令数差距（167 vs 165�
 但非 dct 类结构，优先级低于 satd/sa8d/sao；列为后续增量，先做
 近端实机 kernel/E2E 实测。
 
+进一步证据（2026-08-16）：`filter8_u8x16` 核心按 coeffIdx 使用
+不同优化形式——coeff 1/3 走 `vsubl + vmlal/vmlsl` 链、coeff 2 走
+对称配对 `vaddl + vmlaq_n`；即“抽头=dot”只在抽象层成立，位精确
+要求逐系数 lowering。通用 dot DAG 的成本/收益比低于 satd/sao，
+正式列为远期增量（与 asm 族同级）。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；
