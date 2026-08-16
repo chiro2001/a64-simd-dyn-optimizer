@@ -272,3 +272,14 @@ bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
 - 7-kernel IR-all bundle（satd/sa8d/sao/sad/mc/ssd/interp8）N1
   3+3：中位 12000 vs base 12058（**-0.48%**），bit-exact
   （md5 一致）；新增 mc/ssd/interp8 无回归。
+
+### 三机 E2E 汇总（2026-08-16，7-kernel IR-all bundle，5+5 中位）
+
+| 机器 | base（ms） | IR-all（ms） | Δ | bit-exact |
+| --- | ---: | ---: | --- | --- |
+| N1（NEON） | 12086 | 12096 | +0.08%（噪声内；前两轮 -0.48%/-0.71%） | md5 一致 |
+| 920B（SVE1） | 8187 | 8189 | +0.02%（中性） | ee5db7… |
+| 710（SVE2） | 9251 | 9244 | -0.08%（中性） | 2ce69750… |
+
+结论：DAG 最优 bundle 在三机全部 bit-exact；N1 为唯一可能正收益
+目标（会话噪声 ±1%，方向与此前 -0.5~-0.9% 一致），920B/710 中性。
