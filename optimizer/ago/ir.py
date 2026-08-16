@@ -20,10 +20,19 @@ class Shape:
     elem: str          # u8/s8/u16/s16/u32/s32
     lanes: int         # elements in this value
     vbits: int         # vector width in bits (128 = NEON lane, 256 = SVE)
+    vscale: Optional[int] = None  # scalable: lanes are per 128-bit unit;
+                                  # None = fixed width (NEON/128 semantics)
 
     def bits(self) -> int:
         return {"u8": 8, "s8": 8, "u16": 16, "s16": 16,
                 "u32": 32, "s32": 32}[self.elem] * self.lanes
+
+    def concrete_lanes(self, vl_bits: int = 128) -> int:
+        """Actual lane count at a given vector length.  Scalable shapes
+        (vscale set) scale with vl_bits/128; fixed shapes do not."""
+        if self.vscale is None:
+            return self.lanes
+        return self.lanes * (vl_bits // 128)
 
 
 @dataclass(frozen=True)

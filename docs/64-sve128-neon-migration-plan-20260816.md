@@ -62,6 +62,13 @@ VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
   verifier 并测量（fused_uop 仍有效，20k 门禁按 VL=16 判定）；
 - emit_dct*_best.py 增加 `--vl 16`/`--neon` 输出模式。
 
+### IR 宽度参数化（第一步，2026-08-16 已实现）
+
+见 docs/65（IR 粒度审计）。`Shape`/`ValueLayout` 增加 `vscale`
+（默认 1）+ `concrete_lanes(vl_bits)`：`lanes` 表达为每 128-bit
+lane 数 × vscale，宽度成为 lowering 属性。这是 8-lane 发射器与
+NEON lowering 的语义基础；后续把 permute 索引改为 lane 索引表达式。
+
 ## 4. 预期与风险
 
 - SVE128：结构赢点（sdot.d/smullb）在 8-lane 下仍成立，但上游

@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -33,6 +33,12 @@ class ValueLayout:
     lanes: Tuple[int, ...]         # logical output lanes this value owns
     range_hint: Tuple[int, int] = (0, 0)
     wrap_mode: str = "wrapping"    # wrapping|saturating
+    vscale: Optional[int] = None   # scalable: lanes are per 128-bit unit
+
+    def concrete_lanes(self, vl_bits: int = 128) -> Tuple[int, ...]:
+        if self.vscale is None:
+            return self.lanes
+        return tuple(l * (vl_bits // 128) for l in self.lanes)
 
 
 @dataclass(frozen=True)
