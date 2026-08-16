@@ -219,3 +219,16 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
   匿名命名空间静态模板，无法直接链接参考库符号，列为后续）；
 - 上游另有 `pixel_var_neon_dotprod` 变体——同图不同 dot 的又一
   实例。asm 族（sad/mc/ssd/pixel-util）全部完成 DAG 覆盖。
+
+### filter per-coeff lowering PoC（2026-08-16）
+
+- `interp8_op_ir.py` + `interp8_emit.py`：interp8 hpp 16x16 的
+  per-coeff 宽度无关 DAG（2240 ops）——16 行 × 8 个滑窗加载共享，
+  三 phase（coeffIdx 1/2/3）各自的优化形式编码为独立子 DAG，
+  发射为 `if/else if/else` 分派；
+- 门禁：经 `dag_pipeline` vs 上游
+  `x265::interp_horiz_pp_neon<8,16,16>`，三 phase × 20k **0 失配**
+  （vq=1/2），1013/1105 fused；
+- filter 从“评估后延期”推进到“首个 per-coeff DAG + 上游 exact
+  门禁”；其余形状（8x8/16x8/32x32 等）与 i8mm/dotprod 目标按
+  同法继续。

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""interp8 hpp 16x16 per-coeff DAG tests (filter family)."""
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
+
+from interp8_emit import emit_interp8_hpp  # noqa: E402
+from interp8_op_ir import interp8_hpp_16x16_dag  # noqa: E402
+from lane_defuse import defuse_report  # noqa: E402
+
+
+def main():
+    ops = interp8_hpp_16x16_dag()
+    assert all("n_out" in o.attrs and "lane_in" in o.attrs for o in ops)
+    r = defuse_report(ops)
+    assert r["ok"], r["issues"][:5]
+    src = emit_interp8_hpp(ops)
+    assert src.count("if (coeffIdx == 1)") == 1
+    assert src.count("else if (coeffIdx == 2)") == 1
+    assert src.count("vld1q_u8") == 128
+    assert src.count("vqrshrun_n_s16") == 96
+    assert src.count("vmlaq_n_s16") == 128
+    assert src.count("vst1q_u8") == 48
+    print("interp8 hpp IR DAG OK: ops=%d" % len(ops))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -51,6 +51,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, ()
     if kind == "dup8":
         return 16, ()
+    if kind == "dup_u8":
+        return 8, ()
     if kind == "dup64":
         return 2, ()
     if kind == "edge":
@@ -114,6 +116,24 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 16, (_e(16),)
     if kind == "vabdl_u8":
         return 8, (_e(8), _e(8))
+    if kind in ("vsubl_u8", "vaddl_u8"):
+        return 8, (_e(8), _e(8))
+    if kind == "vadd_u16":
+        return 8, (_e(8), _e(8))
+    if kind in ("vmlal_u8", "vmlsl_u8"):
+        return 8, (_e(8), _e(8), _e(8))
+    if kind == "reinterpret_s16":
+        return 8, (_e(8),)
+    if kind == "vmlaq_n_s16":
+        return 8, (_e(8), _e(8))
+    if kind == "vqrshrun":
+        return 8, (_e(8),)
+    if kind == "combine_u8":
+        m0 = ((0,), (1,), (2,), (3,), (4,), (5,), (6,), (7,),
+              (), (), (), (), (), (), (), ())
+        m1 = ((), (), (), (), (), (), (), (),
+              (0,), (1,), (2,), (3,), (4,), (5,), (6,), (7,))
+        return 16, (m0, m1)
     if kind in ("vmull_u16", "vmull_u8"):
         if kind == "vmull_u8":
             return 8, (_e(8), _e(8))
