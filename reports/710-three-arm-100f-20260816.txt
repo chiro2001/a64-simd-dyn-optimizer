@@ -1,0 +1,47 @@
+# 710 三臂 100f 交叉验证（2026-08-16，round-0025 P3 跨机补充）
+
+## 方法
+
+- 机器：710（Yitian Neoverse-N2，SVE2 VL=128），1080p 真实 100f
+  （`/tmp/real_1080p_100f_b.yuv`），单线程（taskset -c 0，
+  --pools 0 --frame-threads 1 --no-wpp --lookahead-threads 0
+  --b-adapt 0）；
+- 注入：LD_PRELOAD .so（SVE2 VL=128 交叉构建后 scp）：
+  - best9：`build/710-best9.so`（best9-128 集，17 kernel）；
+  - best9-ir-dct：`build/710-best9-ir-dct.so`（`AGO_IR_DCT=1` +
+    dct16/dct32，19 kernel）；
+- 协议：每轮三臂随机顺序各一次，两批各 5 轮；same-machine md5 门
+  全部 = 21500eb459ae1c60db47eb5abd71227a（与历史 710 100f 冻结哈希
+  一致）；按轮配对 bootstrap95（10000，seed 0xB057）；
+  diff = base - opt，>0 候选更快。
+- 工具：`scripts/freeze-four-arm-n1.sh`（ARMS/SO_*/REPO 泛化后复用）。
+
+## 结果（真实 100f，ms）
+
+| 批 | base 中位 | best9 | best9-ir-dct |
+| --- | ---: | ---: | ---: |
+| 1 | 25436 | 25304（-0.52%） | 25330（-0.42%） |
+| 2 | 25264 | 25325（+0.24%） | 25280（+0.06%） |
+
+合并 10 轮 paired bootstrap：
+
+| 臂 | base 中位 | opt 中位 | paired diff | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| best9 | 25312 | 25314 | +40.0 | +0.16% | [-100.0, +143.0] ms |
+| best9-ir-dct | 25312 | 25281 | +62.0 | +0.24% | [-18.5, +109.0] ms |
+
+## 结论
+
+1. 全部 bit-exact（21500eb4…）。
+2. 两批方向翻转（批 1 候选快、批 2 候选慢），10 轮合并 CI 全部跨零；
+   与 N1 结果一致：**best9 与 best9+IR-DCT 均无法在 100f 下与 base
+   统计区分**，IR-DCT 叠加未获两机实证支持。
+3. best9-ir-dct 中位方向为正（+0.24%）且 CI 下界贴近零；如需定版，
+   建议独占节点/更多轮次，或直接以 950 SVE2 2x256 的 dct 实测为准。
+4. 710 上维持 best9-128 发布集，IR-DCT 候选保留。
+
+## 产物
+
+- 原始计时：`/tmp/n1-four-arm-ms-710.txt`（批 1）、
+  `/tmp/n1-four-arm-ms-710b.txt`（批 2）
+- bundles：`build/710-best9.so`、`build/710-best9-ir-dct.so`

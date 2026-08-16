@@ -1,0 +1,53 @@
+# 950（920G）quick test 复测（git 4bb48e3，2026-08-16）
+
+> 与 05cfa58 版数字稳定一致；本版由 950 本机执行（用户侧提供报告）。
+
+## 环境
+
+- uname：Linux 6.6.0-145.3.22.153.oe2403sp3.aarch64，384 核；
+- ISA：SVE2 2x256 / NEON 4x128（hwcap sve2，无 sve2p1/sve2p3）；
+- ref x265 b81f650，lib build/x265-8-950（NEON+SVE2，I8MM=ON）；
+- compiler：gcc-16（GCC 15.3）native，-march=armv8.2-a+sve2 -O3；
+- method：CNTVCT latency paired（taskset -c 0，p50；ratio =
+  baseline/cand，>1 候选更快）。
+
+## 本轮新增（05cfa58..4bb48e3）
+
+- `scripts/freeze-950-dct.sh`：950 E2E 一键 A/B（23-kernel bundle，
+  dct16=op895、dct32=opbase；5+5 + md5 + paired CI；GATE=1 原生
+  TestBenchLite）；
+- `scripts/build-testbench-lite-native.sh`：native 门禁包装
+  （build-testbench-lite.sh 的 RUN_MODE=native）；
+- round-0025 decision：P4 luma_hvpp 记录关闭证据；
+- dct16/dct32 候选源码无改动（仍 op895/opbase/op4032）。
+
+## 门禁（native，gcc-16）
+
+| 候选 | TestBenchLite seeds | 20k diff vs upstream |
+| --- | --- | ---: |
+| dct16 op895 | 5-seed PASS | 0 |
+| dct32 opbase | 5-seed PASS | 0 |
+| dct32 op4032 | 5-seed PASS | 5300/20M（=C ref；上游 SVE 自身小分歧，非 bit-exact） |
+
+本地交叉验证（本仓库）：QEMU VL=256 下 dct16/dct32 各 seed=1 PASS；
+回归 tools 10 + optimizer/ir 50 + optimizer/ago 26 全过。
+
+## Paired CNTVCT（bootstrap95）
+
+| kernel | baseline | median | bootstrap95 | fused_uop |
+| --- | --- | ---: | --- | ---: |
+| dct16 op895 | sve | 1.2917 | [1.2917,1.3333] | 895 |
+| dct16 op895 | neon | 0.8750 | [0.8750,0.8750] | NEON 仍快 ~14% |
+| dct32 opbase | sve | 1.0000 | [0.9911,1.0183] | 8114（平价） |
+| dct32 opbase | neon | 0.8009 | [0.7955,0.8094] | 慢于 NEON |
+| dct32 op4032 | sve | 1.7143 | [1.7059,1.7382] | 4032（+71%） |
+| dct32 op4032 | neon | 1.4015 | [1.3811,1.4966] | +40% |
+
+## 结论
+
+1. dct16 op895：比 950 实际分发的上游 SVE +29%，但 NEON 基线仍快约
+   14%——E2E 符号取决于 dispatch 路径；
+2. dct32 opbase：bit-exact 但平价/略慢，无 kernel 级赢面；
+3. dct32 op4032：真实赢面（+71% vs SVE / +40% vs NEON），匹配 C
+   参考但非 bit-exact，E2E 需策略放行（docs/63 step 4）；
+4. E2E 一键流程已备（freeze-950-dct.sh），仍需远程 host + yuv 执行。
