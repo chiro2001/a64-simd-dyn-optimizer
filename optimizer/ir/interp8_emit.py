@@ -26,6 +26,10 @@ def emit_interp8_hpp(
             loads.append("    uint8x16_t %s = vld1q_u8(src + %d * srcStride "
                          "+ %d + %d);"
                          % (out, attrs["row"], attrs["col"], attrs["off"]))
+        elif kind == "load_u8x8":
+            loads.append("    uint8x8_t %s = vld1_u8(src + %d * srcStride "
+                         "+ %d + %d);"
+                         % (out, attrs["row"], attrs["col"], attrs["off"]))
         elif kind == "dup_u8":
             phases[ph - 1].append(
                 "        uint8x8_t %s = vdup_n_u8(%d);"
@@ -77,6 +81,10 @@ def emit_interp8_hpp(
         elif kind == "store_u8x16":
             phases[ph - 1].append(
                 "        vst1q_u8(dst + %d * dstStride + %d, %s);"
+                % (attrs["row"], attrs["col"], ins[0]))
+        elif kind == "store_u8x8":
+            phases[ph - 1].append(
+                "        vst1_u8(dst + %d * dstStride + %d, %s);"
                 % (attrs["row"], attrs["col"], ins[0]))
         else:
             raise ValueError("interp8 emit: %s" % kind)

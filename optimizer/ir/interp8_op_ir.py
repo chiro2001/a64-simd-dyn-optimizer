@@ -38,7 +38,10 @@ def _vget(fresh, v, which, tile):
 
 
 def _phase1(fresh, s, row, half, tile):
-    lo = lambda i: _vget(fresh, s[i], half, tile)
+    if half is not None:
+        lo = lambda i: _vget(fresh, s[i], half, tile)
+    else:
+        lo = lambda i: s[i]
     c4 = fresh("dup_u8", tile, attrs={"value": 4})
     c10 = fresh("dup_u8", tile, attrs={"value": 10})
     c58 = fresh("dup_u8", tile, attrs={"value": 58})
@@ -63,7 +66,10 @@ def _phase1(fresh, s, row, half, tile):
 
 
 def _phase2(fresh, s, row, half, tile):
-    lo = lambda i: _vget(fresh, s[i], half, tile)
+    if half is not None:
+        lo = lambda i: _vget(fresh, s[i], half, tile)
+    else:
+        lo = lambda i: s[i]
     t0 = fresh("vaddl_u8", tile, (lo(3).out, lo(4).out),
                attrs={"elem": "u8"})
     t1 = fresh("vaddl_u8", tile, (lo(2).out, lo(5).out),
@@ -86,7 +92,10 @@ def _phase2(fresh, s, row, half, tile):
 
 
 def _phase3(fresh, s, row, half, tile):
-    lo = lambda i: _vget(fresh, s[i], half, tile)
+    if half is not None:
+        lo = lambda i: _vget(fresh, s[i], half, tile)
+    else:
+        lo = lambda i: s[i]
     c4 = fresh("dup_u8", tile, attrs={"value": 4})
     c10 = fresh("dup_u8", tile, attrs={"value": 10})
     c58 = fresh("dup_u8", tile, attrs={"value": 58})
@@ -112,6 +121,22 @@ def _phase3(fresh, s, row, half, tile):
 
 def interp8_hpp_dag(width: int = 16, height: int = 16) -> List[Op]:
     ops, fresh = _builder()
+    if width == 8:
+        for row in range(height):
+            w = []
+            for i in range(8):
+                v = fresh("load_u8x8", "f.r%d.w%d" % (row, i),
+                          attrs={"row": row, "col": 0, "off": i - 3})
+                w.append(v)
+            for ph, fn in ((1, _phase1), (2, _phase2), (3, _phase3)):
+                d = fn(fresh, w, row, None,
+                       "f.ph%d.r%d" % (ph, row))
+                n = fresh("vqrshrun", "f.ph%d.r%d.n" % (ph, row), (d,),
+                          attrs={"shift": 6, "elem": "s16"})
+                fresh("store_u8x8", "f.ph%d.r%d.st" % (ph, row), (n.out,),
+                      attrs={"base": "dst", "row": row, "col": 0,
+                             "phase": ph})
+        return annotate(ops)
     chunks = (width + 15) // 16
     windows = {}
     for row in range(height):
@@ -145,6 +170,14 @@ def interp8_hpp_dag(width: int = 16, height: int = 16) -> List[Op]:
 
 def interp8_hpp_16x8_dag() -> List[Op]:
     return interp8_hpp_dag(16, 8)
+
+
+def interp8_hpp_8x8_dag() -> List[Op]:
+    return interp8_hpp_dag(8, 8)
+
+
+def interp8_hpp_8x16_dag() -> List[Op]:
+    return interp8_hpp_dag(8, 16)
 
 
 def interp8_hpp_16x16_dag() -> List[Op]:

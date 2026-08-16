@@ -41,6 +41,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 8, ()
     if kind == "load_u8x16":
         return 16, ()
+    if kind == "load_u8x8":
+        return 8, ()
     if kind == "load_diff":
         return 8, ()
     if kind == "load_diff16":
@@ -114,6 +116,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 16, (_e(16), _e(16))
     if kind == "store_u8x16":
         return 16, (_e(16),)
+    if kind == "store_u8x8":
+        return 8, (_e(8),)
     if kind == "vabdl_u8":
         return 8, (_e(8), _e(8))
     if kind in ("vsubl_u8", "vaddl_u8"):

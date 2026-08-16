@@ -238,10 +238,14 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
 `interp8_op_ir.py` 的 DAG 构建器参数化为 `interp8_hpp_dag(width,
 height)`（按 16 字节列块分块；16x16 入口保持不变），
 `interp8_emit.py` 相应支持列偏移；同一宽度无关 DAG 发射 7 个
-upstream 形状，`dag_pipeline` 全部 vq=1/2 20k **0 失配**：
+upstream 形状，`dag_pipeline` 全部 vq=1/2 20k **0 失配**。
+随后补上宽度 8 的 u8x8 路径（`load_u8x8/store_u8x8`，phase 无 half
+切分；`lane_defuse.py` 增加 8 字节 lane 语义），共 9 个形状：
 
 | 形状 | DAG ops | fused_uop | 门禁 |
 | --- | ---: | ---: | ---: |
+| 8x8 | 416 | 243 | vq=1/2 0 |
+| 8x16 | 832 | 626 | vq=1/2 0 |
 | 16x8 | 1120 | 429 | vq=1/2 0 |
 | 16x16 | 2240 | 1013 | vq=1/2 0（原 PoC） |
 | 16x32 | 4480 | 1895 | vq=1/2 0 |
@@ -250,9 +254,8 @@ upstream 形状，`dag_pipeline` 全部 vq=1/2 20k **0 失配**：
 | 64x32 | 17920 | 6209 | vq=1/2 0 |
 | 64x64 | 35840 | 12001 | vq=1/2 0 |
 
-工具：`tools/test_interp8_op_ir.py` 覆盖 16x8/16x16/32x32 的
-def-use 与发射计数。宽度 8（u8x8 路径）与 i8mm/dotprod 目标留待
-后续。
+工具：`tools/test_interp8_op_ir.py` 覆盖 8x8/16x8/16x16/32x32 的
+def-use 与发射计数。i8mm/dotprod 目标留待后续。
 
 ### DAG 最优 kernel 集 N1 E2E（2026-08-16 更新）
 

@@ -7,7 +7,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "optimizer", "ir"))
 
 from interp8_emit import emit_interp8_hpp  # noqa: E402
-from interp8_op_ir import (interp8_hpp_16x8_dag, interp8_hpp_16x16_dag,
+from interp8_op_ir import (interp8_hpp_8x8_dag, interp8_hpp_16x8_dag,
+                           interp8_hpp_16x16_dag,
                            interp8_hpp_32x32_dag)  # noqa: E402
 from lane_defuse import defuse_report  # noqa: E402
 
@@ -38,6 +39,14 @@ def main():
     assert src32x32.count("vld1q_u8") == 32 * 8 * 2
     assert src32x32.count("vst1q_u8") == 32 * 3 * 2
     print("interp8 hpp IR 16x8/32x32 shapes OK")
+
+    ops8x8 = interp8_hpp_8x8_dag()
+    assert defuse_report(ops8x8)["ok"]
+    src8x8 = emit_interp8_hpp(ops8x8)
+    assert src8x8.count("vld1_u8") == 8 * 8
+    assert src8x8.count("vst1_u8") == 8 * 3
+    assert src8x8.count("vld1q_u8") == 0
+    print("interp8 hpp IR 8x8 shape OK")
     return 0
 
 
