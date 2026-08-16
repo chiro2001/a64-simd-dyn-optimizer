@@ -851,7 +851,12 @@ def candidate_sources(kernel, isa, vl=None):
         # same DAG lowered to SVE2 bridge (best_ir_sve8) or pure NEON
         # (best_ir_neon8); instruction-count parity or better than the
         # hand-written fused candidates (docs/65 step 5-7).
-        name = "best_ir_sve8.cpp" if isa == "sve2" else "best_ir_neon8.cpp"
+        if isa == "sve1" and not os.environ.get("AGO_IR_SVE1"):
+            # 920B default: pure NEON beats sdot.d (Kunpeng throughput).
+            name = "best_ir_neon8.cpp"
+        else:
+            # sve1+AGO_IR_SVE1, sve2, sve2p1, sve2p3: bridge sdot.d.
+            name = "best_ir_sve8.cpp"
         p = os.path.join(d, name)
         if os.path.exists(p):
             return [p]

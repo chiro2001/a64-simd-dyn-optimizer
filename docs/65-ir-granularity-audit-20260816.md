@@ -173,3 +173,16 @@ zip1q/zip2q/rev64q、vget/widen_add、dot 4-term 分组、reduce/padd
 （dct16/dct32 的 pass1/pass2）在返回前调用 `lane_defuse.annotate`，
 每个 op 携带 `n_out` 与 `lane_in`（每输入值、每输出 lane 的消费
 lane 列表）——DAG 自描述，无需重新推导；发射器输出逐字节不变。
+
+**目标矩阵全覆盖（2026-08-16）**：同一 fused8 DAG 发射的
+`best_ir_sve8.cpp` 在 SVE1（`armv8.2-a+sve+dotprod`）、SVE2
+（`armv8.2-a+sve2`）、SVE2p3（`armv9.4-a+sve2p3`）march 下编译，
+20k 差分在 vq=1/vq=2 全部 0 失配（dct16/dct32 × 8 组合）；纯 NEON
+（`neon_dot`）此前已门禁。注入选择：
+
+- `AGO_IR_DCT=1` + `--isa sve1`：默认 NEON（920B sdot.d 吞吐差）；
+  `AGO_IR_SVE1=1` 覆盖为 sve8（SVE1+dotprod 主机）；
+- `AGO_IR_DCT=1` + `--isa sve2|sve2p1|sve2p3`：sve8（bridge sdot.d）；
+  sve2p3 bundle 已构建验证，ISA 检查 0 违规。
+
+至此目标矩阵 NEON/SVE1/SVE2/SVE2p3 全部由同一宽度无关 DAG 覆盖。
