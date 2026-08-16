@@ -30,6 +30,7 @@ bundle,best9-ir-dct,three-arm-100f,mixed,mixed,,,710,-0.24,e2e_100f,,yes,reports
 ,best9-noremain,inject-100f-n1-freeze,mixed,mixed,,,N1,-0.12,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain,inject-100f-n1-freeze-r2,mixed,mixed,,,N1,-1.16,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain,ldpreload-100f-710,mixed,mixed,,,710,-0.2,e2e_100f,,yes,reports/best9-noremain-710-interleaved-20260817.txt
+,best9-noremain-ir-dct,3arm-100f-920b,,,,,920B,-2.66,e2e_100f,,yes,reports/920b-best9-noremain-ir-dct-3arm-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-710-freeze,mixed,mixed,,,710,-2.03,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-710-freeze-r2,mixed,mixed,,,710,-2.36,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-n1-freeze,mixed,mixed,,,N1,-2.25,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
@@ -62,6 +63,9 @@ dct,dct32,op4032,sve2,sve2,4032,,950,1.4015,kernel,ratio_vs_neon,no (policy),rep
 dct,dct32,opbase,sve2,sve2,8114,,950,1.0,kernel,ratio_vs_sve,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct,dct32,opbase,sve2,sve2,8114,,950,0.8009,kernel,ratio_vs_neon,yes,reports/950-quicktest-4bb48e3-20260816.txt
 ,dct8+dct16+dct32,op895-opbase,sve2,sve2,,,950,-0.79,e2e_30f,,yes,reports/dct-950-e2e-20260816.txt
+,interp8-hpp,i8mm-vs-simplified-dot,,,,,920B,1.19,kernel,ratio_i8mm_vs_simplified_dot,,reports/interp8-i8mm-920b-e2e-20260817.txt
+,interp8-hpp-16x16,sve-i8mm,,,,,920B,0.31,kernel,ratio_vs_dotprod,,reports/sve-i8mm-920b-20260817.txt
+bundle,interp8-i8mm,7shape-920b,,,,,920B,0.87,e2e_30f,,yes,reports/interp8-i8mm-920b-e2e-20260817.txt
 ,interp8-ir-9shapes,interleaved-100f-710,c/neon,neon,,,710,0.08,e2e_100f,,yes,reports/interp8-ir-710-20260816.txt
 ,interp8-ir-9shapes,interleaved-100f-920b,c/neon,neon,,,920B,3.08,e2e_100f,,yes,reports/interp8-ir-920b-20260816.txt
 ,interp8-ir-9shapes,ir-hpp-100f,c/neon,neon,,,920B,-1.55,e2e_100f,,yes,reports/interp8-ir-920b-20260816.txt
@@ -73,6 +77,9 @@ bundle,ir-dct,four-arm-100f,mixed,mixed,,,N1,-0.02,e2e_100f,,yes,reports/four-ar
 ,ir-dct,inject-100f-710,mixed,mixed,,,710,-1.15,e2e_100f,,yes,reports/710-dct-ir-additivity-20260816.txt
 ,ir-dct,inject-100f-710-r2,mixed,mixed,,,710,-1.07,e2e_100f,,yes,reports/710-dct-ir-additivity-20260816.txt
 ,ir-dct,inject-100f-n1,mixed,mixed,,,N1,-1.4,e2e_100f,,yes,reports/n1-four-arm-inject-20260816.txt
+,ir-dct-on-noremain,increment-100f-710,,,,,710,-1.1,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
+,ir-dct-on-noremain,increment-100f-920b,,,,,920B,-0.59,e2e_100f,,yes,reports/920b-best9-noremain-ir-dct-3arm-20260817.txt
+,ir-dct-on-noremain,increment-100f-n1,,,,,N1,-0.82,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,pure-sve-dct,inject-100f-710,sve2,sve2,,,710,2.63,e2e_100f,,yes,reports/pure-sve-dct-710-20260817.txt
 pixel,sa8d-8,sa8d8_A,neon,neon,100,,920B,5069.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,sa8d-8,sa8d8_A,neon,neon,100,,N1,1728.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -81,13 +88,21 @@ pixel,sa8d-8,sa8d8_B,neon,neon,101,,N1,1733.0,kernel,ticks,yes,reports/ago-m2-ex
 pixel,sa8d-8,sa8d8_C,neon,neon,100,,920B,5106.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,sa8d-8,sa8d8_C,neon,neon,100,,N1,1728.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,sa8d16,ir,c/neon,neon,404,485,920B,1.04,kernel,ratio_neon_cand,yes,docs/66-multi-isa-kernels-survey-20260816.md
+bundle,sao,neon-slot-710,,,,,710,0.15,e2e_30f,,yes,reports/sao-neon-710-e2e-20260817.txt
 sao,sao-stats-e0,ir,sve2,sve2,167,184,710,-15.0,kernel,ticks_pct,yes,docs/66-multi-isa-kernels-survey-20260816.md
+,satd-16,pure-sve-710,,,,,710,0.596,kernel,ratio_vs_satd8_sve2,yes,reports/satd-pure-sve-710-20260817.txt
+,satd-16x16,axis-s16x16_r_vaddlv_a_abd,,,72,,710,1185.0,kernel,ticks,yes,reports/satd8-axis-search-20260817.txt
+,satd-16x8,axis-s16x8_r_vaddlv_a_abd,,,118,,710,518.0,kernel,ticks,yes,reports/satd8-axis-search-20260817.txt
 pixel,satd-16x8,satd16x8_A,neon,neon,150,,920B,6037.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-16x8,satd16x8_A,neon,neon,150,,N1,2266.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-16x8,satd16x8_B,neon,neon,154,,920B,6634.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-16x8,satd16x8_B,neon,neon,154,,N1,2586.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-16x8,satd16x8_C,neon,neon,150,,920B,6105.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-16x8,satd16x8_C,neon,neon,150,,N1,2287.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
+,satd-8,axis-vaddlv-abd,,,,,920B,0.82,kernel,ratio_vs_satd8_A,yes,reports/satd8-axis-search-20260817.txt
+,satd-8,axis-vaddv-abd,,,,,920B,0.99,kernel,ratio_vs_satd8_A,yes,reports/satd8-axis-search-20260817.txt
+,satd-8,pure-sve-710,,,,,710,1.094,kernel,ratio_vs_satd8_sve2,yes,reports/satd-pure-sve-710-20260817.txt
+bundle,satd-8,pure-sve-8x8-710,,,,,710,1.8,e2e_30f,,yes,reports/satd-pure-sve-710-20260817.txt
 pixel,satd-8,satd8_A,neon,neon,76,,920B,3634.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8,satd8_A,neon,neon,76,,N1,1204.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8,satd8_B,neon,neon,76,,920B,3630.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -98,6 +113,7 @@ pixel,satd-8,satd8_D,neon,neon,93,,920B,4758.0,kernel,ticks,yes,reports/ago-m2-e
 pixel,satd-8,satd8_D,neon,neon,93,,N1,1699.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8,satd8_E,neon,neon,76,,920B,3630.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8,satd8_E,neon,neon,76,,N1,1203.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
+,satd-8x16,axis-s8x16_r_vaddlv_a_abd,,,120,,710,515.0,kernel,ticks,yes,reports/satd8-axis-search-20260817.txt
 pixel,satd-8x16,satd8x16_A,neon,neon,152,,920B,6089.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8x16,satd8x16_A,neon,neon,152,,N1,2260.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8x16,satd8x16_B,neon,neon,156,,920B,7930.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt

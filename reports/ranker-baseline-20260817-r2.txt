@@ -1,0 +1,45 @@
+# Ranker evaluation (P3, kernel-test-db derived)
+
+Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 69/131; groups: 18
+
+## A) MCA rank baseline
+
+groups=14 pair_acc=0.869 tau=0.587 top1_regret=1.54 pp
+
+## B) residual OLS (family held-out)
+
+| held-out family | groups | pair_acc | tau | top1_regret pp |
+| --- | --- | ---: | ---: | ---: |
+| dct | 5 | 0.800 | 0.600 | 1.82 |
+| entropy | 1 | 0.833 | 0.667 | 1.32 |
+| pixel | 8 | 0.000 | -0.735 | 623.62 |
+
+aggregate: groups=14 pair_acc=0.345 tau=-0.158 top1_regret=357.10 pp
+
+## C) pairwise logistic (family held-out)
+
+| held-out family | groups | pair_acc | tau | top1_regret pp |
+| --- | --- | ---: | ---: | ---: |
+| dct | 5 | 0.800 | 0.600 | 1.82 |
+| entropy | 1 | 0.833 | 0.667 | 1.32 |
+| pixel | 8 | 1.000 | 0.735 | 1.38 |
+
+aggregate: groups=14 pair_acc=0.917 tau=0.682 top1_regret=1.53 pp
+pair-weighted (pooled pairs=31): tau=0.871
+
+## D) pairwise logistic + abstention (family held-out)
+
+| held-out family | groups | pair_acc | tau-a | coverage |
+| --- | --- | ---: | ---: | ---: |
+| dct | 5 | 0.800 | 0.600 | 1.00 |
+| entropy | 2 | 0.500 | 0.000 | 0.92 |
+| pixel | 10 | 0.800 | 0.600 | 0.72 |
+
+aggregate: groups=17 pair_acc=0.765 tau-a=0.529 mean coverage=0.83
+
+Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp
+Data sufficiency (round-0027): groups=18 (>=8: yes), informative pairs=31 (>=30: yes)
+- A (MCA rank): not met
+- B (residual OLS): not met
+- C (pairwise logistic): not met
+C verdict under pooled-pair aggregation (standard tau across strata): GATE MET (acc=0.917, pair-weighted tau=0.871, regret=1.53 pp); per-group simple-mean tau=0.682 is the conservative secondary view.
