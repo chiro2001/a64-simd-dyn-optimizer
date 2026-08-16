@@ -40,6 +40,15 @@ static inline svuint16_t psv_load_idx(const uint16_t* p)
     return v;
 }
 
+static inline svuint32_t psv_load_idx_u32(const uint32_t* p)
+{
+    svuint32_t v;
+    asm volatile("ld1w {%0.s}, %1/z, [%2]"
+                 : "=w"(v)
+                 : "Upl"(svptrue_pat_b32(SV_VL4)), "r"(p));
+    return v;
+}
+
 static inline svint16_t psv_rev16(svint16_t x)
 {
     static const uint16_t idx[8] = { 7, 6, 5, 4, 3, 2, 1, 0 };
@@ -136,7 +145,7 @@ static inline svint16_t psv_combine4_s16(svint16_t a, svint16_t b)
 static inline svint32_t psv_combine4_s32(svint32_t a, svint32_t b)
 {
     static const uint32_t idx[4] = { 0, 1, 4, 5 };
-    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    svuint32_t i = psv_load_idx_u32(idx);
     svuint32x2_t t = svcreate2_u32(svreinterpret_u32_s32(a),
                                    svreinterpret_u32_s32(b));
     return svreinterpret_s32_u32(svtbl2_u32(t, i));
@@ -152,14 +161,14 @@ static inline svint32_t psv_addp4_s32(svint32_t a, svint32_t b)
 static inline svint32_t psv_rev64_s32(svint32_t x)
 {
     static const uint32_t idx[4] = { 1, 0, 3, 2 };
-    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    svuint32_t i = psv_load_idx_u32(idx);
     return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
 }
 
 static inline svint32_t psv_rev32_s32(svint32_t x)
 {
     static const uint32_t idx[4] = { 3, 2, 1, 0 };
-    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    svuint32_t i = psv_load_idx_u32(idx);
     return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
 }
 

@@ -896,6 +896,13 @@ def candidate_sources(kernel, isa, vl=None):
         p = os.path.join(d, "best_ir.cpp")
         if os.path.exists(p):
             return [p]
+    if kernel == "dct16" and vl == 16 and \
+            os.environ.get("AGO_PURE_SVE") == "1":
+        # Pure-SVE fused8 candidate (VL=128-fixed, zero NEON; validated
+        # vs neon8 in tools/test_dct16_pure_sve.py).
+        p = os.path.join(d, "best_ir_pure_sve.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "sao-stats-e0" and os.environ.get("AGO_IR_SAO") == "1":
         # IR-driven SAO E0 candidates (docs/66): same DAG lowered to
         # pure NEON (best_ir.cpp) or SVE2 (best_ir_sve2.cpp, histseg+
@@ -1378,6 +1385,8 @@ def main():
         cc = [args.cxx, "-fPIC"] + args.opt.split() + common + includes
         if args.isa:
             cc += ["-march=" + ISA_MARCH[args.isa]]
+        if os.environ.get("AGO_PURE_SVE") == "1":
+            cc += ["-msve-vector-bits=128"]
         compiled = False
         for src in sources:
             r = run(cc + ["-c", src, "-o", obj], timeout=180)
