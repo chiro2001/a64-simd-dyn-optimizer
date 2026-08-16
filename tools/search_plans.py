@@ -71,7 +71,8 @@ def all_plans():
 
 def measure(manifest, verify_src, src, workdir, tag,
             allow_mismatch=False, range_start_syms=None,
-            range_end_sym=None, cxx_flags_extra="", qemu_vq=2):
+            range_end_sym=None, cxx_flags_extra="", qemu_vq=2,
+            verify_cxx_flags=""):
     """Compile -> 20k differential -> true-dynamic counts. Returns
     (passed, mismatches, counts) or (False, reason, None)."""
     obj = os.path.join(workdir, tag + ".o")
@@ -84,6 +85,7 @@ def measure(manifest, verify_src, src, workdir, tag,
     verify = os.path.join(workdir, tag + "-verify")
     v = run(["aarch64-linux-gnu-g++", "-O2", "-std=c++11",
              "-march=armv8.2-a+sve2", verify_src, obj,
+             ] + (verify_cxx_flags.split() if verify_cxx_flags else []) + [
              "-Wl,--start-group",
              repo_path(manifest, manifest["reference"]["lib"]),
              "-Wl,--end-group", "-lpthread", "-ldl", "-o", verify])

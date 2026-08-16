@@ -154,3 +154,27 @@ IR 版与手写 SVE2 的差距（-15% vs -19%）与指令数差距（167 vs 165�
 
 优先级按 best9 注入集实测收益与 profile 占比排序：satd/sa8d >
 sao > filter > asm 族。
+
+## 4. 通用算子优化管线工具（2026-08-16）
+
+`tools/dag_pipeline.py`：一站化跑完整管线——DAG 构建 → lane def-use →
+发射 → 编译 → QEMU 差分门禁 → 动态计数。新家族只需提供
+`module:function` 的 DAG 构建器与发射器：
+
+```sh
+python3 tools/dag_pipeline.py --kernel satd-8 \
+  --func dynopt_satd_8x8_sve2 \
+  --dag satd8_op_ir:satd8_dag --emit satd8_emit:emit_satd8
+```
+
+`measure()` 新增 `verify_cxx_flags`（sao/filter 类 verify 需要 x265
+头文件路径时使用）。三家族验证结果：
+
+| 家族 | DAG ops | fused_uop | vq=1/2 差分 |
+| --- | ---: | ---: | --- |
+| satd-8 | 61 | 77/91 | 0 / 0 |
+| sa8d16 | 336 | 404/485 | 0 / 0 |
+| sao-stats-e0 (sve2) | 165 | 167/184 | 0 / 0 |
+
+“通用算子优化管线”从逐家族脚本收敛为单一工具入口；filter/asm 族
+后续接入只需实现各自的 DAG+发射器。
