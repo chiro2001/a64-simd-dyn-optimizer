@@ -54,9 +54,40 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 
 - ✅ 双组原语集全部就绪（含 load8/rev32/rev64/vmovn_s64/rshrn/store4；
    zip1/2_s64 用全宽 svzip 天然满足双组语义）；
-- ⏳ dct16 双组发射器（8-lane pure-SVE 源码按映射逐语句翻译，
-   语句配对：相邻两行合并为一个双组寄存器）、20k vq=2 门禁、
-   TestBenchLite、dct32、op-backend 对比。
+- ✅ **dct16 双组发射器完成**（`optimizer/ir/dct16_dual_sve_emit.py`
+   → `kernels/dct16/candidates/best_ir_sve16.cpp`，`svcntb()==32`
+   守卫）：0 NEON（`check_isa_level --no-neon`）、51k 跨 VQ 差分
+   （vq1 8-lane pure-SVE 参考 vs vq2 16-lane，分进程同输入，0 失配；
+   `tools/test_dct16_sve16.py`）、TestBenchLite vq=2 六 seed 全过
+   （`--gate dct16-sve16`）。
+- ⏳ dct32 双组发射器（同法）、与 op-backend（op895/opbase/op4032）
+   同宽对比、950 实机注入定稿。
+
+## 实现要点（dct16）
+
+语句配对：相邻两行合并为一个双组寄存器（pair A = rows i/i+1，
+pair B = rows i+2/i+3）。三族输出统一为“四行结果落在 s16 lanes
+0-3 后 `psv_store4_s16` 直存 4 个连续位置”：
+
+- k 奇：`sdot(O_A/O_B)` → `dual_vmovn_s64` 得到两对部分和 →
+  `combine_g0` 跨组打包 → `pairwise_add`（uzp1+uzp2）得四行总和。
+- k≡2 mod 4（pass1）：`quad_pack` 把 pair-form EO 打成四行 quad-form
+  → 一次 16-lane `sdot` → `dual_vmovn_s64` → rshrn。
+- k≡2 mod 4（pass2）：`pairwise_add(m_A, m_B)` 先得“每组行内部分和”，
+  再 `pairwise_add(s1, s1)` 得四行总和。
+- k=0/4/8/12：偶数族，先 `combine_g0` 后 `pairwise_add`；k=0/8 用
+  EEE、k=4/12 用 EEO；注意 8-lane 源码中 k=8 是**先乘后加**（与
+  k=0 相反），发射器已按源码逐块对应。
+
+## 门禁陷阱（已踩坑记录）
+
+- `svzip1/2_s64`、`uzp1/2` 的 lane 分组随 VL 变化（N=2 vs N=4），
+  因此 8-lane pure-SVE 代码去掉 `svcntb()==16` 守卫后**不能**直接在
+  vq=2 当参考；跨 VQ 对比必须分进程、同输入。
+- 原始 `uzp1+uzp2` 两两加在 VL=256 下会把第二个操作数的和放到
+  g1（lanes 4-7），必须先 `combine_g0` 把两个 g0 拼进同一寄存器。
+- TestBenchLite（x265 `dct16_c` 标量参考）是最终正确性门禁；
+  `tools/testbench_lite.cpp` 已加 `dct16-sve16` gate（weak 符号）。
 
 ## 验证注意事项
 
