@@ -16,6 +16,7 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | entropy | cost-c1c2-flag | n=1..8 | read absCoeff; write ctx (stateful) | ctx in-place | exact | n=1..8 leaves | 128;256 | fsm | upstream-exact | production 6.47M calls | measured |
 | entropy | cost-coeff-nxn | 4x4 slice | read coeffs+ctx; write absCoeff/baseCtx (in-place compaction) | ctx in-place | exact | soff=15 boundary (ctx tail update) | 128;256 | scan/stateful | upstream-exact | production 5.78M calls | measured |
 | entropy | cost-coeff-remain | 4x4 slice | read absCoeff[16]; return cost (pure) | none | exact (golomb-rice table) | idx<8 vs >=8 buckets | 128;256 | table/DFA | exhaustive 5x3x256 table | production 2.39M calls | measured |
+| entropy | find-pos-first-last | 16 | read int16 coeffs; return packed first/last + sign sum | none | exact | none (16 elems) | 128;256 | bitscan | upstream-exact | 20k | gated |
 | entropy | scan-pos-last | CG16 | read coeffs scan-order; write coeffSign/Flag/Num | none | exact | CG boundary per numSig | 128;256 | fsm/bitpack | upstream-exact | on-machine 20k; production per-call | measured |
 | filter | interp8-hpp | 16x16 | read src 8 win/row; write dst | src/dst disjoint | saturating narrow | edge guard; block widths 16 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
 | filter | interp8-hpp | 16x32 | read src 8 win/row (off -3..+4); write dst WxH | src/dst disjoint | saturating narrow (vqrshrun shift 6, IF_FILTER_PREC) | edge guard; block widths 16 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
@@ -35,11 +36,21 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | filter | interp8-vps-8x4 | 8x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | pixel | sa8d16 | 16x16 | read 2 planes; write int | none | exact | none | 128;256 | hadamard+reduce | upstream-exact | 20k vq=1/2 | measured |
 | pixel | satd-16 | 16x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-16x32 | 16x32 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-16x8 | 16x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-32x32 | 32x32 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-64x64 | 64x64 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8 | 8x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8x16 | 8x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-8x4 | 8x4 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| psy | psy-cost-16x16 | 16x16 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| psy | psy-cost-32x32 | 32x32 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| psy | psy-cost-64x64 | 64x64 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| psy | psy-cost-8x8 | 8x8 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| quant | dequant | 256 | read coeff+scale table; write out coeffs | src/dst disjoint | exact multiply+shift | none (256 elems) | 128;256 | elementwise | upstream-exact | 20k | gated |
+| quant | dequant-scaling-gt | 256 (branch gt) | read coeff+scale table; write out coeffs | src/dst disjoint | exact multiply+shift | none (256 elems) | 128;256 | elementwise | upstream-exact | 20k | gated |
+| quant | nquant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
+| quant | quant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
 | sao | sao-stats-bo | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
 | sao | sao-stats-e0 | 64x1 | read int16 coeff + uint8 rec; accumulate int32 stats (stateful) | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k vq=1/2 | measured |
 | sao | sao-stats-e1 | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |

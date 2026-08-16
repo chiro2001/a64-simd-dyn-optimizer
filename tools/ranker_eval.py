@@ -107,15 +107,28 @@ def ols(features, labels):
 def main():
     rows = list(csv.DictReader(open(SRC)))
     used = []
+    KERNEL_METRICS = {"ticks_pct", "ratio_neon_cand", "ratio_vs_sve",
+                      "ratio_vs_neon", "replay_ratio"}
     for r in rows:
-        if r["label_type"] not in ("e2e_100f", "e2e_30f"):
+        lt = r["label_type"]
+        if lt not in ("e2e_100f", "e2e_30f") and not (
+                lt == "kernel" and r.get("kernel_metric") in KERNEL_METRICS):
             continue
         mca = to_num(r.get("mca_fused_uop"))
         tot = to_num(r.get("mca_total"))
         if mca is None or tot is None:
             continue
+        if lt == "kernel" and (
+                r.get("kernel_metric", "").startswith("ratio") or
+                r.get("kernel_metric") == "replay_ratio"):
+            # ratio metrics: >1 = faster; negate so lower = better.
+            r["label"] = str(-to_num(r["label"]))
         used.append(r)
-    key = lambda r: (r["family"], r["machine"], r["label_type"])
+    def key(r):
+        if r["label_type"] == "kernel":
+            return (r["family"], r["machine"], r["label_type"],
+                    r.get("kernel_metric"))
+        return (r["family"], r["machine"], r["label_type"])
     groups = {}
     for r in used:
         groups.setdefault(key(r), []).append(r)
@@ -124,8 +137,8 @@ def main():
     out = []
     out.append("# Ranker baseline (round-0026 P3a, 2026-08-16)")
     out.append("")
-    out.append("Data: data/ranker-training.csv; rows with e2e label and "
-               "MCA features: %d/%d; groups (family,machine,label): %d"
+    out.append("Data: data/ranker-training.csv; rows with label and "
+               "MCA features (incl. kernel metrics): %d/%d; groups: %d"
                % (len(used), len(rows), len(groups)))
     out.append("")
 

@@ -43,11 +43,13 @@ kernel/region 的语义事实：读写足迹（effects）、允许的别名（al
 
 ## 现状与目标
 
-种子 30 行 / 6 家族（dct、pixel、sao、asm、filter、entropy）：
-interp8 hpp 9 形状 + interp8-vps 3 形状 + sao-stats BO/E0–E3 全覆盖。
-目标（round-0026 P2）：≥4 家族 ✅，≥50 region，≥100 唯一
-final-object；覆盖缺口：sao E1–E3 重建 kernel（saoCuOrg*）、
-satd/asm 其它形状、quant/dequant/psy-cost、entropy 更多 region。
+种子 50 行 / 9 家族（dct、pixel、sao、asm、filter、entropy、quant、
+psy、misc）：interp8 hpp 9 形状 + interp8-vps 7 形状 + satd 8 形状 +
+sao-stats BO/E0–E3 + quant/nquant/dequant/dequant-scaling + psy-cost
+4 形状 + find-pos。
+目标（round-0026 P2）：≥4 家族 ✅，≥50 region ✅，≥100 唯一
+final-object 待补（现 48 行训练特征）；覆盖缺口：sao E1–E3 重建
+kernel（saoCuOrg*）、asm 更多形状、chroma/copy 族。
 
 ## 与后续步骤的关系
 
@@ -61,5 +63,7 @@ satd/asm 其它形状、quant/dequant/psy-cost、entropy 更多 region。
 `tools/export_ranker_data.py` 把 kernel 测试库导出为扁平特征矩阵
 `data/ranker-training.csv`（family/kernel/variant/input/output ISA/
 MCA/机器 + 数值 label：优先 100f E2E %，其次 30f，再次 kernel
-metric；INVALID 行跳过）。当前 36 行；P3 的弃权残差 ranker 用
-family 留出，目标 acc≥0.80 / tau≥0.70 / top-1 regret≤2%。
+metric；INVALID 行跳过/回退 kernel 标签）。当前 48 行；
+`tools/ranker_eval.py`（MCA 排序 + family 留出 OLS）已能出基线：
+现有 1 个可评组（dct/710）MCA 排序 acc=1.0，但数据量不足，未达
+P3 门（acc≥0.80/tau≥0.70/regret≤2% 需更多逐 kernel 有效标签）。

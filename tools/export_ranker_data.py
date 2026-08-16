@@ -42,6 +42,9 @@ def main():
         for ltype, key in (("e2e_100f", "e2e_100f_pct"),
                            ("e2e_30f", "e2e_30f_pct"),
                            ("kernel", "kernel_value")):
+            if ltype.startswith("e2e") and \
+                    "INVALID" in (r.get("e2e_ci_ms") or "").upper():
+                continue
             v = to_num(r.get(key))
             if v is not None:
                 label, label_type = v, ltype
@@ -50,11 +53,13 @@ def main():
             continue
         row = {f: (r.get(f) or "") for f in FEATURES}
         row.update(label=label, label_type=label_type,
+                   kernel_metric=r.get("kernel_metric") or "",
                    bit_exact=r.get("bit_exact") or "",
                    report=r.get("report") or "")
         out.append(row)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    fields = FEATURES + ["label", "label_type", "bit_exact", "report"]
+    fields = FEATURES + ["label", "label_type", "kernel_metric",
+                         "bit_exact", "report"]
     with open(OUT, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         w.writeheader()

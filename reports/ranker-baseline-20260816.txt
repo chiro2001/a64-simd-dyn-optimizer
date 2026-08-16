@@ -1,10 +1,10 @@
 # Ranker baseline (round-0026 P3a, 2026-08-16)
 
-Data: data/ranker-training.csv; rows with e2e label and MCA features: 0/36; groups (family,machine,label): 0
+Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 5/48; groups: 1
 
 ## A) MCA rank baseline
 
-no evaluable groups: need >=2 candidates with MCA + E2E label per (family, machine, label_type)
+groups=1 pair_acc=1.000 tau=1.000 top1_regret=0.00 pp
 
 ## B) residual OLS (family held-out)
 
