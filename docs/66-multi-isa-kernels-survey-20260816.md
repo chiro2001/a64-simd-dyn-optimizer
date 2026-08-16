@@ -257,6 +257,12 @@ upstream 形状，`dag_pipeline` 全部 vq=1/2 20k **0 失配**。
 工具：`tools/test_interp8_op_ir.py` 覆盖 8x8/16x8/16x16/32x32 的
 def-use 与发射计数。i8mm/dotprod 目标留待后续。
 
+注入接线（2026-08-16 晚）：`AGO_IR_FILTER=1` 已覆盖全部 9 个 hpp
+形状（`tools/emit_interp8_ir_candidates.py` 生成
+`kernels/<shape>/candidates/best_ir.cpp`，符号取自 manifest），
+`build_preload_so.py --isa sve1 --vl 16` 全 9 形状 0 skip、ISA 门禁
+通过（`pu[LUMA_WxH].luma_hpp`）。
+
 ### DAG 最优 kernel 集 N1 E2E（2026-08-16 更新）
 
 组合 bundle：satd-8 + sa8d16 + sao-stats-e0 + sad（均 IR 生成候选，

@@ -427,6 +427,14 @@ VL128_SKIP_REASON = {
 # building for a VL=128 SVE2 machine.
 VL128_NEON_PREFER = {"satd-8"}
 
+# interp8 hpp shapes with a width-independent IR candidate (docs/66);
+# AGO_IR_FILTER=1 selects kernels/<shape>/candidates/best_ir.cpp.
+INTERP8_HPP_IR_KERNELS = {
+    "interp8", "interp8-8x16", "interp8-16x8", "interp8-16",
+    "interp8-16x32", "interp8-32x16", "interp8-32",
+    "interp8-64x32", "interp8-64x64",
+}
+
 
 def luma_pu(w, h):
     return "LUMA_%dx%d" % (w, h)
@@ -882,7 +890,8 @@ def candidate_sources(kernel, isa, vl=None):
         p = os.path.join(d, "best_ir.cpp")
         if os.path.exists(p):
             return [p]
-    if kernel == "interp8-16" and os.environ.get("AGO_IR_FILTER") == "1":
+    if kernel in INTERP8_HPP_IR_KERNELS and \
+            os.environ.get("AGO_IR_FILTER") == "1":
         # IR-driven interp8 hpp (docs/66): pure-NEON, VL-safe.
         p = os.path.join(d, "best_ir.cpp")
         if os.path.exists(p):
