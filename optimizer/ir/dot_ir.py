@@ -130,3 +130,30 @@ def dot_summary(ops: List[Op]) -> Dict[str, int]:
         if op.kind == "dot":
             c["%s/%s" % (op.attrs["lowering"], op.attrs["acc_ty"])] += 1
     return dict(c)
+
+
+def select_dot_lowerings(ops: List[Op], isa: str, contract: str,
+                         sve2: bool = False) -> Tuple[List[Op], Dict]:
+    """Instruction-search scheme: assign each canonical dot node its
+    cheapest legal lowering for the target (ISA, contract).
+
+    Returns (ops with attrs['lowering'] set, report dict with per-node
+    alternatives and total uop estimate).  Nodes without a legal
+    lowering keep their current lowering and are flagged in the report.
+    """
+    canon = canonicalize_dot_ops(ops)
+    report = {"nodes": 0, "selected": {}, "no_legal": [], "total_uop": 0}
+    for op in canon:
+        if op.kind != "dot":
+            continue
+        report["nodes"] += 1
+        alts = legal_lowerings(op, isa, contract, sve2)
+        if not alts:
+            report["no_legal"].append(op.tile_id)
+            report["selected"][op.tile_id] = op.attrs["lowering"]
+            continue
+        best = min(alts, key=lambda kv: kv[1])
+        op.attrs["lowering"] = best[0]
+        report["selected"][op.tile_id] = best[0]
+        report["total_uop"] += best[1]
+    return canon, report

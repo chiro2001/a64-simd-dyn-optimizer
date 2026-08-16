@@ -54,6 +54,10 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
   dot(s16,s16,s32,vmull_vmlal)；
 - `legal_lowerings(dot, isa, contract, sve2)`：按目标 ISA + 合同族
   返回合法 lowering 及代价（指令搜索的核心）；
+- `select_dot_lowerings(ops, isa, contract, sve2)`：对整张 DAG 的每个
+  dot 节点选代价最低的合法 lowering，返回带 lowering 的图 + 报告
+  （每节点替代、无合法项标记、总 uop 估计）——即指令搜索方案的
+  单点实现；
 - `expand_dot_lowering()`：还原 legacy kind，兼容现有消费方；
 - `dot_summary()`：按 lowering/acc 统计，供报告。
 
@@ -68,6 +72,7 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
 
 1. **轴定义**：每个 `dot` 节点的 lowering 是一个搜索轴，取值由
    `legal_lowerings()` 按（目标 ISA、sve2 开关、合同族）过滤；
+   批量选择用 `select_dot_lowerings()`（按 uop 估计贪心选优）；
 2. **与现有机制对应**：`legacy_k2` / `legacy_k4` rewrite 就是
    “pass2 k2/k4 的 dot 从 mul_saddv 切到 sdot.d”的 lowering 选择，
    现在显式化到规范化节点上；
@@ -91,12 +96,16 @@ for op in canon:
     if op.kind == "dot":
         print(op.attrs["tile_id"],
               legal_lowerings(op, isa="sve1", contract="both"))
+# 整图最优 lowering 分配：
+canon, rep = select_dot_lowerings(ops, isa="sve1",
+                                  contract="legacy-internal-exact")
+print(rep["selected"], rep["total_uop"])
 ```
 
 ## 6. 验证
 
-- `optimizer/ir/test_dot_ir.py`：6 用例（legacy→typed 转换、summary、
-  sve1/sve2/neon 合法性、合同族过滤）全 PASS；
+- `optimizer/ir/test_dot_ir.py`：8 用例（legacy→typed 转换、summary、
+  sve1/sve2/neon 合法性、合同族过滤、superset、选择器）全 PASS；
 - 现有回归：`cd optimizer && python3 -m unittest discover -s ago -q`、
   `python3 -m unittest discover -s tools -p 'test_check_isa_level.py' -q`。
 

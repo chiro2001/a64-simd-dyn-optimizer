@@ -7,6 +7,7 @@ from dot_ir import (
     dot_summary,
     legal_lowerings,
     make_dot,
+    select_dot_lowerings,
 )
 from op_ir import Op
 
@@ -80,6 +81,23 @@ class TestLegalLowerings(unittest.TestCase):
         # mul_saddv (upstream-exact) stays legal under the legacy family.
         self.assertEqual(legal_lowerings(d, "sve1", "legacy-internal-exact"),
                          [("mul_saddv", 4)])
+
+    def test_select_picks_cheapest_legal(self):
+        ops = [
+            _mk("dot_segment", "d1", "p1.odd.k1", ("O0", "C0"),
+                {"terms": ("O0", "C0")}),
+            _mk("mul_reduce", "m1", "p2.k2.k2", ("E0", "C2"),
+                {"lane_owner": "partial"}),
+        ]
+        canon, rep = select_dot_lowerings(ops, "sve1",
+                                          "legacy-internal-exact")
+        self.assertEqual(rep["selected"]["p1.odd.k1"], "sdot.d")
+        # s32 mul_reduce has no legal lowering on sve1 with s16/s16?
+        # it is typed s32/s32/s32 -> mul_saddv is legal (uop 4).
+        self.assertEqual(rep["selected"]["p2.k2.k2"], "mul_saddv")
+        self.assertEqual(rep["total_uop"], 5)
+        self.assertEqual(rep["no_legal"], [])
+        self.assertEqual(len([o for o in canon if o.kind == "dot"]), 2)
 
 
 if __name__ == "__main__":
