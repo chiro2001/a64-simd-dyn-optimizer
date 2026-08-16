@@ -114,7 +114,9 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 16, (_e(16),)
     if kind == "vabdl_u8":
         return 8, (_e(8), _e(8))
-    if kind == "vmull_u16":
+    if kind in ("vmull_u16", "vmull_u8"):
+        if kind == "vmull_u8":
+            return 8, (_e(8), _e(8))
         return 4, (_e(4), _e(4))
     if kind == "vadd_u32":
         return 4, (_e(4), _e(4))
@@ -128,7 +130,7 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 8, (_e(8), _e(8))
     if kind == "vceq":
         return 16, (_e(16),)
-    if kind == "vpadal_s8":
+    if kind in ("vpadal_s8", "vpadal_u8"):
         pairs = tuple((2 * j, 2 * j + 1) for j in range(8))
         return 8, (_e(8), pairs)
     if kind == "vzip1_s8":
@@ -158,7 +160,7 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (((0,), (1,), (), ()), ((), (), (0,), (1,)))
     if kind == "vaddv_s64":
         return 1, (((0, 1),),)
-    if kind == "vpadal_s16":
+    if kind in ("vpadal_s16", "vpadal_u16"):
         pairs = tuple((2 * j, 2 * j + 1) for j in range(4))
         return 4, (_e(4), pairs, pairs)
     if kind in ("add", "sub"):
@@ -172,7 +174,7 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         m = ((0, 1), (2, 3), (), ())
         m2 = ((), (), (0, 1), (2, 3))
         return 4, (m, m2)
-    if kind == "vpaddl_s16":
+    if kind in ("vpaddl_s16", "vpaddl_u16"):
         return 4, (((0, 1), (2, 3), (4, 5), (6, 7)),)
     if kind == "neon_narrow4":
         return 4, (_e(4),)
@@ -217,6 +219,10 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 1, (((0, 1, 2, 3),),)
     if kind == "vaddv_u32":
         return 1, (((0, 1, 2, 3),),)
+    if kind == "vaddlv_u32":
+        return 1, (((0, 1, 2, 3),),)
+    if kind == "pack_var":
+        return 1, ((), ())
     if kind == "vaddlv":
         return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
     if kind == "store_sub32":

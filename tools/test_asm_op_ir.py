@@ -13,13 +13,16 @@ from sad_emit import emit_sad16  # noqa: E402
 from sad_op_ir import sad16x16_dag  # noqa: E402
 from ssd_emit import emit_sse_pp  # noqa: E402
 from ssd_op_ir import sse_pp_16x16_dag  # noqa: E402
+from pixel_var_emit import emit_pixel_var  # noqa: E402
+from pixel_var_op_ir import pixel_var_16x16_dag  # noqa: E402
 
 
 def main():
     for tag, dag, emit in (
             ("sad", sad16x16_dag, emit_sad16),
             ("mc", avg_pp_16x16_dag, emit_avg_pp),
-            ("ssd", sse_pp_16x16_dag, emit_sse_pp)):
+            ("ssd", sse_pp_16x16_dag, emit_sse_pp),
+            ("pixel_var", pixel_var_16x16_dag, emit_pixel_var)):
         ops = dag()
         assert all("n_out" in o.attrs and "lane_in" in o.attrs
                    for o in ops)

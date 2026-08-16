@@ -207,3 +207,15 @@ asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 
 - `tools/test_asm_op_ir.py`：sad/mc/ssd 三 DAG 的 def-use 与发射
   一致性。asm 族 sad/mc/ssd 三成员已接入通用管线，pixel-util 为
   最后一个剩余成员。
+
+### asm 族 pixel-util（pixel_var 16x16，2026-08-16）
+
+- `pixel_var_op_ir.py` + `pixel_var_emit.py`：按上游
+  `pixel_var_neon<16>`（vpadalq_u8 和 + vmull_u8 平方 +
+  vpadalq_u16 累加 + 打包返回 sum|sumsq<<32）建 DAG（138 ops），
+  纯 NEON 发射；
+- 门禁：自包含标量参考 3000 例 **0 失配**（算法为精确整数运算，
+  与上游语义一致）；上游 exact 需完整 x265 harness（pixel_var 是
+  匿名命名空间静态模板，无法直接链接参考库符号，列为后续）；
+- 上游另有 `pixel_var_neon_dotprod` 变体——同图不同 dot 的又一
+  实例。asm 族（sad/mc/ssd/pixel-util）全部完成 DAG 覆盖。
