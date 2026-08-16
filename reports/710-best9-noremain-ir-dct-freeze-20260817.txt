@@ -23,3 +23,14 @@
    新发布集下再次确认；
 3. 与 N1（旧 best9 + IR-DCT +2.93%）方向一致；N1 用新发布集复测
    待跑。
+
+## 第二批复测（2026-08-17，同 bundle，6 对 100f）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain vs base | +361 | +1.42% | [160.5, 505.5] |
+| best9-noremain-ir-dct vs base | +602.5 | +2.36% | [489.0, 677.5] |
+| best9-noremain-ir-dct vs best9-noremain | +278 | +1.10% | [133.0, 331.0] |
+
+两批（各 6 对）方向与量级一致，可加性双批确认；定版组合
+**best9-minus-remain + dct IR**（710 +2.03~2.36%、N1 +2.25%）。
