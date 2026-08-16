@@ -37,9 +37,9 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 
 ## 实施步骤
 
-1. 补齐双组原语（rev_hi/rev_lo、dual_saddl ✅ 2026-08-17；
-   dual_vmovn、dual_combine4、dual_addp4 待做）并各加 VL=256 数值
-   自检；
+1. 补齐双组原语：rev_lo/hi、dual_saddl、dual_vmovn_s32、
+   dual_combine4_s16、dual_addp4_s32 均 ✅（2026-08-17，VL=256 数值
+   自检 + 0 NEON）；
 2. 实现 dct16 pass1/pass2 双组发射器（可由 8-lane pure-SVE 源码
    按映射逐语句翻译），生成 `dct16/candidates/best_ir_sve16.cpp`；
 3. 门禁：`--no-neon`、20k QEMU vq=2 差分、TestBenchLite（RUN_VQ=2）、
@@ -49,7 +49,8 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
 
 ## 状态
 
-- ✅ 双组表示核心原语（dual_rev16/vget_lo4/hi4、rev_lo/hi、
-   dual_saddl + psv16_*）已验证（VL=256，0 NEON，数值自检）；
-- ⏳ dual_vmovn/combine4/addp4、dct16/32 双组发射器、门禁与
-   op-backend 对比。
+- ✅ 双组原语集全部就绪（dual_rev16/vget_lo4/hi4、rev_lo/hi、
+   dual_saddl/vmovn_s32/combine4_s16/addp4_s32 + psv16_*，VL=256
+   数值自检 + 0 NEON）；
+- ⏳ dct16 双组发射器（8-lane pure-SVE 源码按映射逐语句翻译）、
+   20k vq=2 门禁、TestBenchLite、dct32、op-backend 对比。

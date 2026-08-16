@@ -287,6 +287,42 @@ static inline svint32_t psv16_dual_saddl(svint16_t a, svint16_t b)
                                    svreinterpret_u32_s32(s1));
     return svreinterpret_s32_u32(svtbl2_u32(t, i));
 }
+
+// Truncating narrow of both s32 groups (input lanes 0-3 / 4-7) to a
+// dual 4-lane s16 result (group0 lanes 0-3, group1 lanes 8-11).
+static inline svint16_t psv16_dual_vmovn_s32(svint32_t x)
+{
+    svint16_t r = svreinterpret_s16_s32(x);
+    static const uint16_t idx[16] =
+        { 0, 2, 4, 6, 0, 0, 0, 0, 8, 10, 12, 14, 0, 0, 0, 0 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    return svreinterpret_s16_u16(svtbl_u16(svreinterpret_u16_s16(r), i));
+}
+
+// Combine two dual 4-lane s16 values (a/b) into a 16-lane dual value:
+// lanes 0-7 = [a_g0_lo, b_g0_hi], lanes 8-15 = [a_g1_lo, b_g1_hi].
+static inline svint16_t psv16_dual_combine4_s16(svint16_t a, svint16_t b)
+{
+    static const uint16_t idx[16] =
+        { 0, 1, 2, 3, 16, 17, 18, 19, 8, 9, 10, 11, 24, 25, 26, 27 };
+    svuint16_t i = svld1_u16(svptrue_b16(), idx);
+    svuint16x2_t t = svcreate2_u16(svreinterpret_u16_s16(a),
+                                   svreinterpret_u16_s16(b));
+    return svreinterpret_s16_u16(svtbl2_u16(t, i));
+}
+
+// Pairwise add within each s32 group (a/b each 8 lanes: g0 lanes 0-3,
+// g1 lanes 4-7) -> result lanes: g0 = [a0+a1,a2+a3,b0+b1,b2+b3],
+// g1 = [a4+a5,a6+a7,b4+b5,b6+b7].
+static inline svint32_t psv16_dual_addp4_s32(svint32_t a, svint32_t b)
+{
+    svint32_t lo = svuzp1_s32(a, b);
+    svint32_t hi = svuzp2_s32(a, b);
+    svint32_t s = svadd_s32_x(svptrue_b32(), lo, hi);
+    static const uint32_t idx[8] = { 0, 1, 4, 5, 2, 3, 6, 7 };
+    svuint32_t i = svld1_u32(svptrue_b32(), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(s), i));
+}
 """
 
 

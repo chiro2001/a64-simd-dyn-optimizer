@@ -96,6 +96,8 @@ extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
     svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
     svst1_s64(svptrue_b64(), s, acc);
     svst1_s32(svptrue_b32(), (int32_t*)s, psv16_dual_saddl(x, y));
+    psv16_store(o, psv16_dual_combine4_s16(
+        psv16_dual_vget_lo4(x), psv16_dual_vget_hi4(x)));
 }
 int main()
 {
@@ -146,6 +148,27 @@ int main()
     for (int i = 0; i < 8; i++)
         if (z[i] != es[i]) { bad++; printf("dual_saddl[%d]=%d exp %d\n",
                                            i, z[i], es[i]); }
+    svst1_s32(svptrue_b32(), z, psv16_dual_addp4_s32(
+        svld1_s32(svptrue_b32(), (const int32_t[8])
+            {1,2,3,4,5,6,7,8}),
+        svld1_s32(svptrue_b32(), (const int32_t[8])
+            {9,10,11,12,13,14,15,16})));
+    const int32_t ea[8] = {3,7,19,23,11,15,27,31};
+    for (int i = 0; i < 8; i++)
+        if (z[i] != ea[i]) { bad++; printf("dual_addp4[%d]=%d exp %d\n",
+                                           i, z[i], ea[i]); }
+    psv16_store(r, psv16_dual_combine4_s16(
+        psv16_dual_vget_lo4(v), psv16_dual_vget_hi4(v)));
+    for (int i = 0; i < 16; i++)
+        if (r[i] != x[i]) { bad++; printf("dual_combine4[%d]=%d exp %d\n",
+                                          i, r[i], x[i]); }
+    svst1_s32(svptrue_b32(), z, psv16_dual_saddl(v, psv16_load(y)));
+    svst1_s16(svptrue_b16(), r, psv16_dual_vmovn_s32(
+        svld1_s32(svptrue_b32(), (const int32_t[8])
+            {16,18,20,22,32,34,36,38})));
+    if (r[0] != 16 || r[1] != 18 || r[2] != 20 || r[3] != 22 ||
+        r[8] != 32 || r[9] != 34 || r[10] != 36 || r[11] != 38)
+        { bad++; printf("dual_vmovn_s32 bad\n"); }
     printf(bad ? "FAILED %ld\n" : "PASS\n", bad);
     return bad != 0;
 }
