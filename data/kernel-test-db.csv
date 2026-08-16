@@ -81,6 +81,7 @@ ir-dct-inject-100f-710-r2-710-2026-08-17-ee1f2a7,2026-08-17,ee1f2a7,ir-dct,,inje
 ir-dct-inject-100f-n1-N1-2026-08-16-93ae996,2026-08-16,93ae996,ir-dct,,inject-100f-n1,mixed,mixed,build/ablate-ir-dct-n1-iab-inject,,,,,,,N1,,,,-1.40,195..721,yes,reports/n1-four-arm-inject-20260816.txt
 mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
 sa8d16-ir,2026-08-16,72c8a08,sa8d16,pixel,ir,c/neon,neon,optimizer/ir/sa8d_emit.py,404,485,1;2,20000,0,,920B,ratio_neon_cand,1.04,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
