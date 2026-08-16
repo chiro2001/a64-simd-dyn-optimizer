@@ -1,0 +1,13 @@
+{
+ "counts": {
+  "vector_raw": 93,
+  "movprfx": 0,
+  "vector_fused": 93,
+  "scatter_gather": 0,
+  "scatter_gather_uops": 0,
+  "stack_vector": 0,
+  "vector_fused_uop": 93
+ },
+ "total": 108,
+ "vector": 93
+}

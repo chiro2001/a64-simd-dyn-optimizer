@@ -1,0 +1,40 @@
+{
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|gen|b28117a924e4c1dab947b2d90950a4610249975e6805b3551327cbe5f19e838f": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 108,
+   "vector": 93,
+   "movprfx": 0,
+   "vector_fused": 93,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 93
+  },
+  "range": [
+   "0x4007a0",
+   "0x400960"
+  ]
+ },
+ "upstream-exact|aarch64-linux-gnu-g++|-O2||armv8.2-a+sve2|gen|da44c4269d9ed3f58c125fb3cc477e1944ab7f269f918a162ad3f58a1591b304": {
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 91,
+   "vector": 60,
+   "movprfx": 8,
+   "vector_fused": 52,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 52
+  },
+  "range": [
+   "0x4007a0",
+   "0x400920"
+  ]
+ }
+}
