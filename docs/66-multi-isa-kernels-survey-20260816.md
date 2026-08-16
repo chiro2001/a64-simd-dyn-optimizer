@@ -261,3 +261,14 @@ bit-exact：base 与 IR 集 md5 一致（b5b18776…）。IR 集在 N1 上
 
 26 个 march×VL 组合除 sao-sve1（预期排除）外全部 0 失配——同一
 宽度无关 DAG 在多 ISA 目标矩阵上自动重 lowering 覆盖全部家族。
+
+### 注入链扩展与 7-kernel E2E（2026-08-16）
+
+- `mc` 接入 dispatch（`pu[LUMA_16x16].pixelavg_pp[NONALIGNED]`，
+  weight==32 适配器，其余回退原槽）；`ssd` 接入
+  `cu[BLOCK_16x16].sse_pp`（返回类型改 `unsigned int`）；
+  `interp8-16` 经 `AGO_IR_FILTER` 绕过 VL128 skip（纯 NEON
+  VL 安全）；
+- 7-kernel IR-all bundle（satd/sa8d/sao/sad/mc/ssd/interp8）N1
+  3+3：中位 12000 vs base 12058（**-0.48%**），bit-exact
+  （md5 一致）；新增 mc/ssd/interp8 无回归。

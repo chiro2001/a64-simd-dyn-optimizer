@@ -43,10 +43,11 @@ def emit_sse_pp(ops, func_name: str = "dynopt_sse_pp_16x16_sve2") -> str:
             body.append("    uint32x4_t %s = vaddq_u32(%s, %s);"
                         % (out, ins[0], ins[1]))
         elif kind == "vaddv_u32":
-            body.append("    int %s = (int)vaddvq_u32(%s);"
+            body.append("    unsigned int %s = vaddvq_u32(%s);"
                         % (out, ins[0]))
         elif kind == "scalar_add2":
-            body.append("    int %s = %s + %s;" % (ret, ins[0], ins[1]))
+            body.append("    unsigned int %s = %s + %s;"
+                        % (ret, ins[0], ins[1]))
         else:
             raise ValueError("ssd emit: %s" % kind)
     return """\
@@ -55,8 +56,8 @@ def emit_sse_pp(ops, func_name: str = "dynopt_sse_pp_16x16_sve2") -> str:
 #include <arm_neon.h>
 #include <stdint.h>
 
-extern "C" int %s(const uint8_t* pix1, intptr_t stride1,
-                  const uint8_t* pix2, intptr_t stride2)
+extern "C" unsigned int %s(const uint8_t* pix1, intptr_t stride1,
+                           const uint8_t* pix2, intptr_t stride2)
 {
 %s
     return %s;

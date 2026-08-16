@@ -3,8 +3,8 @@
 #include <arm_neon.h>
 #include <stdint.h>
 
-extern "C" int dynopt_sse_pp_16x16_sve2(const uint8_t* pix1, intptr_t stride1,
-                  const uint8_t* pix2, intptr_t stride2)
+extern "C" unsigned int dynopt_sse_pp_16x16_sve2(const uint8_t* pix1, intptr_t stride1,
+                           const uint8_t* pix2, intptr_t stride2)
 {
     uint32x4_t v0001 = vdupq_n_u32(0);
     uint32x4_t v0002 = vdupq_n_u32(0);
@@ -328,8 +328,8 @@ extern "C" int dynopt_sse_pp_16x16_sve2(const uint8_t* pix1, intptr_t stride1,
     uint32x4_t v0320 = vmull_u16(v0318, v0318);
     uint32x4_t v0321 = vaddq_u32(v0302, v0319);
     uint32x4_t v0322 = vaddq_u32(v0321, v0320);
-    int v0323 = (int)vaddvq_u32(v0313);
-    int v0324 = (int)vaddvq_u32(v0322);
-    int ssd = v0323 + v0324;
+    unsigned int v0323 = vaddvq_u32(v0313);
+    unsigned int v0324 = vaddvq_u32(v0322);
+    unsigned int ssd = v0323 + v0324;
     return ssd;
 }

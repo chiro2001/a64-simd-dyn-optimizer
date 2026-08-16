@@ -45,6 +45,28 @@ ISA_MARCH = {
 # The adapter body is a template with %SYM% replaced by the candidate
 # symbol and %ORIG% by the saved original pointer.
 ADAPTERS = {
+    "mc": {
+        "cand_decl": ("void %SYM%(uint8_t*, intptr_t, const uint8_t*,"
+                      " intptr_t, const uint8_t*, intptr_t)"),
+        "orig_decl": "static pixelavg_pp_t dynopt_orig_avg = nullptr;",
+        "body": """
+static void dynopt_avg_adapter(uint8_t* dst, intptr_t dstride,
+    const uint8_t* s0, intptr_t ss0, const uint8_t* s1, intptr_t ss1,
+    int weight)
+{
+    if (weight == 32)
+    {
+        %SYM%(dst, dstride, s0, ss0, s1, ss1);
+        return;
+    }
+    if (dynopt_orig_avg)
+        dynopt_orig_avg(dst, dstride, s0, ss0, s1, ss1, weight);
+}
+""",
+        "save": "dynopt_orig_avg = "
+                "P->pu[LUMA_16x16].pixelavg_pp[NONALIGNED];",
+        "adapter": "dynopt_avg_adapter",
+    },
     "quant": {
         "cand_decl": ("uint32_t %SYM%(const int16_t*, const int32_t*,"
                       " int32_t*, int16_t*, int, int)"),
@@ -586,6 +608,15 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
         add("pu[%s].sad" % luma_pu(w, w), "int",
             "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
         return out
+    if kernel == "mc":
+        add("pu[LUMA_16x16].pixelavg_pp[NONALIGNED]", "void",
+            "uint8_t*, intptr_t, const uint8_t*, intptr_t,"
+            " const uint8_t*, intptr_t")
+        return out
+    if kernel == "ssd":
+        add("cu[BLOCK_16x16].sse_pp", "unsigned int",
+            "const uint8_t*, intptr_t, const uint8_t*, intptr_t")
+        return out
     if kernel.startswith("satd"):
         if kernel == "satd-8":
             # Multi-shape candidate: 8x8/16x16 primitives + 32x32/64x64
@@ -845,8 +876,14 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
-    if kernel == "sad" and os.environ.get("AGO_IR_ASM") == "1":
-        # IR-driven SAD candidate (docs/66): 66/98, upstream-exact.
+    if kernel in ("sad", "mc", "ssd") and \
+            os.environ.get("AGO_IR_ASM") == "1":
+        # IR-driven asm-family candidates (docs/66): upstream-exact.
+        p = os.path.join(d, "best_ir.cpp")
+        if os.path.exists(p):
+            return [p]
+    if kernel == "interp8-16" and os.environ.get("AGO_IR_FILTER") == "1":
+        # IR-driven interp8 hpp (docs/66): pure-NEON, VL-safe.
         p = os.path.join(d, "best_ir.cpp")
         if os.path.exists(p):
             return [p]

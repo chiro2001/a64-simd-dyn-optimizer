@@ -819,7 +819,7 @@ int main(int argc, char** argv)
 
 ${decl}
 
-extern "C" int ${cand_sym}(
+extern "C" unsigned int ${cand_sym}(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
 int main(int argc, char** argv)
