@@ -93,3 +93,11 @@ family 留出：dct 0.800/0.600、entropy 0.833/0.667、pixel
 达门；tau 差 0.018——熵族 E2E 标签噪声级（ccn/c1c2 CI 跨零）且
 remain 是特征上的 Pareto 最优点却实测最差，线性模型在该组存在
 固有上界）。MCA 基线 0.869/0.587/1.54pp。
+
+**同日第三次更新**：920B 熵族 kernel 级微基准重测入库（scan 1.147 /
+cost 1.090 / flag 1.095 / remain 0.944，ratio_neon_cand；
+reports/entropy-kernel-920b-microbench-20260817.txt）。训练集 115
+行、66 行含特征、18 组。pairwise-logistic family 留出 aggregate
+仍 0.917/0.682/1.53pp；**pair-weighted（31 个可分辨对合并）tau=
+0.871**——按对合并口径达门，简单均值口径差 0.018。两种口径都在
+`reports/ranker-baseline-20260817.txt` 中透明并列。

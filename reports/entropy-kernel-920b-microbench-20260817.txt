@@ -1,0 +1,31 @@
+# 熵族 kernel 级微基准（920B，2026-08-17）
+
+## 方法
+
+- 机器：920B（SVE1 VL=256，共享 Kunpeng 节点），无 PMU 用 CNTVCT；
+- 二进制：`build/entropy_microbench`（本地交叉编译，静态 libstdc++，
+  候选 = scan/cost best_sve2（SVE1）+ c1c2/remain DFA 发射器，与
+  docs/63 920B 快测同源）；
+- 协议：每 kernel × impl（neon/cand）× 5 轮，taskset -c 0，
+  samples=30、batch=4096，取 total_ticks 中位；ratio = neon/cand，
+  >1 候选更快。
+
+## 结果（total_ticks 中位，越小越快）
+
+| kernel | neon 中位 | cand 中位 | ratio(neon/cand) |
+| --- | ---: | ---: | ---: |
+| scan-pos-last | 4976 | 4338 | **1.147** |
+| cost-coeff-nxn | 12388 | 11364 | **1.090** |
+| cost-c1c2-flag | 6499 | 5937 | **1.095** |
+| cost-coeff-remain | 13544 | 14347 | 0.944 |
+
+原始输出：`build/entropy-920b-raw.txt`。
+
+## 结论
+
+1. scan/cost/flag 实机 kernel 级均快于 NEON 基线（+9~15%），方向与
+   历史一致；remain 慢 ~5.6%（真实分布语料；均匀语料 -35% 是分布
+   敏感伪信号）——与 E2E 复核（remain -0.23%）一致；
+2. 本轮为共享节点随机时段，scan 1.147 弱于 docs/63 快测
+   （1.46-1.54），方向成立、幅度受节点噪声影响；
+3. 数据供 P3 ranker 作为熵族 kernel 级标签（ratio_neon_cand）。

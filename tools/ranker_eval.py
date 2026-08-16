@@ -76,6 +76,28 @@ def pair_stats(pred_vals, meas_vals):
     return acc, tau, regret, acc_den
 
 
+def pair_weighted_tau(groups_pred_meas):
+    """Kendall tau-b over ALL informative pairs pooled across groups
+    (pair-weighted; each pair counts once regardless of group size)."""
+    pairs = []
+    for pred, meas in groups_pred_meas:
+        n = len(pred)
+        for i in range(n):
+            for j in range(i + 1, n):
+                sp = (pred[i] > pred[j]) - (pred[i] < pred[j])
+                sm = (meas[i] > meas[j]) - (meas[i] < meas[j])
+                if sp == 0 or sm == 0:
+                    continue
+                pairs.append((sp, sm))
+    if len(pairs) < 2:
+        return None, len(pairs)
+    concord = sum(1 for sp, sm in pairs if sp == sm)
+    discord = len(pairs) - concord
+    # tau-b tie handling approximated pair-wise (ties already dropped)
+    denom = math.sqrt((len(pairs)) ** 2)
+    return (concord - discord) / denom, len(pairs)
+
+
 def ols(features, labels):
     """Least squares with intercept on feature rows (list of lists)."""
     n, p = len(features), len(features[0]) + 1
@@ -284,11 +306,23 @@ def main():
                           statistics.mean(taus3), statistics.mean(regs3)))
             c_acc += accs3; c_tau += taus3; c_reg += regs3; c_grp += ng
     if c_acc:
+        pw_tau, pw_pairs = pair_weighted_tau(
+            [([sum(w[j] * feature_vec(r)[j] for j in range(3))
+               for r in grp],
+              [to_num(r["label"]) for r in grp])
+             for fam in fams
+             for w in [pairwise_logistic(
+                 [r for r in used if r["family"] != fam])]
+             if w is not None
+             for k, grp in groups.items() if k[0] == fam])
         out.append("")
         out.append("aggregate: groups=%d pair_acc=%.3f tau=%.3f "
                    "top1_regret=%.2f pp"
                    % (c_grp, statistics.mean(c_acc),
                       statistics.mean(c_tau), statistics.mean(c_reg)))
+        if pw_tau is not None:
+            out.append("pair-weighted (pooled pairs=%d): tau=%.3f"
+                       % (pw_pairs, pw_tau))
     else:
         out.append("no held-out groups evaluable on this seed corpus")
     out.append("")

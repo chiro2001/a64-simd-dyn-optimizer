@@ -1,6 +1,6 @@
 # Ranker evaluation (P3, kernel-test-db derived)
 
-Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 62/110; groups: 18
+Data: data/ranker-training.csv; rows with label and MCA features (incl. kernel metrics): 66/115; groups: 18
 
 ## A) MCA rank baseline
 
@@ -25,6 +25,7 @@ aggregate: groups=14 pair_acc=0.345 tau=-0.158 top1_regret=357.10 pp
 | pixel | 8 | 1.000 | 0.735 | 1.38 |
 
 aggregate: groups=14 pair_acc=0.917 tau=0.682 top1_regret=1.53 pp
+pair-weighted (pooled pairs=31): tau=0.871
 
 Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp
 - A (MCA rank): not met

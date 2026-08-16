@@ -34,14 +34,18 @@ bundle,best9-ir-dct,three-arm-100f,mixed,mixed,,,710,-0.24,e2e_100f,,yes,reports
 ,best9-noremain-ir-dct,inject-100f-710-freeze-r2,mixed,mixed,,,710,-2.36,e2e_100f,,yes,reports/710-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-n1-freeze,mixed,mixed,,,N1,-2.25,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 ,best9-noremain-ir-dct,inject-100f-n1-freeze-r2,mixed,mixed,,,N1,-2.14,e2e_100f,,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
+,best9-noremain-ir-dct,interleaved-100f-920b,,,,,920B,-2.63,e2e_100f,,yes,reports/920b-best9-noremain-ir-dct-interleaved-20260817.txt
 entropy,cost-c1c2-flag,inject-100f-920b,c,neon,2,1317,920B,0.16,e2e_100f,,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
+entropy,cost-c1c2-flag,kernel-bench-920b,,,2,1317,920B,1.095,kernel,ratio_neon_cand,,reports/entropy-kernel-920b-microbench-20260817.txt
 entropy,cost-c1c2-flag,round27,c,neon,2,1317,920B,0.998,kernel,replay_ratio,yes,reports/entropy-replay-920b-20260815.txt
 entropy,cost-coeff-nxn,inject-100f-920b,c,neon,23,110,920B,0.09,e2e_100f,,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
+entropy,cost-coeff-nxn,kernel-bench-920b,,,23,110,920B,1.09,kernel,ratio_neon_cand,,reports/entropy-kernel-920b-microbench-20260817.txt
 entropy,cost-coeff-nxn,neon,c,neon,268,110,920B,1.097,kernel,replay_ratio,yes,reports/entropy-replay-920b-20260815.txt
 entropy,cost-coeff-nxn,neon,c,neon,268,110,920B,1.097,kernel,replay_ratio,yes,reports/freeze-ablate-stale-bundle-bug-20260817.txt
 entropy,cost-coeff-remain,dfa-table,c,neon,0,80,920B,-0.25,e2e_30f,replay_ratio,yes,reports/entropy-replay-920b-20260815.txt
 entropy,cost-coeff-remain,dfa-table,c,neon,0,80,920B,1.2,kernel,replay_ratio,yes,reports/entropy-replay-920b-20260815.txt
 entropy,cost-coeff-remain,inject-100f-920b,c,neon,0,80,920B,0.23,e2e_100f,,yes,reports/entropy-remain-920b-interleaved-20260817.txt
+entropy,cost-coeff-remain,kernel-bench-920b,,,0,80,920B,0.944,kernel,ratio_neon_cand,,reports/entropy-kernel-920b-microbench-20260817.txt
 dct,dct16,hand-neon,sve2,neon,1946,,N1,-0.93,e2e_30f,ticks_pct,yes,docs/64-sve128-neon-migration-plan-20260816.md
 dct,dct16,hand-neon,sve2,neon,1946,,N1,-27.3,kernel,ticks_pct,yes,docs/64-sve128-neon-migration-plan-20260816.md
 dct,dct16,ir-neon,sve2,neon,1941,,710,-15.4,kernel,ticks_pct,yes,docs/65-ir-granularity-audit-20260816.md
@@ -107,5 +111,6 @@ pixel,satd-8x4,satd8x4_B,neon,neon,38,,N1,675.0,kernel,ticks,yes,reports/ago-m2-
 pixel,satd-8x4,satd8x4_C,neon,neon,38,,920B,1863.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 pixel,satd-8x4,satd8x4_C,neon,neon,38,,N1,668.0,kernel,ticks,yes,reports/ago-m2-expanded-ranking-20260816.txt
 entropy,scan-pos-last,inject-100f-920b,neon,neon,20,100,920B,-1.23,e2e_100f,,yes,reports/entropy-scan-920b-interleaved-20260817.txt
+entropy,scan-pos-last,kernel-bench-920b,,,20,100,920B,1.147,kernel,ratio_neon_cand,,reports/entropy-kernel-920b-microbench-20260817.txt
 entropy,scan-pos-last,rbit-pext,neon,neon,20,100,920B,1.5,kernel,ratio_neon_cand,yes,reports/freeze-ablate-stale-bundle-bug-20260817.txt
 entropy,scan-pos-last,rbit-pext,neon,neon,20,100,920B,1.5,kernel,ratio_neon_cand,yes,reports/freeze-ablate-stale-bundle-bug-20260817.txt
