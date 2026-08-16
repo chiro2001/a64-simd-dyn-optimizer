@@ -76,6 +76,21 @@ zip 扩展 → 与 diff 的 5 类统计。差异仅在 dot 降级：
 lowering。完整 saoCuStatsE0 DAG 提取列为下一增量（含 sign/edge、
 count 的 vpadal 路径与 reduce）。
 
+### SAO E0 64x1 DAG PoC（2026-08-16 完成）
+
+- `sao_e0_op_ir.py`：完整宽度无关 DAG（209 ops）：4 个 16 块 ×
+  （edge → 5×vceq mask → vpadal_s8 count + vzip 扩展 + dot_stats
+  [lo/hi] → vpadal_s16 stats）+ reduce_eo_stats（vpadd/vpaddl +
+  memory subtract + 标量尾项）；
+- `sao_e0_emit.py`：纯 NEON 发射（dot_stats → vmul/vmla 路径）；
+  lane_defuse 新增 vceq/vpadal/vzip/dot/vpadd/store_sub 等语义；
+- 门禁：vs 上游 `saoCuStatsE0_neon` 20k **0 失配**（QEMU vq=1 与
+  vq=2，VL 无关）；
+- 计数：IR 213/226 vs 现有 SVE2 优化候选 165/182——差值来自 NEON
+  路径（vpadal count + vmul/vmla stats）vs SVE2 的 svhistseg +
+  sdot.d；同一 DAG 的 SVE dot 降级与 histseg 优化列为下一增量；
+- 测试：`tools/test_sao_e0.py`。
+
 ## 3. 后续推广路线
 
 1. satd/sa8d 其余形状（16x16/16x32 等，与 sa8d16 候选衔接）；

@@ -41,6 +41,16 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 8, ()
     if kind == "load_diff":
         return 8, ()
+    if kind == "load_diff16":
+        return 8, ()
+    if kind == "dup16":
+        return 8, ()
+    if kind == "dup32":
+        return 4, ()
+    if kind == "edge":
+        return 16, ()
+    if kind == "load32":
+        return 4, ()
     if kind == "permute":
         pk = attrs["kind"]
         if pk == "rev16":
@@ -95,9 +105,39 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 8, (_e(8), _e(8))
     if kind == "max":
         return 8, (_e(8), _e(8))
+    if kind == "vceq":
+        return 16, (_e(16),)
+    if kind == "vpadal_s8":
+        pairs = tuple((2 * j, 2 * j + 1) for j in range(8))
+        return 8, (_e(8), pairs)
+    if kind == "vzip1_s8":
+        m0 = tuple((j // 2,) if j % 2 == 0 else () for j in range(16))
+        m1 = tuple((j // 2,) if j % 2 == 1 else () for j in range(16))
+        return 16, (m0, m1)
+    if kind == "vzip2_s8":
+        m0 = tuple((8 + j // 2,) if j % 2 == 0 else () for j in range(16))
+        m1 = tuple((8 + j // 2,) if j % 2 == 1 else () for j in range(16))
+        return 16, (m0, m1)
+    if kind == "dot_stats":
+        if len(op.inputs) == 3:
+            return 8, (_e(8), _e(8), _e(8))
+        return 8, (_e(8), _e(8))
+    if kind == "vpadal_s16":
+        pairs = tuple((2 * j, 2 * j + 1) for j in range(4))
+        return 4, (_e(4), pairs, pairs)
     if kind in ("add", "sub"):
         n = 8 if attrs["elem"] in ("s16", "u16") else 4
         return n, (_e(n), _e(n))
+    if kind == "vpadd_s16":
+        m = ((0, 1), (2, 3), (4, 5), (6, 7), (), (), (), ())
+        m2 = ((), (), (), (), (0, 1), (2, 3), (4, 5), (6, 7))
+        return 8, (m, m2)
+    if kind == "vpadd_s32":
+        m = ((0, 1), (2, 3), (), ())
+        m2 = ((), (), (0, 1), (2, 3))
+        return 4, (m, m2)
+    if kind == "vpaddl_s16":
+        return 4, (((0, 1), (2, 3), (4, 5), (6, 7)),)
     if kind == "neon_narrow4":
         return 4, (_e(4),)
     if kind == "neon_combine":
@@ -135,8 +175,16 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (_e(4), ((0, 1), (2, 3), (4, 5), (6, 7)))
     if kind == "vaddv":
         return 1, (((0, 1, 2, 3),),)
+    if kind == "vaddv_s16":
+        return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
+    if kind == "vaddv_s32":
+        return 1, (((0, 1, 2, 3),),)
     if kind == "vaddlv":
         return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
+    if kind == "store_sub32":
+        return 4, (_e(4), _e(4))
+    if kind == "scalar_sub":
+        return 1, (((0,),),)
     if kind == "store":
         # store consumes all 4 input lanes (output lane coords in attrs).
         return 4, (_e(4),)
