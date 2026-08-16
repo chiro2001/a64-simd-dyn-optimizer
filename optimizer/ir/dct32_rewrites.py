@@ -14,6 +14,7 @@ import re
 from typing import Dict, List, Tuple
 
 from dct32_op_ir import Op
+from dot_ir import canonicalize_dot_ops, dot_summary, legal_lowerings
 
 
 def _parse_m(out: str) -> int:
@@ -998,6 +999,35 @@ def rewrite_merge_narrow8(ops: List[Op]) -> List[Op]:
 
 
 REWRITES["merge_narrow8"] = rewrite_merge_narrow8
+
+
+def rewrite_canonicalize_dot(ops: List[Op]) -> List[Op]:
+    """Canonicalize dot_segment/mul_reduce/neon_mul into typed `dot`
+    nodes (dot_ir).  The canonical view is lowering-agnostic: SDOT.d,
+    SMULLB/SMLALB, VMULL/VMLAL and unpk+SMUL/mul+saddv are one graph
+    node; instruction search picks a lowering via legal_lowerings().
+    """
+    return canonicalize_dot_ops(ops)
+
+
+REWRITES["canonicalize_dot"] = rewrite_canonicalize_dot
+
+
+def dot_lowering_report(ops: List[Op]) -> Dict:
+    """Per-dot lowering counts plus legal alternatives for reporting."""
+    canon = canonicalize_dot_ops(ops)
+    report = {"dots": dot_summary(canon)}
+    report["alternatives"] = {}
+    for op in canon:
+        if op.kind != "dot":
+            continue
+        key = "%s/%s/%s" % (op.attrs["a_ty"], op.attrs["b_ty"],
+                            op.attrs["acc_ty"])
+        report["alternatives"].setdefault(key, set()).add(
+            op.attrs["lowering"])
+    report["alternatives"] = {
+        k: sorted(v) for k, v in report["alternatives"].items()}
+    return report
 
 
 def apply_rewrites(ops: List[Op], names: List[str]) -> List[Op]:
