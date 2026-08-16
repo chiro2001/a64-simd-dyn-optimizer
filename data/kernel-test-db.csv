@@ -70,6 +70,7 @@ dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct3
 dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
+interp8-hpp-i8mm-shapes-microbench,2026-08-17,,interp8-hpp,,i8mm-vs-simplified-dot,,,,,,,,,,920B,ratio_i8mm_vs_simplified_dot,1.19..2.54,,,,,reports/interp8-i8mm-920b-e2e-20260817.txt
 interp8-16x16-i8mm,,,interp8-hpp-16x16,,i8mm,,,kernels/interp8-16/candidates/best_sve2_i8mm.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/interp8-i8mm-gate-20260817.txt
 interp8-hpp-16x16,2026-08-16,014b997,interp8-hpp-16x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1013,1105,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-16x16-sve-i8mm,2026-08-17,,interp8-hpp-16x16,,sve-i8mm,,,kernels/interp8-16/candidates/best_sve_i8mm.cpp,,,real,20000,0,20k-diff-real,920B,ratio_vs_dotprod,0.31,,,,,reports/sve-i8mm-920b-20260817.txt
@@ -97,6 +98,7 @@ interp8-hps-32x32-inline-sve2,,,interp8-hps-32x32,,inline-sve2,,,kernels/interp8
 interp8-hps-32x8-inline-sve2,,,interp8-hps-32x8,,inline-sve2,,,kernels/interp8-hps-32x8,96,,2,20000,0,20k-diff,,,,,,,,reports/interp8-hps-gate-20260817.txt
 interp8-hps-8x16-inline-sve2,,,interp8-hps-8x16,,inline-sve2,,,kernels/interp8-hps-8x16,61,,2,20000,0,20k-diff,,,,,,,,reports/interp8-hps-gate-20260817.txt
 interp8-hps-8x32-inline-sve2,,,interp8-hps-8x32,,inline-sve2,,,kernels/interp8-hps-8x32,61,,2,20000,0,20k-diff,,,,,,,,reports/interp8-hps-gate-20260817.txt
+interp8-i8mm-bundle-920b-30f,2026-08-17,,interp8-i8mm,bundle,7shape-920b,,,,,,,,,,920B,,,+0.87,,44..97,yes,reports/interp8-i8mm-920b-e2e-20260817.txt
 interp8-ir-9shapes-interleaved-100f-710-710-2026-08-16-cb644a4,2026-08-16,cb644a4,interp8-ir-9shapes,,interleaved-100f-710,c/neon,neon,build/710-interp8-only.so,,,,,,,710,,,,+0.08,-90..119,yes,reports/interp8-ir-710-20260816.txt
 interp8-ir-9shapes-interleaved-100f-920b-920B-2026-08-16-a529ee6,2026-08-16,a529ee6,interp8-ir-9shapes,,interleaved-100f-920b,c/neon,neon,build/ablate-interp8-920b-iab-inject,,,,,,,920B,,,,+3.08,645..720,yes,reports/interp8-ir-920b-20260816.txt
 interp8-ir-9shapes-ir-hpp-100f-920B-2026-08-16-e3d6412,2026-08-16,e3d6412,interp8-ir-9shapes,,ir-hpp-100f,c/neon,neon,kernels/interp8/candidates/best_ir.cpp,,,,,,,920B,,,,-1.55,UNCONFIRMED,yes,reports/interp8-ir-920b-20260816.txt

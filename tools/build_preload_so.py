@@ -444,6 +444,20 @@ INTERP8_HPP_IR_KERNELS = {
     "interp8-64x32", "interp8-64x64",
 }
 
+# interp8 hpp shapes with a gated NEON I8MM candidate (vusmmlaq,
+# reports/interp8-i8mm-gate-20260817.txt + extra shapes).  Enabled with
+# AGO_I8MM=1; on 920B the upstream dispatch is dotprod and the i8mm
+# kernel measures ~1.33x faster (reports/sve-i8mm-920b-20260817.txt).
+INTERP8_HPP_I8MM_KERNELS = {
+    "interp8": (8, 8),
+    "interp8-16": (16, 16),
+    "interp8-32": (32, 32),
+    "interp8-16x8": (16, 8),
+    "interp8-8x16": (8, 16),
+    "interp8-32x16": (32, 16),
+    "interp8-16x32": (16, 32),
+}
+
 
 def luma_pu(w, h):
     return "LUMA_%dx%d" % (w, h)
@@ -673,6 +687,12 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
         field = _interp_field(kernel)
         if shape and field and (shape[0], shape[1]) in I444_PU_SHAPES:
             ret, params = _interp_type(kernel)
+            if kernel in INTERP8_HPP_I8MM_KERNELS and \
+                    os.environ.get("AGO_I8MM") == "1":
+                w, h = INTERP8_HPP_I8MM_KERNELS[kernel]
+                add("pu[%s].%s" % (luma_pu(*shape), field), ret, params,
+                    "dynopt_interp8_hpp_%dx%d_i8mm" % (w, h))
+                return out
             add("pu[%s].%s" % (luma_pu(*shape), field), ret, params)
         return out
     if kernel.startswith("interp4"):
@@ -893,6 +913,17 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel in INTERP8_HPP_I8MM_KERNELS and \
+            os.environ.get("AGO_I8MM") == "1":
+        # Gated NEON I8MM candidates (vusmmlaq).  Square shapes have
+        # per-shape files; non-square shapes are emitted per-kernel from
+        # the shared extra template in try_generate_specialized.
+        w, h = INTERP8_HPP_I8MM_KERNELS[kernel]
+        if (w, h) in ((8, 8), (16, 16), (32, 32)):
+            p = os.path.join(d, "best_sve2_i8mm.cpp")
+            if os.path.exists(p):
+                return [p]
+        return []
     if kernel in ("sad", "mc", "ssd") and \
             os.environ.get("AGO_IR_ASM") == "1":
         # IR-driven asm-family candidates (docs/66): upstream-exact.
@@ -1145,6 +1176,21 @@ def try_generate_specialized(kernel, isa, workdir):
         man = load_manifest(kernel)
     except Exception:
         man = {}
+    if kernel in INTERP8_HPP_I8MM_KERNELS and \
+            os.environ.get("AGO_I8MM") == "1":
+        w, h = INTERP8_HPP_I8MM_KERNELS[kernel]
+        if (w, h) not in ((8, 8), (16, 16), (32, 32)):
+            path = os.path.join(workdir, kernel + "-i8mm-0.cpp")
+            with open(path, "w") as f:
+                f.write("#define I8MM_ONLY_W %d\n"
+                        "#define I8MM_ONLY_H %d\n"
+                        "#include \"%s\"\n" % (
+                            w, h,
+                            os.path.join(
+                                ROOT, "kernels/interp8/candidates/"
+                                      "best_sve2_i8mm_extra.cpp")))
+            return [path]
+        return []
     if kernel == "cost-c1c2-flag":
         try:
             from emit_cost_c1c2_flag_sve2_shared import emit as emit_c1
@@ -1419,7 +1465,11 @@ def main():
                            kernel.replace("/", "_") + ".o")
         cc = [args.cxx, "-fPIC"] + args.opt.split() + common + includes
         if args.isa:
-            cc += ["-march=" + ISA_MARCH[args.isa]]
+            march = ISA_MARCH[args.isa]
+            if os.environ.get("AGO_I8MM") == "1" and any(
+                    k in INTERP8_HPP_I8MM_KERNELS for k in wanted):
+                march += "+i8mm"
+            cc += ["-march=" + march]
         if os.environ.get("AGO_PURE_SVE") == "1":
             cc += ["-msve-vector-bits=128"]
         compiled = False

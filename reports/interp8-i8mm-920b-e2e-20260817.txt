@@ -1,0 +1,67 @@
+# interp8 hpp NEON I8MM 注入 920B E2E A/B（2026-08-17）
+
+## 背景
+
+- 920B（Kunpeng 920）支持 `i8mm`，但上游 luma_hpp 只 dispatch
+  `interp8_horiz_pp_dotprod`；710 构建在支持 i8mm 时 dispatch
+  `interp8_horiz_pp_i8mm`——因此 920B 是“把 dotprod 换成 i8mm”的
+  潜在赢点；
+- 候选：9 形状已门禁的 NEON I8MM（vusmmlaq）模板
+  （best_sve2_i8mm.cpp / best_sve2_i8mm_extra.cpp）；
+- 注入：build_preload_so 新增 AGO_I8MM=1（7 形状：8x8/16x8/8x16/
+  16x16/32x16/16x32/32x32，entry_sym 覆盖 + i8mm march + 非方形
+  单形状生成器），compile-in 注入 920B（git apply + ninja relink），
+  `dynopt: patched 7` 确认。
+
+## 方法
+
+- 5+5 交错（随机顺序），30f 1080p，taskset -c 0，swap
+  libx265.so.216，date +%s%N 计时，md5 校验；
+- perf record（F999）对比 baseline 与注入版的 interp8 hpp 占比；
+- kernel 级预检：7 形状 CNTVCT 微基准（i8mm vs 自嵌简化 dotprod）。
+
+## 结果（30f，5+5）
+
+| 轮 | 变体 | ms | md5 |
+| --- | --- | ---: | --- |
+| 1 | base | 8109 | 1b7e6e62b23490cd2f1167307e682b5a |
+| 2 | inj | 8206 | 同 |
+| 3 | inj | 8220 | 同 |
+| 4 | base | 8132 | 同 |
+| 5 | base | 8143 | 同 |
+| 6 | inj | 8187 | 同 |
+| 7 | base | 8105 | 同 |
+| 8 | inj | 8188 | 同 |
+| 9 | inj | 8203 | 同 |
+| 10 | base | 8140 | 同 |
+
+base 中位 8132 ms；inj 中位 8203 ms；inj 慢 +0.87%（配对差中位
+83 ms，范围 44..97）；10/10 md5 bit-exact。
+
+perf 对比（interp8 hpp 相关符号占比）：
+- baseline：dotprod 32x32 0.71% + 16x16 0.31% + 8x8 0.30% +
+  64x64 0.11% ≈ 1.6%；
+- 注入版：i8mm 32x32 1.33% + 16x16 0.58% + 8x8 0.60% + 未 patch
+  的 64x64 dotprod 0.15% ≈ 3.7%——**注入的 i8mm 模板在真实调度下
+  明显慢于上游 dotprod**。
+
+## 关键教训（微基准基线缺陷）
+
+初版 kernel 微基准里 dotprod 基线是“逐行、无 perm 复用”的简化
+副本，7 形状 i8mm 全胜（ratio 1.19–2.54，-O2/-O3 一致）——与
+真实 E2E 相反。真实 x265 dotprod 是 4 行批处理（load_u8x16xn<4>）
+且 W≥32 路径带 perm 复用（filter8_8_pp_reuse），明显更快；而
+i8mm 模板虽也 4 行批处理，但在 Kunpeng 920 上 vusmmla + 额外
+correction 路径不敌 dotprod 的 vdot 路径。**kernel 级对比必须用
+与真实调度等价的实现（含批处理与复用），不能简化基线。**
+
+## 结论
+
+- NEON I8MM 注入 920B **bit-exact 但 E2E +0.87% 慢**（CI 不含 0），
+  perf 佐证 i8mm 实际更慢——**按 round-0028 验收纪律归档，默认
+  不注入**；
+- 710 上游已 dispatch i8mm（同源无注入空间）；920B 走 dotprod 是
+  合理选择——两条 i8mm 实机路线（SVE svmmla、NEON vusmmla）均已
+  归档，证据入 DB；
+- i8mm 候选文件与门禁保留为已验资产；后续只在“自研 SVE/NEON
+  原生布局显著优于上游 dotprod 微基准”时才重开。
