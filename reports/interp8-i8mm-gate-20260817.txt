@@ -1,0 +1,29 @@
+# interp8 hpp 16x16 i8mm 候选门禁（2026-08-17）
+
+## 方法
+
+- 候选：`kernels/interp8-16x16/candidates/best_sve2_i8mm.cpp`
+  （自 x265 common/aarch64/filter-neon-i8mm.cpp 提取的最小化
+  interp8_horiz_pp_matmul<*,16,16>，vusmmlaq_s32 矩阵乘）；
+  `-march=armv8.2-a+i8mm` 编译；
+- 参考：x265 `interp8_horiz_pp_dotprod<16,16>`
+  （build/x265-8-clang-sve/libx265.a）；
+- 协议：随机 u8 输入，strides {16,32,64}，coeffIdx {1,2,3}，
+  20000 例，QEMU sve-max-vq=2。
+
+## 结果
+
+| 指标 | 值 |
+| --- | ---: |
+| 20k 差分 | **0 失配** |
+| fused_uop（16x16 kernel） | 88 |
+| total insns | 158 |
+
+## 结论
+
+1. 首个 i8mm 目标候选（interp8 hpp 16x16）upstream-exact（0
+   失配），fused_uop 88——比同形状 sdot-h 候选（此前 ~100+）更少；
+2. backlog “filter i8mm/dotprod” 第一块落地：i8mm 计算路径可用
+   （920B/950 有 I8MM，待实机 kernel/E2E 对比）；
+3. 其余形状（8x8/32x32 等）与 NEON i8mm、SVE i8mm（svmmla）目标
+   按同法推广。

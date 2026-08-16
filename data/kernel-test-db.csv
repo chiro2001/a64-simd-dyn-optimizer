@@ -70,6 +70,7 @@ dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct3
 dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
+interp8-16x16-i8mm,,,interp8-16x16,,i8mm,,,kernels/interp8-16x16/candidates/best_sve2_i8mm.cpp,88,,2,20000,0,20k-diff,,,,,,,,reports/interp8-i8mm-gate-20260817.txt
 interp8-hpp-16x16,2026-08-16,014b997,interp8-hpp-16x16,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1013,1105,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-16x32,2026-08-16,014b997,interp8-hpp-16x32,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,1895,2194,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 interp8-hpp-16x8,2026-08-16,014b997,interp8-hpp-16x8,filter,ir,c/neon,neon,optimizer/ir/interp8_emit.py,429,463,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
