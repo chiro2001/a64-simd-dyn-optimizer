@@ -11,7 +11,7 @@
 - 专题：docs/63（950/920B 内网测试）、docs/64（SVE128/NEON 迁移）、
   docs/65（IR 粒度审计）、docs/66（多 ISA 家族全景）、docs/67
   （kernel 测试数据库）、docs/68（工具用法手册，含稳定性标注）、
-  docs/52（AGO 规划）。
+  docs/69（契约语料库，round-0026 P2）、docs/52（AGO 规划）。
 - 实测报告：`reports/`；顶级模型建议：`expert-advice/round-NNNN/`
   （含 `decision.md`，执行 agent 必须处理每条建议的 accept/reject/
   defer）。
@@ -33,6 +33,11 @@
    bootstrap95 范围、空=未计算；bit_exact 填 same-machine md5 门
    结果（策略放行项填 `no (policy)`）。
 5. gate-only 结果 machine 留空；`report` 字段必须指向可读来源。
+
+契约语料库（`data/contract-corpus.csv` + `tools/contract_corpus.py`）
+同款规则：新 kernel/region 进搜索前先登记契约（effects/alias/
+rounding/tail/VL/proof_type），改动语义必须同步更新并过门禁；
+`export-md` 后与代码同一 commit（docs/69）。
 
 示例：
 

@@ -1,0 +1,18 @@
+id,date,family,kernel,region,input_isa,output_isa,vl_supported,effects,alias,rounding,tail,dataflow_kind,proof_type,correctness_gate,status,notes
+,,dct,dct8,8x8,sve2/neon,sve2/neon,128;256,read src[rows*stride s16]; write dst,none,exact (integer butterfly+dot),none (fixed 8x8),butterfly,upstream-exact,20k diff; TestBenchLite,measured,950 E2E bundle dct8/16/32 +0.79%
+,,dct,dct16,16x16,sve2/neon,sve2/neon,128;256,read src; write dst,none,exact,none,butterfly+dot,upstream-exact,200k diff; TestBenchLite 5-seed,measured,op895 +29% vs SVE on 950
+,,dct,dct32,32x32,sve2/neon,sve2/neon,128;256,read src; write dst,none,exact,none,butterfly+dot,upstream-exact (opbase); C-ref exact (op4032),200k diff; TestBenchLite,measured,"op4032 non-bit-exact, policy"
+,,pixel,satd-8,8x8,c/neon,neon,128;256,read 2 planes; write int sum,none,exact (hadamard),none,hadamard,upstream-exact,20k vq=1/2,gated,IR candidate 77 fused
+,,pixel,sa8d16,16x16,c/neon,neon,128;256,read 2 planes; write int,none,exact,none,hadamard+reduce,upstream-exact,20k vq=1/2,measured,920B kernel +4% (cloud +12% not reproduced)
+,,sao,sao-stats-e0,64x1,sve2,sve2,128;256,read int16 coeff + uint8 rec; accumulate int32 stats (stateful),none,exact,adapter guard width!=64 fallback,stats,upstream-exact,20k vq=1/2,measured,710 kernel -15.0%
+,,asm,sad-16,16x16,neon,neon,128;256,read 2 planes; write int,none,exact (vabal sum),none,reduce,upstream-exact,20k vq=1/2,gated,IR 66 fused
+,,asm,mc-16,16x16 avg_pp,neon,neon,128;256,read 2 planes; write dst,src/dst disjoint,exact (urhadd),none,elementwise,upstream-exact,20k vq=1/2,gated,IR 64 fused
+,,asm,ssd-16,16x16 sse_pp,neon,neon,128;256,read 2 planes; write int,none,exact (vabdl+vmull),none,reduce,upstream-exact,20k vq=1/2,gated,IR 132 fused
+,,asm,pixel-var-16,16x16,neon,neon,128;256,read plane; write sum|sumsq,none,exact,none,reduce,scalar-ref exact,3000 scalar cases,gated,IR 138 ops
+,,filter,interp8-hpp,8x8,c/neon,neon,128;256,read src 8 win/row (off -3..+4); write dst WxH,src/dst disjoint strides,"saturating narrow (vqrshrun shift 6, IF_FILTER_PREC)",edge guard; block widths 8,fir-8tap,upstream-exact per phase,20k vq=1/2,measured,IR 243 fused; 920B/710 E2E bundle
+,,filter,interp8-hpp,16x16,c/neon,neon,128;256,read src 8 win/row; write dst,src/dst disjoint,saturating narrow,edge guard; block widths 16,fir-8tap,upstream-exact per phase,20k vq=1/2,measured,IR 1013 fused
+,,filter,interp8-hpp,64x64,c/neon,neon,128;256,read src 8 win/row x4 chunks; write dst,src/dst disjoint,saturating narrow,edge guard; block widths 64,fir-8tap,upstream-exact per phase,20k vq=1/2,measured,IR 12001 fused; 9 shapes in E2E bundle
+,,entropy,scan-pos-last,CG16,neon,neon,128;256,read coeffs scan-order; write coeffSign/Flag/Num,none,exact,CG boundary per numSig,fsm/bitpack,upstream-exact,on-machine 20k; production per-call,measured,920B E2E -1.61%/-1.80%
+,,entropy,cost-coeff-remain,4x4 slice,c,neon,128;256,read absCoeff[16]; return cost (pure),none,exact (golomb-rice table),idx<8 vs >=8 buckets,table/DFA,exhaustive 5x3x256 table,production 2.39M calls,measured,replay +20%; E2E +0.25pp
+,,entropy,cost-coeff-nxn,4x4 slice,c,neon,128;256,read coeffs+ctx; write absCoeff/baseCtx (in-place compaction),ctx in-place,exact,soff=15 boundary (ctx tail update),scan/stateful,upstream-exact,production 5.78M calls,measured,replay +9.7%; E2E neutral
+,,entropy,cost-c1c2-flag,n=1..8,c,neon,128;256,read absCoeff; write ctx (stateful),ctx in-place,exact,n=1..8 leaves,fsm,upstream-exact,production 6.47M calls,measured,replay 0.998 neutral
