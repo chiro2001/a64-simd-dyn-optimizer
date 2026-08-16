@@ -462,13 +462,22 @@ def _odd_sdot_d(kk, narrow_batch=4, constant_layout="derived-replicated",
     return body
 
 
-def _grouped_leaf_cpp(leaf_ex=True):
+def _grouped_leaf_cpp(leaf_ex=True, eeo16=False):
     leaf = []
     for rr in range(4):
         r = rr
         eo16 = ("svint16_t E16_%(r)d = svadd_s16_x(p16, lo%(r)d, rv%(r)d);\n"
                 "            EO16_%(r)d = svsub_s16_x(p16, E16_%(r)d, "
                 "svrev_s16(E16_%(r)d));\n" % {"r": r}) if leaf_ex else ""
+        if leaf_ex and eeo16:
+            eo16 += (
+                "            svint16_t E16rr_%(r)d = svrev_s16(E16_%(r)d);\n"
+                "            svint16_t EE16_%(r)d = svadd_s16_x("
+                "p16, E16_%(r)d, E16rr_%(r)d);\n"
+                "            svint16_t EEr16_%(r)d = svtbl_s16("
+                "EE16_%(r)d, rev8);\n"
+                "            EEO16_%(r)d = svsub_s16_x("
+                "p16, EE16_%(r)d, EEr16_%(r)d);\n" % {"r": r})
         leaf.append(("""\
         {
             const int16_t* s = src + (base + %(r)d) * stride;
@@ -664,7 +673,28 @@ def _grouped_k2_cpp(pass1_k2_slice=True, isa="sve2", legacy_ex=False):
     return "\n".join(k2)
 
 
-def _grouped_k4_cpp():
+def _grouped_k4_cpp(legacy_k4=False):
+    if legacy_k4:
+        slice = """\
+        svint16_t pk4 = svtbl2_s16(svcreate2_s16(EEO16_0, EEO16_1), i0);
+        svint16_t qk4 = svtbl2_s16(svcreate2_s16(EEO16_2, EEO16_3), i0);
+        svint16_t Xk4 = svtbl2_s16(svcreate2_s16(pk4, qk4), ilo);
+"""
+        loop = "\n".join(
+            """\
+        {
+            svint16_t cl = svld1_s16(p16, K4S[%d]);
+            svint16_t ch = svld1_s16(p16, K4S[%d] + 8);
+            svint64_t t = svdot_s64(zero64, Xk4, cl);
+            t = svdot_s64(t, Xk4, ch);
+            svint32_t lo = svuzp1_s32(svreinterpret_s32_s64(t),
+                                      svreinterpret_s32_s64(t));
+            svint16_t r = svrshrnb_n_s32(lo, shift);
+            svint16_t rz = svuzp1_s16(r, r);
+            svst1_s16(pg4h, dst + %d * 32 + base, rz);
+        }""" % (kk, kk, 8 * kk + 4)
+            for kk in range(4))
+        return slice + loop
     return "\n".join(
         """\
         {
@@ -724,18 +754,19 @@ def _grouped_idx_low_cpp(isa="sve2"):
 def _grouped_body_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                       narrow_batch=4,
                       constant_layout="derived-replicated", isa="sve2",
-                      acc_split=1, leaf_ex=True, legacy_ex=False):
+                      acc_split=1, leaf_ex=True, legacy_ex=False,
+                      legacy_k4=False):
     """Assemble the grouped pass32_impl body from per-mechanism blocks
     (leaf / odd slices / k2 EX / odd / k2 / k4 / k0), each selected by an
     independent plan axis. This is the P1 increment-3 structure: no single
     composite function owns all mechanisms."""
-    leaf = _grouped_leaf_cpp(leaf_ex)
+    leaf = _grouped_leaf_cpp(leaf_ex, legacy_k4)
     slices = _grouped_slices_cpp(isa)
     odd = _grouped_odd_cpp(odd_lowering, narrow_batch, constant_layout, isa,
                            acc_split)
     ex = _grouped_ex_cpp(isa) if leaf_ex else ""
     k2 = _grouped_k2_cpp(pass1_k2_slice, isa, legacy_ex)
-    k4 = _grouped_k4_cpp()
+    k4 = _grouped_k4_cpp(legacy_k4)
     k0 = _grouped_k0_cpp()
     return """\
 template<int shift>
@@ -779,8 +810,12 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 %s
     }
 }
-""" % (_grouped_prologue_cpp(constant_layout) + _grouped_idx_low_cpp(isa),
-       "        svint16_t EO16_0, EO16_1, EO16_2, EO16_3;\n"
+""" % (_grouped_prologue_cpp(constant_layout) + _grouped_idx_low_cpp(isa)
+       + ("\n    const svuint16_t rev8 = svld1_u16(p16, IDX_REV8);"
+          if legacy_k4 else ""),
+       ("        svint16_t EO16_0, EO16_1, EO16_2, EO16_3;\n"
+        + ("        svint16_t EEO16_0, EEO16_1, EEO16_2, EEO16_3;\n"
+           if legacy_k4 else ""))
        if leaf_ex else "",
        leaf, (slices if odd_lowering == "sdot.d" else ""),
        ex, odd, k2, k4, k0)
@@ -788,11 +823,12 @@ static void pass32_impl(const int16_t* src, int16_t* dst, intptr_t stride)
 
 def pass_grouped_cpp(pass1_k2_slice=True, odd_lowering="sdot.d",
                      narrow_batch=4, constant_layout="derived-replicated",
-                     isa="sve2", acc_split=1, leaf_ex=True, legacy_ex=False):
+                     isa="sve2", acc_split=1, leaf_ex=True, legacy_ex=False,
+                     legacy_k4=False):
     """Backward-compatible wrapper kept for the search driver's v3 preset."""
     return _grouped_body_cpp(pass1_k2_slice, odd_lowering, narrow_batch,
                              constant_layout, isa, acc_split, leaf_ex,
-                             legacy_ex)
+                             legacy_ex, legacy_k4)
 
 
 def _assemble(func_name, pass_body, call, isa="sve2"):
@@ -863,7 +899,8 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
                  pass1_k2_slice=True, odd_lowering="sdot.d",
                  narrow_batch=4,
                  constant_layout="derived-replicated", isa="sve2",
-                 acc_split=1, leaf_ex=True, legacy_ex=False):
+                 acc_split=1, leaf_ex=True, legacy_ex=False,
+                 legacy_k4=False):
     """Plan-driven grouped DCT32 emitter (P1 increment 3).
 
     Used by layout_ir.lower() for plans produced by atomic rewrites; it
@@ -875,18 +912,19 @@ def emit_grouped(func_name="dynopt_dct32_sve2_shared",
     return _assemble(func_name,
                      _grouped_body_cpp(pass1_k2_slice, odd_lowering,
                                        narrow_batch, constant_layout, isa,
-                                       acc_split, leaf_ex, legacy_ex),
+                                       acc_split, leaf_ex, legacy_ex,
+                                       legacy_k4),
                      call, isa)
 
 
 def emit(func_name="dynopt_dct32_sve2_shared", layout="v1",
          pass1_k2_slice=True, odd_lowering="sdot.d", narrow_batch=4,
          constant_layout="derived-replicated", isa="sve2", acc_split=1,
-         leaf_ex=True, legacy_ex=False):
+         leaf_ex=True, legacy_ex=False, legacy_k4=False):
     if layout == "v3":
         return emit_grouped(func_name, pass1_k2_slice, odd_lowering,
                             narrow_batch, constant_layout, isa, acc_split,
-                            leaf_ex, legacy_ex)
+                            leaf_ex, legacy_ex, legacy_k4)
     if layout in ("v2", "v2b"):
         pass_body = pass_rowmajor_cpp(lazy_c24=(layout == "v2b"))
         call = ("    pass32_impl(src, coef, srcStride, shift1);\n"

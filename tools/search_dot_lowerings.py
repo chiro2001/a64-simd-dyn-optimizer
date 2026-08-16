@@ -54,15 +54,15 @@ def main():
         # The legacy family first rewrites pass2 k2 mul_reduce into s16
         # EX slices (same graph, sdot.d lowering); then the canonical
         # selector sees s16/s16/s64 dots and chooses sdot.d.
-        dag = apply32(ops, ["legacy_k2"]) if contract == \
+        dag = apply32(ops, ["legacy_k2", "legacy_k4"]) if contract == \
             "legacy-internal-exact" else ops
         canon, rep = select_dot_lowerings(dag, "sve2", contract, sve2=True)
         flags = derive_dot_lowering_flags(canon)
         p = dct32_v31_plan()
         p.lowering["legacy_ex"] = flags["legacy_ex"]
-        # legacy_k4 is op-level only (emitter not parameterized yet).
+        p.lowering["legacy_k4"] = flags["legacy_k4"]
         src = lower(p)
-        if not flags["legacy_ex"]:
+        if not flags["legacy_ex"] and not flags["legacy_k4"]:
             ok, srep = check_source(p, src)
             if not ok:
                 print("source-proof FAIL %s: %r" % (contract, srep))

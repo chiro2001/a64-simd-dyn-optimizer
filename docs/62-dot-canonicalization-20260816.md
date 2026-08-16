@@ -104,12 +104,14 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
 | --- | --- | ---: | ---: |
 | upstream-exact | legacy_ex=0 | **8292** | 0 |
 | legacy-internal-exact | legacy_ex=1（canonical 选出 sdot.d） | **7989（-303）** | 0（稀有回绕由 TestBenchLite 门禁） |
+| legacy-internal-exact | legacy_ex=1 + **legacy_k4=1** | **7820（-472）** | 0 |
 
 - `measure()` 新增 `allow_mismatch`：契约族变体可在稀有失配下继续
   出 fused_uop（verify 退出码 1 放行），供 legacy 族测量；
-- 已知缺口：`legacy_k4` 尚未参数化进 grouped 发射器（op 级 rewrite
-  已有）；source-proof 期望表需 legacy 感知 plan 模型（当前 legacy
-  变体跳过该静态层，由编译+差分+轨迹兜底）。
+- `legacy_k4` 已参数化进 grouped 发射器（leaf 生成 EEO16 s16 切片、
+  Xk4 tbl2 打包、sdot.d 循环），与 k2 组合后 8292 → 7820；
+- 已知缺口：source-proof 期望表需 legacy 感知 plan 模型（当前
+  legacy 变体跳过该静态层，由编译+差分+轨迹兜底）。
 
 ## 5. 使用示例
 

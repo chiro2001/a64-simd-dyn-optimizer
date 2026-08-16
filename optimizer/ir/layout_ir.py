@@ -168,7 +168,8 @@ def lower(plan: Plan) -> str:
         odd_lowering=lo.get("odd_lowering", "row-reduce"),
         narrow_batch=lo.get("narrow_batch", 1),
         constant_layout=lo.get("constant_layout", "canonical"),
-        legacy_ex=lo.get("legacy_ex", 0))
+        legacy_ex=lo.get("legacy_ex", 0),
+        legacy_k4=lo.get("legacy_k4", 0))
 
 
 def dct32_v31_plan() -> Plan:
