@@ -71,6 +71,109 @@ static inline svint16_t psv_addp_pair(svint16_t a, svint16_t b)
     svint16_t hi = svuzp2_s16(a, b);
     return svadd_s16_x(svptrue_pat_b16(SV_VL8), lo, hi);
 }
+
+// --- dct16 fused8 pure-SVE primitives (4-lane halves) ---
+static inline svbool_t psv_pg8_s16(void) { return svptrue_pat_b16(SV_VL8); }
+static inline svbool_t psv_pg4_s32(void) { return svptrue_pat_b32(SV_VL4); }
+static inline svbool_t psv_pg2_s64(void) { return svptrue_pat_b64(SV_VL2); }
+
+static inline svint32_t psv_load4_s32(const int32_t* p)
+{
+    svint32_t v;
+    asm volatile("ld1w {%0.s}, %1/z, [%2]"
+                 : "=w"(v)
+                 : "Upl"(svptrue_pat_b32(SV_VL4)), "r"(p));
+    return v;
+}
+
+static inline void psv_store4_s16(int16_t* p, svint16_t v)
+{
+    asm volatile("st1h {%0.h}, %1, [%2]"
+                 :
+                 : "w"(v), "Upl"(svptrue_pat_b16(SV_VL4)), "r"(p));
+}
+
+static inline svint16_t psv_get_lo4_s16(svint16_t x)
+{
+    static const uint16_t idx[8] = { 0, 1, 2, 3, 0, 0, 0, 0 };
+    return svtbl_s16(x, psv_load_idx(idx));
+}
+
+static inline svint16_t psv_get_hi4_s16(svint16_t x)
+{
+    static const uint16_t idx[8] = { 4, 5, 6, 7, 0, 0, 0, 0 };
+    return svtbl_s16(x, psv_load_idx(idx));
+}
+
+static inline svint32_t psv_saddl_s16(svint16_t a, svint16_t b)
+{
+    return svadd_s32_x(svptrue_pat_b32(SV_VL4),
+                       svunpklo_s32(a), svunpklo_s32(b));
+}
+
+static inline svint16_t psv_vmovn_s32(svint32_t x)
+{
+    // Truncating 32->16: take the low 16 bits of each lane (even lanes
+    // of the reinterpreted s16 view).
+    svint16_t r = svreinterpret_s16_s32(x);
+    return svuzp1_s16(r, r);
+}
+
+static inline svint32_t psv_vmovn_s64(svint64_t x)
+{
+    svint32_t r = svreinterpret_s32_s64(x);
+    return svuzp1_s32(r, r);
+}
+
+static inline svint16_t psv_combine4_s16(svint16_t a, svint16_t b)
+{
+    static const uint16_t idx[8] = { 0, 1, 2, 3, 8, 9, 10, 11 };
+    svuint16x2_t t = svcreate2_u16(svreinterpret_u16_s16(a),
+                                   svreinterpret_u16_s16(b));
+    return svreinterpret_s16_u16(svtbl2_u16(t, psv_load_idx(idx)));
+}
+
+static inline svint32_t psv_combine4_s32(svint32_t a, svint32_t b)
+{
+    static const uint32_t idx[4] = { 0, 1, 4, 5 };
+    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    svuint32x2_t t = svcreate2_u32(svreinterpret_u32_s32(a),
+                                   svreinterpret_u32_s32(b));
+    return svreinterpret_s32_u32(svtbl2_u32(t, i));
+}
+
+static inline svint32_t psv_addp4_s32(svint32_t a, svint32_t b)
+{
+    svint32_t lo = svuzp1_s32(a, b);
+    svint32_t hi = svuzp2_s32(a, b);
+    return svadd_s32_x(svptrue_pat_b32(SV_VL4), lo, hi);
+}
+
+static inline svint32_t psv_rev64_s32(svint32_t x)
+{
+    static const uint32_t idx[4] = { 1, 0, 3, 2 };
+    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
+}
+
+static inline svint32_t psv_rev32_s32(svint32_t x)
+{
+    static const uint32_t idx[4] = { 3, 2, 1, 0 };
+    svuint32_t i = svld1_u32(svptrue_pat_b32(SV_VL4), idx);
+    return svreinterpret_s32_u32(svtbl_u32(svreinterpret_u32_s32(x), i));
+}
+
+template <int S>
+static inline svint16_t psv_rshrn_s32(svint32_t x)
+{
+    svint32_t r = svasr_n_s32_x(svptrue_pat_b32(SV_VL4),
+                                svadd_s32_x(svptrue_pat_b32(SV_VL4), x,
+                                            svdup_s32_x(
+                                                svptrue_pat_b32(SV_VL4),
+                                                1 << (S - 1))), S);
+    svint16_t n = svreinterpret_s16_s32(r);
+    return svuzp1_s16(n, n);
+}
 """
 
 
