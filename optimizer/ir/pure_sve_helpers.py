@@ -192,6 +192,37 @@ static inline svint16_t psv_rshrn_s32(svint32_t x)
     svint16_t n = svreinterpret_s16_s32(r);
     return svuzp1_s16(n, n);
 }
+
+// --- 16-lane (full-VL) primitives for the VL=256 emitter ---
+static inline svint16_t psv16_load(const int16_t* p)
+{
+    return svld1_s16(svptrue_b16(), p);
+}
+
+static inline void psv16_store(int16_t* p, svint16_t v)
+{
+    svst1_s16(svptrue_b16(), p, v);
+}
+
+static inline svint16_t psv16_rev(svint16_t x)
+{
+    return svrev_s16(x);
+}
+
+static inline svint64_t psv16_sdot(svint64_t acc, svint16_t x, svint16_t y)
+{
+    return svdot_s64(acc, x, y);
+}
+
+static inline svint16_t psv16_rshrn6(svint32_t x)
+{
+    return svrshrnb_n_s32(x, 6);
+}
+
+static inline svint32_t psv16_rshrn_s64_12(svint64_t x)
+{
+    return svrshrnb_n_s64(x, 12);
+}
 """
 
 

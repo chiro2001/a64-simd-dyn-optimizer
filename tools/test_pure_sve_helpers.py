@@ -83,6 +83,60 @@ int main()
 """
 
 
+PSV16_SRC = r"""
+#include <arm_sve.h>
+#include <cstdint>
+#include <cstdio>
+""" + PURE_SVE_HELPERS + r"""
+extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
+                            int16_t* o, int64_t* s)
+{
+    svint16_t x = psv16_load(a), y = psv16_load(b);
+    psv16_store(o, psv16_rev(x));
+    svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
+    svst1_s64(svptrue_b64(), s, acc);
+}
+int main()
+{
+    const int16_t x[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    int16_t r[16]; int64_t s[4];
+    svint16_t v = psv16_load(x);
+    psv16_store(r, v);
+    long bad = 0;
+    for (int i = 0; i < 16; i++) if (r[i] != x[i]) bad++;
+    psv16_store(r, psv16_rev(v));
+    for (int i = 0; i < 16; i++)
+        if (r[i] != 15 - i) { bad++; printf("rev[%d]=%d exp %d\n",
+                                            i, r[i], 15 - i); }
+    svint64_t acc = psv_zero_s64();
+    acc = psv16_sdot(acc, v, v);
+    svst1_s64(svptrue_b64(), s, acc);
+    const int64_t e[4] = {14, 126, 366, 734};
+    for (int i = 0; i < 4; i++)
+        if (s[i] != e[i]) { bad++; printf("sdot[%d]=%lld exp %lld\n",
+                                          i, (long long)s[i],
+                                          (long long)e[i]); }
+    printf(bad ? "FAILED %ld\n" : "PASS\n", bad);
+    return bad != 0;
+}
+"""
+
+
+PSV16_SMOKE_SRC = r"""
+#include <arm_sve.h>
+#include <cstdint>
+""" + PURE_SVE_HELPERS + r"""
+extern "C" void psv16_smoke(const int16_t* a, const int16_t* b,
+                            int16_t* o, int64_t* s)
+{
+    svint16_t x = psv16_load(a), y = psv16_load(b);
+    psv16_store(o, psv16_rev(x));
+    svint64_t acc = psv16_sdot(psv_zero_s64(), x, y);
+    svst1_s64(svptrue_b64(), s, acc);
+}
+"""
+
+
 class PureSveHelpersTest(unittest.TestCase):
 
     def test_smoke_object_has_no_neon(self):
@@ -100,6 +154,7 @@ class PureSveHelpersTest(unittest.TestCase):
             [sys.executable,
              os.path.join(ROOT, "tools", "check_isa_level.py"),
              "--object", obj, "--level", "sve2", "--json", "--no-neon",
+             "--symbols", "psv16_smoke",
              "--objdump", "aarch64-linux-gnu-objdump"],
             capture_output=True, text=True)
         self.assertEqual(g.returncode, 0, g.stdout + g.stderr)
@@ -124,6 +179,40 @@ class PureSveHelpersTest(unittest.TestCase):
             qemu = "qemu-aarch64"
         run = subprocess.run([qemu, "-L", "/usr/aarch64-linux-gnu",
                               "-cpu", "max,sve-max-vq=1", binp],
+                             capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        self.assertIn("PASS", run.stdout)
+
+    def test_psv16_full_vl_under_qemu_vq2(self):
+        src = os.path.join(ROOT, "build", "tmp-psv16.cpp")
+        binp = os.path.join(ROOT, "build", "tmp-psv16")
+        obj = os.path.join(ROOT, "build", "tmp-psv16.o")
+        with open(src, "w") as f:
+            f.write(PSV16_SRC)
+        cxx = os.environ.get("CXX", "aarch64-linux-gnu-g++")
+        r = subprocess.run([cxx, "-O2", "-march=armv8.2-a+sve2",
+                            "-o", binp, src], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[:3000])
+        # gate: object must have zero NEON SIMD data instructions
+        smoke_src = os.path.join(ROOT, "build", "tmp-psv16-smoke.cpp")
+        with open(smoke_src, "w") as f:
+            f.write(PSV16_SMOKE_SRC)
+        rg = subprocess.run([cxx, "-c", "-O2", "-march=armv8.2-a+sve2",
+                             "-o", obj, smoke_src],
+                            capture_output=True, text=True)
+        self.assertEqual(rg.returncode, 0, rg.stderr[:3000])
+        g = subprocess.run(
+            [sys.executable, os.path.join(ROOT, "tools",
+                                          "check_isa_level.py"),
+             "--object", obj, "--level", "sve2", "--json", "--no-neon",
+             "--objdump", "aarch64-linux-gnu-objdump"],
+            capture_output=True, text=True)
+        d = json.loads(g.stdout)
+        self.assertEqual(d["neon_violations"], [], g.stdout + g.stderr)
+        qemu = os.environ.get("QEMU") or os.path.join(
+            ROOT, "build", "qemu-build", "qemu-aarch64")
+        run = subprocess.run([qemu, "-L", "/usr/aarch64-linux-gnu",
+                              "-cpu", "max,sve-max-vq=2", binp],
                              capture_output=True, text=True)
         self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
         self.assertIn("PASS", run.stdout)
