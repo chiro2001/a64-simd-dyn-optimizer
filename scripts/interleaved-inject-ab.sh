@@ -17,7 +17,7 @@ set -euo pipefail
 
 HOST="${1:?usage: interleaved-inject-ab.sh host labelA labelB [pairs]}"
 LABEL_A="${2:?}"
-LABEL_B="${3:?}"
+LABEL_B="${3:-}"
 PAIRS="${4:-8}"
 LABEL_C="${LABEL_C:-}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -43,10 +43,12 @@ package() { # package <label>
 }
 
 PKG_A=$(package "$LABEL_A")
-PKG_B=$(package "$LABEL_B")
+PKG_B=""
+[ -n "$LABEL_B" ] && PKG_B=$(package "$LABEL_B")
 PKG_C=""
 [ -n "$LABEL_C" ] && PKG_C=$(package "$LABEL_C")
-scp -o BatchMode=yes -o ServerAliveInterval=30 "$PKG_A" "$PKG_B" \
+scp -o BatchMode=yes -o ServerAliveInterval=30 "$PKG_A" \
+  ${PKG_B:+"$PKG_B"} \
   ${PKG_C:+"$PKG_C"} scripts/strip-dynopt-link.py \
   "scripts/$INJECT_SCRIPT" "$HOST":/tmp/
 
@@ -104,7 +106,7 @@ ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
 python3 - /tmp/iab-ms.txt "$LABEL_A" "$LABEL_B" "$LABEL_C" <<'PY'
 import csv, random, statistics, sys
 rows = list(csv.reader(open(sys.argv[1])))
-a, b, c = sys.argv[2], sys.argv[3], sys.argv[4] or ""
+a, b, c = sys.argv[2], sys.argv[3] or "", sys.argv[4] or ""
 by = {}
 for arm, ms in rows:
     by.setdefault(arm, []).append(int(ms))
@@ -120,8 +122,9 @@ def ci(x, y, label):
           % (label, md, 100 * md / statistics.median(x), bs[250], bs[9750]))
 base = by["base"]
 ci(base, by[a], "%s vs base (pos=faster)" % a)
-ci(base, by[b], "%s vs base (pos=faster)" % b)
-ci(by[a], by[b], "%s vs %s (pos=%s faster)" % (b, a, b))
+if b:
+    ci(base, by[b], "%s vs base (pos=faster)" % b)
+    ci(by[a], by[b], "%s vs %s (pos=%s faster)" % (b, a, b))
 if c:
     ci(base, by[c], "%s vs base (pos=faster)" % c)
     ci(by[a], by[c], "%s vs %s (pos=%s faster)" % (c, a, c))

@@ -1,0 +1,24 @@
+# 920B best9 vs best9-minus-remain 交错对比（2026-08-17）
+
+## 方法
+
+- 机器：920B，真实 100f，注入法交错（interleaved-inject-ab.sh）；
+- 臂：base / best9（13 kernel，含 remain DFA）/ best9-noremain
+  （12 kernel，去 cost-coeff-remain）；
+- 6 对随机交错，全部 bit-exact（1600c2fac1294b5ffb19512f6615b31d）。
+
+## 结果（diff = 前者 - 后者，>0 = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9 vs base | +547.5 | +2.46% | [504.5, 571.5] |
+| best9-noremain vs base | +489.0 | +2.20% | [472.0, 534.5] |
+| best9-noremain vs best9 | -41.0 | -0.19% | [-61.0, -26.0] |
+
+## 结论
+
+1. 去掉 remain DFA 后整包**显著更快 0.19%**（与单 kernel 复核
+   -0.23% 一致）；
+2. 920B 发布集更新为 **best9-minus-remain（12 kernel）**；
+3. 历史 best9 的 +2.2~2.5% 数字里含 remain 的 ~-0.2% 拖累；
+4. remain DFA 保留为候选，默认不注入；710/950 复核后同步发布集。

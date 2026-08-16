@@ -1,0 +1,24 @@
+# 920B scanPosLast 单 kernel 交错复核（2026-08-17）
+
+## 方法
+
+- 机器：920B（SVE1 VL256），真实 100f，注入法（直接换
+  libx265.so.216，interleaved-inject-ab.sh），单候选 scan-pos-last；
+- 6 对随机交错，same-machine md5 全等
+  （1600c2fac1294b5ffb19512f6615b31d，bit-exact）。
+
+## 结果
+
+| base 中位 | opt 中位 | diff | Δ% | bootstrap95 |
+| ---: | ---: | ---: | ---: | ---: |
+| 22452 | 22179.5 | +272.5 | +1.23% | [235.5, 326.5] ms |
+
+## 结论
+
+1. scanPosLast（rbit + pext-nibble）在 920B 交错注入下确认显著
+   **+1.23%**（CI 不跨零），历史顺序数字（-1.61%/-1.80%）方向与
+   量级成立；
+2. 单 kernel 即占 best9 整包（~+2.2%）的一半以上，是熵族最大
+   收益源；
+3. 与 best9 其余 kernel 的叠加性待组合测试（best9 整包已确认
+   +2.17~2.32%）。

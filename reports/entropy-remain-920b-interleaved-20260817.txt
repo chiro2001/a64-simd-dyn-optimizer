@@ -1,0 +1,24 @@
+# 920B costCoeffRemain DFA 单 kernel 交错复核（2026-08-17）
+
+## 方法
+
+- 机器：920B，真实 100f，注入法交错（interleaved-inject-ab.sh），
+  单候选 cost-coeff-remain（DFA 表，5×3×256）；
+- 6 对随机交错，bit-exact（1600c2fac1294b5ffb19512f6615b31d）。
+
+## 结果
+
+| base 中位 | opt 中位 | diff | Δ% | bootstrap95 |
+| ---: | ---: | ---: | ---: | ---: |
+| 22387 | 22438 | -51 | -0.23% | [-130.0, -16.5] ms |
+
+diff = base - opt，<0 = 候选更慢。
+
+## 结论
+
+1. remain DFA 在 920B 交错注入下是**显著小回归（-0.23%）**，与顺序
+   计时“+0.25pp 增量”结论相反；
+2. 真实回放 +20% 未转 E2E（热点占比小 + 表访问开销），不应作为
+   920B 发布集成员；
+3. 下一步：best9 vs best9-minus-remain 交错对比，确认移除后整包
+   更快。
