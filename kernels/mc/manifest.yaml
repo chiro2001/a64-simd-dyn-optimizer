@@ -1,0 +1,26 @@
+# MC avg_pp 16x16 (asm-family, mc-a.S NEON / mc-a-sve2.S SVE2).
+kernel: mc
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: avg_pp
+  n: 16
+
+candidate:
+  symbol: dynopt_avg_pp_16x16_sve2
+  trace_driver_src: kernels/mc/trace_driver.cpp
+  trace_driver_c: kernels/mc/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pixel_avg_pp_16x16_neon
+  symbol_mangled: x265_pixel_avg_pp_16x16_neon
+  call: x265_pixel_avg_pp_16x16_neon
+  decl: |
+    extern "C" void x265_pixel_avg_pp_16x16_neon(
+        uint8_t*, intptr_t, const uint8_t*, intptr_t,
+        const uint8_t*, intptr_t);
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000

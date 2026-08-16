@@ -1,0 +1,25 @@
+# SSD sse_pp 16x16 (asm-family, ssd-a.S NEON / ssd-a-sve.S SVE2).
+kernel: ssd
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sse_pp
+  n: 16
+
+candidate:
+  symbol: dynopt_sse_pp_16x16_sve2
+  trace_driver_src: kernels/ssd/trace_driver.cpp
+  trace_driver_c: kernels/ssd/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: pixel_sse_pp_16x16_neon
+  symbol_mangled: x265_pixel_sse_pp_16x16_neon
+  call: x265_pixel_sse_pp_16x16_neon
+  decl: |
+    extern "C" int x265_pixel_sse_pp_16x16_neon(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000

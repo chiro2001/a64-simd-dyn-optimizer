@@ -193,3 +193,17 @@ vaddlv）建宽度无关 DAG（133 ops），纯 NEON 发射；经
 asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 已
 接入通用管线；其余成员（ssd 平方和、mc 平均、pixel-util）按同法
 继续。
+
+### asm 族 MC/SSD 接入（2026-08-16）
+
+- `mc_avg_op_ir.py` + `mc_avg_emit.py`：avg_pp 16x16（urhadd = 
+  (a+b+1)>>1），64 ops，经 `dag_pipeline` vs 上游
+  `x265_pixel_avg_pp_16x16_neon`：**64/118，vq=1/2 0 失配**；
+- `ssd_op_ir.py` + `ssd_emit.py`：sse_pp 16x16（vabdl + vmull +
+  u32 累加 + vaddv），325 ops，vs `x265_pixel_sse_pp_16x16_neon`：
+  **132/169，vq=1/2 0 失配**；
+- 新增 `avg_pp`/`sse_pp` verify 模板与 kernels/mc、kernels/ssd
+  manifest（参考为 NEON asm 符号，x265 参数惯例 dst 在前）；
+- `tools/test_asm_op_ir.py`：sad/mc/ssd 三 DAG 的 def-use 与发射
+  一致性。asm 族 sad/mc/ssd 三成员已接入通用管线，pixel-util 为
+  最后一个剩余成员。

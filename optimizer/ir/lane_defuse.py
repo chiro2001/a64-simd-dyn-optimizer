@@ -108,6 +108,16 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (tuple((base + i,) for i in range(4)),)
     if kind == "vabal":
         return 8, (_e(8), _e(8), _e(8))
+    if kind == "rhadd":
+        return 16, (_e(16), _e(16))
+    if kind == "store_u8x16":
+        return 16, (_e(16),)
+    if kind == "vabdl_u8":
+        return 8, (_e(8), _e(8))
+    if kind == "vmull_u16":
+        return 4, (_e(4), _e(4))
+    if kind == "vadd_u32":
+        return 4, (_e(4), _e(4))
     if kind == "widen_add":
         return 4, (_e(4), _e(4))
     if kind == "abs":
@@ -204,6 +214,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
     if kind == "vaddv_s16":
         return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
     if kind == "vaddv_s32":
+        return 1, (((0, 1, 2, 3),),)
+    if kind == "vaddv_u32":
         return 1, (((0, 1, 2, 3),),)
     if kind == "vaddlv":
         return 1, (((0, 1, 2, 3, 4, 5, 6, 7),),)
