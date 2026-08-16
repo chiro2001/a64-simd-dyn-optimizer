@@ -18,6 +18,11 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | entropy | cost-coeff-remain | 4x4 slice | read absCoeff[16]; return cost (pure) | none | exact (golomb-rice table) | idx<8 vs >=8 buckets | 128;256 | table/DFA | exhaustive 5x3x256 table | production 2.39M calls | measured |
 | entropy | find-pos-first-last | 16 | read int16 coeffs; return packed first/last + sign sum | none | exact | none (16 elems) | 128;256 | bitscan | upstream-exact | 20k | gated |
 | entropy | scan-pos-last | CG16 | read coeffs scan-order; write coeffSign/Flag/Num | none | exact | CG boundary per numSig | 128;256 | fsm/bitpack | upstream-exact | on-machine 20k; production per-call | measured |
+| filter | interp4 | 16x16 | read src (off -1..+2); write dst | src/dst disjoint | exact | edge guard | 128;256 | fir-4tap | upstream-exact | 20k | gated |
+| filter | interp4 | 32x32 | read src (off -1..+2); write dst | src/dst disjoint | exact | edge guard | 128;256 | fir-4tap | upstream-exact | 20k | gated |
+| filter | interp4 | 8x8 | read src (off -1..+2); write dst | src/dst disjoint | exact | edge guard | 128;256 | fir-4tap | upstream-exact | 20k | gated |
+| filter | interp4vpp | 16x16 | read src; write int16 dst | src/dst disjoint | exact | edge guard | 128;256 | fir-4tap-vert | upstream-exact | 20k | gated |
+| filter | interp4vpp | 32x32 | read src; write int16 dst | src/dst disjoint | exact | edge guard | 128;256 | fir-4tap-vert | upstream-exact | 20k | gated |
 | filter | interp8-hpp | 16x16 | read src 8 win/row; write dst | src/dst disjoint | saturating narrow | edge guard; block widths 16 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
 | filter | interp8-hpp | 16x32 | read src 8 win/row (off -3..+4); write dst WxH | src/dst disjoint | saturating narrow (vqrshrun shift 6, IF_FILTER_PREC) | edge guard; block widths 16 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
 | filter | interp8-hpp | 16x8 | read src 8 win/row (off -3..+4); write dst WxH | src/dst disjoint | saturating narrow (vqrshrun shift 6, IF_FILTER_PREC) | edge guard; block widths 16 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
@@ -28,36 +33,64 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | filter | interp8-hpp | 8x16 | read src 8 win/row (off -3..+4); write dst WxH | src/dst disjoint | saturating narrow (vqrshrun shift 6, IF_FILTER_PREC) | edge guard; block widths 8 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
 | filter | interp8-hpp | 8x8 | read src 8 win/row (off -3..+4); write dst WxH | src/dst disjoint strides | saturating narrow (vqrshrun shift 6, IF_FILTER_PREC) | edge guard; block widths 8 | 128;256 | fir-8tap | upstream-exact per phase | 20k vq=1/2 | measured |
 | filter | interp8-hps | 16x16 | read src (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | edge guard | 128;256 | fir-8tap-hps | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-hps | 16x8 | read src (off -3..+4); write int16 dst | src/dst disjoint | exact | edge guard | 128;256 | fir-8tap-hps | upstream-exact | 20k | gated |
 | filter | interp8-hps | 32x32 | read src (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | edge guard | 128;256 | fir-8tap-hps | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-hps | 32x8 | read src (off -3..+4); write int16 dst | src/dst disjoint | exact | edge guard | 128;256 | fir-8tap-hps | upstream-exact | 20k | gated |
 | filter | interp8-hps | 8x8 | read src (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | edge guard | 128;256 | fir-8tap-hps | upstream-exact | 20k vq=1/2 | gated |
 | filter | interp8-vps | 16x16 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps | 32x32 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
+| filter | interp8-vps | 8x16 | read src rows; write int16 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
 | filter | interp8-vps | 8x8 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-16x32 | 16x32 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-16x4 | 16x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-32x16 | 32x16 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vps-8x4 | 8x4 | read src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k vq=1/2 | injected |
 | filter | interp8-vsp | 16x16 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-vsp | 16x4 | read int16 src rows; write u8 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
 | filter | interp8-vsp | 32x32 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
 | filter | interp8-vsp | 8x8 | read int16 src rows (off -3..+4); write u8 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vsp | upstream-exact | 20k vq=1/2 | gated |
 | filter | interp8-vss | 16x16 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
+| filter | interp8-vss | 16x4 | read int16 src rows; write int16 dst | src/dst disjoint | exact | vertical edge guard | 128;256 | fir-8tap-vert | upstream-exact | 20k | gated |
 | filter | interp8-vss | 32x32 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
 | filter | interp8-vss | 8x8 | read int16 src rows (off -3..+4); write int16 dst | src/dst disjoint | exact (int16 intermediate) | vertical edge guard | 128;256 | fir-8tap-vss | upstream-exact | 20k vq=1/2 | gated |
 | misc | chroma-copy-pp | 16x16 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | chroma-copy-pp | 32x32 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
 | misc | chroma-copy-pp | 8x8 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | chroma-copy-ps | 16x16 | read src; write int16 dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | chroma-copy-sp | 16x16 | read int16 src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | chroma-copy-ss | 16x16 | read int16 src; write int16 dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | cu-add-ps | 16x16 | read 2 src; write int16 dst | none | exact | none | 128;256 | elementwise | upstream-exact | 20k | gated |
 | misc | cu-copy-pp | 16x16 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | cu-copy-ps | 16x16 | read src; write int16 dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | cu-copy-sp | 16x16 | read int16 src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | cu-copy-ss | 16x16 | read int16 src; write int16 dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
+| misc | cu-sub-ps | 16x16 | read 2 src; write int16 dst | none | exact | none | 128;256 | elementwise | upstream-exact | 20k | gated |
+| misc | planecopy-cp | 1d | read plane; write plane | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
 | misc | pu-addavg | 16x16 | read 2 src; write dst | none | exact | none | 128;256 | elementwise | upstream-exact | 20k | gated |
+| misc | pu-copy-pp | 16x16 | read src; write dst | none | exact | none | 128;256 | copy | upstream-exact | 20k | gated |
 | misc | sad-32 | 32x32 | read 2 planes; write int | none | exact | none | 128;256 | reduce | upstream-exact | 20k | gated |
 | misc | satd-24x32 | 24x32 | read 2 planes; write int | none | exact | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | misc | satd-64x16 | 64x16 | read 2 planes; write int | none | exact | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| misc | scale1d | 1d | read src; write dst | none | exact | none | 128;256 | scale | upstream-exact | 20k | gated |
+| misc | scale2d | 2d | read src; write dst | none | exact | none | 128;256 | scale | upstream-exact | 20k | gated |
+| misc | sign | 1d | read src; write dst | none | exact | none | 128;256 | sign | upstream-exact | 20k | gated |
+| misc | ssim | 4x4x2 | read 2 planes; write stats | none | exact | none | 128;256 | reduce | upstream-exact | 20k | gated |
+| misc | weight-pp | 16x16 | read src; write dst (weighted) | none | exact | none | 128;256 | elementwise | upstream-exact | 20k | gated |
 | pixel | sa8d16 | 16x16 | read 2 planes; write int | none | exact | none | 128;256 | hadamard+reduce | upstream-exact | 20k vq=1/2 | measured |
 | pixel | satd-16 | 16x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-16x32 | 16x32 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-16x4 | 16x4 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-16x64 | 16x64 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-16x8 | 16x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-32x32 | 32x32 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-32x64 | 32x64 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-32x8 | 32x8 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-48x64 | 48x64 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
+| pixel | satd-64x48 | 64x48 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-64x64 | 64x64 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8 | 8x8 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
 | pixel | satd-8x16 | 8x16 | read 2 planes; write int sum | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k vq=1/2 | gated |
+| pixel | satd-8x32 | 8x32 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | pixel | satd-8x4 | 8x4 | read 2 planes; write int | none | exact (hadamard) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | psy | psy-cost-16x16 | 16x16 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | psy | psy-cost-32x32 | 32x32 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
@@ -65,6 +98,7 @@ Target (round-0026): >=4 families, >=50 regions, >=100 unique final objects.
 | psy | psy-cost-8x8 | 8x8 | read 2 planes; write int cost | none | exact (hadamard satd) | none | 128;256 | hadamard | upstream-exact | 20k | gated |
 | quant | dequant | 256 | read coeff+scale table; write out coeffs | src/dst disjoint | exact multiply+shift | none (256 elems) | 128;256 | elementwise | upstream-exact | 20k | gated |
 | quant | dequant-scaling-gt | 256 (branch gt) | read coeff+scale table; write out coeffs | src/dst disjoint | exact multiply+shift | none (256 elems) | 128;256 | elementwise | upstream-exact | 20k | gated |
+| quant | dequant-scaling-le | 256 (branch le) | read coeff+scale table; write out | src/dst disjoint | exact multiply+shift | none | 128;256 | elementwise | upstream-exact | 20k | gated |
 | quant | nquant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
 | quant | quant | 256 | read coeff+quant table; write out coeffs; return count | src/dst disjoint | rounding shift + dead-zone (upstream-exact) | none (256 elems) | 128;256 | elementwise+scan | upstream-exact | 20k | gated |
 | sao | sao-stats-bo | 64x1 | read int16 coeff + uint8 rec (+offsets); accumulate int32 stats | none | exact | adapter guard width!=64 fallback | 128;256 | stats | upstream-exact | 20k | injected |
