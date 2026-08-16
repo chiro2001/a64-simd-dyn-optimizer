@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Emit the current golden-gated best DCT32 candidate source.
 
-Best found by tools/search_op_axes.py (2026-08-16): r16k2ep+si =
-4100 fused_uop, TestBenchLite 5-seed PASS.  This script regenerates that
+Best found by tools/search_op_axes.py (2026-08-16): r16k2epsi+m8 =
+4032 fused_uop, TestBenchLite 5-seed PASS.  This script regenerates that
 exact source from the plan flags so the artifact is reproducible.
 
 Usage:
@@ -30,13 +30,14 @@ BEST_FLAGS = {
     "k2k4_from_packs": 1,
     "k0_epack": 1,
     "sdot_indexed": 1,
+    "k0_merge8": 1,
 }
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(
-        ROOT, "kernels/dct32/candidates/best_sve2_op4100.cpp"))
+        ROOT, "kernels/dct32/candidates/best_sve2_op4032.cpp"))
     ap.add_argument("--base", action="store_true",
                     help="emit the upstream-exact op-backend baseline "
                          "(8114 fused_uop, 20k diff 0) instead of the "
@@ -57,7 +58,7 @@ def main():
     else:
         out = args.out
         header = ("// Best golden-gated DCT32 candidate (2026-08-16):\n"
-                  "// flags %r -> 4100 fused_uop, TestBenchLite 5-seed "
+                  "// flags %r -> 4032 fused_uop, TestBenchLite 5-seed "
                   "PASS\n"
                   "// Regenerate with tools/emit_dct32_best.py\n\n"
                   % (BEST_FLAGS,))

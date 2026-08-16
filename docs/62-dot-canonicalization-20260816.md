@@ -237,6 +237,20 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
 - 鲁棒性：`rewrite_merge_narrow8` 对非 8-row-bank 布局（rg16）优雅
   跳过（不再中断搜索）；rg4 下 merge_narrow8 仍编译失败（待修）。
 
+### 第五轮：r16k2epsi+m8 4032（2026-08-16，当前最佳）
+
+| 变体 | fused_uop | TestBenchLite 5 seed |
+| --- | ---: | --- |
+| **r16k2epsi+m8（+sdot_indexed +k0_merge8）** | **4032** | **全 PASS** |
+| r16k2epsi+sm | 4060 | — |
+| r16k2ep+si | 4100 | 全 PASS |
+
+- **4032 fused_uop**：相对 upstream 8292 **-51.4%**，低于内部参考
+  4827 **16.5%**；确定性复跑一致，TestBenchLite 5 seed 全 PASS；
+- 固化：`tools/emit_dct32_best.py` → `kernels/dct32/candidates/
+  best_sve2_op4032.cpp`（可编译）；`build_preload_so` 的
+  `AGO_LEGACY_DCT32=1` 已指向 op4032。
+
 ### 注入链路接入（2026-08-16）
 
 - `tools/emit_dct32_best.py --base` 固化 **upstream-exact op 后端基线

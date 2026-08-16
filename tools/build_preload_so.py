@@ -849,11 +849,11 @@ def candidate_sources(kernel, isa, vl=None):
         # Op-backend DCT32 candidates (VL=256, armv8.2-a+sve2):
         #   best_sve2_opbase.cpp  - upstream-exact, 8114 fused_uop,
         #     20k diff 0 (safe for bit-exact E2E injection);
-        #   best_sve2_op4100.cpp  - legacy-internal-exact golden-gated
-        #     best, 4100 fused_uop (TestBenchLite 5-seed PASS; NOT
+        #   best_sve2_op4032.cpp  - legacy-internal-exact golden-gated
+        #     best, 4032 fused_uop (TestBenchLite 5-seed PASS; NOT
         #     bit-exact - opt in via AGO_LEGACY_DCT32=1).
         if os.environ.get("AGO_LEGACY_DCT32") == "1":
-            p = os.path.join(d, "best_sve2_op4100.cpp")
+            p = os.path.join(d, "best_sve2_op4032.cpp")
         else:
             p = os.path.join(d, "best_sve2_opbase.cpp")
         if os.path.exists(p):
