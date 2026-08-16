@@ -1,0 +1,24 @@
+# N1 best9-minus-remain + dct IR 定版（2026-08-17）
+
+## 方法
+
+- 机器：N1（NEON-only，2 核共享），真实 100f，注入法交错
+  （interleaved-inject-ab.sh，单标签模式），各 6 对，全部 bit-exact
+  （0745037284723547973824e0a24d4c57）。
+
+## 结果（diff = base - opt，>0 = 候选更快）
+
+| 臂 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain（12 kernel） | +38.5 | +0.12% | [-333.5, 307.5] |
+| best9-noremain-ir-dct（14 kernel） | +746.5 | +2.25% | [624.0, 935.5] |
+
+## 结论
+
+1. 组合在 N1 确认 **+2.25%**（CI 不跨零）；best9-noremain 单独本轮
+   中性（N1 噪声大，CI 宽）；
+2. 与 710（best9-noremain +1.63%、组合 +2.03%）方向一致；
+3. 定版数据：**best9-minus-remain + dct IR** = N1 +2.25% /
+   710 +2.03%，均 bit-exact、CI 不跨零——推荐冻结发布集；
+4. 注：本轮数字来自修复后的 interleaved 脚本（打包路径与 e2e-full
+   同步），不受 freeze-ablate stale-bundle bug 影响。
