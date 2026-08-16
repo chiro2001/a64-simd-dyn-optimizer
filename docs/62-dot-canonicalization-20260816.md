@@ -200,6 +200,26 @@ k2k4_from_packs/tbl2_to_zip/merge_narrow8/常量布局），全部 QEMU 实测
   （legacy-internal-exact 黄金标准）；
 - 确定性已复跑确认（两次一致）。
 
+### 第三轮 rg16+k2k4 组合：r16k2+ep 4216（2026-08-16）
+
+在 rg16+k2k4（4650）之上叠加结构轴：
+
+| 变体 | fused_uop | TestBenchLite 5 seed |
+| --- | ---: | --- |
+| **r16k2+ep（+k0_epack）** | **4216** | **全 PASS** |
+| r16k2+si（+sdot_indexed） | 4484 | — |
+| r16k2+m8（+k0_merge8） | 4609 | — |
+| r16k2+sm（+k0_shared_mul） | 4615 | — |
+| rg16+k2k4 | 4650 | 全 PASS |
+
+- **r16k2+ep = 4216 fused_uop**：低于内部参考 4827 达 **12.7%**，
+  相对 upstream grouped 8292 **-49%**；确定性复跑一致；
+  TestBenchLite 5 seed 全 PASS（legacy-internal-exact 黄金标准）。
+- 注意：k0_epack 在 row_group=4 组合下劣化（6554），但在
+  rg16+k2k4 结构下最优——结构轴之间存在强交互，必须组合搜索；
+- merge_narrow8 与 rg16 leaf 布局不兼容（KeyError，设计给旧
+  row_group=4），已记录待适配。
+
 ### 跨 kernel：interp8 的 filter8 接入同一 dot 节点（2026-08-16）
 
 “同一算法、不同指令实现”不止 dct16/32：interp8 的 8-tap 滤波在
