@@ -66,6 +66,16 @@ the 15% goal, consistent with the dct32/quant/ME entropy analysis.
     vs old bundle +0.52% (CI included 0). The profiling-driven slot
     selection made the long-clip win robust.
 
+2026-08-16 cost-coeff-nxn revision (microbench-driven):
+  - benchmarks/cost_coeff_microbench.cpp with the production corpus
+    (g_scan4x4 scan types, trSize 4/8/8/16/16/32/32/32, mask bounded
+    by scanPosSigOff): upstream 1.23 ticks/call; checked-in NEON
+    variant 1.25; **unroll NEON variant 1.11 (-10%)**, vector 1.61,
+    sve-gather 2.62 (and 15500/20000 mismatches at VL=128 -> not used).
+  - kernels/cost-coeff-nxn regenerated with emit_neon(unroll=True);
+    full-bundle 20k bit-exact PASS; 100f E2E 25538 -> 25146 ms
+    (-1.43%, CI [287,451] ms) - unchanged within noise, no regression.
+
 100-frame confirmation (same host, /tmp/real_1080p_100f_b.yuv, 100f)
 ---------------------------------------------------------------------
 Optimized md5: 21500eb459ae1c60db47eb5abd71227a
@@ -107,6 +117,7 @@ tools/bisect_vl128_e2e.sh     - E2E-level kernel bisection helper
 benchmarks/dct16_microbench.cpp - dct16 SVE vs NEON CNTVCT A/B
 benchmarks/satd_sa8d_microbench.cpp - satd/sa8d candidate-vs-upstream
                                   CNTVCT A/B + variant search
+benchmarks/cost_coeff_microbench.cpp - costCoeffNxN variant search
 tools/gen_verify.py --vl      - override manifest vl_bytes (VL=16 hosts)
 
 Residual
