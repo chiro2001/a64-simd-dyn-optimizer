@@ -110,6 +110,19 @@ count 的 vpadal 路径与 reduce）。
 同一宽度无关 DAG 的 mul↔sdot 双目标 lowering 在 SAO 上落地，SVE2
 计数与手写候选仅差 2 ops（histseg count 已复用）。
 
+### SAO E0 实机 kernel 验证（2026-08-16）
+
+`AGO_IR_SAO=1` 注入链就绪（`best_ir.cpp` NEON / `best_ir_sve2.cpp`
+SVE2）。710（SVE2）kernel 微基准（cntvct，2000 例差分 0 失配）：
+
+| 候选 | 相对上游 NEON 槽位 |
+| --- | ---: |
+| 现有 SVE2 候选 | **-19.2%** |
+| IR SVE2 候选 | **-15.0%** |
+
+IR 版与手写 SVE2 的差距（-15% vs -19%）与指令数差距（167 vs 165）
+一致；两者均显著快于 710 上游 NEON 槽位。
+
 ### filter/ipfilter 评估（2026-08-16）
 
 四套实现（NEON / NEON-dotprod / NEON-i8mm / SVE）都含 interp8_*：

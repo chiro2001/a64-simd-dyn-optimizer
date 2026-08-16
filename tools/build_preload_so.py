@@ -845,6 +845,14 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel == "sao-stats-e0" and os.environ.get("AGO_IR_SAO") == "1":
+        # IR-driven SAO E0 candidates (docs/66): same DAG lowered to
+        # pure NEON (best_ir.cpp) or SVE2 (best_ir_sve2.cpp, histseg+
+        # sdot), both upstream-exact at vq=1/2.
+        name = "best_ir.cpp" if isa != "sve2" else "best_ir_sve2.cpp"
+        p = os.path.join(d, name)
+        if os.path.exists(p):
+            return [p]
     if kernel in ("satd-8", "sa8d16") and \
             os.environ.get("AGO_IR_PIXEL") == "1":
         # IR-driven satd/sa8d candidates (docs/66): width-independent
