@@ -368,7 +368,7 @@ def lower_pass2_upstream(shift: int = 10) -> List[Op]:
                          "topology": "contiguous", "n_lanes": 4})
         # k2 (2,6,10,14): 4x vmul + vpadd tree + vrshrn
         for k in K2_K:
-            tid = "p2.k2.k%d.g%d" % (k, g)
+            tid = "p2.f2.k%d.g%d" % (k, g)
             cexpr = "GT16_S32[%d]" % ((k - 2) // 4)
             c0 = b.new("load", tid, "c0_%d_%d" % (k, g),
                        attrs={"arch": "neon-const", "elem": "s32",
@@ -442,84 +442,91 @@ def lower_pass1_fused8(shift: int = 3) -> List[Op]:
     def _g(k, j):
         return "G[%d][%d]" % (k, j)
 
-    o16: Dict[int, str] = {}
-    eo_comb: Dict[int, str] = {}
-    eee: Dict[int, str] = {}
-    eeo: Dict[int, str] = {}
-    for i in range(0, 16, 2):
-        tid = "p1.leaf.rowpair%d" % (i // 2)
-        s: Dict[int, Tuple[str, str]] = {}
-        E: Dict[str, str] = {}
-        for r in (i, i + 1):
-            rtid = "p1.leaf.row%d" % r
-            lo = b.new("load", rtid, "s%d_lo" % r,
-                       attrs={"arch": "neon", "elem": "s16", "row": r,
-                              "half": "lo", "base": "src",
-                              "index": "r*stride"})
-            hi = b.new("load", rtid, "s%d_hi_raw" % r,
-                       attrs={"arch": "neon", "elem": "s16", "row": r,
-                              "half": "hi", "base": "src",
-                              "index": "r*stride+8"})
-            hi_r = b.new("permute", rtid, "s%d_hi" % r, (hi.out,),
-                         attrs={"kind": "rev16", "arch": "neon",
-                                "idx": "rev8", "seg": 1})
-            s[r] = (lo.out, hi_r.out)
-            o16[r] = b.new("sub", rtid, "O_%d" % r, (lo.out, hi_r.out),
-                           attrs={"elem": "s16", "arch": "neon"}).out
-            for half, tag in (("lo", "0"), ("hi", "1")):
-                a = b.new("vget", rtid, "g%s_%d_a" % (tag, r), (lo.out,),
-                          attrs={"which": half, "elem": "s16"})
-                c = b.new("vget", rtid, "g%s_%d_c" % (tag, r),
-                          (hi_r.out,), attrs={"which": half,
-                                               "elem": "s16"})
-                E["%s%d" % (tag, r)] = b.new(
-                    "widen_add", rtid, "E%s_%d" % (tag, r), (a.out, c.out),
-                    attrs={"elem": "s32"}).out
-        p = i // 2
-        eo_a = b.new("sub", tid, "EOa_%d" % p,
-                     (E["0%d" % i],
-                      b.new("permute", tid, "Er_%d" % i, (E["1%d" % i],),
-                            attrs={"kind": "rev32", "arch": "neon"}).out),
-                     attrs={"elem": "s32", "arch": "neon"}).out
-        eo_b = b.new("sub", tid, "EOb_%d" % p,
-                     (E["0%d" % (i + 1)],
-                      b.new("permute", tid, "Er_%d" % (i + 1),
-                            (E["1%d" % (i + 1)],),
-                            attrs={"kind": "rev32", "arch": "neon"}).out),
-                     attrs={"elem": "s32", "arch": "neon"}).out
-        nn_a = b.new("neon_narrow4", tid, "EOn_%d_a" % p, (eo_a,),
-                     attrs={"mode": "vmovn"})
-        nn_b = b.new("neon_narrow4", tid, "EOn_%d_b" % p, (eo_b,),
-                     attrs={"mode": "vmovn"})
-        eo_comb[p] = b.new("neon_combine", tid, "EO_%d" % p,
-                           (nn_a.out, nn_b.out),
-                           attrs={"elem": "s16", "n_lanes": 8}).out
-        ee_i = b.new("add", tid, "EE_%d" % i,
-                     (E["0%d" % i],
-                      b.new("permute", tid, "EEr_%d" % i, (E["1%d" % i],),
-                            attrs={"kind": "rev32", "arch": "neon"}).out),
-                     attrs={"elem": "s32", "arch": "neon"})
-        ee_j = b.new("add", tid, "EE_%d" % (i + 1),
-                     (E["0%d" % (i + 1)],
-                      b.new("permute", tid, "EEr_%d" % (i + 1),
-                            (E["1%d" % (i + 1)],),
-                            attrs={"kind": "rev32", "arch": "neon"}).out),
-                     attrs={"elem": "s32", "arch": "neon"})
-        t0 = b.new("permute", tid, "t0_%d" % i, (ee_i.out, ee_j.out),
-                   attrs={"kind": "zip1q", "arch": "neon"})
-        z2 = b.new("permute", tid, "z2_%d" % i, (ee_i.out, ee_j.out),
-                   attrs={"kind": "zip2q", "arch": "neon"})
-        t1 = b.new("permute", tid, "t1_%d" % i, (z2.out,),
-                   attrs={"kind": "rev64q", "arch": "neon"})
-        eee[p] = b.new("add", tid, "EEE_%d" % p, (t0.out, t1.out),
-                       attrs={"elem": "s32", "arch": "neon",
-                              "lane_owner": "partial"}).out
-        eeo[p] = b.new("sub", tid, "EEO_%d" % p, (t0.out, t1.out),
-                       attrs={"elem": "s32", "arch": "neon",
-                              "lane_owner": "partial"}).out
-
     for g in range(4):
         rows = tuple(4 * g + m for m in range(4))
+        o16: Dict[int, str] = {}
+        eo_comb: Dict[int, str] = {}
+        eee: Dict[int, str] = {}
+        eeo: Dict[int, str] = {}
+        for i in (4 * g, 4 * g + 2):
+            tid = "p1.leaf.rowpair%d" % (i // 2)
+            s: Dict[int, Tuple[str, str]] = {}
+            E: Dict[str, str] = {}
+            for r in (i, i + 1):
+                rtid = "p1.leaf.row%d" % r
+                lo = b.new("load", rtid, "s%d_lo" % r,
+                           attrs={"arch": "neon", "elem": "s16",
+                                  "row": r, "half": "lo",
+                                  "base": "src", "index": "r*stride"})
+                hi = b.new("load", rtid, "s%d_hi_raw" % r,
+                           attrs={"arch": "neon", "elem": "s16",
+                                  "row": r, "half": "hi",
+                                  "base": "src", "index": "r*stride+8"})
+                hi_r = b.new("permute", rtid, "s%d_hi" % r, (hi.out,),
+                             attrs={"kind": "rev16", "arch": "neon",
+                                    "idx": "rev8", "seg": 1})
+                s[r] = (lo.out, hi_r.out)
+                o16[r] = b.new("sub", rtid, "O_%d" % r, (lo.out, hi_r.out),
+                               attrs={"elem": "s16",
+                                      "arch": "neon"}).out
+                for half, tag in (("lo", "0"), ("hi", "1")):
+                    a = b.new("vget", rtid, "g%s_%d_a" % (tag, r),
+                              (lo.out,), attrs={"which": half,
+                                                "elem": "s16"})
+                    c = b.new("vget", rtid, "g%s_%d_c" % (tag, r),
+                              (hi_r.out,), attrs={"which": half,
+                                                  "elem": "s16"})
+                    E["%s%d" % (tag, r)] = b.new(
+                        "widen_add", rtid, "E%s_%d" % (tag, r),
+                        (a.out, c.out), attrs={"elem": "s32"}).out
+            p = i // 2
+            eo_a = b.new("sub", tid, "EOa_%d" % p,
+                         (E["0%d" % i],
+                          b.new("permute", tid, "Er_%d" % i,
+                                (E["1%d" % i],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"}).out
+            eo_b = b.new("sub", tid, "EOb_%d" % p,
+                         (E["0%d" % (i + 1)],
+                          b.new("permute", tid, "Er_%d" % (i + 1),
+                                (E["1%d" % (i + 1)],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"}).out
+            nn_a = b.new("neon_narrow4", tid, "EOn_%d_a" % p, (eo_a,),
+                         attrs={"mode": "vmovn"})
+            nn_b = b.new("neon_narrow4", tid, "EOn_%d_b" % p, (eo_b,),
+                         attrs={"mode": "vmovn"})
+            eo_comb[p] = b.new("neon_combine", tid, "EO_%d" % p,
+                               (nn_a.out, nn_b.out),
+                               attrs={"elem": "s16", "n_lanes": 8}).out
+            ee_i = b.new("add", tid, "EE_%d" % i,
+                         (E["0%d" % i],
+                          b.new("permute", tid, "EEr_%d" % i,
+                                (E["1%d" % i],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"})
+            ee_j = b.new("add", tid, "EE_%d" % (i + 1),
+                         (E["0%d" % (i + 1)],
+                          b.new("permute", tid, "EEr_%d" % (i + 1),
+                                (E["1%d" % (i + 1)],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"})
+            t0 = b.new("permute", tid, "t0_%d" % i, (ee_i.out, ee_j.out),
+                       attrs={"kind": "zip1q", "arch": "neon"})
+            z2 = b.new("permute", tid, "z2_%d" % i, (ee_i.out, ee_j.out),
+                       attrs={"kind": "zip2q", "arch": "neon"})
+            t1 = b.new("permute", tid, "t1_%d" % i, (z2.out,),
+                       attrs={"kind": "rev64q", "arch": "neon"})
+            eee[p] = b.new("add", tid, "EEE_%d" % p, (t0.out, t1.out),
+                           attrs={"elem": "s32", "arch": "neon",
+                                  "lane_owner": "partial"}).out
+            eeo[p] = b.new("sub", tid, "EEO_%d" % p, (t0.out, t1.out),
+                           attrs={"elem": "s32", "arch": "neon",
+                                  "lane_owner": "partial"}).out
         for k in ODD_K:
             tid = "p1.odd.k%d.g%d" % (k, g)
             b.new("load", tid, "ck_%d_%d" % (k, g),
@@ -593,6 +600,172 @@ def lower_pass1_fused8(shift: int = 3) -> List[Op]:
                   attrs={"arch": "neon", "base": "dst",
                          "index": "16*k + 4*g",
                          "lanes": tuple((1, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+    return b.ops
+
+
+def lower_pass2_fused8(shift: int = 10) -> List[Op]:
+    """8-lane fused pass2 (mirror of tools/emit_dct16_vl128.py
+    --pass2 fused): per 4-row group compute the two rowpairs' leaves
+    (O s16, EO s32 per row, EEE/EEO s32 per rowpair), then consume:
+    odd k sdot over O, k2 vmul/vpadd over the four EO, even k
+    vmul/vpadd over EEE/EEO."""
+    b = _Builder("d16")
+
+    def _g(k, j):
+        return "G[%d][%d]" % (k, j)
+
+    for g in range(4):
+        rows = tuple(4 * g + m for m in range(4))
+        o16: Dict[int, str] = {}
+        eo: Dict[int, str] = {}
+        eee: Dict[int, str] = {}
+        eeo: Dict[int, str] = {}
+        for i in (4 * g, 4 * g + 2):
+            tid = "p2.leaf.rowpair%d" % (i // 2)
+            s: Dict[int, Tuple[str, str]] = {}
+            E: Dict[str, str] = {}
+            for r in (i, i + 1):
+                rtid = "p2.leaf.row%d" % r
+                lo = b.new("load", rtid, "s%d_lo" % r,
+                           attrs={"arch": "neon", "elem": "s16",
+                                  "row": r, "half": "lo",
+                                  "base": "src", "index": "r*line"})
+                hi = b.new("load", rtid, "s%d_hi_raw" % r,
+                           attrs={"arch": "neon", "elem": "s16",
+                                  "row": r, "half": "hi",
+                                  "base": "src", "index": "r*line+8"})
+                hi_r = b.new("permute", rtid, "s%d_hi" % r, (hi.out,),
+                             attrs={"kind": "rev16", "arch": "neon",
+                                    "idx": "rev8", "seg": 1})
+                s[r] = (lo.out, hi_r.out)
+                o16[r] = b.new("sub", rtid, "O_%d" % r, (lo.out, hi_r.out),
+                               attrs={"elem": "s16",
+                                      "arch": "neon"}).out
+                for half, tag in (("lo", "0"), ("hi", "1")):
+                    a = b.new("vget", rtid, "g%s_%d_a" % (tag, r),
+                              (lo.out,), attrs={"which": half,
+                                                "elem": "s16"})
+                    c = b.new("vget", rtid, "g%s_%d_c" % (tag, r),
+                              (hi_r.out,), attrs={"which": half,
+                                                  "elem": "s16"})
+                    E["%s%d" % (tag, r)] = b.new(
+                        "widen_add", rtid, "E%s_%d" % (tag, r),
+                        (a.out, c.out), attrs={"elem": "s32"}).out
+                eo[r] = b.new(
+                    "sub", rtid, "EO_%d" % r,
+                    (E["0%d" % r],
+                     b.new("permute", rtid, "Er_%d" % r, (E["1%d" % r],),
+                           attrs={"kind": "rev32",
+                                  "arch": "neon"}).out),
+                    attrs={"elem": "s32", "arch": "neon",
+                           "lane_owner": "partial"}).out
+            p = i // 2
+            ee_i = b.new("add", tid, "EE_%d" % i,
+                         (E["0%d" % i],
+                          b.new("permute", tid, "EEr_%d" % i,
+                                (E["1%d" % i],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"})
+            ee_j = b.new("add", tid, "EE_%d" % (i + 1),
+                         (E["0%d" % (i + 1)],
+                          b.new("permute", tid, "EEr_%d" % (i + 1),
+                                (E["1%d" % (i + 1)],),
+                                attrs={"kind": "rev32",
+                                       "arch": "neon"}).out),
+                         attrs={"elem": "s32", "arch": "neon"})
+            t0 = b.new("permute", tid, "t0_%d" % i, (ee_i.out, ee_j.out),
+                       attrs={"kind": "zip1q", "arch": "neon"})
+            z2 = b.new("permute", tid, "z2_%d" % i, (ee_i.out, ee_j.out),
+                       attrs={"kind": "zip2q", "arch": "neon"})
+            t1 = b.new("permute", tid, "t1_%d" % i, (z2.out,),
+                       attrs={"kind": "rev64q", "arch": "neon"})
+            eee[p] = b.new("add", tid, "EEE_%d" % p, (t0.out, t1.out),
+                           attrs={"elem": "s32", "arch": "neon",
+                                  "lane_owner": "partial"}).out
+            eeo[p] = b.new("sub", tid, "EEO_%d" % p, (t0.out, t1.out),
+                           attrs={"elem": "s32", "arch": "neon",
+                                  "lane_owner": "partial"}).out
+        for k in ODD_K:
+            tid = "p2.odd.k%d.g%d" % (k, g)
+            b.new("load", tid, "ck_%d_%d" % (k, g),
+                  attrs={"arch": "neon-const", "elem": "s16",
+                         "const": "GT16[%d]" % k})
+            dots = []
+            for r in rows:
+                dots.append(b.new(
+                    "dot_segment", tid, "t_%d_%d" % (k, r), (o16[r],),
+                    attrs={"arch": "neon-bridge", "acc_bits": 64,
+                           "lane_owner": "partial",
+                           "terms": tuple(_g(k, j) for j in range(8)),
+                           "const_src": "GT16[%d]" % k}).out)
+            nn = b.new("neon_reduce_narrow", tid, "nn_%d_%d" % (k, g),
+                       tuple(dots),
+                       attrs={"shift": shift, "mode": "rshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((2, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+        for k in K2_K:
+            tid = "p2.k2.k%d.g%d" % (k, g)
+            b.new("load", tid, "c0_%d_%d" % (k, g),
+                  attrs={"arch": "neon-const", "elem": "s32",
+                         "const": "GT16_S32[%d]" % ((k - 2) // 4)})
+            terms = tuple(_g(k, j) for j in range(4))
+            ms = []
+            for r in rows:
+                ms.append(b.new("neon_mul", tid, "m_%d_%d" % (k, r),
+                                (eo[r],),
+                                attrs={"const_src":
+                                       "GT16_S32[%d]" % ((k - 2) // 4),
+                                       "terms": terms}).out)
+            t01 = b.new("neon_padd", tid, "t01_%d_%d" % (k, g),
+                        (ms[0], ms[1]), attrs={}).out
+            t23 = b.new("neon_padd", tid, "t23_%d_%d" % (k, g),
+                        (ms[2], ms[3]), attrs={}).out
+            tt = b.new("neon_padd", tid, "t_%d_%d" % (k, g),
+                       (t01, t23), attrs={}).out
+            nn = b.new("neon_narrow", tid, "nn_%d_%d" % (k, g), (tt,),
+                       attrs={"shift": shift, "mode": "rshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((2, k, r) for r in rows),
+                         "topology": "contiguous", "n_lanes": 4})
+        for k, fam, use_eee in ((0, 0, True), (4, 1, False),
+                                (8, 2, True), (12, 3, False)):
+            tid = "p2.k%d.k%d.g%d" % (k, fam, g)
+            src = eee if use_eee else eeo
+            pa, pb = 2 * g, 2 * g + 1
+            b.new("load", tid, "c_%d_%d_%d" % (k, fam, g),
+                  attrs={"arch": "neon-const", "elem": "s32",
+                         "const": "T8E[%d]" % fam})
+            terms = tuple(_g(k, j) for j in range(4))
+            if k == 0:
+                pp = b.new("neon_padd", tid, "pp_%d_%d" % (k, g),
+                           (src[pa], src[pb]), attrs={}).out
+                m = b.new("neon_mul", tid, "m_%d_%d" % (k, g), (pp,),
+                          attrs={"const_src": "T8E[%d]" % fam,
+                                 "terms": terms}).out
+            else:
+                m0 = b.new("neon_mul", tid, "m0_%d_%d" % (k, g),
+                           (src[pa],),
+                           attrs={"const_src": "T8E[%d]" % fam,
+                                  "terms": terms}).out
+                m1 = b.new("neon_mul", tid, "m1_%d_%d" % (k, g),
+                           (src[pb],),
+                           attrs={"const_src": "T8E[%d]" % fam,
+                                  "terms": terms}).out
+                m = b.new("neon_padd", tid, "m_%d_%d" % (k, g),
+                          (m0, m1), attrs={}).out
+            nn = b.new("neon_narrow", tid, "nn_%d_%d" % (k, g), (m,),
+                       attrs={"shift": shift, "mode": "rshrn"})
+            b.new("store", tid, "", (nn.out,),
+                  attrs={"arch": "neon", "base": "dst",
+                         "index": "16*k + 4*g",
+                         "lanes": tuple((2, k, r) for r in rows),
                          "topology": "contiguous", "n_lanes": 4})
     return b.ops
 

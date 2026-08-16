@@ -79,3 +79,24 @@ VL=128/NEON 迁移的本质是 IR 宽度参数化。第一步（本仓库已实�
 全覆盖、0 scatter、op 数 1424、宽度解析 OK。这是「同一计算图在不同
 宽度下可重 lowering」的 DAG 层证明；发射器（8-lane codegen）作为
 下一步消费该 DAG。
+
+## 6. 第四步已落地：8-lane codegen 垂直切片（2026-08-16）
+
+`dct16_op_emit.emit_acle(neon8=True)`：消费 `lower_pass1_fused8() +
+lower_pass2_fused8()` DAG，用统一的 NEON/SVE-bridge 发射器
+（`emit_neon8_ops`）生成完整候选：
+
+- 新增 op 种类：`neon_narrow4`（vmovn s32→s16 4-lane）、
+  `neon_combine`（vcombine s16 4+4→8）、`neon_reduce_narrow`
+  mode="pair"（k2 族 2 个 s64 部分和 → vmovn+vcombine+vrshrn）；
+- `T8ODD16` 常量表（t8_odd 4→8-lane 复制）与 pass2 fused8 DAG
+  （`lower_pass2_fused8`，每组现算叶子再消费）；
+- 门禁：`-O3 -march=armv8.2-a+sve2` 编译 + QEMU vq=1 20k 差分
+  **0 失配**（wrapper 范围 fused 1956 / stack 572）。
+
+已知差距（后续项）：IR 发射器按 DAG 顺序扁平展开全部 4 组，而
+手写 fused C++ 用 `for` 循环（1392 fused / 95 stack / 1743 total）；
+扁平展开造成寄存器压力与栈流量偏大。下一步是「循环回卷」：按 tile
+结构（`p*.odd.k*.g*` / `p*.f2.k*`）把 DAG 重新发射成与 C++ 一致的
+四层循环，目标计数对齐 1392。生产候选仍以手写发射器为准，本切片
+证明「同一 DAG → 8-lane 代码」链路可用且可门禁。

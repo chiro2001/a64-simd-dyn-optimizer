@@ -11,7 +11,8 @@ from dct16_op_ir import (  # noqa: E402
     dct16_upstream_provenance, dct16_width_provenance,
     lower_pass1_fused8, lower_pass1_leaf, lower_pass1_odd,
     lower_pass1_perrow, lower_pass1_quarter, lower_pass2_odd_quarter,
-    lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_upstream)
+    lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_fused8,
+    lower_pass2_upstream)
 from dct16_rewrites import apply_rewrites  # noqa: E402
 
 
@@ -89,7 +90,7 @@ def main():
         pass
     print("DCT16 rewrites OK (tbl2_to_zip / merge_narrow8)")
     # 8-lane fused pass1 (VL=128/NEON baseline) + pass2 upstream.
-    f8 = lower_pass1_fused8() + lower_pass2_upstream()
+    f8 = lower_pass1_fused8() + lower_pass2_fused8()
     r8 = dct16_upstream_provenance(f8)
     assert r8["ok"], r8["issues"]
     assert r8["store_count"] == 512

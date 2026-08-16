@@ -14,8 +14,9 @@ from __future__ import annotations
 from typing import Dict, List, Optional
 
 from dct16_op_ir import G16, GT16_S32, T8E, lower_pass1_perrow, \
-    lower_pass1_quarter, lower_pass2_odd_quarter, \
-    lower_pass2_odd_quarter_legacy_even_sve, lower_pass2_upstream
+    lower_pass1_fused8, lower_pass1_quarter, lower_pass2_fused8, \
+    lower_pass2_odd_quarter, lower_pass2_odd_quarter_legacy_even_sve, \
+    lower_pass2_upstream
 from op_ir import Op
 
 
@@ -128,6 +129,12 @@ def _const_decls() -> str:
         _const_table("GT16", G16, "int16_t", 8),
         _const_table("GT16_S32", GT16_S32, "int32_t", 4),
         _const_table("T8E", T8E, "int32_t", 4),
+        "static const int16_t T8ODD16[4][8] = {\n"
+        "    { 89,  75,  50,  18, 89,  75,  50,  18 },\n"
+        "    { 75, -18, -89, -50, 75, -18, -89, -50 },\n"
+        "    { 50, -89,  18,  75, 50, -89,  18,  75 },\n"
+        "    { 18, -50,  75, -89, 18, -50,  75, -89 },\n"
+        "};",
         "static const int16_t CQ_LO[16][16] = {\n%s\n};" % "\n".join(cq_lo),
         "static const int16_t CQ_HI[16][16] = {\n%s\n};" % "\n".join(cq_hi),
         "static const int32_t T8E8[4][8] = {\n"
@@ -216,17 +223,33 @@ def _emit_pass1(ops: List[Op], legacy: bool = False) -> List[str]:
             ctype[out] = "int64x2_t"
         elif kind == "neon_reduce_narrow":
             nm = "_%s" % out
-            body.append("    const int32x4_t t01%s = vcombine_s32("
-                        "vmovn_s64(%s), vmovn_s64(%s));"
-                        % (nm, ins[0], ins[1]))
-            body.append("    const int32x4_t t23%s = vcombine_s32("
-                        "vmovn_s64(%s), vmovn_s64(%s));"
-                        % (nm, ins[2], ins[3]))
-            body.append("    const int32x4_t w%s = vpaddq_s32(t01%s, t23%s);"
-                        % (nm, nm, nm))
-            body.append("    int16x4_t %s = vrshrn_n_s32(w%s, %d);"
-                        % (out, nm, attrs["shift"]))
+            if attrs.get("mode") == "pair" and len(ins) == 2:
+                body.append("    const int32x4_t t%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[0], ins[1]))
+                body.append("    int16x4_t %s = vrshrn_n_s32(t%s, %d);"
+                            % (out, nm, attrs["shift"]))
+            else:
+                body.append("    const int32x4_t t01%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[0], ins[1]))
+                body.append("    const int32x4_t t23%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[2], ins[3]))
+                body.append("    const int32x4_t w%s = "
+                            "vpaddq_s32(t01%s, t23%s);"
+                            % (nm, nm, nm))
+                body.append("    int16x4_t %s = vrshrn_n_s32(w%s, %d);"
+                            % (out, nm, attrs["shift"]))
             ctype[out] = "int16x4_t"
+        elif kind == "neon_narrow4":
+            body.append("    int16x4_t %s = vmovn_s32(%s);"
+                        % (out, ins[0]))
+            ctype[out] = "int16x4_t"
+        elif kind == "neon_combine":
+            body.append("    int16x8_t %s = vcombine_s16(%s, %s);"
+                        % (out, ins[0], ins[1]))
+            ctype[out] = "int16x8_t"
         elif kind == "narrow4":
             rsh = "svqrshrnb_n_s32" if (legacy
                                         or attrs.get("mode") == "qrshrn") \
@@ -333,12 +356,15 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
                 ctype[out] = "svint16_t"
                 continue
             row = attrs["row"]
+            addr = "src + %d * line" % row
+            if "stride" in attrs.get("index", ""):
+                addr = "src + %d * stride" % row
             if attrs["half"] == "lo":
                 body.append("    const int16x8_t %s = vld1q_s16("
-                            "src + %d * line);" % (out, row))
+                            "%s);" % (out, addr))
             else:
                 body.append("    const int16x8_t %s = vld1q_s16("
-                            "src + %d * line + 8);" % (out, row))
+                            "%s + 8);" % (out, addr))
             ctype[out] = "int16x8_t"
         elif kind == "permute":
             pk = attrs["kind"]
@@ -496,17 +522,33 @@ def _emit_pass2(ops: List[Op], legacy: bool = False) -> List[str]:
             ctype[out] = "svint64_t"
         elif kind == "neon_reduce_narrow":
             nm = "_%s" % out
-            body.append("    const int32x4_t t01%s = vcombine_s32("
-                        "vmovn_s64(%s), vmovn_s64(%s));"
-                        % (nm, ins[0], ins[1]))
-            body.append("    const int32x4_t t23%s = vcombine_s32("
-                        "vmovn_s64(%s), vmovn_s64(%s));"
-                        % (nm, ins[2], ins[3]))
-            body.append("    const int32x4_t w%s = vpaddq_s32(t01%s, t23%s);"
-                        % (nm, nm, nm))
-            body.append("    int16x4_t %s = vrshrn_n_s32(w%s, %d);"
-                        % (out, nm, attrs["shift"]))
+            if attrs.get("mode") == "pair" and len(ins) == 2:
+                body.append("    const int32x4_t t%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[0], ins[1]))
+                body.append("    int16x4_t %s = vrshrn_n_s32(t%s, %d);"
+                            % (out, nm, attrs["shift"]))
+            else:
+                body.append("    const int32x4_t t01%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[0], ins[1]))
+                body.append("    const int32x4_t t23%s = vcombine_s32("
+                            "vmovn_s64(%s), vmovn_s64(%s));"
+                            % (nm, ins[2], ins[3]))
+                body.append("    const int32x4_t w%s = "
+                            "vpaddq_s32(t01%s, t23%s);"
+                            % (nm, nm, nm))
+                body.append("    int16x4_t %s = vrshrn_n_s32(w%s, %d);"
+                            % (out, nm, attrs["shift"]))
             ctype[out] = "int16x4_t"
+        elif kind == "neon_narrow4":
+            body.append("    int16x4_t %s = vmovn_s32(%s);"
+                        % (out, ins[0]))
+            ctype[out] = "int16x4_t"
+        elif kind == "neon_combine":
+            body.append("    int16x8_t %s = vcombine_s16(%s, %s);"
+                        % (out, ins[0], ins[1]))
+            ctype[out] = "int16x8_t"
         elif kind == "neon_mul":
             ck = const_cache[attrs["const_src"]]
             body.append("    int32x4_t %s = vmulq_s32(%s, %s);"
@@ -599,7 +641,11 @@ def emit_acle(func_name: str = "dynopt_dct16_sve2_shared",
               pass2: str = "upstream", pass2_k_tile: int = 1,
               pass2_pack_zip: bool = True,
               store_merge16: bool = True,
-              legacy: bool = False, even_sve: bool = False) -> str:
+              legacy: bool = False, even_sve: bool = False,
+              neon8: bool = False) -> str:
+    if neon8:
+        ops = lower_pass1_fused8() + lower_pass2_fused8()
+        return emit_neon8_ops(ops, func_name)
     if pass1 == "quarter":
         ops = lower_pass1_quarter(k_tile=pass1_k_tile,
                                   pack_zip=pass1_pack_zip,
@@ -698,6 +744,53 @@ extern "C" void dynopt_dct16_op_pass2(
 }
 """ % (IDX_REV, REV16_TBL, REV32_TBL, IDX_LO, IDX_QA, IDX_QB,
        HELPERS, _const_decls(), pass1, pass2_fn, func_name)
+
+
+def emit_neon8_ops(ops, func_name: str = "dynopt_dct16_sve2_shared") -> str:
+    """Emit the 8-lane fused pass1 + upstream pass2 DAG (NEON/SVE bridge).
+
+    Both passes are 128-bit NEON values with sdot.d bridge dots, so the
+    same NEON handler (_emit_pass2) emits both functions.
+    """
+    b1, _, _, _, _ = _emit_pass2(
+        [o for o in ops if o.tile_id.startswith("p1.")])
+    b2, _, _, _, _ = _emit_pass2(
+        [o for o in ops if o.tile_id.startswith("p2.")])
+    pass1 = "static inline void op_pass_4(" \
+            "const int16_t* src, int16_t* dst, intptr_t stride)\n{\n" \
+            "    const int line = 16;\n%s\n}" % "\n".join(b1)
+    pass2_fn = "static inline void op_pass_11(" \
+               "const int16_t* src, int16_t* dst)\n{\n"
+    pass2_fn += "    const int line = 16;\n%s\n}" \
+               % "\n".join(b2)
+    return """\
+// Generated by optimizer/ir/dct16_op_emit.py (neon8) -- do not edit.
+// 8-lane fused pass1 + upstream pass2 (VL=128 / NEON baseline).
+#include <arm_neon.h>
+#include <arm_sve.h>
+#include <arm_neon_sve_bridge.h>
+#include <cstdint>
+
+%s
+%s
+%s
+
+%s
+
+%s
+
+%s
+
+%s
+
+extern "C" void %s(const int16_t* src, int16_t* dst, intptr_t srcStride)
+{
+    int16_t coef[256];
+    op_pass_4(src, coef, srcStride);
+    op_pass_11(coef, dst);
+}
+""" % (IDX_REV, REV16_TBL, REV32_TBL, HELPERS, _const_decls(),
+       pass1, pass2_fn, func_name)
 
 
 def emit_from_combo(combo=None,
