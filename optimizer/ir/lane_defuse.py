@@ -39,6 +39,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
 
     if kind == "load":
         return 8, ()
+    if kind == "load_u8x16":
+        return 16, ()
     if kind == "load_diff":
         return 8, ()
     if kind == "load_diff16":
@@ -99,8 +101,13 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
             return 8, (m0, m1)
         raise ValueError("lane semantics: permute %s" % pk)
     if kind == "vget":
+        if attrs.get("elem") == "u8":
+            base = 0 if attrs["which"] == "lo" else 8
+            return 8, (tuple((base + i,) for i in range(8)),)
         base = 0 if attrs["which"] == "lo" else 4
         return 4, (tuple((base + i,) for i in range(4)),)
+    if kind == "vabal":
+        return 8, (_e(8), _e(8), _e(8))
     if kind == "widen_add":
         return 4, (_e(4), _e(4))
     if kind == "abs":
@@ -204,6 +211,8 @@ def lane_semantics(op: Op) -> Tuple[int, InputMaps]:
         return 4, (_e(4), _e(4))
     if kind == "scalar_sub":
         return 1, (((0,),),)
+    if kind == "scalar_add2":
+        return 1, (((0,),), ((0,),))
     if kind == "store":
         # store consumes all 4 input lanes (output lane coords in attrs).
         return 4, (_e(4),)

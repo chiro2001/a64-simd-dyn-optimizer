@@ -178,3 +178,18 @@ python3 tools/dag_pipeline.py --kernel satd-8 \
 
 “通用算子优化管线”从逐家族脚本收敛为单一工具入口；filter/asm 族
 后续接入只需实现各自的 DAG+发射器。
+
+### asm 族首个成员：SAD 16x16（2026-08-16）
+
+`sad_op_ir.py` + `sad_emit.py`：按上游 `sad_pp_neon`（vabal 链 +
+vaddlv）建宽度无关 DAG（133 ops），纯 NEON 发射；经
+`dag_pipeline.py` 门禁 vs 上游 `pixel_sad_16x16_neon_dotprod`：
+
+| 候选 | fused_uop | vq=1/2 差分 |
+| --- | ---: | --- |
+| IR NEON | **66/98** | 0 / 0 |
+| 现有 SVE2 候选 | 80/123 | 0 / 0 |
+
+asm 族（sad/ssd/mc/pixel-util）的“同图不同指令”结构确认，sad 已
+接入通用管线；其余成员（ssd 平方和、mc 平均、pixel-util）按同法
+继续。
