@@ -182,3 +182,23 @@ def register_canonicalize_dot(rewrites: Dict):
         return canonicalize_dot_ops(ops)
     rewrites["canonicalize_dot"] = rewrite
     return rewrite
+
+
+def derive_dot_lowering_flags(canon: List[Op]) -> Dict[str, int]:
+    """Translate selected dot lowerings back to emitter plan flags.
+
+    The grouped emitter parameterizes the same decisions as
+    `legacy_ex` (pass2 k2 via s16 sdot.d) and `legacy_k4` (pass2 k4 via
+    s16 sdot.d).  This closes the loop:
+      graph -> canonicalize -> select_dot_lowerings -> flags -> emitter.
+    """
+    flags = {"legacy_ex": 0, "legacy_k4": 0}
+    for op in canon:
+        if op.kind != "dot" or op.attrs.get("lowering") != "sdot.d":
+            continue
+        tid = op.tile_id
+        if tid.startswith("p2.k2"):
+            flags["legacy_ex"] = 1
+        elif tid.startswith("p2.k4"):
+            flags["legacy_k4"] = 1
+    return flags

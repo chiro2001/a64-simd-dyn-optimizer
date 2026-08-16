@@ -10,7 +10,11 @@ from dct16_op_ir import lower_pass1_leaf, lower_pass1_odd, lower_pass2_upstream
 from dct32_op_ir import lower_plan_to_ops
 from dct32_rewrites import apply_rewrites as apply32
 from rewrites_dct32 import dct32_spec_plan
-from dot_ir import dot_summary, select_dot_lowerings
+from dot_ir import (
+    derive_dot_lowering_flags,
+    dot_summary,
+    select_dot_lowerings,
+)
 
 
 class TestDct32DotDag(unittest.TestCase):
@@ -41,6 +45,20 @@ class TestDct32DotDag(unittest.TestCase):
         # op-level dot uop must drop by more than 1000 (search axis
         # benefit; full fused_uop measured separately by search_plans).
         self.assertLess(rep["total_uop"], 1024 * 1 + 1024 * 4 - 1000)
+
+    def test_derive_flags_closes_loop(self):
+        # upstream-exact: k2/k4 stay mul_saddv -> no legacy flags.
+        canon_u, _ = select_dot_lowerings(self.ops, "sve1",
+                                          "upstream-exact")
+        self.assertEqual(derive_dot_lowering_flags(canon_u),
+                         {"legacy_ex": 0, "legacy_k4": 0})
+        # legacy family with k2/k4 rewrites: sdot.d on pass2 k2/k4.
+        leg = apply32(self.ops, ["legacy_k2", "legacy_k4"])
+        canon_l, _ = select_dot_lowerings(leg, "sve1",
+                                          "legacy-internal-exact")
+        flags = derive_dot_lowering_flags(canon_l)
+        self.assertEqual(flags["legacy_ex"], 1)
+        self.assertEqual(flags["legacy_k4"], 1)
 
 
 class TestDct16DotDag(unittest.TestCase):

@@ -58,6 +58,9 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
   dot 节点选代价最低的合法 lowering，返回带 lowering 的图 + 报告
   （每节点替代、无合法项标记、总 uop 估计）——即指令搜索方案的
   单点实现；
+- `derive_dot_lowering_flags(canon)`：把选定的 lowering 翻译回发射器
+  的 plan 开关（`legacy_ex` / `legacy_k4`），闭环为
+  `图 → canonicalize → select → flags → 发射器 → 测量`；
 - `expand_dot_lowering()`：还原 legacy kind，兼容现有消费方；
 - `dot_summary()`：按 lowering/acc 统计，供报告。
 
@@ -83,6 +86,14 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
    `dot_segment` 与 `neon_mul` 同样归一后可跨 kernel 复用同一套
    lowering/代价表。
 
+### 测量链路已验证（2026-08-16）
+
+`tools/search_plans.py` 在本环境（qemu-aarch64 + 交叉 g++16 +
+`build/x265-8-clang-sve/libx265.a`）冒烟通过：18 语义 plan →
+12 唯一 lowering → 全测，best = `assign+segment+narrow4+derived+k2`
+**fused_uop 8292**（与 docs/20 v3.1 full-call 一致），20k 差分 0、
+零 scatter。下一步即可在该链路上跑规范化 dot 驱动的 lowering 枚举。
+
 ## 5. 使用示例
 
 ```python
@@ -100,6 +111,10 @@ for op in canon:
 canon, rep = select_dot_lowerings(ops, isa="sve1",
                                   contract="legacy-internal-exact")
 print(rep["selected"], rep["total_uop"])
+# 闭环：选定 lowering -> 发射器开关 -> search_plans 测量
+from dot_ir import derive_dot_lowering_flags
+flags = derive_dot_lowering_flags(canon)
+print(flags)  # {'legacy_ex': 1, 'legacy_k4': 1} 供发射器使用
 ```
 
 ## 6. 验证
@@ -114,6 +129,8 @@ print(rep["selected"], rep["total_uop"])
     了搜索轴收益（full fused_uop 由 search_plans 另行测量）；
 - 真实 dct16 DAG：256×`dot_segment` + 92×`neon_mul` 归一为同一
   `dot` 节点，SVE1 上均有合法 lowering；
+- 闭环测试：upstream-exact 下 `derive_dot_lowering_flags`=全 0；
+  legacy 族 + k2/k4 rewrite 后 = legacy_ex/legacy_k4 全 1；
 - 现有回归：`cd optimizer && python3 -m unittest discover -s ago -q`、
   `python3 -m unittest discover -s tools -p 'test_check_isa_level.py' -q`、
   `cd optimizer/ir && python3 -m unittest test_dot_ir test_dot_dag -q`。
