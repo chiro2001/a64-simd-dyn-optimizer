@@ -3,6 +3,40 @@
 目的：950（SVE2 2x256）首轮 E2E（用新 op 后端 dct16/dct32 候选），
 920B（NEON）回归基线；两者都出 bit-exact 门禁与 paired CI。
 
+## 0. 内网 E2E 测试媒体（2026-08-16 更新）
+
+内网机器（950/920B internal）无法 ssh 到公网 920B/710，下载走 GitHub：
+
+- Release：https://github.com/chiro2001/a64-simd-dyn-optimizer/releases/tag/e2e-media-20260816
+- 源视频：1416529-hd_1920_1080_30fps.mp4（7.5MB，md5
+  f081565cbee2ba7a43a0550035bd4099）
+- 复现命令：README-e2e-media.txt（同一 release 内）
+
+yuv 来源（已逐字节验证）：
+
+| 文件 | 源视频帧 | yuv md5 |
+| --- | --- | --- |
+| real_1080p_30f.yuv | 帧 0..29 | e20e4c9e5e82f338c6cdf05787cf6cd3 |
+| real_1080p_100f_b.yuv | 帧 100..199 | 0f0c65c1f54a19ca53927f6efd430016 |
+
+下载 mp4 后生成 yuv（目标机装 ffmpeg）：
+
+```sh
+# 30f
+ffmpeg -y -i 1416529-hd_1920_1080_30fps.mp4 \
+  -frames:v 30 -pix_fmt yuv420p -f rawvideo real_1080p_30f.yuv
+# 100f（帧 100..199；select 里的逗号按 shell 转义）
+ffmpeg -y -i 1416529-hd_1920_1080_30fps.mp4 \
+  -vf "select='gte(n\\,100)'" -frames:v 100 \
+  -pix_fmt yuv420p -f rawvideo real_1080p_100f_b.yuv
+```
+
+注意：`--frames 100` 不会补帧，输入必须是真实 100 帧的
+`real_1080p_100f_b.yuv`（311,040,000 B），否则“100f”读数实为 30f
+（2026-08-16 曾踩坑，见 reports/entropy-ablation-920b-20260816.txt）。
+公网机器上已有副本：920B `/home/chiro/e2e-media/`、710
+`/root/e2e-media/`（同一 mp4 + README）。
+
 ## 1. 950 快速测试
 
 ### 前置
