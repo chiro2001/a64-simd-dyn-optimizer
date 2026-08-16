@@ -9,6 +9,7 @@
 set -euo pipefail
 
 REPO="${AGO_REPO:-/root/projects/a64-simd-dyn-optimizer}"
+rm -rf /tmp/e2e
 mkdir -p /tmp/e2e
 tar -C /tmp/e2e -xzf /tmp/e2e-full.tar.gz
 
@@ -31,7 +32,7 @@ objs = ' '.join(sorted(glob.glob('/tmp/e2e/work/*.o')) +
                 ['/tmp/e2e/out/dynopt_patch.o'])
 lines = open(p).read().splitlines()
 for i, line in enumerate(lines):
-    if line.startswith('build libx265.so.216:') and 'dynopt_patch.o' not in line:
+    if line.startswith('build libx265.so.216:'):
         # Drop previously injected dynopt objects before adding this bundle.
         line = re.sub(r'(?: /tmp/[^ ]+\.o)+', '', line)
         lines[i] = line.replace(' | x265.def', ' ' + objs + ' | x265.def')
