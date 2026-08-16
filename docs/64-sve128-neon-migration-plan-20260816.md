@@ -64,6 +64,19 @@ VL=128 下均 ~99.93% lanes 失配（20.47M/20.48M）。两 kernel 的迁移
 4. 下一步：dct32 继续叠加 k 族结构轴（k0_epack/k2k4 的 8-lane
    版），以及 NEON lowering（920B/N1）。
 
+### 3.1.0 8-lane k 族轴静态评估（2026-08-16）
+
+8-lane 下各 k 族轴的静态收益上限：
+- k0/k16 共享（c0=c16=64）：每 4 行组省 1 vpadd → 全程 ~8 op
+  （≈0.1%）；
+- k≡4 mod8 改 sdot.d（EEO s16 打包）：每 k 省 ~0.25 op（<0.3%）；
+- odd 行 sdot_indexed 常量打包：8-lane 下索引只能选同一 64-bit
+  组，无法像 VL=256 那样双族合并，收益接近于零。
+
+结论：fused quarter 已吃掉 8-lane 下可用的结构空间；剩余轴
+<1%，且 710/920B 实机显示指令数收益不转 E2E，优先级让位于
+IR 长期项（8-lane op 发射器）与 N1/950 的实测推进。
+
 ### 3.1.1 NEON lowering（2026-08-16 已落地）
 
 `tools/emit_dct16_vl128.py --isa neon` / `tools/emit_dct32_vl128.py
