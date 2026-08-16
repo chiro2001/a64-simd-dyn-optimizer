@@ -1,49 +1,57 @@
-# N1 四臂 100f 组合归因（2026-08-16，expert-advice round-0025 P3 执行）
+# N1 四臂 100f 组合归因（2026-08-16 晚，expert-advice round-0025 P3 执行）
+
+> 修正：初版用 `/tmp/real_1080p_30f.yuv`（只有 30 帧）+ `--frames 100`
+> 实为 30f，作废；本版为真实 100 帧输入
+> `/tmp/real_1080p_100f_b.yuv`（311,040,000 B）。
 
 ## 方法
 
-- 机器：N1（Ampere 类，NEON-only，2 核共享节点），1080p 100f 单线程
-  （taskset -c 0，--pools 0 --frame-threads 1 --no-wpp
+- 机器：N1（Ampere 类，NEON-only，2 核共享节点），1080p 真实 100f
+  单线程（taskset -c 0，--pools 0 --frame-threads 1 --no-wpp
   --lookahead-threads 0 --b-adapt 0）；
 - 注入：LD_PRELOAD .so（本地交叉构建后 scp，不触碰 N1 工作树）：
   - best9：`build/n1-best9.so`（13 kernel，best9 集）；
   - ir-dct：`build/n1-ir-dct.so`（`AGO_IR_DCT=1`，dct16/dct32 IR NEON）；
   - best9-ir-dct：`build/n1-best9-ir-dct.so`（15 kernel 组合）；
 - 协议：每轮四臂随机顺序各跑一次，共 10 轮（两批 5 轮）；same-machine
-  md5 门先各跑一次，全部 = e176725c1c26f311a78245f13b7c924f；
+  md5 门各臂一次，全部 = 0745037284723547973824e0a24d4c57（与历史
+  N1 100f 冻结哈希一致）；
 - 统计：按轮配对，bootstrap95（10000 次，seed 0xB057）；
   diff = base - opt，>0 表示候选更快。
-- 工具：`scripts/freeze-four-arm-n1.sh`。
+- 工具：`scripts/freeze-four-arm-n1.sh`（TAG/SKIP_MD5 可重入追加轮次）。
 
-## 结果（100f，ms）
+## 结果（真实 100f，ms）
+
+分两批（各 5 轮）中位：
+
+| 批 | base | best9 | ir-dct | best9-ir-dct |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | 33140 | 33066（-0.22%） | 33005（-0.41%） | 32915（-0.68%） |
+| 2 | 33027 | 32826（-0.61%） | 32981（-0.14%） | 32917（-0.33%） |
+
+合并 10 轮 paired bootstrap：
 
 | 臂 | base 中位 | opt 中位 | paired diff | Δ% | bootstrap95 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| best9 | 12043 | 12010 | +65.0 | +0.54% | [-132, +120] ms |
-| ir-dct | 12043 | 12084 | -14.0 | -0.12% | [-102, +126] ms |
-| best9-ir-dct | 12043 | 12012 | +22.5 | +0.19% | [-42, +119] ms |
-
-分两批看：第一批（5 轮）best9 -0.47%、ir-dct +0.07%、best9-ir-dct
--0.37%；第二批（5 轮）best9 +1.10%、ir-dct +0.85%、best9-ir-dct
-+0.10%——批间方向翻转，说明 N1 共享节点噪声主导（含 base 14391 ms
-离群轮）。
+| best9 | 33028 | 32958 | +83.0 | +0.25% | [-93.5, +121.0] ms |
+| ir-dct | 33028 | 32993 | +7.0 | +0.02% | [-114.5, +151.0] ms |
+| best9-ir-dct | 33028 | 32916 | +33.5 | +0.10% | [-85.0, +322.0] ms |
 
 ## 结论
 
-1. 全部臂 bit-exact（e176…），无码流回归。
-2. 100f/10 轮下三臂均无法与 base 统计区分（CI 全跨零）；best9 中位
-   方向为候选更快（+0.5%），但不足以晋级声明。
-3. **IR-DCT 未在 best9 之上叠加**：best9-ir-dct ≈ best9；此前 30f
-   5+5+5 的 IR -1.80% 未在 100f 复现，方向不稳定，N1 上不作为单独
-   收益声明。
-4. 建议：N1 发布集维持 best9；IR-DCT 候选保留，待 950/920B 证据或
-   低噪声节点（710 或独占节点）复测；如需 N1 定版，增加轮次或改用
-   710 做同组合确认。
+1. 全部臂 bit-exact（07450372…），无码流回归。
+2. 真实 100f/10 轮下三臂 CI 全部跨零：N1 共享 2 核噪声主导，无法统计
+   区分；方向均为候选更快（best9 +0.25% 中位最优），但不足以下晋级
+   结论。
+3. **IR-DCT 未在 best9 之上叠加**：best9-ir-dct 中位收益不高于 best9
+   单独；此前 30f 的 IR -1.80% 未在真实 100f 复现。N1 发布集维持
+   best9，IR-DCT 候选保留。
+4. 若需 N1 定版，建议独占节点或更多轮次（≥20 轮）交错复测。
 
 ## 产物
 
-- 脚本：`scripts/freeze-four-arm-n1.sh`（TAG/SKIP_MD5 可重入追加轮次）
-- 原始计时：`/tmp/n1-four-arm-ms.txt`（批 1）、
-  `/tmp/n1-four-arm-ms-run2.txt`（批 2）
+- 脚本：`scripts/freeze-four-arm-n1.sh`
+- 原始计时：`/tmp/n1-four-arm-ms-100f.txt`（批 1）、
+  `/tmp/n1-four-arm-ms-100f2.txt`（批 2）
 - bundles：`build/n1-best9.so`、`build/n1-ir-dct.so`、
   `build/n1-best9-ir-dct.so`
