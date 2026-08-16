@@ -1,0 +1,53 @@
+SVE1 vs SVE2 instruction-set isolation on Yitian 710 (Neoverse-N2, SVE2 VL=128)
+================================================================================
+Date: 2026-08-16
+Host: root@47.96.166.168
+CPU:  Neoverse-N2, 2 cores, 3.0 GHz
+ISA:  asimd sve sve2 sveaes svepmull svebitperm svesha3 svesm4
+      svei8mm svebf16 i8mm bf16 (lscpu flags)
+SVL:  16 bytes = 128 bits (svcntb)
+Protocol: docs/58-sve1-vs-sve2-128-protocol.md (pre-registered)
+Script: scripts/isa-sve1-vs-sve2-paired.sh
+
+Experiment (satd8 8x8, batch=4096, samples=20, taskset -c 0, 3 repeats)
+------------------------------------------------------------------------
+Implementation                          median CNTVCT ticks
+NEON baseline (x265 primitives.satd)    2141 2141 2141
+SVE1 pack-2 (CADD90 emulated via tbl)   2286 2286 2286
+SVE2 pack-2 (native svcadd_s16 x8)      1720 1727 1719
+
+Ratios (median of medians)
+--------------------------
+SVE1 / NEON  = 1.068x slower  (+6.8%)
+SVE2 / NEON  = 0.803x time    (1.245x faster, -19.7%)
+SVE2 / SVE1  = 0.752x time    (1.329x faster, -24.8%)
+
+Interpretation
+--------------
+On the same microarchitecture and same 128-bit vector length, native
+SVE2 CADD90 removes the SVE1 emulation chain (tbl + sign + mul + add).
+SVE2 satd8 pack-2 is ~33% faster than the SVE1 emulated version and
+~25% faster than the NEON baseline. This directly supports the ISA
+audit in docs/53: SVE1's lack of CADD90 is a real structural penalty,
+not just a QEMU/static-count artifact.
+
+Raw output from scripts/isa-sve1-vs-sve2-paired.sh:
+---------------------------------------------------
+== NEON baseline ==
+satd8,neon,median=2141
+satd8,neon,median=2141
+satd8,neon,median=2141
+== SVE1 (CADD90 emulation) ==
+satd8,cand,median=2286
+satd8,cand,median=2286
+satd8,cand,median=2286
+== SVE2 (native cadd) ==
+satd8,cand,median=1720
+satd8,cand,median=1727
+satd8,cand,median=1719
+
+Artifacts
+---------
+- Source SVE1: experiments/isa-sve1-satd8-20260816/pack-2_compute-sve.cpp
+- Source SVE2: experiments/isa-sve2-satd8-128/compute-sve_pack-2.cpp
+- Remote setup: /root/projects/a64-simd-dyn-optimizer on 47.96.166.168

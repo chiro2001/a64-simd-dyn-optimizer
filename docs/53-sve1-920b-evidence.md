@@ -93,3 +93,22 @@ PMULLB/T = SVE2（128-bit 形式另需 FEAT_SVE_PMULL128）。
 zip/uzp/trn 直接做，不必只用 tbl 模拟；**SDOT .D,.H,.H（16→64 点积）
 在 SVE1 可用**，interp8 path-A 的 sdot.d 切片不构成 SVE2 依赖。真正
 限制 920B 的仍是 cadd90 模拟链、宽乘缺失与 uaddv/ld1b 长依赖链。
+
+## 7. SVE2-128 同机隔离实测（2026-08-16，倚天710）
+
+一台 **Neoverse-N2（SVE2，VL=128）** 上完成 SVE1→SVE2 指令集隔离实验
+（协议 docs/58；报告 reports/isa-sve1-vs-sve2-128-20260816.txt）：
+
+| 实现 | satd8 8x8 中位（CNTVCT） | 相对 NEON |
+| --- | ---: | ---: |
+| NEON 基线 | 2141 | 1.000 |
+| SVE1 pack-2（CADD90 模拟） | 2286 | **1.068× 慢** |
+| SVE2 pack-2（原生 svcadd x8） | 1720 | **0.803×（快 24.5%）** |
+
+同机同宽下 SVE2 原生 CADD90 比 SVE1 模拟快 **1.33×**，直接验证了
+“SVE1 缺 CADD90 是结构代价”的判断；SVE2 赢点不是单纯宽度红利。
+
+**best9-950 在 VL=128 的 20k 正确性**（reports/vl128-best9-950-
+correctness-20260816.txt）：dct8/interp8-16/32/interp8-vps/sa8d16/
+熵族/sao-stats 全通过；**satd-8、interp8vpp-16/32 失败**，它们隐含
+VL=256 假设。VL=128 机器部署须过滤这三项或改用纯 NEON/VL 自适应变体。

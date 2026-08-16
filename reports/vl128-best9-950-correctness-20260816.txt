@@ -1,0 +1,56 @@
+best9-950 candidate correctness on SVE2 VL=128 (Yitian 710 / Neoverse-N2)
+==========================================================================
+Date: 2026-08-16
+Host: root@47.96.166.168 (Neoverse-N2, SVE2, svcntb=16, VL=128)
+Object set: build/dynopt-inject-best9-950 (21 kernels / 41 slots)
+Method: native g++ on the VL=128 host, generated manifest verifiers with
+  vl_bytes=16 (prctl PR_SVE_SET_VL=16), 20k cases unless noted.
+Reference lib: build/x265-8-clang-sve/libx265.a (contains upstream SVE/SVE2
+  primitives used by the manifest contracts).
+
+Results
+-------
+kernel               result
+cost-c1c2-flag       PASS (60k production-style differential)
+cost-coeff-remain    PASS (20k)
+cost-coeff-nxn       PASS (20k)
+sa8d16               PASS (20k)
+satd-8               FAIL (20k/20k vs scalar SATD oracle; candidate is SVE2
+                      pack/generic lowering that assumes VL=256)
+scan-pos-last        PASS (20k)
+interp8-vps-8x8      PASS (20k)
+interp8-vps-8x16     PASS (20k)
+interp8-vps-16x16    PASS (20k)
+interp8-vps-16x32    PASS (20k)
+interp8-vps-32x16    PASS (20k)
+interp8-vps-32x32    PASS (20k)
+sao-stats-bo         PASS (20k)
+sao-stats-e1         PASS (20k)
+sao-stats-e2         PASS (20k)
+sao-stats-e3         PASS (20k)
+dct8                 PASS (20k, 1,280,000 lanes, 0 mismatches)
+interp8vpp-16        FAIL (20k, 7,641,431 mismatches)
+interp8vpp-32        FAIL (20k, 6,833,455 mismatches)
+interp8-16           PASS (20k)
+interp8-32           PASS (20k)
+
+Interpretation
+--------------
+- Most best9-950 entries are either pure NEON, scalar, or VL-agnostic SVE2;
+  they are safe on SVE2-128.
+- Three SVE2-specific candidates are NOT safe on VL=128:
+  * satd-8 (the SVE2 pack-2 / generic recipe uses svptrue predicates and a
+    16-lane packed layout that only works at VL=256),
+  * interp8vpp-16/32 (loads a full 16-pixel row with svptrue_b16, which at
+    VL=128 carries only 8 pixels and therefore produces wrong output).
+- dct8 uses NEON registers + SVE dot via arm_neon_sve_bridge and is VL-safe.
+- interp8-16/32 (horizontal sdot-d path) and interp8-vps (NEON inline) pass.
+
+Action
+------
+For a VL=128 SVE2 machine, do not deploy best9-950 as-is. Either:
+1. filter out satd-8/interp8vpp-16/interp8vpp-32 from the SVE2 bundle; or
+2. generate VL=128-native variants:
+   - satd-8: use the existing pure-NEON best_sve1.cpp / AGO NEON cover,
+   - interp8vpp-16/32: replace svptrue_b16 row loads with whilelt/16-byte
+     fixed-width loads (the current kernels are written for VL=256).

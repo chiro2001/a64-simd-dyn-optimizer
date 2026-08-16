@@ -39,6 +39,22 @@ ISA 与宽度两个变量。一台 **SVE2 且 VL=128** 的机器可以在同机�
 - 结果回填 reports/，与 920B（SVE1-256）和 950（SVE2-256，若有）
   一起构成 ISA x VL 矩阵。
 
+## 执行状态（2026-08-16，倚天710 / Neoverse-N2 / SVE2 VL=128）
+
+已完成：
+
+- satd8 8x8 同机三向 paired：
+  - NEON 2141、SVE1（CADD90 模拟）2286、SVE2（原生 svcadd）1720；
+  - SVE2/SVE1 时间比 0.752（快 1.33×），SVE2/NEON 时间比 0.803。
+  - 报告：reports/isa-sve1-vs-sve2-128-20260816.txt。
+- best9-950 在 VL=128 的 20k 正确性交叉验证：
+  - 通过：dct8、interp8-16/32、interp8-vps、sa8d16、scan-pos-last、
+    cost-c1c2/cost-coeff-remain/cost-coeff-nxn、sao-stats-bo/e1/e2/e3；
+  - 失败（隐含 VL=256）：**satd-8、interp8vpp-16/32**。
+  - 报告：reports/vl128-best9-950-correctness-20260816.txt。
+- 结论：SVE2 指令集提升在 VL=128 上确认；但 best9-950 不能原样注入
+  VL=128 机器，需过滤/改造失败三项。
+
 ## 用途
 
 - 验证“SVE2 指令（cadd/smull/smlal/zip/uzp/trn/tbl2）相对 SVE1 的

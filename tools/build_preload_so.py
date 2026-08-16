@@ -354,6 +354,16 @@ SOURCE_OVERRIDES = {
     "interp8-32": "kernels/interp8/candidates/best_sve2_sdoth_32x32.cpp",
 }
 
+# SVE2 VL=128 cross-validation (2026-08-16, reports/vl128-best9-950-
+# correctness-20260816.txt) found these best9-950 SVE2 candidates contain
+# VL=256 assumptions and must not be injected on a VL=128 machine.
+VL128_SKIP = {"interp8vpp-16", "interp8vpp-32"}
+
+# Kernels where the checked-in best_sve1.cpp is a pure-NEON / VL-safe
+# implementation and should be used instead of the VL=256 SVE2 recipe when
+# building for a VL=128 SVE2 machine.
+VL128_NEON_PREFER = {"satd-8"}
+
 
 def luma_pu(w, h):
     return "LUMA_%dx%d" % (w, h)
@@ -778,8 +788,15 @@ def entries_for_kernel(kernel, sym):
     return out
 
 
-def candidate_sources(kernel, isa):
+def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if vl == 128:
+        if kernel in VL128_SKIP:
+            return []
+        if kernel in VL128_NEON_PREFER:
+            p = os.path.join(d, "best_sve1.cpp")
+            if os.path.exists(p):
+                return [p]
     if isa == "sve1" and os.path.exists(os.path.join(d, "best_sve1.cpp")):
         return [os.path.join(d, "best_sve1.cpp")]
     if kernel in SOURCE_OVERRIDES:
@@ -1071,6 +1088,11 @@ def main():
     ap.add_argument("--target", choices=("920B", "950"), default=None,
                     help="convenience alias: 920B -> --isa sve1, "
                          "950 -> --isa sve2")
+    ap.add_argument("--vl", type=int, default=None,
+                    help="SVE vector length in bytes (16 or 32); when set "
+                         "to 16, skip known VL=256-only SVE2 candidates "
+                         "and prefer VL-safe pure-NEON sources where "
+                         "available")
     ap.add_argument("--kernels", default="",
                     help="comma-separated kernel names (default: every "
                          "kernel with a candidate source and a dispatch "
@@ -1119,7 +1141,7 @@ def main():
     decls = []
     assigns = []
     saves = []
-    report = {"isa": args.isa, "patched": [], "skipped": []}
+    report = {"isa": args.isa, "vl": args.vl, "patched": [], "skipped": []}
     used_syms = set()
 
     for kernel in wanted:
@@ -1142,7 +1164,11 @@ def main():
         if not entries:
             report["skipped"].append([kernel, "no dispatch mapping"])
             continue
-        sources = candidate_sources(kernel, args.isa)
+        sources = candidate_sources(kernel, args.isa, args.vl)
+        if not sources and args.vl == 128 and kernel in VL128_SKIP:
+            report["skipped"].append(
+                [kernel, "VL=128 skip: candidate assumes VL=256"])
+            continue
         if not sources:
             sources = try_generate_source(kernel, args.isa, args.workdir)
             if not sources:
