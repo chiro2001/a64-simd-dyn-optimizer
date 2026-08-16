@@ -56,11 +56,13 @@
 ## 3. 下一步（组合层）
 
 1. 把 op_pass_4/op_pass_11 的 op 序列显式化为可遍历结构（从发射器
-   源码提取 op 表），逐 op 应用 §1-1 的算子证书做归纳检查（算子层
-   已完整，归纳为机械替换）——**已落地**：tools/composition_check.py
-   静态解析 op_pass_4/11 全部语句，验证仅由已认证 dual 原语（15 种）
-   与按组逐 lane 的 SVE 内建（4 种）构成，0 未知语句；并记录 7 处
-   store 足迹模式（dst + 16*k + i，k∈{0,4,8,12}，i=4 行组基址）；
+  源码提取 op 表），逐 op 应用 §1-1 的算子证书做归纳检查（算子层
+  已完整，归纳为机械替换）——**已落地**：tools/composition_check.py
+   静态解析 dct16/dct32 的 op_pass_4/11 全部语句，验证仅由已认证
+   dual 原语（dct16 15 种 / dct32 14 种）与按组逐 lane 的 SVE 内建
+   （4 种）构成，0 未知语句；并记录 store 足迹模式（dct16 7 处 /
+   dct32 8 处；dct16 为 dst + 16*k + i，k∈{0,4,8,12}，i=4 行组
+   基址）；
 2. 若需更强保证：对舍入原语（rshrn）用 SMT 位向量证
    `(x + 2^(S-1)) >> S` 与 vqrshrun 语义一致（标量级），再把算子
    证书嵌入归纳证明；SMT 超预算则标 `test-obligation`。
@@ -68,8 +70,9 @@
 ## 4. 验收
 
 - 算子层：`tools/dual_lane_cert.py` CERT PASS（已达成，14 原语）；
-- 组合层：`tools/composition_check.py` **COMPOSITION PASS**（0 未知
-  语句；op 序列仅含已认证/按组逐 lane 算子；store 足迹模式已记录）
-  + 20k QEMU 差分（已有门禁复用）；
+- 组合层：`tools/composition_check.py` **COMPOSITION PASS
+  （dct16=True dct32=True）**（0 未知语句；op 序列仅含已认证/按组
+  逐 lane 算子；store 足迹模式已记录）+ 20k QEMU 差分（已有门禁
+  复用）；
 - 完整声明仅在组合/足迹层完成后可宣称（docs/72 的跨 VQ 差分仍为
   必要但非充分证据）。

@@ -17,6 +17,8 @@ class CompositionCheckTest(unittest.TestCase):
             capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn("COMPOSITION PASS", r.stdout)
+        self.assertIn("dct16=True", r.stdout)
+        self.assertIn("dct32=True", r.stdout)
         self.assertNotIn("UNKNOWN statements", r.stdout)
 
 

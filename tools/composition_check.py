@@ -25,6 +25,10 @@ sys.path.insert(0, "optimizer/ir")
 from dct16_dual_sve_emit import (  # noqa: E402
     _PROLOGUE, _ODD_LOOP, _PASS4_K2_LOOP, _PASS11_K2_LOOP, _EVEN_LOOP,
 )
+from dct32_dual_sve_emit import (  # noqa: E402
+    _PROLOGUE as _PROLOGUE32, _ODD_LOOP as _ODD_LOOP32,
+    _K2_LOOP_PASS1, _K2_LOOP_PASS2, _K4_LOOP, _EVEN_LOOP as _EVEN_LOOP32,
+)
 
 
 # Certified by tools/dual_lane_cert.py (operator layer).
@@ -119,6 +123,7 @@ def main():
     all_text = _PROLOGUE + _ODD_LOOP + _PASS4_K2_LOOP + _PASS11_K2_LOOP \
         + _EVEN_LOOP
     counts, unknown, stores = classify(all_text)
+    print("== dct16 ==")
     print("certified dual ops used:",
           sorted(k for k in counts if k in CERTIFIED_DUAL))
     print("groupwise ops used:",
@@ -127,13 +132,30 @@ def main():
     print("store statements:", len(stores))
     for s in stores:
         print("  STORE:", s)
+    ok16 = not unknown
     if unknown:
         print("UNKNOWN statements (%d):" % len(unknown))
         for why, s in unknown[:20]:
             print("  [%s] %s" % (why, s[:160]))
-        return 1
-    print("COMPOSITION PASS")
-    return 0
+
+    text32 = (_PROLOGUE32 + _ODD_LOOP32 + _K2_LOOP_PASS1
+              + _K2_LOOP_PASS2 + _K4_LOOP + _EVEN_LOOP32)
+    counts32, unknown32, stores32 = classify(text32)
+    print("== dct32 ==")
+    print("certified dual ops used:",
+          sorted(k for k in counts32 if k in CERTIFIED_DUAL))
+    print("groupwise ops used:",
+          sorted(k for k in counts32 if k in GROUPWISE))
+    print("unique op kinds:", len(counts32))
+    print("store statements:", len(stores32))
+    ok32 = not unknown32
+    if unknown32:
+        print("UNKNOWN statements (%d):" % len(unknown32))
+        for why, s in unknown32[:20]:
+            print("  [%s] %s" % (why, s[:160]))
+    print("COMPOSITION PASS dct16=%s dct32=%s"
+          % (ok16, ok32))
+    return 0 if (ok16 and ok32) else 1
 
 
 if __name__ == "__main__":
