@@ -89,17 +89,7 @@ pass 优化 → 按目标机指令成本表做有界 cover/布局选择 → 20k 
 也可直接用 `--target 920B|950`，等价于 `--isa sve1|sve2` +
 对应 MCA profile。
 
-```sh
-# 920B：生成原生 SVE1 候选（gen 后端会自动使用 CADD90 的 SVE1 精确替换、
-# NEON-bridge 窄化等等价 lowering）
-python3 tools/search_sve2_layouts.py --kernel sa8d --backend gen --isa sve1 \
-  --outdir experiments/isa-sve1/sa8d --workers 4 --mca-top 5 \
-  --mca-bin /home/chiro/llvm-src/build-mca/bin/llvm-mca
-
-# 950：只允许 SVE2.0 及以下（interp8 会自动退回 sdot-d path-A，不搜索 sdot.h）
-python3 tools/search_sve2_layouts.py --kernel interp8 --target 950 \
-  --outdir experiments/isa-sve2/interp8 --workers 4
-```
+具体命令见 [docs/68](docs/68-tools-usage-20260816.md) §2。
 
 已用完整 20k 差分验证的 SVE1 原生候选示例：
 
@@ -186,18 +176,8 @@ CNTVCT 比率排序（见 [docs/48](docs/48-preload-and-isa-profiles.md) §9）�
 把对应函数指针替换为本项目候选；也可手动调用 `dynopt_init()` 或
 `dynopt_patch_primitives()`。
 
-```sh
-# 构建 950 可用的 SVE2 注入库（自动跳过不兼容 kernel）
-python3 tools/build_preload_so.py --isa sve2 \
-  --out build/dynopt-x265-sve2.so --kernels dct8,sa8d16,interp8vpp-16
-
-# 构建 920B 可用的 SVE1 注入库（dct32 自动使用 best_sve1）
-python3 tools/build_preload_so.py --isa sve1 \
-  --out build/dynopt-x265-sve1.so --kernels dct8,dct32,scale2d
-
-# 使用
-LD_PRELOAD=/abs/path/build/dynopt-x265-sve2.so x265 --input ... --output ...
-```
+用法示例（含 LD_PRELOAD）见 [docs/68](docs/68-tools-usage-20260816.md)
+§5。
 
 构建报告（`--json`）会列出实际 patch 的 kernel/slot 和跳过原因；当前只
 支持 8-bit x265。全 kernel 扫描下 sve2 可 patch 153 个、sve1 原生 79 个
@@ -207,31 +187,14 @@ ISA 限制见
 
 对静态链接或不想用预加载的环境，可直接把候选编进 x265：
 
-```sh
-scripts/build-x265-injected.sh --isa sve1 --kernels sa8d,interp8 \
-  --build-dir build/x265-8-cross-sve2 --inject-out build/dynopt-inject
-```
-
-脚本会重编带 patch 的 `primitives.cpp`、把候选对象并入 `libx265.a`，
-再链接运行自检程序；源码随后恢复。
+`scripts/build-x265-injected.sh` 会重编带 patch 的 `primitives.cpp`、
+把候选对象并入 `libx265.a` 再链接自检程序（命令见 docs/68 §5）。
 
 ## 常用入口
 
-```sh
-scripts/doctor.sh                       # 环境体检
-scripts/bootstrap.sh                    # 幂等安装缺失工具
-scripts/quick-test-real-machine.sh <920b|950> [report]  # 内网实机快速测试
-python3 tools/test_gen_emit.py          # 通用发射器冒烟回归（69/69）
-python3 tools/enumerate_x265_simd.py    # 覆盖清点（29/29，todo=0）
-python3 tools/search_sve2_layouts.py --kernel <k> --workers 4 \
-  --outdir experiments/m30-<k>-search/layout-search \
-  --mca-top 5 --mca-bin /home/chiro/llvm-src/build-mca/bin/llvm-mca
-python3 tools/build_preload_so.py --isa sve2 --out build/dynopt-x265.so
-python3 tools/check_isa_level.py --object <candidate.o> --level sve2
-scripts/verify-preload-real-machine.sh <user@host> sve1  # 920B 真机验证
-scripts/quick-test-real-machine.sh <950|920b> [report]  # 实机快速测试
-tools/parse_quick_report.py             # paired 结果回填/验收表
-```
+全部命令行入口（搜索/验证/注入/实机/数据库/诊断，含稳定性标注）见
+[docs/68](docs/68-tools-usage-20260816.md)；agent 操作契约见
+[AGENTS.md](AGENTS.md)。
 
 内网 920B/950 的快速实测流程、候选清单与已知问题见
 [docs/49](docs/49-quick-test-internal-20260815.md)。

@@ -10,7 +10,8 @@
   `docs/59-history-20260816.md`）。
 - 专题：docs/63（950/920B 内网测试）、docs/64（SVE128/NEON 迁移）、
   docs/65（IR 粒度审计）、docs/66（多 ISA 家族全景）、docs/67
-  （kernel 测试数据库）、docs/52（AGO 规划）。
+  （kernel 测试数据库）、docs/68（工具用法手册，含稳定性标注）、
+  docs/52（AGO 规划）。
 - 实测报告：`reports/`；顶级模型建议：`expert-advice/round-NNNN/`
   （含 `decision.md`，执行 agent 必须处理每条建议的 accept/reject/
   defer）。
@@ -67,3 +68,37 @@ python3 tools/kernel_db.py export-md
   `python3 -m unittest discover -s optimizer/ago`。
 - 结果、报告、DB 行、docs 更新一起提交，并推送到 origin/yitian/
   github 三端。
+
+## 5. 工具用法速查
+
+完整清单见 [docs/68](docs/68-tools-usage-20260816.md)；下面是高频
+命令（beta = 接口可能调整）。
+
+```sh
+# 数据库（beta）：任何测量结果必须入库
+python3 tools/kernel_db.py add 'kernel=<k> variant=<v> machine=<m> ...'
+python3 tools/kernel_db.py export-md
+
+# IR 通用管线（beta）：DAG -> defuse -> emit -> QEMU 差分 -> 计数
+python3 tools/dag_pipeline.py --kernel <k> --func <sym> \
+  --dag <module>:<fn> --emit <module>:<fn> \
+  [--march armv8.2-a+dotprod]
+
+# 注入（stable）
+python3 tools/build_preload_so.py --isa sve1 --vl 16 \
+  --kernels k1,k2 --opt=-O3 --out build/xxx.so
+
+# 实机 A/B（beta）：920B 消融 / 多臂 100f / 950 一键
+KERNELS=... scripts/freeze-ablate.sh <label> [host]
+scripts/freeze-four-arm-n1.sh [host] [rounds]   # ARMS/SO_*/REPO 可覆盖
+scripts/freeze-950-dct.sh <user@host>           # GATE=1 附 TestBenchLite
+
+# 回归（提交前必跑）
+python3 -m unittest discover -s tools -p 'test_*.py'
+python3 -m unittest discover -s optimizer/ir
+python3 -m unittest discover -s optimizer/ago
+```
+
+不稳定的工具（使用前读源码）：`dag_pipeline.py`、`kernel_db.py`、
+`freeze-ablate.sh`、`freeze-four-arm-n1.sh`、`freeze-950-dct.sh`、
+`trace_entropy_calls.py`/`entropy_trace_replay`、`parse_quick_report.py`。
