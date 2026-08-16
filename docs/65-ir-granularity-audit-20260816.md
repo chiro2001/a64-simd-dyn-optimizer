@@ -152,3 +152,21 @@ A/B：
 dct32 翻倍）；N1 5+5+5 交错下 IR 中位 -1.80% vs 手写 -0.93%（此前
 3+3 的「≈0」为机器噪声），710 与手写一致——「自动重 lowering」链路
 从计数对齐推进到实机等效（不劣）。
+
+## 7. 第八步已落地：lane 粒度 def-use 边（2026-08-16）
+
+`optimizer/ir/lane_defuse.py`：把 §2 指出的缺口（“Op 的 inputs/out
+是整值引用，没有显式 per-lane def-use 边”）补上——对 fused8 DAG 的
+每个 op 推导「输出 lane → 输入 lane」消费映射（含 rev16/rev32/
+zip1q/zip2q/rev64q、vget/widen_add、dot 4-term 分组、reduce/padd
+配对树等），并验证：
+
+- 每个被消费的 lane 都有定义且不越界；
+- 每个 store 输出 lane 都能沿 def 链回溯到 load（无未定义、无真环；
+  dot_accum 的自引用按累加链语义跳过）；
+- 覆盖 dct16 fused8（128 store lanes）与 dct32 fused8（512 store
+  lanes），负例（消费未定义输入）正确报错。
+
+测试：`tools/test_lane_defuse.py`（6 个正向 + 1 个负向）。这是
+「元素为最小单元」从“lane 元数据”推进到“可验证的 lane 级 def-use
+证明”；下一步可把这些映射写回 op attrs 作为显式边。
