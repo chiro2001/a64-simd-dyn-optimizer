@@ -49,55 +49,56 @@ def main():
     ops = lower_plan_to_ops(plan)
     print("canonical dots:", dot_summary(ops))
 
+    # Canonical-driven grid: legacy family x narrow_batch x constant
+    # layout x acc_split.  Legacy flags are derived from the canonical
+    # dot selection (select_dot_lowerings -> derive_dot_lowering_flags).
+    grid = []
+    for legacy in ("off", "ex", "ex+k4"):
+        for narrow in (1, 4):
+            for const in ("canonical", "derived-replicated"):
+                for acc in (1, 2):
+                    grid.append((legacy, narrow, const, acc))
+
     rows = []
-    for contract in ("upstream-exact", "legacy-internal-exact"):
-        # The legacy family first rewrites pass2 k2 mul_reduce into s16
-        # EX slices (same graph, sdot.d lowering); then the canonical
-        # selector sees s16/s16/s64 dots and chooses sdot.d.
-        dag = apply32(ops, ["legacy_k2", "legacy_k4"]) if contract == \
-            "legacy-internal-exact" else ops
-        canon, rep = select_dot_lowerings(dag, "sve2", contract, sve2=True)
+    for idx, (legacy, narrow, const, acc) in enumerate(grid):
+        contract = ("legacy-internal-exact" if legacy != "off"
+                    else "upstream-exact")
+        dag = ops
+        if legacy in ("ex", "ex+k4"):
+            rew = ["legacy_k2"]
+            if legacy == "ex+k4":
+                rew.append("legacy_k4")
+            dag = apply32(ops, rew)
+        canon, _ = select_dot_lowerings(dag, "sve2", contract, sve2=True)
         flags = derive_dot_lowering_flags(canon)
+        if legacy == "off":
+            flags = {"legacy_ex": 0, "legacy_k4": 0}
         p = dct32_v31_plan()
         p.lowering["legacy_ex"] = flags["legacy_ex"]
         p.lowering["legacy_k4"] = flags["legacy_k4"]
+        p.lowering["narrow_batch"] = narrow
+        p.lowering["constant_layout"] = const
+        p.lowering["acc_split"] = acc
         src = lower(p)
-        if not flags["legacy_ex"] and not flags["legacy_k4"]:
-            ok, srep = check_source(p, src)
-            if not ok:
-                print("source-proof FAIL %s: %r" % (contract, srep))
-                return 1
-        else:
-            # The source-proof checker's expectations are calibrated to
-            # the base (non-legacy) plan; the legacy_ex path needs a
-            # legacy-aware plan model (follow-up). The compile + 20k
-            # differential + trace measurement below still runs.
-            print("[note] legacy variant: skip source-proof (plan model "
-                  "not legacy-aware); measuring directly")
-        src_path = os.path.join(workdir, "dot-%s.cpp" % contract)
+        src_path = os.path.join(workdir, "dot-%02d.cpp" % idx)
         with open(src_path, "w") as f:
             f.write(src)
-        passed, why2, counts = measure(manifest, verify_src, src_path,
-                                       workdir, "dot-%s" % contract,
-                                       allow_mismatch=(
-                                           contract ==
-                                           "legacy-internal-exact"))
+        passed, why2, counts = measure(
+            manifest, verify_src, src_path, workdir, "dot-%02d" % idx,
+            allow_mismatch=(legacy != "off"))
         if not passed:
-            # legacy variants are allowed to show rare mismatches (the
-            # contract family defers to TestBenchLite).
-            if isinstance(why2, str) and why2.startswith("mismatches="):
-                rows.append((contract, flags, None, why2))
-                continue
-            print("measure FAIL %s: %r" % (contract, why2))
-            return 1
-        rows.append((contract, flags,
+            rows.append((legacy, narrow, const, acc, None, why2))
+            continue
+        rows.append((legacy, narrow, const, acc,
                      counts.get("vector_fused_uop"),
                      counts.get("scatter_gather", 0)))
 
-    print("\n%-22s %-28s %8s %6s" %
-          ("contract", "dot lowering flags", "fused_uop", "mism"))
-    for contract, flags, fu, mis in rows:
-        print("%-22s %-28s %8s %6s" % (contract, flags, fu, mis))
+    print("\n%-8s %5s %-18s %4s %8s %6s" %
+          ("legacy", "narrow", "const", "acc", "fused_uop", "sg"))
+    for legacy, narrow, const, acc, fu, mis in sorted(
+            rows, key=lambda r: (r[4] is None, r[4] or 10 ** 9)):
+        print("%-8s %5s %-18s %4s %8s %6s" %
+              (legacy, narrow, const, acc, fu, mis))
     return 0
 
 

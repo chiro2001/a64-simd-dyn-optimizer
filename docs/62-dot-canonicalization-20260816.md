@@ -113,6 +113,27 @@ k2-ex` 用 sdot.d 替代 mul+saddv 后 full fused_uop **8292 → 7989
 - 已知缺口：source-proof 期望表需 legacy 感知 plan 模型（当前
   legacy 变体跳过该静态层，由编译+差分+轨迹兜底）。
 
+### 指令搜索网格（2026-08-16，24 组合全实测）
+
+canonical 驱动的网格枚举（legacy ∈ {off, ex, ex+k4} × narrow_batch
+∈ {1,4} × constant_layout ∈ {canonical, derived-replicated} ×
+acc_split ∈ {1,2}），全部经 QEMU 20k 差分 + 真动态轨迹，0 失配：
+
+| 排序 | legacy | narrow | const | fused_uop |
+| --- | --- | ---: | --- | ---: |
+| 1 | **ex+k4** | 4 | derived-replicated | **7820** |
+| 2 | ex | 4 | derived-replicated | 7989 |
+| 3 | ex+k4 | 4 | canonical | 8278 |
+| 4 | off | 4 | derived-replicated | 8292 |
+| 5 | ex | 4 | canonical | 8434 |
+| 6 | off | 4 | canonical | 8716 |
+| 7-24 | narrow_batch=1 全部 | 1 | — | 10884–11465 |
+
+结论：sdot.d lowering（legacy）+ narrow4 + derived-replicated 常量是
+该网格最优；acc_split 在此发射器路径无 fused_uop 影响；narrow_batch
+=1 全面劣化。搜索方案（canonical → select → flags → 发射 → 测量）
+已闭环且可复现。
+
 ## 5. 使用示例
 
 ```python
