@@ -107,3 +107,17 @@ odd/k2 两族 k 循环 + 偶数四行展开）：
 代码质量。修复要点：叶子切片按 tile/row 过滤、pass2 k2 常量
 `GT16_S32[(k-2)/4]` 的循环变量映射、偶数区间 store 的 k 具体化。
 「同一 DAG → 8-lane 代码」链路现在同时满足正确性门禁与计数对齐。
+
+**多目标重 lowering 已演示（2026-08-16）**：`emit_acle(neon8=True,
+neon_dot=True)` 用同一个 fused8 DAG 发射纯 NEON（vmull/vmlal）变体
+（`-march=armv8.2-a+dotprod`，objdump 确认 0 sdot）：
+
+| 目标 | 发射方式 | fused_uop | stack | total | 200k 差分 | TestBenchLite |
+| --- | --- | ---: | ---: | ---: | --- | --- |
+| SVE2 bridge | 手写 fused C++ | 1392 | 95 | 1743 | 0 | PASS |
+| SVE2 bridge | IR neon8 | 1393 | 110 | 1730 | 0 | - |
+| 纯 NEON | 手写 fused C++ | 1946 | 270 | 2155 | 0 | PASS |
+| 纯 NEON | IR neon8+neon_dot | **1941** | 240 | 2174 | 0 | **PASS** |
+
+同一宽度无关 DAG 在 SVE2 与 NEON 两个目标上都达到/超过手写候选的
+关键指标——「自动重 lowering」从链路可用推进到生产同级。
