@@ -136,8 +136,11 @@ sao-cuorg-e0-sve2-tbl,,,sao-cuorg-e0,,sve2-tbl,,,kernels/sao/candidates/best_sve
 sao-cuorg-e1-neon-seed,,,sao-cuorg-e1,,neon-seed,,,kernels/sao/candidates/best_e1.cpp,517,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e1-sve2-tbl,2026-08-17,,sao-cuorg-e1,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e1.cpp,129,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e1-2rows-neon-seed,,,sao-cuorg-e1-2rows,,neon-seed,,,kernels/sao/candidates/best_e1_2rows.cpp,261,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
+sao-cuorg-e1-2rows-sve2-tbl,2026-08-17,,sao-cuorg-e1-2rows,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e1_2rows.cpp,65,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e2-neon-seed,,,sao-cuorg-e2,,neon-seed,,,kernels/sao/candidates/best_e2.cpp,133,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
+sao-cuorg-e2-sve2-tbl,2026-08-17,,sao-cuorg-e2,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e2.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e3-neon-seed,,,sao-cuorg-e3,,neon-seed,,,kernels/sao/candidates/best_e3.cpp,117,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
+sao-cuorg-e3-sve2-tbl,2026-08-17,,sao-cuorg-e3,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e3.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 satd-16x8-satd16x8_A-920B,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,920B,ticks,6037,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_A-N1,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,N1,ticks,2266,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
