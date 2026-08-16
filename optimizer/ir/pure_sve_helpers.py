@@ -21,7 +21,8 @@ static inline void psv_store8(int16_t* p, svint16_t v)
 {
     asm volatile("st1h {%0.h}, %1, [%2]"
                  :
-                 : "w"(v), "Upl"(svptrue_pat_b16(SV_VL8)), "r"(p));
+                 : "w"(v), "Upl"(svptrue_pat_b16(SV_VL8)), "r"(p)
+                 : "memory");
 }
 
 static inline svint64_t psv_zero_s64(void)
@@ -108,7 +109,8 @@ static inline void psv_store4_s16(int16_t* p, svint16_t v)
 {
     asm volatile("st1h {%0.h}, %1, [%2]"
                  :
-                 : "w"(v), "Upl"(svptrue_pat_b16(SV_VL4)), "r"(p));
+                 : "w"(v), "Upl"(svptrue_pat_b16(SV_VL4)), "r"(p)
+                 : "memory");
 }
 
 static inline svint16_t psv_get_lo4_s16(svint16_t x)
