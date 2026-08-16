@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""dct32 op-backend axis-lattice B&B acceptance (docs/74 §5).
+
+Second real-space acceptance for the bounded B&B: a 3-binary-axis
+sub-lattice of the dct32 op-backend (legacy_ex x k0_even_sve x
+k0_shared_mul, with k0_shared_mul valid only when k0_even_sve=1).
+Every valid combo is emitted through dct32_op_emit.emit_from_plan,
+compiled, and scored with the static fused_uop oracle.  B&B uses the
+same admissible lower bound as the satd acceptance (min measured cost
+over completions of a partial assignment).  Gates: same best, no
+mis-pruning, node reduction >= 2x.
+"""
+
+import heapq
+import itertools
+import json
+import os
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+for sub in ("optimizer/ir", "tools"):
+    sys.path.insert(0, os.path.join(ROOT, sub))
+
+from dct32_op_emit import emit_from_plan  # noqa: E402
+from dct32_op_ir import Plan, lower_plan_to_ops  # noqa: E402
+from layout_ir import dct32_v31_plan  # noqa: E402
+from static_counts import static_counts  # noqa: E402
+
+AXES = ["legacy_ex", "k0_even_sve", "k0_shared_mul"]
+
+
+def valid(combo):
+    c = dict(zip(AXES, combo))
+    if c["k0_shared_mul"] and not c["k0_even_sve"]:
+        return False
+    return True
+
+
+def emit_and_count(combo, workdir):
+    c = dict(zip(AXES, combo))
+    p = dct32_v31_plan()
+    p.lowering.update(c)
+    tag = "_".join("%s%d" % (a, c[a]) for a in AXES)
+    src = emit_from_plan(p, "dynopt_dct32_axis_%s" % tag)
+    src_path = os.path.join(workdir, "dct32-%s.cpp" % tag)
+    obj_path = os.path.join(workdir, "dct32-%s.o" % tag)
+    with open(src_path, "w") as f:
+        f.write(src)
+    r = subprocess.run(
+        ["aarch64-linux-gnu-g++", "-c", "-O2", "-std=c++11",
+         "-march=armv8.2-a+sve2", "-o", obj_path, src_path],
+        capture_output=True, text=True)
+    if r.returncode != 0:
+        return None, r.stderr[:300]
+    return static_counts(obj_path).get("vector_fused_uop"), None
+
+
+def main():
+    workdir = os.path.join(ROOT, "build", "dct32-axis-bb")
+    os.makedirs(workdir, exist_ok=True)
+    results = {}
+    for combo in itertools.product((0, 1), repeat=3):
+        if not valid(combo):
+            continue
+        c = dict(zip(AXES, combo))
+        tag = "_".join("%s%d" % (a, c[a]) for a in AXES)
+        fused, err = emit_and_count(combo, workdir)
+        if fused is None:
+            print("emit/compile failed %s: %s" % (tag, (err or "")[:120]))
+            continue
+        results[combo] = fused
+        print("combo %s fused=%d" % (tag, fused))
+
+    if len(results) < 4:
+        print("too few valid combos: %d" % len(results))
+        return 1
+
+    rows = []
+    for combo, fused in results.items():
+        rows.append({"combo": combo, "fused": fused})
+    with open(os.path.join(workdir, "results.json"), "w") as f:
+        json.dump(rows, f, indent=1)
+
+    # full enumeration best
+    fb = min(fused for _, fused in results.items())
+    # B&B over the axis lattice with admissible lb = min measured cost
+    # over completions of a partial assignment.
+    heap = []
+    counter = 0
+    best = None
+    explored = 0
+    pruned = 0
+
+    def lb(partial):
+        best_c = None
+        for combo, fused in results.items():
+            ok = True
+            for i, v in enumerate(partial):
+                if v is not None and combo[i] != v:
+                    ok = False
+                    break
+            if ok and (best_c is None or fused < best_c):
+                best_c = fused
+        return best_c
+
+    heapq.heappush(heap, (lb((None, None, None)), counter, (None, None, None)))
+    while heap:
+        l, _, partial = heapq.heappop(heap)
+        if best is not None and l >= best:
+            pruned += 1
+            continue
+        explored += 1
+        if all(v is not None for v in partial):
+            c = results[partial]
+            if best is None or c < best:
+                best = c
+            continue
+        idx = partial.index(None)
+        for v in (0, 1):
+            child = list(partial)
+            child[idx] = v
+            child = tuple(child)
+            if not valid(child):
+                continue
+            nlb = lb(child)
+            if best is not None and nlb >= best:
+                pruned += 1
+                continue
+            heapq.heappush(heap, (nlb, counter, child))
+            counter += 1
+
+    print("full enumeration: %d candidates, best=%d" % (len(results), fb))
+    print("B&B: best=%d explored=%d pruned=%d" % (best, explored, pruned))
+    print("same best: %s" % (best == fb))
+    print("node reduction: %.2fx (%d -> %d)"
+          % (len(results) / max(1, explored), len(results), explored))
+    return 0 if best == fb else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -141,3 +141,25 @@ PASS（vs x265 satd8_sve2<W,H>），fused_uop 60..129：
   首次在真实测量空间上验证了有限 B&B 的剪枝价值；
 - 数据：experiments/m31-satd8-axis-search/results.json（24 行），
   tools/test_axis_bb_accept.py 入回归。
+
+## 9. dct32 op-backend 子格验收（2026-08-17 晚）
+
+第二个真实空间：dct32 op-backend 的 3 二进制轴子格
+（legacy_ex × k0_even_sve × k0_shared_mul，k0_shared_mul 仅在
+k0_even_sve=1 时合法 → 6 组合），全部 emit+编译+fused_uop 计数
+（tools/dct32_axis_bb_accept.py）：
+
+| 指标 | 值 |
+| --- | ---: |
+| 全枚举 | 6 候选，最优 1053 |
+| B&B 最优 | 1053（同最优） |
+| 状态数 / 节点减少 | 5 / 1.20x |
+| 剪枝 | 3 |
+| 误剪 | 0 |
+
+- **部分通过**：同最优 ✓、无误剪 ✓，但节点减少 1.20x **未达 2x
+  门**——该子格成本平坦（k0_even_sve/k0_shared_mul 对静态
+  fused_uop 无影响，仅 legacy_ex 1087→1053），剪枝空间小；
+- 教训：B&B 验收需选**成本有方差**的轴（例如 row_group/
+  slice_kind/rewrites 或 op-backend 全格），否则节点减少无意义；
+  satd 24 候选（4.8x）仍为通过的验收案例。
