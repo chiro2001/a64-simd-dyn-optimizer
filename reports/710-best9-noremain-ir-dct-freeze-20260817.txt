@@ -1,0 +1,25 @@
+# 710 best9-minus-remain + dct IR 定版（2026-08-17）
+
+## 方法
+
+- 机器：710（SVE2 VL128），真实 100f，注入法交错
+  （interleaved-inject-ab.sh），6 对，全部 bit-exact
+  （21500eb459ae1c60db47eb5abd71227a）；
+- 臂：base / best9-noremain（16 kernel）/ best9-noremain-ir-dct
+  （+dct16/32 IR，18 kernel）。
+
+## 结果（diff = 前者 - 后者，>0 = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9-noremain vs base | +414.5 | +1.63% | [291.5, 440.5] |
+| best9-noremain-ir-dct vs base | +515.5 | +2.03% | [474.5, 641.5] |
+| best9-noremain-ir-dct vs best9-noremain | +179.0 | +0.71% | [61.0, 245.0] |
+
+## 结论
+
+1. 新发布集（best9-minus-remain）在 710 确认 +1.63%；
+2. 叠加 dct IR 后 **+2.03%**，额外 +0.71%（CI 不含 0）——可加性在
+   新发布集下再次确认；
+3. 与 N1（旧 best9 + IR-DCT +2.93%）方向一致；N1 用新发布集复测
+   待跑。
