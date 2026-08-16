@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""dct32 op-backend B&B acceptance unit test (same-best, no mis-prune;
-node-reduction gate is data-dependent and recorded separately)."""
+"""dct32 op-backend B&B acceptance unit test (same-best, no mis-prune,
+node reduction >= 2x on the cost-varying odd_from_k0packs x row_group
+sub-lattice)."""
 
 import itertools
 import os
@@ -19,7 +20,8 @@ class Dct32AxisBBAcceptTest(unittest.TestCase):
             capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn("same best: True", r.stdout)
-        self.assertIn("B&B: best=1053", r.stdout)
+        self.assertIn("B&B: best=886", r.stdout)
+        self.assertIn("node reduction: 2.00x", r.stdout)
 
 
 if __name__ == "__main__":

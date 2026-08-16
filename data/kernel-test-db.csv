@@ -63,6 +63,7 @@ dct16-ir-neon-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,dct16,,ir-neon,sve2,neon,
 dct16-op895-950,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_sve,1.2917,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct16-op895-950-neon,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8750,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-axis-bb-accept,2026-08-17,,dct32,,axis-bb-3bin,,,tools/dct32_axis_bb_accept.py,1053,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
+dct32-axis-bb-accept-v2,2026-08-17,,dct32,,axis-bb-oddxrg,,,tools/dct32_axis_bb_accept.py,886,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-best_ir_sve16,,,dct32,,best_ir_sve16,,,,,,2,40960,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct32-best_ir_sve16-static-vq2,,,dct32,,best_ir_sve16-static-vq2,,,,897,,2,,,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct32-best_sve2-sve256-2026-08-16-96bc310,2026-08-16,96bc310,dct32,dct,best_sve2-sve256,sve2,sve2,kernels/dct32/candidates/best_sve2.cpp,4014,1041,1;2,20000,0,,,,,,,,yes,docs/47-current-coverage-matrix-20260815.md

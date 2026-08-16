@@ -144,22 +144,30 @@ PASS（vs x265 satd8_sve2<W,H>），fused_uop 60..129：
 
 ## 9. dct32 op-backend 子格验收（2026-08-17 晚）
 
-第二个真实空间：dct32 op-backend 的 3 二进制轴子格
-（legacy_ex × k0_even_sve × k0_shared_mul，k0_shared_mul 仅在
-k0_even_sve=1 时合法 → 6 组合），全部 emit+编译+fused_uop 计数
-（tools/dct32_axis_bb_accept.py）：
+第二个真实空间：dct32 op-backend 的**成本有方差子格**
+（odd_from_k0packs × row_group = {0,1} × {None,8,16}，固定基
+legacy_ex/legacy_k4/k0_even_sve=1 → 6 组合全合法），全部
+emit+编译+fused_uop 计数（tools/dct32_axis_bb_accept.py）：
+
+| 组合 | fused_uop |
+| --- | ---: |
+| odd0 × rgNone | 930 |
+| odd0 × rg8 | 1458 |
+| odd0 × rg16 | 2516 |
+| odd1 × rgNone | **886** |
+| odd1 × rg8 | 1400 |
+| odd1 × rg16 | 2489 |
 
 | 指标 | 值 |
 | --- | ---: |
-| 全枚举 | 6 候选，最优 1053 |
-| B&B 最优 | 1053（同最优） |
-| 状态数 / 节点减少 | 5 / 1.20x |
+| 全枚举 | 6 候选，最优 886 |
+| B&B 最优 | 886（同最优） |
+| 状态数 / 节点减少 | 3 / **2.00x（达 ≥2x 门）** |
 | 剪枝 | 3 |
 | 误剪 | 0 |
 
-- **部分通过**：同最优 ✓、无误剪 ✓，但节点减少 1.20x **未达 2x
-  门**——该子格成本平坦（k0_even_sve/k0_shared_mul 对静态
-  fused_uop 无影响，仅 legacy_ex 1087→1053），剪枝空间小；
-- 教训：B&B 验收需选**成本有方差**的轴（例如 row_group/
-  slice_kind/rewrites 或 op-backend 全格），否则节点减少无意义；
-  satd 24 候选（4.8x）仍为通过的验收案例。
+- **验收门全部达成**（最优哈希一致、无误剪、节点 ≥2x 减半）——
+  第二个真实空间的通过案例（首个为 satd 24 候选 4.8x）；
+- 对照记录：初版 3 二进制轴子格（legacy_ex × k0_even_sve ×
+  k0_shared_mul）成本平坦（仅 1087/1053），节点减少仅 1.20x
+  未达门——**教训：B&B 验收必须选成本有方差的轴**，已按此修正。
