@@ -27,6 +27,16 @@ aggregate: groups=14 pair_acc=0.345 tau=-0.158 top1_regret=357.10 pp
 aggregate: groups=14 pair_acc=0.917 tau=0.682 top1_regret=1.53 pp
 pair-weighted (pooled pairs=31): tau=0.871
 
+## D) pairwise logistic + abstention (family held-out)
+
+| held-out family | groups | pair_acc | tau-a | coverage |
+| --- | --- | ---: | ---: | ---: |
+| dct | 5 | 0.800 | 0.600 | 1.00 |
+| entropy | 2 | 0.500 | 0.000 | 0.92 |
+| pixel | 10 | 0.800 | 0.600 | 0.72 |
+
+aggregate: groups=17 pair_acc=0.765 tau-a=0.529 mean coverage=0.83
+
 Gate (round-0026): family-held-out acc>=0.80, tau>=0.70, top-1 regret<=2.0 pp
 Data sufficiency (round-0027): groups=18 (>=8: yes), informative pairs=31 (>=30: yes)
 - A (MCA rank): not met

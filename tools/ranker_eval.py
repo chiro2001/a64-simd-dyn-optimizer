@@ -98,6 +98,35 @@ def pair_weighted_tau(groups_pred_meas):
     return (concord - discord) / denom, len(pairs)
 
 
+def abstained_pair_stats(pred, meas, lam_frac=0.10):
+    """Pair-level abstention: drop pairs whose predicted score gap is
+    below lam_frac * (group score range).  Returns (acc, tau-a,
+    coverage) over the kept informative pairs, or (None, None, 0)."""
+    n = len(pred)
+    if n < 2:
+        return None, None, 0.0
+    lo, hi = min(pred), max(pred)
+    lam = lam_frac * (hi - lo) if hi > lo else 0.0
+    concord = discord = kept = total = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            sp = (pred[i] > pred[j]) - (pred[i] < pred[j])
+            sm = (meas[i] > meas[j]) - (meas[i] < meas[j])
+            if sm == 0:
+                continue
+            total += 1
+            if abs(pred[i] - pred[j]) < lam:
+                continue
+            kept += 1
+            if sp == sm:
+                concord += 1
+            else:
+                discord += 1
+    if kept == 0:
+        return None, None, 0.0
+    return concord / kept, (concord - discord) / kept, kept / total
+
+
 def ols(features, labels):
     """Least squares with intercept on feature rows (list of lists)."""
     n, p = len(features), len(features[0]) + 1
@@ -325,6 +354,47 @@ def main():
                        % (pw_pairs, pw_tau))
     else:
         out.append("no held-out groups evaluable on this seed corpus")
+
+    # Baseline D: pairwise logistic + pair-level abstention (round-0026
+    # "会弃权的残差 ranker" prototype; lam = 10% of group score range).
+    out.append("")
+    out.append("## D) pairwise logistic + abstention (family held-out)")
+    out.append("")
+    out.append("| held-out family | groups | pair_acc | tau-a | coverage |")
+    out.append("| --- | --- | ---: | ---: | ---: |")
+    d_acc_w, d_tau_w, d_n = 0.0, 0.0, 0
+    d_covs = []
+    for fam in fams:
+        train = [r for r in used if r["family"] != fam]
+        w = pairwise_logistic(train)
+        if w is None:
+            continue
+        accs4, taus4, covs4 = [], [], []
+        for k, grp in groups.items():
+            if k[0] != fam:
+                continue
+            pred = [sum(w[j] * feature_vec(r)[j] for j in range(3))
+                    for r in grp]
+            meas = [to_num(r["label"]) for r in grp]
+            acc, tau, cov = abstained_pair_stats(pred, meas)
+            if acc is not None and cov > 0:
+                accs4.append(acc); taus4.append(tau); covs4.append(cov)
+                d_covs.append(cov)
+        if accs4:
+            out.append("| %s | %d | %.3f | %.3f | %.2f |"
+                       % (fam, len(accs4), statistics.mean(accs4),
+                          statistics.mean(taus4), statistics.mean(covs4)))
+            d_acc_w += statistics.mean(accs4) * len(accs4)
+            d_tau_w += statistics.mean(taus4) * len(accs4)
+            d_n += len(accs4)
+    if d_n:
+        out.append("")
+        out.append("aggregate: groups=%d pair_acc=%.3f tau-a=%.3f "
+                   "mean coverage=%.2f"
+                   % (d_n, d_acc_w / d_n, d_tau_w / d_n,
+                      statistics.mean(d_covs)))
+    else:
+        out.append("no held-out groups evaluable")
     out.append("")
     def gate(acc, tau, reg):
         return acc >= 0.80 and tau >= 0.70 and reg <= 2.0
