@@ -272,6 +272,185 @@ static inline void pass2Butterfly32_sve(const int16_t *src, int16_t *dst)
 """ % _fused_body(pass2=True).replace("srcStride", "line")
 
 
+def _neon_odd_block():
+    """NEON 16-term dots for 4 rows -> int32x4 (rows 0..3)."""
+    rows = "".join(
+        "            int32x4_t a%d = vmull_s16(vget_low_s16(c0_c1), "
+        "vget_low_s16(O%d_0));\n"
+        "            a%d = vmlal_s16(a%d, vget_high_s16(c0_c1), "
+        "vget_high_s16(O%d_0));\n"
+        "            int32x4_t b%d = vmull_s16(vget_low_s16(c2_c3), "
+        "vget_low_s16(O%d_1));\n"
+        "            b%d = vmlal_s16(b%d, vget_high_s16(c2_c3), "
+        "vget_high_s16(O%d_1));\n" % (r, r, r, r, r, r, r, r, r, r)
+        for r in range(4))
+    return rows + """\
+            int32x4_t r0 = vpaddq_s32(a0, b0);
+            int32x4_t r1 = vpaddq_s32(a1, b1);
+            int32x4_t r2 = vpaddq_s32(a2, b2);
+            int32x4_t r3 = vpaddq_s32(a3, b3);
+            int32x4_t s01 = vpaddq_s32(r0, r1);
+            int32x4_t s23 = vpaddq_s32(r2, r3);
+            int32x4_t t = vpaddq_s32(s01, s23);
+            int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + i, res);
+"""
+
+
+def _neon_dot8_columns():
+    """NEON 8-term dots over EO0..EO3 (4 columns) -> int32x4."""
+    rows = "".join(
+        "            int32x4_t a%d = vmull_s16(vget_low_s16(c0), "
+        "vget_low_s16(EO%d));\n"
+        "            a%d = vmlal_s16(a%d, vget_high_s16(c0), "
+        "vget_high_s16(EO%d));\n" % (r, r, r, r, r)
+        for r in range(4))
+    return rows + """\
+            int32x4_t s01 = vpaddq_s32(a0, a1);
+            int32x4_t s23 = vpaddq_s32(a2, a3);
+            int32x4_t t = vpaddq_s32(s01, s23);
+            int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + i, res);
+"""
+
+
+def _fused_body_neon(pass2=False):
+    rows = "".join(_row_block(s, pass2) for s in ("0", "1", "2", "3"))
+    pairs = _pair_block("0", "1", "0") + _pair_block("2", "3", "1")
+    odd = _neon_odd_block()
+    if pass2:
+        k2_loads = """\
+            int32x4_t c0 = vmovl_s16(vld1_s16(&g_t32[k][0]));
+            int32x4_t c1 = vmovl_s16(vld1_s16(&g_t32[k][4]));
+"""
+        k2 = """\
+            int32x4_t t0 = vmulq_s32(c0, EO0_0);
+            t0 = vmlaq_s32(t0, c1, EO0_1);
+            int32x4_t t1 = vmulq_s32(c0, EO1_0);
+            t1 = vmlaq_s32(t1, c1, EO1_1);
+            int32x4_t t2 = vmulq_s32(c0, EO2_0);
+            t2 = vmlaq_s32(t2, c1, EO2_1);
+            int32x4_t t3 = vmulq_s32(c0, EO3_0);
+            t3 = vmlaq_s32(t3, c1, EO3_1);
+
+            int32x4_t t0123 = vpaddq_s32(vpaddq_s32(t0, t1),
+                                         vpaddq_s32(t2, t3));
+            int16x4_t res = vrshrn_n_s32(t0123, shift);
+            vst1_s16(dst + k * line + i, res);
+"""
+    else:
+        k2_loads = """\
+            int16x8_t c0 = vld1q_s16(&g_t32[k][0]);
+"""
+        k2 = _neon_dot8_columns()
+    return """\
+    for (int i = 0; i < line; i += 4)
+    {
+        int16x8x4_t in_lo_0 = vld1q_s16_x4(src + (i + 0) * srcStride);
+        in_lo_0.val[2] = rev16(in_lo_0.val[2]);
+        in_lo_0.val[3] = rev16(in_lo_0.val[3]);
+        int16x8x4_t in_lo_1 = vld1q_s16_x4(src + (i + 1) * srcStride);
+        in_lo_1.val[2] = rev16(in_lo_1.val[2]);
+        in_lo_1.val[3] = rev16(in_lo_1.val[3]);
+        int16x8x4_t in_lo_2 = vld1q_s16_x4(src + (i + 2) * srcStride);
+        in_lo_2.val[2] = rev16(in_lo_2.val[2]);
+        in_lo_2.val[3] = rev16(in_lo_2.val[3]);
+        int16x8x4_t in_lo_3 = vld1q_s16_x4(src + (i + 3) * srcStride);
+        in_lo_3.val[2] = rev16(in_lo_3.val[2]);
+        in_lo_3.val[3] = rev16(in_lo_3.val[3]);
+
+        int16x8_t O0_0 = vsubq_s16(in_lo_0.val[0], in_lo_0.val[3]);
+        int16x8_t O0_1 = vsubq_s16(in_lo_0.val[1], in_lo_0.val[2]);
+        int16x8_t O1_0 = vsubq_s16(in_lo_1.val[0], in_lo_1.val[3]);
+        int16x8_t O1_1 = vsubq_s16(in_lo_1.val[1], in_lo_1.val[2]);
+        int16x8_t O2_0 = vsubq_s16(in_lo_2.val[0], in_lo_2.val[3]);
+        int16x8_t O2_1 = vsubq_s16(in_lo_2.val[1], in_lo_2.val[2]);
+        int16x8_t O3_0 = vsubq_s16(in_lo_3.val[0], in_lo_3.val[3]);
+        int16x8_t O3_1 = vsubq_s16(in_lo_3.val[1], in_lo_3.val[2]);
+
+%s
+%s
+        for (int k = 1; k < 32; k += 2)
+        {
+            int16x8_t c0_c1 = vld1q_s16(&g_t32[k][0]);
+            int16x8_t c2_c3 = vld1q_s16(&g_t32[k][8]);
+%s
+        }
+
+        for (int k = 2; k < 32; k += 4)
+        {
+%s
+%s
+        }
+
+        for (int k = 4; k < 32; k += 8)
+        {
+            int32x4_t c = vmovl_s16(vld1_s16(&g_t32[k][0]));
+
+            int32x4_t t0 = vmulq_s32(c, EEO0);
+            int32x4_t t1 = vmulq_s32(c, EEO1);
+            int32x4_t t2 = vmulq_s32(c, EEO2);
+            int32x4_t t3 = vmulq_s32(c, EEO3);
+
+            int32x4_t t = vpaddq_s32(vpaddq_s32(t0, t1),
+                                     vpaddq_s32(t2, t3));
+            int16x4_t res = vrshrn_n_s32(t, shift);
+            vst1_s16(dst + k * line + i, res);
+        }
+
+        int32x4_t c0 = vld1q_s32(t8_even[0]);
+        int32x4_t c8 = vld1q_s32(t8_even[1]);
+        int32x4_t c16 = vld1q_s32(t8_even[2]);
+        int32x4_t c24 = vld1q_s32(t8_even[3]);
+
+        int32x4_t t0 = vpaddq_s32(EEEE0, EEEE1);
+        int32x4_t t1 = vmulq_s32(c0, t0);
+        int16x4_t res0 = vrshrn_n_s32(t1, shift);
+        vst1_s16(dst + 0 * line + i, res0);
+
+        int32x4_t t2 = vmulq_s32(c8, EEEO0);
+        int32x4_t t3 = vmulq_s32(c8, EEEO1);
+        int16x4_t res8 = vrshrn_n_s32(vpaddq_s32(t2, t3), shift);
+        vst1_s16(dst + 8 * line + i, res8);
+
+        int32x4_t t4 = vmulq_s32(c16, EEEE0);
+        int32x4_t t5 = vmulq_s32(c16, EEEE1);
+        int16x4_t res16 = vrshrn_n_s32(vpaddq_s32(t4, t5), shift);
+        vst1_s16(dst + 16 * line + i, res16);
+
+        int32x4_t t6 = vmulq_s32(c24, EEEO0);
+        int32x4_t t7 = vmulq_s32(c24, EEEO1);
+        int16x4_t res24 = vrshrn_n_s32(vpaddq_s32(t6, t7), shift);
+        vst1_s16(dst + 24 * line + i, res24);
+    }
+""" % (rows, pairs, odd, k2_loads, k2)
+
+
+def _pass1_fused_neon():
+    return """\
+static inline void pass1Butterfly32_sve(const int16_t *src, int16_t *dst,
+                                        intptr_t srcStride)
+{
+    const int shift = 4 + X265_DEPTH - 8;
+    const int line = 32;
+
+%s
+}
+""" % _fused_body_neon(pass2=False)
+
+
+def _pass2_fused_neon():
+    return """\
+static inline void pass2Butterfly32_sve(const int16_t *src, int16_t *dst)
+{
+    const int shift = 11;
+    const int line = 32;
+
+%s
+}
+""" % _fused_body_neon(pass2=True).replace("srcStride", "line")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(
@@ -280,6 +459,11 @@ def main():
                     default="upstream")
     ap.add_argument("--pass2", choices=("upstream", "fused"),
                     default="upstream")
+    ap.add_argument("--isa", choices=("sve2", "sve1", "neon"),
+                    default="sve2",
+                    help="target ISA: sve2/sve1 use sdot.d via the "
+                         "neon-sve bridge; neon emits pure NEON "
+                         "(vmull/vmlal), fused structure only")
     args = ap.parse_args()
     with open(SVE) as f:
         sve = f.read()
@@ -296,43 +480,32 @@ def main():
     rev32 = _primh_block(primh, "static inline int32x4_t rev32")
     g_t32 = _g_t32(constants)
 
-    if args.pass1 == "fused":
-        pass1_src = _pass1_fused()
+    if args.isa == "neon":
+        pass1_src = _pass1_fused_neon()
+        pass2_src = _pass2_fused_neon()
     else:
-        pass1_src = _pass1(sve).replace(
-            "x265_sdotq_s16", "sdotq_s16").replace(
-                "x265_vld1sh_s32", "vld1sh_s32")
-    if args.pass2 == "fused":
-        pass2_src = _pass2_fused()
+        if args.pass1 == "fused":
+            pass1_src = _pass1_fused()
+        else:
+            pass1_src = _pass1(sve).replace(
+                "x265_sdotq_s16", "sdotq_s16").replace(
+                    "x265_vld1sh_s32", "vld1sh_s32")
+        if args.pass2 == "fused":
+            pass2_src = _pass2_fused()
+        else:
+            pass2_src = _pass2(sve).replace(
+                "x265_sdotq_s16", "sdotq_s16").replace(
+                    "x265_vld1sh_s32", "vld1sh_s32")
+    variant_header = "// isa=%s pass1=%s pass2=%s\n" % (
+        args.isa, args.pass1, args.pass2)
+
+    if args.isa == "neon":
+        includes = "#include <arm_neon.h>\n#include <cstdint>\n"
+        helpers = ""
     else:
-        pass2_src = _pass2(sve).replace(
-            "x265_sdotq_s16", "sdotq_s16").replace(
-                "x265_vld1sh_s32", "vld1sh_s32")
-    variant_header = "// pass1=%s pass2=%s\n" % (args.pass1, args.pass2)
-
-    src = """\
-// Generated by tools/emit_dct32_vl128.py -- do not edit by hand.
-// VL=128 migration baseline: upstream 8-lane E/O + sdot structure
-// (upstream-exact at any SVE VL; structural axes applied later).
-%s
-// Depth-8 contract, matching the gen_verify legacy oracle.
-#define X265_DEPTH 8
-#include <arm_neon.h>
-#include <arm_sve.h>
-#include <arm_neon_sve_bridge.h>
-#include <cstdint>
-
-%s
-
-%s
-
-%s
-
-%s
-
-%s
-
-%s
+        includes = ("#include <arm_neon.h>\n#include <arm_sve.h>\n"
+                    "#include <arm_neon_sve_bridge.h>\n#include <cstdint>\n")
+        helpers = """\
 
 static inline int64x2_t sdotq_s16(int64x2_t acc, int16x8_t x, int16x8_t y)
 {
@@ -345,6 +518,30 @@ static inline int32x4_t vld1sh_s32(const int16_t* p)
 {
     return svget_neonq_s32(svld1sh_s32(svptrue_pat_b32(SV_VL4), p));
 }
+"""
+
+    src = """\
+// Generated by tools/emit_dct32_vl128.py -- do not edit by hand.
+// VL=128 migration baseline: upstream 8-lane E/O + sdot structure
+// (upstream-exact at any SVE VL; structural axes applied later).
+%s
+// Depth-8 contract, matching the gen_verify legacy oracle.
+#define X265_DEPTH 8
+%s
+
+%s
+
+%s
+
+%s
+
+%s
+
+%s
+
+%s
+
+%s
 
 %s
 
@@ -357,8 +554,8 @@ extern "C" void dynopt_dct32_sve2_shared(const int16_t* src, int16_t* dst,
     pass1Butterfly32_sve(src, coef, srcStride);
     pass2Butterfly32_sve(coef, dst);
 }
-""" % (variant_header, t8_odd := _tables_sve(sve), t8_even, rev_tbls,
-       g_t32, rev16, rev32, pass1_src, pass2_src)
+""" % (variant_header, includes, t8_odd := _tables_sve(sve), t8_even,
+       rev_tbls, g_t32, rev16, rev32, helpers, pass1_src, pass2_src)
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     with open(args.out, "w") as f:
