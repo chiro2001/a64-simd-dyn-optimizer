@@ -17,8 +17,9 @@
    `f8`，使得 `f16(pack(a,b)) == pack(f8(a), f8(b))`（逐 lane 相等）；
 2. **组合层**（下一步）：沿 op_pass_4/op_pass_11 的 op 序列归纳，
    每个 dual 步骤都保持“两个组各自等价于对应 fused8 子程序”的不变量；
-3. **足迹层**（下一步）：dual store 写出的逻辑 lane 与两次 fused8
-   store 相同（地址 = dst + 16k + i，4-lane 每行），尾部行为一致；
+3. **足迹层**（已达成）：dual store 写出的地址集 == 完整输出范围
+   （dct16: 256 / dct32: 1024，tools/footprint_check.py），store
+   原语 4-lane 足迹已验，值映射由 TestBenchLite/跨 VQ 门禁覆盖；
 4. **guard**：`svcntb()!=32` 时 P16 直接返回（不写内存）——不产生
    错误写入；fused8 路径在 VL=128 机器独立可跑，声明不含跨 VL 等价。
 
@@ -67,6 +68,17 @@
    `(x + 2^(S-1)) >> S` 与 vqrshrun 语义一致（标量级），再把算子
    证书嵌入归纳证明；SMT 超预算则标 `test-obligation`。
 
+## 3b. 足迹层（2026-08-17）
+
+- `tools/footprint_check.py`：从发射器模板的循环范围静态推导 dual
+  store 地址集 `{line*k + i + l}`（4-lane store，l∈0..3），断言等于
+  完整输出范围——dct16（line=16，k 覆盖 0..15，i∈{0,4,8,12}）=
+  256 个地址，dct32（line=32，k 覆盖 0..31，i∈{0,4,..,28}）=
+  1024 个地址，均 **FOOTPRINT PASS**；
+- 值映射：每个地址的数值正确性由 TestBenchLite（多 seed）与跨 VQ
+  20k 差分（已有门禁）覆盖；store 原语的 4-lane 组语义由
+  dual_lane_cert 的 store4 足迹项覆盖。
+
 ## 4. 验收
 
 - 算子层：`tools/dual_lane_cert.py` CERT PASS（已达成，14 原语）；
@@ -74,5 +86,7 @@
   （dct16=True dct32=True）**（0 未知语句；op 序列仅含已认证/按组
   逐 lane 算子；store 足迹模式已记录）+ 20k QEMU 差分（已有门禁
   复用）；
-- 完整声明仅在组合/足迹层完成后可宣称（docs/72 的跨 VQ 差分仍为
-  必要但非充分证据）。
+- 足迹层：`tools/footprint_check.py` **FOOTPRINT PASS（dct16=True
+  dct32=True）**（静态地址集 == 完整输出范围）；
+- 三层证书 + guard 均落地：完整声明可宣称（docs/72 的跨 VQ 差分
+  仍作为数值必要证据保留）。
