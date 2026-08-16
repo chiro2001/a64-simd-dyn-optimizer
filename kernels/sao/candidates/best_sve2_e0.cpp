@@ -15,7 +15,9 @@ extern "C" void dynopt_sao_e0_64_sve2(
         offsetEo[0], offsetEo[1], offsetEo[2], offsetEo[3], offsetEo[4],
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
-    const svint8_t offv = svld1_s8(svptrue_b8(), offs);
+    // Predicated 16-byte load: only indices 0..4 are ever used.
+    const svbool_t pg16 = svwhilelt_b8((uint32_t)0, (uint32_t)16);
+    const svint8_t offv = svld1_s8(pg16, offs);
 
     for (int y = 0; y < 2; y++)
     {

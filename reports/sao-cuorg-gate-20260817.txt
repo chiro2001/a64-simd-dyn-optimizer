@@ -39,7 +39,37 @@
   实现（docs/45 tbl-u16 布局）——u8 比较得 sign、`svinsr` 位移插入
   实现 sign 递推、`svtbl` 查 offset 表、`svqxtunb`+`svuzp1` 饱和窄化；
 - 20k 差分（4 strides × 随机 offset/signLeft）**0 失配**；
-  fused_uop=22（对比 NEON seed 版 269）；
+  fused_uop=168（对比 NEON seed 版 269；2026-08-17 复核计数，此前
+  报告的 22 为误记——`tools/static_counts.py` 全函数静态计数）；
 - 调试记录：VL=256 下 `svmovlb_s16`/`svqxtunb_s16` 是交错展开（需
   `svunpklo_s16`/`svuzp1` 复原）；`svlasta` 配 `whilelt` 谓词返回
   异常，改用 `svdup_lane` + 全真谓词提取 lane7。
+- 修正：offset 表原先用 `svld1_s8(svptrue_b8(), offs)` 从 16 字节
+  局部数组读 32 字节（越界 UB，仅因 tbl 索引 0..4 未暴露），改为
+  `svwhilelt_b8(0,16)` 谓词加载。
+
+## SVE2 版 B0/E1（2026-08-17 晚，追加）
+
+- `best_sve2_b0.cpp` / `best_sve2_e1.cpp`：B0（band offset，64x4）
+  与 E1（vertical edge offset，64x4）纯 SVE2 候选；
+- 关键优化：这两个 kernel 的 lane 之间**无横向递推**（E0 才有
+  signLeft 逐 lane 递推），因此按整条 32 字节 Z 向量并行处理，不再
+  按 8-lane 小块展开；
+- clip(p + off) 用 128 偏置 + 回绕加法实现，免展开/收窄：
+  `ps = p - 128`（s8 精确）→ `s = qadd_s8(ps, off)`（饱和到
+  [-128,127]，恰为 clamp(p+off-128)）→ `out = u8(s) + 128`（普通
+  u8 加法，模 256 精确等于 clamp(p+off,0,255)）；
+- B0 的 `p >> 3` 用 SVE2 `LSR .B` 立即数（GCC arm_sve.h 无
+  svlsr_n_u8，Clang 有；内联汇编发射，纯 Z 寄存器）；
+- E1 的 edge ∈ [0,4]，offset 表用 `svwhilelt_b8(0,16)` 谓词加载
+  16 字节（避免越界读取）；
+
+| kernel | 形状 | fused_uop | NEON seed 对比 |
+| --- | --- | ---: | ---: |
+| saoCuOrgB0 SVE2 | 64x4 | 57 | 219（-74%） |
+| saoCuOrgE1 SVE2 | 64x4 | 129 | 517（-75%） |
+
+- 20k 差分（4 strides × 随机 offset/upBuff）**0 失配**（B0/E1 各
+  20000 例，QEMU sve-max-vq=2）；
+- DB 174 行（含 E0 修正行）；契约语料 128 行含 6 cuorg region，
+  无需新增 region 契约。
