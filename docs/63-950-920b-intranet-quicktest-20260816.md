@@ -3,6 +3,17 @@
 目的：950（SVE2 2x256）首轮 E2E（用新 op 后端 dct16/dct32 候选），
 920B（NEON）回归基线；两者都出 bit-exact 门禁与 paired CI。
 
+## 0b. 就绪核验（2026-08-17，git 70ad366）
+
+- `FROZEN=1` 路径（docs/73 冻结发布集：14 kernel，dct16/32 走
+  AGO_IR_DCT=1 best_ir_sve8）在本地构建通过：14 对象 + patch，
+  SVE2 ISA 违规 0（dct16/32 为混合 NEON+SVE2，非纯 SVE 模式，
+  属预期）；
+- op4032 opt-in 路径（AGO_LEGACY_DCT32=1，策略放行项）构建通过；
+- 用户侧动作保持一键：`FROZEN=1 scripts/freeze-950-dct.sh user@host`
+  （可选 `AGO_IR_SVE16=1` / `GATE=1`），跑完后
+  `python3 tools/m4_declaration.py` 出最终 M4 声明。
+
 ## 0. 内网 E2E 测试媒体（2026-08-16 更新）
 
 内网机器（950/920B internal）无法 ssh 到公网 920B/710，下载走 GitHub：
