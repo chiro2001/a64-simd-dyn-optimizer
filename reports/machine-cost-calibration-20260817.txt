@@ -2,6 +2,9 @@
 
 拟合：log1p(fused_uop) -> ticks / ticks_pct（OLS + Spearman + LOOCV）。数据：M2 17 cover（N1/920B ticks）与 dct 各机 kernel ticks_pct。小样本，仅作排序参考，不做绝对值承诺。
 
+## 710 / ticks
+rows=3 slope=-1344.095 intercept=6951.460 R2=0.999 Spearman=-1.000 LOOCV-Spearman=-
+
 ## 710 / ticks_pct
 rows=4 slope=1.268 intercept=-22.452 R2=0.341 Spearman=0.800 LOOCV-Spearman=0.000
 
