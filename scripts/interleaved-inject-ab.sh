@@ -11,7 +11,7 @@
 #
 # Env: FRAMES (default 100), FREEZE_INPUT (default 100f yuv),
 # REPO (default /home/chiro/...), AGO_INJECT_SCRIPT (default
-# cloud-e2e-inject.sh). Bundles must exist locally at
+# cloud-e2e-inject.sh), LABEL_C (optional third arm). Bundles must exist locally at
 # build/ablate-<label>-inject and build/ablate-<label>-work.
 set -euo pipefail
 
@@ -19,6 +19,7 @@ HOST="${1:?usage: interleaved-inject-ab.sh host labelA labelB [pairs]}"
 LABEL_A="${2:?}"
 LABEL_B="${3:?}"
 PAIRS="${4:-8}"
+LABEL_C="${LABEL_C:-}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
@@ -43,8 +44,11 @@ package() { # package <label>
 
 PKG_A=$(package "$LABEL_A")
 PKG_B=$(package "$LABEL_B")
+PKG_C=""
+[ -n "$LABEL_C" ] && PKG_C=$(package "$LABEL_C")
 scp -o BatchMode=yes -o ServerAliveInterval=30 "$PKG_A" "$PKG_B" \
-  scripts/strip-dynopt-link.py "scripts/$INJECT_SCRIPT" "$HOST":/tmp/
+  ${PKG_C:+"$PKG_C"} scripts/strip-dynopt-link.py \
+  "scripts/$INJECT_SCRIPT" "$HOST":/tmp/
 
 ENC="taskset -c 0 ./x265 --input $INPUT \
   --input-res 1920x1080 --fps 30 --frames $FRAMES \
@@ -53,9 +57,11 @@ ENC="taskset -c 0 ./x265 --input $INPUT \
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "set -e; cd $REPO/build/x265-8-gcc && \
    cp libx265.so.216 /tmp/lib-base.so.216; \
-   for label in $LABEL_A $LABEL_B; do \
+   for label in $LABEL_A $LABEL_B $LABEL_C; do \
+     [ -n "\$label" ] || continue; \
      cp /tmp/e2e-\$label.tar.gz /tmp/e2e-full.tar.gz; \
-     bash /tmp/$INJECT_SCRIPT >/tmp/inject-\$label.log 2>&1; \
+     AGO_REPO=$REPO bash /tmp/$INJECT_SCRIPT \
+       >/tmp/inject-\$label.log 2>&1; \
      cp libx265.so.216 /tmp/lib-\$label.so.216; \
      cd $REPO; \
      python3 /tmp/strip-dynopt-link.py; \
@@ -72,7 +78,9 @@ ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
 echo "[iab] md5 gate (one encode per arm)"
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && \
-   for arm in base $LABEL_A $LABEL_B; do \
+   for arm in base $LABEL_A $LABEL_B $LABEL_C; do \
+     [ -n "\$arm" ] && [ "\$arm" != base ] || [ "\$arm" = base ] || continue; \
+     [ -f /tmp/lib-\$arm.so.216 ] || continue; \
      cp /tmp/lib-\$arm.so.216 libx265.so.216; \
      $ENC -o /tmp/iab-\$arm.mp4 >/dev/null 2>&1 && \
        md5sum /tmp/iab-\$arm.mp4 | cut -d' ' -f1 || echo FAIL-\$arm; \
@@ -82,7 +90,8 @@ echo "[iab] $PAIRS interleaved rounds"
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && \
    for p in \$(seq 1 $PAIRS); do \
-     for arm in \$(shuf -e base $LABEL_A $LABEL_B); do \
+     for arm in \$(shuf -e base $LABEL_A $LABEL_B $LABEL_C); do \
+       [ -f /tmp/lib-\$arm.so.216 ] || continue; \
        cp /tmp/lib-\$arm.so.216 libx265.so.216; \
        s=\$(date +%s%N); $ENC -o /dev/null >/dev/null 2>&1; \
        e=\$(date +%s%N); echo \"\$arm,\$(( (e-s)/1000000 ))\"; \
@@ -92,10 +101,10 @@ ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
 ssh -o BatchMode=yes -o ServerAliveInterval=30 "$HOST" \
   "cd $REPO/build/x265-8-gcc && cp /tmp/lib-base.so.216 libx265.so.216"
 
-python3 - /tmp/iab-ms.txt "$LABEL_A" "$LABEL_B" <<'PY'
+python3 - /tmp/iab-ms.txt "$LABEL_A" "$LABEL_B" "$LABEL_C" <<'PY'
 import csv, random, statistics, sys
 rows = list(csv.reader(open(sys.argv[1])))
-a, b = sys.argv[2], sys.argv[3]
+a, b, c = sys.argv[2], sys.argv[3], sys.argv[4] or ""
 by = {}
 for arm, ms in rows:
     by.setdefault(arm, []).append(int(ms))
@@ -113,5 +122,9 @@ base = by["base"]
 ci(base, by[a], "%s vs base (pos=faster)" % a)
 ci(base, by[b], "%s vs base (pos=faster)" % b)
 ci(by[a], by[b], "%s vs %s (pos=%s faster)" % (b, a, b))
+if c:
+    ci(base, by[c], "%s vs base (pos=faster)" % c)
+    ci(by[a], by[c], "%s vs %s (pos=%s faster)" % (c, a, c))
+    ci(by[b], by[c], "%s vs %s (pos=%s faster)" % (c, b, c))
 PY
 echo "[iab] OK"

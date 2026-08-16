@@ -1,0 +1,33 @@
+# N1 四臂组合归因（注入法重做，2026-08-16）
+
+## 方法
+
+- 机器：N1（NEON-only，2 核共享节点），真实 100f
+  （/tmp/real_1080p_100f_b.yuv），单线程 taskset -c 0；
+- 注入：compile-in（cloud-e2e-inject-710.sh + AGO_REPO 覆盖），
+  直接换 libx265.so.216 交错（interleaved-inject-ab.sh）；
+- 臂：base / best9（13 kernel）/ ir-dct（AGO_IR_DCT=1，
+  dct16/32 IR NEON）/ best9-ir-dct（15 kernel 组合）；
+- 6 对随机交错，same-machine md5 全等
+  （0745037284723547973824e0a24d4c57，bit-exact）。
+
+## 结果（ms；pos = 前者更快）
+
+| 对比 | diff 中位 | Δ% | bootstrap95 |
+| --- | ---: | ---: | ---: |
+| best9 vs base | +473 | +1.44% | [228, 934] |
+| ir-dct vs base | +461 | +1.40% | [195, 721] |
+| ir-dct vs best9 | -127 | -0.39% | [-419.5, 288.5] |
+| best9-ir-dct vs base | +962.5 | +2.93% | [765, 1383] |
+| best9-ir-dct vs best9 | +538 | +1.67% | [203, 734.5] |
+| best9-ir-dct vs ir-dct | +577.5 | +1.78% | [384, 772] |
+
+## 结论
+
+1. 注入法下 best9 与 IR-DCT 在 N1 各有约 +1.4% E2E（CI 不含 0）；
+2. **best9+IR-DCT 约 +2.9%，显著高于任一单独臂**（vs best9
+   +1.67%、vs ir-dct +1.78%，CI 均不含 0）——dct IR 候选与 best9
+   可叠加；
+3. 此前 LD_PRELOAD 四臂“中性”结论作废（reports/ld-preload-
+   interception-check-20260816.txt），本报告为有效替代；
+4. 共享节点噪声大（CI 宽），建议 710/独占节点复测或加轮次。
