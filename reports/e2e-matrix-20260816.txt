@@ -1,0 +1,29 @@
+AGO best9 E2E matrix (2026-08-16, all same-machine bit-exact)
+============================================================
+
+Machine       Bundle                30f                   100f
+------------  ---------------------  --------------------  --------------------
+920B          best9 (13k, sve1)     -2.06% CI[160,212]    -2.02% CI[356,509]
+  (Kunpeng    md5 30f ee5db7...      md5 100f 1600c2fa...
+   920, SVE1)
+N1            best9 (13k, sve1)     ~-1.6% historical     -1.52% CI[226,706]
+  (Neoverse-  md5 30f b5b18776...    md5 100f 07450372...
+   N1)
+Yitian710     best9-128 (17k,        significant (noisy    -1.53% CI[279,415]
+  (Neoverse-  sve2 vl=128)           baseline drift)       md5 21500eb4...
+   N2, VL=128)
+
+Notes
+-----
+- All gates: same-machine bitstream md5 equal (optimized == baseline),
+  5+5 paired wall-clock runs, bootstrap95 CI from scripts/paired_ci.py.
+- N1 30f: historical -1.62% (30f) / -1.20% (100f); current machine has a
+  pinned 100% CPU process on core 1 (lf_mo2_s.elf); tests pinned core 0.
+  Interleaved A/B (full vs no-sa8d16/satd) confirmed full bundle is
+  ~68 ms faster; 100f now -1.52% significant.
+- 920B/N1 cost-coeff uses non-unroll NEON variant (machine-aware);
+  Yitian uses unroll (VL=128). All bundles exclude interp8-16/32 sdoth
+  hpp (slower than upstream i8mm on VL=128).
+- Goal 15% E2E not reached; remaining headroom is outside dispatch
+  kernels (entropy, ME control flow, psyCost/quant/dct16 rewrites) or
+  requires the VL=256 SVE2 (950) window.
