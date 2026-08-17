@@ -26,12 +26,20 @@ _FILES = {
 
 
 def cover_meta() -> Dict:
+    # psy-cost 16x16 dataflow (all covers): load src/recon -> abd/sub ->
+    # abs -> 4x4 block sums -> per-block penalty add -> total.
+    cp = ["ld1_u8", "abd_u8", "abs_s16", "add_u16", "paddl_u16",
+          "add_u16"]
+    tail = (["ld1_u8"] * 32 + ["abd_u8"] * 16 + ["abs_s16"] * 16 +
+            ["paddl_u16"] * 4 + ["add_u16"] * 4)
     return {
         "covers": ["A", "B"],
         "names": {
             "A": "best_sve2 (SVE2, permute=30.8%)",
             "B": "best_ir_sve16 (dual-group, permute=42.6%)",
         },
+        "cp_chains": {"A": cp, "B": cp},
+        "tail_ops": {"A": tail, "B": tail},
         "expected_permute_ratio": {
             "A": 0.308,  # measured (reports/scan-permute-all-20260818.txt)
             "B": 0.426,  # measured

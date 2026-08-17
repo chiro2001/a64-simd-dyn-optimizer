@@ -23,6 +23,12 @@ _FILES = {
 
 
 def cover_meta() -> Dict:
+    # SAD 16x16 dataflow (all covers): load 16x16 x2 -> abd/sub ->
+    # pairwise accumulate (uadalp tree) -> horizontal sum.
+    cp = ["ld1_u8", "abd_u8", "addl_u8", "paddl_u16", "paddl_u16",
+          "add_u16"]
+    tail = (["ld1_u8"] * 32 + ["abd_u8"] * 16 + ["paddl_u16"] * 8 +
+            ["add_u16"])
     return {
         "covers": ["A", "B", "C"],
         "names": {
@@ -30,6 +36,8 @@ def cover_meta() -> Dict:
             "B": "best_ir (IR SVE2, permute=0.0%)",
             "C": "best_ir_sve16 (dual-group, permute=54.7%)",
         },
+        "cp_chains": {"A": cp, "B": cp, "C": cp},
+        "tail_ops": {"A": tail, "B": tail, "C": tail},
         "expected_permute_ratio": {
             "A": 0.0,    # measured (reports/scan-permute-all-20260818.txt)
             "B": 0.0,    # measured

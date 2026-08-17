@@ -20,12 +20,20 @@ _FILES = {
 
 
 def cover_meta() -> Dict:
+    # SATD 16x16 dataflow (all covers): load -> vsubl/u16 -> hadamard
+    # butterfly (add/sub + tbl/trn) -> abs -> horizontal sum (uaddlv).
+    cp = ["ld1_u8", "addl_u8", "add_u16", "tbl_s16", "add_u16",
+          "abs_s16", "paddl_u16", "add_u16"]
+    tail = (["ld1_u8"] * 32 + ["addl_u8"] * 16 + ["add_u16"] * 16 +
+            ["abs_s16"] * 16 + ["paddl_u16"])
     return {
         "covers": ["A", "B"],
         "names": {
             "A": "best_sve1 (SVE1, permute=8.0%)",
             "B": "best_ir_sve16 (dual-group, permute=58.8%)",
         },
+        "cp_chains": {"A": cp, "B": cp},
+        "tail_ops": {"A": tail, "B": tail},
         "expected_permute_ratio": {
             "A": 0.080,  # measured (reports/scan-permute-all-20260818.txt)
             "B": 0.588,  # measured
