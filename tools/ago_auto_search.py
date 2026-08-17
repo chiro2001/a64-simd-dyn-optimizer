@@ -180,8 +180,16 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
         # 组合分数 = permute_ratio + fused_uop/1000（两者归一化）。
         # 纯 NEON 候选 permute_ratio=0 但 fused_uop 高，SVE2 候选
         # permute_ratio 可能高但 fused_uop 低，组合分数平衡两者。
+        def _score(r):
+            # permute_ratio (0-1) + fused_uop/1000 + cp_lat/500: the
+            # cp_lat term matches the 950-arbitrated dct16 case (op895
+            # beats the lower-permute neon_bridge_fused; docs/79/83).
+            # Weight 0.002 keeps predictor-consistent winners (sao-e0
+            # block32, cost-coeff unroll) while fixing dct16.
+            return (r["permute_ratio"] + r["fused_uop"] / 1000.0 +
+                    (r.get("cp_lat") or 0) / 500.0)
         for r in results:
-            r["score"] = r["permute_ratio"] + r["fused_uop"] / 1000.0
+            r["score"] = _score(r)
         results.sort(key=lambda r: r["score"])
         winner = results[0]
         print("\n[ago-search] 最佳候选: cover-%s (%s)" % (
@@ -223,7 +231,9 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                         print("%-12s COMPILE FAIL" % label)
                         continue
                     ratio = sc.get("permute_depth_ratio", 0)
-                    score = ratio + sc.get("vector_fused_uop", 0) / 1000.0
+                    score = (ratio +
+                             sc.get("vector_fused_uop", 0) / 1000.0 +
+                             (sc.get("critical_path_latency") or 0) / 500.0)
                     flag = " ***" if ratio >= 0.30 else ""
                     print("%-12s %-34s %6d %8s %6d %5.1f%% %5s%s" % (
                         label[:12],

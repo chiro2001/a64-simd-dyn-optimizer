@@ -3,7 +3,24 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 11：Feedback Loop 落地）
+## 0. 本轮改动摘要（goal round 12：score 公式补 cp_lat（发现模式深化））
+
+1. **score 公式升级（docs/82 #5 第二步，docs/79 未探索轴之一）**：
+   `score = permute_ratio + fused_uop/1000 + cp_lat/500`——cp_lat 项
+   依据唯一有 950 仲裁实证的 dct16 案例（op895 优于 permute 更低但
+   cp_lat 更高的 neon_bridge_fused；docs/79/83）。权重推导：
+   - 约束区间 (0.001, 0.003)：dct16 需 w>0.001；sao-e0 的 block32
+     胜出需 w<0.003；cost-coeff unroll 胜出需 w<0.0038
+   - 取 w=0.002（/500）：**全部家族胜者与校准 predictor（ago_pred）
+     一致**——dct16 C(op895)、sao-e0 E(block32)、cost-coeff B(unroll)、
+     satd-8x16 A、sao-e1 C(block32) 均不变，且 dct16 的 score 排序
+     从"几乎选错"修正为正确
+   - 试错记录：w=0.01（/100）过大导致 sao-e0 E→C、cost-coeff A→B
+     翻转（与 ago_pred 矛盾），已弃
+   - 发现模式同公式（cp_lat 从 ⚠ 提示升级为计入排序）
+2. 测试 6 个全过（无 score 断言）。
+
+## 0a. 本轮改动摘要（goal round 11：Feedback Loop 落地）
 
 1. **Feedback Loop（docs/83 §8 遗留 #3 完成，闭环"实测 → 代价表校准"）**：
    - `optimizer/ago/calibration.py`：load_calibration（缺失/坏 JSON 返回
