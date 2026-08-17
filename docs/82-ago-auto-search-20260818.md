@@ -87,6 +87,9 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | sad | covers_sad.py | A=best_sve2, B=best_ir, C=best_ir_sve16 | B (score=0.066) |
 | cost-coeff-nxn | covers_costcoeff.py | A=best_sve2(looped), B=best_sve2_unroll | B (score=0.268) |
 | sao-stats-e0 | covers_sao_e0.py | A-E (5 候选) | E=block32 (score=0.261) |
+| sao-stats-e1 | covers_sao_stats_e1.py | A/B/C (block16=C 重复) | C=block32 (score=0.187) |
+| sao-stats-e2 | covers_sao_stats_e2.py | A/B/C (block16=C 重复) | C=block32 (score=0.202) |
+| sao-stats-bo | covers_sao_stats_bo.py | A=best_sve2 (标量) | A (score=0.314) |
 | psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16, C=best_cadd | C (score=0.269) |
 
 ## 新家族扩展（2026-08-18 续接：docs/82 下一步 #4 完成）

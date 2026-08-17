@@ -65,6 +65,9 @@ KERNEL_COVERS = {
     "cost-coeff-nxn": ("optimizer.ago.covers_costcoeff",
                        "dynopt_cost_coeff_nxn_sve2"),
     "sao-stats-e0": ("optimizer.ago.covers_sao_e0", "dynopt_sao_stats_e0_64_sve2"),
+    "sao-stats-e2": ("optimizer.ago.covers_sao_stats_e2", "dynopt_sao_stats_e2_64_sve2"),
+    "sao-stats-e1": ("optimizer.ago.covers_sao_stats_e1", "dynopt_sao_stats_e1_64_sve2"),
+    "sao-stats-bo": ("optimizer.ago.covers_sao_stats_bo", "dynopt_sao_stats_bo_64_sve2"),
     "psy-cost-16x16": ("optimizer.ago.covers_psycost",
                        "dynopt_psy_cost_pp_16x16_sve2"),
 }

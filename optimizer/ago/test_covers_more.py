@@ -12,6 +12,10 @@ from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
 from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
+from optimizer.ago.covers_sao_stats_e1 import cover_meta as saoe1_meta
+from optimizer.ago.covers_sao_stats_e1 import emit_cover as emit_saoe1
+from optimizer.ago.covers_sao_stats_e2 import cover_meta as saoe2_meta
+from optimizer.ago.covers_sao_stats_bo import cover_meta as saobo_meta
 from optimizer.ago.covers_sao_e0 import emit_cover as emit_saoe0
 from optimizer.ago.covers_dct8 import emit_cover as emit_dct8
 from optimizer.ago.covers_sa8d16 import emit_cover as emit_sa8d16
@@ -163,6 +167,30 @@ class TestCoversSa8d16(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_sa8d16("Z")
+
+
+class TestCoversSaoStats(unittest.TestCase):
+    """sao-stats-bo/e1/e2 covers."""
+
+    def test_e1_meta(self):
+        m = saoe1_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+
+    def test_e2_meta(self):
+        m = saoe2_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+
+    def test_bo_meta(self):
+        m = saobo_meta()
+        self.assertEqual(m["covers"], ["A"])
+
+    def test_emit_e1_c(self):
+        code = emit_saoe1("C")
+        self.assertIn("dynopt_sao_stats_e1_64_sve2", code)
+
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_saoe1("Z")
 
 
 class TestCoversSaoE0(unittest.TestCase):

@@ -3,7 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 9：sao-stats-e0 接入，自动搜索 27 kernel）
+## 0. 本轮改动摘要（goal round 10：sao stats 家族全覆盖，自动搜索 30 kernel）
+
+1. **sao-stats-bo/e1/e2 接入自动搜索**（sao stats 家族 4/4 全覆盖）：
+   - **e1**：A=best_sve2（176 uop）、C=block32（102 uop）——排序
+     C 104.2 < A 222.6（2.1x）；B=block16 源重复（DUP）
+   - **e2**：A（178）、C（102）——排序 C 111.7 < A 222.7（2.0x）
+   - **bo**：A=best_sve2 标量实现（0 vector uop，位运算统计）——
+     门禁过，ago_pred 314.1
+   - **block32 模式在整个 sao stats 家族一致胜出（e0 2.1x/e1 2.1x/
+     e2 2.0x）**——自动搜索在 sao stats 家族三连"超过手写"
+2. **DB 310→313 行**；docs/82 +3 行；测试 +5（TestCoversSaoStats）。
+   covers_sao_stats_{bo,e1,e2}.py + 两工具注册。
+
+## 0a. 本轮改动摘要（goal round 9：sao-stats-e0 接入，自动搜索 27 kernel）
 
 1. **sao-stats-e0 接入自动搜索**（sao 家族首个，710 上已证实 -15% 的
    赢家收编）：5 候选全导出 manifest 符号，全过 QEMU 门禁（vs

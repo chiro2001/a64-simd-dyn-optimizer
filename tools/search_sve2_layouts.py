@@ -605,6 +605,24 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sao_stats_e0_64_sve2")
             return emit_fn
+        if kernel == "sao-stats-e2":
+            from ago.covers_sao_stats_e2 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sao_stats_e2_64_sve2")
+            return emit_fn
+        if kernel == "sao-stats-e1":
+            from ago.covers_sao_stats_e1 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sao_stats_e1_64_sve2")
+            return emit_fn
+        if kernel == "sao-stats-bo":
+            from ago.covers_sao_stats_bo import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sao_stats_bo_64_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -1654,6 +1672,9 @@ def main():
             "sad": ["A", "B", "C"],
             "cost-coeff-nxn": ["A", "B"],
             "sao-stats-e0": ["A", "B", "C", "D", "E"],
+            "sao-stats-e2": ["A", "B", "C"],
+            "sao-stats-e1": ["A", "B", "C"],
+            "sao-stats-bo": ["A"],
             "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
@@ -1870,6 +1891,12 @@ def main():
             from ago.covers_costcoeff import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sao-stats-e0":
             from ago.covers_sao_e0 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao-stats-e2":
+            from ago.covers_sao_stats_e2 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao-stats-e1":
+            from ago.covers_sao_stats_e1 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao-stats-bo":
+            from ago.covers_sao_stats_bo import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-32x64":
             from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x32":
@@ -1913,7 +1940,8 @@ def main():
                 "satd-32x64",
                 "satd-32x8",
                 "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
-                "cost-coeff-nxn", "sao-stats-e0") \
+                "cost-coeff-nxn", "sao-stats-e0", "sao-stats-bo",
+                "sao-stats-e1", "sao-stats-e2") \
                 else "armv8.2-a+dotprod"
             # _CXX may be "clang --target=aarch64-linux-gnu" (dct8 special
             # case, docs/30 1.7); split so subprocess sees separate args.

@@ -1,0 +1,115 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400920",
+   "0x400c40"
+  ],
+  "counts": {
+   "total": 196,
+   "vector": 182,
+   "movprfx": 4,
+   "vector_fused": 178,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 22,
+   "vector_fused_uop": 178,
+   "critical_path_latency": 33,
+   "critical_path_len": 36,
+   "permute_on_critical": 4,
+   "permute_depth_ratio": 0.111,
+   "load_use_avg": 13.3,
+   "load_use_min": 2,
+   "spill_reload": 2
+  },
+  "fusion": {
+   "eligible": 26,
+   "hw_supported": 0,
+   "pairs": [
+    "cmhi+sub",
+    "cmhi+sub",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "zip1+zip1",
+    "zip1+zip1",
+    "cmhi+sub",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "zip1+cmeq",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip2+zip1",
+    "zip1+cmeq",
+    "zip1+cmhi",
+    "zip1+sub",
+    "cmhi+sub",
+    "add+add",
+    "zip2+zip1",
+    "zip2+zip1",
+    "add+zip1",
+    "uzp1+addp"
+   ],
+   "counts": {
+    "load_insns": 25,
+    "scalar_insns": 58,
+    "simd_insns": 91,
+    "store_insns": 11,
+    "fused_pseudo": 4
+   }
+  },
+  "ago_pred": 222.73
+ },
+ {
+  "tag": "cover-C",
+  "cover": "C",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400920",
+   "0x400be0"
+  ],
+  "counts": {
+   "total": 171,
+   "vector": 112,
+   "movprfx": 10,
+   "vector_fused": 102,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 102,
+   "critical_path_latency": 36,
+   "critical_path_len": 20,
+   "permute_on_critical": 2,
+   "permute_depth_ratio": 0.1,
+   "load_use_avg": 39.38,
+   "load_use_min": 1,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 0,
+   "hw_supported": 0,
+   "pairs": [],
+   "counts": {
+    "scalar_insns": 110,
+    "simd_insns": 28,
+    "load_insns": 11,
+    "store_insns": 11,
+    "fused_pseudo": 10
+   }
+  },
+  "ago_pred": 111.7
+ }
+]

@@ -209,9 +209,12 @@ sao-cuorg-e2-sve2-tbl,2026-08-17,,sao-cuorg-e2,,sve2-tbl,,,kernels/sao/candidate
 sao-cuorg-e3-neon-seed,,,sao-cuorg-e3,,neon-seed,,,kernels/sao/candidates/best_e3.cpp,117,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e3-neon-slot,2026-08-17,,sao-cuorg-e3,,neon-slot,,,kernels/sao/candidates/best_neon_e3.cpp,101,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt
 sao-cuorg-e3-sve2-tbl,2026-08-17,,sao-cuorg-e3,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e3.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
+sao-stats-bo-best_sve2-ago-pipeline,,,sao-stats-bo,permute,best_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-bo/candidates/best_sve2.cpp,0,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-e0-block32-vs-best_sve2,,,sao-stats-e0,permute,block32-vs-best_sve2,neon,sve2,kernels/sao-stats-e0/candidates/block32_sve2.cpp,102,,,,,,,ago_pred_ratio,0.481,,,,,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-e0-block32_sve2-ago-pipeline,,,sao-stats-e0,permute,block32_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-e0/candidates/block32_sve2.cpp,102,,2,2000,0,PASS,,permute_ratio,0.159,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sao_emit.py,167,184,1;2,20000,0,,710,ticks_pct,-15.0,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sao-stats-e1-block32_sve2-ago-pipeline,,,sao-stats-e1,permute,block32_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-e1/candidates/block32_sve2.cpp,102,,2,2000,0,PASS,,permute_ratio,0.085,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sao-stats-e2-block32_sve2-ago-pipeline,,,sao-stats-e2,permute,block32_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-e2/candidates/block32_sve2.cpp,102,,2,2000,0,PASS,,permute_ratio,0.100,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-axis-s8x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-axis-s16x8,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-axis-s16x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
