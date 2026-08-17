@@ -57,6 +57,10 @@ python3 tools/feedback_calibrate.py --ingest /tmp/measurements.json \
   - sa8d16 / psy-cost：cadd 版 vs 手写（ago_pred 4.4x 差）
   - sao stats/重建：block32 vs best_sve2（2x 差）
   - interp8：svdot32 vs best_sve2（docs/80）
+  - sad：**cover D（svadalp 宽累加，r33 新增）vs best_sve2（A）**——
+    920B 实测揭示 A 每行归约弱点，D 每行 1 条 UADALP；
+    QEMU 20000 例 0 失配、cp_lat=22 最短、ago_pred 0.707（快 29%）
+    （kernels/sad/candidates/best_sve2_adalp.cpp）
 
 ## 4. 结果入库（AGENTS.md 强制）
 
