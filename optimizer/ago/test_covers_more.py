@@ -12,6 +12,8 @@ from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sad import emit_cover as emit_sad
 from optimizer.ago.covers_satd16 import cover_meta as satd16_meta
 from optimizer.ago.covers_satd16 import emit_cover as emit_satd16
+from optimizer.ago.covers_satd16x32 import cover_meta as s16x32_meta
+from optimizer.ago.covers_satd16x32 import emit_cover as emit_s16x32
 from optimizer.ago.covers_psycost import cover_meta as psy_meta
 from optimizer.ago.covers_psycost import emit_cover as emit_psy
 from optimizer.ago.covers_satd_8x16 import cover_meta as s816_meta
@@ -61,6 +63,25 @@ class TestCoversSatd16(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_satd16("Z")
+
+
+class TestCoversSatd16x32(unittest.TestCase):
+
+    def test_meta(self):
+        m = s16x32_meta()
+        self.assertEqual(m["covers"], ["A"])
+        self.assertLess(m["expected_permute_ratio"]["A"], 0.30)
+
+    def test_emit_all(self):
+        for c in s16x32_meta()["covers"]:
+            code = emit_s16x32(c)
+            self.assertIsInstance(code, str)
+            self.assertIn("svcadd_s16", code)
+            self.assertIn("g < 8", code)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_s16x32("Z")
 
 
 class TestCoversPsyCost(unittest.TestCase):

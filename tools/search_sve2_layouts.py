@@ -465,6 +465,20 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_satd_16x16_sve2")
             return emit_fn
+        if kernel == "satd-16x32":
+            from ago.covers_satd16x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_16x32_sve2")
+            return emit_fn
+        if kernel == "satd-16x64":
+            from ago.covers_satd16x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_16x64_sve2")
+            return emit_fn
         if kernel == "satd-8x16":
             from ago.covers_satd_8x16 import emit_cover  # noqa: E402
 
@@ -1522,6 +1536,8 @@ def main():
             "dct16": ["A", "B", "C"],
             "dct32": ["A", "B"],
             "satd-16": ["A", "B", "C"],
+            "satd-16x32": ["A"],
+            "satd-16x64": ["A"],
             "satd-8x16": ["A", "B", "C"],
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
@@ -1714,6 +1730,10 @@ def main():
             from ago.covers_dct32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16":
             from ago.covers_satd16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-16x32":
+            from ago.covers_satd16x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-16x64":
+            from ago.covers_satd16x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-8x16":
             from ago.covers_satd_8x16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16x8":
@@ -1741,8 +1761,9 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "dct16", "dct32", "satd-16", "sad",
-                "psy-cost-16x16", "satd-8x16", "satd-16x8",
+                "interp8", "dct16", "dct32", "satd-16", "satd-16x32",
+                "satd-16x64",
+                "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn") \
                 else "armv8.2-a+dotprod"
             _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",

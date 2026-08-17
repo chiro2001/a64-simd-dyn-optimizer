@@ -3,7 +3,26 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 3：satd-16 原生 cadd + -O3 口径统一 + 模板沉淀）
+## 0. 本轮改动摘要（goal round 4：satd-16x32/16x64 新 kernel 覆盖）
+
+1. **大形状 satd 覆盖（13 个 kernel）**：satd-16x32/16x64（W=16，
+   H=32/64，均为 16 宽 × 纵向翻倍）此前无任何候选。用已验证的
+   satd-16 cadd 内核做**纵向扩展**（g-loop 4→8/16 组，同一 ROWH4
+   结构）：
+   - `kernels/satd-16x32|candidates/best_sve2_cadd.cpp`（g<8）、
+     `kernels/satd-16x64/candidates/best_sve2_cadd.cpp`（g<16）
+   - 新建 covers_satd16x32.py / covers_satd16x64.py（cover A）
+   - 两工具注册（ago_auto_search KERNEL_COVERS + search_sve2_layouts
+     make_emitter/ago_covers/rank-by chain/_ago_march sve2 组——
+     后者曾因缺 satd-16x32 落到 dotprod march 使 rank-by ago 崩溃，
+     已修）
+   - 门禁：**两 shape 均 QEMU vq=2 2000 例差分 0 失配**（vs
+     satd8_sve2<16,32>/<16,64>）；fused 38（循环体）、permute 22.2%、
+     ago_pred 38.1
+   - 测试 +3（TestCoversSatd16x32，含 g<8 结构断言）
+2. **DB 297 行**（+2）；docs/82 家族表 + satd-16x32/16x64 行。
+
+## 0a. 本轮改动摘要（goal round 3：satd-16 原生 cadd + -O3 口径统一 + 模板沉淀）
 
 1. **satd-16 cover C（best_sve2_cadd.cpp，SVE2 原生 cadd）**：best_sve1
    已经是 cadd 风格（gen_sve2_emit 的 ROWH4 = cadd→tbl→cadd），但它是
