@@ -3,7 +3,23 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 25：复制家族 6 + idct 2，自动搜索 57 kernel）
+## 0. 本轮改动摘要（goal round 26：interp8 交替路径 28 kernel，自动搜索 85）
+
+1. **interp8 hps/vps/vsp/vss 交替路径全收编（28 kernel）**：
+   - vss 8 形状（docs/81 次高 permute 家族：90-2129 uop）、vsp 6
+     （250-499）、vps 6（259-510）、hps 8（64-168）——**28/28 全过
+     QEMU 门禁**
+   - 批量生成模板（模块级候选解析）+ 批量注册（make_emitter/
+     ago_covers/rank-by/_ago_march/KERNEL_COVERS）
+   - 踩坑记录：a) 注册脚本的 `"idct16",` 替换误伤 lite_top gate
+     字典（两处）→ 恢复原条目（含 interp8 条目 + .get()）；b) 两
+     manifest 的 contract 值跨行含冒号致 YAML 非法 → 改单行
+   - 测试 +1（TestInterp8AltCovers，按候选存在过滤）
+2. **DB 341→369 行**；docs/82 +4 摘要行（按子家族）。自动搜索
+   57→85 kernel / 21 家族。剩余 interp4/interp8vpp 家族（~40
+   形状）与 misc（mc/ssd/sad-32 等）待后续轮批量。
+
+## 0a. 本轮改动摘要（goal round 25：复制家族 6 + idct 2，自动搜索 57 kernel）
 
 1. **复制家族补齐 6 kernel**（chroma-copy-pp/sp/ss、cu-copy-ps/sp/ss）：
    全部门禁过（fused 32-48、0% permute），覆盖 cu/chroma 复制 13/13。

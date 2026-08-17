@@ -1,0 +1,83 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x401060"
+  ],
+  "counts": {
+   "total": 557,
+   "vector": 403,
+   "movprfx": 0,
+   "vector_fused": 403,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 36,
+   "vector_fused_uop": 403,
+   "critical_path_latency": 43,
+   "critical_path_len": 24,
+   "permute_on_critical": 0,
+   "permute_depth_ratio": 0.0,
+   "load_use_avg": 25.11,
+   "load_use_min": 2,
+   "spill_reload": 4
+  },
+  "fusion": {
+   "eligible": 38,
+   "hw_supported": 0,
+   "pairs": [
+    "movi+mla",
+    "movi+mla",
+    "mla+movi",
+    "movi+mla",
+    "movi+mla",
+    "mla+movi",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add",
+    "usubl+add"
+   ],
+   "counts": {
+    "store_insns": 44,
+    "scalar_insns": 293,
+    "simd_insns": 116,
+    "load_insns": 10
+   }
+  },
+  "ago_pred": 390.73
+ }
+]
