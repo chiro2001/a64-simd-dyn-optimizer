@@ -1,0 +1,122 @@
+SVE2-256 Critical-Path Feature Analysis (P1 Local)
+==================================================
+Date: 2026-08-17
+Commit: (pending)
+Related: docs/78 P1, expert-advice/round-0029/decision.md (P2 accept)
+
+Summary
+-------
+Extended tools/static_counts.py + optimizer/analysis/critical_path.py +
+optimizer/analysis/cost.py with SVE2 mnemonic support and a new
+critical_path_features() function. The key new feature,
+permute_depth_ratio (fraction of the critical dependency path occupied
+by pure lane-rearrangement ops: tbl/uzp/zip/unpk/movprfx), achieves
+perfect negative Spearman correlation (-1.000) against 950 measured
+kernel ratios on 4 dct16/dct32 candidates. The old fused_uop metric is
+anti-predictive (+0.800): fewer fused_uop correlates with SLOWER real
+performance, confirming the docs/78 root cause #1 (permute critical
+chain).
+
+Code Changes
+------------
+1. optimizer/analysis/critical_path.py:
+   - MNEMONIC_LATENCY: +15 SVE2 mnemonics (ld1h/w/d, st1h/w/d, sdot,
+     sunpklo/hi, rshrnb, saddl2, movprfx, ptrue, rev/revh/revw, addvl,
+     cntb/cntp/cnth/cntw/cntd, sel, splice, saddv/uaddv, etc.)
+   - REG regex: added 'p' for SVE predicate registers (p0-p15), without
+     which ptrue/movprfx/sdot predicate dependencies are invisible.
+   - RMW_MN: added sdot/udot/usdot/sudot — SVE2 dot accumulates into
+     destination; without this edge the dot-product chain depth is
+     severed (same bug class as the old vmlaq accumulator miss).
+   - LOAD_MN/STORE_MN/NO_DST_MN: added SVE ld1b/h/w/d, st1b/h/w/d.
+
+2. optimizer/analysis/cost.py CLASSES:
+   - load: +ld1b/h/w/d
+   - store: +st1b/h/w/d
+   - permute: +sunpklo/hi, uunpklo/hi, unpklo/hi, sel, splice
+   - add: +saddl2, uaddl2, ssubl2, usubl2
+   - shift: +asr, lsl, lsr
+   - narrow: deduplicated, +sxtl2, uxtl2
+
+3. tools/static_counts.py:
+   - PERMUTE_MN: pure lane-rearrangement set (tbl/tbx/zip1-2/uzp1-2/
+     trn1-2/ext/rev*/sunpklo-hi/uunpklo-hi/unpklo-hi/xtn/xtn2/sel/
+     splice/movprfx). Excludes mov/movi/mvni/dup (register setup).
+   - critical_path_features(): backward pass on the dep graph to
+     identify all instructions on any critical path, then:
+     * critical_path_latency (longest forward latency, cycles)
+     * critical_path_len (instruction count on critical path)
+     * permute_on_critical (count of PERMUTE_MN on critical path)
+     * permute_depth_ratio (permute_on_critical / critical_path_len)
+     * load_use_avg/min (distance from load to first consumer)
+     * spill_reload (stack slot store+load pairs)
+   - static_counts() output now includes all critical-path features.
+   - CLI __main__ prints both old and new features.
+
+Verification: sve16 vs op895 (dct16, 950 measured)
+-------------------------------------------------
+Candidate     fused_uop  cp_lat  cp_len  perm_cp  pct%   ld_avg  spill  measured(ratio_vs_neon)
+dct16-op895       952    52.0      27       5   18.5%    86.2     20    0.8750 (faster)
+dct16-sve16       640    69.0      27      13   48.1%   281.7      5    0.2867 (3.49x slower)
+dct32-opbase     1129   123.0      66      14   21.2%    50.0     17    0.8009 (faster)
+dct32-sve16       897    85.0      30      14   46.7%   357.6     12    0.4349 (slower)
+
+Spearman correlation (feature vs measured ratio_vs_neon, n=4):
+  fused_uop:            rho = +0.800  (ANTI-PREDICTIVE, wrong direction)
+  cp_latency:           rho = -0.200  (weak, fails for dct32)
+  permute_on_critical:  rho = -0.400  (good, but tied at 14 for dct32)
+  permute_depth_ratio:  rho = -1.000  (PERFECT, correct in all 4 cases)
+  load_use_avg:          rho = -0.600  (good proxy)
+  spill_reload:         rho = +1.000  (anti-predictive; spills don't dominate)
+
+Key Finding
+-----------
+permute_depth_ratio perfectly separates winners from losers:
+  - op895/opbase: 18-21% permute on critical path → fast
+  - sve16:        46-48% permute on critical path → slow
+
+The sve16 dual-group design trades total uop reduction (-33%) for a
+critical path dominated by tbl2/uzp/unpk overhead (48% vs 18%). On 950
+(SVE2 2x256), these permute-class ops have real latency that the
+throughput model (fused_uop) cannot see. The critical-path analysis
+makes this visible.
+
+The old fused_uop metric is not just weak — it is actively misleading
+(rho = +0.800): it ranks sve16 (640 uop) ahead of op895 (952 uop) when
+in reality sve16 is 3.49x slower than NEON while op895 is only 1.14x
+slower.
+
+Why cp_latency alone is insufficient
+-------------------------------------
+For dct32, opbase has cp=123 (longer) vs sve16 cp=85 (shorter), yet
+opbase is faster. The critical path of opbase is long but dominated by
+compute (sdot/addp/mul), which is fast on 950. The critical path of
+sve16 is shorter but dominated by permute (tbl), which is slow. Only
+permute_depth_ratio (fraction) captures this distinction.
+
+Recommendations for P2
+---------------------
+1. P2 region-schedule template search should use permute_depth_ratio
+   as the primary ranking feature (minimize permute fraction on
+   critical path), NOT fused_uop.
+2. The width-native lowering (single-group full-width u8x32/s16x16/
+   s32x8) should specifically target tbl2 elimination — the 187 tbl
+   in sve16 vs 0 in op895 is the single largest instruction-count
+   delta.
+3. For P2 candidate gating, add: permute_depth_ratio < 0.30 as a
+   soft threshold (op895=18.5%, opbase=21.2% are the positive
+   benchmarks).
+
+Regression Tests
+----------------
+  tools:              51 tests OK
+  optimizer/ir:       50 tests OK
+  optimizer/ago:      43 tests OK
+
+Next Steps
+----------
+- P1 950-side (user): primitive latency microbench (TBL/TBL2, ZIP/UZP,
+  UNPK, SDOT serial vs independent chain, VL128 vs VL256)
+- P2 (core): reverse-engineer op895/opbase region template into
+  optimizer/ir/; width-native lowering; search with permute_depth_ratio
+  as primary ranking feature

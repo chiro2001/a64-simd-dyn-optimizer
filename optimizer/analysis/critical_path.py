@@ -36,23 +36,53 @@ MNEMONIC_LATENCY = {
     "ret": 0, "nop": 0, "cmp": 1, "tst": 1,
     "adrp": 1, "adr": 1, "adds": 2, "subs": 2, "csel": 2, "cinc": 2,
     "sbfiz": 1, "ubfiz": 1, "sbfx": 1, "ubfx": 1, "asrv": 1, "lslv": 1,
+    # SVE2 mnemonics (2026-08-17 extension for VL=256 candidate analysis,
+    # docs/78 P1). Latencies follow the same ports as their NEON siblings;
+    # per-machine calibration is in optimizer/analysis/cost.py profiles.
+    "ld1b": 4, "ld1h": 4, "ld1w": 4, "ld1d": 4,
+    "st1b": 1, "st1h": 1, "st1w": 1, "st1d": 1,
+    "addvl": 1, "cntb": 1, "cntp": 1, "cnth": 1, "cntw": 1, "cntd": 1,
+    "ptrue": 1, "whilelo": 1, "whilelt": 1, "whilele": 1, "whilels": 1,
+    "movprfx": 1,
+    "rev": 2, "revh": 2, "revw": 2,
+    "rshrnb": 4, "rshrn2": 4, "shrnb": 3, "shrn2": 3,
+    "sqrshrnb": 4, "sqrshrn2": 4,
+    "saddl2": 2, "uaddl2": 2, "ssubl2": 2, "usubl2": 2,
+    "sdot": 4, "udot": 4,
+    "sunpklo": 2, "sunpkhi": 2,
+    "uunpklo": 2, "uunpkhi": 2,
+    "unpklo": 2, "unpkhi": 2,
+    "sel": 2, "splice": 2,
+    "saddv": 3, "uaddv": 3,
+    "ins": 2, "fmov": 1,
+    "bl": 0,
 }
 
-REG = re.compile(r"(?<![\w.])([vqzxwsdhb]\d+|sp)(?:\.\S+)?(?:\[\d+\])?")
-STORE_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur"}
-LOAD_MN = {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r"}
-NO_DST_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur", "cmp", "tst",
+# p = SVE predicate registers p0-p15; without it ptrue/movprfx/sdot
+# predicate dependencies are invisible to the chain.
+REG = re.compile(r"(?<![\w.])([vqzxwsdhbp]\d+|sp)(?:\.\S+)?(?:\[\d+\])?")
+# SVE load/store mnemonics use element-width suffixes (ld1h/st1h/ld1w/...).
+STORE_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur",
+            "st1b", "st1h", "st1w", "st1d"}
+LOAD_MN = {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r",
+           "ld1b", "ld1h", "ld1w", "ld1d"}
+NO_DST_MN = {"st1", "st2", "st3", "st4", "str", "stp", "stur",
+             "st1b", "st1h", "st1w", "st1d",
+             "cmp", "tst",
              "cbz", "cbnz", "b", "b.ne", "b.eq", "b.hi", "b.lo", "b.gt",
              "b.le", "b.ge", "b.lt", "ret", "nop"}
 # Instructions whose destination register is also an input (read-modify-write
 # accumulator / fold forms). The old parser missed this edge, which severed
 # the 4-deep vmlaq accumulator chain.
+# sdot/udot (SVE2 and NEON) accumulate into the destination, so without
+# this edge the dot-product chain depth is invisible (docs/78 root cause).
 RMW_MN = {"mla", "mls", "madd", "msub", "smlal", "smlal2", "umlal",
           "umlal2", "smlsl", "smlsl2", "umlsl", "umlsl2", "saba", "uaba",
           "sabal", "sabal2", "uabal", "uabal2", "sadalp", "uadalp",
           "fmla", "fmls", "fmlal", "fmlal2", "fmlsl", "fmlsl2",
           "smaddl", "umaddl", "smsubl", "umsubl", "sbc", "adc", "ngc",
-          "sqrdmlah", "sqrdmlsh"}
+          "sqrdmlah", "sqrdmlsh",
+          "sdot", "udot", "usdot", "sudot"}
 # Two-register pair loads have two destinations.
 PAIR_LOAD_MN = {"ldp"}
 

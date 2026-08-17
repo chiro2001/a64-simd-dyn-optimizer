@@ -28,25 +28,31 @@ import re
 # when it is genuinely ambiguous; here the classes are chosen to be disjoint
 # for the DCT8 op family.
 CLASSES = {
-    "dot": {"sdot", "udot", "sdot_lane", "udot_lane"},
+    "dot": {"sdot", "udot", "sdot_lane", "udot_lane", "usdot", "sudot"},
     "mul": {"mul", "mla", "mls", "smull", "umull", "sqdmulh", "sqrdmulh",
             "fmla", "fmls", "fmul", "sqdmull", "sqdmull2", "umlal", "umlsl",
             "smlal", "smlsl"},
     "add": {"add", "sub", "saddl", "ssubl", "saddw", "ssubw", "addp",
             "sadalp", "uadalp", "addv", "saddv", "uaddv", "addhn", "raddhn",
             "saddlb", "saddlt", "ssublb", "ssublt", "addpl", "addpv",
-            "uaddl", "usubl", "uaddw", "usubw", "uaddlb", "uaddlt"},
+            "uaddl", "usubl", "uaddw", "usubw", "uaddlb", "uaddlt",
+            "saddl2", "uaddl2", "ssubl2", "usubl2"},
     "permute": {"trn1", "trn2", "zip1", "zip2", "uzp1", "uzp2", "ext", "tbl",
                 "tbx", "rev16", "rev32", "rev64", "dup", "mov", "movi",
-                "mvni", "rev", "revh", "revw"},
+                "mvni", "rev", "revh", "revw",
+                "sunpklo", "sunpkhi", "uunpklo", "uunpkhi",
+                "unpklo", "unpkhi", "sel", "splice"},
     "narrow": {"rshrn", "sqrshrn", "uqrshrn", "shrn", "sqshrn", "uqrshl",
                "sqxtn", "uqxtn", "sxtl", "uxtl",
                "rshrnb", "rshrn2", "sqrshrnb", "sqrshrn2", "shrnb", "shrn2",
                "sqrshrun", "sqrshrunb", "sqrshrunt", "sqshrunb",
-               "sqshrun", "uqshrn", "uqshrnb", "sqxtun", "uqxtn2"},
-    "load": {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r"},
-    "store": {"st1", "st2", "st3", "st4", "str", "stp", "stur"},
-    "shift": {"shl", "sshr", "ushr", "sli", "sri"},
+               "sqshrun", "uqshrn", "uqshrnb", "sqxtun", "uqxtn2",
+               "sxtl2", "uxtl2", "rshrn2"},
+    "load": {"ld1", "ld2", "ld3", "ld4", "ldr", "ldp", "ldur", "ld1r",
+             "ld1b", "ld1h", "ld1w", "ld1d"},
+    "store": {"st1", "st2", "st3", "st4", "str", "stp", "stur",
+              "st1b", "st1h", "st1w", "st1d"},
+    "shift": {"shl", "sshr", "ushr", "sli", "sri", "asr", "lsl", "lsr"},
     "fused": {"movprfx"},   # hardware-fused with the next instruction
     "scalar": set(),   # anything not matched above
 }
