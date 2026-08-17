@@ -3,6 +3,18 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 29：interp8 大形状 +3、docs/84 语料总览）
+
+1. **interp8-16/32x16/64x32 收编（+3）**：全过门禁（2039/4537/15491
+   uop），自动搜索 139→142 kernel——**本地 sve1/sve2 适用语料收编
+   完毕**（全部有候选的 kernel 均已接入）。
+2. **interp4（17 形状）最终判定**：SVE2p3-only（sdot z.h,b,b 2-way），
+   机器列表（N1/920B/710/950）均无 SVE2p3，超出目标优先范围
+   （NEON/SVE→SVE256）——确认不接入。
+3. **docs/84 语料总览**：142 kernel 全量审计（逐 kernel 实跑胜者
+   与 docs/82 一致），家族统计 + 覆盖状态，作为语料现状权威记录。
+4. **DB 423 行**；测试 +1（TestInterp8LargeShapes 并入既有参数化）。
+
 ## 0. 本轮改动摘要（goal round 28：misc 11 kernel，自动搜索 139）
 
 1. **misc 单候选 kernel 全收编（11）**：mc（64 uop）、ssd（132）、

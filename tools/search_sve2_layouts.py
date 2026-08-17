@@ -1284,6 +1284,24 @@ def make_emitter(kernel, backend="acle"):
             def emit_fn(combo):
                 return emit_cover(combo.get("cover", "A"), "dynopt_avg_pp_16x16_sve2")
             return emit_fn
+        if kernel == "interp8-64x32":
+            from ago.covers_interp8_64x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x32_sve2")
+            return emit_fn
+        if kernel == "interp8-32x16":
+            from ago.covers_interp8_32x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x16_sve2")
+            return emit_fn
+        if kernel == "interp8-16":
+            from ago.covers_interp8_16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x16_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -2445,6 +2463,9 @@ def main():
             "sad-32": ["A"],
             "ssd": ["A"],
             "mc": ["A"],
+            "interp8-64x32": ["A"],
+            "interp8-32x16": ["A"],
+            "interp8-16": ["A"],
             "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
@@ -2887,6 +2908,12 @@ def main():
             from ago.covers_ssd import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "mc":
             from ago.covers_mc import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-64x32":
+            from ago.covers_interp8_64x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-32x16":
+            from ago.covers_interp8_32x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-16":
+            from ago.covers_interp8_16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-32x64":
             from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x32":
@@ -2976,6 +3003,9 @@ def main():
                 "satd-8x32",
                 "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn", "sao-stats-e0", "interp8-hps-16x16",
+                "interp8-16",
+                "interp8-32x16",
+                "interp8-64x32",
                 "mc",
                 "ssd",
                 "sad-32",
@@ -3424,6 +3454,9 @@ def main():
                 except Exception as e:  # noqa: BLE001
                     print("  %-24s bench920 skipped: %s" % (tag, e))
         elif args.kernel in ("interp8-hps-16x16",
+                "interp8-16",
+                "interp8-32x16",
+                "interp8-64x32",
                 "mc",
                 "ssd",
                 "sad-32",

@@ -456,8 +456,11 @@ class TestInterp8Shapes(unittest.TestCase):
 
     SHAPES = [("interp8-8x16", "dynopt_interp8_8x16_sve2"),
               ("interp8-16x8", "dynopt_interp8_16x8_sve2"),
+              ("interp8-16", "dynopt_interp8_16x16_sve2"),
               ("interp8-16x32", "dynopt_interp8_16x32_sve2"),
               ("interp8-32", "dynopt_interp8_32x32_sve2"),
+              ("interp8-32x16", "dynopt_interp8_32x16_sve2"),
+              ("interp8-64x32", "dynopt_interp8_64x32_sve2"),
               ("interp8-64x64", "dynopt_interp8_64x64_sve2")]
 
     def test_meta_and_emit(self):
