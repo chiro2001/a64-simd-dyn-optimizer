@@ -3,6 +3,28 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 35：sao-e0 920B 实测 + psy-cost 家族全形状实测）
+
+1. **sao-stats-e0 block32 920B 实测**：ratio 1.031（慢 3.1%，3 次稳定，
+   mism=0）——无赢面。静态 2x 预测基于 950 SVE2 代价表，920B SVE1 的
+   svdot_s64 未兑现优势。新 harness `benchmarks/sao_e0_microbench.cpp`
+   （5 参 cand vs 7 参 primitives.saoCuStatsE0，endX=64/endY=1 契约）。
+2. **psy-cost 家族 920B 全形状实测**（SVE1 cover 全兼容）：
+   | 形状 | ratio cand/ref | 结论 |
+   |---|---|---|
+   | **8x8** | **0.8525（3 次 × 500s 几乎一致）** | **快 14.7%——920B 最大稳定赢面** |
+   | 16x16 | 0.9834 | 快 1.7%（r32 已入库） |
+   | 32x32 | 0.9957 | 快 0.4%（噪声内） |
+   | 64x64 | 1.0079 | 慢 0.8%（噪声内） |
+   - **机理推测**：8x8 块小，NEON ref 的每调用固定开销占比高，SVE1
+     cover 更紧凑；大块计算密集，NEON 效率逼近。
+   - psy-cost-8x8 是继 psy-cost-16、sad-32 后**第三个 920B 稳定赢面**，
+     且幅度最大（14.7%）——"自动搜索 > 手写"实机证据显著增强。
+3. **920B 实测全景**（11 项）：赢 = psy-cost-8x8（14.7%）、sad-32
+   （4-7%）、psy-cost-16（1.4%）；噪声 = satd-16、psy-cost-32/64；
+   输 = sa8d16 NEON 降级（1.7%）、sao-e0（3.1%）、sad-16（2.3x）。
+4. DB 439→443 行（sao-e0 + psy-cost 8x8/32x32/64x64）。
+
 ## 0. 本轮改动摘要（goal round 34：uadalp 模式泛化到 sad-32 + 920B 带宽优势实证）
 
 1. **uadalp 宽累加模式泛化到 sad-32**（round-33 sad-16 发现的直接推广）：

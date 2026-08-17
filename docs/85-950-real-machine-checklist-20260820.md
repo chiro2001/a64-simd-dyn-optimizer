@@ -53,6 +53,8 @@ python3 tools/feedback_calibrate.py --ingest /tmp/measurements.json \
   ```
 - 门禁：同机码流 md5 bit-exact；5+5（或 5+5+5）交错取中位
 - 重点仲裁项（docs/84 §3）：
+  - **psy-cost-8x8：已在 920B 实证快 14.7%**（r35，最强赢面）——950
+    只需验证 32/64 形状与 cadd SVE2 版（静态 4.4x）
   - dct16：op895 vs neon_bridge_fused（score 已按 950 实证修正）
   - sa8d16 / psy-cost：cadd 版 vs 手写（ago_pred 4.4x 差）
   - sao stats/重建：block32 vs best_sve2（2x 差）

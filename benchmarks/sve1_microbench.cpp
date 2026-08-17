@@ -2,9 +2,10 @@
 // vs the machine's current dispatched path (primitives.*).
 //
 // Kernels measured (all 4-arg pixelcmp_t signatures):
-//   satd-16x16 : dynopt_satd_16x16_sve2   vs primitives.cu[BLOCK_16x16].satd
-//   sad-16x16  : dynopt_sad_16x16_sve2    vs primitives.cu[BLOCK_16x16].sad
-//   psy-cost-16: dynopt_psy_cost_pp_16x16_sve2 vs primitives.psy_cost_pp
+//   satd-16x16 : dynopt_satd_16x16_sve2   vs primitives.pu[LUMA_16x16].satd
+//   sad-16x16  : dynopt_sad_16x16_sve2    vs primitives.pu[LUMA_16x16].sad
+//   psy        : dynopt_psy_cost_pp_<N>x<N>_sve2 vs primitives.cu[BLOCK_NxN]
+//                .psy_cost_pp  (N = 8/16/32/64 via -DPSY_N)
 //
 // Usage: sve1_microbench <satd|sad|psy> [samples] [batch]
 #include <algorithm>
@@ -19,11 +20,32 @@
 using namespace X265_NS;
 
 extern "C" int dynopt_satd_16x16_sve2(
-    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t)
+    __attribute__((weak));
 extern "C" int dynopt_sad_16x16_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t)
+    __attribute__((weak));
+#if defined(PSY_N) && PSY_N == 8
+extern "C" int dynopt_psy_cost_pp_8x8_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define PSY_FN dynopt_psy_cost_pp_8x8_sve2
+#define PSY_BLOCK BLOCK_8x8
+#elif defined(PSY_N) && PSY_N == 32
+extern "C" int dynopt_psy_cost_pp_32x32_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define PSY_FN dynopt_psy_cost_pp_32x32_sve2
+#define PSY_BLOCK BLOCK_32x32
+#elif defined(PSY_N) && PSY_N == 64
+extern "C" int dynopt_psy_cost_pp_64x64_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define PSY_FN dynopt_psy_cost_pp_64x64_sve2
+#define PSY_BLOCK BLOCK_64x64
+#else
 extern "C" int dynopt_psy_cost_pp_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define PSY_FN dynopt_psy_cost_pp_16x16_sve2
+#define PSY_BLOCK BLOCK_16x16
+#endif
 
 typedef int (*fn_t)(const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
@@ -85,8 +107,8 @@ int main(int argc, char** argv)
     }
     else if (!strcmp(which, "psy"))
     {
-        ref = primitives.cu[BLOCK_16x16].psy_cost_pp;
-        cand = dynopt_psy_cost_pp_16x16_sve2;
+        ref = primitives.cu[PSY_BLOCK].psy_cost_pp;
+        cand = PSY_FN;
     }
     else
     {
@@ -95,7 +117,12 @@ int main(int argc, char** argv)
     }
 
     std::mt19937 rng(0x5A8D16u ^ (unsigned)which[0]);
-    std::vector<uint8_t> a(64 * 64), b(64 * 64);
+#ifdef PSY_N
+    const int PAD = 96;
+#else
+    const int PAD = 64;
+#endif
+    std::vector<uint8_t> a(PAD * PAD), b(PAD * PAD);
     for (size_t i = 0; i < a.size(); i++)
     {
         a[i] = (uint8_t)(rng() & 0xFF);
@@ -105,15 +132,15 @@ int main(int argc, char** argv)
     int mism = 0;
     for (int i = 0; i < 1000; i++)
     {
-        int x = (int)(rng() % 49), y = (int)(rng() % 49);
-        const uint8_t* pa = &a[y * 64 + x];
-        const uint8_t* pb = &b[y * 64 + x];
-        if (ref(pa, 64, pb, 64) != cand(pa, 64, pb, 64))
+        int x = (int)(rng() % (PAD - 65)), y = (int)(rng() % (PAD - 65));
+        const uint8_t* pa = &a[y * PAD + x];
+        const uint8_t* pb = &b[y * PAD + x];
+        if (ref(pa, PAD, pb, PAD) != cand(pa, PAD, pb, PAD))
             mism++;
     }
     printf("[%s] correctness mism=%d/1000\n", which, mism);
 
-    const intptr_t sa = 64, sb = 64;
+    const intptr_t sa = PAD, sb = PAD;
     uint64_t tr = bench(ref, a.data(), sa, b.data(), sb, samples, batch);
     uint64_t tc = bench(cand, a.data(), sa, b.data(), sb, samples, batch);
     double per_call = 1.0 / batch;
