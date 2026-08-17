@@ -78,12 +78,14 @@ op-backend（op895/opbase/op4032）同宽对比。当前 fused8 DAG 是 8-lane
   计数路径，与本表同口径数字不同；本表命令：
   `aarch64-linux-gnu-g++ -O3 -march=armv8.2-a+sve2 -c <cand>.cpp` +
   `tools/static_counts.py`/按符号计数。）
-- ⏳ 950 实机 kernel 周期/注入 E2E：候选已接入
-  `AGO_IR_SVE16=1`（`tools/build_preload_so.py` 在
-  `--isa sve2 --vl 32` 时优先选 `best_ir_sve16.cpp`）。950 侧命令：
+- ✅/✘ 950 实机 kernel 周期对比已做（2026-08-17，
+  `reports/950-sve16-dual-lane-20260817.txt`）：TestBenchLite 6-seed
+  双编译器（gcc16/clang22）全过，但实机明显更慢——dct16 比上游
+  SVE/NEON 慢 ~2.2-3.5x，dct32 慢 ~1.5-2.3x；静态 fused_uop 优势
+  （640 vs 952 / 897 vs 1129）不转实机周期，**950 不可采纳**。
+  op895/opbase 维持 950 kernel 级选型；候选在其他机器仍可接入：
   `AGO_IR_SVE16=1 python3 tools/build_preload_so.py --isa sve2 --vl 32
-  --kernels dct16,dct32 --opt=-O3 --out build/dct-sve16.so`，再按
-  docs/63 的注入法 A/B。
+  --kernels dct16,dct32 --opt=-O3 --out build/dct-sve16.so`。
 
 ## 实现要点（dct16）
 

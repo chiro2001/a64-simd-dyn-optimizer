@@ -62,6 +62,10 @@ dct16-ir-neon,2026-08-16,72c8a08,dct16,dct,ir-neon,sve2,neon,kernels/dct16/candi
 dct16-ir-neon-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,dct16,,ir-neon,sve2,neon,kernels/dct16/candidates/best_ir_neon8.cpp,1941,,1;2,20000,0,PASS,N1,ticks_pct,-18.2,-1.80,-0.02,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 dct16-op895-950,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_sve,1.2917,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct16-op895-950-neon,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8750,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+dct16-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.3043,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct16-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4864,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct16-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.2867,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct16-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4567,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-axis-bb-accept,2026-08-17,,dct32,,axis-bb-3bin,,,tools/dct32_axis_bb_accept.py,1053,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-axis-bb-accept-v2,2026-08-17,,dct32,,axis-bb-oddxrg,,,tools/dct32_axis_bb_accept.py,886,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-best_ir_sve16,,,dct32,,best_ir_sve16,,,,,,2,40960,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
@@ -75,6 +79,10 @@ dct32-op4032-950,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/can
 dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_neon,1.4015,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
 dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+dct32-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-clang22,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.5382,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct32-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-clang22,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.6733,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct32-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.4349,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.5892,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
 interp8-best_ir_sve16,,,interp8,filter,best_ir_sve16,neon,sve2,kernels/interp8/candidates/best_ir_sve16.cpp,683,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-16-best_ir_sve16,,,interp8-16,filter,best_ir_sve16,neon,sve2,kernels/interp8-16/candidates/best_ir_sve16.cpp,3741,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py

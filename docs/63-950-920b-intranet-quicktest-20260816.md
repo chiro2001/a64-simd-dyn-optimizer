@@ -152,4 +152,8 @@ LD_PRELOAD=$PWD/build/dynopt-vl128-dct-neon.so ./x265 ...  # A/B 同 710
 ## 3. 输出与记录
 - 每台机器：md5（bit-exact 门）、base/opt 中位、paired CI；
 - 950 追加：dct16/dct32 TestBenchLite 5-seed 结果、perf 前后热点；
+- 950 追加（2026-08-17，sve16 双组 dct16/32）：TestBenchLite 6-seed
+  双编译器 PASS，但实机慢——dct16 2.2-3.5x、dct32 1.5-2.3x 慢于
+  上游 SVE/NEON，不可采纳；详见
+  `reports/950-sve16-dual-lane-20260817.txt`（op895/opbase 维持选型）。
 - 结果回填 docs/59 与 reports/，并同步 remote。

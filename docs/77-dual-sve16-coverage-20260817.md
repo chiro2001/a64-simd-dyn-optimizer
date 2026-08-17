@@ -86,4 +86,8 @@ AGO_IR_SVE16=1 python3 tools/build_preload_so.py \
 - sao 族（edge/vceq/vzip/histseg/sdot）与 interp8 其余 field
   （vpp/vps/vsp/vss、interp4）未接入，列为后续。
 - `psy-cost-16x16` 无 manifest，注入需补 manifest。
-- 950 实机周期/E2E 待用户侧（FROZEN 流程同 docs/63/73）。
+- 950 kernel 级对比已做（2026-08-17，
+  `reports/950-sve16-dual-lane-20260817.txt`）：dct16/dct32 双编译器
+  全门禁 PASS 但实机慢 1.5-3.5x，**950 不可采纳**（静态 uop 不转实机
+  周期，与 sao/satd/pure-SVE 教训一致）。950 E2E（FROZEN 冻结集，
+  不含 sve16）仍待用户侧（docs/63/73）。
