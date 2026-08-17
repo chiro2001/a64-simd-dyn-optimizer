@@ -66,6 +66,7 @@ dct16-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-cl
 dct16-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4864,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.2867,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4567,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct16-wide_sve2_neon_bridge,,,dct16,,wide_sve2_neon_bridge,,,,,,2,,,,,fused_uop,950,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct32-axis-bb-accept,2026-08-17,,dct32,,axis-bb-3bin,,,tools/dct32_axis_bb_accept.py,1053,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-axis-bb-accept-v2,2026-08-17,,dct32,,axis-bb-oddxrg,,,tools/dct32_axis_bb_accept.py,886,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-best_ir_sve16,,,dct32,,best_ir_sve16,,,,,,2,40960,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md

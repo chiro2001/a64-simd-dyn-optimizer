@@ -1,0 +1,103 @@
+# SVE2 Width-Native DCT16 Emitter (P2)
+
+## Date: 2026-08-17
+## Branch: main (server-mini)
+
+## Overview
+
+Created `optimizer/ir/dct16_wide_sve2.py` — a Python emitter that
+generates SVE2 dct16 candidates with configurable even-k lowering modes.
+This is the P2 region-schedule template deliverable from docs/78.
+
+## Emitter Modes
+
+| Mode | even-k | Butterfly | Reduce | 0-NEON | Validated | permute_ratio |
+|------|--------|-----------|-------|--------|-----------|---------------|
+| neon_bridge | NEON bridge | NEON zip1/rev64/zip2 | NEON vpaddq | No | PASS (QEMU) | 12.0% |
+| addp | SVE2 width-native | SVE2 svsplice+svtbl (BUG) | SVE2 addp | Yes | FAIL | 41.4% |
+| uzp | SVE2 width-native | SVE2 svsplice+svtbl (BUG) | SVE2 uzp1+uzp2+add | Yes | FAIL | 53.1% |
+
+## Key Findings
+
+### 1. neon_bridge mode VALIDATED (bit-exact vs op895)
+
+The neon_bridge mode reproduces op895's algorithm using the same NEON
+intrinsics for the even-k section (vaddl_s16, vrev64q_s32, vpaddq_s32,
+vmulq_s32, vrshrn_n_s32) and the same SVE2 for odd-k (svdot_s64).
+
+QEMU validation: 200 iterations × 6 modes, 0 mismatch vs op895.
+
+Static counts (-O3 -march=armv8-a+sve2):
+- vector_fused_uop: 950 (vs op895 952)
+- critical_path_latency: 55 (vs op895 52)
+- permute_on_critical: 3 (vs op895 5)
+- permute_depth_ratio: 12.0% (vs op895 18.5%)
+- spill_reload: 27 (vs op895 20)
+
+### 2. SVE2 width-native butterfly FUNDAMENTAL BUG
+
+The addp/uzp modes (pure SVE2 even-k) produce WRONG results because
+the SVE2 width-native butterfly uses svsplice+svtbl which creates an
+INTRA-row reversal (reversing within each row's 4 elements), while
+op895 uses zip1_s64+rev64+zip2_s64 which creates a CROSS-row butterfly
+(interleaving elements from two different rows).
+
+These are mathematically different operations:
+- Intra-row: EEE[i] = EE[i][0]+EE[i][3], EE[i][1]+EE[i][2], ...
+- Cross-row: EEE[0] = EE[0][0]+EE[1][3], EE[0][1]+EE[1][2], ...
+
+The cross-row butterfly cannot be replicated with simple svsplice+svtbl
+at VL=256. It requires either:
+a) NEON bridge (zip1q_s64/rev64q_s32/zip2q_s64) — used by op895
+b) SVE2 svzip1_s64/svzip2_s64 + a per-64-bit reversal (revw_d64)
+c) A completely different algorithm that avoids the cross-row butterfly
+
+### 3. addp_s32 creates LONGER critical path
+
+Using `addp_s32` (inline asm `addp r, r, b` with "+w" constraint)
+instead of `uzp1+uzp2+add` creates a read-modify-write dependency that
+extends the critical path:
+- addp mode: cp_lat=358, cp_len=145, permute_ratio=41.4%
+- uzp mode: cp_lat=128, cp_len=98, permute_ratio=53.1%
+
+The addp instruction IS in MNEMONIC_LATENCY (latency=3) but the "+w"
+constraint creates a serial chain that makes the critical path longer.
+
+### 4. neon_bridge permute_depth_ratio improvement
+
+The neon_bridge mode achieves permute_depth_ratio=12.0% (vs op895's
+18.5%). This is likely due to the emitter's code ordering affecting
+compiler register allocation and scheduling, not a fundamental
+algorithmic improvement. The difference is small (3 vs 5 permutes
+on critical path) and may not translate to real-world improvement.
+
+## Files Created/Modified
+
+- `optimizer/ir/dct16_wide_sve2.py` — width-native SVE2 dct16 emitter
+- `kernels/dct16/candidates/best_wide_sve2_neon_bridge.cpp` — generated candidate
+- `tools/test_dct16_wide_sve2.py` — emitter test suite (6 tests)
+- `data/kernel-test-db.csv` — 2 new rows (static counts for neon_bridge)
+
+## Next Steps
+
+1. **P2 continued**: The neon_bridge mode is a template that reproduces
+   op895. The search axes (batch size, coefficient pre-arrangement,
+   reduce tree structure) need to be explored to find candidates that
+   actually IMPROVE on op895's permute_depth_ratio.
+
+2. **Width-native butterfly fix**: The SVE2 width-native butterfly
+   needs to use svzip1_s64/svzip2_s64 + revw_d64 to replicate op895's
+   cross-row butterfly. This would enable pure-SVE2 candidates without
+   NEON bridge.
+
+3. **dct32**: Apply the same approach to dct32 (opbase).
+
+4. **950 real-machine validation**: The neon_bridge candidate needs
+   to be tested on 950 to see if the 12.0% permute_depth_ratio
+   translates to real performance improvement over op895.
+
+## Git State
+
+- HEAD: 92888ae (P1 local)
+- New files ready for commit
+- 3 regression suites pass (57+50+43=150 tests)
