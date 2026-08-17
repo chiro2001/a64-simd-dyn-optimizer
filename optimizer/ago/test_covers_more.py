@@ -12,6 +12,8 @@ from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
 from optimizer.ago.covers_dct32 import cover_meta as dct32_meta
+from optimizer.ago.covers_satd_8x4 import cover_meta as s8x4_meta
+from optimizer.ago.covers_satd_8x4 import emit_cover as emit_s8x4
 from optimizer.ago.covers_dct32 import emit_cover as emit_dct32
 from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
 from optimizer.ago.covers_sao_stats_e1 import cover_meta as saoe1_meta
@@ -306,6 +308,23 @@ class TestCoversSaoE0(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_saoe0("Z")
+
+
+class TestCoversSatd8x4(unittest.TestCase):
+
+    def test_meta(self):
+        m = s8x4_meta()
+        self.assertEqual(m["covers"], ["A"])
+        self.assertLess(m["expected_permute_ratio"]["A"], 0.05)
+
+    def test_emit(self):
+        code = emit_s8x4("A")
+        self.assertIn("dynopt_satd_8x4_sve2", code)
+        self.assertIn("svcadd_s16", code)  # bridge cadd
+
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_s8x4("B")
 
 
 class TestInterp8Shapes(unittest.TestCase):

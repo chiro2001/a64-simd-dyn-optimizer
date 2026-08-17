@@ -3,7 +3,21 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 21：语料审计 + 旧格式适配 + 工具手册更新）
+## 0. 本轮改动摘要（goal round 22：satd-8x4 桥接候选，自动搜索 41 kernel）
+
+1. **satd-8x4（8 宽边缘形状首个）**：宽度原生不可行（8-lane 行无法
+   填满 256 位向量，combine permutes 吃收益）→ 用 **128-bit bridge**
+   镜像上游 hadamard_4x4_dual（cadd<90> + kHADPermuteTbl 2 级蝴蝶 +
+   垂直 abs/max 折叠，同 psy-cost best_cadd 模式）：
+   - **踩坑**：初版按 sa8d 习惯加了 `(sum+1)>>1` 舍入——satd8_sve2
+     wrapper **返回原始和（无 >>1）**；first-diff 恰好 want=5506
+     got=2753（偶数和的 >>1）暴露。移除后 bit-exact
+   - **门禁过（QEMU 2000 例 0 失配），fused 36、ago_pred 30.8**
+   - 接线：covers_satd_8x4.py（单 cover A）+ 两工具注册；测试 +3
+2. **DB 324→325 行**；docs/82 +1 行（score=0.036）。satd 家族 14
+   形状。satd-8x32（=4×8x8 结构）可同法（bridge 循环）后续补。
+
+## 0a. 本轮改动摘要（goal round 21：语料审计 + 旧格式适配 + 工具手册更新）
 
 1. **40 kernel 语料审计**：全量跑 ago_auto_search，38 kernel 胜者与
    docs/82 完全一致（无漂移）；**抓到 2 处异常**：sa8d/satd-8 的

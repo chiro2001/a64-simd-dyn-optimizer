@@ -65,6 +65,7 @@ KERNEL_COVERS = {
     "satd-32x64": ("optimizer.ago.covers_satd32x64", "dynopt_satd_32x64_sve2"),
     "satd-32x8": ("optimizer.ago.covers_satd32x8", "dynopt_satd_32x8_sve2"),
     "satd-8x16": ("optimizer.ago.covers_satd_8x16", "dynopt_satd_8x16_sve2"),
+    "satd-8x4": ("optimizer.ago.covers_satd_8x4", "dynopt_satd_8x4_sve2"),
     "satd-16x8": ("optimizer.ago.covers_satd_16x8", "dynopt_satd_16x8_sve2"),
     "sad": ("optimizer.ago.covers_sad", "dynopt_sad_16x16_sve2"),
     "cost-coeff-nxn": ("optimizer.ago.covers_costcoeff",
