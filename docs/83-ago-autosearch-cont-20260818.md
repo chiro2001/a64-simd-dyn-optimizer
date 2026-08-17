@@ -3,6 +3,27 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 32：920B 首次实机测量——SVE1 VL=256）
+
+1. **920B 首次实机 kernel 测量**（CNTVCT=100MHz，中位 ticks，mism=0/1000）：
+   - 新设施 `benchmarks/sa8d16_microbench.cpp` + `benchmarks/sve1_microbench.cpp`
+     （通用 harness：satd-16/sad-16/psy-cost-16，均 vs `primitives.*` 分派路径）。
+   - **构建踩坑修复**：920B 编译必须加 `-I build/x265-8-gcc`
+     （x265_config.h 是生成头，在 build 下而非 source 下）；本地交叉编译
+     用 `-I build/x265-8-cross-sve2`。
+2. **测量结果**（候选=AGO 胜者，ref=920B 分派路径，ratio cand/ref>1=候选慢）：
+   | kernel | 候选 cover | ratio cand/ref | 结论 |
+   |---|---|---|---|
+   | sa8d16 | best_sve1（**实为 NEON**：SVE2 cadd 胜者无法降级 SVE1） | 1.017（4 次稳定） | 慢 1.7%，NEON 降级版无赢面 |
+   | satd-16 | best_sve1（真 SVE1，svtbl 模拟 cadd90） | 首轮 0.962，复测 3×300s 1.01-1.03 | 噪声内，无稳定赢面 |
+   | sad | best_sve2（SVE1-only） | 2.34 | 慢 2.3x：逐行 svaddv 归约 vs 手写 NEON 多行展开 |
+   | **psy-cost-16x16** | best_sve2（SVE1） | **0.983-0.987（4 次稳定）** | **快 ~1.4%——920B 上首个"自动搜索>现状"稳定实机证据** |
+3. **结论**：920B（SVE1）只能验证 SVE1 兼容 cover；psy-cost-16 稳定小赢
+   （1.4%）。真正的 SVE2 胜者（sa8d16/psy-cost cadd 蝴蝶版等，静态预测
+   4.4x/2x）需 950 验证。sad cover 暴露逐行归约弱点 → 后续优化点
+   （多行展开 + 宽累加，可再入自动搜索迭代）。
+4. DB 430→434 行（+4：sa8d16/satd-16/sad/psy-cost-16x16，machine=920B）。
+
 ## 0. 本轮改动摘要（goal round 31：DB 核对补漏 + docs/85 950 验证清单）
 
 1. **语料↔DB 交叉核对**：发现 5 个已门禁但漏入库的 kernel
