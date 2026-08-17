@@ -1284,6 +1284,13 @@ def make_emitter(kernel, backend="acle"):
             def emit_fn(combo):
                 return emit_cover(combo.get("cover", "A"), "dynopt_avg_pp_16x16_sve2")
             return emit_fn
+        if kernel == "dequant":
+            from ago.covers_dequant import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_dequant_normal_256_sve2")
+            return emit_fn
         if kernel == "interp8-64x32":
             from ago.covers_interp8_64x32 import emit_cover  # noqa: E402
 
@@ -2463,6 +2470,7 @@ def main():
             "sad-32": ["A"],
             "ssd": ["A"],
             "mc": ["A"],
+            "dequant": ["A"],
             "interp8-64x32": ["A"],
             "interp8-32x16": ["A"],
             "interp8-16": ["A"],
@@ -2908,6 +2916,8 @@ def main():
             from ago.covers_ssd import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "mc":
             from ago.covers_mc import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "dequant":
+            from ago.covers_dequant import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-64x32":
             from ago.covers_interp8_64x32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-32x16":
@@ -3006,6 +3016,7 @@ def main():
                 "interp8-16",
                 "interp8-32x16",
                 "interp8-64x32",
+                "dequant",
                 "mc",
                 "ssd",
                 "sad-32",
@@ -3457,6 +3468,7 @@ def main():
                 "interp8-16",
                 "interp8-32x16",
                 "interp8-64x32",
+                "dequant",
                 "mc",
                 "ssd",
                 "sad-32",

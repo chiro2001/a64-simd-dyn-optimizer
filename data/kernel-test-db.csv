@@ -109,6 +109,7 @@ dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve
 dct32-wide_sve2_loop,,,dct32,,wide_sve2_loop,,,,,,2,0,0,PENDING,,static_fused_uop,761,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct8-best_sve2-ago-pipeline,,,dct8,permute,best_sve2-ago-pipeline,neon,sve2,kernels/dct8/candidates/best_sve2.cpp,289,,2,2000,0,PASS,,permute_ratio,0.185,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
+dequant-best_sve2-ago-pipeline,,,dequant,permute,best_sve2-ago-pipeline,neon,sve2,kernels/dequant/candidates/best_sve2.cpp,130,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 find-pos-first-last-best-ago-pipeline,,,find-pos-first-last,permute,best-ago-pipeline,neon,sve2,kernels/find-pos-first-last/candidates/*.cpp,12,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 idct16-best-ago-pipeline,,,idct16,permute,best-ago-pipeline,neon,sve2,kernels/idct16/candidates/*.cpp,1143,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 idct32-best-ago-pipeline,,,idct32,permute,best-ago-pipeline,neon,sve2,kernels/idct32/candidates/*.cpp,5968,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md

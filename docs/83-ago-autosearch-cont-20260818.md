@@ -3,6 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 30：dequant 从零移植——语料 143 完整）
+
+1. **dequant（反量化）从零移植**（最后一个无候选的 manifest kernel）：
+   - 上游 `x265_dequant_normal_sve2`（pixel-util-sve2.S）算法简单：
+     smullb/t 宽乘 quant + srshl 舍入移位（asm 对 shift 取负 = 右移
+     舍入）+ sqxtnb/t 饱和窄化
+   - **踩坑**：harness 契约是 **4 参数**（quantCoef, coef, scale,
+     shift，num 固定 256）——初版按 5 参数写导致参数错位（scale
+     读到 num 位），first-diff 定位后修正
+   - **门禁过（QEMU 2000 例 0 失配），fused 130、ago_pred 56.4**
+2. **语料 143 kernel 完整**（全部有 manifest 的 kernel 均已收编；
+   唯一例外 interp4 为 SVE2p3-only 超出范围）。DB 423→424 行；
+   测试 +3（TestCoversDequant）；docs/82 +1 行。
+
 ## 0. 本轮改动摘要（goal round 29：interp8 大形状 +3、docs/84 语料总览）
 
 1. **interp8-16/32x16/64x32 收编（+3）**：全过门禁（2039/4537/15491

@@ -75,6 +75,7 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | interp8vpp (21 形状) | covers_interp8vpp_*.py | A | 全过门禁 (95-4906 uop) |
 | interp4 (17 形状) | （未接入） | — | SVE2p3-only（sdot z.h,b,b），950 不适用，留待 sve2p3 约束轴 |
 | mc / ssd / sad-32 / pu-addavg / pu-copy-pp / scan-pos-last / sign / scale2d / pel-filter-luma-strong / find-pos-first-last / sao | covers_{mc,ssd,...}.py | A | 全过门禁 (5-269 uop) |
+| dequant | covers_dequant.py | A=best_sve2 (smull+srshl+sqxtn) | A (score=0.130) |
 | dct16 | covers_dct16.py | A=neon_bridge, B=pure_sve2, C=op895 | C (score=1.137) |
 | dct8 | covers_dct8.py | A=best_sve2 (B/C/D/E scan-only) | A (score=0.474) |
 | dct32 | covers_dct32.py | A=loop, B=opbase, C=batch8 | A (score=0.955；manifest 已修；C 门禁过但负结案) |

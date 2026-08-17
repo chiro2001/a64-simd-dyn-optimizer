@@ -9,6 +9,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from optimizer.ago.covers_sad import cover_meta as sad_meta
+from optimizer.ago.covers_dequant import cover_meta as dequant_meta
+from optimizer.ago.covers_dequant import emit_cover as emit_dequant
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
 from optimizer.ago.covers_dct32 import cover_meta as dct32_meta
@@ -310,6 +312,23 @@ class TestCoversSaoE0(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_saoe0("Z")
+
+
+class TestCoversDequant(unittest.TestCase):
+
+    def test_meta(self):
+        m = dequant_meta()
+        self.assertEqual(m["covers"], ["A"])
+        self.assertLess(m["expected_permute_ratio"]["A"], 0.05)
+
+    def test_emit(self):
+        code = emit_dequant("A")
+        self.assertIn("dynopt_dequant_normal_256_sve2", code)
+        self.assertIn("svmullb_s32", code)
+
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_dequant("B")
 
 
 class TestMiscCovers(unittest.TestCase):

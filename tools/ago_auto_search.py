@@ -177,6 +177,7 @@ KERNEL_COVERS = {
     "sad-32": ("optimizer.ago.covers_sad_32", "dynopt_sad_32x32_sve2"),
     "ssd": ("optimizer.ago.covers_ssd", "dynopt_sse_pp_16x16_sve2"),
     "mc": ("optimizer.ago.covers_mc", "dynopt_avg_pp_16x16_sve2"),
+    "dequant": ("optimizer.ago.covers_dequant", "dynopt_dequant_normal_256_sve2"),
     "interp8-64x32": ("optimizer.ago.covers_interp8_64x32", "dynopt_interp8_64x32_sve2"),
     "interp8-32x16": ("optimizer.ago.covers_interp8_32x16", "dynopt_interp8_32x16_sve2"),
     "interp8-16": ("optimizer.ago.covers_interp8_16", "dynopt_interp8_16x16_sve2"),
