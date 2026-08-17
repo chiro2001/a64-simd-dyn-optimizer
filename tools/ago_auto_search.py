@@ -95,6 +95,25 @@ def compile_and_count(cpp_path, march, tmpdir):
     return static_counts(obj)
 
 
+def _normalize_cover_meta(meta):
+    """Adapt the M2-era cover_meta format (kernel/tails/tail_ops/
+    cp_chains/regions) to the current cover protocol (covers/names/
+    cp_chains/tail_ops/expected_permute_ratio). sa8d/satd-8 still use
+    the old format; the auto-search requires the protocol keys.
+    """
+    if "covers" in meta:
+        return meta
+    covers = sorted(meta.get("tails", {}))
+    return {
+        "covers": covers,
+        "names": {c: "%s cover %s" % (meta.get("kernel", "?"), c)
+                  for c in covers},
+        "cp_chains": meta.get("cp_chains", {}),
+        "tail_ops": meta.get("tail_ops", {}),
+        "expected_permute_ratio": {c: 0.0 for c in covers},
+    }
+
+
 def _discovery_variants(kernel):
     """docs/82 #5：返回参数网格上的自动变体 (label, emit_fn) 列表。
 
@@ -150,7 +169,7 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
         #    运行；有 manifest 的 kernel 仍可另行跑 --backend ago 全管线。
         cover_module_name, func_name = KERNEL_COVERS[kernel]
         cover_module = __import__(cover_module_name, fromlist=["emit_cover"])
-        meta = cover_module.cover_meta()
+        meta = _normalize_cover_meta(cover_module.cover_meta())
 
         print("\n[ago-search] 候选排名（按 %s）:" % rank_by)
         print("%-12s %-30s %6s %8s %6s %6s %5s" % (

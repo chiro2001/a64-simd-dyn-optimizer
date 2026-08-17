@@ -56,6 +56,36 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class TestCoverMetaAdapter(unittest.TestCase):
+
+    def test_current_protocol_passthrough(self):
+        from ago_auto_search import _normalize_cover_meta
+        meta = {"covers": ["A", "B"], "names": {}, "cp_chains": {},
+                "tail_ops": {}, "expected_permute_ratio": {}}
+        out = _normalize_cover_meta(meta)
+        self.assertIs(out, meta)  # unchanged
+
+    def test_old_m2_format_adapted(self):
+        from ago_auto_search import _normalize_cover_meta
+        old = {"kernel": "sa8d8", "tails": {"A": "tA", "B": "tB"},
+               "tail_ops": {"A": [], "B": []},
+               "cp_chains": {"A": ["ld1"], "B": ["ld1"]},
+               "regions": {}}
+        out = _normalize_cover_meta(old)
+        self.assertEqual(out["covers"], ["A", "B"])
+        self.assertEqual(out["cp_chains"]["A"], ["ld1"])
+        self.assertEqual(out["expected_permute_ratio"]["A"], 0.0)
+        self.assertIn("sa8d8", out["names"]["A"])
+
+    def test_sa8d_and_satd8_run(self):
+        import tempfile
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        from ago_auto_search import auto_search, KERNEL_COVERS
+        for k in ("sa8d", "satd-8"):
+            rc = auto_search(k, "permute", False, False)
+            self.assertEqual(rc, 0, k)
+
+
 class TestIsaConstraint(unittest.TestCase):
     """SVE1 constraint (920B): SVE2-only covers must be rejected."""
 

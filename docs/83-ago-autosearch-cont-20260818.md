@@ -3,7 +3,26 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 20：interp8 8x16/16x8，自动搜索 40 kernel）
+## 0. 本轮改动摘要（goal round 21：语料审计 + 旧格式适配 + 工具手册更新）
+
+1. **40 kernel 语料审计**：全量跑 ago_auto_search，38 kernel 胜者与
+   docs/82 完全一致（无漂移）；**抓到 2 处异常**：sa8d/satd-8 的
+   cover_meta 是 M2 旧格式（kernel/tails/tail_ops/cp_chains/regions，
+   无 "covers"/"names" 键）→ 自动搜索 KeyError 崩溃（此前从未在
+   auto-search 中运行过）。
+2. **旧格式适配器**（ago_auto_search._normalize_cover_meta）：识别
+   旧格式并归一化为当前协议（covers/names/cp_chains/tail_ops/
+   expected_permute_ratio），一处修复两个 kernel：
+   - sa8d：A/B/C 全跑通（100/101 uop、**31.7% permute⚠** 超阈值），
+     胜者 A（score 0.417）
+   - satd-8：A-E 全跑通（76 uop、23.1%），胜者 A（score 0.359）
+   - 测试 +3（TestCoverMetaAdapter，含两 kernel 实跑）
+3. **docs/68 工具手册补 AGO 自动搜索工具链章节**（3.5 节）：auto-search
+   主入口/全管线/Feedback Loop/calibration/covers 协议/templates/
+   40 kernel 语料状态。
+4. docs/82 补 sa8d/satd-8 行（M2 已验证 → 正式行）。
+
+## 0a. 本轮改动摘要（goal round 20：interp8 8x16/16x8，自动搜索 40 kernel）
 
 1. **interp8 小矩形形状接入**（家族形状补齐）：
    - interp8-8x16（best_ir：fused 1044、ago_pred 469.7）、
