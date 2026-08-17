@@ -92,6 +92,7 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | sao-stats-bo | covers_sao_stats_bo.py | A=best_sve2 (标量) | A (score=0.314) |
 | sao-stats-e3 | covers_sao_stats_e3.py | A=block32 (45° 对角线) | A (score=0.309) |
 | sao-b0 | covers_sao_b0.py | A=best_sve2 (宽度原生查表) | A (score=0.465) |
+| sao-e1 | covers_sao_e1.py | A=best_sve2 (垂直边分类+eoTable) | A (score=0.451) |
 | psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16, C=best_cadd | C (score=0.269) |
 
 ## 新家族扩展（2026-08-18 续接：docs/82 下一步 #4 完成）

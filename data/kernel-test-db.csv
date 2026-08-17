@@ -210,6 +210,7 @@ sao-cuorg-e2-sve2-tbl,2026-08-17,,sao-cuorg-e2,,sve2-tbl,,,kernels/sao/candidate
 sao-cuorg-e3-neon-seed,,,sao-cuorg-e3,,neon-seed,,,kernels/sao/candidates/best_e3.cpp,117,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-e3-neon-slot,2026-08-17,,sao-cuorg-e3,,neon-slot,,,kernels/sao/candidates/best_neon_e3.cpp,101,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt
 sao-cuorg-e3-sve2-tbl,2026-08-17,,sao-cuorg-e3,,sve2-tbl,,,kernels/sao/candidates/best_sve2_e3.cpp,33,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
+sao-e1-best_sve2-ago-pipeline,,,sao-e1,permute,best_sve2-ago-pipeline,neon,sve2,kernels/sao-e1/candidates/best_sve2.cpp,213,,2,2000,0,PASS,,permute_ratio,0.238,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-bo-best_sve2-ago-pipeline,,,sao-stats-bo,permute,best_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-bo/candidates/best_sve2.cpp,0,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-e0-block32-vs-best_sve2,,,sao-stats-e0,permute,block32-vs-best_sve2,neon,sve2,kernels/sao-stats-e0/candidates/block32_sve2.cpp,102,,,,,,,ago_pred_ratio,0.481,,,,,docs/83-ago-autosearch-cont-20260818.md
 sao-stats-e0-block32_sve2-ago-pipeline,,,sao-stats-e0,permute,block32_sve2-ago-pipeline,neon,sve2,kernels/sao-stats-e0/candidates/block32_sve2.cpp,102,,2,2000,0,PASS,,permute_ratio,0.159,,,,yes,docs/83-ago-autosearch-cont-20260818.md

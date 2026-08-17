@@ -3,7 +3,19 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 14：sao-b0 重建 kernel 首个，自动搜索 32 kernel）
+## 0. 本轮改动摘要（goal round 15：sao-e1 重建，自动搜索 33 kernel）
+
+1. **sao-e1（垂直边偏移重建）**：B0 模式（svtbl 查表 + s16 饱和加 +
+   qxtun 合并窄化）+ 垂直边分类——`signDown = sign(rec[x] -
+   rec[x+stride])`、`edgeType = signDown + upBuff[x] + 2`（0..4）、
+   5 项 eoTable 查表、`upBuff[x] = -signDown` 行间传递：
+   - **门禁过（QEMU 2000 例 0 失配，vs processSaoCUE1_neon，含 4 行
+     upBuff 终值比对），fused 213、ago_pred 95.7**
+   - 接线：covers_sao_e1.py + 两工具注册；测试 +3（含 qxtun 断言）
+2. **DB 315→316 行**；docs/82 +1 行（score=0.451）。sao 重建家族
+   b0/e1 完成，e2/e3（对角，需双 upBuff）后续轮。
+
+## 0a. 本轮改动摘要（goal round 14：sao-b0 重建 kernel 首个，自动搜索 32 kernel）
 
 1. **sao-b0（band offset 重建）首个候选（best_sve2.cpp）**：从零移植
    processSaoCUB0_neon——每像素 `offset[pixel>>3]` 查 32 项表 + 饱和加

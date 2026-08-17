@@ -625,6 +625,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sao_b0_64x4_sve2")
             return emit_fn
+        if kernel == "sao-e1":
+            from ago.covers_sao_e1 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_sao_e1_64x4_sve2")
+            return emit_fn
         if kernel == "sao-stats-e1":
             from ago.covers_sao_stats_e1 import emit_cover  # noqa: E402
 
@@ -1689,6 +1696,7 @@ def main():
             "sao-stats-e2": ["A", "B", "C"],
             "sao-stats-e3": ["A"],
             "sao-b0": ["A"],
+            "sao-e1": ["A"],
             "sao-stats-e1": ["A", "B", "C"],
             "sao-stats-bo": ["A"],
             "psy-cost-16x16": ["A", "B", "C"],
@@ -1915,6 +1923,8 @@ def main():
             from ago.covers_sao_stats_e3 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sao-b0":
             from ago.covers_sao_b0 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao-e1":
+            from ago.covers_sao_e1 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sao-stats-e1":
             from ago.covers_sao_stats_e1 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sao-stats-bo":
@@ -1965,6 +1975,7 @@ def main():
                 "cost-coeff-nxn", "sao-stats-e0", "sao-stats-bo",
                 "sao-stats-e3",
                 "sao-b0",
+                "sao-e1",
                 "sao-stats-e1", "sao-stats-e2") \
                 else "armv8.2-a+dotprod"
             # _CXX may be "clang --target=aarch64-linux-gnu" (dct8 special
