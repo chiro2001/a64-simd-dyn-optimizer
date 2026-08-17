@@ -44,7 +44,7 @@ class TestDct16WideSve2Emitter(unittest.TestCase):
 
     def test_emits_valid_cpp_all_modes(self):
         """emit_candidate() produces non-empty C++ for all modes."""
-        for mode in ("addp", "uzp", "neon_bridge"):
+        for mode in ("addp", "uzp", "neon_bridge", "neon_bridge_fused", "pure_sve2"):
             code = emit_candidate(mode)
             self.assertIsInstance(code, str)
             self.assertGreater(len(code), 1000)
@@ -85,7 +85,7 @@ class TestDct16WideSve2Compile(unittest.TestCase):
 
     def test_all_modes_compile(self):
         """All modes compile without errors."""
-        for mode in ("addp", "uzp", "neon_bridge"):
+        for mode in ("addp", "uzp", "neon_bridge", "neon_bridge_fused", "pure_sve2"):
             src = os.path.join(self.tmp, "dct16_%s.cpp" % mode)
             obj = os.path.join(self.tmp, "dct16_%s.o" % mode)
             code = emit_candidate(mode)
@@ -113,6 +113,24 @@ class TestDct16WideSve2Compile(unittest.TestCase):
         self.assertGreater(counts["vector_fused_uop"], 800)
         self.assertLess(counts["vector_fused_uop"], 1100)
         self.assertLess(counts["permute_depth_ratio"], 0.30)
+
+    def test_neon_bridge_fused_compiles_and_counts(self):
+        """neon_bridge_fused mode compiles and has expected static features."""
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        from static_counts import static_counts
+        src = os.path.join(self.tmp, "dct16_neon_bridge_fused.cpp")
+        obj = os.path.join(self.tmp, "dct16_neon_bridge_fused.o")
+        code = emit_candidate("neon_bridge_fused")
+        with open(src, "w") as f:
+            f.write(code)
+        subprocess.run(
+            [CC] + CXXFLAGS + ["-c", src, "-o", obj],
+            check=True, capture_output=True)
+        counts = static_counts(obj)
+        self.assertGreater(counts["vector_fused_uop"], 800)
+        self.assertLess(counts["vector_fused_uop"], 1100)
+        self.assertGreater(counts["spill_reload"], 0)
+        self.assertLess(counts["spill_reload"], 30)
 
 
 if __name__ == "__main__":

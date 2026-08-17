@@ -444,18 +444,160 @@ def emit_pass2_pure_sve2() -> str:
     return "\n".join(lines)
 
 
+def emit_pass2_fused() -> str:
+    """Emit op_pass_11 — NEON-bridged pass2 with fused k-batch loop.
+
+    Instead of computing all 32 butterfly results (EEE_0..7, EEO_0..7,
+    EO_0..15) simultaneously (causing 27 spills), this variant processes
+    each batch's butterfly results immediately across all even k values,
+    keeping only QO0_0..3/QO1_0..3 alive for the odd-k section.
+    """
+    lines = []
+    lines.append("static __attribute__((noinline)) void op_pass_11(")
+    lines.append("    const int16_t* src, int16_t* dst)")
+    lines.append("{")
+    lines.append("    const int line = 16;")
+    lines.append("    const svbool_t p16 = svptrue_b16();")
+    lines.append("    const svint64_t zero64 = svdup_n_s64(0);")
+    lines.append("    svint16_t QO0_0, QO0_1, QO0_2, QO0_3;")
+    lines.append("    svint16_t QO1_0, QO1_1, QO1_2, QO1_3;")
+    lines.append("")
+
+    for b in range(4):
+        base = b * 4
+        lines.append("    // ---- batch %d (rows %d-%d) ----" % (b, base, base + 3))
+        lines.append("    {")
+        for i in range(4):
+            r = base + i
+            lines.append("        svint16_t z_%d = svld1_s16(p16, src + %d * line);" % (r, r))
+            lines.append("        svint16_t r_%d = svrev_s16(z_%d);" % (r, r))
+            lines.append("        svint16_t zO_%d = svsub_s16_x(p16, z_%d, r_%d);" % (r, r, r))
+            lines.append("        int16x8_t nlo_%d = svget_neonq_s16(z_%d);" % (r, r))
+            lines.append("        int16x8_t nhi_%d = svget_neonq_s16(r_%d);" % (r, r))
+            lines.append("        int16x4_t g0_%d_a = vget_low_s16(nlo_%d);" % (r, r))
+            lines.append("        int16x4_t g0_%d_c = vget_low_s16(nhi_%d);" % (r, r))
+            lines.append("        int32x4_t E0_%d = vaddl_s16(g0_%d_a, g0_%d_c);" % (r, r, r))
+            lines.append("        int16x4_t g1_%d_a = vget_high_s16(nlo_%d);" % (r, r))
+            lines.append("        int16x4_t g1_%d_c = vget_high_s16(nhi_%d);" % (r, r))
+            lines.append("        int32x4_t E1_%d = vaddl_s16(g1_%d_a, g1_%d_c);" % (r, r, r))
+            lines.append("        int32x4_t EEr_%d = rev32(E1_%d);" % (r, r))
+            lines.append("        int32x4_t EE_%d = vaddq_s32(E0_%d, EEr_%d);" % (r, r, r))
+            lines.append("        int32x4_t EO_%d = vsubq_s32(E0_%d, EEr_%d);" % (r, r, r))
+
+        for pair in range(2):
+            r0 = base + pair * 2
+            r1 = base + pair * 2 + 1
+            lines.append("        int32x4_t t0_%d = vreinterpretq_s32_s64("
+                         "vzip1q_s64(vreinterpretq_s64_s32(EE_%d), "
+                         "vreinterpretq_s64_s32(EE_%d)));" % (pair, r0, r1))
+            lines.append("        int32x4_t z2_%d = vreinterpretq_s32_s64("
+                         "vzip2q_s64(vreinterpretq_s64_s32(EE_%d), "
+                         "vreinterpretq_s64_s32(EE_%d)));" % (pair, r0, r1))
+            lines.append("        int32x4_t t1_%d = vrev64q_s32(z2_%d);" % (pair, pair))
+            lines.append("        int32x4_t EEE_%d = vaddq_s32(t0_%d, t1_%d);"
+                         % (pair, pair, pair))
+            lines.append("        int32x4_t EEO_%d = vsubq_s32(t0_%d, t1_%d);"
+                         % (pair, pair, pair))
+
+        lines.append("        { // k=0 (EEE, uniform T8E[0])")
+        lines.append("            int32x4_t pp = vpaddq_s32(EEE_0, EEE_1);")
+        lines.append("            int32x4_t m = vmulq_s32(vld1q_s32(T8E[0]), pp);")
+        lines.append("            int16x4_t nn = vrshrn_n_s32(m, 10);")
+        lines.append("            vst1_s16(dst + 16 * 0 + %d, nn);" % (b * 4))
+        lines.append("        }")
+        lines.append("        { // k=8 (EEE, non-uniform T8E[2])")
+        lines.append("            int32x4_t m0 = vmulq_s32(vld1q_s32(T8E[2]), EEE_0);")
+        lines.append("            int32x4_t m1 = vmulq_s32(vld1q_s32(T8E[2]), EEE_1);")
+        lines.append("            int32x4_t m = vpaddq_s32(m0, m1);")
+        lines.append("            int16x4_t nn = vrshrn_n_s32(m, 10);")
+        lines.append("            vst1_s16(dst + 16 * 8 + %d, nn);" % (b * 4))
+        lines.append("        }")
+        lines.append("        { // k=4 (EEO, non-uniform T8E[1])")
+        lines.append("            int32x4_t m0 = vmulq_s32(vld1q_s32(T8E[1]), EEO_0);")
+        lines.append("            int32x4_t m1 = vmulq_s32(vld1q_s32(T8E[1]), EEO_1);")
+        lines.append("            int32x4_t m = vpaddq_s32(m0, m1);")
+        lines.append("            int16x4_t nn = vrshrn_n_s32(m, 10);")
+        lines.append("            vst1_s16(dst + 16 * 4 + %d, nn);" % (b * 4))
+        lines.append("        }")
+        lines.append("        { // k=12 (EEO, non-uniform T8E[3])")
+        lines.append("            int32x4_t m0 = vmulq_s32(vld1q_s32(T8E[3]), EEO_0);")
+        lines.append("            int32x4_t m1 = vmulq_s32(vld1q_s32(T8E[3]), EEO_1);")
+        lines.append("            int32x4_t m = vpaddq_s32(m0, m1);")
+        lines.append("            int16x4_t nn = vrshrn_n_s32(m, 10);")
+        lines.append("            vst1_s16(dst + 16 * 12 + %d, nn);" % (b * 4))
+        lines.append("        }")
+
+        for k_idx, k in enumerate([2, 6, 10, 14]):
+            lines.append("        { // k=%d (EO * GT16_S32[%d])" % (k, k_idx))
+            lines.append("            int32x4_t c = vld1q_s32(GT16_S32[%d]);" % k_idx)
+            lines.append("            int32x4_t m0 = vmulq_s32(c, EO_%d);" % base)
+            lines.append("            int32x4_t m1 = vmulq_s32(c, EO_%d);" % (base + 1))
+            lines.append("            int32x4_t m2 = vmulq_s32(c, EO_%d);" % (base + 2))
+            lines.append("            int32x4_t m3 = vmulq_s32(c, EO_%d);" % (base + 3))
+            lines.append("            int32x4_t t01 = vpaddq_s32(m0, m1);")
+            lines.append("            int32x4_t t23 = vpaddq_s32(m2, m3);")
+            lines.append("            int32x4_t t = vpaddq_s32(t01, t23);")
+            lines.append("            int16x4_t nn = vrshrn_n_s32(t, 10);")
+            lines.append("            vst1_s16(dst + 16 * %d + %d, nn);" % (k, b * 4))
+            lines.append("        }")
+
+        lines.append("        // QO pack (persist for odd-k)")
+        lines.append("        svint64_t pa0 = svreinterpret_s64_s16(zO_%d);" % base)
+        lines.append("        svint64_t pa1 = svreinterpret_s64_s16(zO_%d);" % (base + 1))
+        lines.append("        svint64_t pa2 = svreinterpret_s64_s16(zO_%d);" % (base + 2))
+        lines.append("        svint64_t pa3 = svreinterpret_s64_s16(zO_%d);" % (base + 3))
+        lines.append("        svint64_t pt0 = svzip1_s64(pa0, pa2);")
+        lines.append("        svint64_t pt1 = svzip2_s64(pa0, pa2);")
+        lines.append("        svint64_t pt2 = svzip1_s64(pa1, pa3);")
+        lines.append("        svint64_t pt3 = svzip2_s64(pa1, pa3);")
+        lines.append("        svint64_t pp0 = svzip1_s64(pt0, pt2);")
+        lines.append("        svint64_t pp1 = svzip2_s64(pt0, pt2);")
+        lines.append("        QO0_%d = svreinterpret_s16_s64(pp0);" % b)
+        lines.append("        QO1_%d = svreinterpret_s16_s64(pp1);" % b)
+        lines.append("    } // end batch %d" % b)
+        lines.append("")
+
+    lines.append("    // ---- odd-k (svdot, all 4 batches per k) ----")
+    odd_k = [1, 3, 5, 7, 9, 11, 13, 15]
+    for k in odd_k:
+        lines.append("    { // k=%d" % k)
+        lines.append("        const svint16_t c_clo = svld1_s16(p16, CQ_LO[%d]);" % k)
+        lines.append("        const svint16_t c_chi = svld1_s16(p16, CQ_HI[%d]);" % k)
+        for b in range(4):
+            lines.append("        svint64_t d0_%d = svdot_s64(zero64, QO0_%d, c_clo);"
+                         % (b, b))
+            lines.append("        svint64_t d1_%d = svdot_s64(d0_%d, QO1_%d, c_chi);"
+                         % (b, b, b))
+        lines.append("        const svint32_t w01 = svuzp1_s32("
+                     "svreinterpret_s32_s64(d1_0), svreinterpret_s32_s64(d1_1));")
+        lines.append("        const svint32_t w23 = svuzp1_s32("
+                     "svreinterpret_s32_s64(d1_2), svreinterpret_s32_s64(d1_3));")
+        lines.append("        const svint16_t nb = svrshrnb_n_s32(w01, 10);")
+        lines.append("        const svint16_t nt = svrshrnb_n_s32(w23, 10);")
+        lines.append("        svint16_t nn = svuzp1_s16(nb, nt);")
+        lines.append("        svst1_s16(p16, dst + 16 * %d, nn);" % k)
+        lines.append("    }")
+        lines.append("")
+
+    lines.append("}")
+    return "\n".join(lines)
+
+
 def emit_pass2(even_k_mode: str = "addp") -> str:
     """Emit op_pass_11 — pass2 with configurable even-k lowering.
 
     even_k_mode:
-      "pure_sve2":   pure SVE2 cross-row butterfly (validated, zero NEON)
-      "addp":        width-native SVE2 with addp_s32 reduction (non-permute)
-      "uzp":         width-native SVE2 with uzp1+uzp2+add reduction
-      "neon_bridge": op895 original (NEON-bridged even-k)
+      "pure_sve2":        pure SVE2 cross-row butterfly (validated, zero NEON)
+      "addp":             width-native SVE2 with addp_s32 reduction (non-permute)
+      "uzp":              width-native SVE2 with uzp1+uzp2+add reduction
+      "neon_bridge":      op895 original (NEON-bridged even-k)
+      "neon_bridge_fused": NEON-bridged with fused k-batch loop (reduced spills)
     Odd-k is always pure SVE2 (from op895 svdot).
     """
     if even_k_mode == "pure_sve2":
         return emit_pass2_pure_sve2()
+    if even_k_mode == "neon_bridge_fused":
+        return emit_pass2_fused()
     use_addp = (even_k_mode == "addp")
     use_neon = (even_k_mode == "neon_bridge")
 
@@ -751,6 +893,7 @@ def emit_pass2(even_k_mode: str = "addp") -> str:
 
 def emit_candidate(even_k_mode: str = "addp") -> str:
     is_pure_sve2 = (even_k_mode == "pure_sve2")
+    is_fused = (even_k_mode == "neon_bridge_fused")
     lines = []
     lines.append("// Generated by optimizer/ir/dct16_wide_sve2.py -- do not edit by hand.")
     lines.append("// Width-native SVE2 dct16 (VL=256, single-group full-width).")
