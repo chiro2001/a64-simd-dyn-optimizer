@@ -3,7 +3,18 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 27：interp4vpp/interp8vpp 43 kernel，自动搜索 128）
+## 0. 本轮改动摘要（goal round 28：misc 11 kernel，自动搜索 139）
+
+1. **misc 单候选 kernel 全收编（11）**：mc（64 uop）、ssd（132）、
+   sad-32（5）、pu-addavg（128）、pu-copy-pp（32）、scan-pos-last
+   （20）、sign（8）、scale2d（22）、pel-filter-luma-strong（128）、
+   find-pos-first-last（12）、sao（269，best_b0）——**11/11 全过
+   QEMU 门禁**。
+2. **DB 412→423 行**；docs/82 +1 摘要行；测试 +1（TestMiscCovers）。
+   自动搜索 128→139 kernel。剩余未收编：dequant（无候选）、
+   interp4（SVE2p3）、各家族空目录——本地语料基本收编完毕。
+
+## 0a. 本轮改动摘要（goal round 27：interp4vpp/interp8vpp 43 kernel，自动搜索 128）
 
 1. **interp4vpp（22 形状）+ interp8vpp（21 形状）全收编**：全部门禁过
    （interp4vpp 50-1296 uop、interp8vpp 95-4906 uop），自动搜索

@@ -312,6 +312,24 @@ class TestCoversSaoE0(unittest.TestCase):
             emit_saoe0("Z")
 
 
+class TestMiscCovers(unittest.TestCase):
+    """misc single-candidate kernels (mc/ssd/sad-32/etc.)."""
+
+    KERNELS = ["mc", "ssd", "sad-32", "pu-addavg", "pu-copy-pp",
+               "scan-pos-last", "sign", "scale2d",
+               "pel-filter-luma-strong", "find-pos-first-last", "sao"]
+
+    def test_meta_and_emit(self):
+        for k in self.KERNELS:
+            mod = __import__("optimizer.ago.covers_%s"
+                             % k.replace("-", "_"),
+                             fromlist=["cover_meta", "emit_cover"])
+            m = mod.cover_meta()
+            self.assertEqual(m["covers"], ["A"], k)
+            code = mod.emit_cover("A")
+            self.assertGreater(len(code), 100, k)
+
+
 class TestInterpVppCovers(unittest.TestCase):
     """interp4vpp / interp8vpp families (43 shapes with candidates)."""
 

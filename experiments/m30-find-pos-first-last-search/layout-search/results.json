@@ -1,0 +1,47 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400760",
+   "0x4007e0"
+  ],
+  "counts": {
+   "total": 27,
+   "vector": 12,
+   "movprfx": 0,
+   "vector_fused": 12,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 2,
+   "vector_fused_uop": 12,
+   "critical_path_latency": 22,
+   "critical_path_len": 16,
+   "permute_on_critical": 2,
+   "permute_depth_ratio": 0.125,
+   "load_use_avg": 4.0,
+   "load_use_min": 1,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 3,
+   "hw_supported": 0,
+   "pairs": [
+    "uzp1+tbl",
+    "tbl+shrn",
+    "add+addv"
+   ],
+   "counts": {
+    "load_insns": 3,
+    "scalar_insns": 16,
+    "simd_insns": 7
+   }
+  },
+  "ago_pred": 10.02
+ }
+]

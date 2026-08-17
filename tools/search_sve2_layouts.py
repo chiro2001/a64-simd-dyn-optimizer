@@ -1218,6 +1218,72 @@ def make_emitter(kernel, backend="acle"):
             def emit_fn(combo):
                 return emit_cover(combo.get("cover", "A"), "dynopt_interp8_hps_16x16_sve2")
             return emit_fn
+        if kernel == "sao":
+            from ago.covers_sao import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sao_e0_64_sve2")
+            return emit_fn
+        if kernel == "find-pos-first-last":
+            from ago.covers_find_pos_first_last import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_find_pos_first_last_sve2")
+            return emit_fn
+        if kernel == "pel-filter-luma-strong":
+            from ago.covers_pel_filter_luma_strong import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_pel_filter_luma_strong_sve2")
+            return emit_fn
+        if kernel == "scale2d":
+            from ago.covers_scale2d import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_scale2d_64to32_sve2")
+            return emit_fn
+        if kernel == "sign":
+            from ago.covers_sign import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sign_sve2")
+            return emit_fn
+        if kernel == "scan-pos-last":
+            from ago.covers_scan_pos_last import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_scan_pos_last_sve2")
+            return emit_fn
+        if kernel == "pu-copy-pp":
+            from ago.covers_pu_copy_pp import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_pu_copy_pp_sve2")
+            return emit_fn
+        if kernel == "pu-addavg":
+            from ago.covers_pu_addavg import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_pu_addavg_16x16_sve2")
+            return emit_fn
+        if kernel == "sad-32":
+            from ago.covers_sad_32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sad_32x32_sve2")
+            return emit_fn
+        if kernel == "ssd":
+            from ago.covers_ssd import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_sse_pp_16x16_sve2")
+            return emit_fn
+        if kernel == "mc":
+            from ago.covers_mc import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_avg_pp_16x16_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -2368,6 +2434,17 @@ def main():
             "interp8-hps-16x8": ["A"],
             "interp8-hps-16x32": ["A"],
             "interp8-hps-16x16": ["A"],
+            "sao": ["A"],
+            "find-pos-first-last": ["A"],
+            "pel-filter-luma-strong": ["A"],
+            "scale2d": ["A"],
+            "sign": ["A"],
+            "scan-pos-last": ["A"],
+            "pu-copy-pp": ["A"],
+            "pu-addavg": ["A"],
+            "sad-32": ["A"],
+            "ssd": ["A"],
+            "mc": ["A"],
             "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
@@ -2788,6 +2865,28 @@ def main():
             from ago.covers_interp8_hps_16x32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-hps-16x16":
             from ago.covers_interp8_hps_16x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao":
+            from ago.covers_sao import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "find-pos-first-last":
+            from ago.covers_find_pos_first_last import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "pel-filter-luma-strong":
+            from ago.covers_pel_filter_luma_strong import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "scale2d":
+            from ago.covers_scale2d import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sign":
+            from ago.covers_sign import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "scan-pos-last":
+            from ago.covers_scan_pos_last import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "pu-copy-pp":
+            from ago.covers_pu_copy_pp import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "pu-addavg":
+            from ago.covers_pu_addavg import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sad-32":
+            from ago.covers_sad_32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "ssd":
+            from ago.covers_ssd import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "mc":
+            from ago.covers_mc import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-32x64":
             from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x32":
@@ -2877,6 +2976,17 @@ def main():
                 "satd-8x32",
                 "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn", "sao-stats-e0", "interp8-hps-16x16",
+                "mc",
+                "ssd",
+                "sad-32",
+                "pu-addavg",
+                "pu-copy-pp",
+                "scan-pos-last",
+                "sign",
+                "scale2d",
+                "pel-filter-luma-strong",
+                "find-pos-first-last",
+                "sao",
                 "interp8-hps-16x32",
                 "interp8-hps-16x8",
                 "interp8-hps-32x16",
@@ -3314,6 +3424,17 @@ def main():
                 except Exception as e:  # noqa: BLE001
                     print("  %-24s bench920 skipped: %s" % (tag, e))
         elif args.kernel in ("interp8-hps-16x16",
+                "mc",
+                "ssd",
+                "sad-32",
+                "pu-addavg",
+                "pu-copy-pp",
+                "scan-pos-last",
+                "sign",
+                "scale2d",
+                "pel-filter-luma-strong",
+                "find-pos-first-last",
+                "sao",
                 "interp8-hps-16x32",
                 "interp8-hps-16x8",
                 "interp8-hps-32x16",

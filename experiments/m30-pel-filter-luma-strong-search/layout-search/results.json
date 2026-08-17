@@ -1,0 +1,69 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400a00"
+  ],
+  "counts": {
+   "total": 145,
+   "vector": 128,
+   "movprfx": 0,
+   "vector_fused": 128,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 1,
+   "vector_fused_uop": 128,
+   "critical_path_latency": 31,
+   "critical_path_len": 18,
+   "permute_on_critical": 2,
+   "permute_depth_ratio": 0.111,
+   "load_use_avg": 23.65,
+   "load_use_min": 1,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 24,
+   "hw_supported": 0,
+   "pairs": [
+    "dup+uzp1",
+    "tbl+uaddl",
+    "usubw+smax",
+    "smax+smin",
+    "tbl+uaddl",
+    "usubw+smax",
+    "smax+smin",
+    "tbl+uaddl",
+    "usubw+smax",
+    "smax+smin",
+    "tbl+uaddl",
+    "usubw+smax",
+    "smax+smin",
+    "zip1+uaddl",
+    "zip1+uaddw",
+    "zip1+uaddl",
+    "zip1+uaddl",
+    "add+add",
+    "usubw+smax",
+    "usubw+smax",
+    "smax+smin",
+    "usubw+smax",
+    "smax+smin",
+    "smax+smin"
+   ],
+   "counts": {
+    "simd_insns": 72,
+    "scalar_insns": 40,
+    "load_insns": 1,
+    "store_insns": 3
+   }
+  },
+  "ago_pred": 78.65
+ }
+]
