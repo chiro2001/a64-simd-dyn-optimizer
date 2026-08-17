@@ -702,6 +702,48 @@ def make_emitter(kernel, backend="acle"):
             def emit_fn(combo):
                 return emit_cover(combo.get("cover", "A"), "dynopt_sao_stats_bo_64_sve2")
             return emit_fn
+        if kernel == "chroma-addavg-8x8":
+            from ago.covers_chroma_addavg_8x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_chroma_addavg_8x8_sve2")
+            return emit_fn
+        if kernel == "cu-sub-ps":
+            from ago.covers_cu_sub_ps import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_cu_sub_ps_16x16_sve2")
+            return emit_fn
+        if kernel == "cu-add-ps":
+            from ago.covers_cu_add_ps import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_cu_add_ps_16x16_sve2")
+            return emit_fn
+        if kernel == "cu-copy-pp":
+            from ago.covers_cu_copy_pp import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_cu_copy_pp_sve2")
+            return emit_fn
+        if kernel == "chroma-copy-ps-16x16":
+            from ago.covers_chroma_copy_ps_16x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_chroma_copy_ps_16x16_sve2")
+            return emit_fn
+        if kernel == "chroma-copy-pp-32x32":
+            from ago.covers_chroma_copy_pp_32x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_chroma_copy_pp_32x32_sve2")
+            return emit_fn
+        if kernel == "chroma-copy-pp-8x8":
+            from ago.covers_chroma_copy_pp_8x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_chroma_copy_pp_8x8_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -1766,6 +1808,13 @@ def main():
             "sao-e3": ["A"],
             "sao-stats-e1": ["A", "B", "C"],
             "sao-stats-bo": ["A"],
+            "chroma-addavg-8x8": ["A"],
+            "cu-sub-ps": ["A"],
+            "cu-add-ps": ["A"],
+            "cu-copy-pp": ["A"],
+            "chroma-copy-ps-16x16": ["A"],
+            "chroma-copy-pp-32x32": ["A"],
+            "chroma-copy-pp-8x8": ["A"],
             "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
@@ -2014,6 +2063,20 @@ def main():
             from ago.covers_sao_stats_e1 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sao-stats-bo":
             from ago.covers_sao_stats_bo import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "chroma-addavg-8x8":
+            from ago.covers_chroma_addavg_8x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "cu-sub-ps":
+            from ago.covers_cu_sub_ps import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "cu-add-ps":
+            from ago.covers_cu_add_ps import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "cu-copy-pp":
+            from ago.covers_cu_copy_pp import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "chroma-copy-ps-16x16":
+            from ago.covers_chroma_copy_ps_16x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "chroma-copy-pp-32x32":
+            from ago.covers_chroma_copy_pp_32x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "chroma-copy-pp-8x8":
+            from ago.covers_chroma_copy_pp_8x8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-32x64":
             from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x32":
@@ -2059,7 +2122,14 @@ def main():
                 "sad", "psy-cost-16x16", "satd-8x4",
                 "satd-8x32",
                 "satd-8x16", "satd-16x8",
-                "cost-coeff-nxn", "sao-stats-e0", "sao-stats-bo",
+                "cost-coeff-nxn", "sao-stats-e0", "chroma-copy-pp-8x8",
+                "chroma-copy-pp-32x32",
+                "chroma-copy-ps-16x16",
+                "cu-copy-pp",
+                "cu-add-ps",
+                "cu-sub-ps",
+                "chroma-addavg-8x8",
+                "sao-stats-bo",
                 "sao-stats-e3",
                 "sao-b0",
                 "sao-e1",

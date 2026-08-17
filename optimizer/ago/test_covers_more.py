@@ -312,6 +312,25 @@ class TestCoversSaoE0(unittest.TestCase):
             emit_saoe0("Z")
 
 
+class TestCuChromaCovers(unittest.TestCase):
+    """cu/chroma copy/arithmetic family covers (7 kernels)."""
+
+    KERNELS = ["chroma-copy-pp-8x8", "chroma-copy-pp-32x32",
+               "chroma-copy-ps-16x16", "cu-copy-pp", "cu-add-ps",
+               "cu-sub-ps", "chroma-addavg-8x8"]
+
+    def test_meta_and_emit(self):
+        for k in self.KERNELS:
+            mod = __import__("optimizer.ago.covers_%s"
+                             % k.replace("-", "_"),
+                             fromlist=["cover_meta", "emit_cover"])
+            m = mod.cover_meta()
+            self.assertEqual(m["covers"], ["A"], k)
+            code = mod.emit_cover("A")
+            self.assertIsInstance(code, str)
+            self.assertGreater(len(code), 100, k)
+
+
 class TestCoversSatd8x32(unittest.TestCase):
 
     def test_meta(self):

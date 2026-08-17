@@ -3,7 +3,21 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 23：satd-8x32 桥接候选，自动搜索 42 kernel）
+## 0. 本轮改动摘要（goal round 24：cu/chroma 家族 7 kernel，自动搜索 49）
+
+1. **cu/chroma 复制/算术家族接入**（复制/加法/减法/平均 7 kernel，
+   全为 manifest 已存在、候选已存在但未收编）：
+   - chroma-copy-pp-8x8（16/27.0）、chroma-copy-pp-32x32（2/5.8）、
+     chroma-copy-ps-16x16（32/39.5）、cu-copy-pp（2/5.8）、
+     cu-add-ps（96/130.8）、cu-sub-ps（64/105.3）、
+     chroma-addavg-8x8（64/70.1）
+   - 门禁：**7/7 均 QEMU 2000 例 0 失配**（复制类 0% permute）
+   - 接线：covers_{chroma,cu}_*.py（生成模板，模块级解析候选文件——
+     踩坑：懒加载 _FILES 导致 emit 时 None、缺模块级 import os，已修）
+     + 两工具注册；测试 +1（TestCuChromaCovers 参数化 7 kernel）
+2. **DB 326→333 行**；docs/82 +7 行。自动搜索 42→49 kernel / 15 家族。
+
+## 0a. 本轮改动摘要（goal round 23：satd-8x32 桥接候选，自动搜索 42 kernel）
 
 1. **satd-8x32（8 宽形状第 2 个）**：= 4× 8x8 块（satd8_sve2<8,32> 的
    h%8==0 分支），每块 hadamard_4x4_quad（8 cadd → 8 tbl → 8 cadd →

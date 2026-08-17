@@ -102,6 +102,13 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | sao-e1 | covers_sao_e1.py | A=best_sve2 (垂直边分类+eoTable) | A (score=0.451) |
 | sao-e2 | covers_sao_e2.py | A=best_sve2 (135° 对角, bufft+1) | A (score=0.323) |
 | sao-e3 | covers_sao_e3.py | A=best_sve2 (45° 对角, buff-1) | A (score=0.325) |
+| chroma-copy-pp-8x8 | covers_chroma_copy_pp_8x8.py | A | A (score=0.016) |
+| chroma-copy-pp-32x32 | covers_chroma_copy_pp_32x32.py | A | A (score=0.002) |
+| chroma-copy-ps-16x16 | covers_chroma_copy_ps_16x16.py | A | A (score=0.032) |
+| cu-copy-pp | covers_cu_copy_pp.py | A | A (score=0.002) |
+| cu-add-ps | covers_cu_add_ps.py | A | A (score=0.096) |
+| cu-sub-ps | covers_cu_sub_ps.py | A | A (score=0.064) |
+| chroma-addavg-8x8 | covers_chroma_addavg_8x8.py | A | A (score=0.064) |
 | psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16, C=best_cadd | C (score=0.269) |
 
 ## 新家族扩展（2026-08-18 续接：docs/82 下一步 #4 完成）

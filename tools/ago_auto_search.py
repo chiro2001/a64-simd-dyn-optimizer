@@ -80,6 +80,13 @@ KERNEL_COVERS = {
     "sao-e3": ("optimizer.ago.covers_sao_e3", "dynopt_sao_e3_64_sve2"),
     "sao-stats-e1": ("optimizer.ago.covers_sao_stats_e1", "dynopt_sao_stats_e1_64_sve2"),
     "sao-stats-bo": ("optimizer.ago.covers_sao_stats_bo", "dynopt_sao_stats_bo_64_sve2"),
+    "chroma-addavg-8x8": ("optimizer.ago.covers_chroma_addavg_8x8", "dynopt_chroma_addavg_8x8_sve2"),
+    "cu-sub-ps": ("optimizer.ago.covers_cu_sub_ps", "dynopt_cu_sub_ps_16x16_sve2"),
+    "cu-add-ps": ("optimizer.ago.covers_cu_add_ps", "dynopt_cu_add_ps_16x16_sve2"),
+    "cu-copy-pp": ("optimizer.ago.covers_cu_copy_pp", "dynopt_cu_copy_pp_sve2"),
+    "chroma-copy-ps-16x16": ("optimizer.ago.covers_chroma_copy_ps_16x16", "dynopt_chroma_copy_ps_16x16_sve2"),
+    "chroma-copy-pp-32x32": ("optimizer.ago.covers_chroma_copy_pp_32x32", "dynopt_chroma_copy_pp_32x32_sve2"),
+    "chroma-copy-pp-8x8": ("optimizer.ago.covers_chroma_copy_pp_8x8", "dynopt_chroma_copy_pp_8x8_sve2"),
     "psy-cost-16x16": ("optimizer.ago.covers_psycost",
                        "dynopt_psy_cost_pp_16x16_sve2"),
 }
