@@ -3,7 +3,28 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 10：sao stats 家族全覆盖，自动搜索 30 kernel）
+## 0. 本轮改动摘要（goal round 11：Feedback Loop 落地）
+
+1. **Feedback Loop（docs/83 §8 遗留 #3 完成，闭环"实测 → 代价表校准"）**：
+   - `optimizer/ago/calibration.py`：load_calibration（缺失/坏 JSON 返回
+     空，永不抛错）/ apply_calibration（按 kernel scale 乘 ago_pred）/
+     fit_scales（每 kernel 中位 ratio，[0.5, 2.0] 越界视为 outlier）
+   - `tools/feedback_calibrate.py --ingest <measurements.json>`：逐行
+     发射 cover → 编译（-O3 armv8.2-a+sve2）→ extract_features →
+     predict_from_features → scale = measured/predicted → 写
+     build/calibration.json（gitignored）+ 报告（含 outlier 标注）
+   - 集成：search_sve2_layouts --rank-by ago 自动加载校准（或
+     $DYNOPT_CALIBRATION）并乘上 kernel scale；无校准文件时行为不变
+   - 冒烟验证：合成 measurements（satd-16/psy-cost 各 2 cover）→
+     校准文件生效（144.4→53.6 等），删除文件后排序恢复原值；
+     predicted 与既有 ago_pred 完全一致（144.4/148.2/94.2/304.2）
+   - 测试：test_calibration.py 8 个（中位/outlier/多 kernel/应用/
+     加载容错）
+2. **sao-stats-e3 与 sao 重建 kernel（e1-e3/b0）暂缓**：saoCuStatsE3_sve
+   是行循环 + 逐边型统计的复杂内核（签名与 64 宽候选不同），从零移植
+   风险高；留作后续轮。
+
+## 0a. 本轮改动摘要（goal round 10：sao stats 家族全覆盖，自动搜索 30 kernel）
 
 1. **sao-stats-bo/e1/e2 接入自动搜索**（sao stats 家族 4/4 全覆盖）：
    - **e1**：A=best_sve2（176 uop）、C=block32（102 uop）——排序

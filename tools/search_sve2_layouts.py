@@ -1851,6 +1851,8 @@ def main():
             sys.path.insert(0, _opt)
         from ago.objfeatures import extract_features  # noqa: E402
         from ago.predict import predict_from_features  # noqa: E402
+        from ago.calibration import load_calibration, apply_calibration  # noqa: E402
+        _calib = load_calibration()
         if args.kernel == "satd-8":
             from ago.covers_satd8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sa8d":
@@ -1952,7 +1954,8 @@ def main():
             feats = extract_features(obj, src)
             cover = r["tag"].split("-")[-1]
             p = predict_from_features(meta, cover, table, feats)
-            r["ago_pred"] = p["predicted_cyc"]
+            r["ago_pred"] = apply_calibration(p["predicted_cyc"],
+                                                args.kernel, _calib)
         print("rank by ago prediction (%s table):" % tgt)
         for r in sorted(ok, key=lambda r: r.get("ago_pred") or 1e9):
             print("  %-24s fused_uop=%d ago_pred=%.1f"
