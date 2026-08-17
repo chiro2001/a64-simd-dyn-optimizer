@@ -1,15 +1,35 @@
 [
  {
-  "tag": "k_tile-1",
-  "k_tile": 1,
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
   "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
+  "verify": "cases=20000 lanes=1280000 mismatches=0 rate=0.000000%\n",
   "counts": {
-   "total": 492,
-   "vector": 355,
-   "movprfx": 32,
-   "vector_fused": 323
-  }
+   "total": 309,
+   "vector": 289,
+   "movprfx": 0,
+   "vector_fused": 289,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 9,
+   "vector_fused_uop": 289,
+   "critical_path_latency": 48,
+   "critical_path_len": 72,
+   "permute_on_critical": 15,
+   "permute_depth_ratio": 0.208,
+   "load_use_avg": 50.5,
+   "load_use_min": 5,
+   "spill_reload": 4
+  },
+  "range": [
+   "0x400814",
+   "0x400d00"
+  ],
+  "cached": true,
+  "ago_pred": 278.06,
+  "fused_uop_per_output": 4.516
  }
 ]

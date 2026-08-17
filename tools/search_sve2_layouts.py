@@ -479,6 +479,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_dct32_sve2_shared")
             return emit_fn
+        if kernel == "dct8":
+            from ago.covers_dct8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_dct8_sve2_shared")
+            return emit_fn
         if kernel == "satd-16":
             from ago.covers_satd16 import emit_cover  # noqa: E402
 
@@ -1622,6 +1629,7 @@ def main():
             "interp8": ["A", "B", "C"],
             "dct16": ["A", "B", "C"],
             "dct32": ["A", "B"],
+            "dct8": ["A"],
             "satd-16": ["A", "B", "C"],
             "satd-16x32": ["A"],
             "satd-16x64": ["A"],
@@ -1830,6 +1838,8 @@ def main():
             from ago.covers_dct16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "dct32":
             from ago.covers_dct32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "dct8":
+            from ago.covers_dct8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16":
             from ago.covers_satd16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16x32":
@@ -1881,7 +1891,7 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "dct16", "dct32", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
+                "interp8", "dct16", "dct32", "dct8", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
                 "satd-16x4",
                 "satd-16x64",
                 "satd-32x16",
@@ -1895,7 +1905,10 @@ def main():
                 "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn") \
                 else "armv8.2-a+dotprod"
-            _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",
+            # _CXX may be "clang --target=aarch64-linux-gnu" (dct8 special
+            # case, docs/30 1.7); split so subprocess sees separate args.
+            _sp.run((args.cxx or _CXX).split() +
+                    ["-O3", "-DNDEBUG", "-std=c++17",
                      "-march=" + _ago_march, "-c", src, "-o", obj],
                     timeout=180, capture_output=True)
             feats = extract_features(obj, src)

@@ -93,6 +93,7 @@ dct32-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,s
 dct32-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.4349,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.5892,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-wide_sve2_loop,,,dct32,,wide_sve2_loop,,,,,,2,0,0,PENDING,,static_fused_uop,761,,,,yes,reports/sve2-wide-dct16-20260817.txt
+dct8-best_sve2-ago-pipeline,,,dct8,permute,best_sve2-ago-pipeline,neon,sve2,kernels/dct8/candidates/best_sve2.cpp,289,,2,2000,0,PASS,,permute_ratio,0.185,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
 interp8-ago-auto-search,,,interp8,permute,ago-auto-search,,,optimizer/ago/covers_interp8.py,87,,,,,PASS,,ago_score,0.292,,,,yes,docs/82-ago-auto-search-20260818.md
 interp8-best_ir_sve16,,,interp8,filter,best_ir_sve16,neon,sve2,kernels/interp8/candidates/best_ir_sve16.cpp,683,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py

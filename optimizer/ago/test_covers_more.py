@@ -10,6 +10,8 @@ sys.path.insert(0, ROOT)
 
 from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
+from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
+from optimizer.ago.covers_dct8 import emit_cover as emit_dct8
 from optimizer.ago.covers_sa8d16 import emit_cover as emit_sa8d16
 from optimizer.ago.covers_sad import emit_cover as emit_sad
 from optimizer.ago.covers_satd16 import cover_meta as satd16_meta
@@ -159,6 +161,22 @@ class TestCoversSa8d16(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_sa8d16("Z")
+
+
+class TestCoversDct8(unittest.TestCase):
+
+    def test_meta(self):
+        m = dct8_meta()
+        self.assertEqual(m["covers"], ["A"])
+        self.assertLess(m["expected_permute_ratio"]["A"], 0.30)
+
+    def test_emit(self):
+        code = emit_dct8("A")
+        self.assertIn("dynopt_dct8_sve2_shared", code)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_dct8("B")  # narrowed to A only (sve2_shared not bit-exact)
 
 
 class TestSa8dLargeCovers(unittest.TestCase):

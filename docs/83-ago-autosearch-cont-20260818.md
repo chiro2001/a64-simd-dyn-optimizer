@@ -3,7 +3,24 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 8：satd-16x4/32x8，自动搜索 25 kernel）
+## 0. 本轮改动摘要（goal round 8 续：dct8 接入 + _CXX 修复，自动搜索 26 kernel）
+
+1. **dct8 接入自动搜索（dct 家族补齐）**：5 个候选静态测量
+   （best_sve2 258/18.5%/59、proto_b 330/12.2%、proto_c 325/20%、
+   proto_fused 327/13%、sve2_shared 81/52.2%）；仅 best_sve2 与
+   sve2_shared 导出 manifest 符号 dynopt_dct8_sve2_shared。
+   - **sve2_shared VERIFY FAIL（2000 例 127983 失配）**——非 bit-exact，
+     不可用；covers_dct8 收窄为 A（B 及 proto 系列 scan-only）
+   - cover-A 门禁过（fused 289@clang、ago_pred 278.1，参考 dct8_sve
+     是 void 写 dst 型，共享 verify harness 比对输出）
+2. **工具修复（_CXX 含空格崩溃）**：dct8 特殊用例把 _CXX 设为
+   `"clang --target=aarch64-linux-gnu"`（docs/30 §1.7），rank-by ago
+   的 `_sp.run([args.cxx or _CXX, ...])` 把它当单个可执行文件名 →
+   FileNotFoundError；改 `.split()` 展开参数。
+3. **DB 307→308 行**；docs/82 + dct8 行（score=0.474）；测试 +3
+   （TestCoversDct8，断言 covers 收窄为 A）。
+
+## 0a. 本轮改动摘要（goal round 8：satd-16x4/32x8，自动搜索 25 kernel）
 
 1. **satd-16x4 / satd-32x8 cadd 候选**（cadd 模式收尾剩余 16/32 宽形状）：
    - satd-16x4：g<1（fused 36、ago_pred 30.5）

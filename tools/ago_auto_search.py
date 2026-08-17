@@ -41,6 +41,7 @@ KERNEL_COVERS = {
     "interp8": ("optimizer.ago.covers_interp8", "dynopt_interp8_8x8_sve2"),
     "dct16": ("optimizer.ago.covers_dct16", "dynopt_dct16_sve2_shared"),
     "dct32": ("optimizer.ago.covers_dct32", "dynopt_dct32_sve2_shared"),
+    "dct8": ("optimizer.ago.covers_dct8", "dynopt_dct8_sve2_shared"),
     "satd-8": ("optimizer.ago.covers_satd8", "dynopt_satd_8x8_sve2"),
     "sa8d": ("optimizer.ago.covers_sa8d8", "dynopt_sa8d_8x8_sve2"),
     "sa8d16": ("optimizer.ago.covers_sa8d16", "dynopt_sa8d_16x16_sve2"),
