@@ -13,6 +13,8 @@ from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
 from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
 from optimizer.ago.covers_sao_stats_e1 import cover_meta as saoe1_meta
+from optimizer.ago.covers_sao_stats_e3 import cover_meta as saoe3_meta
+from optimizer.ago.covers_sao_stats_e3 import emit_cover as emit_saoe3
 from optimizer.ago.covers_sao_stats_e1 import emit_cover as emit_saoe1
 from optimizer.ago.covers_sao_stats_e2 import cover_meta as saoe2_meta
 from optimizer.ago.covers_sao_stats_bo import cover_meta as saobo_meta
@@ -175,6 +177,20 @@ class TestCoversSaoStats(unittest.TestCase):
     def test_e1_meta(self):
         m = saoe1_meta()
         self.assertEqual(m["covers"], ["A", "B", "C"])
+
+    def test_e3_meta(self):
+        m = saoe3_meta()
+        self.assertEqual(m["covers"], ["A"])
+
+    def test_emit_e3(self):
+        code = emit_saoe3("A")
+        self.assertIn("dynopt_sao_stats_e3_64_sve2", code)
+        self.assertIn("stride - 1", code)  # 45deg diagonal offset
+
+    def test_e3_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_saoe3("Z")
+
 
     def test_e2_meta(self):
         m = saoe2_meta()

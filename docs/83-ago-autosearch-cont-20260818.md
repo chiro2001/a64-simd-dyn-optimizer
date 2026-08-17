@@ -3,7 +3,26 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 12：score 公式补 cp_lat（发现模式深化））
+## 0. 本轮改动摘要（goal round 13：sao-stats-e3 接入，sao stats 家族 5/5 完整）
+
+1. **sao-stats-e3（45° 对角线）**：E3 是 sao stats 家族最后一个成员，
+   此前无候选（saoCuStatsE3_sve 参考是行循环复杂内核，从零移植风险
+   高的判断被推翻）：
+   - **关键洞察**：E3 的 64 宽单行形式与 E1 **仅差一处**——sign_down
+     的对比较从 `rec[x] vs rec[x+stride]`（垂直）改为
+     `rec[x] vs rec[x+stride-1]`（45° 对角线）；upBuff 协议（negate
+     on load、偏移 -1 存储）、5 类分类、svdot 统计、s_eoTable 归约
+     全部相同；harness 只比较 stats/count（不比较 upBuff），行末
+     边界存储可省
+   - 复制 E1 block32 改一行偏移 → **门禁过（QEMU 2000 例 0 失配，
+     vs saoCuStatsE3_neon），fused 102、ago_pred 106.1**
+   - 接线：covers_sao_stats_e3.py + 两工具注册（make_emitter 踩坑：
+     e2 分支是单行格式，首次 anchor 没匹配导致注册中断，补齐后
+     通过）；测试 +3（含 stride-1 对角线断言）
+2. **sao stats 家族 5/5 完整**（e0/e1/e2/e3/bo），全部门禁过、
+   block32 模式全家族胜出（102 uop）。DB 313→314 行；docs/82 +1 行。
+
+## 0a. 本轮改动摘要（goal round 12：score 公式补 cp_lat（发现模式深化））
 
 1. **score 公式升级（docs/82 #5 第二步，docs/79 未探索轴之一）**：
    `score = permute_ratio + fused_uop/1000 + cp_lat/500`——cp_lat 项
