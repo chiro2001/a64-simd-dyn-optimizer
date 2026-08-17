@@ -3,7 +3,21 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 15：sao-e1 重建，自动搜索 33 kernel）
+## 0. 本轮改动摘要（goal round 16：sao-e2/e3 重建，自动搜索 35 kernel）
+
+1. **sao-e2 / sao-e3（对角边偏移重建）**：E1 模式的两个对角变体：
+   - **E2（135°）**：signDown = sign(rec[x] - rec[x+stride+1])（下右
+     对角）、bufft[x+1] = -signDown（偏移 +1 存储，双缓冲）——
+     **门禁过（fused 53、ago_pred 32.6，含 bufft[1..64] 比对）**
+   - **E3（45°）**：x 从 startX+1=1 起、sign(rec[x] - rec[x+stride])、
+     upBuff1[x-1] = -signDown（偏移 -1 存储）——**门禁过（fused 55、
+     ago_pred 33.8）**
+2. **sao 重建家族 b0/e1/e2/e3 全完整**（sao 体系 9/9：stats 5 + 重建
+   4），全部门禁过。自动搜索 33→35 kernel。
+3. 接线：covers_sao_e2/e3.py + 两工具注册；测试 +5（含对角偏移断言）；
+   DB 316→318 行；docs/82 +2 行。
+
+## 0a. 本轮改动摘要（goal round 15：sao-e1 重建，自动搜索 33 kernel）
 
 1. **sao-e1（垂直边偏移重建）**：B0 模式（svtbl 查表 + s16 饱和加 +
    qxtun 合并窄化）+ 垂直边分类——`signDown = sign(rec[x] -

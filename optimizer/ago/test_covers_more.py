@@ -20,6 +20,10 @@ from optimizer.ago.covers_sao_stats_e2 import cover_meta as saoe2_meta
 from optimizer.ago.covers_sao_stats_bo import cover_meta as saobo_meta
 from optimizer.ago.covers_sao_b0 import cover_meta as saob0_meta
 from optimizer.ago.covers_sao_e1 import cover_meta as saoe1rec_meta
+from optimizer.ago.covers_sao_e2 import cover_meta as saoe2rec_meta
+from optimizer.ago.covers_sao_e2 import emit_cover as emit_saoe2rec
+from optimizer.ago.covers_sao_e3 import cover_meta as saoe3rec_meta
+from optimizer.ago.covers_sao_e3 import emit_cover as emit_saoe3rec
 from optimizer.ago.covers_sao_e1 import emit_cover as emit_saoe1rec
 from optimizer.ago.covers_sao_b0 import emit_cover as emit_saob0
 from optimizer.ago.covers_sao_e0 import emit_cover as emit_saoe0
@@ -199,6 +203,31 @@ class TestCoversSaoStats(unittest.TestCase):
     def test_e2_meta(self):
         m = saoe2_meta()
         self.assertEqual(m["covers"], ["A", "B", "C"])
+
+    def test_e2rec_meta(self):
+        m = saoe2rec_meta()
+        self.assertEqual(m["covers"], ["A"])
+
+    def test_emit_e2rec(self):
+        code = emit_saoe2rec("A")
+        self.assertIn("dynopt_sao_e2_64_sve2", code)
+        self.assertIn("stride + 1", code)  # down-right diagonal
+
+    def test_e3rec_meta(self):
+        m = saoe3rec_meta()
+        self.assertEqual(m["covers"], ["A"])
+
+    def test_emit_e3rec(self):
+        code = emit_saoe3rec("A")
+        self.assertIn("dynopt_sao_e3_64_sve2", code)
+        self.assertIn("x - 1", code)  # shifted upBuff store
+
+    def test_e2e3_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_saoe2rec("Z")
+        with self.assertRaises(ValueError):
+            emit_saoe3rec("Z")
+
 
     def test_e1rec_meta(self):
         m = saoe1rec_meta()
