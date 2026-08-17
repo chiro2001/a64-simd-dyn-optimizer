@@ -3,6 +3,17 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 31：DB 核对补漏 + docs/85 950 验证清单）
+
+1. **语料↔DB 交叉核对**：发现 5 个已门禁但漏入库的 kernel
+   （satd-32x16/32x32/64x16、interp8-32x16/64x32）→ 补 5 行；sa8d
+   （M2 记作 sa8d-8）补口径统一行。**143 kernel 全部有门禁行**
+   （DB 424→430 行）。
+2. **docs/85：950 实机验证清单**——把用户侧命令（kernel 微基准/
+   Feedback Loop 校准/E2E 仲裁/入库/通过标准）打包为一步到位的
+   执行清单；工具侧就绪声明 + 重点仲裁项（dct16 op895、
+   sa8d16/psy-cost cadd、sao block32、interp8 svdot32）。
+
 ## 0. 本轮改动摘要（goal round 30：dequant 从零移植——语料 143 完整）
 
 1. **dequant（反量化）从零移植**（最后一个无候选的 manifest kernel）：

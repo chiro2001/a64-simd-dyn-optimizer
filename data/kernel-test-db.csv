@@ -148,7 +148,9 @@ interp8-16x8-best_ir_sve16,,,interp8-16x8,filter,best_ir_sve16,neon,sve2,kernels
 interp8-32-best_ir-ago-pipeline,,,interp8-32,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-32/candidates/best_ir.cpp,8743,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-32-best_ir_sve16,,,interp8-32,filter,best_ir_sve16,neon,sve2,kernels/interp8-32/candidates/best_ir_sve16.cpp,15156,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-32-svdot32-sve2,,,interp8-32,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_32x32.cpp,47,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
+interp8-32x16-best-ago-pipeline,,,interp8-32x16,permute,best-ago-pipeline,neon,sve2,kernels/interp8-32x16/candidates/*.cpp,4537,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-32x16-best_ir_sve16,,,interp8-32x16,filter,best_ir_sve16,neon,sve2,kernels/interp8-32x16/candidates/best_ir_sve16.cpp,7538,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-64x32-best-ago-pipeline,,,interp8-64x32,permute,best-ago-pipeline,neon,sve2,kernels/interp8-64x32/candidates/*.cpp,15491,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-64x32-best_ir_sve16,,,interp8-64x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x32/candidates/best_ir_sve16.cpp,30368,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-64x64-best_ir-ago-pipeline,,,interp8-64x64,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-64x64/candidates/best_ir.cpp,27351,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-64x64-best_ir_sve16,,,interp8-64x64,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x64/candidates/best_ir_sve16.cpp,60849,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
@@ -273,6 +275,7 @@ psy-cost-16x16-best_sve2-ago-pipeline,,,psy-cost-16x16,permute,best_sve2-ago-pip
 pu-addavg-best-ago-pipeline,,,pu-addavg,permute,best-ago-pipeline,neon,sve2,kernels/pu-addavg/candidates/*.cpp,128,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 pu-copy-pp-best-ago-pipeline,,,pu-copy-pp,permute,best-ago-pipeline,neon,sve2,kernels/pu-copy-pp/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
+sa8d-best-ago-pipeline,,,sa8d,permute,best-ago-pipeline,neon,sve2,optimizer/ago/covers_sa8d8.py,86,,2,2000,0,PASS,,permute_ratio,0.317,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sa8d-32x32-best_wide_cadd-ago-pipeline,,,sa8d-32x32,permute,best_wide_cadd-ago-pipeline,neon,sve2,kernels/sa8d-32x32/candidates/best_wide_cadd.cpp,195,,2,2000,0,PASS,,permute_ratio,0.10,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sa8d-64x64-best_wide_cadd-ago-pipeline,,,sa8d-64x64,permute,best_wide_cadd-ago-pipeline,neon,sve2,kernels/sa8d-64x64/candidates/best_wide_cadd.cpp,404,,2,2000,0,PASS,,permute_ratio,0.10,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sa8d-8-sa8d8_A-920B,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,920B,ticks,5069,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -355,8 +358,11 @@ satd-16x8-satd16x8_B-920B,,,satd-16x8,pixel,satd16x8_B,neon,neon,experiments/ago
 satd-16x8-satd16x8_B-N1,,,satd-16x8,pixel,satd16x8_B,neon,neon,experiments/ago-m2-expanded/src/satd16x8_B.cpp,154,,1,20000,0,20k-native,N1,ticks,2586,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_C-920B,,,satd-16x8,pixel,satd16x8_C,neon,neon,experiments/ago-m2-expanded/src/satd16x8_C.cpp,150,,1,20000,0,20k-native,920B,ticks,6105,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_C-N1,,,satd-16x8,pixel,satd16x8_C,neon,neon,experiments/ago-m2-expanded/src/satd16x8_C.cpp,150,,1,20000,0,20k-native,N1,ticks,2287,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
+satd-32x16-best-ago-pipeline,,,satd-32x16,permute,best-ago-pipeline,neon,sve2,kernels/satd-32x16/candidates/*.cpp,72,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-32x32-best-ago-pipeline,,,satd-32x32,permute,best-ago-pipeline,neon,sve2,kernels/satd-32x32/candidates/*.cpp,72,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-32x64-best_sve2_cadd-ago-pipeline,,,satd-32x64,permute,best_sve2_cadd-ago-pipeline,neon,sve2,kernels/satd-32x64/candidates/best_sve2_cadd.cpp,72,,2,2000,0,PASS,,permute_ratio,0.25,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-32x8-best_sve2_cadd-ago-pipeline,,,satd-32x8,permute,best_sve2_cadd-ago-pipeline,neon,sve2,kernels/satd-32x8/candidates/best_sve2_cadd.cpp,138,,2,2000,0,PASS,,permute_ratio,0.10,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-64x16-best-ago-pipeline,,,satd-64x16,permute,best-ago-pipeline,neon,sve2,kernels/satd-64x16/candidates/*.cpp,140,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-64x32-best_sve2_cadd-ago-pipeline,,,satd-64x32,permute,best_sve2_cadd-ago-pipeline,neon,sve2,kernels/satd-64x32/candidates/best_sve2_cadd.cpp,140,,2,2000,0,PASS,,permute_ratio,0.25,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-64x48-best_sve2_cadd-ago-pipeline,,,satd-64x48,permute,best_sve2_cadd-ago-pipeline,neon,sve2,kernels/satd-64x48/candidates/best_sve2_cadd.cpp,140,,2,2000,0,PASS,,permute_ratio,0.25,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-64x64-best_sve2_cadd-ago-pipeline,,,satd-64x64,permute,best_sve2_cadd-ago-pipeline,neon,sve2,kernels/satd-64x64/candidates/best_sve2_cadd.cpp,140,,2,2000,0,PASS,,permute_ratio,0.25,,,,yes,docs/83-ago-autosearch-cont-20260818.md
