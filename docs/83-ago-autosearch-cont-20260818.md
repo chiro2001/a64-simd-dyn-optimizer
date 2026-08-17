@@ -3,7 +3,26 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 16：sao-e2/e3 重建，自动搜索 35 kernel）
+## 0. 本轮改动摘要（goal round 17：ISA 约束维度落地——SVE1/920B 输出）
+
+1. **"指定不同限制输出"维度落地（--isa sve1/sve2/neon）**：
+   - `ago_auto_search.py` 新增 `--isa` 便捷参数（sve1 → armv8.2-a+sve、
+     sve2 → 默认、neon → armv8.2-a+dotprod）
+   - **ISA 约束过滤机制**：SVE2-only intrinsics（svcadd/svqadd/svqxtun
+     等）在 sve1 march 下被 GCC 明确拒绝（"requires ISA extension
+     'sve2'"）→ 编译失败 → 打印 **ISA REJECT**（失败时用 sve2 march
+     复测区分"ISA 拒绝"与"真编译失败"）→ 幸存者排序
+   - **验证（920B SVE1 语义）**：sdot.d 是 SVE1 dotprod 指令（docs/59
+     canary 证实，check_isa_level 0 违规），svdot 类 cover 在 sve1 下
+     合法编译 ✓；cadd/qadd/qxtun 类正确拒绝 ✓
+   - **satd-16 双约束演示**：SVE2 目标 → C（原生 cadd）；SVE1 目标 →
+     A（best_sve1 软件 cadd）——同一 kernel 按约束输出不同候选
+   - SVE1 幸存集抽查：sad B、cost-coeff B、satd-8x16 A、satd-16x8 B、
+     psy-cost A、sa8d16 A、sao-e0 E（block32，svdot_s64 合法）
+2. **测试 +2（TestIsaConstraint）**：svcadd 源在 sve2 编译过/sve1 拒绝；
+   svadd 源在 sve1 编译过。tools 86→88。
+
+## 0a. 本轮改动摘要（goal round 16：sao-e2/e3 重建，自动搜索 35 kernel）
 
 1. **sao-e2 / sao-e3（对角边偏移重建）**：E1 模式的两个对角变体：
    - **E2（135°）**：signDown = sign(rec[x] - rec[x+stride+1])（下右

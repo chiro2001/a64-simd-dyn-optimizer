@@ -52,3 +52,39 @@ class TestDiscoveryGrid(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestIsaConstraint(unittest.TestCase):
+    """SVE1 constraint (920B): SVE2-only covers must be rejected."""
+
+    def test_sve2_cadd_source_rejected_under_sve1(self):
+        import tempfile
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        from ago_auto_search import compile_and_count
+        src = (
+            "#include <arm_sve.h>\n"
+            "svint16_t f(svint16_t a) { return svcadd_s16(a, a, 90); }\n")
+        with tempfile.TemporaryDirectory(prefix="isa-") as td:
+            cpp = os.path.join(td, "c.cpp")
+            with open(cpp, "w") as f:
+                f.write(src)
+            # sve2: compiles
+            sc2 = compile_and_count(cpp, "armv8.2-a+sve2", td)
+            self.assertNotIn("error", sc2)
+            # sve1: rejected (svcadd is SVE2-only)
+            sc1 = compile_and_count(cpp, "armv8.2-a+sve", td)
+            self.assertIn("error", sc1)
+
+    def test_sve1_source_ok_under_sve1(self):
+        import tempfile
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        from ago_auto_search import compile_and_count
+        src = (
+            "#include <arm_sve.h>\n"
+            "svint16_t f(svint16_t a) { return svadd_s16_x(svptrue_b16(), a, a); }\n")
+        with tempfile.TemporaryDirectory(prefix="isa-") as td:
+            cpp = os.path.join(td, "c.cpp")
+            with open(cpp, "w") as f:
+                f.write(src)
+            sc = compile_and_count(cpp, "armv8.2-a+sve", td)
+            self.assertNotIn("error", sc)

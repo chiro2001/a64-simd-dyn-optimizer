@@ -152,6 +152,14 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                 f.write(code)
             sc = compile_and_count(cpp, march, tmpdir)
             if "error" in sc:
+                # Distinguish ISA rejection (compiles under sve2 but not
+                # the requested march) from a genuinely broken cover.
+                if march != "armv8.2-a+sve2":
+                    sc2 = compile_and_count(cpp, "armv8.2-a+sve2", tmpdir)
+                    if "error" not in sc2:
+                        print("cover-%s      ISA REJECT (%s)" % (
+                            cover_id, march))
+                        continue
                 print("cover-%s      COMPILE FAIL" % cover_id)
                 continue
             ratio = sc.get("permute_depth_ratio", 0)
@@ -376,7 +384,14 @@ def main():
                          "变体，与精选 covers 同台排序")
     ap.add_argument("--march", default="armv8.2-a+sve2",
                     help="-march 值（默认 armv8.2-a+sve2）")
+    ap.add_argument("--isa", choices=("sve1", "sve2", "neon"),
+                    help="ISA 约束便捷参数（sve1=920B/VL256、sve2=950、"
+                         "neon=纯 NEON）；覆盖 --march 的默认值")
     args = ap.parse_args()
+    if args.isa == "sve1" and args.march == "armv8.2-a+sve2":
+        args.march = "armv8.2-a+sve"
+    elif args.isa == "neon" and args.march == "armv8.2-a+sve2":
+        args.march = "armv8.2-a+dotprod"
     return auto_search(args.kernel, args.rank_by, args.verify,
                        args.discover, args.march)
 
