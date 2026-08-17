@@ -465,6 +465,24 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_interp8_8x8_sve2")
             return emit_fn
+        if kernel == "interp8-64x64":
+            from ago.covers_interp8_64x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x64_sve2")
+            return emit_fn
+        if kernel == "interp8-32":
+            from ago.covers_interp8_32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x32_sve2")
+            return emit_fn
+        if kernel == "interp8-16x32":
+            from ago.covers_interp8_16x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x32_sve2")
+            return emit_fn
         if kernel == "dct16":
             from ago.covers_dct16 import emit_cover  # noqa: E402
 
@@ -1687,6 +1705,9 @@ def main():
             "sa8d-32x32": ["A"],
             "sa8d-64x64": ["A"],
             "interp8": ["A", "B", "C"],
+            "interp8-64x64": ["A"],
+            "interp8-32": ["A"],
+            "interp8-16x32": ["A"],
             "dct16": ["A", "B", "C"],
             "dct32": ["A", "B"],
             "dct8": ["A"],
@@ -1905,6 +1926,12 @@ def main():
             from ago.covers_sa8d64x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8":
             from ago.covers_interp8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-64x64":
+            from ago.covers_interp8_64x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-32":
+            from ago.covers_interp8_32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8-16x32":
+            from ago.covers_interp8_16x32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "dct16":
             from ago.covers_dct16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "dct32":
@@ -1980,7 +2007,7 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "dct16", "dct32", "dct8", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
+                "interp8", "interp8-16x32", "dct16", "dct32", "dct8", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
                 "satd-16x4",
                 "satd-16x64",
                 "satd-32x16",

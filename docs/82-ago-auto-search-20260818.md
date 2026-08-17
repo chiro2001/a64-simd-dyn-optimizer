@@ -62,6 +62,9 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | Kernel | 文件 | Covers | 最佳 |
 |--------|------|--------|------|
 | interp8 | covers_interp8.py | A=svdot32, B=svdot64, C=neon | A (score=0.292) |
+| interp8-16x32 | covers_interp8_16x32.py | A=best_ir (hpp) | A (score=4.562) |
+| interp8-32 | covers_interp8_32.py | A=best_ir (hpp) | A (score=8.743) |
+| interp8-64x64 | covers_interp8_64x64.py | A=best_ir (hpp) | A (score=27.351) |
 | dct16 | covers_dct16.py | A=neon_bridge, B=pure_sve2, C=op895 | C (score=1.137) |
 | dct8 | covers_dct8.py | A=best_sve2 (B/C/D/E scan-only) | A (score=0.474) |
 | dct32 | covers_dct32.py | A=loop, B=opbase | A (score=0.955；manifest 已修) |

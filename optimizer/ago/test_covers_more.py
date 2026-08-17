@@ -287,6 +287,25 @@ class TestCoversSaoE0(unittest.TestCase):
             emit_saoe0("Z")
 
 
+class TestInterp8Shapes(unittest.TestCase):
+    """interp8 16x32 / 32x32 / 64x64 shape covers (best_ir)."""
+
+    SHAPES = [("interp8-16x32", "dynopt_interp8_16x32_sve2"),
+              ("interp8-32", "dynopt_interp8_32x32_sve2"),
+              ("interp8-64x64", "dynopt_interp8_64x64_sve2")]
+
+    def test_meta_and_emit(self):
+        for k, sym in self.SHAPES:
+            mod = __import__("optimizer.ago.covers_%s"
+                             % k.replace("-", "_"),
+                             fromlist=["cover_meta", "emit_cover"])
+            m = mod.cover_meta()
+            self.assertEqual(m["covers"], ["A"], k)
+            self.assertLess(m["expected_permute_ratio"]["A"], 0.05)
+            code = mod.emit_cover("A")
+            self.assertIn(sym, code, k)
+
+
 class TestCoversDct8(unittest.TestCase):
 
     def test_meta(self):

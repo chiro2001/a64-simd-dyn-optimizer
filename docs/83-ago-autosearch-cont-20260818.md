@@ -3,7 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 17：ISA 约束维度落地——SVE1/920B 输出）
+## 0. 本轮改动摘要（goal round 18：interp8 家族形状扩展，自动搜索 38 kernel）
+
+1. **interp8 形状 kernel 接入**（家族从 8x8 扩展到大形状）：
+   - interp8-16x32（best_ir：fused 4562、ago_pred 1878.2）、
+     interp8-32（8743、3519.1）、interp8-64x64（27351、11805.9）
+   - 门禁：**三 shape 均 QEMU vq=2 2000 例 0 失配**（全展开 hpp，
+     0% permute；stk 高（2217-11066）是全展开的寄存器压力代价）
+   - 接线：covers_interp8_{16x32,32,64x64}.py + 两工具注册；测试 +3
+     （TestInterp8Shapes 参数化）
+2. **DB 318→321 行**；docs/82 +3 行。自动搜索 35→38 kernel。
+   遗留评估：dct32 8-row batch 轴（发射器精细手术、收益不确定）与
+   边缘 satd 形状（8/24/48 宽 pack 开销）继续暂缓。
+
+## 0a. 本轮改动摘要（goal round 17：ISA 约束维度落地——SVE1/920B 输出）
 
 1. **"指定不同限制输出"维度落地（--isa sve1/sve2/neon）**：
    - `ago_auto_search.py` 新增 `--isa` 便捷参数（sve1 → armv8.2-a+sve、

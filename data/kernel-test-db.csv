@@ -100,12 +100,15 @@ interp8-best_ir_sve16,,,interp8,filter,best_ir_sve16,neon,sve2,kernels/interp8/c
 interp8-svdot32-sve2,,,interp8,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32.cpp,87,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-16-best_ir_sve16,,,interp8-16,filter,best_ir_sve16,neon,sve2,kernels/interp8-16/candidates/best_ir_sve16.cpp,3741,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-16-svdot32-sve2,,,interp8-16,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_16x16.cpp,26,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
+interp8-16x32-best_ir-ago-pipeline,,,interp8-16x32,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-16x32/candidates/best_ir.cpp,4562,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-16x32-best_ir_sve16,,,interp8-16x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x32/candidates/best_ir_sve16.cpp,7556,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-16x8-best_ir_sve16,,,interp8-16x8,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x8/candidates/best_ir_sve16.cpp,1836,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-32-best_ir-ago-pipeline,,,interp8-32,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-32/candidates/best_ir.cpp,8743,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-32-best_ir_sve16,,,interp8-32,filter,best_ir_sve16,neon,sve2,kernels/interp8-32/candidates/best_ir_sve16.cpp,15156,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-32-svdot32-sve2,,,interp8-32,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_32x32.cpp,47,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-32x16-best_ir_sve16,,,interp8-32x16,filter,best_ir_sve16,neon,sve2,kernels/interp8-32x16/candidates/best_ir_sve16.cpp,7538,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-64x32-best_ir_sve16,,,interp8-64x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x32/candidates/best_ir_sve16.cpp,30368,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-64x64-best_ir-ago-pipeline,,,interp8-64x64,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-64x64/candidates/best_ir.cpp,27351,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-64x64-best_ir_sve16,,,interp8-64x64,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x64/candidates/best_ir_sve16.cpp,60849,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-8x16-best_ir_sve16,,,interp8-8x16,filter,best_ir_sve16,neon,sve2,kernels/interp8-8x16/candidates/best_ir_sve16.cpp,1453,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-hpp-i8mm-shapes-microbench,2026-08-17,,interp8-hpp,,i8mm-vs-simplified-dot,,,,,,,,,,920B,ratio_i8mm_vs_simplified_dot,1.19..2.54,,,,,reports/interp8-i8mm-920b-e2e-20260817.txt
