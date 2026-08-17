@@ -1,0 +1,75 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007e0",
+   "0x4019a0"
+  ],
+  "counts": {
+   "total": 1134,
+   "vector": 1044,
+   "movprfx": 0,
+   "vector_fused": 1044,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 117,
+   "vector_fused_uop": 1044,
+   "critical_path_latency": 55,
+   "critical_path_len": 25,
+   "permute_on_critical": 0,
+   "permute_depth_ratio": 0.0,
+   "load_use_avg": 18.35,
+   "load_use_min": 1,
+   "spill_reload": 116
+  },
+  "fusion": {
+   "eligible": 30,
+   "hw_supported": 0,
+   "pairs": [
+    "uaddl+mul",
+    "uaddl+uaddl",
+    "mul+mul",
+    "uaddl+uaddl",
+    "uaddl+mul",
+    "uaddl+uaddl",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mul",
+    "mul+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "mla+mla",
+    "uaddl+uaddl",
+    "uaddl+uaddl",
+    "uaddl+uaddl",
+    "uaddl+uaddl",
+    "mov+mla"
+   ],
+   "counts": {
+    "scalar_insns": 261,
+    "store_insns": 77,
+    "load_insns": 71,
+    "simd_insns": 179
+   }
+  },
+  "ago_pred": 469.69
+ }
+]

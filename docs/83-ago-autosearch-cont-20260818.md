@@ -3,7 +3,18 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 19：dct32 8-row batch 发现轴闭环（负面结案））
+## 0. 本轮改动摘要（goal round 20：interp8 8x16/16x8，自动搜索 40 kernel）
+
+1. **interp8 小矩形形状接入**（家族形状补齐）：
+   - interp8-8x16（best_ir：fused 1044、ago_pred 469.7）、
+     interp8-16x8（831、347.0）
+   - 门禁：**两 shape 均 QEMU vq=2 2000 例 0 失配**（0% permute）
+   - 接线：covers_interp8_{8x16,16x8}.py + 两工具注册；TestInterp8Shapes
+     SHAPES 扩至 5 形状
+2. **DB 322→324 行**；docs/82 +2 行。interp8 家族形状 6/6 完整
+   （8x8/8x16/16x8/16x32/32x32/64x64），自动搜索 38→40 kernel。
+
+## 0a. 本轮改动摘要（goal round 19：dct32 8-row batch 发现轴闭环（负面结案））
 
 1. **dct32 batch 参数化 + 发现轴探索（docs/79 未探索轴之一）**：
    - `dct32_wide_sve2.py` 的 emit_pass/emit_candidate 参数化 `batch`

@@ -311,7 +311,9 @@ class TestCoversSaoE0(unittest.TestCase):
 class TestInterp8Shapes(unittest.TestCase):
     """interp8 16x32 / 32x32 / 64x64 shape covers (best_ir)."""
 
-    SHAPES = [("interp8-16x32", "dynopt_interp8_16x32_sve2"),
+    SHAPES = [("interp8-8x16", "dynopt_interp8_8x16_sve2"),
+              ("interp8-16x8", "dynopt_interp8_16x8_sve2"),
+              ("interp8-16x32", "dynopt_interp8_16x32_sve2"),
               ("interp8-32", "dynopt_interp8_32x32_sve2"),
               ("interp8-64x64", "dynopt_interp8_64x64_sve2")]
 
