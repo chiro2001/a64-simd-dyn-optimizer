@@ -3,7 +3,27 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 5：satd 大形状全家族覆盖，20 kernel）
+## 0. 本轮改动摘要（goal round 6：sa8d16 宽度原生 cadd，自动搜索 21 kernel）
+
+1. **sa8d16 宽度原生候选（best_wide_cadd.cpp）**：现有候选 best_sve1
+   (411 uop)/best_sve2 (404 uop，纯 NEON trn 128-bit) 均远高于 manifest
+   预期 ~180；上游 `sa8d16_sve2<16,16>` 的 hadamard_8x8 本身用 cadd
+   （128-bit bridge，rot-90 + kHADPermuteTbl）。逐字移植为宽度原生
+   （VL=256 16-lane 同时处理左右 8x8 象限）：
+   - 静态（-O3）：**fused 193（vs 404/411，减半）、permute 10.0%
+     （vs 20.2/16.9%）、cp_lat 47（vs 95/100）**
+   - 门禁：**QEMU vq=2 2000 例差分 0 失配**（vs sa8d16_sve2<16,16>）
+   - 排序（ago_pred，950 表）：**cover-C 204.2 vs B 903.9 / A 908.9
+     （4.4x 快）**——自动搜索大幅超过两个手写候选
+   - 踩坑记录：初版 had8 只有 **2 级 cadd + 2 tbl**（8 点 hadamard 需
+     3 级蝴蝶）→ 2000/2000 失配（同 psy-cost 漏级错误）；补第 3 级
+     cadd 后 bit-exact
+2. **接线**：新建 covers_sa8d16.py（A/B/C + cp_chains/tail_ops/
+   expected_permute_ratio），两工具注册（make_emitter/ago_covers/
+   rank-by chain/_ago_march/KERNEL_COVERS）；测试 +4（TestCoversSa8d16）。
+3. **DB 301→303 行**；docs/82 家族表 + sa8d16 行（score=0.293）。
+
+## 0a. 本轮改动摘要（goal round 5：satd 大形状全家族覆盖，20 kernel）
 
 1. **satd 大形状全覆盖（cadd 模板参数化生成，+8 kernel → 自动搜索 20）**：
    水平/纵向扩展模式经门禁逐一证实（独立 16-lane 条带分解与参考一致）：

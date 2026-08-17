@@ -1,20 +1,124 @@
 [
  {
-  "tag": "reduce-sve",
-  "reduce": "sve",
+  "tag": "cover-A",
+  "cover": "A",
   "contract": "upstream-exact",
   "upstream_exact": true,
   "passed": true,
   "verify_mismatches": 0,
   "verify": "cases=20000 mismatches=0\n",
   "counts": {
-   "total": 227,
-   "vector": 193,
-   "movprfx": 4,
-   "vector_fused": 189,
+   "total": 673,
+   "vector": 411,
+   "movprfx": 0,
+   "vector_fused": 411,
    "scatter_gather": 0,
-   "vector_fused_uop": 189
+   "scatter_gather_uops": 0,
+   "stack_vector": 5,
+   "vector_fused_uop": 411,
+   "critical_path_latency": 100,
+   "critical_path_len": 83,
+   "permute_on_critical": 14,
+   "permute_depth_ratio": 0.169,
+   "load_use_avg": 33.78,
+   "load_use_min": 2,
+   "spill_reload": 9
   },
-  "cached": true
+  "range": [
+   "0x400f60",
+   "0x400f64"
+  ],
+  "cached": true,
+  "ago_pred": 908.87,
+  "baseline_ratio": 1.1018766756032172,
+  "halve_gate_met": false
+ },
+ {
+  "tag": "cover-B",
+  "cover": "B",
+  "contract": "upstream-exact",
+  "upstream_exact": true,
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "counts": {
+   "total": 641,
+   "vector": 404,
+   "movprfx": 0,
+   "vector_fused": 404,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 404,
+   "critical_path_latency": 95,
+   "critical_path_len": 99,
+   "permute_on_critical": 20,
+   "permute_depth_ratio": 0.202,
+   "load_use_avg": 25.69,
+   "load_use_min": 2,
+   "spill_reload": 6
+  },
+  "range": [
+   "0x400f40",
+   "0x400f44"
+  ],
+  "cached": true,
+  "ago_pred": 903.89,
+  "baseline_ratio": 1.0831099195710456,
+  "halve_gate_met": false
+ },
+ {
+  "tag": "cover-C",
+  "cover": "C",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400b40"
+  ],
+  "counts": {
+   "total": 231,
+   "vector": 197,
+   "movprfx": 4,
+   "vector_fused": 193,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 193,
+   "critical_path_latency": 47,
+   "critical_path_len": 30,
+   "permute_on_critical": 3,
+   "permute_depth_ratio": 0.1,
+   "load_use_avg": 47.42,
+   "load_use_min": 1,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 10,
+   "hw_supported": 0,
+   "pairs": [
+    "abs+umax",
+    "abs+umax",
+    "abs+umax",
+    "abs+umax",
+    "add+add",
+    "add+add",
+    "abs+umax",
+    "abs+umax",
+    "abs+umax",
+    "add+add"
+   ],
+   "counts": {
+    "scalar_insns": 115,
+    "simd_insns": 112,
+    "fused_pseudo": 4
+   }
+  },
+  "ago_pred": 204.2,
+  "baseline_ratio": 0.517426273458445,
+  "halve_gate_met": false
  }
 ]

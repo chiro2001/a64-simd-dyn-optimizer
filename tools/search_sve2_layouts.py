@@ -437,6 +437,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sa8d_8x8_sve2")
             return emit_fn
+        if kernel == "sa8d16":
+            from ago.covers_sa8d16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_sa8d_16x16_sve2")
+            return emit_fn
         if kernel == "interp8":
             from ago.covers_interp8 import emit_cover  # noqa: E402
 
@@ -1581,6 +1588,7 @@ def main():
         ago_covers = {
             "satd-8": ["A", "B", "C", "D", "E"],
             "sa8d": ["A", "B", "C"],
+            "sa8d16": ["A", "B", "C"],
             "interp8": ["A", "B", "C"],
             "dct16": ["A", "B", "C"],
             "dct32": ["A", "B"],
@@ -1778,6 +1786,8 @@ def main():
             from ago.covers_satd8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sa8d":
             from ago.covers_sa8d8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sa8d16":
+            from ago.covers_sa8d16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8":
             from ago.covers_interp8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "dct16":
@@ -1831,7 +1841,7 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "dct16", "dct32", "satd-16", "satd-16x32",
+                "interp8", "dct16", "dct32", "sa8d16", "satd-16", "satd-16x32",
                 "satd-16x64",
                 "satd-32x16",
                 "satd-32x32",

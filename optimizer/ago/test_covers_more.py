@@ -9,6 +9,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from optimizer.ago.covers_sad import cover_meta as sad_meta
+from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
+from optimizer.ago.covers_sa8d16 import emit_cover as emit_sa8d16
 from optimizer.ago.covers_sad import emit_cover as emit_sad
 from optimizer.ago.covers_satd16 import cover_meta as satd16_meta
 from optimizer.ago.covers_satd16 import emit_cover as emit_satd16
@@ -132,6 +134,31 @@ class TestCoversSatdShapes(unittest.TestCase):
             emit_s816("Z")
         with self.assertRaises(ValueError):
             emit_s168("Z")
+
+
+class TestCoversSa8d16(unittest.TestCase):
+
+    def test_meta(self):
+        m = sa8d16_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+        self.assertLess(m["expected_permute_ratio"]["C"], 0.15)
+        self.assertGreater(m["expected_permute_ratio"]["C"],
+                           m["expected_permute_ratio"]["A"] * 0.3)
+
+    def test_emit_c(self):
+        code = emit_sa8d16("C")
+        self.assertIn("svcadd_s16", code)
+        self.assertIn("had8_s16", code)
+
+    def test_emit_all(self):
+        for c in sa8d16_meta()["covers"]:
+            code = emit_sa8d16(c)
+            self.assertIsInstance(code, str)
+            self.assertGreater(len(code), 100)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_sa8d16("Z")
 
 
 class TestLargeSatdCovers(unittest.TestCase):

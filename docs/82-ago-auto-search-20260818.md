@@ -66,6 +66,7 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | dct32 | covers_dct32.py | A=loop, B=opbase | A (score=0.955；manifest 已修) |
 | satd-8 | covers_satd8.py | A-E (5 种尾部) | (M2 已验证) |
 | sa8d | covers_sa8d8.py | A-C (3 种尾部) | (M2 已验证) |
+| sa8d16 | covers_sa8d16.py | A=best_sve1, B=best_sve2, C=best_wide_cadd | C (score=0.293) |
 | satd-16 | covers_satd16.py | A=best_sve1, B=best_ir_sve16, C=best_sve2_cadd | C (score=0.218) |
 | satd-16x32 | covers_satd16x32.py | A=best_sve2_cadd (32 行扩展) | A (score=0.260) |
 | satd-16x64 | covers_satd16x64.py | A=best_sve2_cadd (64 行扩展) | A |
