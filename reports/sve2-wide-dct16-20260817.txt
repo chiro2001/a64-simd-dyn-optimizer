@@ -11,11 +11,27 @@ This is the P2 region-schedule template deliverable from docs/78.
 
 ## Emitter Modes
 
-| Mode | even-k | Butterfly | Reduce | 0-NEON | Validated | permute_ratio |
-|------|--------|-----------|-------|--------|-----------|---------------|
-| neon_bridge | NEON bridge | NEON zip1/rev64/zip2 | NEON vpaddq | No | PASS (QEMU) | 12.0% |
-| addp | SVE2 width-native | SVE2 svsplice+svtbl (BUG) | SVE2 addp | Yes | FAIL | 41.4% |
-| uzp | SVE2 width-native | SVE2 svsplice+svtbl (BUG) | SVE2 uzp1+uzp2+add | Yes | FAIL | 53.1% |
+| Mode | even-k | Butterfly | Reduce | 0-NEON | Validated | permute_ratio | fused_uop |
+|------|--------|-----------|-------|--------|-----------|---------------|-----------|
+| neon_bridge | NEON bridge | NEON zip1/rev64/zip2 | NEON vpaddq | No | PASS (QEMU) | 12.0% | 950 |
+| pure_sve2 | SVE2 svrev/zip1/ext/revw | SVE2 addp+svtbl swap | Yes | PASS (QEMU) | 43.4% | 1012 |
+| addp (old) | SVE2 svsplice+svtbl (BUG) | SVE2 addp | Yes | FAIL | 41.4% | 922 |
+| uzp (old) | SVE2 svsplice+svtbl (BUG) | SVE2 uzp1+uzp2+add | Yes | FAIL | 53.1% | 955 |
+
+## pure_sve2 mode: VALIDATED bit-exact vs op895 (2026-08-17)
+
+Uses validated pure SVE2 cross-row butterfly:
+- Per-row: svrev_s16 → svunpklo_s32 → svrev_s32 → svadd/svsub (1 permute/row)
+- Cross-row: svzip1_s64 → svext_s32(4) → revw_d32 → svadd/svsub (3 permutes/pair)
+- Reduction: addp_s32 + svtbl swap {0,2,1,3} at each level
+
+Key discovery: SVE `addp` interleaves pairs from src1/src2, while NEON
+`vpaddq_s32` takes ALL pairs from src1 first. This requires `svtbl` swap
+at each addp level to match vpaddq ordering.
+
+Also: SVE `addp` instruction requires zd==zn (RMW constraint), creating
+serial dependency chains that inflate critical path latency (277 vs 55
+for neon_bridge).
 
 ## Key Findings
 

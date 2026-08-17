@@ -62,6 +62,7 @@ dct16-ir-neon,2026-08-16,72c8a08,dct16,dct,ir-neon,sve2,neon,kernels/dct16/candi
 dct16-ir-neon-N1-2026-08-16-72c8a08,2026-08-16,72c8a08,dct16,,ir-neon,sve2,neon,kernels/dct16/candidates/best_ir_neon8.cpp,1941,,1;2,20000,0,PASS,N1,ticks_pct,-18.2,-1.80,-0.02,INVALID,yes,reports/ld-preload-interception-check-20260816.txt
 dct16-op895-950,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_sve,1.2917,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct16-op895-950-neon,2026-08-16,4bb48e3,dct16,dct,op895,sve2,sve2,kernels/dct16/candidates/best_sve2_op895.cpp,895,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8750,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
+dct16-pure_sve2,,,dct16,,pure_sve2,,,,,,1;2,20000,0,PASS,,fused_uop,1012,,,,,reports/sve2-wide-dct16-20260817.txt
 dct16-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.3043,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4864,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.2867,,,,,reports/950-sve16-dual-lane-20260817.txt

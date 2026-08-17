@@ -110,6 +110,35 @@ static inline svint32_t addp_s32(svint32_t a, svint32_t b)
 }
 """
 
+SVE_HELPERS = r"""
+static inline svint16_t revh_d(svint16_t x)
+{
+    svint16_t r;
+    asm volatile("revh %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t revw_d32(svint32_t x)
+{
+    svint32_t r;
+    asm volatile("revw %[r].d, %[p]/m, %[x].d"
+                 : [r] "=w" (r)
+                 : [x] "w" (x), [p] "Upl" (svptrue_b64()));
+    return r;
+}
+
+static inline svint32_t addp_s32(svint32_t a, svint32_t b)
+{
+    svint32_t r = a;
+    asm volatile("addp %[r].s, %[p]/m, %[r].s, %[b].s"
+                 : [r] "+w" (r)
+                 : [b] "w" (b), [p] "Upl" (svptrue_b32()));
+    return r;
+}
+"""
+
 
 def _emit_constants() -> str:
     lines = []
@@ -234,15 +263,199 @@ def emit_pass1() -> str:
     return "\n".join(lines)
 
 
+def emit_pass2_pure_sve2() -> str:
+    """Emit op_pass_11 — pure SVE2 pass2 with validated cross-row butterfly.
+
+    Uses svrev_s32 + svzip1_s64 + svext_s32 + revw_d32 for the butterfly,
+    matching op895's NEON vzip1q/vzip2q/vrev64q pattern but with ZERO NEON.
+    Reduction uses addp_s32 (SVE2 non-permute) + rshrnb + uzp1 for store.
+    """
+    lines = []
+    lines.append("static __attribute__((noinline)) void op_pass_11(")
+    lines.append("    const int16_t* src, int16_t* dst)")
+    lines.append("{")
+    lines.append("    const int line = 16;")
+    lines.append("    const svbool_t p16 = svptrue_b16();")
+    lines.append("    const svbool_t p8s = svptrue_b32();")
+    lines.append("    const svbool_t pg4s = svwhilelt_b32(0, 4);")
+    lines.append("    const svbool_t pg4h = svwhilelt_b16(0, 4);")
+    lines.append("    const svint64_t zero64 = svdup_n_s64(0);")
+    lines.append("    static const uint32_t swap_idx[8] = {0, 2, 1, 3, 4, 6, 5, 7};")
+    lines.append("    svuint32_t swp = svld1_u32(p8s, swap_idx);")
+    lines.append("")
+
+    for b in range(4):
+        base = b * 4
+        lines.append("    // ---- batch %d (rows %d-%d) ----" % (b, base, base + 3))
+        for i in range(4):
+            r = base + i
+            lines.append("    svint16_t z_%d = svld1_s16(p16, src + %d * line);" % (r, r))
+            lines.append("    svint16_t r_%d = svrev_s16(z_%d);" % (r, r))
+        for i in range(4):
+            r = base + i
+            lines.append("    svint32_t E_%d = svadd_s32_x(p8s, "
+                         "svunpklo_s32(z_%d), svunpklo_s32(r_%d));" % (r, r, r))
+            lines.append("    svint32_t rev_E_%d = svrev_s32(E_%d);" % (r, r))
+            lines.append("    svint32_t EE_%d = svadd_s32_x(p8s, E_%d, rev_E_%d);"
+                         % (r, r, r))
+            lines.append("    svint32_t EO_%d = svsub_s32_x(p8s, E_%d, rev_E_%d);"
+                         % (r, r, r))
+            lines.append("    svint16_t zO_%d = svsub_s16_x(p16, z_%d, r_%d);"
+                         % (r, r, r))
+        for pair in range(2):
+            r0 = base + pair * 2
+            r1 = base + pair * 2 + 1
+            eee_idx = b * 2 + pair
+            lines.append("    // cross-row butterfly pair %d (rows %d,%d)" % (pair, r0, r1))
+            lines.append("    svint64_t ee0_%d = svreinterpret_s64_s32(EE_%d);" % (eee_idx, r0))
+            lines.append("    svint64_t ee1_%d = svreinterpret_s64_s32(EE_%d);" % (eee_idx, r1))
+            lines.append("    svint64_t zip_%d = svzip1_s64(ee0_%d, ee1_%d);"
+                         % (eee_idx, eee_idx, eee_idx))
+            lines.append("    svint32_t zip_s_%d = svreinterpret_s32_s64(zip_%d);"
+                         % (eee_idx, eee_idx))
+            lines.append("    svint32_t shift_%d = svext_s32(zip_s_%d, zip_s_%d, 4);"
+                         % (eee_idx, eee_idx, eee_idx))
+            lines.append("    svint32_t t1_%d = revw_d32(shift_%d);" % (eee_idx, eee_idx))
+            lines.append("    svint32_t EEE_%d = svadd_s32_x(pg4s, zip_s_%d, t1_%d);"
+                         % (eee_idx, eee_idx, eee_idx))
+            lines.append("    svint32_t EEO_%d = svsub_s32_x(pg4s, zip_s_%d, t1_%d);"
+                         % (eee_idx, eee_idx, eee_idx))
+        lines.append("")
+
+    for b in range(4):
+        base = b * 4
+        lines.append("    // ---- QO pack batch %d ----" % b)
+        lines.append("    svint64_t pa0_%d = svreinterpret_s64_s16(zO_%d);" % (b, base))
+        lines.append("    svint64_t pa1_%d = svreinterpret_s64_s16(zO_%d);" % (b, base + 1))
+        lines.append("    svint64_t pa2_%d = svreinterpret_s64_s16(zO_%d);" % (b, base + 2))
+        lines.append("    svint64_t pa3_%d = svreinterpret_s64_s16(zO_%d);" % (b, base + 3))
+        lines.append("    svint64_t pt0_%d = svzip1_s64(pa0_%d, pa2_%d);" % (b, b, b))
+        lines.append("    svint64_t pt1_%d = svzip2_s64(pa0_%d, pa2_%d);" % (b, b, b))
+        lines.append("    svint64_t pt2_%d = svzip1_s64(pa1_%d, pa3_%d);" % (b, b, b))
+        lines.append("    svint64_t pt3_%d = svzip2_s64(pa1_%d, pa3_%d);" % (b, b, b))
+        lines.append("    svint64_t pp0_%d = svzip1_s64(pt0_%d, pt2_%d);" % (b, b, b))
+        lines.append("    svint64_t pp1_%d = svzip2_s64(pt0_%d, pt2_%d);" % (b, b, b))
+        lines.append("    svint16_t QO0_%d = svreinterpret_s16_s64(pp0_%d);" % (b, b))
+        lines.append("    svint16_t QO1_%d = svreinterpret_s16_s64(pp1_%d);" % (b, b))
+        lines.append("")
+
+    k_eee = [(0, 0), (8, 2)]
+    k_eeo = [(4, 1), (12, 3)]
+    k_eo = [(2, 0), (6, 1), (10, 2), (14, 3)]
+
+    for k, t8e_idx in k_eee + k_eeo:
+        data_name = "EEE" if (k, t8e_idx) in k_eee else "EEO"
+        t8e = T8E[t8e_idx]
+        uniform_c = (len(set(t8e)) == 1)
+        lines.append("    // k=%d: %s * T8E[%d]%s" % (
+            k, data_name, t8e_idx,
+            " (uniform c)" if uniform_c else " (non-uniform c)"))
+        lines.append("    svint32_t c_%d = svld1_s32(pg4s, T8E[%d]);" % (k, t8e_idx))
+        lines.append("    svint32_t c_bcast_%d = svsplice_s32(p8s, c_%d, c_%d);"
+                     % (k, k, k))
+        for b in range(4):
+            eee_lo = b * 2
+            eee_hi = b * 2 + 1
+            if uniform_c:
+                lines.append("    svint32_t pp_%d_%d = addp_s32(%s_%d, %s_%d);"
+                             % (k, b, data_name, eee_lo, data_name, eee_hi))
+                lines.append("    pp_%d_%d = svreinterpret_s32_u32("
+                             "svtbl_u32(svreinterpret_u32_s32(pp_%d_%d), swp));"
+                             % (k, b, k, b))
+                lines.append("    svint32_t m_%d_%d = svmul_s32_x(p8s, c_bcast_%d, pp_%d_%d);"
+                             % (k, b, k, k, b))
+            else:
+                lines.append("    svint32_t m_lo_%d_%d = svmul_s32_x(p8s, "
+                             "c_bcast_%d, %s_%d);" % (k, b, k, data_name, eee_lo))
+                lines.append("    svint32_t m_hi_%d_%d = svmul_s32_x(p8s, "
+                             "c_bcast_%d, %s_%d);" % (k, b, k, data_name, eee_hi))
+                lines.append("    svint32_t m_%d_%d = addp_s32(m_lo_%d_%d, m_hi_%d_%d);"
+                             % (k, b, k, b, k, b))
+                lines.append("    m_%d_%d = svreinterpret_s32_u32("
+                             "svtbl_u32(svreinterpret_u32_s32(m_%d_%d), swp));"
+                             % (k, b, k, b))
+            lines.append("    svint16_t nn_%d_%d = svrshrnb_n_s32(m_%d_%d, 10);"
+                         % (k, b, k, b))
+            lines.append("    nn_%d_%d = svuzp1_s16(nn_%d_%d, nn_%d_%d);"
+                         % (k, b, k, b, k, b))
+            lines.append("    svst1_s16(pg4h, dst + 16 * %d + %d, nn_%d_%d);"
+                         % (k, b * 4, k, b))
+        lines.append("")
+
+    for k, gt_idx in k_eo:
+        lines.append("    // k=%d: EO * GT16_S32[%d]" % (k, gt_idx))
+        lines.append("    svint32_t c_%d = svld1_s32(pg4s, GT16_S32[%d]);" % (k, gt_idx))
+        lines.append("    svint32_t c_bcast_%d = svsplice_s32(p8s, c_%d, c_%d);"
+                     % (k, k, k))
+        for b in range(4):
+            base = b * 4
+            for j in range(4):
+                r = base + j
+                lines.append("    svint32_t m_%d_%d_%d = svmul_s32_x(p8s, "
+                             "c_bcast_%d, EO_%d);" % (k, b, j, k, r))
+            lines.append("    svint32_t l1_%d_%d = addp_s32(m_%d_%d_0, m_%d_%d_1);"
+                         % (k, b, k, b, k, b))
+            lines.append("    l1_%d_%d = svreinterpret_s32_u32("
+                         "svtbl_u32(svreinterpret_u32_s32(l1_%d_%d), swp));"
+                         % (k, b, k, b))
+            lines.append("    svint32_t l2_%d_%d = addp_s32(m_%d_%d_2, m_%d_%d_3);"
+                         % (k, b, k, b, k, b))
+            lines.append("    l2_%d_%d = svreinterpret_s32_u32("
+                         "svtbl_u32(svreinterpret_u32_s32(l2_%d_%d), swp));"
+                         % (k, b, k, b))
+            lines.append("    svint32_t pp_%d_%d = addp_s32(l1_%d_%d, l2_%d_%d);"
+                         % (k, b, k, b, k, b))
+            lines.append("    pp_%d_%d = svreinterpret_s32_u32("
+                         "svtbl_u32(svreinterpret_u32_s32(pp_%d_%d), swp));"
+                         % (k, b, k, b))
+            lines.append("    svint16_t nn_%d_%d = svrshrnb_n_s32(pp_%d_%d, 10);"
+                         % (k, b, k, b))
+            lines.append("    nn_%d_%d = svuzp1_s16(nn_%d_%d, nn_%d_%d);"
+                         % (k, b, k, b, k, b))
+            lines.append("    svst1_s16(pg4h, dst + 16 * %d + %d, nn_%d_%d);"
+                         % (k, b * 4, k, b))
+        lines.append("")
+
+    odd_k = [1, 3, 5, 7, 9, 11, 13, 15]
+    for k in odd_k:
+        lines.append("    // k=%d: odd-k (QO0/QO1 svdot, from op895)" % k)
+        lines.append("    const svint16_t c_clo_%d = svld1_s16(p16, CQ_LO[%d]);" % (k, k))
+        lines.append("    const svint16_t c_chi_%d = svld1_s16(p16, CQ_HI[%d]);" % (k, k))
+        for b in range(4):
+            lines.append("    svint64_t d0_%d_%d = svdot_s64(zero64, QO0_%d, c_clo_%d);"
+                         % (k, b, b, k))
+            lines.append("    svint64_t d1_%d_%d = svdot_s64(d0_%d_%d, QO1_%d, c_chi_%d);"
+                         % (k, b, k, b, b, k))
+        lines.append("    {")
+        lines.append("        const svint32_t w01 = svuzp1_s32("
+                     "svreinterpret_s32_s64(d1_%d_0), svreinterpret_s32_s64(d1_%d_1));"
+                     % (k, k))
+        lines.append("        const svint32_t w23 = svuzp1_s32("
+                     "svreinterpret_s32_s64(d1_%d_2), svreinterpret_s32_s64(d1_%d_3));"
+                     % (k, k))
+        lines.append("        const svint16_t nb = svrshrnb_n_s32(w01, 10);")
+        lines.append("        const svint16_t nt = svrshrnb_n_s32(w23, 10);")
+        lines.append("        svint16_t nn = svuzp1_s16(nb, nt);")
+        lines.append("        svst1_s16(p16, dst + 16 * %d + 0, nn);" % k)
+        lines.append("    }")
+        lines.append("")
+
+    lines.append("}")
+    return "\n".join(lines)
+
+
 def emit_pass2(even_k_mode: str = "addp") -> str:
     """Emit op_pass_11 — pass2 with configurable even-k lowering.
 
     even_k_mode:
+      "pure_sve2":   pure SVE2 cross-row butterfly (validated, zero NEON)
       "addp":        width-native SVE2 with addp_s32 reduction (non-permute)
       "uzp":         width-native SVE2 with uzp1+uzp2+add reduction
       "neon_bridge": op895 original (NEON-bridged even-k)
     Odd-k is always pure SVE2 (from op895 svdot).
     """
+    if even_k_mode == "pure_sve2":
+        return emit_pass2_pure_sve2()
     use_addp = (even_k_mode == "addp")
     use_neon = (even_k_mode == "neon_bridge")
 
@@ -537,6 +750,7 @@ def emit_pass2(even_k_mode: str = "addp") -> str:
 
 
 def emit_candidate(even_k_mode: str = "addp") -> str:
+    is_pure_sve2 = (even_k_mode == "pure_sve2")
     lines = []
     lines.append("// Generated by optimizer/ir/dct16_wide_sve2.py -- do not edit by hand.")
     lines.append("// Width-native SVE2 dct16 (VL=256, single-group full-width).")
@@ -544,11 +758,15 @@ def emit_candidate(even_k_mode: str = "addp") -> str:
     lines.append("// pass2 even-k: %s" % even_k_mode)
     lines.append("// pass2 odd-k:  pure SVE2 (from op895 svdot)")
     lines.append("#include <arm_sve.h>")
-    lines.append("#include <arm_neon.h>")
-    lines.append("#include <arm_neon_sve_bridge.h>")
+    if not is_pure_sve2:
+        lines.append("#include <arm_neon.h>")
+        lines.append("#include <arm_neon_sve_bridge.h>")
     lines.append("#include <cstdint>")
     lines.append("")
-    lines.append(HELPERS)
+    if is_pure_sve2:
+        lines.append(SVE_HELPERS)
+    else:
+        lines.append(HELPERS)
     lines.append("")
     lines.append(_emit_constants())
     lines.append("")
