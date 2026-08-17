@@ -70,8 +70,10 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | sa8d-32x32 | covers_sa8d32x32.py | A=best_wide_cadd (2 半向量×4 pass) | A (score=0.295) |
 | sa8d-64x64 | covers_sa8d64x64.py | A=best_wide_cadd (4 半向量×8 pass) | A (score=0.504) |
 | satd-16 | covers_satd16.py | A=best_sve1, B=best_ir_sve16, C=best_sve2_cadd | C (score=0.218) |
+| satd-16x4 | covers_satd16x4.py | A=best_sve2_cadd (4 行) | A (score=0.136) |
 | satd-16x32 | covers_satd16x32.py | A=best_sve2_cadd (32 行扩展) | A (score=0.260) |
 | satd-16x64 | covers_satd16x64.py | A=best_sve2_cadd (64 行扩展) | A |
+| satd-32x8 | covers_satd32x8.py | A=best_sve2_cadd (2 半向量/行) | A (score=0.238) |
 | satd-32x16 | covers_satd32x16.py | A=best_sve2_cadd (2 半向量/行) | A (score=0.322) |
 | satd-32x32 | covers_satd32x32.py | A=best_sve2_cadd (2 半向量/行) | A (score=0.322) |
 | satd-32x64 | covers_satd32x64.py | A=best_sve2_cadd (2 半向量/行) | A (score=0.322) |

@@ -182,8 +182,9 @@ class TestSa8dLargeCovers(unittest.TestCase):
 class TestLargeSatdCovers(unittest.TestCase):
     """Parameterized: all large-shape cadd covers emit + meta sane."""
 
-    SHAPES = [(16, 32), (16, 64), (32, 16), (32, 32), (32, 64),
-              (64, 16), (64, 32), (64, 48), (64, 64)]
+    SHAPES = [(16, 4), (16, 32), (16, 64), (32, 8), (32, 16),
+              (32, 32), (32, 64), (64, 16), (64, 32), (64, 48),
+              (64, 64)]
 
     def _import(self, w, h):
         mod = __import__("optimizer.ago.covers_satd%dx%d" % (w, h),

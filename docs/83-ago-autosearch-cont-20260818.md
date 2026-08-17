@@ -3,7 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 7：sa8d 大形状 32x32/64x64，自动搜索 23 kernel）
+## 0. 本轮改动摘要（goal round 8：satd-16x4/32x8，自动搜索 25 kernel）
+
+1. **satd-16x4 / satd-32x8 cadd 候选**（cadd 模式收尾剩余 16/32 宽形状）：
+   - satd-16x4：g<1（fused 36、ago_pred 30.5）
+   - satd-32x8：2 halves × g<2（fused 138、ago_pred 156.2）
+   - 门禁：**两 shape 均 QEMU vq=2 2000 例 0 失配**（vs
+     satd8_sve2<16,4>/<32,8>）
+   - 接线：covers_satd16x4/32x8 + 两工具注册；TestLargeSatdCovers
+     SHAPES 扩至 11 形状
+2. **DB 305→307 行**；docs/82 +2 行。satd 家族覆盖 13 形状（16/32/64
+   宽系全部；剩余 8 宽（8x4/8x32）与 24/48 宽（1.5/3 向量）为边缘
+   形状，cadd 模板不直接适用）。
+
+## 0a. 本轮改动摘要（goal round 7：sa8d 大形状 32x32/64x64，自动搜索 23 kernel）
 
 1. **sa8d-32x32/64x64 宽度原生 cadd（best_wide_cadd.cpp，新建 manifest）**：
    x265 的 BLOCK_32x32/64x64 sa8d 走 `sa8d16x32_sve2<W,H>` 参考

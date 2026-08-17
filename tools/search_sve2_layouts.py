@@ -549,6 +549,20 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_satd_64x64_sve2")
             return emit_fn
+        if kernel == "satd-32x8":
+            from ago.covers_satd32x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_32x8_sve2")
+            return emit_fn
+        if kernel == "satd-16x4":
+            from ago.covers_satd16x4 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_16x4_sve2")
+            return emit_fn
         if kernel == "satd-8x16":
             from ago.covers_satd_8x16 import emit_cover  # noqa: E402
 
@@ -1615,6 +1629,8 @@ def main():
             "satd-32x32": ["A"],
             "satd-64x16": ["A"],
             "satd-64x64": ["A"],
+            "satd-16x4": ["A"],
+            "satd-32x8": ["A"],
             "satd-64x48": ["A"],
             "satd-64x32": ["A"],
             "satd-32x64": ["A"],
@@ -1842,6 +1858,10 @@ def main():
             from ago.covers_satd64x48 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x64":
             from ago.covers_satd64x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-16x4":
+            from ago.covers_satd16x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-32x8":
+            from ago.covers_satd32x8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "psy-cost-16x16":
             from ago.covers_psycost import cover_meta as _cmeta  # noqa: E402
         else:
@@ -1862,6 +1882,7 @@ def main():
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
                 "interp8", "dct16", "dct32", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
+                "satd-16x4",
                 "satd-16x64",
                 "satd-32x16",
                 "satd-32x32",
@@ -1870,6 +1891,7 @@ def main():
                 "satd-64x48",
                 "satd-64x32",
                 "satd-32x64",
+                "satd-32x8",
                 "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn") \
                 else "armv8.2-a+dotprod"
