@@ -444,6 +444,30 @@ INTERP8_HPP_IR_KERNELS = {
     "interp8-64x32", "interp8-64x64",
 }
 
+# Full-width dual-group 16-lane (VL=256) candidates (docs/72 style,
+# extended to the whole pixel/asm family; AGO_IR_SVE16=1 enables them).
+SVE16_KERNELS = {
+    "mc", "sad", "ssd", "psy-cost-16x16", "sa8d16",
+    "satd-16", "satd-8x16", "satd-16x8",
+} | set(INTERP8_HPP_IR_KERNELS)
+
+SVE16_SYMBOLS = {
+    "mc": "dynopt_avg_pp_16x16_sve16",
+    "sad": "dynopt_sad_16x16_sve16",
+    "ssd": "dynopt_sse_pp_16x16_sve16",
+    "psy-cost-16x16": "dynopt_pixel_var_16x16_sve16",
+    "sa8d16": "dynopt_sa8d_16x16_sve16",
+    "satd-16": "dynopt_satd_16x16_sve16",
+    "satd-8x16": "dynopt_satd_8x16_sve16",
+    "satd-16x8": "dynopt_satd_16x8_sve16",
+}
+for _sh, _d in (("8x8", "interp8"), ("8x16", "interp8-8x16"),
+                ("16x8", "interp8-16x8"), ("16x16", "interp8-16"),
+                ("16x32", "interp8-16x32"), ("32x16", "interp8-32x16"),
+                ("32x32", "interp8-32"), ("64x32", "interp8-64x32"),
+                ("64x64", "interp8-64x64")):
+    SVE16_SYMBOLS[_d] = "dynopt_interp8_hpp_%s_sve16" % _sh
+
 # interp8 hpp shapes with a gated NEON I8MM candidate (vusmmlaq,
 # reports/interp8-i8mm-gate-20260817.txt + extra shapes).  Enabled with
 # AGO_I8MM=1; on 920B the upstream dispatch is dotprod and the i8mm
@@ -621,6 +645,12 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
         return out
     if kernel == "sa8d16":
         params = "const uint8_t*, intptr_t, const uint8_t*, intptr_t"
+        if os.environ.get("AGO_IR_SVE16") == "1":
+            # The dual-group candidate is 16x16-only; 32x32/64x64 stay
+            # on the upstream path for a VL=256 pure-SVE bundle.
+            add("cu[BLOCK_16x16].sa8d", "int", params,
+                "dynopt_sa8d_16x16_sve16")
+            return out
         for n, sym in ((16, "dynopt_sa8d_16x16_sve2"),
                        (32, "dynopt_sa8d_32x32_sve2"),
                        (64, "dynopt_sa8d_64x64_sve2")):
@@ -925,6 +955,14 @@ def entries_for_kernel(kernel, sym, vl=None, skip_satd_small=False):
 
 def candidate_sources(kernel, isa, vl=None):
     d = os.path.join(ROOT, "kernels", kernel, "candidates")
+    if kernel in SVE16_KERNELS and isa == "sve2" and vl == 32 and \
+            os.environ.get("AGO_IR_SVE16") == "1":
+        # Full-width dual-group 16-lane candidates (VL=256, zero NEON;
+        # validated in tools/test_dual_sve16.py).  Picked before the
+        # NEON/SVE2 IR fallbacks below.
+        p = os.path.join(d, "best_ir_sve16.cpp")
+        if os.path.exists(p):
+            return [p]
     if kernel == "satd-8" and isa == "sve2" and vl == 16 and \
             os.environ.get("AGO_PURE_SVE") == "1":
         # Pure-SVE satd 8x8/16x16/32x32/64x64 (zero NEON, any VL;
@@ -1464,6 +1502,9 @@ def main():
             man = {}
         sym = (man.get("candidate") or {}).get("symbol") or \
             SPECIAL_SYMBOLS.get(kernel)
+        if os.environ.get("AGO_IR_SVE16") == "1" and \
+                kernel in SVE16_SYMBOLS:
+            sym = SVE16_SYMBOLS[kernel]
         if not sym:
             report["skipped"].append([kernel, "no candidate symbol"])
             continue

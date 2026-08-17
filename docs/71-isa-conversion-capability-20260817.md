@@ -13,9 +13,9 @@
 | 输入 kernel ISA | → NEON | → SVE1 | → SVE2 | → SVE2p3 |
 | --- | --- | --- | --- | --- |
 | C 参考 | ✅ 已实现+验证：satd/sa8d/熵族 IR（N1/920B） | ✅ 已实现+门禁：搜索 gen 后端（CADD90 替换、NEON-bridge），920B 实机未发布 | ✅ 已实现+验证：dct/sao IR（710/950） | ⚠️ 门禁通过（QEMU vq=2），无实机 |
-| NEON | ✅ 已实现+验证：NEON→NEON（satd8/sa8d16/scan，N1/920B） | ⚠️ 部分：当前产物是 NEON+SVE 混合（sdot bridge）；纯 SVE 开关待做 | ✅ 已实现+验证：dct16/32 IR sve8（710 E2E +1.15%，与 best9 叠加 +2.32%） | ⚠️ 门禁通过；纯 SVE 待做 |
+| NEON | ✅ 已实现+验证：NEON→NEON（satd8/sa8d16/scan，N1/920B） | ⚠️ 部分：当前产物是 NEON+SVE 混合（sdot bridge）；纯 SVE 开关待做 | ✅ 已实现+验证：dct16/32 IR sve8（710 E2E +1.15%，与 best9 叠加 +2.32%）；**全宽 VL=256 双组 16-lane 已覆盖全部向量家族**（docs/77：mc/sad/ssd/pixel_var/satd/sa8d/interp8 + dct16/32，0-NEON + QEMU vq=2 全过；950 实机待测） | ⚠️ 门禁通过；纯 SVE 待做 |
 | SVE1 | ✅ NEON 兜底/对比路径 | ✅ 宽度/后端适配 | ⚠️ 未系统做（按需） | ⚠️ 未系统做 |
-| SVE2 | ✅ NEON 兜底/对比路径 | ⚠️ 降级路径未系统做 | ⚠️ 宽度参数化：VL128→VL256 需 16-lane 发射器（待做） | ⚠️ QEMU 门禁有，无实机 |
+| SVE2 | ✅ NEON 兜底/对比路径 | ⚠️ 降级路径未系统做 | ✅ 宽度参数化：dual-group 16-lane 发射器已完成并推广（docs/77：mc/sad/ssd/pixel_var/satd/sa8d/interp8 全家族，0-NEON + QEMU vq=2 全过） | ⚠️ QEMU 门禁有，无实机 |
 
 图例：✅ = 已有门禁 + 至少一处实机证据；⚠️ = 有门禁或部分实现，
 存在明确缺口。
@@ -40,8 +40,9 @@
    **dct16/32 发射器均已完成**（0 NEON SIMD、20k VL=128 差分
    0 失配、与 neon8 数值一致）；TestBenchLite 与推广待做；
    当前限定 VL=128。
-2. **16-lane 发射器**：dct fused8 发射器固定 8-lane（VL128）；VL256
-   宽度需要 emit_acle(vl=32) 参数化（同图不同宽）。
+2. **16-lane 发射器（已完成）**：通用 dual-group 16-lane lowering
+   已覆盖全部向量家族（docs/77），VL=256 全宽、0 NEON、QEMU vq=2
+   全过；950 实机周期/E2E 待用户侧。
 3. **SVE2p3 实机验证**：目前只有 QEMU vq=2 门禁，无对应实机；按
    统一晋级门（bit-exact、100f CI 不跨零、双段同向）补齐前不发布。
 4. SVE1/SVE2 之间、SVE2→SVE2p3 的降级/升宽路径未系统化（按需接入）。
