@@ -148,3 +148,29 @@ def cover_meta() -> Dict:
             meta["cp_chains"][key] = cp
             meta["regions"][key] = "satd-%s/reduce" % shape
     return meta
+
+
+def shape_meta(shape: str) -> Dict:
+    """Per-shape cover_meta for the AGO auto-search: keys are cover
+    letters (A/B/C), so predict_from_features works with the standard
+    `cover = tag.split('-')[-1]` lookup (docs/82)."""
+    m = cover_meta()
+    # Measured permute_depth_ratio per shape/cover (ago_auto_search
+    # static_counts, 2026-08-18): NEON trn-based covers land 17-23%,
+    # well below the sve16 candidates (50.7%/46.7%).
+    _measured = {
+        "8x16": {"A": 0.214, "B": 0.222, "C": 0.214},
+        "16x8": {"A": 0.231, "B": 0.174, "C": 0.231},
+        "8x4": {"A": 0.0, "B": 0.0, "C": 0.0},
+    }
+    return {
+        "covers": ["A", "B", "C"],
+        "names": {c: "satd-%s NEON cover %s" % (shape, c)
+                  for c in "ABC"},
+        "cp_chains": {c: m["cp_chains"]["%s/%s" % (shape, c)]
+                      for c in "ABC"},
+        "tail_ops": {c: m["tail_ops"]["%s/%s" % (shape, c)]
+                     for c in "ABC"},
+        "expected_permute_ratio": _measured.get(
+            shape, {c: 0.0 for c in "ABC"}),
+    }

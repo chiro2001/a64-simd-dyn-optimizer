@@ -222,6 +222,9 @@ satd8-axis-s16x8_r_vaddv_a_subabs,2026-08-17,,satd-16x8,,axis-s16x8_r_vaddv_a_su
 satd8-axis-s16x8_r_vpaddl_a_abd,2026-08-17,,satd-16x8,,axis-s16x8_r_vpaddl_a_abd,,,experiments/m31-satd8-axis-search/s16x8_r_vpaddl_a_abd.cpp,119,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s16x8_r_vpaddl_a_subabs,2026-08-17,,satd-16x8,,axis-s16x8_r_vpaddl_a_subabs,,,experiments/m31-satd8-axis-search/s16x8_r_vpaddl_a_subabs.cpp,127,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd-16x8-best_ir_sve16,,,satd-16x8,pixel,best_ir_sve16,neon,sve2,kernels/satd-16x8/candidates/best_ir_sve16.cpp,362,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+satd-16x8-neon-cover-A,,,satd-16x8,pixel,neon-cover-A,neon,neon,optimizer/ago/covers_satd_shapes.py,150,,2,2000,0,PASS,,permute_ratio,0.231,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-16x8-neon-cover-B,,,satd-16x8,pixel,neon-cover-B,neon,neon,optimizer/ago/covers_satd_shapes.py,152,,2,2000,0,PASS,,permute_ratio,0.174,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-16x8-neon-cover-C,,,satd-16x8,pixel,neon-cover-C,neon,neon,optimizer/ago/covers_satd_shapes.py,150,,2,2000,0,PASS,,permute_ratio,0.231,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-16x8-satd16x8_A-920B,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,920B,ticks,6037,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_A-N1,,,satd-16x8,pixel,satd16x8_A,neon,neon,experiments/ago-m2-expanded/src/satd16x8_A.cpp,150,,1,20000,0,20k-native,N1,ticks,2266,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-16x8-satd16x8_B-920B,,,satd-16x8,pixel,satd16x8_B,neon,neon,experiments/ago-m2-expanded/src/satd16x8_B.cpp,154,,1,20000,0,20k-native,920B,ticks,6634,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -261,6 +264,9 @@ satd8-axis-s8x16_r_vaddv_a_subabs,2026-08-17,,satd-8x16,,axis-s8x16_r_vaddv_a_su
 satd8-axis-s8x16_r_vpaddl_a_abd,2026-08-17,,satd-8x16,,axis-s8x16_r_vpaddl_a_abd,,,experiments/m31-satd8-axis-search/s8x16_r_vpaddl_a_abd.cpp,121,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd8-axis-s8x16_r_vpaddl_a_subabs,2026-08-17,,satd-8x16,,axis-s8x16_r_vpaddl_a_subabs,,,experiments/m31-satd8-axis-search/s8x16_r_vpaddl_a_subabs.cpp,129,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
 satd-8x16-best_ir_sve16,,,satd-8x16,pixel,best_ir_sve16,neon,sve2,kernels/satd-8x16/candidates/best_ir_sve16.cpp,362,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+satd-8x16-neon-cover-A,,,satd-8x16,pixel,neon-cover-A,neon,neon,optimizer/ago/covers_satd_shapes.py,152,,2,2000,0,PASS,,permute_ratio,0.214,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-8x16-neon-cover-B,,,satd-8x16,pixel,neon-cover-B,neon,neon,optimizer/ago/covers_satd_shapes.py,154,,2,2000,0,PASS,,permute_ratio,0.222,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+satd-8x16-neon-cover-C,,,satd-8x16,pixel,neon-cover-C,neon,neon,optimizer/ago/covers_satd_shapes.py,152,,2,2000,0,PASS,,permute_ratio,0.214,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-8x16-satd8x16_A-920B,,,satd-8x16,pixel,satd8x16_A,neon,neon,experiments/ago-m2-expanded/src/satd8x16_A.cpp,152,,1,20000,0,20k-native,920B,ticks,6089,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x16-satd8x16_A-N1,,,satd-8x16,pixel,satd8x16_A,neon,neon,experiments/ago-m2-expanded/src/satd8x16_A.cpp,152,,1,20000,0,20k-native,N1,ticks,2260,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x16-satd8x16_B-920B,,,satd-8x16,pixel,satd8x16_B,neon,neon,experiments/ago-m2-expanded/src/satd8x16_B.cpp,156,,1,20000,0,20k-native,920B,ticks,7930,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

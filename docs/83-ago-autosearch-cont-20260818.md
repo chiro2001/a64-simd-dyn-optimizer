@@ -3,23 +3,23 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（第二轮续接）
+## 0. 本轮改动摘要（第三轮续接）
 
-1. **自动发现模式（docs/82 下一步 #5 第一步）**：`ago_auto_search.py`
-   新增 `--discover`：枚举发射器/模板参数网格变体（dct16 全部 even-k
-   模式、含精选未暴露的 fused/addp），与精选 covers 同台编译/计数/
-   排序，输出"发现最佳 vs 精选最佳"对比。dct16 发现 neon_bridge_fused
-   score 1.100 < op895 1.137（uop 少 94），但 cp_lat 97 vs 52 更差
-   ——score 公式不含关键路径，工具已加 ⚠ 提示，950 实测前不下结论。
-   interp8/dct32 无同 kernel 网格（形状=独立 kernel / 变体已全覆盖）。
-2. **psy-cost manifest + 全管线**：手工差分确认候选 best_sve2.cpp 与
-   上游 `x265::psyCost_pp_sve2<2>` **bit-exact（QEMU 500×6 模式 0
-   失配）**；新建 `kernels/psy-cost-16x16/manifest.yaml`（kind=psy_cost
-   复用 gen_verify sad harness，签名同形）+ trace_driver.cpp。全管线
-   （`--backend ago`）cover-A 过 200/2000 例 QEMU 门禁；cover-B 因
-   符号是 pixel_var 不匹配合同 LINK FAIL（scan 记录）。psy-cost 从
-   "免 manifest 仅排序"升级为"全管线验证"。
-3. 上一轮（首轮续接）摘要见 §1-2 的历史记录；本轮 commit 内容见 §5。
+1. **satd 形状家族接入自动搜索（docs/82 #4 扩展）**：satd-8x16/
+   satd-16x8 是 scan 中仅有的超阈值 satd 变体（50.7%/46.7%，均为
+   dual-group sve16），此前无次阈值候选。新建适配器 covers
+   （`covers_satd_8x16.py`/`covers_satd_16x8.py` 包装 covers_satd_shapes
+   的 NEON A/B/C trn 版），`shape_meta()` 提供 per-shape cover_meta
+   （键=cover 字母，兼容 predict_from_features）。接入 ago_auto_search
+   （免 manifest）与 search_sve2_layouts ago 后端（全管线）：
+   - satd-8x16：NEON A/C 21.4%、B 22.2%（152-154 uop），**3 cover 全过
+     QEMU 2000 例差分**（vs `x265::satd8_sve2<8,16>`）；sve16 候选
+     50.7% 符号不匹配 LINK FAIL（scan 记录）
+   - satd-16x8：NEON B 17.4% > A/C 23.1%，**3 cover 全过 QEMU 2000 例
+     差分**（vs `satd8_sve2<16,8>`）；sve16 候选 46.7% LINK FAIL
+   - 自动搜索在两个家族均选出比手写 sve16 更好的候选（score 0.366/
+     0.328 vs sve16 的 0.863/0.829）——"自动搜索 ≥ 手写"再添两例
+2. 前两轮摘要见 §1（首轮）与 §2（第二轮）；commit 清单见 §5/§7。
 
 ## 1. 首轮改动摘要
 
@@ -60,12 +60,29 @@
    `scripts/microbench-950-interp8.sh`（本地交叉编译语法验证通过；
    950 实机跑 `scripts/microbench-950-interp8.sh user@host`）。
 
-## 2. 回归
+## 2. 第二轮改动摘要
+
+1. **自动发现模式（docs/82 下一步 #5 第一步）**：`ago_auto_search.py`
+   新增 `--discover`：枚举发射器/模板参数网格变体（dct16 全部 even-k
+   模式、含精选未暴露的 fused/addp），与精选 covers 同台编译/计数/
+   排序，输出"发现最佳 vs 精选最佳"对比。dct16 发现 neon_bridge_fused
+   score 1.100 < op895 1.137（uop 少 94），但 cp_lat 97 vs 52 更差
+   ——score 公式不含关键路径，工具已加 ⚠ 提示，950 实测前不下结论。
+   interp8/dct32 无同 kernel 网格（形状=独立 kernel / 变体已全覆盖）。
+2. **psy-cost manifest + 全管线**：手工差分确认候选 best_sve2.cpp 与
+   上游 `x265::psyCost_pp_sve2<2>` **bit-exact（QEMU 500×6 模式 0
+   失配）**；新建 `kernels/psy-cost-16x16/manifest.yaml`（kind=psy_cost
+   复用 gen_verify sad harness，签名同形）+ trace_driver.cpp。全管线
+   （`--backend ago`）cover-A 过 200/2000 例 QEMU 门禁；cover-B 因
+   符号是 pixel_var 不匹配合同 LINK FAIL（scan 记录）。psy-cost 从
+   "免 manifest 仅排序"升级为"全管线验证"。
+
+## 3. 回归
 
 - tools 80（含 QEMU 差分）+ ir 50 + ago 70（含 9 个新 cover 测试）
   全部 PASS。
 
-## 3. 工具链漂移警告（docs/79 数字复核）
+## 4. 工具链漂移警告（docs/79 数字复核）
 
 复核 docs/79 的 neon_bridge 静态数（950 fused / 12.0% permute）时发现
 **当前工具链下不可复现**：`kernels/dct16/candidates/
@@ -84,7 +101,7 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
 （docs/79 门禁本来就是 kernel ratio CI 下界，不依赖静态数字）。
 新候选的静态数一律以 ago_auto_search 现工具链输出为准。
 
-## 4. 未提交批次清单（首轮 commit 内容，bd97659/415f759/6cbdecf 已推送）
+## 5. 未提交批次清单（首轮 commit 内容，bd97659/415f759/6cbdecf 已推送）
 
 - docs/80（P5 interp8 svdot32）、docs/81（permute_ratio 全家族分析）、
   docs/82（AGO 自动搜索集成 + 本轮更新）、docs/83（本文档）
@@ -104,7 +121,7 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
 - scan-permute 报告 3 份 + DB/MD（280 行）
 - `.gitignore` 增 `/tmp/`（P2 调试残留，被正式测试取代）
 
-## 5. 本轮 commit 内容（第二轮续接）
+## 6. 本轮 commit 内容（第二轮续接）
 
 - `tools/ago_auto_search.py`：`--discover` 自动发现模式（参数网格枚举
   + 与精选对比 + cp_lat 透明化提示）
@@ -115,7 +132,18 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
 - `docs/83` 更新（发现模式 + psy-cost 全管线）
 - DB 行：psy-cost 全管线门禁、dct16 发现变体静态数
 
-## 6. 下一步（优先级）
+## 7. 本轮 commit 内容（第三轮续接）
+
+- `optimizer/ago/covers_satd_shapes.py`：shape_meta() per-shape
+  cover_meta + 实测 expected_permute_ratio
+- `optimizer/ago/covers_satd_8x16.py` / `covers_satd_16x8.py`（新）
+- `tools/ago_auto_search.py` / `tools/search_sve2_layouts.py`：
+  注册 satd-8x16/satd-16x8（免 manifest + 全管线）
+- `optimizer/ago/test_covers_more.py`：+4 测试（13 个）
+- DB 289 行（6 行：satd 形状 NEON covers 门禁 + permute）
+- docs/82 家族表 + docs/83 更新
+
+## 8. 下一步（优先级）
 
 1. **950 实机（用户侧）**：`scripts/microbench-950-interp8.sh user@host`
    （svdot32 vs best_sve2 正负控）+ `AGO_WIDE_SVE2=1

@@ -14,6 +14,10 @@ from optimizer.ago.covers_satd16 import cover_meta as satd16_meta
 from optimizer.ago.covers_satd16 import emit_cover as emit_satd16
 from optimizer.ago.covers_psycost import cover_meta as psy_meta
 from optimizer.ago.covers_psycost import emit_cover as emit_psy
+from optimizer.ago.covers_satd_8x16 import cover_meta as s816_meta
+from optimizer.ago.covers_satd_8x16 import emit_cover as emit_s816
+from optimizer.ago.covers_satd_16x8 import cover_meta as s168_meta
+from optimizer.ago.covers_satd_16x8 import emit_cover as emit_s168
 
 
 class TestCoversSad(unittest.TestCase):
@@ -73,6 +77,36 @@ class TestCoversPsyCost(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_psy("Z")
+
+
+class TestCoversSatdShapes(unittest.TestCase):
+    """satd-8x16 / satd-16x8 NEON covers (docs/82 #4 扩展)."""
+
+    def test_8x16_meta(self):
+        m = s816_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+        # All measured below the 30% threshold (vs sve16 candidate 50.7%).
+        for c in m["covers"]:
+            self.assertLess(m["expected_permute_ratio"][c], 0.30)
+
+    def test_16x8_meta(self):
+        m = s168_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+        for c in m["covers"]:
+            self.assertLess(m["expected_permute_ratio"][c], 0.30)
+
+    def test_emit_all_shapes(self):
+        for emit_fn in (emit_s816, emit_s168):
+            for c in ("A", "B", "C"):
+                code = emit_fn(c)
+                self.assertIsInstance(code, str)
+                self.assertGreater(len(code), 500)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_s816("Z")
+        with self.assertRaises(ValueError):
+            emit_s168("Z")
 
 
 if __name__ == "__main__":
