@@ -109,6 +109,14 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | cu-add-ps | covers_cu_add_ps.py | A | A (score=0.096) |
 | cu-sub-ps | covers_cu_sub_ps.py | A | A (score=0.064) |
 | chroma-addavg-8x8 | covers_chroma_addavg_8x8.py | A | A (score=0.064) |
+| chroma-copy-pp | covers_chroma_copy_pp.py | A | A (score=0.032) |
+| chroma-copy-sp-16x16 | covers_chroma_copy_sp_16x16.py | A | A (score=0.048) |
+| chroma-copy-ss-16x16 | covers_chroma_copy_ss_16x16.py | A | A (score=0.032) |
+| cu-copy-ps | covers_cu_copy_ps.py | A | A (score=0.032) |
+| cu-copy-sp | covers_cu_copy_sp.py | A | A (score=0.048) |
+| cu-copy-ss | covers_cu_copy_ss.py | A | A (score=0.032) |
+| idct16 | covers_idct16.py | A=anchor,B=scatter,C=zip16 | B (score=1.513) |
+| idct32 | covers_idct32.py | A=scalar,B=scatter | A (score=5.968) |
 | psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16, C=best_cadd | C (score=0.269) |
 
 ## 新家族扩展（2026-08-18 续接：docs/82 下一步 #4 完成）

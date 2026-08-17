@@ -3,7 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 24：cu/chroma 家族 7 kernel，自动搜索 49）
+## 0. 本轮改动摘要（goal round 25：复制家族 6 + idct 2，自动搜索 57 kernel）
+
+1. **复制家族补齐 6 kernel**（chroma-copy-pp/sp/ss、cu-copy-ps/sp/ss）：
+   全部门禁过（fused 32-48、0% permute），覆盖 cu/chroma 复制 13/13。
+2. **idct16/32 接入（变换家族完整）**：idct16 三候选
+   （anchor 1282/scatter 1143/zip16 1151）全过门禁，**scatter 胜**
+   （ago_pred 1513.2 vs 2258.5/2321.3）；idct32 两候选（scalar
+   5968/scatter 8670）全过，**scalar 胜**（12544.5 vs 16506.7）。
+   sdot_*（SVE2p1）scan-only。
+3. **DB 333→341 行**；docs/82 +8 行。自动搜索 49→57 kernel / 17 家族。
+   批量生成模板（模块级候选解析）可复用——剩余 interp4/interp8vpp/
+   interp8 交替路径等 100+ kernel 待收编（下一轮按家族批量）。
+
+## 0a. 本轮改动摘要（goal round 24：cu/chroma 家族 7 kernel，自动搜索 49）
 
 1. **cu/chroma 复制/算术家族接入**（复制/加法/减法/平均 7 kernel，
    全为 manifest 已存在、候选已存在但未收编）：

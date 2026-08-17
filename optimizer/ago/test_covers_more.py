@@ -331,6 +331,31 @@ class TestCuChromaCovers(unittest.TestCase):
             self.assertGreater(len(code), 100, k)
 
 
+class TestIdctCovers(unittest.TestCase):
+
+    def test_idct16_meta(self):
+        mod = __import__("optimizer.ago.covers_idct16",
+                         fromlist=["cover_meta", "emit_cover"])
+        m = mod.cover_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C"])
+        code = mod.emit_cover("B")
+        self.assertIn("dynopt_idct16_sve2_shared", code)
+
+    def test_idct32_meta(self):
+        mod = __import__("optimizer.ago.covers_idct32",
+                         fromlist=["cover_meta", "emit_cover"])
+        m = mod.cover_meta()
+        self.assertEqual(m["covers"], ["A", "B"])
+        code = mod.emit_cover("A")
+        self.assertIn("dynopt_idct32_sve2_shared", code)
+
+    def test_invalid(self):
+        mod = __import__("optimizer.ago.covers_idct16",
+                         fromlist=["emit_cover"])
+        with self.assertRaises(ValueError):
+            mod.emit_cover("Z")
+
+
 class TestCoversSatd8x32(unittest.TestCase):
 
     def test_meta(self):

@@ -37,9 +37,12 @@ best9-noremain-ir-dct-inject-100f-n1-freeze-N1-2026-08-17-082ce77,2026-08-17,082
 best9-noremain-ir-dct-inject-100f-n1-freeze-r2-N1-2026-08-17-d6d990b,2026-08-17,d6d990b,best9-noremain-ir-dct,,inject-100f-n1-freeze-r2,mixed,mixed,build/ablate-best9-noremain-ir-dct-n1-iab-inject,,,,,,,N1,,,,-2.14,603.5..959.5,yes,reports/n1-best9-noremain-ir-dct-freeze-20260817.txt
 best9-noremain-ir-dct-interleaved-100f-920b-920B,,,best9-noremain-ir-dct,,interleaved-100f-920b,,,,,,,,,,920B,,,,-2.63,510.5..672.5,yes,reports/920b-best9-noremain-ir-dct-interleaved-20260817.txt
 chroma-addavg-8x8-best-ago-pipeline,,,chroma-addavg-8x8,permute,best-ago-pipeline,neon,sve2,kernels/chroma-addavg-8x8/candidates/*.cpp,64,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+chroma-copy-pp-best-ago-pipeline,,,chroma-copy-pp,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-pp/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 chroma-copy-pp-32x32-best-ago-pipeline,,,chroma-copy-pp-32x32,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-pp-32x32/candidates/*.cpp,2,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 chroma-copy-pp-8x8-best-ago-pipeline,,,chroma-copy-pp-8x8,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-pp-8x8/candidates/*.cpp,16,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 chroma-copy-ps-16x16-best-ago-pipeline,,,chroma-copy-ps-16x16,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-ps-16x16/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+chroma-copy-sp-16x16-best-ago-pipeline,,,chroma-copy-sp-16x16,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-sp-16x16/candidates/*.cpp,48,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+chroma-copy-ss-16x16-best-ago-pipeline,,,chroma-copy-ss-16x16,permute,best-ago-pipeline,neon,sve2,kernels/chroma-copy-ss-16x16/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 cost-c1c2-flag-inject-100f-920b-920B-2026-08-17-f3218ce,,,cost-c1c2-flag,entropy,inject-100f-920b,c,neon,,2,1317,,,,,920B,,,,+0.16,-78.0..40.5,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
 cost-c1c2-flag-kernel-bench-920b-920B,,,cost-c1c2-flag,entropy,kernel-bench-920b,,,build/ablate-c1c2-920b-iab-work/cost-c1c2-flag.o,2,1317,,,,,920B,ratio_neon_cand,1.095,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
 cost-c1c2-flag-920b,,,cost-c1c2-flag,entropy,round27,c,neon,,2,1317,replay,6472176,0,,920B,replay_ratio,0.998,,,,yes,reports/entropy-replay-920b-20260815.txt
@@ -55,6 +58,9 @@ cost-coeff-remain-inject-100f-920b-920B-2026-08-17-d536a6e,,,cost-coeff-remain,e
 cost-coeff-remain-kernel-bench-920b-920B,,,cost-coeff-remain,entropy,kernel-bench-920b,,,build/ablate-remain-920b-iab-work/cost-coeff-remain.o,0,80,,,,,920B,ratio_neon_cand,0.944,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
 cu-add-ps-best-ago-pipeline,,,cu-add-ps,permute,best-ago-pipeline,neon,sve2,kernels/cu-add-ps/candidates/*.cpp,96,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 cu-copy-pp-best-ago-pipeline,,,cu-copy-pp,permute,best-ago-pipeline,neon,sve2,kernels/cu-copy-pp/candidates/*.cpp,2,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+cu-copy-ps-best-ago-pipeline,,,cu-copy-ps,permute,best-ago-pipeline,neon,sve2,kernels/cu-copy-ps/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+cu-copy-sp-best-ago-pipeline,,,cu-copy-sp,permute,best-ago-pipeline,neon,sve2,kernels/cu-copy-sp/candidates/*.cpp,48,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+cu-copy-ss-best-ago-pipeline,,,cu-copy-ss,permute,best-ago-pipeline,neon,sve2,kernels/cu-copy-ss/candidates/*.cpp,32,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 cu-sub-ps-best-ago-pipeline,,,cu-sub-ps,permute,best-ago-pipeline,neon,sve2,kernels/cu-sub-ps/candidates/*.cpp,64,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 dct16-ago-auto-search,,,dct16,permute,ago-auto-search,,,optimizer/ago/covers_dct16.py,952,,,,,PASS,,ago_score,1.137,,,,yes,docs/82-ago-auto-search-20260818.md
 dct16-best_ir_sve16,,,dct16,,best_ir_sve16,,,,,,2,51200,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
@@ -103,6 +109,8 @@ dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve
 dct32-wide_sve2_loop,,,dct32,,wide_sve2_loop,,,,,,2,0,0,PENDING,,static_fused_uop,761,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct8-best_sve2-ago-pipeline,,,dct8,permute,best_sve2-ago-pipeline,neon,sve2,kernels/dct8/candidates/best_sve2.cpp,289,,2,2000,0,PASS,,permute_ratio,0.185,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
+idct16-best-ago-pipeline,,,idct16,permute,best-ago-pipeline,neon,sve2,kernels/idct16/candidates/*.cpp,1143,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+idct32-best-ago-pipeline,,,idct32,permute,best-ago-pipeline,neon,sve2,kernels/idct32/candidates/*.cpp,5968,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-ago-auto-search,,,interp8,permute,ago-auto-search,,,optimizer/ago/covers_interp8.py,87,,,,,PASS,,ago_score,0.292,,,,yes,docs/82-ago-auto-search-20260818.md
 interp8-best_ir_sve16,,,interp8,filter,best_ir_sve16,neon,sve2,kernels/interp8/candidates/best_ir_sve16.cpp,683,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-svdot32-sve2,,,interp8,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32.cpp,87,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
