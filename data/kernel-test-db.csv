@@ -192,6 +192,7 @@ sad-best_ir_sve16,,,sad,asm,best_ir_sve16,neon,sve2,kernels/sad/candidates/best_
 sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sao-layout-bb-accept,2026-08-17,,sao,sao,layout-bb,,,tools/lattice_bb.py,33,,,12,0,generic-accept-sao-layout,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 sao-neon-bundle-710-30f,2026-08-17,,sao,bundle,neon-slot-710,,,,,,,,,,710,,,+0.15,,-22..50,yes,reports/sao-neon-710-e2e-20260817.txt
+sao-b0-best_sve2-ago-pipeline,,,sao-b0,permute,best_sve2-ago-pipeline,neon,sve2,kernels/sao-b0/candidates/best_sve2.cpp,132,,2,2000,0,PASS,,permute_ratio,0.333,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-cuorg-b0-neon-seed,,,sao-cuorg-b0,,neon-seed,,,kernels/sao/candidates/best_b0.cpp,219,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt
 sao-cuorg-b0-neon-slot,2026-08-17,,sao-cuorg-b0,,neon-slot,,,kernels/sao/candidates/best_neon_b0.cpp,219,,2,20000,0,20k-diff,,,,,,,,reports/sao-neon-slot-gate-20260817.txt
 sao-cuorg-b0-sve2-tbl,2026-08-17,,sao-cuorg-b0,,sve2-tbl,,,kernels/sao/candidates/best_sve2_b0.cpp,57,,2,20000,0,20k-diff,,,,,,,,reports/sao-cuorg-gate-20260817.txt

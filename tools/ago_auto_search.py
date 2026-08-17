@@ -67,6 +67,7 @@ KERNEL_COVERS = {
     "sao-stats-e0": ("optimizer.ago.covers_sao_e0", "dynopt_sao_stats_e0_64_sve2"),
     "sao-stats-e2": ("optimizer.ago.covers_sao_stats_e2", "dynopt_sao_stats_e2_64_sve2"),
     "sao-stats-e3": ("optimizer.ago.covers_sao_stats_e3", "dynopt_sao_stats_e3_64_sve2"),
+    "sao-b0": ("optimizer.ago.covers_sao_b0", "dynopt_sao_b0_64x4_sve2"),
     "sao-stats-e1": ("optimizer.ago.covers_sao_stats_e1", "dynopt_sao_stats_e1_64_sve2"),
     "sao-stats-bo": ("optimizer.ago.covers_sao_stats_bo", "dynopt_sao_stats_bo_64_sve2"),
     "psy-cost-16x16": ("optimizer.ago.covers_psycost",

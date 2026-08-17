@@ -3,7 +3,23 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 13：sao-stats-e3 接入，sao stats 家族 5/5 完整）
+## 0. 本轮改动摘要（goal round 14：sao-b0 重建 kernel 首个，自动搜索 32 kernel）
+
+1. **sao-b0（band offset 重建）首个候选（best_sve2.cpp）**：从零移植
+   processSaoCUB0_neon——每像素 `offset[pixel>>3]` 查 32 项表 + 饱和加
+   回写。宽度原生（VL=256 32 像素块）：svtbl 查表（32 项表 = 1 个完整
+   向量）+ s16 拓宽 + svqadd_s16 + svqxtun 饱和窄化：
+   - **踩坑**：svqxtunt_s16 是带合并参数的谓词形式
+     `(svuint8_t lo, svint16_t op)`（低半结果作 merge 源），不是
+     1 参数形式；且 SVE2 XTN 把窄化结果放到偶数字节，需 svuzp1 压实
+   - **门禁过（QEMU 2000 例 0 失配，vs processSaoCUB0_neon），
+     fused 132、ago_pred 46.5**（permute 33.3% 来自 uzp1 压实）
+   - 接线：covers_sao_b0.py + 两工具注册；测试 +3（含 svtbl 断言）
+2. **DB 314→315 行**；docs/82 +1 行。sao 重建家族（b0/e1/e2/e3）从
+   B0 起步，E1-E3 重建 = B0 模式 + 边分类（upBuff），后续轮按
+   stats 家族同法补齐。
+
+## 0a. 本轮改动摘要（goal round 13：sao-stats-e3 接入，sao stats 家族 5/5 完整）
 
 1. **sao-stats-e3（45° 对角线）**：E3 是 sao stats 家族最后一个成员，
    此前无候选（saoCuStatsE3_sve 参考是行循环复杂内核，从零移植风险

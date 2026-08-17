@@ -18,6 +18,8 @@ from optimizer.ago.covers_sao_stats_e3 import emit_cover as emit_saoe3
 from optimizer.ago.covers_sao_stats_e1 import emit_cover as emit_saoe1
 from optimizer.ago.covers_sao_stats_e2 import cover_meta as saoe2_meta
 from optimizer.ago.covers_sao_stats_bo import cover_meta as saobo_meta
+from optimizer.ago.covers_sao_b0 import cover_meta as saob0_meta
+from optimizer.ago.covers_sao_b0 import emit_cover as emit_saob0
 from optimizer.ago.covers_sao_e0 import emit_cover as emit_saoe0
 from optimizer.ago.covers_dct8 import emit_cover as emit_dct8
 from optimizer.ago.covers_sa8d16 import emit_cover as emit_sa8d16
@@ -195,6 +197,20 @@ class TestCoversSaoStats(unittest.TestCase):
     def test_e2_meta(self):
         m = saoe2_meta()
         self.assertEqual(m["covers"], ["A", "B", "C"])
+
+    def test_b0_meta(self):
+        m = saob0_meta()
+        self.assertEqual(m["covers"], ["A"])
+
+    def test_emit_b0(self):
+        code = emit_saob0("A")
+        self.assertIn("dynopt_sao_b0_64x4_sve2", code)
+        self.assertIn("svtbl_s8", code)
+
+    def test_b0_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_saob0("Z")
+
 
     def test_bo_meta(self):
         m = saobo_meta()
