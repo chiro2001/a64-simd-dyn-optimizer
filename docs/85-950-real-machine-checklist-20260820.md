@@ -61,6 +61,9 @@ python3 tools/feedback_calibrate.py --ingest /tmp/measurements.json \
     920B 实测揭示 A 每行归约弱点，D 每行 1 条 UADALP；
     QEMU 20000 例 0 失配、cp_lat=22 最短、ago_pred 0.707（快 29%）
     （kernels/sad/candidates/best_sve2_adalp.cpp）
+  - sad-32：**cover A 已在 920B 实证赢 4-7%**（r34，全宽 VL=256 带宽
+    优势）——950 只需验证 cover B（uadalp，ago_pred 0.754）；
+    cover B 见 kernels/sad-32/candidates/best_sve2_adalp.cpp
 
 ## 4. 结果入库（AGENTS.md 强制）
 
