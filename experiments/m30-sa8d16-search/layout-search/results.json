@@ -82,29 +82,28 @@
   "counts": {
    "total": 231,
    "vector": 197,
-   "movprfx": 4,
-   "vector_fused": 193,
+   "movprfx": 3,
+   "vector_fused": 194,
    "scatter_gather": 0,
    "scatter_gather_uops": 0,
    "stack_vector": 0,
-   "vector_fused_uop": 193,
+   "vector_fused_uop": 194,
    "critical_path_latency": 47,
    "critical_path_len": 30,
    "permute_on_critical": 3,
    "permute_depth_ratio": 0.1,
-   "load_use_avg": 47.42,
+   "load_use_avg": 47.5,
    "load_use_min": 1,
    "spill_reload": 0
   },
   "fusion": {
-   "eligible": 10,
+   "eligible": 9,
    "hw_supported": 0,
    "pairs": [
     "abs+umax",
     "abs+umax",
     "abs+umax",
     "abs+umax",
-    "add+add",
     "add+add",
     "abs+umax",
     "abs+umax",
@@ -113,12 +112,12 @@
    ],
    "counts": {
     "scalar_insns": 115,
-    "simd_insns": 112,
-    "fused_pseudo": 4
+    "simd_insns": 113,
+    "fused_pseudo": 3
    }
   },
   "ago_pred": 204.2,
-  "baseline_ratio": 0.517426273458445,
+  "baseline_ratio": 0.5201072386058981,
   "halve_gate_met": false
  }
 ]

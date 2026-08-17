@@ -1,0 +1,35 @@
+# SA8D 32x32 SVE2 kernel manifest. Width-native cadd butterfly candidate
+# (best_wide_cadd.cpp): 2 half-vectors per row x 4 8-row passes.
+kernel: sa8d-32x32
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: sa8d
+  n: 32
+  rows: 32
+
+candidate:
+  symbol: dynopt_sa8d_32x32_sve2
+  trace_driver_src: kernels/sa8d-32x32/trace_driver.cpp
+  trace_driver_c: kernels/sa8d-32x32/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: sa8d16x32_sve2
+  symbol_mangled: _ZN4x26513sa8d16x32_sve2ILi32ELi32EEEiPKhlS2_l
+  call: x265::sa8d16x32_sve2<32, 32>
+  decl: |
+    namespace x265 {
+    template <int W, int H> int sa8d16x32_sve2(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+    }
+
+baselines:
+  sve2:
+    driver: kernels/sa8d-32x32/trace_driver.cpp
+    symbol_mangled: _ZN4x26513sa8d16x32_sve2ILi32ELi32EEEiPKhlS2_l
+
+corpus:
+  strides: [33, 48, 64]
+  value_range: [0, 255]
+  cases: 20000

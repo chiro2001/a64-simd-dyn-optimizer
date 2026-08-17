@@ -174,6 +174,8 @@ psy-cost-16x16-best_cadd-vs-best_sve2,,,psy-cost-16x16,permute,best_cadd-vs-best
 psy-cost-16x16-best_ir_sve16,,,psy-cost-16x16,pixel,best_ir_sve16,neon,sve2,kernels/psy-cost-16x16/candidates/best_ir_sve16.cpp,577,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 psy-cost-16x16-best_sve2-ago-pipeline,,,psy-cost-16x16,permute,best_sve2-ago-pipeline,neon,sve2,kernels/psy-cost-16x16/candidates/best_sve2.cpp,176,,2,2000,0,PASS,,permute_ratio,0.308,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
+sa8d-32x32-best_wide_cadd-ago-pipeline,,,sa8d-32x32,permute,best_wide_cadd-ago-pipeline,neon,sve2,kernels/sa8d-32x32/candidates/best_wide_cadd.cpp,195,,2,2000,0,PASS,,permute_ratio,0.10,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sa8d-64x64-best_wide_cadd-ago-pipeline,,,sa8d-64x64,permute,best_wide_cadd-ago-pipeline,neon,sve2,kernels/sa8d-64x64/candidates/best_wide_cadd.cpp,404,,2,2000,0,PASS,,permute_ratio,0.10,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sa8d-8-sa8d8_A-920B,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,920B,ticks,5069,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 sa8d-8-sa8d8_A-N1,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,N1,ticks,1728,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 sa8d-8-sa8d8_B-920B,,,sa8d-8,pixel,sa8d8_B,neon,neon,experiments/ago-m2-expanded/src/sa8d8_B.cpp,101,,1,20000,0,20k-native,920B,ticks,5107,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

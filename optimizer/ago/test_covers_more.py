@@ -161,6 +161,24 @@ class TestCoversSa8d16(unittest.TestCase):
             emit_sa8d16("Z")
 
 
+class TestSa8dLargeCovers(unittest.TestCase):
+    """sa8d-32x32 / sa8d-64x64 width-native cadd covers."""
+
+    SHAPES = [(32, 32), (64, 64)]
+
+    def test_meta_and_emit(self):
+        for w, h in self.SHAPES:
+            mod = __import__("optimizer.ago.covers_sa8d%dx%d" % (w, h),
+                             fromlist=["cover_meta", "emit_cover"])
+            m = mod.cover_meta()
+            self.assertEqual(m["covers"], ["A"], "%dx%d" % (w, h))
+            self.assertLess(m["expected_permute_ratio"]["A"], 0.15)
+            code = mod.emit_cover("A")
+            self.assertIn("svcadd_s16", code, "%dx%d" % (w, h))
+            self.assertIn("dynopt_sa8d_%dx%d_sve2" % (w, h), code)
+            self.assertIn(">> 1", code)  # per-group rounding
+
+
 class TestLargeSatdCovers(unittest.TestCase):
     """Parameterized: all large-shape cadd covers emit + meta sane."""
 

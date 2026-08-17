@@ -3,7 +3,31 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 6：sa8d16 宽度原生 cadd，自动搜索 21 kernel）
+## 0. 本轮改动摘要（goal round 7：sa8d 大形状 32x32/64x64，自动搜索 23 kernel）
+
+1. **sa8d-32x32/64x64 宽度原生 cadd（best_wide_cadd.cpp，新建 manifest）**：
+   x265 的 BLOCK_32x32/64x64 sa8d 走 `sa8d16x32_sve2<W,H>` 参考
+   （16x32 strip 循环）。宽度原生扩展（2/4 半向量 × 4/8 个 8 行 pass，
+   cadd<90> 3 级蝴蝶 + kHADPermuteTbl）：
+   - 门禁（QEMU vq=2 2000 例）：**32x32 fused 195 / ago_pred 272.6；
+     64x64 fused 404 / ago_pred 617.5**——全过（0 失配）
+   - 踩坑记录（重要，3 连）：
+     a) **u16 total 溢出**：32x32 sa8d 最大 ~261k ≫ 65535；改 u32 标量
+        累加（sa8d16 的 65280 也勉强临界，一并修）
+     b) **harness 缓冲区 stride 上限**：gen_verify 的 buf 是 rows*64+64，
+        stride 128 会让参考读越界 → 误失配；strides 改 [33,48,64]
+     c) **舍入粒度**（最终根因）：参考 `pixel_sa8d_16x32` 的
+        `vpaddq_u64(sum0,sum1)` 按 **16x16 组**分别 (sum+1)>>1 再求和
+        （不是整 strip 一次舍入，也不是 16x32 strip）——32x32 共 4 组、
+        64x64 共 16 组；修正后 first-diff 从差 1 → 0 失配
+   - 期间 verify_cache 因 ckey 不含 manifest strides 而反复命中旧结果
+     （1277 失配不变），需显式清 outdir 缓存
+2. **接线**：新建 kernels/sa8d-32x32、sa8d-64x64（manifest + trace
+   driver + 候选）+ covers_sa8d32x32/64x64；两工具注册；测试 +2
+   （TestSa8dLargeCovers，断言 per-group rounding）。DB 303→305 行；
+   docs/82 + 2 行。
+
+## 0a. 本轮改动摘要（goal round 6：sa8d16 宽度原生 cadd，自动搜索 21 kernel）
 
 1. **sa8d16 宽度原生候选（best_wide_cadd.cpp）**：现有候选 best_sve1
    (411 uop)/best_sve2 (404 uop，纯 NEON trn 128-bit) 均远高于 manifest

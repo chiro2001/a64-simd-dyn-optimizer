@@ -38,7 +38,7 @@ extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
 {
     const svbool_t p16 = svptrue_b16();
     const svuint16_t had_idx = svld1_u16(p16, HAD_IDX16);
-    svuint16_t total = svdup_n_u16(0);
+    unsigned total = 0;
 
     // Two 8-row passes: (rows 0-7) and (rows 8-15), each processing the
     // left+right 8x8 quadrant pair in the 16 lanes simultaneously.
@@ -90,9 +90,9 @@ extern "C" int dynopt_sa8d_16x16_sve2(const uint8_t* pix1, intptr_t sp1,
         svuint16_t max3 = svmax_u16_x(p16, svreinterpret_u16_s16(aa3),
                                       svreinterpret_u16_s16(aa7));
 
-        total = svadd_u16_x(p16, total,
-                            svadd_u16_x(p16, svadd_u16_x(p16, max0, max1),
-                                        svadd_u16_x(p16, max2, max3)));
+        total += svaddv_u16(p16,
+                     svadd_u16_x(p16, svadd_u16_x(p16, max0, max1),
+                                 svadd_u16_x(p16, max2, max3)));
     }
-    return (int)(((unsigned)svaddv_u16(p16, total) + 1) >> 1);
+    return (int)((total + 1) >> 1);
 }
