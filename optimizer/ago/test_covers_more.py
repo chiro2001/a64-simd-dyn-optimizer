@@ -11,6 +11,8 @@ sys.path.insert(0, ROOT)
 from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
+from optimizer.ago.covers_dct32 import cover_meta as dct32_meta
+from optimizer.ago.covers_dct32 import emit_cover as emit_dct32
 from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
 from optimizer.ago.covers_sao_stats_e1 import cover_meta as saoe1_meta
 from optimizer.ago.covers_sao_stats_e3 import cover_meta as saoe3_meta
@@ -268,6 +270,25 @@ class TestCoversSaoStats(unittest.TestCase):
     def test_invalid(self):
         with self.assertRaises(ValueError):
             emit_saoe1("Z")
+
+
+class TestCoversDct32Batch8(unittest.TestCase):
+
+    def test_meta(self):
+        m = dct32_meta()
+        self.assertIn("C", m["covers"])
+        self.assertLess(m["expected_permute_ratio"]["C"], 0.15)
+
+    def test_emit_c_batch8(self):
+        code = emit_dct32("C")
+        self.assertIn("dynopt_dct32_sve2_shared", code)
+        # batch8 doubles the odd-k halves -> 2 occurrences of the
+        # X-packing marker
+        self.assertGreaterEqual(code.count("svtbl2_s16"), 16)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_dct32("Z")
 
 
 class TestCoversSaoE0(unittest.TestCase):

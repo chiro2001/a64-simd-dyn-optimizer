@@ -3,7 +3,25 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 18：interp8 家族形状扩展，自动搜索 38 kernel）
+## 0. 本轮改动摘要（goal round 19：dct32 8-row batch 发现轴闭环（负面结案））
+
+1. **dct32 batch 参数化 + 发现轴探索（docs/79 未探索轴之一）**：
+   - `dct32_wide_sve2.py` 的 emit_pass/emit_candidate 参数化 `batch`
+     （4=原 loop、8=8 rows/组）；odd-k 路径按 4 行半组重复
+   - 发现网格接入（`_discovery_variants` dct32 → emitter-batch8），
+     batch8 同时固化为 cover C（门禁全管线）
+   - **结果（静态 + 门禁）**：batch8 fused **1113 vs 761（+46%）**、
+     permute 12.5% vs 19.4%（更好）、cp_lat 87 vs 75（更差）、
+     ago_pred **1571.2 vs 890.2（更差 1.8x）**；**门禁通过（bit-exact）**
+   - **结论：8-row batch 负结案**——寄存器压力（stk 167 vs 42）+ odd-k
+     双倍结构使 uop 大增，permute 改善不足以抵消；docs/79 该轴
+     "已探索、不采纳"。发现模式正确记录为候选（score 1.412 > 1.105）
+   - 踩坑：插桩时 anchor 误入 verify 块（缩进破坏），移除后重插
+2. **DB 321→322 行**；docs/82 dct32 行改 A/B/C（C 门禁过但负结案）；
+   测试 +3（TestCoversDct32Batch8）。dct32 是发现模式首个完整闭环
+   的 kernel（精选/发现/门禁/负结案四步齐备）。
+
+## 0a. 本轮改动摘要（goal round 18：interp8 家族形状扩展，自动搜索 38 kernel）
 
 1. **interp8 形状 kernel 接入**（家族从 8x8 扩展到大形状）：
    - interp8-16x32（best_ir：fused 4562、ago_pred 1878.2）、

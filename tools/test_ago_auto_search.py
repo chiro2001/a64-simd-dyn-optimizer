@@ -31,9 +31,11 @@ class TestDiscoveryGrid(unittest.TestCase):
         # svdot32 16x16/32x32 are separate kernels; 8x8 variants curated.
         self.assertEqual(AAS._discovery_variants("interp8"), [])
 
-    def test_dct32_grid_empty(self):
-        # loop/opbase already cover all existing dct32 variants.
-        self.assertEqual(AAS._discovery_variants("dct32"), [])
+    def test_dct32_grid_batch8(self):
+        # docs/79 unexplored axis: 8 rows per g iteration (batch=8).
+        variants = AAS._discovery_variants("dct32")
+        labels = [v[0] for v in variants]
+        self.assertIn("emitter-batch8", labels)
 
     def test_sad_grid_empty(self):
         self.assertEqual(AAS._discovery_variants("sad"), [])

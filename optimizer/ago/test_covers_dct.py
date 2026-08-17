@@ -49,7 +49,8 @@ class TestCoversDct32(unittest.TestCase):
 
     def test_meta_has_2_covers(self):
         m = dct32_meta()
-        self.assertEqual(m["covers"], ["A", "B"])
+        # A=loop, B=opbase, C=batch8 (discovery axis, gated, negative)
+        self.assertEqual(m["covers"], ["A", "B", "C"])
 
     def test_expected_ratios(self):
         m = dct32_meta()

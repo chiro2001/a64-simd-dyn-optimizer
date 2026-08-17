@@ -115,6 +115,14 @@ def _discovery_variants(kernel):
             ("emitter-addp",
              lambda: emit_candidate("addp")),
         ]
+    if kernel == "dct32":
+        # docs/79 未探索轴：8 rows at once（batch=8）。精选 cover 只有
+        # loop(batch=4)/opbase；发现网格枚举 batch=8 变体。
+        from dct32_wide_sve2 import emit_candidate
+        return [
+            ("emitter-batch8",
+             lambda: emit_candidate(batch=8)),
+        ]
     if kernel == "interp8":
         # svdot32 的 16x16/32x32 形状是独立 kernel（interp8-16/32），
         # 与 8x8 精选不可比；8x8 的全部 lowering 变体（svdot32/

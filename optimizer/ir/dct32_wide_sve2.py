@@ -91,13 +91,13 @@ static inline svint32_t addp_s32(svint32_t a, svint32_t b)
 """
 
 
-def emit_butterfly_row(row_idx, pass_num):
+def emit_butterfly_row(row_idx, pass_num, batch=4):
     """Emit butterfly computation for one row in a group."""
     p = f"_p{pass_num}"
     r = row_idx
     lines = []
-    lines.append(f"    svint16_t lo_{r}{p} = svld1_s16(p16, src + (g * 4 + {r}) * stride);")
-    lines.append(f"    svint16_t hi_{r}{p} = svld1_s16(p16, src + (g * 4 + {r}) * stride + 16);")
+    lines.append(f"    svint16_t lo_{r}{p} = svld1_s16(p16, src + (g * {batch} + {r}) * stride);")
+    lines.append(f"    svint16_t hi_{r}{p} = svld1_s16(p16, src + (g * {batch} + {r}) * stride + 16);")
     lines.append(f"    svint16_t rv_{r}{p} = svrev_s16(hi_{r}{p});")
     lines.append(f"    svint16_t O_{r}{p} = svsub_s16_x(p16, lo_{r}{p}, rv_{r}{p});")
     lines.append(f"    svint32_t loa_{r}{p} = svunpklo_s32(lo_{r}{p});")
@@ -121,8 +121,14 @@ def emit_butterfly_row(row_idx, pass_num):
     return "\n".join(lines)
 
 
-def emit_pass(shift, pass_num):
-    """Emit a full pass function with loop-based k-sections."""
+def emit_pass(shift, pass_num, batch=4):
+    """Emit a full pass function with loop-based k-sections.
+
+    batch: rows (and output columns) processed per g iteration.
+    4 = original loop emitter; 8 = the docs/79 "8 rows at once"
+    unexplored axis (odd-k path repeats per 4-row half).
+    """
+    assert batch in (4, 8), "batch must be 4 or 8"
     p = f"_p{pass_num}"
     func_name = "op_pass_4" if pass_num == 1 else "op_pass_11"
     add_val = 8 if pass_num == 1 else 1024
@@ -146,23 +152,23 @@ def emit_pass(shift, pass_num):
     lines.append("    const svuint16_t i3 = svld1_u16(p16, IDX_CF);")
     lines.append("    const svuint16_t ilo = svld1_u16(p16, IDX_LO8);")
     lines.append("")
-    lines.append("    for (int g = 0; g < 8; g++)")
+    lines.append(f"    for (int g = 0; g < {32 // batch}; g++)")
     lines.append("    {")
-    for r in range(4):
-        lines.append(emit_butterfly_row(r, pass_num))
+    for r in range(batch):
+        lines.append(emit_butterfly_row(r, pass_num, batch))
         lines.append("")
 
     # k=0,8,16,24: scalar extraction + K0 multiply
     # k=0,16 use k0e (EEEE even); k=8,24 use k0o (EEEO odd)
     lines.append(f"        // k=0,8,16,24 (scalar K0, shift={shift})")
-    for r in range(4):
+    for r in range(batch):
         lines.append(f"        int32_t k0e_{r}{p} = svlastb_s32(pg1s, EEEE_{r}{p});")
         lines.append(f"        int32_t k0e_{r}{p}_1 = svlastb_s32(pg2s, EEEE_{r}{p});")
         lines.append(f"        int32_t k0o_{r}{p} = svlastb_s32(pg1s, EEEO_{r}{p});")
         lines.append(f"        int32_t k0o_{r}{p}_1 = svlastb_s32(pg2s, EEEO_{r}{p});")
     for ki in range(4):
         k_row = ki * 8  # 0, 8, 16, 24
-        for r in range(4):
+        for r in range(batch):
             if ki % 2 == 0:
                 ev = f"k0e_{r}{p}"
                 ev2 = f"k0e_{r}{p}_1"
@@ -170,44 +176,41 @@ def emit_pass(shift, pass_num):
                 ev = f"k0o_{r}{p}"
                 ev2 = f"k0o_{r}{p}_1"
             lines.append(
-                f"        dst[{k_row} * 32 + g * 4 + {r}] = "
+                f"        dst[{k_row} * 32 + g * {batch} + {r}] = "
                 f"(int16_t)((((int64_t)K0[{ki}][0] * {ev} + "
                 f"(int64_t)K0[{ki}][1] * {ev2}) + add) >> {shift});"
             )
     lines.append("")
 
-    # Odd-k (k=1,3,...,31): svtbl2 + svdot loop
+    # Odd-k (k=1,3,...,31): svtbl2 + svdot loop, per 4-row half of the
+    # group (batch=8 repeats the 4-row packing for rows 4..7).
     lines.append(f"        // k=1,3,...,31 (svdot with CODD, shift={shift})")
-    lines.append(f"        svint16_t p0 = svtbl2_s16(svcreate2_s16(O_0{p}, O_1{p}), i0);")
-    lines.append(f"        svint16_t q0 = svtbl2_s16(svcreate2_s16(O_2{p}, O_3{p}), i0);")
-    lines.append(f"        svint16_t X0 = svtbl2_s16(svcreate2_s16(p0, q0), ilo);")
-    lines.append(f"        svint16_t p1 = svtbl2_s16(svcreate2_s16(O_0{p}, O_1{p}), i1);")
-    lines.append(f"        svint16_t q1 = svtbl2_s16(svcreate2_s16(O_2{p}, O_3{p}), i1);")
-    lines.append(f"        svint16_t X1 = svtbl2_s16(svcreate2_s16(p1, q1), ilo);")
-    lines.append(f"        svint16_t p2 = svtbl2_s16(svcreate2_s16(O_0{p}, O_1{p}), i2);")
-    lines.append(f"        svint16_t q2 = svtbl2_s16(svcreate2_s16(O_2{p}, O_3{p}), i2);")
-    lines.append(f"        svint16_t X2 = svtbl2_s16(svcreate2_s16(p2, q2), ilo);")
-    lines.append(f"        svint16_t p3 = svtbl2_s16(svcreate2_s16(O_0{p}, O_1{p}), i3);")
-    lines.append(f"        svint16_t q3 = svtbl2_s16(svcreate2_s16(O_2{p}, O_3{p}), i3);")
-    lines.append(f"        svint16_t X3 = svtbl2_s16(svcreate2_s16(p3, q3), ilo);")
-    lines.append("")
-    lines.append("        for (int ki = 0; ki < 16; ki++)")
-    lines.append("        {")
-    lines.append("            svint16_t c0 = svld1_s16(p16, CODD[ki][0]);")
-    lines.append("            svint16_t c1 = svld1_s16(p16, CODD[ki][1]);")
-    lines.append("            svint16_t c2 = svld1_s16(p16, CODD[ki][2]);")
-    lines.append("            svint16_t c3 = svld1_s16(p16, CODD[ki][3]);")
-    lines.append("            svint64_t t0 = svdot_s64(zero64, X0, c0);")
-    lines.append("            svint64_t t1 = svdot_s64(zero64, X1, c1);")
-    lines.append("            svint64_t t2 = svdot_s64(zero64, X2, c2);")
-    lines.append("            svint64_t t3 = svdot_s64(zero64, X3, c3);")
-    lines.append("            svint64_t acc = svadd_s64_x(p64, t0, t1);")
-    lines.append("            acc = svadd_s64_x(p64, acc, t2);")
-    lines.append("            acc = svadd_s64_x(p64, acc, t3);")
-    lines.append(f"            svint16_t rnd = svrshrnb_n_s32(svuzp1_s32(svreinterpret_s32_s64(acc), svreinterpret_s32_s64(acc)), {shift});")
-    lines.append("            svint16_t nar = svuzp1_s16(rnd, rnd);")
-    lines.append("            svst1_s16(pg4h, dst + (2 * ki + 1) * 32 + g * 4, nar);")
-    lines.append("        }")
+    for half in range(batch // 4):
+        base = 4 * half
+        lines.append(f"        {{ // half {half}: rows {base}..{base + 3}")
+        for j in range(4):
+            lines.append(f"        svint16_t p{j} = svtbl2_s16(svcreate2_s16(O_{base + 0}{p}, O_{base + 1}{p}), i{j});")
+            lines.append(f"        svint16_t q{j} = svtbl2_s16(svcreate2_s16(O_{base + 2}{p}, O_{base + 3}{p}), i{j});")
+            lines.append(f"        svint16_t X{j} = svtbl2_s16(svcreate2_s16(p{j}, q{j}), ilo);")
+        lines.append("")
+        lines.append("        for (int ki = 0; ki < 16; ki++)")
+        lines.append("        {")
+        lines.append("            svint16_t c0 = svld1_s16(p16, CODD[ki][0]);")
+        lines.append("            svint16_t c1 = svld1_s16(p16, CODD[ki][1]);")
+        lines.append("            svint16_t c2 = svld1_s16(p16, CODD[ki][2]);")
+        lines.append("            svint16_t c3 = svld1_s16(p16, CODD[ki][3]);")
+        lines.append("            svint64_t t0 = svdot_s64(zero64, X0, c0);")
+        lines.append("            svint64_t t1 = svdot_s64(zero64, X1, c1);")
+        lines.append("            svint64_t t2 = svdot_s64(zero64, X2, c2);")
+        lines.append("            svint64_t t3 = svdot_s64(zero64, X3, c3);")
+        lines.append("            svint64_t acc = svadd_s64_x(p64, t0, t1);")
+        lines.append("            acc = svadd_s64_x(p64, acc, t2);")
+        lines.append("            acc = svadd_s64_x(p64, acc, t3);")
+        lines.append(f"            svint16_t rnd = svrshrnb_n_s32(svuzp1_s32(svreinterpret_s32_s64(acc), svreinterpret_s32_s64(acc)), {shift});")
+        lines.append("            svint16_t nar = svuzp1_s16(rnd, rnd);")
+        lines.append(f"            svst1_s16(pg4h, dst + (2 * ki + 1) * 32 + g * {batch} + {base}, nar);")
+        lines.append("        }")
+        lines.append("        }")
     lines.append("")
 
     # EO-k (k=2,6,...,30): svmul+svaddv loop
@@ -215,9 +218,9 @@ def emit_pass(shift, pass_num):
     lines.append("        for (int ki = 0; ki < 8; ki++)")
     lines.append("        {")
     lines.append("            svint32_t kc = svld1_s32(p8s, K2[ki]);")
-    for r in range(4):
+    for r in range(batch):
         lines.append(
-            f"            dst[(2 + 4 * ki) * 32 + g * 4 + {r}] = "
+            f"            dst[(2 + 4 * ki) * 32 + g * {batch} + {r}] = "
             f"(int16_t)((svaddv_s32(p8s, svmul_s32_x(p8s, EO_{r}{p}, kc)) + add) >> {shift});"
         )
     lines.append("        }")
@@ -228,9 +231,9 @@ def emit_pass(shift, pass_num):
     lines.append("        for (int ki = 0; ki < 4; ki++)")
     lines.append("        {")
     lines.append("            svint32_t kc = svld1_s32(pg4s, K4[ki]);")
-    for r in range(4):
+    for r in range(batch):
         lines.append(
-            f"            dst[(4 + 8 * ki) * 32 + g * 4 + {r}] = "
+            f"            dst[(4 + 8 * ki) * 32 + g * {batch} + {r}] = "
             f"(int16_t)((svaddv_s32(pg4s, svmul_s32_x(p8s, EEO_{r}{p}, kc)) + add) >> {shift});"
         )
     lines.append("        }")
@@ -240,8 +243,11 @@ def emit_pass(shift, pass_num):
     return "\n".join(lines)
 
 
-def emit_candidate():
-    """Assemble full C++ file."""
+def emit_candidate(batch=4):
+    """Assemble full C++ file.
+
+    batch: rows per g iteration (4 = original loop; 8 = docs/79 axis).
+    """
     consts = _get_constants()
 
     parts = []
@@ -266,9 +272,9 @@ def emit_candidate():
     parts.append("")
 
     # Pass functions
-    parts.append(emit_pass(4, 1))
+    parts.append(emit_pass(4, 1, batch))
     parts.append("")
-    parts.append(emit_pass(11, 2))
+    parts.append(emit_pass(11, 2, batch))
     parts.append("")
 
     # Entry point
