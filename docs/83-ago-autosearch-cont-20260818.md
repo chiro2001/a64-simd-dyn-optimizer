@@ -3,7 +3,20 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 8 续：dct8 接入 + _CXX 修复，自动搜索 26 kernel）
+## 0. 本轮改动摘要（goal round 9：sao-stats-e0 接入，自动搜索 27 kernel）
+
+1. **sao-stats-e0 接入自动搜索**（sao 家族首个，710 上已证实 -15% 的
+   赢家收编）：5 候选全导出 manifest 符号，全过 QEMU 门禁（vs
+   saoCuStatsE0_neon）：
+   - A=best_ir 213 uop / B=best_ir_sve2 167 / C=best_sve2 165 /
+     D=block16（=C 重复源，DUP）/ **E=block32_sve2 102 uop**
+   - 排序（ago_pred，950 表）：**E 104.2 < C 216.6 < B 217.2 < A
+     224.0**——自动搜索选出 32 行块变体（uop 最轻），**2.1x 超过
+     手写 best_sve2**（另一例"自动搜索 > 手写"）
+2. **DB 308→310 行**；docs/82 + sao-stats-e0 行（score=0.261）；
+   测试 +3（TestCoversSaoE0）。covers_sao_e0.py（A-E）+ 两工具注册。
+
+## 0a. 本轮改动摘要（goal round 8 续：dct8 接入 + _CXX 修复，自动搜索 26 kernel）
 
 1. **dct8 接入自动搜索（dct 家族补齐）**：5 个候选静态测量
    （best_sve2 258/18.5%/59、proto_b 330/12.2%、proto_c 325/20%、

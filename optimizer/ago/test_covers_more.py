@@ -11,6 +11,8 @@ sys.path.insert(0, ROOT)
 from optimizer.ago.covers_sad import cover_meta as sad_meta
 from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
+from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
+from optimizer.ago.covers_sao_e0 import emit_cover as emit_saoe0
 from optimizer.ago.covers_dct8 import emit_cover as emit_dct8
 from optimizer.ago.covers_sa8d16 import emit_cover as emit_sa8d16
 from optimizer.ago.covers_sad import emit_cover as emit_sad
@@ -161,6 +163,23 @@ class TestCoversSa8d16(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_sa8d16("Z")
+
+
+class TestCoversSaoE0(unittest.TestCase):
+
+    def test_meta(self):
+        m = saoe0_meta()
+        self.assertEqual(m["covers"], ["A", "B", "C", "D", "E"])
+        self.assertLess(m["expected_permute_ratio"]["E"], 0.30)
+
+    def test_emit_all(self):
+        for c in saoe0_meta()["covers"]:
+            code = emit_saoe0(c)
+            self.assertIn("dynopt_sao_stats_e0_64_sve2", code, c)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_saoe0("Z")
 
 
 class TestCoversDct8(unittest.TestCase):

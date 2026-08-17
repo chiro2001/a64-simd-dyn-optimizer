@@ -598,6 +598,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_cost_coeff_nxn_sve2")
             return emit_fn
+        if kernel == "sao-stats-e0":
+            from ago.covers_sao_e0 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_sao_stats_e0_64_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -1646,6 +1653,7 @@ def main():
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
             "cost-coeff-nxn": ["A", "B"],
+            "sao-stats-e0": ["A", "B", "C", "D", "E"],
             "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
@@ -1860,6 +1868,8 @@ def main():
             from ago.covers_sad import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "cost-coeff-nxn":
             from ago.covers_costcoeff import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sao-stats-e0":
+            from ago.covers_sao_e0 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-32x64":
             from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-64x32":
@@ -1903,7 +1913,7 @@ def main():
                 "satd-32x64",
                 "satd-32x8",
                 "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
-                "cost-coeff-nxn") \
+                "cost-coeff-nxn", "sao-stats-e0") \
                 else "armv8.2-a+dotprod"
             # _CXX may be "clang --target=aarch64-linux-gnu" (dct8 special
             # case, docs/30 1.7); split so subprocess sees separate args.
