@@ -2362,7 +2362,7 @@ def main():
             "satd-8x4": ["A"],
             "satd-8x32": ["A"],
             "satd-16x8": ["A", "B", "C"],
-            "sad": ["A", "B", "C"],
+            "sad": ["A", "B", "C", "D"],
             "cost-coeff-nxn": ["A", "B"],
             "sao-stats-e0": ["A", "B", "C", "D", "E"],
             "sao-stats-e2": ["A", "B", "C"],

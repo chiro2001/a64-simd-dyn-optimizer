@@ -56,11 +56,14 @@ class TestCoversSad(unittest.TestCase):
 
     def test_meta(self):
         m = sad_meta()
-        self.assertEqual(m["covers"], ["A", "B", "C"])
+        self.assertEqual(m["covers"], ["A", "B", "C", "D"])
         # A/B (existing best) must beat C (dual-group sve16) on 950 proxy.
         self.assertEqual(m["expected_permute_ratio"]["A"], 0.0)
         self.assertEqual(m["expected_permute_ratio"]["B"], 0.0)
         self.assertGreater(m["expected_permute_ratio"]["C"], 0.30)
+        # D (round-33 uadalp wide-accumulate) is a SVE2 candidate with the
+        # shortest critical path; it must emit and gate (see docs/83 r33).
+        self.assertEqual(m["expected_permute_ratio"]["D"], 0.0)
 
     def test_emit_all(self):
         for c in sad_meta()["covers"]:

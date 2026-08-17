@@ -3,6 +3,31 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 33：sad 自动搜索迭代——uadalp 宽累加变体 D）
+
+1. **920B 实测驱动 sad 自动搜索迭代**（手动搜索落入 AGO 自动搜索）：
+   - 920B 实测显示 cover A（best_sve2，逐行 svaddv 归约）慢 2.3x，
+     cover B（best_ir，NEON vabal 链）慢 1.3-1.45x——920B 分派路径是
+     手写 NEON asm（0.67 ticks/call）。
+   - **根因**：SVE1 指令集无 pairwise 宽累加（UABAL/UADALP 属
+     NEON/SVE2）——这正是 x265 在 aarch64 用 NEON 做 sad 的原因。
+   - 自动搜索新变体 **D（svadalp uadalp 宽累加）**：每行 1 条 UADALP
+     （16 u8→8 u16 pairwise 入累加器），消除每行归约树，最后单次
+     svaddv_u16。SVE2-only（sve1 约束下 ISA REJECT）。
+   - 静态：**cp_lat=22（全场最短）**、fused_uop=67（A=80/B=66）、
+     fusion_eligible=15 对 uadalp+uadalp。
+   - **QEMU 门禁：20000 例 0 失配**（vs pixel_sad_16x16_neon_dotprod，
+     upstream-exact）。
+2. **ACLE 踩坑**：GCC 的 UADALP intrinsic 是 `svadalp_u16_m(pg, acc, d)`
+   （带 predicate，无 u 前缀），非 `svuadalp_u16`；sve1 编译拒绝证实
+   SVE2-only。
+3. 管线接入：`ago_covers["sad"]` 加 D（search_sve2_layouts.py）；
+   covers_sad.py 的 D 落盘 `kernels/sad/candidates/best_sve2_adalp.cpp`
+   并走统一 _FILES 读取；test_covers_more 更新（covers 4 项）。
+4. **结论**：sad 在 920B（SVE1）无赢面是 ISA 级约束而非搜索空间不足；
+   D 是 950 目标的 SVE2 胜者候选（静态最优 cp_lat），待 950 实机验证。
+5. DB 434→435 行（sad-cover-D-adalp-ago-pipeline）。
+
 ## 0. 本轮改动摘要（goal round 32：920B 首次实机测量——SVE1 VL=256）
 
 1. **920B 首次实机 kernel 测量**（CNTVCT=100MHz，中位 ticks，mism=0/1000）：
