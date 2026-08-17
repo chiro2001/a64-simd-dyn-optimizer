@@ -614,6 +614,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_satd_8x4_sve2")
             return emit_fn
+        if kernel == "satd-8x32":
+            from ago.covers_satd_8x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_8x32_sve2")
+            return emit_fn
         if kernel == "satd-16x8":
             from ago.covers_satd_16x8 import emit_cover  # noqa: E402
 
@@ -1746,6 +1753,7 @@ def main():
             "satd-32x64": ["A"],
             "satd-8x16": ["A", "B", "C"],
             "satd-8x4": ["A"],
+            "satd-8x32": ["A"],
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
             "cost-coeff-nxn": ["A", "B"],
@@ -1980,6 +1988,8 @@ def main():
             from ago.covers_satd_8x16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-8x4":
             from ago.covers_satd_8x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-8x32":
+            from ago.covers_satd_8x32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16x8":
             from ago.covers_satd_16x8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sad":
@@ -2047,6 +2057,7 @@ def main():
                 "satd-32x64",
                 "satd-32x8",
                 "sad", "psy-cost-16x16", "satd-8x4",
+                "satd-8x32",
                 "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn", "sao-stats-e0", "sao-stats-bo",
                 "sao-stats-e3",

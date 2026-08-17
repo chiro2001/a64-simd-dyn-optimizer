@@ -3,7 +3,22 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 22：satd-8x4 桥接候选，自动搜索 41 kernel）
+## 0. 本轮改动摘要（goal round 23：satd-8x32 桥接候选，自动搜索 42 kernel）
+
+1. **satd-8x32（8 宽形状第 2 个）**：= 4× 8x8 块（satd8_sve2<8,32> 的
+   h%8==0 分支），每块 hadamard_4x4_quad（8 cadd → 8 tbl → 8 cadd →
+   4 abssumsub → 4 max）。128-bit bridge 镜像上游，**一次门禁通过**
+   （round-22 的"satd 返原始和无 >>1"教训直接应用）：
+   - **门禁过（QEMU 2000 例 0 失配），fused 75（循环体）、ago_pred
+     66.4**
+   - 接线：covers_satd_8x32.py + 两工具注册；测试 +3（含 blk<4 断言）
+2. **DB 325→326 行**；docs/82 +1 行（score=0.075）。satd 家族 17
+   形状（8 宽 2/2 完成：8x4、8x32）。覆盖
+   {8x4, 8x8, 8x16, 8x32, 16x4, 16x8, 16x16, 16x32, 16x64, 32x8,
+   32x16, 32x32, 32x64, 64x16, 64x32, 64x48, 64x64} 17/17 完整
+   （剩余 24/48 宽为非 8 倍数宽，x265 无对应 satd 原语）。
+
+## 0a. 本轮改动摘要（goal round 22：satd-8x4 桥接候选，自动搜索 41 kernel）
 
 1. **satd-8x4（8 宽边缘形状首个）**：宽度原生不可行（8-lane 行无法
    填满 256 位向量，combine permutes 吃收益）→ 用 **128-bit bridge**

@@ -308,6 +308,7 @@ satd-8x16-satd8x16_B-920B,,,satd-8x16,pixel,satd8x16_B,neon,neon,experiments/ago
 satd-8x16-satd8x16_B-N1,,,satd-8x16,pixel,satd8x16_B,neon,neon,experiments/ago-m2-expanded/src/satd8x16_B.cpp,156,,1,20000,0,20k-native,N1,ticks,2818,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x16-satd8x16_C-920B,,,satd-8x16,pixel,satd8x16_C,neon,neon,experiments/ago-m2-expanded/src/satd8x16_C.cpp,152,,1,20000,0,20k-native,920B,ticks,6145,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x16-satd8x16_C-N1,,,satd-8x16,pixel,satd8x16_C,neon,neon,experiments/ago-m2-expanded/src/satd8x16_C.cpp,152,,1,20000,0,20k-native,N1,ticks,2254,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
+satd-8x32-best_cadd_bridge-ago-pipeline,,,satd-8x32,permute,best_cadd_bridge-ago-pipeline,neon,sve2,kernels/satd-8x32/candidates/best_cadd_bridge.cpp,75,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-8x4-best_cadd_bridge-ago-pipeline,,,satd-8x4,permute,best_cadd_bridge-ago-pipeline,neon,sve2,kernels/satd-8x4/candidates/best_cadd_bridge.cpp,36,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 satd-8x4-satd8x4_A-920B,,,satd-8x4,pixel,satd8x4_A,neon,neon,experiments/ago-m2-expanded/src/satd8x4_A.cpp,38,,1,20000,0,20k-native,920B,ticks,1796,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x4-satd8x4_A-N1,,,satd-8x4,pixel,satd8x4_A,neon,neon,experiments/ago-m2-expanded/src/satd8x4_A.cpp,38,,1,20000,0,20k-native,N1,ticks,675,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt

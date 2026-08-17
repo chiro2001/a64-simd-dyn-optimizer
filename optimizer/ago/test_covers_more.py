@@ -13,6 +13,8 @@ from optimizer.ago.covers_sa8d16 import cover_meta as sa8d16_meta
 from optimizer.ago.covers_dct8 import cover_meta as dct8_meta
 from optimizer.ago.covers_dct32 import cover_meta as dct32_meta
 from optimizer.ago.covers_satd_8x4 import cover_meta as s8x4_meta
+from optimizer.ago.covers_satd_8x32 import cover_meta as s8x32_meta
+from optimizer.ago.covers_satd_8x32 import emit_cover as emit_s8x32
 from optimizer.ago.covers_satd_8x4 import emit_cover as emit_s8x4
 from optimizer.ago.covers_dct32 import emit_cover as emit_dct32
 from optimizer.ago.covers_sao_e0 import cover_meta as saoe0_meta
@@ -308,6 +310,23 @@ class TestCoversSaoE0(unittest.TestCase):
     def test_invalid_cover_raises(self):
         with self.assertRaises(ValueError):
             emit_saoe0("Z")
+
+
+class TestCoversSatd8x32(unittest.TestCase):
+
+    def test_meta(self):
+        m = s8x32_meta()
+        self.assertEqual(m["covers"], ["A"])
+        self.assertLess(m["expected_permute_ratio"]["A"], 0.05)
+
+    def test_emit(self):
+        code = emit_s8x32("A")
+        self.assertIn("dynopt_satd_8x32_sve2", code)
+        self.assertIn("blk < 4", code)  # 4x 8x8 blocks
+
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            emit_s8x32("B")
 
 
 class TestCoversSatd8x4(unittest.TestCase):
