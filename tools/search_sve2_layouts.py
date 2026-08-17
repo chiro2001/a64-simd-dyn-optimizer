@@ -479,6 +479,55 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_satd_16x64_sve2")
             return emit_fn
+        if kernel == "satd-32x16":
+            from ago.covers_satd32x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_32x16_sve2")
+            return emit_fn
+        if kernel == "satd-32x32":
+            from ago.covers_satd32x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_32x32_sve2")
+            return emit_fn
+        if kernel == "satd-64x16":
+            from ago.covers_satd64x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_64x16_sve2")
+            return emit_fn
+        if kernel == "satd-32x64":
+            from ago.covers_satd32x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_32x64_sve2")
+            return emit_fn
+        if kernel == "satd-64x32":
+            from ago.covers_satd64x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_64x32_sve2")
+            return emit_fn
+        if kernel == "satd-64x48":
+            from ago.covers_satd64x48 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_64x48_sve2")
+            return emit_fn
+        if kernel == "satd-64x64":
+            from ago.covers_satd64x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_64x64_sve2")
+            return emit_fn
         if kernel == "satd-8x16":
             from ago.covers_satd_8x16 import emit_cover  # noqa: E402
 
@@ -1538,6 +1587,13 @@ def main():
             "satd-16": ["A", "B", "C"],
             "satd-16x32": ["A"],
             "satd-16x64": ["A"],
+            "satd-32x16": ["A"],
+            "satd-32x32": ["A"],
+            "satd-64x16": ["A"],
+            "satd-64x64": ["A"],
+            "satd-64x48": ["A"],
+            "satd-64x32": ["A"],
+            "satd-32x64": ["A"],
             "satd-8x16": ["A", "B", "C"],
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
@@ -1734,6 +1790,12 @@ def main():
             from ago.covers_satd16x32 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16x64":
             from ago.covers_satd16x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-32x16":
+            from ago.covers_satd32x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-32x32":
+            from ago.covers_satd32x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-64x16":
+            from ago.covers_satd64x16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-8x16":
             from ago.covers_satd_8x16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "satd-16x8":
@@ -1742,6 +1804,14 @@ def main():
             from ago.covers_sad import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "cost-coeff-nxn":
             from ago.covers_costcoeff import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-32x64":
+            from ago.covers_satd32x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-64x32":
+            from ago.covers_satd64x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-64x48":
+            from ago.covers_satd64x48 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-64x64":
+            from ago.covers_satd64x64 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "psy-cost-16x16":
             from ago.covers_psycost import cover_meta as _cmeta  # noqa: E402
         else:
@@ -1763,6 +1833,13 @@ def main():
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
                 "interp8", "dct16", "dct32", "satd-16", "satd-16x32",
                 "satd-16x64",
+                "satd-32x16",
+                "satd-32x32",
+                "satd-64x16",
+                "satd-64x64",
+                "satd-64x48",
+                "satd-64x32",
+                "satd-32x64",
                 "sad", "psy-cost-16x16", "satd-8x16", "satd-16x8",
                 "cost-coeff-nxn") \
                 else "armv8.2-a+dotprod"

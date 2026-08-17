@@ -134,6 +134,37 @@ class TestCoversSatdShapes(unittest.TestCase):
             emit_s168("Z")
 
 
+class TestLargeSatdCovers(unittest.TestCase):
+    """Parameterized: all large-shape cadd covers emit + meta sane."""
+
+    SHAPES = [(16, 32), (16, 64), (32, 16), (32, 32), (32, 64),
+              (64, 16), (64, 32), (64, 48), (64, 64)]
+
+    def _import(self, w, h):
+        mod = __import__("optimizer.ago.covers_satd%dx%d" % (w, h),
+                         fromlist=["cover_meta", "emit_cover"])
+        return mod.cover_meta, mod.emit_cover
+
+    def test_meta_all(self):
+        for w, h in self.SHAPES:
+            meta, _ = self._import(w, h)
+            m = meta()
+            self.assertEqual(m["covers"], ["A"], "%dx%d" % (w, h))
+            self.assertLess(m["expected_permute_ratio"]["A"], 0.30)
+
+    def test_emit_all(self):
+        for w, h in self.SHAPES:
+            _, emit = self._import(w, h)
+            code = emit("A")
+            self.assertIn("svcadd_s16", code, "%dx%d" % (w, h))
+            self.assertIn("dynopt_satd_%dx%d_sve2" % (w, h), code)
+
+    def test_invalid_cover_raises(self):
+        _, emit = self._import(32, 64)
+        with self.assertRaises(ValueError):
+            emit("Z")
+
+
 class TestCoversCostCoeff(unittest.TestCase):
     """cost-coeff-nxn covers (docs/82 #4 扩展)."""
 

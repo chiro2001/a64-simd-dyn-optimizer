@@ -3,7 +3,25 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 4：satd-16x32/16x64 新 kernel 覆盖）
+## 0. 本轮改动摘要（goal round 5：satd 大形状全家族覆盖，20 kernel）
+
+1. **satd 大形状全覆盖（cadd 模板参数化生成，+8 kernel → 自动搜索 20）**：
+   水平/纵向扩展模式经门禁逐一证实（独立 16-lane 条带分解与参考一致）：
+   - 32x16/32x32/32x64（2 半向量/行）、64x16/64x32/64x48/64x64
+     （4 半向量/行）、16x32/16x64（上一轮）——全部 **QEMU vq=2
+     2000 例差分 0 失配**（vs satd8_sve2<W,H>）
+   - 静态（-O3 循环体）：32 宽 fused 72 / ago_pred 72.3；64 宽
+     fused 140 / ago_pred 170.8
+   - 生成方式：python 生成器（halves × gmax 参数化）产出候选 +
+     covers 模块，两工具注册（make_emitter/ago_covers/rank-by
+     chain/_ago_march/KERNEL_COVERS）
+   - 踩坑：生成器初始把 covers 模块写成 `covers_satd-32x64.py`
+     （带连字符）→ 导入失败门禁空跑；重命名为 `covers_satd32x64.py`
+     后 4 门禁全过。测试：TestLargeSatdCovers 参数化 9 形状（+3）
+2. **DB 297→301 行**；docs/82 家族表 +8 行（satd 家族 14 形状全覆盖，
+   覆盖 score 0.260-0.391）。satd 家族成为自动搜索最大家族。
+
+## 0a. 本轮改动摘要（goal round 4：satd-16x32/16x64 新 kernel 覆盖）
 
 1. **大形状 satd 覆盖（13 个 kernel）**：satd-16x32/16x64（W=16，
    H=32/64，均为 16 宽 × 纵向翻倍）此前无任何候选。用已验证的
