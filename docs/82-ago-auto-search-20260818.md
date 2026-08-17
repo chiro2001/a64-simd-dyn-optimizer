@@ -66,7 +66,7 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | dct32 | covers_dct32.py | A=loop, B=opbase | A (score=0.955；manifest 已修) |
 | satd-8 | covers_satd8.py | A-E (5 种尾部) | (M2 已验证) |
 | sa8d | covers_sa8d8.py | A-C (3 种尾部) | (M2 已验证) |
-| satd-16 | covers_satd16.py | A=best_sve1, B=best_ir_sve16 | A (score=0.252) |
+| satd-16 | covers_satd16.py | A=best_sve1, B=best_ir_sve16, C=best_sve2_cadd | C (score=0.218) |
 | satd-8x16 | covers_satd_8x16.py | A/B/C=NEON trn covers | A (score=0.366) |
 | satd-16x8 | covers_satd_16x8.py | A/B/C=NEON trn covers | B (score=0.328) |
 | sad | covers_sad.py | A=best_sve2, B=best_ir, C=best_ir_sve16 | B (score=0.066) |
@@ -85,7 +85,7 @@ expected_permute_ratio）：
 
 | Kernel | 排名 | 结果 | 说明 |
 |--------|------|------|------|
-| satd-16 | A=best_sve1 (8.0%) > B=best_ir_sve16 (58.8%) | A 胜 | 与 dct16 sve16 同型：dual-group 高 permute |
+| satd-16 | C=best_sve2_cadd (8.0%,138) > A=best_sve1 (8.0%,172) > B=best_ir_sve16 (58.8%) | C 胜 | 原生 svcadd 替换软件 cadd（SVE2 约束）；fused 172→138、tbl 48→16；A/C 全过 QEMU 2000 例差分，ago_pred 144.4 vs 148.2 |
 | sad | B=best_ir (0.0%,66) > A=best_sve2 (0.0%,80) > C=best_ir_sve16 (54.7%) | B 胜 | 无优化空间族（docs/37），自动选出 IR 版 |
 | psy-cost-16x16 | C=best_cadd (17.4%,95) > A=best_sve2 (30.8%,168) > B=best_ir_sve16 (42.6%) | C 胜 | cadd 蝴蝶移植上游结构（24 cadd+16 tbl/块 vs 24 trn/块）；A/C 全过 QEMU 2000 例差分，ago_pred 94.2 vs 304.2 |
 | satd-8x16 | NEON A/C (21.4%) ≈ B (22.2%)，均胜 sve16 (50.7%) | A 胜 | 3 cover 全过 QEMU 2000 例差分（vs satd8_sve2<8,16>） |

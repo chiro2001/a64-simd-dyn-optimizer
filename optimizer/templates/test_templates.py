@@ -10,7 +10,8 @@ sys.path.insert(0, ROOT)
 
 from optimizer.templates import (
     NEONBridgeTemplate, SvdotS32DirectTemplate, LoopKSectionsTemplate,
-    TemplateConstraints, ALL_TEMPLATES, select_template,
+    CADDButterflyTemplate, TemplateConstraints, ALL_TEMPLATES,
+    select_template,
 )
 
 
@@ -115,6 +116,44 @@ class TestSelectTemplate(unittest.TestCase):
         c = TemplateConstraints(isa="sve2", vl=32)
         tpl = select_template("unknown_kernel", c)
         self.assertIsNone(tpl)
+
+
+class TestCADDButterflyTemplate(unittest.TestCase):
+
+    def test_applicable_sve2_950(self):
+        tpl = CADDButterflyTemplate()
+        c = TemplateConstraints(isa="sve2", vl=32)
+        self.assertTrue(tpl.applicable("satd16", c))
+        self.assertTrue(tpl.applicable("psy_cost", c))
+
+    def test_not_applicable_sve1(self):
+        tpl = CADDButterflyTemplate()
+        c = TemplateConstraints(isa="sve1", vl=32)
+        self.assertFalse(tpl.applicable("satd16", c))
+
+    def test_not_applicable_vl128(self):
+        tpl = CADDButterflyTemplate()
+        c = TemplateConstraints(isa="sve2", vl=16)
+        self.assertFalse(tpl.applicable("satd16", c))
+
+    def test_predict_ratio(self):
+        tpl = CADDButterflyTemplate()
+        self.assertLess(tpl.predict_permute_ratio(), 0.20)
+
+    def test_emit_satd16(self):
+        tpl = CADDButterflyTemplate()
+        result = tpl.emit("dynopt_satd_16x16_sve2_test",
+                          kernel_type="satd16")
+        self.assertIsInstance(result.code, str)
+        self.assertGreater(len(result.code), 500)
+        self.assertIn("svcadd_s16", result.code)
+        self.assertIn("270", result.code)
+
+    def test_select_for_satd16(self):
+        c = TemplateConstraints(isa="sve2", vl=32)
+        tpl = select_template("satd16", c)
+        self.assertIsNotNone(tpl)
+        self.assertEqual(tpl.name, "cadd_butterfly")
 
 
 class TestAllTemplates(unittest.TestCase):

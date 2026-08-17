@@ -2,11 +2,16 @@
 
 Covers wrap the existing satd-16 candidates:
 
-  A best_sve1 : SVE1 VL=256 single-width (permute_ratio=8.0%, fused=172)
+  A best_sve1     : SVE1 VL=256 single-width (permute_ratio=8.0%, fused=172)
   B best_ir_sve16 : dual-group 16-lane IR (permute_ratio=58.8%, fused=731,
                     expected loser on 950 — same pattern as dct16 sve16)
+  C best_sve2_cadd: SVE2-native svcadd butterfly (fused=138, -20% vs A,
+                    tbl 48->16 + mul 32->0; 950-only, SVE2 constraint —
+                    same dataflow as A with the software cadd emulation
+                    replaced by one svcadd<270> instruction)
 
-The auto-search must rank A above B (permute_ratio rho=-1.000 vs 950).
+The auto-search must rank A above B (permute_ratio rho=-1.000 vs 950)
+and C above A on the SVE2 constraint (fewer fused uops, same ratio).
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from typing import Dict
 _FILES = {
     "A": "best_sve1.cpp",
     "B": "best_ir_sve16.cpp",
+    "C": "best_sve2_cadd.cpp",
 }
 
 
@@ -26,17 +32,26 @@ def cover_meta() -> Dict:
           "abs_s16", "paddl_u16", "add_u16"]
     tail = (["ld1_u8"] * 32 + ["addl_u8"] * 16 + ["add_u16"] * 16 +
             ["abs_s16"] * 16 + ["paddl_u16"])
+    # Cover C: native cadd replaces the software cadd (swap tbl + mul
+    # sign + add) -> per row 1 tbl + 2 cadd instead of 3 tbl + 2 mul.
+    cp_c = ["ld1_u8", "addl_u8", "cadd_s16", "tbl_s16", "cadd_s16",
+            "add_u16", "abs_s16", "paddl_u16", "add_u16"]
+    tail_c = (["ld1_u8"] * 32 + ["addl_u8"] * 16 + ["cadd_s16"] * 32 +
+              ["tbl_s16"] * 16 + ["add_u16"] * 8 + ["abs_s16"] * 8 +
+              ["paddl_u16"])
     return {
-        "covers": ["A", "B"],
+        "covers": ["A", "B", "C"],
         "names": {
             "A": "best_sve1 (SVE1, permute=8.0%)",
             "B": "best_ir_sve16 (dual-group, permute=58.8%)",
+            "C": "best_sve2_cadd (SVE2 native cadd, fused=138)",
         },
-        "cp_chains": {"A": cp, "B": cp},
-        "tail_ops": {"A": tail, "B": tail},
+        "cp_chains": {"A": cp, "B": cp, "C": cp_c},
+        "tail_ops": {"A": tail, "B": tail, "C": tail_c},
         "expected_permute_ratio": {
             "A": 0.080,  # measured (reports/scan-permute-all-20260818.txt)
             "B": 0.588,  # measured
+            "C": 0.080,  # measured (same CP permute count, -20% uops)
         },
     }
 

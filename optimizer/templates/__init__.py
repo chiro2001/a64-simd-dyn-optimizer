@@ -6,12 +6,12 @@
 使用方式:
     from optimizer.templates import (
         NEONBridgeTemplate, SvdotS32DirectTemplate,
-        LoopKSectionsTemplate, TemplateConstraints,
+        LoopKSectionsTemplate, CADDButterflyTemplate, TemplateConstraints,
     )
 
     constraints = TemplateConstraints(isa="sve2", vl=32)
     for tpl in [NEONBridgeTemplate(), SvdotS32DirectTemplate(),
-                LoopKSectionsTemplate()]:
+                LoopKSectionsTemplate(), CADDButterflyTemplate()]:
         if tpl.applicable("hpp", constraints):
             result = tpl.emit("dynopt_interp8_8x8_sve2",
                               kernel_type="hpp", width=8, height=8)
@@ -21,17 +21,20 @@
 1. NEONBridge — SVE2 计算 + NEON narrow（dct16/interp8）
 2. SvdotS32Direct — s8xs8->s32 直接输出（interp8 hpp）
 3. LoopKSections — k-sections 循环（dct32）
+4. CADDButterfly — svcadd<rot>(x,x) 蝴蝶 + tbl 重排（psy-cost/satd-16）
 """
 
 from .base import RegionScheduleTemplate, TemplateConstraints, TemplateResult
 from .neon_bridge import NEONBridgeTemplate
 from .svdot_s32_direct import SvdotS32DirectTemplate
 from .loop_ksections import LoopKSectionsTemplate
+from .cadd_butterfly import CADDButterflyTemplate
 
 ALL_TEMPLATES = [
     NEONBridgeTemplate(),
     SvdotS32DirectTemplate(),
     LoopKSectionsTemplate(),
+    CADDButterflyTemplate(),
 ]
 
 

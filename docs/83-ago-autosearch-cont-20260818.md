@@ -3,7 +3,36 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 2：psy-cost cadd 蝴蝶候选）
+## 0. 本轮改动摘要（goal round 3：satd-16 原生 cadd + -O3 口径统一 + 模板沉淀）
+
+1. **satd-16 cover C（best_sve2_cadd.cpp，SVE2 原生 cadd）**：best_sve1
+   已经是 cadd 风格（gen_sve2_emit 的 ROWH4 = cadd→tbl→cadd），但它是
+   **SVE1 软件模拟 cadd**（tbl swap + mul sign + add，3-4 条指令，为
+   920B SVE1 兼容）。950 是 SVE2——原生 `svcadd_s16(a, a, 270)` 一条
+   指令替换（软件 cadd 语义 = SVE2 rot-270，逐 lane 核对后确认）：
+   - 静态（-O3）：**fused_uop 172→138（-20%）、tbl 48→16、mul 32→0**；
+     permute_depth_ratio 持平 0.08（CP 模型只计 2 条 tbl）
+   - 门禁：**QEMU vq=2 2000 例差分 0 失配**（vs satd8_sve2<16,16>）
+   - 自动搜索排序（ago_pred，950 表）：**cover-C 144.4 < cover-A 148.2**
+     ——SVE2 约束下自动搜索选出原生 cadd 版（920B/SVE1 约束下仍选
+     best_sve1 软件模拟，即"指定不同限制输出"维度）
+2. **-O3 口径统一（工具一致性修复）**：search_sve2_layouts ago 后端
+   candidate_opt 默认 -O2（sdot 例外），ago_auto_search 用 -O3——
+   同一 cover 两工具计数不同（satd-16 best_sve1 48@-O2 vs 172@-O3）。
+   修复：ago 后端（combo 含 "cover" 键）统一 -O3（与自动搜索、家族表
+   score、docs/79 实测 -O3 一致）；缓存键含 candidate_opt 自动分槽。
+   修复后两工具数字完全对齐（satd-16 A/C = 172/138，psy-cost A/C =
+   176/97）。
+3. **cadd_butterfly 模板沉淀（optimizer/templates/cadd_butterfly.py）**：
+   第 4 个通用模板（P4 模板库）。模式：svcadd<270>(x,x) 蝴蝶 + tbl 重排
+   替代 trn 转置链；ISA 映射（SVE2 原生 / SVE1 软件模拟 / NEON trn 基线）；
+   成功案例 psy-cost + satd-16。emit() 生成 satd-16 pack=2 宽度原生源；
+   kernel_types = satd16/satd/sa8d/psy_cost；6 个新单测（模板测试 19→25）。
+4. **DB 295 行**（+2：satd-16 cadd 门禁行 + vs-best_sve1 对比行）；
+   docs/82 家族表 satd-16 行改 C 胜（score=0.218，ago_pred 144.4 vs
+   148.2）。
+
+## 0a. 本轮改动摘要（goal round 2：psy-cost cadd 蝴蝶候选）
 
 1. **psy-cost 家族首个"超过手写"候选（best_cadd.cpp）**：手写
    best_sve2.cpp（30.8% permute、168 uop）是 trn 转置链实现；量化上游
@@ -192,9 +221,8 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
    融合）作为发现网格；950 实测反馈后校准 score 权重。
 3. 代价表 Feedback Loop（docs/82 #3）：把 950 实测 kernel 结果回流
    NP1/920B 代价表，校准 ago_pred。
-4. satd-16 width-native 候选：satd-16 的 best_ir_sve16 58.8% 与 dct16
-   sve16 同型（dual-group 高 permute），可套 dct16 的 neon_bridge/loop
-   模板重做（sad 已 0% 无需）。psy-cost 已完成（cadd 版 17.4% 胜出，
-   §0）；cadd 蝴蝶模板（tbl 重排 + svcadd<90> 两路和差）可沉淀为
-   optimizer/templates/ 通用模板，供其它 8 点 hadamard 家族复用
-   （satd-16 的 horizontal 8-point、sao E0 等）。
+4. ~~satd-16 width-native~~ / ~~cadd 模板沉淀~~（已完成，goal round 3，
+   §0）：satd-16 cover C（原生 svcadd）胜出（fused 138，ago_pred 144.4
+   vs 148.2）；cadd_butterfly 模板已入库。后续：把模板应用到其它 8 点
+   hadamard 家族（satd-8x16/16x8 的 hadamard_abs_4_h、sao E0、sa8d
+   的 8 点变换）作为新 cover。

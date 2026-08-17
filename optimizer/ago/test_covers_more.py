@@ -47,9 +47,10 @@ class TestCoversSatd16(unittest.TestCase):
 
     def test_meta(self):
         m = satd16_meta()
-        self.assertEqual(m["covers"], ["A", "B"])
+        self.assertEqual(m["covers"], ["A", "B", "C"])
         self.assertLess(m["expected_permute_ratio"]["A"], 0.30)
         self.assertGreater(m["expected_permute_ratio"]["B"], 0.30)
+        self.assertLess(m["expected_permute_ratio"]["C"], 0.30)
 
     def test_emit_all(self):
         for c in satd16_meta()["covers"]:

@@ -164,6 +164,13 @@ def candidate_march(combo):
 
 
 def candidate_opt(combo):
+    if combo.get("cover"):
+        # AGO backend (layout axis = cover id): keep the same -O3 the
+        # auto-search (ago_auto_search.py) and the docs/82 family-table
+        # scores use; -O2 would silently change the whole-object fused
+        # counts (e.g. satd-16 best_sve1 48@-O2 vs 172@-O3) and skew the
+        # ago_pred ranking against the calibrated -O3 features.
+        return "-O3"
     if combo.get("compute") == "sdot-h":
         # clang -O3 gives 101 fused / 0 stack spills (GCC extra flags give
         # 103 fused / 14 spills); keep plain -O3 and let --cxx choose.
@@ -1514,7 +1521,7 @@ def main():
             "interp8": ["A", "B", "C"],
             "dct16": ["A", "B", "C"],
             "dct32": ["A", "B"],
-            "satd-16": ["A", "B"],
+            "satd-16": ["A", "B", "C"],
             "satd-8x16": ["A", "B", "C"],
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
