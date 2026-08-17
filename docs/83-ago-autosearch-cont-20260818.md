@@ -3,7 +3,37 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（第三轮续接）
+## 0. 本轮改动摘要（goal round 2：psy-cost cadd 蝴蝶候选）
+
+1. **psy-cost 家族首个"超过手写"候选（best_cadd.cpp）**：手写
+   best_sve2.cpp（30.8% permute、168 uop）是 trn 转置链实现；量化上游
+   `x265::psyCost_pp_sve2<2>` 二进制发现其内部用 **SVE2 cadd<90>(x,x)
+   蝴蝶**（[a+b, a-b] 相邻 lane 对，一次指令完成两路和差）+ 单次 tbl
+   重排，每 8x8 块 24 cadd + 16 tbl（vs 手写 24 trn + 16 add/sub）。
+   移植上游 u8 路径（pass_1 → hadamard_h 4 段 cadd→tbl→cadd→tbl→cadd
+   → pass_2_3 → 16x16 组合 → vabaq 绝对值差）为独立候选：
+   - 静态（-O3 armv8.2-a+sve2，static_counts）：**fused_uop 97（-45%）、
+     permute_depth_ratio 17.4%（vs 30.8%）、cp_lat 29（vs 44）、
+     permute_on_critical 4（vs 40）**
+   - 门禁：**QEMU vq=2 2000 例差分 0 失配**（vs psyCost_pp_sve2<2>）
+   - 自动搜索排序（ago_pred，950 代价表）：**cover-C 94.2 vs cover-A
+     304.2**——预测 3.2x 快
+2. **踩坑记录**：初版只移植 3 段（漏第 2 次 tbl+cadd）→ 1999/2000
+   失配；上游 hadamard_8_h 是 **4 段**（8 点 hadamard 3 级蝴蝶 + 2 次
+   tbl 重排），补齐后 bit-exact。"bit-exact by construction"仍必须过
+   门禁。
+3. **ago 后端计数统一为全对象 static_counts**（薄 wrapper 伪影推广）：
+   cadd 内核 -O2 链接时被内联进 trace driver 的 main，导出符号只剩
+   3 uop（同 dct16/32 "manifest 待修"问题）。修复：ago 后端**全部**
+   kernel 走 whole-object static_counts（原只豁免 dct16/dct32），
+   缓存键 `|count=whole-object-static` 同步推广。修复后 cover-A 168、
+   cover-C 95（此前 cover-A 走 trace 路径记 784，与自动搜索 static
+   口径不一致）。
+4. **DB 293 行**（+2：best_cadd 门禁行 + vs-best_sve2 对比行）；
+   docs/82 家族表 psy-cost 行改 C 胜（score=0.269）；cover C 注册
+   covers_psycost（A/B/C + cp_chains/tail_ops/expected_permute_ratio）。
+
+## 0a. 第三轮改动摘要（goal round 1，2026-08-18）
 
 1. **satd 形状家族接入自动搜索（docs/82 #4 扩展）**：satd-8x16/
    satd-16x8 是 scan 中仅有的超阈值 satd 变体（50.7%/46.7%，均为
@@ -162,6 +192,9 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
    融合）作为发现网格；950 实测反馈后校准 score 权重。
 3. 代价表 Feedback Loop（docs/82 #3）：把 950 实测 kernel 结果回流
    NP1/920B 代价表，校准 ago_pred。
-4. satd-16/sad 的 width-native 候选：satd-16 的 best_ir_sve16 58.8%
-   与 dct16 sve16 同型（dual-group 高 permute），可套 dct16 的
-   neon_bridge/loop 模板重做（sad 已 0% 无需）。
+4. satd-16 width-native 候选：satd-16 的 best_ir_sve16 58.8% 与 dct16
+   sve16 同型（dual-group 高 permute），可套 dct16 的 neon_bridge/loop
+   模板重做（sad 已 0% 无需）。psy-cost 已完成（cadd 版 17.4% 胜出，
+   §0）；cadd 蝴蝶模板（tbl 重排 + svcadd<90> 两路和差）可沉淀为
+   optimizer/templates/ 通用模板，供其它 8 点 hadamard 家族复用
+   （satd-16 的 horizontal 8-point、sao E0 等）。

@@ -169,6 +169,8 @@ mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_e
 lattice-bb-generic-accept,2026-08-17,,multi,,lattice-bb-generic,,,tools/lattice_bb.py,,,,,,generic-accept-satd+dct32,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 psy-cost-16x16-ago-auto-search,,,psy-cost-16x16,permute,ago-auto-search,,,optimizer/ago/covers_psycost.py,176,,,,,PASS,,ago_score,0.484,,,,yes,docs/82-ago-auto-search-20260818.md
+psy-cost-16x16-best_cadd-ago-pipeline,,,psy-cost-16x16,permute,best_cadd-ago-pipeline,neon,sve2,kernels/psy-cost-16x16/candidates/best_cadd.cpp,95,,2,2000,0,PASS,,permute_ratio,0.174,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+psy-cost-16x16-best_cadd-vs-best_sve2,,,psy-cost-16x16,permute,best_cadd-vs-best_sve2,neon,sve2,kernels/psy-cost-16x16/candidates/best_cadd.cpp,95,,,,,,,ago_pred_ratio,0.31,,,,,docs/83-ago-autosearch-cont-20260818.md
 psy-cost-16x16-best_ir_sve16,,,psy-cost-16x16,pixel,best_ir_sve16,neon,sve2,kernels/psy-cost-16x16/candidates/best_ir_sve16.cpp,577,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 psy-cost-16x16-best_sve2-ago-pipeline,,,psy-cost-16x16,permute,best_sve2-ago-pipeline,neon,sve2,kernels/psy-cost-16x16/candidates/best_sve2.cpp,176,,2,2000,0,PASS,,permute_ratio,0.308,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt

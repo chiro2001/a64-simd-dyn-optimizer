@@ -1,0 +1,141 @@
+[
+ {
+  "tag": "cover-A",
+  "cover": "A",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x4007a0",
+   "0x400b20"
+  ],
+  "counts": {
+   "total": 216,
+   "vector": 168,
+   "movprfx": 0,
+   "vector_fused": 168,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 0,
+   "vector_fused_uop": 168,
+   "critical_path_latency": 39,
+   "critical_path_len": 150,
+   "permute_on_critical": 40,
+   "permute_depth_ratio": 0.267,
+   "load_use_avg": 6.47,
+   "load_use_min": 3,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 23,
+   "hw_supported": 0,
+   "pairs": [
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "zip1+umax",
+    "umax+add",
+    "zip1+umax",
+    "zip2+umax",
+    "zip2+umax",
+    "add+add",
+    "umax+add",
+    "addv+uaddl",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "add+abs",
+    "zip1+umax",
+    "umax+add",
+    "zip1+umax",
+    "zip2+umax",
+    "zip2+umax",
+    "add+add",
+    "umax+add"
+   ],
+   "counts": {
+    "scalar_insns": 45,
+    "simd_insns": 152
+   }
+  },
+  "ago_pred": 304.25
+ },
+ {
+  "tag": "cover-C",
+  "cover": "C",
+  "contract": "upstream-exact",
+  "passed": true,
+  "verify_mismatches": 0,
+  "verify": "cases=20000 mismatches=0\n",
+  "upstream_exact": true,
+  "range": [
+   "0x400980",
+   "0x4009c0"
+  ],
+  "counts": {
+   "total": 127,
+   "vector": 95,
+   "movprfx": 0,
+   "vector_fused": 95,
+   "scatter_gather": 0,
+   "scatter_gather_uops": 0,
+   "stack_vector": 7,
+   "vector_fused_uop": 95,
+   "critical_path_latency": 24,
+   "critical_path_len": 43,
+   "permute_on_critical": 16,
+   "permute_depth_ratio": 0.372,
+   "load_use_avg": 12.32,
+   "load_use_min": 2,
+   "spill_reload": 0
+  },
+  "fusion": {
+   "eligible": 32,
+   "hw_supported": 0,
+   "pairs": [
+    "uaddl+tbl",
+    "uaddl+tbl",
+    "uaddl+tbl",
+    "usubl+tbl",
+    "usubl+tbl",
+    "uaddl+tbl",
+    "usubl+tbl",
+    "usubl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "tbl+tbl",
+    "add+abs",
+    "sabd+umax",
+    "add+abs",
+    "abs+umax",
+    "sabd+umax",
+    "umax+add",
+    "umax+add",
+    "add+add",
+    "add+uaddlp",
+    "uaddlp+zip2",
+    "zip2+zip2",
+    "zip2+abs",
+    "addp+addp",
+    "sshr+sub",
+    "mov+sabd",
+    "sabd+addv"
+   ],
+   "counts": {
+    "scalar_insns": 50,
+    "simd_insns": 56,
+    "load_insns": 6,
+    "store_insns": 3
+   }
+  },
+  "ago_pred": 94.21
+ }
+]

@@ -66,9 +66,10 @@ class TestCoversPsyCost(unittest.TestCase):
 
     def test_meta(self):
         m = psy_meta()
-        self.assertEqual(m["covers"], ["A", "B"])
+        self.assertEqual(m["covers"], ["A", "B", "C"])
         self.assertLess(m["expected_permute_ratio"]["A"], 0.35)
         self.assertGreater(m["expected_permute_ratio"]["B"], 0.35)
+        self.assertLess(m["expected_permute_ratio"]["C"], 0.25)
 
     def test_emit_all(self):
         for c in psy_meta()["covers"]:

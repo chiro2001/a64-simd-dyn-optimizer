@@ -71,7 +71,7 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | satd-16x8 | covers_satd_16x8.py | A/B/C=NEON trn covers | B (score=0.328) |
 | sad | covers_sad.py | A=best_sve2, B=best_ir, C=best_ir_sve16 | B (score=0.066) |
 | cost-coeff-nxn | covers_costcoeff.py | A=best_sve2(looped), B=best_sve2_unroll | B (score=0.268) |
-| psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16 | A (score=0.484) |
+| psy-cost-16x16 | covers_psycost.py | A=best_sve2, B=best_ir_sve16, C=best_cadd | C (score=0.269) |
 
 ## 新家族扩展（2026-08-18 续接：docs/82 下一步 #4 完成）
 
@@ -87,7 +87,7 @@ expected_permute_ratio）：
 |--------|------|------|------|
 | satd-16 | A=best_sve1 (8.0%) > B=best_ir_sve16 (58.8%) | A 胜 | 与 dct16 sve16 同型：dual-group 高 permute |
 | sad | B=best_ir (0.0%,66) > A=best_sve2 (0.0%,80) > C=best_ir_sve16 (54.7%) | B 胜 | 无优化空间族（docs/37），自动选出 IR 版 |
-| psy-cost-16x16 | A=best_sve2 (30.8%) > B=best_ir_sve16 (42.6%) | A 胜 ⚠ | 均 ≥30% 阈值，未来需宽度原生 lowering |
+| psy-cost-16x16 | C=best_cadd (17.4%,95) > A=best_sve2 (30.8%,168) > B=best_ir_sve16 (42.6%) | C 胜 | cadd 蝴蝶移植上游结构（24 cadd+16 tbl/块 vs 24 trn/块）；A/C 全过 QEMU 2000 例差分，ago_pred 94.2 vs 304.2 |
 | satd-8x16 | NEON A/C (21.4%) ≈ B (22.2%)，均胜 sve16 (50.7%) | A 胜 | 3 cover 全过 QEMU 2000 例差分（vs satd8_sve2<8,16>） |
 | satd-16x8 | NEON B (17.4%) > A/C (23.1%)，均胜 sve16 (46.7%) | B 胜 | 3 cover 全过 QEMU 2000 例差分（vs satd8_sve2<16,8>） |
 

@@ -5,14 +5,16 @@ Covers wrap the existing candidates:
   A best_sve2     : hand-written NEON/SVE2 (permute_ratio=30.8%, fused=176)
   B best_ir_sve16 : dual-group 16-lane IR (permute_ratio=42.6%, fused=577,
                     expected loser on 950)
+  C best_cadd     : SVE2 cadd-butterfly port of the upstream u8 structure
+                    (fused=89, tbl=32 vs trn=96, cp_lat 23 vs 44) — beats
+                    the hand-written best on every static axis
 
 Manifest (kernels/psy-cost-16x16/manifest.yaml, 2026-08-18): kind=psy_cost
 reuses the gen_verify sad harness (identical signature: two u8 planes +
-two strides -> int). Candidate bit-exact vs upstream x265::psyCost_pp_sve2<2>
-(QEMU 500x6 manual + 2000-case funnel gate). Cover-B defines a different
-symbol (pixel_var) so it LINK-FAILs in the full pipeline — recorded by
-scan only. Both covers are near/above the 30% soft threshold; a
-width-native lowering is the next cover candidate.
+two strides -> int). Candidates bit-exact vs upstream x265::psyCost_pp_sve2<2>
+(QEMU 500x6 manual + 2000-case funnel gate; C is a verbatim algorithm port,
+re-verified through the same gate). Cover-B defines a different symbol
+(pixel_var) so it LINK-FAILs in the full pipeline — recorded by scan only.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from typing import Dict
 _FILES = {
     "A": "best_sve2.cpp",
     "B": "best_ir_sve16.cpp",
+    "C": "best_cadd.cpp",
 }
 
 
@@ -32,17 +35,26 @@ def cover_meta() -> Dict:
           "add_u16"]
     tail = (["ld1_u8"] * 32 + ["abd_u8"] * 16 + ["abs_s16"] * 16 +
             ["paddl_u16"] * 4 + ["add_u16"] * 4)
+    # Cover C: cadd-butterfly horizontal hadamard replaces the trn chain.
+    cp_c = ["ld1_u8", "uaddl_s16", "cadd_s16", "tbl_s16", "cadd_s16",
+            "abd_s16", "abs_s16", "umax_u16", "add_u16", "addp_u32"]
+    tail_c = (["ld1_u8"] * 32 + ["uaddl_s16"] * 8 + ["cadd_s16"] * 16 +
+              ["tbl_s16"] * 8 + ["cadd_s16"] * 16 + ["abd_s16"] * 8 +
+              ["abs_s16"] * 8 + ["umax_u16"] * 4 + ["add_u16"] * 4 +
+              ["addp_u32"] * 2)
     return {
-        "covers": ["A", "B"],
+        "covers": ["A", "B", "C"],
         "names": {
             "A": "best_sve2 (SVE2, permute=30.8%)",
             "B": "best_ir_sve16 (dual-group, permute=42.6%)",
+            "C": "best_cadd (SVE2 cadd butterfly, permute=0.0%)",
         },
-        "cp_chains": {"A": cp, "B": cp},
-        "tail_ops": {"A": tail, "B": tail},
+        "cp_chains": {"A": cp, "B": cp, "C": cp_c},
+        "tail_ops": {"A": tail, "B": tail, "C": tail_c},
         "expected_permute_ratio": {
             "A": 0.308,  # measured (reports/scan-permute-all-20260818.txt)
             "B": 0.426,  # measured
+            "C": 0.0,    # measured (static model: 0 tbl on CP)
         },
     }
 

@@ -1176,12 +1176,15 @@ def measure_layout_candidate(task):
             row.update({"passed": False, "counts": None})
             return row, None, "NO RANGE_END"
         rng = (rng[0], rng_end[1])
-    if backend == "ago" and kernel in ("dct16", "dct32"):
-        # ago covers for dct16/dct32 export a thin wrapper around
-        # static op_pass helpers; wrapper-range tracing undercounts the
-        # kernel (docs/82 "manifest 待修"). Whole-object static counts
-        # match the docs/79 measured numbers (dct32 761/1129, dct16
-        # 950/1019) and are the same extractor ago_auto_search uses.
+    if backend == "ago":
+        # ago covers export the kernel as the exported symbol, but the
+        # -O2 driver link can inline always_inline-heavy kernels into the
+        # trace main, leaving a thin wrapper behind (dct16/dct32 static
+        # op_pass helpers; psy-cost cadd hit the same wrapper artifact:
+        # trace counted 3 uops for a 97-uop kernel). Whole-object static
+        # counts are immune and are the same extractor ago_auto_search
+        # uses; they match the docs/79 measured numbers (dct32 761/1129,
+        # dct16 950/1019).
         try:
             from static_counts import static_counts
             counts = static_counts(obj, vl_bytes=vl_bytes)
@@ -1516,7 +1519,7 @@ def main():
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
             "cost-coeff-nxn": ["A", "B"],
-            "psy-cost-16x16": ["A", "B"],
+            "psy-cost-16x16": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
             raise SystemExit("AGO backend: no cover axis for kernel %s"
@@ -1607,7 +1610,7 @@ def main():
                             candidate_march(combo), str(args.backend)))
         ckey = "%s|%s|%s" % (args.contract or manifest.get("contract", ""),
                              buildfp, src_hash)
-        if args.backend == "ago" and args.kernel in ("dct16", "dct32"):
+        if args.backend == "ago":
             # counting method differs from other backends (whole-object
             # static counts, not wrapper-range trace); separate cache slot.
             ckey += "|count=whole-object-static"
