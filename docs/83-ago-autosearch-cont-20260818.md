@@ -3,7 +3,21 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
-## 0. 本轮改动摘要（goal round 26：interp8 交替路径 28 kernel，自动搜索 85）
+## 0. 本轮改动摘要（goal round 27：interp4vpp/interp8vpp 43 kernel，自动搜索 128）
+
+1. **interp4vpp（22 形状）+ interp8vpp（21 形状）全收编**：全部门禁过
+   （interp4vpp 50-1296 uop、interp8vpp 95-4906 uop），自动搜索
+   85→128 kernel。
+2. **interp4 家族（17 形状）判定为 SVE2p3-only**：候选用
+   `sdot z.h,b,b`（SVE2p3 2-way B→H，docs/22 §5.3）——armv8.2-a+sve2
+   下汇编拒绝（"selected processor does not support"）。950 不适用，
+   **移除注册**（covers 文件保留，留待 sve2p3 约束轴——未来可给 ago
+   后端加 sve2p3 march 支持）。
+3. **DB 369→412 行**（+43）；docs/82 +3 行（interp4vpp/interp8vpp
+   摘要 + interp4 未接入说明）；测试 +1（TestInterpVppCovers）。
+   安全注册模板（稳定 anchor，避开 gate 字典）已验证两轮。
+
+## 0a. 本轮改动摘要（goal round 26：interp8 交替路径 28 kernel，自动搜索 85）
 
 1. **interp8 hps/vps/vsp/vss 交替路径全收编（28 kernel）**：
    - vss 8 形状（docs/81 次高 permute 家族：90-2129 uop）、vsp 6

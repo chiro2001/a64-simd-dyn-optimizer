@@ -798,6 +798,264 @@ def make_emitter(kernel, backend="acle"):
             def emit_fn(combo):
                 return emit_cover(combo.get("cover", "A"), "dynopt_interp8_vss_8x8_sve2")
             return emit_fn
+        if kernel == "interp8vpp-8x4":
+            from ago.covers_interp8vpp_8x4 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_8x4_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-8x32":
+            from ago.covers_interp8vpp_8x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_8x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-8x16":
+            from ago.covers_interp8vpp_8x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_8x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-64x64":
+            from ago.covers_interp8vpp_64x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-64x48":
+            from ago.covers_interp8vpp_64x48 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x48_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-64x32":
+            from ago.covers_interp8vpp_64x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-64x16":
+            from ago.covers_interp8vpp_64x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_64x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-32x8":
+            from ago.covers_interp8vpp_32x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x8_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-32x64":
+            from ago.covers_interp8vpp_32x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-32x24":
+            from ago.covers_interp8vpp_32x24 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x24_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-32x16":
+            from ago.covers_interp8vpp_32x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-32":
+            from ago.covers_interp8vpp_32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_32x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-24x32":
+            from ago.covers_interp8vpp_24x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_24x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16x8":
+            from ago.covers_interp8vpp_16x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x8_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16x64":
+            from ago.covers_interp8vpp_16x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16x4":
+            from ago.covers_interp8vpp_16x4 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x4_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16x32":
+            from ago.covers_interp8vpp_16x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16x12":
+            from ago.covers_interp8vpp_16x12 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x12_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-16":
+            from ago.covers_interp8vpp_16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_16x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp8vpp-12x16":
+            from ago.covers_interp8vpp_12x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp8_12x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x8":
+            from ago.covers_interp4vpp_8x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x8_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x64":
+            from ago.covers_interp4vpp_8x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x6":
+            from ago.covers_interp4vpp_8x6 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x6_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x4":
+            from ago.covers_interp4vpp_8x4 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x4_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x32":
+            from ago.covers_interp4vpp_8x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-8x16":
+            from ago.covers_interp4vpp_8x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_8x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x8":
+            from ago.covers_interp4vpp_32x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x8_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x64":
+            from ago.covers_interp4vpp_32x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x48":
+            from ago.covers_interp4vpp_32x48 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x48_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x32":
+            from ago.covers_interp4vpp_32x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x24":
+            from ago.covers_interp4vpp_32x24 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x24_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-32x16":
+            from ago.covers_interp4vpp_32x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_32x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-24x64":
+            from ago.covers_interp4vpp_24x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_24x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-24x32":
+            from ago.covers_interp4vpp_24x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_24x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x8":
+            from ago.covers_interp4vpp_16x8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x8_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x64":
+            from ago.covers_interp4vpp_16x64 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x64_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x4":
+            from ago.covers_interp4vpp_16x4 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x4_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x32":
+            from ago.covers_interp4vpp_16x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x24":
+            from ago.covers_interp4vpp_16x24 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x24_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16x12":
+            from ago.covers_interp4vpp_16x12 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x12_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-16":
+            from ago.covers_interp4vpp_16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_16x16_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-12x32":
+            from ago.covers_interp4vpp_12x32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_12x32_sve2_vpp")
+            return emit_fn
+        if kernel == "interp4vpp-12x16":
+            from ago.covers_interp4vpp_12x16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"), "dynopt_interp4_12x16_sve2_vpp")
+            return emit_fn
         if kernel == "interp8-vss-8x4":
             from ago.covers_interp8_vss_8x4 import emit_cover  # noqa: E402
 
@@ -2040,6 +2298,49 @@ def main():
             "idct32": ["A", "B"],
             "idct16": ["A", "B", "C"],
             "interp8-vss-8x8": ["A"],
+            "interp8vpp-8x4": ["A"],
+            "interp8vpp-8x32": ["A"],
+            "interp8vpp-8x16": ["A"],
+            "interp8vpp-64x64": ["A"],
+            "interp8vpp-64x48": ["A"],
+            "interp8vpp-64x32": ["A"],
+            "interp8vpp-64x16": ["A"],
+            "interp8vpp-32x8": ["A"],
+            "interp8vpp-32x64": ["A"],
+            "interp8vpp-32x24": ["A"],
+            "interp8vpp-32x16": ["A"],
+            "interp8vpp-32": ["A"],
+            "interp8vpp-24x32": ["A"],
+            "interp8vpp-16x8": ["A"],
+            "interp8vpp-16x64": ["A"],
+            "interp8vpp-16x4": ["A"],
+            "interp8vpp-16x32": ["A"],
+            "interp8vpp-16x12": ["A"],
+            "interp8vpp-16": ["A"],
+            "interp8vpp-12x16": ["A"],
+            "interp4vpp-8x8": ["A"],
+            "interp4vpp-8x64": ["A"],
+            "interp4vpp-8x6": ["A"],
+            "interp4vpp-8x4": ["A"],
+            "interp4vpp-8x32": ["A"],
+            "interp4vpp-8x16": ["A"],
+            "interp4vpp-32x8": ["A"],
+            "interp4vpp-32x64": ["A"],
+            "interp4vpp-32x48": ["A"],
+            "interp4vpp-32x32": ["A"],
+            "interp4vpp-32x24": ["A"],
+            "interp4vpp-32x16": ["A"],
+            "interp4vpp-24x64": ["A"],
+            "interp4vpp-24x32": ["A"],
+            "interp4vpp-16x8": ["A"],
+            "interp4vpp-16x64": ["A"],
+            "interp4vpp-16x4": ["A"],
+            "interp4vpp-16x32": ["A"],
+            "interp4vpp-16x24": ["A"],
+            "interp4vpp-16x12": ["A"],
+            "interp4vpp-16": ["A"],
+            "interp4vpp-12x32": ["A"],
+            "interp4vpp-12x16": ["A"],
             "interp8-vss-8x4": ["A"],
             "interp8-vss-8x16": ["A"],
             "interp8-vss-32x32": ["A"],
@@ -2347,6 +2648,92 @@ def main():
             from ago.covers_idct16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-vss-8x8":
             from ago.covers_interp8_vss_8x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-8x4":
+            from ago.covers_interp8vpp_8x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-8x32":
+            from ago.covers_interp8vpp_8x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-8x16":
+            from ago.covers_interp8vpp_8x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-64x64":
+            from ago.covers_interp8vpp_64x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-64x48":
+            from ago.covers_interp8vpp_64x48 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-64x32":
+            from ago.covers_interp8vpp_64x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-64x16":
+            from ago.covers_interp8vpp_64x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-32x8":
+            from ago.covers_interp8vpp_32x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-32x64":
+            from ago.covers_interp8vpp_32x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-32x24":
+            from ago.covers_interp8vpp_32x24 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-32x16":
+            from ago.covers_interp8vpp_32x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-32":
+            from ago.covers_interp8vpp_32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-24x32":
+            from ago.covers_interp8vpp_24x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16x8":
+            from ago.covers_interp8vpp_16x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16x64":
+            from ago.covers_interp8vpp_16x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16x4":
+            from ago.covers_interp8vpp_16x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16x32":
+            from ago.covers_interp8vpp_16x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16x12":
+            from ago.covers_interp8vpp_16x12 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-16":
+            from ago.covers_interp8vpp_16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8vpp-12x16":
+            from ago.covers_interp8vpp_12x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x8":
+            from ago.covers_interp4vpp_8x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x64":
+            from ago.covers_interp4vpp_8x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x6":
+            from ago.covers_interp4vpp_8x6 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x4":
+            from ago.covers_interp4vpp_8x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x32":
+            from ago.covers_interp4vpp_8x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-8x16":
+            from ago.covers_interp4vpp_8x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x8":
+            from ago.covers_interp4vpp_32x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x64":
+            from ago.covers_interp4vpp_32x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x48":
+            from ago.covers_interp4vpp_32x48 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x32":
+            from ago.covers_interp4vpp_32x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x24":
+            from ago.covers_interp4vpp_32x24 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-32x16":
+            from ago.covers_interp4vpp_32x16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-24x64":
+            from ago.covers_interp4vpp_24x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-24x32":
+            from ago.covers_interp4vpp_24x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x8":
+            from ago.covers_interp4vpp_16x8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x64":
+            from ago.covers_interp4vpp_16x64 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x4":
+            from ago.covers_interp4vpp_16x4 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x32":
+            from ago.covers_interp4vpp_16x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x24":
+            from ago.covers_interp4vpp_16x24 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16x12":
+            from ago.covers_interp4vpp_16x12 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-16":
+            from ago.covers_interp4vpp_16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-12x32":
+            from ago.covers_interp4vpp_12x32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp4vpp-12x16":
+            from ago.covers_interp4vpp_12x16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-vss-8x4":
             from ago.covers_interp8_vss_8x4 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "interp8-vss-8x16":
@@ -2432,7 +2819,50 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "interp8-8x16", "interp8-16x32", "dct16", "dct32", "dct8", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
+                "interp8", "interp8-8x16", "interp8-16x32", "dct16",
+                "interp4vpp-12x16",
+                "interp4vpp-12x32",
+                "interp4vpp-16",
+                "interp4vpp-16x12",
+                "interp4vpp-16x24",
+                "interp4vpp-16x32",
+                "interp4vpp-16x4",
+                "interp4vpp-16x64",
+                "interp4vpp-16x8",
+                "interp4vpp-24x32",
+                "interp4vpp-24x64",
+                "interp4vpp-32x16",
+                "interp4vpp-32x24",
+                "interp4vpp-32x32",
+                "interp4vpp-32x48",
+                "interp4vpp-32x64",
+                "interp4vpp-32x8",
+                "interp4vpp-8x16",
+                "interp4vpp-8x32",
+                "interp4vpp-8x4",
+                "interp4vpp-8x6",
+                "interp4vpp-8x64",
+                "interp4vpp-8x8",
+                "interp8vpp-12x16",
+                "interp8vpp-16",
+                "interp8vpp-16x12",
+                "interp8vpp-16x32",
+                "interp8vpp-16x4",
+                "interp8vpp-16x64",
+                "interp8vpp-16x8",
+                "interp8vpp-24x32",
+                "interp8vpp-32",
+                "interp8vpp-32x16",
+                "interp8vpp-32x24",
+                "interp8vpp-32x64",
+                "interp8vpp-32x8",
+                "interp8vpp-64x16",
+                "interp8vpp-64x32",
+                "interp8vpp-64x48",
+                "interp8vpp-64x64",
+                "interp8vpp-8x16",
+                "interp8vpp-8x32",
+                "interp8vpp-8x4", "dct32", "dct8", "sa8d16", "sa8d-32x32", "sa8d-64x64", "satd-16", "satd-16x32",
                 "satd-16x4",
                 "satd-16x64",
                 "satd-32x16",

@@ -71,6 +71,9 @@ python3 tools/search_sve2_layouts.py --kernel interp8 \
 | interp8-vps (6 形状) | covers_interp8_vps_*.py | A | 全过门禁 (259-510 uop) |
 | interp8-vsp (6 形状) | covers_interp8_vsp_*.py | A | 全过门禁 (250-499 uop) |
 | interp8-vss (8 形状) | covers_interp8_vss_*.py | A | 全过门禁 (90-2129 uop)；docs/81 次高 permute 家族收编 |
+| interp4vpp (22 形状) | covers_interp4vpp_*.py | A | 全过门禁 (50-1296 uop) |
+| interp8vpp (21 形状) | covers_interp8vpp_*.py | A | 全过门禁 (95-4906 uop) |
+| interp4 (17 形状) | （未接入） | — | SVE2p3-only（sdot z.h,b,b），950 不适用，留待 sve2p3 约束轴 |
 | dct16 | covers_dct16.py | A=neon_bridge, B=pure_sve2, C=op895 | C (score=1.137) |
 | dct8 | covers_dct8.py | A=best_sve2 (B/C/D/E scan-only) | A (score=0.474) |
 | dct32 | covers_dct32.py | A=loop, B=opbase, C=batch8 | A (score=0.955；manifest 已修；C 门禁过但负结案) |

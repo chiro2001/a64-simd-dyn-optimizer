@@ -312,6 +312,26 @@ class TestCoversSaoE0(unittest.TestCase):
             emit_saoe0("Z")
 
 
+class TestInterpVppCovers(unittest.TestCase):
+    """interp4vpp / interp8vpp families (43 shapes with candidates)."""
+
+    def test_meta_and_emit(self):
+        import glob as _g
+        _kd = os.path.join(os.path.dirname(ROOT), "kernels")
+        ks = [d for d in sorted(os.listdir(_kd))
+              if (d.startswith("interp4vpp") or d.startswith("interp8vpp"))
+              and _g.glob(os.path.join(_kd, d, "candidates", "*.cpp"))]
+        self.assertGreaterEqual(len(ks), 40)
+        for k in ks:
+            mod = __import__("optimizer.ago.covers_%s"
+                             % k.replace("-", "_"),
+                             fromlist=["cover_meta", "emit_cover"])
+            m = mod.cover_meta()
+            self.assertEqual(m["covers"], ["A"], k)
+            code = mod.emit_cover("A")
+            self.assertGreater(len(code), 100, k)
+
+
 class TestInterp8AltCovers(unittest.TestCase):
     """interp8 hps/vps/vsp/vss alternate paths (28 shapes)."""
 
