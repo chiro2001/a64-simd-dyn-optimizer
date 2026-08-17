@@ -3,6 +3,29 @@
 > 承接 docs/78-82 主线（NEON/SVE → SVE2-256 优化 + AGO 自动搜索）。
 > 本文档记录本地可完成项；950 实机验证仍在用户侧。
 
+## 0. 本轮改动摘要（goal round 34：uadalp 模式泛化到 sad-32 + 920B 带宽优势实证）
+
+1. **uadalp 宽累加模式泛化到 sad-32**（round-33 sad-16 发现的直接推广）：
+   - 扫描全部候选确认只有 sad/sad-32 有"逐行 svaddv 归约"弱点模式
+     （sao-stats/ssd 的 svaddv 是最终归约，合理）。
+   - 新变体 **B（best_sve2_adalp.cpp）**：32 行 × 1 UADALP（每行 32B 全宽
+     VL=256 → 32 u8→16 u16），最后单次 svaddv_u16。SVE2-only。
+   - **QEMU 门禁 20000 例 0 失配**（vs pixel_sad_32x32_neon_dotprod）；
+     cp_lat=12（A=14）；ago_pred B/A=0.754（快 25%）。
+   - covers_sad_32.py 重构（去掉不稳定 glob，显式 A/B）+ ago_covers 加 B
+     + 测试拆分（TestMiscCovers 单候选列表移除 sad-32）。
+2. **920B 实机：sad-32 cover A 稳定赢 4-7%**（重大发现）：
+   - ratio cand/ref = 0.935-0.957（3 次 × 500 samples × 16384 batch，
+     mism=0）——与 sad-16 的 2.3x 慢**完全相反**。
+   - **机理**：sad-32 每行 32B = SVE1 VL=256 **全宽 load**（1 次 256-bit
+     vs NEON 2 次 128-bit），带宽优势覆盖归约劣势 → 净赢。
+     sad-16 每行 16B 只占半向量，无带宽优势 → 输。
+   - 这是继 psy-cost-16（1.4%）后**第二个 920B 稳定赢面**，且首次验证
+     "SVE1 全宽带宽 > NEON 128-bit"路径。sad-32 归入"920B 可用赢面"。
+   - 认知沉淀：920B 测量优先测**行宽 ≥32B** 的 kernel（satd-32x32 的
+     SVE1 cover 缺失、sao block32 待测——均留 950/后续）。
+3. DB 436→439 行（sad-32 cover-B 门禁+ago_pred、sad-32 920B 实测）。
+
 ## 0. 本轮改动摘要（goal round 33：sad 自动搜索迭代——uadalp 宽累加变体 D）
 
 1. **920B 实测驱动 sad 自动搜索迭代**（手动搜索落入 AGO 自动搜索）：

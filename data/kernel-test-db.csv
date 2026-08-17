@@ -297,6 +297,9 @@ sad-cover-D-adalp-ago-pipeline,,,sad,permute,cover-D-adalp-ago-pipeline,neon,sve
 sad-cover-D-vs-best_sve2,,,sad,permute,cover-D-vs-best_sve2,neon,sve2,kernels/sad/candidates/best_sve2_adalp.cpp,,,,,,,,ago_pred_ratio,0.707,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sad-32-best-ago-pipeline,,,sad-32,permute,best-ago-pipeline,neon,sve2,kernels/sad-32/candidates/*.cpp,5,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sad-32-cover-A-920b-920B-2026-08-18,2026-08-18,,sad-32,,cover-A-920b,,sve1,kernels/sad-32/candidates/best_sve2.cpp,,,,,,,920B,ratio_vs_dispatch,1.070,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sad-32-cover-B-adalp-ago-pipeline,,,sad-32,permute,cover-B-adalp-ago-pipeline,neon,sve2,kernels/sad-32/candidates/best_sve2_adalp.cpp,,,2,20000,0,PASS,,cp_latency,12,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sad-32-cover-B-vs-cover-A,,,sad-32,permute,cover-B-vs-cover-A,neon,sve2,kernels/sad-32/candidates/best_sve2_adalp.cpp,,,,,,,,ago_pred_ratio,0.754,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-best-ago-pipeline,,,sao,permute,best-ago-pipeline,neon,sve2,kernels/sao/candidates/*.cpp,269,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-layout-bb-accept,2026-08-17,,sao,sao,layout-bb,,,tools/lattice_bb.py,33,,,12,0,generic-accept-sao-layout,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 sao-neon-bundle-710-30f,2026-08-17,,sao,bundle,neon-slot-710,,,,,,,,,,710,,,+0.15,,-22..50,yes,reports/sao-neon-710-e2e-20260817.txt

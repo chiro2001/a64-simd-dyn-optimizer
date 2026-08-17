@@ -2467,7 +2467,7 @@ def main():
             "scan-pos-last": ["A"],
             "pu-copy-pp": ["A"],
             "pu-addavg": ["A"],
-            "sad-32": ["A"],
+            "sad-32": ["A", "B"],
             "ssd": ["A"],
             "mc": ["A"],
             "dequant": ["A"],

@@ -337,9 +337,19 @@ class TestCoversDequant(unittest.TestCase):
 class TestMiscCovers(unittest.TestCase):
     """misc single-candidate kernels (mc/ssd/sad-32/etc.)."""
 
-    KERNELS = ["mc", "ssd", "sad-32", "pu-addavg", "pu-copy-pp",
+    KERNELS = ["mc", "ssd", "pu-addavg", "pu-copy-pp",
                "scan-pos-last", "sign", "scale2d",
                "pel-filter-luma-strong", "find-pos-first-last", "sao"]
+
+    def test_sad32_multi_cover(self):
+        # sad-32 gained cover B (round-34 uadalp wide-accumulate).
+        mod = __import__("optimizer.ago.covers_sad_32",
+                         fromlist=["cover_meta", "emit_cover"])
+        m = mod.cover_meta()
+        self.assertEqual(m["covers"], ["A", "B"])
+        for c in ("A", "B"):
+            code = mod.emit_cover(c)
+            self.assertGreater(len(code), 100, c)
 
     def test_meta_and_emit(self):
         for k in self.KERNELS:

@@ -1,5 +1,6 @@
-// 920B (SVE1, VL=256) real-machine microbenchmark: SAD 16x16 cover B
-// (best_ir.cpp: NEON vabal accumulate chain) vs dispatched path.
+// 920B (SVE1, VL=256) real-machine microbenchmark: SAD covers vs
+// dispatched path. Default shape 16x16; compile with -DSAD_N=32 for
+// 32x32 (ref = pu[LUMA_32x32].sad).
 //
 // Usage: sad_microbench [samples] [batch]
 #include <algorithm>
@@ -13,8 +14,15 @@
 
 using namespace X265_NS;
 
+#ifdef SAD_N32
+extern "C" int dynopt_sad_32x32_sve2(
+    const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define CAND_FN dynopt_sad_32x32_sve2
+#else
 extern "C" int dynopt_sad_16x16_sve2(
     const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+#define CAND_FN dynopt_sad_16x16_sve2
+#endif
 
 typedef int (*fn_t)(const uint8_t*, intptr_t, const uint8_t*, intptr_t);
 
@@ -57,11 +65,20 @@ int main(int argc, char** argv)
     p.cpuid = X265_NS::cpu_detect(false);
     x265_setup_primitives(&p);
 
+#ifdef SAD_N32
+    fn_t ref = primitives.pu[LUMA_32x32].sad;
+#else
     fn_t ref = primitives.pu[LUMA_16x16].sad;
-    fn_t cand = dynopt_sad_16x16_sve2;
+#endif
+    fn_t cand = CAND_FN;
 
     std::mt19937 rng(0x5A8D16u);
-    std::vector<uint8_t> a(64 * 64), b(64 * 64);
+#ifdef SAD_N32
+    const int PAD = 128;
+#else
+    const int PAD = 64;
+#endif
+    std::vector<uint8_t> a(PAD * PAD), b(PAD * PAD);
     for (size_t i = 0; i < a.size(); i++)
     {
         a[i] = (uint8_t)(rng() & 0xFF);
@@ -70,7 +87,7 @@ int main(int argc, char** argv)
     int mism = 0;
     for (int i = 0; i < 1000; i++)
     {
-        int x = (int)(rng() % 49), y = (int)(rng() % 49);
+        int x = (int)(rng() % (PAD - 33)), y = (int)(rng() % (PAD - 33));
         const uint8_t* pa = &a[y * 64 + x];
         const uint8_t* pb = &b[y * 64 + x];
         if (ref(pa, 64, pb, 64) != cand(pa, 64, pb, 64))
@@ -78,7 +95,7 @@ int main(int argc, char** argv)
     }
     printf("[sad-B] correctness mism=%d/1000\n", mism);
 
-    const intptr_t sa = 64, sb = 64;
+    const intptr_t sa = PAD, sb = PAD;
     uint64_t tr = bench(ref, a.data(), sa, b.data(), sb, samples, batch);
     uint64_t tc = bench(cand, a.data(), sa, b.data(), sb, samples, batch);
     double per_call = 1.0 / batch;
