@@ -39,6 +39,8 @@ best9-noremain-ir-dct-interleaved-100f-920b-920B,,,best9-noremain-ir-dct,,interl
 cost-c1c2-flag-inject-100f-920b-920B-2026-08-17-f3218ce,,,cost-c1c2-flag,entropy,inject-100f-920b,c,neon,,2,1317,,,,,920B,,,,+0.16,-78.0..40.5,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
 cost-c1c2-flag-kernel-bench-920b-920B,,,cost-c1c2-flag,entropy,kernel-bench-920b,,,build/ablate-c1c2-920b-iab-work/cost-c1c2-flag.o,2,1317,,,,,920B,ratio_neon_cand,1.095,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
 cost-c1c2-flag-920b,,,cost-c1c2-flag,entropy,round27,c,neon,,2,1317,replay,6472176,0,,920B,replay_ratio,0.998,,,,yes,reports/entropy-replay-920b-20260815.txt
+cost-coeff-nxn-best_sve2-ago-pipeline,,,cost-coeff-nxn,permute,best_sve2-ago-pipeline,neon,sve2,kernels/cost-coeff-nxn/candidates/best_sve2.cpp,23,,2,2000,0,PASS,,permute_ratio,0.455,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+cost-coeff-nxn-best_sve2_unroll-ago-pipeline,,,cost-coeff-nxn,permute,best_sve2_unroll-ago-pipeline,neon,sve2,kernels/cost-coeff-nxn/candidates/best_sve2_unroll.cpp,50,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 cost-coeff-nxn-inject-100f-920b-920B-2026-08-17-f3218ce,,,cost-coeff-nxn,entropy,inject-100f-920b,c,neon,,23,110,,,,,920B,,,,+0.09,-39.5..351.0,yes,reports/entropy-ccn-c1c2-920b-interleaved-20260817.txt
 cost-coeff-nxn-kernel-bench-920b-920B,,,cost-coeff-nxn,entropy,kernel-bench-920b,,,kernels/cost-coeff-nxn/candidates/best_sve2.cpp,23,110,,,,,920B,ratio_neon_cand,1.090,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
 cost-coeff-nxn-neon-920b,,,cost-coeff-nxn,entropy,neon,c,neon,,268,110,replay,5776047,0,,920B,replay_ratio,1.097,,,,yes,reports/entropy-replay-920b-20260815.txt

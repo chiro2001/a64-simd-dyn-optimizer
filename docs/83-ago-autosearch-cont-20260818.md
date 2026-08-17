@@ -19,7 +19,12 @@
      差分**（vs `satd8_sve2<16,8>`）；sve16 候选 46.7% LINK FAIL
    - 自动搜索在两个家族均选出比手写 sve16 更好的候选（score 0.366/
      0.328 vs sve16 的 0.863/0.829）——"自动搜索 ≥ 手写"再添两例
-2. 前两轮摘要见 §1（首轮）与 §2（第二轮）；commit 清单见 §5/§7。
+2. **cost-coeff-nxn 接入**（scan 超阈值家族收尾）：covers_costcoeff.py
+   包装 looped（45.5%⚠）与 unroll（0.0%）两候选；**两 cover 全过 QEMU
+   2000 例差分**（vs x265_costCoeffNxN_neon），自动搜索选出 unroll 版
+   （score 0.268）。至此 scan 25 个超阈值候选覆盖：dct16/32、interp8、
+   satd-16/8x16/16x8、sad、psy-cost、cost-coeff 全部接入自动搜索。
+3. 前两轮摘要见 §1（首轮）与 §2（第二轮）；commit 清单见 §5/§6/§7。
 
 ## 1. 首轮改动摘要
 
@@ -137,10 +142,11 @@ svdot32 20.5%、dct32 loop 19.4% 均精确复现）。950 实机仍是最终仲�
 - `optimizer/ago/covers_satd_shapes.py`：shape_meta() per-shape
   cover_meta + 实测 expected_permute_ratio
 - `optimizer/ago/covers_satd_8x16.py` / `covers_satd_16x8.py`（新）
+- `optimizer/ago/covers_costcoeff.py`（新）
 - `tools/ago_auto_search.py` / `tools/search_sve2_layouts.py`：
-  注册 satd-8x16/satd-16x8（免 manifest + 全管线）
-- `optimizer/ago/test_covers_more.py`：+4 测试（13 个）
-- DB 289 行（6 行：satd 形状 NEON covers 门禁 + permute）
+  注册 satd-8x16/satd-16x8/cost-coeff-nxn（免 manifest + 全管线）
+- `optimizer/ago/test_covers_more.py`：+7 测试（16 个）
+- DB 291 行（6 行 satd 形状 + 2 行 cost-coeff 门禁）
 - docs/82 家族表 + docs/83 更新
 
 ## 8. 下一步（优先级）

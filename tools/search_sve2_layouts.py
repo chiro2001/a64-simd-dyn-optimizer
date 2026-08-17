@@ -479,6 +479,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sad_16x16_sve2")
             return emit_fn
+        if kernel == "cost-coeff-nxn":
+            from ago.covers_costcoeff import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_cost_coeff_nxn_sve2")
+            return emit_fn
         if kernel == "psy-cost-16x16":
             from ago.covers_psycost import emit_cover  # noqa: E402
 
@@ -1508,6 +1515,7 @@ def main():
             "satd-8x16": ["A", "B", "C"],
             "satd-16x8": ["A", "B", "C"],
             "sad": ["A", "B", "C"],
+            "cost-coeff-nxn": ["A", "B"],
             "psy-cost-16x16": ["A", "B"],
         }
         if args.kernel not in ago_covers:
@@ -1702,6 +1710,8 @@ def main():
             from ago.covers_satd_16x8 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sad":
             from ago.covers_sad import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "cost-coeff-nxn":
+            from ago.covers_costcoeff import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "psy-cost-16x16":
             from ago.covers_psycost import cover_meta as _cmeta  # noqa: E402
         else:
@@ -1722,7 +1732,8 @@ def main():
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
                 "interp8", "dct16", "dct32", "satd-16", "sad",
-                "psy-cost-16x16", "satd-8x16", "satd-16x8") \
+                "psy-cost-16x16", "satd-8x16", "satd-16x8",
+                "cost-coeff-nxn") \
                 else "armv8.2-a+dotprod"
             _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",
                      "-march=" + _ago_march, "-c", src, "-o", obj],

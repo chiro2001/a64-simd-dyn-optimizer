@@ -18,6 +18,8 @@ from optimizer.ago.covers_satd_8x16 import cover_meta as s816_meta
 from optimizer.ago.covers_satd_8x16 import emit_cover as emit_s816
 from optimizer.ago.covers_satd_16x8 import cover_meta as s168_meta
 from optimizer.ago.covers_satd_16x8 import emit_cover as emit_s168
+from optimizer.ago.covers_costcoeff import cover_meta as cc_meta
+from optimizer.ago.covers_costcoeff import emit_cover as emit_cc
 
 
 class TestCoversSad(unittest.TestCase):
@@ -107,6 +109,26 @@ class TestCoversSatdShapes(unittest.TestCase):
             emit_s816("Z")
         with self.assertRaises(ValueError):
             emit_s168("Z")
+
+
+class TestCoversCostCoeff(unittest.TestCase):
+    """cost-coeff-nxn covers (docs/82 #4 扩展)."""
+
+    def test_meta(self):
+        m = cc_meta()
+        self.assertEqual(m["covers"], ["A", "B"])
+        self.assertGreater(m["expected_permute_ratio"]["A"], 0.30)
+        self.assertEqual(m["expected_permute_ratio"]["B"], 0.0)
+
+    def test_emit_all(self):
+        for c in ("A", "B"):
+            code = emit_cc(c)
+            self.assertIsInstance(code, str)
+            self.assertGreater(len(code), 100)
+
+    def test_invalid_cover_raises(self):
+        with self.assertRaises(ValueError):
+            emit_cc("Z")
 
 
 if __name__ == "__main__":
