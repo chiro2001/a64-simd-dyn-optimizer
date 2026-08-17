@@ -1,0 +1,39 @@
+# psy-cost 16x16 (SVE2, VL=256), upstream-exact vs
+# x265::psyCost_pp_sve2<2> (SVE2 dispatch on 950 covers NEON).
+# Verified bit-exact 500 iters x 6 modes (QEMU sve-max-vq=2, 2026-08-18).
+# verify template reuses the sad kind (same signature: two u8 planes
+# + two intptr strides -> int).
+kernel: psy-cost-16x16
+contract: upstream-exact
+vl_bytes: 32
+shape:
+  kind: psy_cost
+  n: 16
+
+candidate:
+  symbol: dynopt_psy_cost_pp_16x16_sve2
+  trace_driver_src: kernels/psy-cost-16x16/trace_driver.cpp
+  trace_driver_c: kernels/psy-cost-16x16/trace_driver.cpp
+
+reference:
+  lib: build/x265-8-clang-sve/libx265.a
+  symbol: psyCost_pp_sve2
+  symbol_mangled: _ZN4x26515psyCost_pp_sve2ILi2EEEiPKhlS2_l
+  call: x265::psyCost_pp_sve2<2>
+  decl: |
+    namespace x265 {
+    template <int size> int psyCost_pp_sve2(
+        const uint8_t*, intptr_t, const uint8_t*, intptr_t);
+    }
+
+baselines:
+  sve2:
+    driver: kernels/psy-cost-16x16/trace_driver.cpp
+    symbol_mangled: _ZN4x26515psyCost_pp_sve2ILi2EEEiPKhlS2_l
+
+corpus:
+  strides: [16, 32, 64]
+  cases: 20000
+
+layouts:
+  compute: [sve]

@@ -154,6 +154,8 @@ cover-B  pure_sve2   fused=1012  ratio=43.4%  score=1.446  *** >30% ***
 1. ~~修复 dct32 的 manifest/contract 配置~~（已完成，见文首更新）
 2. 950 实机验证 AGO 选出的最佳候选
 3. 将 950 实测结果反馈到代价表（Feedback Loop）
-4. ~~扩展到更多 kernel 家族（satd-16, sad, psy-cost 等）~~（已完成，
-   见"新家族扩展"节；psy-cost 建议加 manifest 后走全管线验证）
-5. 自动发现新 cover 变体（而非预定义）
+4. ~~扩展到更多 kernel 家族（satd-16, sad, psy-cost 等）~~（已完成；
+   psy-cost manifest 已建，全管线通过，见 docs/83）
+5. ~~自动发现新 cover 变体（而非预定义）~~（第一步完成：
+   `ago_auto_search.py --discover` 参数网格枚举，见 docs/83；
+   深化：score 补 cp_lat、dct32 新 lowering 轴）

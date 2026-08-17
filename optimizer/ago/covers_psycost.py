@@ -1,18 +1,18 @@
 """Bounded cover search for psy-cost 16x16 (AGO M3, docs/82 下一步 #4).
 
-psy-cost has no search manifest yet (NEON upstream cost function), so
-this module is used via the manifest-free ago_auto_search path (direct
-emit -> compile -> static_counts -> rank), not search_sve2_layouts.
-
 Covers wrap the existing candidates:
 
-  A best_sve2     : hand-written SVE2 (permute_ratio=30.8%, fused=176)
+  A best_sve2     : hand-written NEON/SVE2 (permute_ratio=30.8%, fused=176)
   B best_ir_sve16 : dual-group 16-lane IR (permute_ratio=42.6%, fused=577,
                     expected loser on 950)
 
-Both are near/above the 30% soft threshold (docs/81: psy-cost is the
-family with the most permute-bound variants after interp8-hpp), so the
-auto-search ranks A first; a width-native lowering is a future cover.
+Manifest (kernels/psy-cost-16x16/manifest.yaml, 2026-08-18): kind=psy_cost
+reuses the gen_verify sad harness (identical signature: two u8 planes +
+two strides -> int). Candidate bit-exact vs upstream x265::psyCost_pp_sve2<2>
+(QEMU 500x6 manual + 2000-case funnel gate). Cover-B defines a different
+symbol (pixel_var) so it LINK-FAILs in the full pipeline — recorded by
+scan only. Both covers are near/above the 30% soft threshold; a
+width-native lowering is the next cover candidate.
 """
 
 from __future__ import annotations

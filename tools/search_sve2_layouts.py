@@ -465,6 +465,13 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sad_16x16_sve2")
             return emit_fn
+        if kernel == "psy-cost-16x16":
+            from ago.covers_psycost import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_psy_cost_pp_16x16_sve2")
+            return emit_fn
         raise ValueError("AGO backend: kernel %s has no cover template"
                          % kernel)
     if backend == "gen":
@@ -1485,6 +1492,7 @@ def main():
             "dct32": ["A", "B"],
             "satd-16": ["A", "B"],
             "sad": ["A", "B", "C"],
+            "psy-cost-16x16": ["A", "B"],
         }
         if args.kernel not in ago_covers:
             raise SystemExit("AGO backend: no cover axis for kernel %s"
@@ -1674,6 +1682,8 @@ def main():
             from ago.covers_satd16 import cover_meta as _cmeta  # noqa: E402
         elif args.kernel == "sad":
             from ago.covers_sad import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "psy-cost-16x16":
+            from ago.covers_psycost import cover_meta as _cmeta  # noqa: E402
         else:
             raise ValueError("--rank-by ago: kernel %s has no cover_meta"
                              % args.kernel)
@@ -1691,7 +1701,8 @@ def main():
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
             _ago_march = "armv8.2-a+sve2" if args.kernel in (
-                "interp8", "dct16", "dct32", "satd-16", "sad") \
+                "interp8", "dct16", "dct32", "satd-16", "sad",
+                "psy-cost-16x16") \
                 else "armv8.2-a+dotprod"
             _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",
                      "-march=" + _ago_march, "-c", src, "-o", obj],

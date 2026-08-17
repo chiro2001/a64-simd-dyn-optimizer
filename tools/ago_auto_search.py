@@ -62,7 +62,38 @@ def compile_and_count(cpp_path, march, tmpdir):
     return static_counts(obj)
 
 
-def auto_search(kernel, rank_by="permute", verify=False, march="armv8.2-a+sve2"):
+def _discovery_variants(kernel):
+    """docs/82 #5：返回参数网格上的自动变体 (label, emit_fn) 列表。
+
+    与预定义 cover 不同，这些变体由发射器/模板的参数组合枚举产生，
+    让自动搜索"发现"新候选而非只对精选 A/B/C 排序。无网格的 kernel
+    返回 []（其 cover 已全覆盖现有变体）。
+    """
+    import sys as _sys
+
+    _ir = os.path.join(ROOT, "optimizer", "ir")
+    if _ir not in _sys.path:
+        _sys.path.insert(0, _ir)
+    if kernel == "dct16":
+        # dct16 发射器全部 even-k 模式（docs/79 表）：精选只暴露
+        # neon_bridge/pure_sve2，发现网格补 fused/addp 两个模式。
+        from dct16_wide_sve2 import emit_candidate
+        return [
+            ("emitter-neon_bridge_fused",
+             lambda: emit_candidate("neon_bridge_fused")),
+            ("emitter-addp",
+             lambda: emit_candidate("addp")),
+        ]
+    if kernel == "interp8":
+        # svdot32 的 16x16/32x32 形状是独立 kernel（interp8-16/32），
+        # 与 8x8 精选不可比；8x8 的全部 lowering 变体（svdot32/
+        # svdot64/neon）已在精选 covers 中——无同 kernel 发现网格。
+        return []
+    return []
+
+
+def auto_search(kernel, rank_by="permute", verify=False, discover=False,
+                march="armv8.2-a+sve2"):
     """对指定 kernel 运行 AGO 自动搜索。"""
     if kernel not in KERNEL_COVERS:
         print("不支持的 kernel: %s（支持: %s）" % (
@@ -141,7 +172,77 @@ def auto_search(kernel, rank_by="permute", verify=False, march="armv8.2-a+sve2")
         if winner["permute_ratio"] >= 0.30:
             print("  ⚠ 超过 30%% 阈值，可能不是 950 上的最佳选择")
 
-        # 4. 可选：QEMU bit-exact 验证
+        # 4. 自动发现（docs/82 #5）：枚举参数网格变体，与精选同台排序
+        if discover:
+            disc = _discovery_variants(kernel)
+            if not disc:
+                print("\n[ago-search] %s 无发现网格（精选 cover 已覆盖全部"
+                      "现有变体）" % kernel)
+            else:
+                print("\n[ago-search] 自动发现（参数网格枚举）:")
+                print("%-12s %-34s %6s %8s %6s %6s %5s" % (
+                    "variant", "desc", "fused", "cp_lat", "perm",
+                    "ratio", "spill"))
+                print("-" * 80)
+                disc_results = []
+                for label, emit_fn in disc:
+                    try:
+                        code = emit_fn()
+                    except Exception as exc:  # noqa: BLE001
+                        print("%-12s EMIT FAIL: %s" % (label, exc))
+                        continue
+                    cpp = os.path.join(tmpdir,
+                                       "disc-%s.cpp" % label.split("-")[0])
+                    with open(cpp, "w") as f:
+                        f.write(code)
+                    sc = compile_and_count(cpp, march, tmpdir)
+                    if "error" in sc:
+                        print("%-12s COMPILE FAIL" % label)
+                        continue
+                    ratio = sc.get("permute_depth_ratio", 0)
+                    score = ratio + sc.get("vector_fused_uop", 0) / 1000.0
+                    flag = " ***" if ratio >= 0.30 else ""
+                    print("%-12s %-34s %6d %8s %6d %5.1f%% %5s%s" % (
+                        label[:12],
+                        ("emitter mode" if label.startswith("emitter")
+                         else "svdot32 template"),
+                        sc.get("vector_fused_uop", 0),
+                        sc.get("critical_path_latency", "-"),
+                        sc.get("permute_on_critical", 0),
+                        ratio * 100,
+                        sc.get("spill_reload", "-"),
+                        flag))
+                    disc_results.append({
+                        "label": label,
+                        "fused_uop": sc.get("vector_fused_uop", 0),
+                        "permute_ratio": ratio,
+                        "cp_lat": sc.get("critical_path_latency"),
+                        "score": score,
+                    })
+                if disc_results:
+                    dbest = min(disc_results, key=lambda r: r["score"])
+                    print("\n[ago-search] 发现最佳: %s (score=%.3f, "
+                          "permute=%.1f%%, fused=%d, cp_lat=%s) vs "
+                          "精选最佳: cover-%s (score=%.3f, permute=%.1f%%, "
+                          "fused=%d, cp_lat=%s)" % (
+                              dbest["label"], dbest["score"],
+                              dbest["permute_ratio"] * 100,
+                              dbest["fused_uop"], dbest["cp_lat"],
+                              winner["cover"], winner["score"],
+                              winner["permute_ratio"] * 100,
+                              winner["fused_uop"], winner["cp_lat"]))
+                    if dbest["score"] < winner["score"]:
+                        print("  ✓ 自动发现优于精选 cover（score 口径）"
+                              "——可固化为新 cover")
+                        if (dbest["cp_lat"] and winner["cp_lat"]
+                                and dbest["cp_lat"] > winner["cp_lat"]):
+                            print("  ⚠ 但 cp_lat 更差（%s vs %s）——score "
+                                  "公式不含关键路径，950 实测前不下结论"
+                                  % (dbest["cp_lat"], winner["cp_lat"]))
+                    else:
+                        print("  （精选 cover 仍最优；发现变体记录为候选）")
+
+        # 5. 可选：QEMU bit-exact 验证
         if verify:
             print("\n[ago-search] QEMU bit-exact 验证...")
             # TODO: 对 interp8 做 bit-exact 验证
@@ -232,10 +333,14 @@ def main():
                     help="排序方式（默认 permute）")
     ap.add_argument("--verify", action="store_true",
                     help="对最佳候选做 QEMU bit-exact 验证")
+    ap.add_argument("--discover", action="store_true",
+                    help="自动发现（docs/82 #5）：枚举发射器/模板参数网格"
+                         "变体，与精选 covers 同台排序")
     ap.add_argument("--march", default="armv8.2-a+sve2",
                     help="-march 值（默认 armv8.2-a+sve2）")
     args = ap.parse_args()
-    return auto_search(args.kernel, args.rank_by, args.verify, args.march)
+    return auto_search(args.kernel, args.rank_by, args.verify,
+                       args.discover, args.march)
 
 
 if __name__ == "__main__":

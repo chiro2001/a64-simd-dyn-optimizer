@@ -52,6 +52,8 @@ dct16-best_ir_sve16,,,dct16,,best_ir_sve16,,,,,,2,51200,0,PASS,,,,,,,yes,docs/72
 dct16-best_ir_sve16-static-vq2,,,dct16,,best_ir_sve16-static-vq2,,,,640,,2,,,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct16-best_sve2-sve256-2026-08-16-96bc310,2026-08-16,96bc310,dct16,dct,best_sve2-sve256,sve2,sve2,kernels/dct16/candidates/best_sve2.cpp,847,220,1;2,20000,0,,,,,,,,yes,docs/47-current-coverage-matrix-20260815.md
 dct16-composition-cert,2026-08-17,,dct16,,composition-cert,,,optimizer/ir/dct16_dual_sve_emit.py,,,,,,static-op-whitelist,,,,,,,,docs/75-two-group-equivalence-20260817.md
+dct16-disc-addp,,,dct16,permute,disc-addp,neon,sve2,optimizer/ir/dct16_wide_sve2.py,927,,,,,STATIC,,permute_ratio,0.425,,,,,docs/83-ago-autosearch-cont-20260818.md
+dct16-disc-neon_bridge_fused,,,dct16,permute,disc-neon_bridge_fused,neon,sve2,optimizer/ir/dct16_wide_sve2.py,858,,,,,STATIC,,permute_ratio,0.242,,,,,docs/83-ago-autosearch-cont-20260818.md
 dct16-dual-lane-cert,2026-08-17,,dct16,,dual-lane-cert,,,optimizer/ir/pure_sve_helpers.py,,,2,200,0,dual-lane-cert,,,,,,,,docs/75-two-group-equivalence-20260817.md
 dct16-dct32-footprint-cert,2026-08-17,,dct16,,footprint-cert,,,optimizer/ir/dct16_dual_sve_emit.py,,,,,,static-address-set,,,,,,,,docs/75-two-group-equivalence-20260817.md
 dct16-hand-neon,,,dct16,dct,hand-neon,sve2,neon,,1946,,1;2,20000,0,PASS,N1,ticks_pct,-27.3,-0.93,,,yes,docs/64-sve128-neon-migration-plan-20260816.md
@@ -166,6 +168,7 @@ lattice-bb-generic-accept,2026-08-17,,multi,,lattice-bb-generic,,,tools/lattice_
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 psy-cost-16x16-ago-auto-search,,,psy-cost-16x16,permute,ago-auto-search,,,optimizer/ago/covers_psycost.py,176,,,,,PASS,,ago_score,0.484,,,,yes,docs/82-ago-auto-search-20260818.md
 psy-cost-16x16-best_ir_sve16,,,psy-cost-16x16,pixel,best_ir_sve16,neon,sve2,kernels/psy-cost-16x16/candidates/best_ir_sve16.cpp,577,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+psy-cost-16x16-best_sve2-ago-pipeline,,,psy-cost-16x16,permute,best_sve2-ago-pipeline,neon,sve2,kernels/psy-cost-16x16/candidates/best_sve2.cpp,176,,2,2000,0,PASS,,permute_ratio,0.308,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
 sa8d-8-sa8d8_A-920B,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,920B,ticks,5069,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 sa8d-8-sa8d8_A-N1,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,N1,ticks,1728,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
