@@ -8,6 +8,10 @@
 #   AGO_IR_SVE16=1 scripts/freeze-950-dct.sh user@host  # dct16/32
 #     use the 16-lane dual-group IR candidates (docs/72) instead of
 #     op895/opbase; bundle/work dirs default to *-sve16-950.
+#   AGO_WIDE_SVE2=1 scripts/freeze-950-dct.sh user@host  # dct16/32/interp8
+#     use width-native svdot_s32 interp8 + neon_bridge dct16 + loop dct32
+#     candidates (docs/79 P5); permute_depth_ratio 20.5% (interp8 8x8)
+#     vs best_sve2 53.3%.
 #   FROZEN=1 scripts/freeze-950-dct.sh user@host  # frozen release set
 #     best9-minus-remain + dct IR (docs/73): 14 kernels, dct16/32 via
 #     AGO_IR_DCT=1 (best_ir_sve8 low-lane SVE2 bridge on 950).
@@ -49,8 +53,8 @@ interp8-vps-32x16,interp8-vps-32x32,sao-stats-bo,dct16,dct32"
 satd-8,scan-pos-last,interp8-vps-8x8,interp8-vps-8x16,interp8-vps-16x16,\
 interp8-vps-16x32,interp8-vps-32x16,interp8-vps-32x32,sao-stats-bo,\
 sao-stats-e1,sao-stats-e2,sao-stats-e3,dct8,dct16,dct32,\
-interp8vpp-16,interp8vpp-32,interp8-16,interp8-32"
-    echo "[950] bundle missing; building 23-kernel SVE2 bundle"
+interp8vpp-16,interp8vpp-32,interp8,interp8-16,interp8-32"
+    echo "[950] bundle missing; building 24-kernel SVE2 bundle"
   fi
   python3 tools/build_preload_so.py --isa sve2 --vl 32 \
     --kernels "$KERNELS" \

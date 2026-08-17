@@ -1,0 +1,50 @@
+====================================================================================================
+permute_depth_ratio 全量扫描报告
+march=armv8.2-a+sve2  阈值=30%  候选数=31
+====================================================================================================
+kernel                         variant                    fused  cp_la   perm  ratio spill  status
+----------------------------------------------------------------------------------------------------
+dct16                          best_ir_sve16                640     69     13  48.1%     5  *** 超阈值 ***
+dct32                          best_ir_sve16                897     85     14  46.7%    12  *** 超阈值 ***
+dct16                          best_wide_sve2_pure         1012    277     59  43.4%     5  *** 超阈值 ***
+dct16                          best_ir_pure_sve             818     49     32  42.1%     6  *** 超阈值 ***
+dct32                          best_ir_pure_sve            1136     60     36  41.4%    10  *** 超阈值 ***
+dct16                          best_op_mca                  699     51     66  38.6%     1  *** 超阈值 ***
+dct16                          best_ir_sve8                 373     50     13  37.1%     9  *** 超阈值 ***
+dct16                          best_legacy_sve2             742    172     37  37.0%    10  *** 超阈值 ***
+dct32                          best_op_r8                  1382    105     29  33.0%    14  *** 超阈值 ***
+dct16                          best_sve2                   1002    170     31  29.8%    23  OK
+dct16                          best_ir_neon8                507     37     12  26.7%     4  OK
+dct16                          best_sve2_vl128              369     70     10  26.3%     8  OK
+dct16                          best_wide_sve2_neon_bridg   1019     62     25  25.3%    28  OK
+dct16                          best_wide_sve2_neon_bridg    858     97     22  24.2%     6  OK
+dct16                          best_neon_vl128              512     42      6  23.1%     6  OK
+dct32                          best_sve2_opbase            1129    123     14  21.2%    17  OK
+dct32                          best_ir_neon8                691     57     10  20.8%    14  OK
+dct32                          best_neon_vl128              762     97      9  19.6%    15  OK
+dct32                          best_wide_sve2_loop          761     75      6  19.4%    27  OK
+dct32                          best_sve2_op4100            2090    394     59  18.8%    12  OK
+dct16                          best_sve2_op895              952     52      5  18.5%    20  OK
+dct8                           best_sve2                    258     59     12  18.5%     4  OK
+dct32                          best_op_r16                 2110    400     57  18.0%    12  OK
+dct32                          best_sve2_op4032            2110    400     57  18.0%    12  OK
+dct32                          best_sve2                   1128    108      6  13.6%    18  OK
+dct32                          best_ir_sve8                 619     61      4  11.1%    16  OK
+dct32                          best_sve1                   1233    119      6  10.0%    16  OK
+dct32                          best_op_mca                 1108    159      8   9.4%    12  OK
+dct32                          best_sve2_vl128              651    212      9   8.9%    24  OK
+idct16                         best_sve2                      -      -      -    N/A     -  COMPILE_FAIL: /tmp/cc7jKfw3.s: Assembler
+idct32                         best_sve2                      -      -      -    N/A     -  COMPILE_FAIL: /tmp/ccHsu1CG.s: Assembler
+----------------------------------------------------------------------------------------------------
+汇总: OK=20  超阈值=9  编译失败=2
+
+超阈值候选（需 950 实测验证）:
+  dct16/best_ir_sve16  ratio=48.1%  fused=640  cp_lat=69
+  dct32/best_ir_sve16  ratio=46.7%  fused=897  cp_lat=85
+  dct16/best_wide_sve2_pure  ratio=43.4%  fused=1012  cp_lat=277
+  dct16/best_ir_pure_sve  ratio=42.1%  fused=818  cp_lat=49
+  dct32/best_ir_pure_sve  ratio=41.4%  fused=1136  cp_lat=60
+  dct16/best_op_mca  ratio=38.6%  fused=699  cp_lat=51
+  dct16/best_ir_sve8  ratio=37.1%  fused=373  cp_lat=50
+  dct16/best_legacy_sve2  ratio=37.0%  fused=742  cp_lat=172
+  dct32/best_op_r8  ratio=33.0%  fused=1382  cp_lat=105

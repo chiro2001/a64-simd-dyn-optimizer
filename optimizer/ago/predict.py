@@ -115,3 +115,41 @@ def predict_sve1(cp_chain: list, table_sve1: Dict, features: Dict) -> Dict:
             tput_ops.extend([key] * int(cnt))
     return predict(cp_chain, tput_ops, table_sve1,
                    int(features.get("spill_reload_heuristic", 0)) * 4)
+
+
+# Permute-aware prediction (2026-08-18, docs/79 P1).
+#
+# permute_depth_ratio has rho=-1.000 vs 950 measured (dct16/dct32),
+# meaning higher ratio → slower on 950 (permute-bound bottleneck).
+# This function adjusts the base prediction with a permute penalty
+# proportional to the ratio × critical path length, using the
+# empirically observed threshold (0.30 = "slow zone boundary").
+#
+# Formula:
+#   permute_penalty = max(0, ratio - 0.30) × cp_len × PERMUTE_LATENCY
+#   adjusted = base_pred + permute_penalty
+#
+# For candidates without permute features (e.g. non-SVE2 ISA), falls
+# back to the base prediction unchanged.
+_PERMUTE_THRESHOLD = 0.30
+_PERMUTE_LATENCY = 2.0  # cycles per permute on critical path (950 estimate)
+
+
+def predict_with_permute(cover_meta: Dict, cover: str, table: Dict,
+                         features: Dict) -> Dict:
+    """Permute-aware prediction: base AGO pred + permute penalty.
+
+    Uses permute_depth_ratio from static_counts (bridged via
+    objfeatures.extract_features) as a secondary signal. Candidates
+    with ratio > 0.30 get penalized proportionally.
+    """
+    base = predict_from_features(cover_meta, cover, table, features)
+    ratio = features.get("permute_depth_ratio")
+    cp_len = features.get("critical_path_len")
+    if ratio is not None and cp_len is not None:
+        excess = max(0.0, ratio - _PERMUTE_THRESHOLD)
+        penalty = excess * cp_len * _PERMUTE_LATENCY
+        base["permute_depth_ratio"] = round(ratio, 4)
+        base["permute_penalty"] = round(penalty, 3)
+        base["predicted_cyc"] = round(base["predicted_cyc"] + penalty, 3)
+    return base

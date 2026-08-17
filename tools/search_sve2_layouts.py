@@ -430,6 +430,41 @@ def make_emitter(kernel, backend="acle"):
                 return emit_cover(combo.get("cover", "A"),
                                   "dynopt_sa8d_8x8_sve2")
             return emit_fn
+        if kernel == "interp8":
+            from ago.covers_interp8 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_interp8_8x8_sve2")
+            return emit_fn
+        if kernel == "dct16":
+            from ago.covers_dct16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_dct16_sve2_shared")
+            return emit_fn
+        if kernel == "dct32":
+            from ago.covers_dct32 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_dct32_sve2_shared")
+            return emit_fn
+        if kernel == "satd-16":
+            from ago.covers_satd16 import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_satd_16x16_sve2")
+            return emit_fn
+        if kernel == "sad":
+            from ago.covers_sad import emit_cover  # noqa: E402
+
+            def emit_fn(combo):
+                return emit_cover(combo.get("cover", "A"),
+                                  "dynopt_sad_16x16_sve2")
+            return emit_fn
         raise ValueError("AGO backend: kernel %s has no cover template"
                          % kernel)
     if backend == "gen":
@@ -1081,6 +1116,14 @@ def measure_layout_candidate(task):
         return row, None, "DRIVER LINK FAIL"
     if backend == "op" and kernel in ("dct32", "dct16"):
         start_syms = ["_ZL9op_pass_4PKsPsl"]
+    elif backend == "ago" and kernel in ("dct32", "dct16"):
+        # ago covers for dct16/dct32 (covers_dct16/32.py) emit static
+        # op_pass_4/op_pass_11 helpers plus a thin exported wrapper
+        # (dynopt_dct16/32_sve2_shared). Tracing the wrapper range
+        # counts only its prologue (~14 insns) and misses the kernel;
+        # the ago+dct static path below uses whole-object counts, so no
+        # symbol range is needed.
+        start_syms = [manifest["candidate"]["symbol"]]
     else:
         start_syms = manifest["candidate"].get(
             "range_start", manifest["candidate"]["symbol"])
@@ -1105,7 +1148,21 @@ def measure_layout_candidate(task):
             row.update({"passed": False, "counts": None})
             return row, None, "NO RANGE_END"
         rng = (rng[0], rng_end[1])
-    if is_sdot_compute(combo.get("compute")):
+    if backend == "ago" and kernel in ("dct16", "dct32"):
+        # ago covers for dct16/dct32 export a thin wrapper around
+        # static op_pass helpers; wrapper-range tracing undercounts the
+        # kernel (docs/82 "manifest 待修"). Whole-object static counts
+        # match the docs/79 measured numbers (dct32 761/1129, dct16
+        # 950/1019) and are the same extractor ago_auto_search uses.
+        try:
+            from static_counts import static_counts
+            counts = static_counts(obj, vl_bytes=vl_bytes)
+        except Exception as exc:  # noqa: BLE001
+            row.update({"passed": False, "counts": None})
+            return row, None, "STATIC COUNT FAIL: %s" % exc
+        row["range"] = ["all", "all"]
+        row["counts"] = counts
+    elif is_sdot_compute(combo.get("compute")):
         # QEMU 11.0.3 disassembles sdot z.s,z.h,z.h as .byte, so dynamic
         # trace counts would miss all 1376 sdots (docs/27 §8.10). These
         # kernels are fully unrolled: objdump static == dynamic.
@@ -1261,7 +1318,7 @@ def main():
                          "(default 0 = off)")
     ap.add_argument("--rank-by",
                     choices=("fused_uop", "mca", "cp", "lite", "vector-lb",
-                             "consensus", "bench920", "ago"),
+                             "consensus", "bench920", "ago", "permute"),
                     default="fused_uop",
                     help="final ranking key (default fused_uop; mca requires "
                          "--mca-top and uses mca_cycles as primary key, "
@@ -1423,6 +1480,11 @@ def main():
         ago_covers = {
             "satd-8": ["A", "B", "C", "D", "E"],
             "sa8d": ["A", "B", "C"],
+            "interp8": ["A", "B", "C"],
+            "dct16": ["A", "B", "C"],
+            "dct32": ["A", "B"],
+            "satd-16": ["A", "B"],
+            "sad": ["A", "B", "C"],
         }
         if args.kernel not in ago_covers:
             raise SystemExit("AGO backend: no cover axis for kernel %s"
@@ -1513,6 +1575,10 @@ def main():
                             candidate_march(combo), str(args.backend)))
         ckey = "%s|%s|%s" % (args.contract or manifest.get("contract", ""),
                              buildfp, src_hash)
+        if args.backend == "ago" and args.kernel in ("dct16", "dct32"):
+            # counting method differs from other backends (whole-object
+            # static counts, not wrapper-range trace); separate cache slot.
+            ckey += "|count=whole-object-static"
         c_contract = _layout_contract(
             combo, args.contract, manifest.get("contract", "upstream-exact"))
         if ckey in cache and cache[ckey].get("counts"):
@@ -1596,8 +1662,21 @@ def main():
         from ago.predict import predict_from_features  # noqa: E402
         if args.kernel == "satd-8":
             from ago.covers_satd8 import cover_meta as _cmeta  # noqa: E402
-        else:
+        elif args.kernel == "sa8d":
             from ago.covers_sa8d8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "interp8":
+            from ago.covers_interp8 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "dct16":
+            from ago.covers_dct16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "dct32":
+            from ago.covers_dct32 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "satd-16":
+            from ago.covers_satd16 import cover_meta as _cmeta  # noqa: E402
+        elif args.kernel == "sad":
+            from ago.covers_sad import cover_meta as _cmeta  # noqa: E402
+        else:
+            raise ValueError("--rank-by ago: kernel %s has no cover_meta"
+                             % args.kernel)
         tgt = args.mca_target or "NP1"
         table_path = {
             "920B": os.path.join(
@@ -1611,8 +1690,11 @@ def main():
         for r in ok:
             src = os.path.join(args.outdir, r["tag"] + ".cpp")
             obj = os.path.join(args.outdir, r["tag"] + ".ago.o")
-            _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++11",
-                     "-march=armv8.2-a+dotprod", "-c", src, "-o", obj],
+            _ago_march = "armv8.2-a+sve2" if args.kernel in (
+                "interp8", "dct16", "dct32", "satd-16", "sad") \
+                else "armv8.2-a+dotprod"
+            _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",
+                     "-march=" + _ago_march, "-c", src, "-o", obj],
                     timeout=180, capture_output=True)
             feats = extract_features(obj, src)
             cover = r["tag"].split("-")[-1]
@@ -1624,6 +1706,35 @@ def main():
                   % (r["tag"], fu(r), r.get("ago_pred") or 0.0))
         ok.sort(key=lambda r: (r.get("ago_pred") is None,
                                r.get("ago_pred") or 1e9, fu(r)))
+    if args.rank_by == "permute" and ok:
+        # Permute-aware ranking (docs/79 P1): permute_depth_ratio has
+        # rho=-1.000 vs 950 measured. Lower ratio = faster. Candidates
+        # without static_counts data fall to the back.
+        import subprocess as _sp
+        _opt = os.path.join(ROOT, "optimizer")
+        if _opt not in sys.path:
+            sys.path.insert(0, _opt)
+        from ago.objfeatures import extract_features  # noqa: E402
+        for r in ok:
+            src = os.path.join(args.outdir, r["tag"] + ".cpp")
+            obj = os.path.join(args.outdir, r["tag"] + ".permute.o")
+            _sp.run([args.cxx or _CXX, "-O3", "-DNDEBUG", "-std=c++17",
+                     "-march=armv8.2-a+sve2", "-c", src, "-o", obj],
+                    timeout=180, capture_output=True)
+            feats = extract_features(obj, src)
+            r["permute_ratio"] = feats.get("permute_depth_ratio")
+            r["cp_lat_sc"] = feats.get("critical_path_latency")
+            r["cp_len_sc"] = feats.get("critical_path_len")
+        print("rank by permute_depth_ratio (rho=-1.000 vs 950):")
+        for r in sorted(ok, key=lambda r: (r.get("permute_ratio") is None,
+                                          r.get("permute_ratio") or 1e9)):
+            ratio = r.get("permute_ratio")
+            flag = " *** >30% ***" if ratio and ratio >= 0.30 else ""
+            print("  %-24s fused_uop=%d permute_ratio=%.1f%% cp_lat=%s%s"
+                  % (r["tag"], fu(r), (ratio or 0) * 100,
+                     r.get("cp_lat_sc") or "-", flag))
+        ok.sort(key=lambda r: (r.get("permute_ratio") is None,
+                               r.get("permute_ratio") or 1e9, fu(r)))
     baseline = manifest.get("targets", {}).get("baseline_fused_uop")
     gate = manifest.get("targets", {}).get("halve_gate", 0.5)
     shape = manifest.get("shape", {})

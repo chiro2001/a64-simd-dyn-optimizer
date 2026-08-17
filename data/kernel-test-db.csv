@@ -47,6 +47,7 @@ cost-coeff-remain-dfa-table-920B-2026-08-16-7e9dfe9,,,cost-coeff-remain,entropy,
 cost-coeff-remain-dfa-920b,,,cost-coeff-remain,entropy,dfa-table,c,neon,,0,80,replay,2391308,0,,920B,replay_ratio,1.20,-0.25,,,yes,reports/entropy-replay-920b-20260815.txt
 cost-coeff-remain-inject-100f-920b-920B-2026-08-17-d536a6e,,,cost-coeff-remain,entropy,inject-100f-920b,c,neon,,0,80,,,,,920B,,,,+0.23,-130.0..-16.5,yes,reports/entropy-remain-920b-interleaved-20260817.txt
 cost-coeff-remain-kernel-bench-920b-920B,,,cost-coeff-remain,entropy,kernel-bench-920b,,,build/ablate-remain-920b-iab-work/cost-coeff-remain.o,0,80,,,,,920B,ratio_neon_cand,0.944,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
+dct16-ago-auto-search,,,dct16,permute,ago-auto-search,,,optimizer/ago/covers_dct16.py,952,,,,,PASS,,ago_score,1.137,,,,yes,docs/82-ago-auto-search-20260818.md
 dct16-best_ir_sve16,,,dct16,,best_ir_sve16,,,,,,2,51200,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct16-best_ir_sve16-static-vq2,,,dct16,,best_ir_sve16-static-vq2,,,,640,,2,,,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct16-best_sve2-sve256-2026-08-16-96bc310,2026-08-16,96bc310,dct16,dct,best_sve2-sve256,sve2,sve2,kernels/dct16/candidates/best_sve2.cpp,847,220,1;2,20000,0,,,,,,,,yes,docs/47-current-coverage-matrix-20260815.md
@@ -69,6 +70,7 @@ dct16-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc1
 dct16-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4567,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-wide_sve2_neon_bridge,,,dct16,,wide_sve2_neon_bridge,,,,,,2,,,,,fused_uop,950,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct16-wide_sve2_neon_bridge_fused,,,dct16,,wide_sve2_neon_bridge_fused,,,,,,1;2,20000,0,QEMU\,,static_only,0,,,,no\,reports/sve2-wide-dct16-20260817.txt
+dct32-ago-auto-search,,,dct32,permute,ago-auto-search,,,optimizer/ago/covers_dct32.py,761,,,,,PASS,,ago_score,0.955,,,,yes,docs/82-ago-auto-search-20260818.md
 dct32-axis-bb-accept,2026-08-17,,dct32,,axis-bb-3bin,,,tools/dct32_axis_bb_accept.py,1053,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-axis-bb-accept-v2,2026-08-17,,dct32,,axis-bb-oddxrg,,,tools/dct32_axis_bb_accept.py,886,,,6,0,static-fused-lattice,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 dct32-best_ir_sve16,,,dct32,,best_ir_sve16,,,,,,2,40960,0,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
@@ -88,11 +90,15 @@ dct32-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc1
 dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.5892,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-wide_sve2_loop,,,dct32,,wide_sve2_loop,,,,,,2,0,0,PENDING,,static_fused_uop,761,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
+interp8-ago-auto-search,,,interp8,permute,ago-auto-search,,,optimizer/ago/covers_interp8.py,87,,,,,PASS,,ago_score,0.292,,,,yes,docs/82-ago-auto-search-20260818.md
 interp8-best_ir_sve16,,,interp8,filter,best_ir_sve16,neon,sve2,kernels/interp8/candidates/best_ir_sve16.cpp,683,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-svdot32-sve2,,,interp8,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32.cpp,87,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-16-best_ir_sve16,,,interp8-16,filter,best_ir_sve16,neon,sve2,kernels/interp8-16/candidates/best_ir_sve16.cpp,3741,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-16-svdot32-sve2,,,interp8-16,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_16x16.cpp,26,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-16x32-best_ir_sve16,,,interp8-16x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x32/candidates/best_ir_sve16.cpp,7556,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-16x8-best_ir_sve16,,,interp8-16x8,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x8/candidates/best_ir_sve16.cpp,1836,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-32-best_ir_sve16,,,interp8-32,filter,best_ir_sve16,neon,sve2,kernels/interp8-32/candidates/best_ir_sve16.cpp,15156,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-32-svdot32-sve2,,,interp8-32,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_32x32.cpp,47,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-32x16-best_ir_sve16,,,interp8-32x16,filter,best_ir_sve16,neon,sve2,kernels/interp8-32x16/candidates/best_ir_sve16.cpp,7538,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-64x32-best_ir_sve16,,,interp8-64x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x32/candidates/best_ir_sve16.cpp,30368,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-64x64-best_ir_sve16,,,interp8-64x64,filter,best_ir_sve16,neon,sve2,kernels/interp8-64x64/candidates/best_ir_sve16.cpp,60849,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
@@ -158,6 +164,7 @@ mc-best_ir_sve16,,,mc,asm,best_ir_sve16,neon,sve2,kernels/mc/candidates/best_ir_
 mc-avg-16-ir,2026-08-16,72c8a08,mc-avg-16,asm,ir,neon,neon,optimizer/ir/mc_avg_emit.py,64,118,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 lattice-bb-generic-accept,2026-08-17,,multi,,lattice-bb-generic,,,tools/lattice_bb.py,,,,,,generic-accept-satd+dct32,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 pixel-var-16-ir,2026-08-16,72c8a08,pixel-var-16,asm,ir,neon,neon,optimizer/ir/pixel_var_emit.py,138,,scalar,3000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+psy-cost-16x16-ago-auto-search,,,psy-cost-16x16,permute,ago-auto-search,,,optimizer/ago/covers_psycost.py,176,,,,,PASS,,ago_score,0.484,,,,yes,docs/82-ago-auto-search-20260818.md
 psy-cost-16x16-best_ir_sve16,,,psy-cost-16x16,pixel,best_ir_sve16,neon,sve2,kernels/psy-cost-16x16/candidates/best_ir_sve16.cpp,577,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 pure-sve-dct-inject-100f-710-710-2026-08-17-1560422,2026-08-17,1560422,pure-sve-dct,,inject-100f-710,sve2,sve2,kernels/dct16/candidates/best_ir_pure_sve.cpp,,,,,,,710,,,,+2.63,-769.5..-636.5,yes,reports/pure-sve-dct-710-20260817.txt
 sa8d-8-sa8d8_A-920B,,,sa8d-8,pixel,sa8d8_A,neon,neon,experiments/ago-m2-expanded/src/sa8d8_A.cpp,100,,1,20000,0,20k-native,920B,ticks,5069,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
@@ -168,6 +175,7 @@ sa8d-8-sa8d8_C-920B,,,sa8d-8,pixel,sa8d8_C,neon,neon,experiments/ago-m2-expanded
 sa8d-8-sa8d8_C-N1,,,sa8d-8,pixel,sa8d8_C,neon,neon,experiments/ago-m2-expanded/src/sa8d8_C.cpp,100,,1,20000,0,20k-native,N1,ticks,1728,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 sa8d16-best_ir_sve16,,,sa8d16,pixel,best_ir_sve16,neon,sve2,kernels/sa8d16/candidates/best_ir_sve16.cpp,1033,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 sa8d16-ir,2026-08-16,72c8a08,sa8d16,pixel,ir,c/neon,neon,optimizer/ir/sa8d_emit.py,404,485,1;2,20000,0,,920B,ratio_neon_cand,1.04,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
+sad-ago-auto-search,,,sad,permute,ago-auto-search,,,optimizer/ago/covers_sad.py,66,,,,,PASS,,ago_score,0.066,,,,yes,docs/82-ago-auto-search-20260818.md
 sad-best_ir_sve16,,,sad,asm,best_ir_sve16,neon,sve2,kernels/sad/candidates/best_ir_sve16.cpp,384,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 sad-16-ir,2026-08-16,72c8a08,sad-16,asm,ir,neon,neon,optimizer/ir/sad_emit.py,66,98,1;2,20000,0,,,,,,,,yes,docs/66-multi-isa-kernels-survey-20260816.md
 sao-layout-bb-accept,2026-08-17,,sao,sao,layout-bb,,,tools/lattice_bb.py,33,,,12,0,generic-accept-sao-layout,,,,,,,,docs/74-contract-grammar-bb-20260817.md
@@ -193,6 +201,7 @@ sao-stats-e0-ir,2026-08-16,72c8a08,sao-stats-e0,sao,ir,sve2,sve2,optimizer/ir/sa
 satd-axis-s8x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-axis-s16x8,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
 satd-axis-s16x16,2026-08-17,,satd-,,axis-best-710,,,,,,,,,,710,ratio_vs_satd8_sve2,,,,,yes,reports/satd8-axis-search-20260817.txt
+satd-16-ago-auto-search,,,satd-16,permute,ago-auto-search,,,optimizer/ago/covers_satd16.py,172,,,,,PASS,,ago_score,0.252,,,,yes,docs/82-ago-auto-search-20260818.md
 satd-16-best_ir_sve16,,,satd-16,pixel,best_ir_sve16,neon,sve2,kernels/satd-16/candidates/best_ir_sve16.cpp,731,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 satd16-pure-sve-710-kernel,2026-08-17,,satd-16,,pure-sve-710,,,,,,,,,,710,ratio_vs_satd8_sve2,0.596,,,,yes,reports/satd-pure-sve-710-20260817.txt
 satd8-axis-s16x16_r_vaddlv_a_abd,2026-08-17,,satd-16x16,,axis-s16x16_r_vaddlv_a_abd,,,experiments/m31-satd8-axis-search/s16x16_r_vaddlv_a_abd.cpp,72,,2,20000,0,20k-diff,,,,,,,,reports/satd8-axis-search-20260817.txt
@@ -261,6 +270,9 @@ satd-8x4-satd8x4_B-920B,,,satd-8x4,pixel,satd8x4_B,neon,neon,experiments/ago-m2-
 satd-8x4-satd8x4_B-N1,,,satd-8x4,pixel,satd8x4_B,neon,neon,experiments/ago-m2-expanded/src/satd8x4_B.cpp,38,,1,20000,0,20k-native,N1,ticks,675,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x4-satd8x4_C-920B,,,satd-8x4,pixel,satd8x4_C,neon,neon,experiments/ago-m2-expanded/src/satd8x4_C.cpp,38,,1,20000,0,20k-native,920B,ticks,1863,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
 satd-8x4-satd8x4_C-N1,,,satd-8x4,pixel,satd8x4_C,neon,neon,experiments/ago-m2-expanded/src/satd8x4_C.cpp,38,,1,20000,0,20k-native,N1,ticks,668,,,,yes,reports/ago-m2-expanded-ranking-20260816.txt
+scan-permute-all-all-229,,,scan-permute-all,permute,all-229,,,tools/scan_permute_ratio.py,,,,229,0,STATIC,,over30,25,,,,,reports/scan-permute-all-20260818.txt
+scan-permute-dct-dct-31,,,scan-permute-dct,permute,dct-31,,,tools/scan_permute_ratio.py,,,,31,0,STATIC,,over30,11,,,,,reports/scan-permute-dct-20260818.txt
+scan-permute-interp8-interp8-87,,,scan-permute-interp8,permute,interp8-87,,,tools/scan_permute_ratio.py,,,,87,0,STATIC,,over30,5,,,,,reports/scan-permute-interp8-20260818.txt
 scan-pos-last-inject-100f-920b-920B-2026-08-17-d536a6e,,,scan-pos-last,entropy,inject-100f-920b,neon,neon,,20,100,,,,,920B,,,,-1.23,235.5..326.5,yes,reports/entropy-scan-920b-interleaved-20260817.txt
 scan-pos-last-kernel-bench-920b-920B,,,scan-pos-last,entropy,kernel-bench-920b,,,kernels/scan-pos-last/candidates/best_sve2.cpp,20,100,,,,,920B,ratio_neon_cand,1.147,,,,,reports/entropy-kernel-920b-microbench-20260817.txt
 scan-pos-last-920b,,,scan-pos-last,entropy,rbit-pext,neon,neon,,20,100,real-20k,20000,0,,920B,ratio_neon_cand,1.50,,,,yes,reports/freeze-ablate-stale-bundle-bug-20260817.txt
