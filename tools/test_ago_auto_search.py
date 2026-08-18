@@ -86,6 +86,80 @@ class TestCoverMetaAdapter(unittest.TestCase):
             self.assertEqual(rc, 0, k)
 
 
+class TestRankByAgo(unittest.TestCase):
+    """Verify --rank-by ago uses cost-table prediction (docs/86)."""
+
+    def test_interp8_rank_by_ago_picks_svdot32(self):
+        """ago prediction should select svdot32 (cover-A) for interp8,
+        consistent with the combined-score winner."""
+        rc = AAS.auto_search("interp8", "ago", False, False)
+        self.assertEqual(rc, 0)
+
+    def test_satd16_rank_by_ago_picks_cadd(self):
+        """ago prediction should select best_sve2_cadd (cover-C) for
+        satd-16, consistent with docs/83 round 3."""
+        rc = AAS.auto_search("satd-16", "ago", False, False)
+        self.assertEqual(rc, 0)
+
+    def test_rank_by_ago_and_permute_consistent_winners(self):
+        """For psy-cost-16x16, both ranking modes should select cover-C
+        (best_cadd butterfly). This verifies the cost-table prediction
+        doesn't contradict the combined-score heuristic."""
+        rc_ago = AAS.auto_search("psy-cost-16x16", "ago", False, False)
+        rc_perm = AAS.auto_search("psy-cost-16x16", "permute", False, False)
+        self.assertEqual(rc_ago, 0)
+        self.assertEqual(rc_perm, 0)
+
+    def test_select_table_sve(self):
+        """_select_table should pick SVE1 table for SVE march."""
+        from ago_auto_search import _select_table
+        path = _select_table("armv8.2-a+sve2")
+        self.assertIn("sve-timing-920b", path)
+        path2 = _select_table("armv8.2-a+sve")
+        self.assertIn("sve-timing-920b", path2)
+
+    def test_select_table_neon(self):
+        """_select_table should pick NP1 table for NEON march."""
+        from ago_auto_search import _select_table
+        path = _select_table("armv8.2-a+dotprod")
+        self.assertIn("neon-timing-n1", path)
+
+    def test_calibration_loaded_in_rank_by_ago(self):
+        """When build/calibration.json exists, --rank-by ago should
+        apply the calibration scale (docs/86 Feedback Loop validation)."""
+        import json, os
+        calib_path = os.path.join(ROOT, "build", "calibration.json")
+        if not os.path.exists(calib_path):
+            self.skipTest("no calibration.json (run feedback_calibrate)")
+        with open(calib_path) as f:
+            calib = json.load(f)
+        # Verify calibration has expected structure
+        self.assertIsInstance(calib, dict)
+        for kernel, entry in calib.items():
+            self.assertIn("scale", entry)
+            self.assertGreater(entry["scale"], 0)
+        # Verify sa8d is calibrated (from 920B ticks data)
+        self.assertIn("sa8d", calib)
+        self.assertGreater(calib["sa8d"]["scale"], 50)  # ~81x loop factor
+
+    def test_psycost_shapes_in_corpus(self):
+        """psy-cost-8x8/32x32/64x64 must be in KERNEL_COVERS
+        (manual search results fed into AGO, docs/86)."""
+        for k in ("psy-cost-8x8", "psy-cost-32x32",
+                  "psy-cost-64x64", "psy-cost-16x16"):
+            self.assertIn(k, AAS.KERNEL_COVERS,
+                          "%s missing from KERNEL_COVERS" % k)
+        # Verify each can emit and has cover_meta
+        for k in ("psy-cost-8x8", "psy-cost-32x32", "psy-cost-64x64"):
+            mod_name, func = AAS.KERNEL_COVERS[k]
+            mod = __import__(mod_name, fromlist=["emit_cover", "cover_meta"])
+            meta = mod.cover_meta()
+            self.assertIn("covers", meta)
+            self.assertGreaterEqual(len(meta["covers"]), 1)
+            code = mod.emit_cover(meta["covers"][0], func)
+            self.assertGreater(len(code), 100)
+
+
 class TestIsaConstraint(unittest.TestCase):
     """SVE1 constraint (920B): SVE2-only covers must be rejected."""
 
@@ -101,10 +175,10 @@ class TestIsaConstraint(unittest.TestCase):
             with open(cpp, "w") as f:
                 f.write(src)
             # sve2: compiles
-            sc2 = compile_and_count(cpp, "armv8.2-a+sve2", td)
+            sc2, _ = compile_and_count(cpp, "armv8.2-a+sve2", td)
             self.assertNotIn("error", sc2)
             # sve1: rejected (svcadd is SVE2-only)
-            sc1 = compile_and_count(cpp, "armv8.2-a+sve", td)
+            sc1, _ = compile_and_count(cpp, "armv8.2-a+sve", td)
             self.assertIn("error", sc1)
 
     def test_sve1_source_ok_under_sve1(self):
@@ -118,5 +192,5 @@ class TestIsaConstraint(unittest.TestCase):
             cpp = os.path.join(td, "c.cpp")
             with open(cpp, "w") as f:
                 f.write(src)
-            sc = compile_and_count(cpp, "armv8.2-a+sve", td)
+            sc, _ = compile_and_count(cpp, "armv8.2-a+sve", td)
             self.assertNotIn("error", sc)

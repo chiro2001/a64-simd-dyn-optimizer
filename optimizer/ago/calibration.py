@@ -61,11 +61,14 @@ def fit_scales(rows: list, min_ratio: float = 0.5,
     """Fit per-kernel median scale from measurement rows.
 
     rows: [{"kernel": ..., "predicted": float, "measured": float}]
-    Rows whose measured/predicted ratio falls outside [min_ratio,
-    max_ratio] are treated as outliers and dropped from that kernel's
-    median (they still count towards n for transparency).
+    Outlier filtering is relative to the kernel's median: entries
+    outside [0.5 * median, 2.0 * median] are dropped (two-pass).
+    This handles both well-calibrated (ratio ~1x) and initial
+    calibration (ratio ~50-80x due to loop static undercount).
     """
     from collections import defaultdict
+    from statistics import median
+
     ratios = defaultdict(list)
     for r in rows:
         p = float(r["predicted"])
@@ -75,7 +78,12 @@ def fit_scales(rows: list, min_ratio: float = 0.5,
         ratios[r["kernel"]].append(m / p)
     out = {}
     for kernel, rs in ratios.items():
-        sane = [x for x in rs if min_ratio <= x <= max_ratio]
+        # Pass 1: compute median from all entries
+        med = median(rs)
+        # Pass 2: filter relative to median (robust to any absolute scale)
+        lo = med * min_ratio
+        hi = med * max_ratio
+        sane = [x for x in rs if lo <= x <= hi]
         base = sorted(sane) if sane else sorted(rs)
         scale = base[len(base) // 2]
         out[kernel] = {

@@ -59,7 +59,11 @@ _CLASS_TABLE_KEY = {
     "abs": "abs_s16",
     "max": "maxv_u8",
     "trn": "add_u16",
+    "tbl": "add_u16",
     "mul": "sdot",
+    "narrow": "add_u16",
+    "pred": "empty",
+    "movprfx": "empty",
     "branch": "empty",
 }
 
@@ -68,10 +72,17 @@ def predict_from_features(cover_meta: Dict, cover: str, table: Dict,
                           features: Dict) -> Dict:
     """Final-object prediction: throughput bound from the measured
     instruction mix (count x reciprocal throughput), critical path from
-    the source-level chain. pred = max(cp, tput) + spill penalty."""
+    the source-level chain. pred = max(cp, tput) + spill penalty.
+
+    Auto-detects the table type (NP1 NEON vs 920B/950 SVE1) by probing
+    for SVE1-specific keys and selects the matching class mapping."""
+    if "ld1b_s8" in table:
+        class_key = _SVE1_CLASS_KEY
+    else:
+        class_key = _CLASS_TABLE_KEY
     tput_ops = []
     for cls, cnt in features.get("insn_by_class", {}).items():
-        key = _CLASS_TABLE_KEY.get(cls)
+        key = class_key.get(cls)
         if key:
             tput_ops.extend([key] * int(cnt))
     cp_chain = cover_meta["cp_chains"][cover]
@@ -89,6 +100,9 @@ _SVE1_CLASS_KEY = {
     "trn": "tbl_s16",
     "tbl": "tbl_s16",
     "mul": "mul_s16",
+    "narrow": "xtn_s16",
+    "pred": "whilelt_s32",
+    "movprfx": "movprfx",
     "branch": "empty",
 }
 

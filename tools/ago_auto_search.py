@@ -183,19 +183,34 @@ KERNEL_COVERS = {
     "interp8-16": ("optimizer.ago.covers_interp8_16", "dynopt_interp8_16x16_sve2"),
     "psy-cost-16x16": ("optimizer.ago.covers_psycost",
                        "dynopt_psy_cost_pp_16x16_sve2"),
+    "psy-cost-8x8": ("optimizer.ago.covers_psycost_8x8",
+                     "dynopt_psy_cost_pp_8x8_sve2"),
+    "psy-cost-32x32": ("optimizer.ago.covers_psycost_32x32",
+                       "dynopt_psy_cost_pp_32x32_sve2"),
+    "psy-cost-64x64": ("optimizer.ago.covers_psycost_64x64",
+                       "dynopt_psy_cost_pp_64x64_sve2"),
 }
 
 
-def compile_and_count(cpp_path, march, tmpdir):
-    """编译候选并提取 static_counts。"""
-    obj = os.path.join(tmpdir, "candidate.o")
+def compile_and_count(cpp_path, march, tmpdir, obj_name="candidate.o"):
+    """编译候选并提取 static_counts。返回 (sc, obj_path)。"""
+    obj = os.path.join(tmpdir, obj_name)
     r = subprocess.run(
         [CC, "-O3", "-march=" + march, "-c", cpp_path, "-o", obj],
         capture_output=True, text=True, timeout=120)
     if r.returncode != 0:
-        return {"error": r.stderr[:200]}
+        return {"error": r.stderr[:200]}, obj
     from static_counts import static_counts
-    return static_counts(obj)
+    return static_counts(obj), obj
+
+
+def _select_table(march):
+    """Select cost table by march: SVE1 table for sve, NP1 for neon."""
+    if "sve" in march:
+        return os.path.join(ROOT, "benchmarks", "sve-timing-920b",
+                            "timing-sve1-ago.json")
+    return os.path.join(ROOT, "benchmarks", "neon-timing-n1",
+                        "timing-n1.json")
 
 
 def _normalize_cover_meta(meta):
@@ -285,12 +300,15 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
             cpp = os.path.join(tmpdir, "cover-%s.cpp" % cover_id)
             with open(cpp, "w") as f:
                 f.write(code)
-            sc = compile_and_count(cpp, march, tmpdir)
+            sc, obj_path = compile_and_count(
+                cpp, march, tmpdir, "cover-%s.o" % cover_id)
             if "error" in sc:
                 # Distinguish ISA rejection (compiles under sve2 but not
                 # the requested march) from a genuinely broken cover.
                 if march != "armv8.2-a+sve2":
-                    sc2 = compile_and_count(cpp, "armv8.2-a+sve2", tmpdir)
+                    sc2, _ = compile_and_count(
+                        cpp, "armv8.2-a+sve2", tmpdir,
+                        "cover-%s-fb.o" % cover_id)
                     if "error" not in sc2:
                         print("cover-%s      ISA REJECT (%s)" % (
                             cover_id, march))
@@ -308,7 +326,7 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                 ratio * 100,
                 sc.get("spill_reload", "-"),
                 flag))
-            results.append({
+            r = {
                 "cover": cover_id,
                 "name": meta["names"][cover_id],
                 "fused_uop": sc.get("vector_fused_uop", 0),
@@ -317,36 +335,61 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                 "permute_on_cp": sc.get("permute_on_critical"),
                 "spill": sc.get("spill_reload"),
                 "code": code,
-            })
+            }
+            # When rank-by ago, compute cost-table prediction with
+            # permute penalty (predict_with_permute). This uses the
+            # SVE1 table (920B/950 proxy) for SVE targets and NP1 for
+            # NEON, auto-detected by predict_from_features.
+            if rank_by == "ago":
+                from ago.objfeatures import extract_features  # noqa: E402
+                from ago.predict import predict_with_permute  # noqa: E402
+                from ago.calibration import load_calibration, apply_calibration  # noqa: E402
+                table_path = _select_table(march)
+                import json as _json  # noqa: E402
+                with open(table_path) as _f:
+                    _table = _json.load(_f)
+                _calib = load_calibration(
+                    os.environ.get("DYNOPT_CALIBRATION") or
+                    os.path.join(ROOT, "build", "calibration.json"))
+                feats = extract_features(obj_path, cpp)
+                p = predict_with_permute(meta, cover_id, _table, feats)
+                r["ago_pred"] = apply_calibration(
+                    p["predicted_cyc"], kernel, _calib)
+            results.append(r)
 
         if not results:
             print("[ago-search] 全部候选编译失败")
             return 1
 
-        # 3. 选择最佳候选（综合 permute_ratio + fused_uop）
-        # permute_ratio 预测 950 permute 瓶颈，fused_uop 预测总指令开销。
-        # 组合分数 = permute_ratio + fused_uop/1000（两者归一化）。
-        # 纯 NEON 候选 permute_ratio=0 但 fused_uop 高，SVE2 候选
-        # permute_ratio 可能高但 fused_uop 低，组合分数平衡两者。
+        # 3. 选择最佳候选
+        # Combined score (always computed, used by --rank-by permute
+        # and by discovery comparison regardless of mode).
         def _score(r):
-            # permute_ratio (0-1) + fused_uop/1000 + cp_lat/500: the
-            # cp_lat term matches the 950-arbitrated dct16 case (op895
-            # beats the lower-permute neon_bridge_fused; docs/79/83).
-            # Weight 0.002 keeps predictor-consistent winners (sao-e0
-            # block32, cost-coeff unroll) while fixing dct16.
             return (r["permute_ratio"] + r["fused_uop"] / 1000.0 +
                     (r.get("cp_lat") or 0) / 500.0)
         for r in results:
             r["score"] = _score(r)
-        results.sort(key=lambda r: r["score"])
-        winner = results[0]
-        print("\n[ago-search] 最佳候选: cover-%s (%s)" % (
-            winner["cover"], winner["name"]))
-        print("  permute_ratio=%.1f%%  fused_uop=%d  cp_lat=%s  score=%.3f" % (
-            winner["permute_ratio"] * 100,
-            winner["fused_uop"],
-            winner["cp_lat"],
-            winner["score"]))
+
+        if rank_by == "ago":
+            # AGO cost-table prediction with permute penalty
+            results.sort(key=lambda r: r.get("ago_pred") or 1e9)
+            winner = results[0]
+            print("\n[ago-search] 最佳候选: cover-%s (%s)" % (
+                winner["cover"], winner["name"]))
+            print("  ago_pred=%.1f  fused_uop=%d  permute=%.1f%%" % (
+                winner.get("ago_pred", 0),
+                winner["fused_uop"],
+                winner["permute_ratio"] * 100))
+        else:
+            results.sort(key=lambda r: r["score"])
+            winner = results[0]
+            print("\n[ago-search] 最佳候选: cover-%s (%s)" % (
+                winner["cover"], winner["name"]))
+            print("  permute_ratio=%.1f%%  fused_uop=%d  cp_lat=%s  score=%.3f" % (
+                winner["permute_ratio"] * 100,
+                winner["fused_uop"],
+                winner["cp_lat"],
+                winner["score"]))
 
         if winner["permute_ratio"] >= 0.30:
             print("  ⚠ 超过 30%% 阈值，可能不是 950 上的最佳选择")
@@ -374,8 +417,9 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                                        "disc-%s.cpp" % label.split("-")[0])
                     with open(cpp, "w") as f:
                         f.write(code)
-                    sc = compile_and_count(cpp, march, tmpdir)
-                    if "error" in sc:
+                    sc, _ = compile_and_count(cpp, march, tmpdir,
+                                             "disc-%s.o" % label.split("-")[0])
+                    if isinstance(sc, dict) and "error" in sc:
                         print("%-12s COMPILE FAIL" % label)
                         continue
                     ratio = sc.get("permute_depth_ratio", 0)
@@ -402,6 +446,10 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                     })
                 if disc_results:
                     dbest = min(disc_results, key=lambda r: r["score"])
+                    # Discovery variants use combined score; compare
+                    # against the curated winner's combined score too
+                    # (compute if not already present, for fair compare).
+                    wscore = winner["score"]
                     print("\n[ago-search] 发现最佳: %s (score=%.3f, "
                           "permute=%.1f%%, fused=%d, cp_lat=%s) vs "
                           "精选最佳: cover-%s (score=%.3f, permute=%.1f%%, "
@@ -409,10 +457,10 @@ def auto_search(kernel, rank_by="permute", verify=False, discover=False,
                               dbest["label"], dbest["score"],
                               dbest["permute_ratio"] * 100,
                               dbest["fused_uop"], dbest["cp_lat"],
-                              winner["cover"], winner["score"],
+                              winner["cover"], wscore,
                               winner["permute_ratio"] * 100,
                               winner["fused_uop"], winner["cp_lat"]))
-                    if dbest["score"] < winner["score"]:
+                    if dbest["score"] < wscore:
                         print("  ✓ 自动发现优于精选 cover（score 口径）"
                               "——可固化为新 cover")
                         if (dbest["cp_lat"] and winner["cp_lat"]
@@ -522,11 +570,42 @@ def main():
     ap.add_argument("--isa", choices=("sve1", "sve2", "neon"),
                     help="ISA 约束便捷参数（sve1=920B/VL256、sve2=950、"
                          "neon=纯 NEON）；覆盖 --march 的默认值")
+    ap.add_argument("--compare", action="store_true",
+                    help="同时运行 permute 和 ago 两种排序，报告不一致"
+                         "（诊断预测校准需求）")
     args = ap.parse_args()
     if args.isa == "sve1" and args.march == "armv8.2-a+sve2":
         args.march = "armv8.2-a+sve"
     elif args.isa == "neon" and args.march == "armv8.2-a+sve2":
         args.march = "armv8.2-a+dotprod"
+    if args.compare:
+        import io, contextlib
+        results = {}
+        for mode in ("permute", "ago"):
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = auto_search(args.kernel, mode, False, False, args.march)
+            results[mode] = (rc, buf.getvalue())
+        # Extract winners
+        winners = {}
+        for mode, (rc, out) in results.items():
+            for line in out.splitlines():
+                if "最佳候选" in line:
+                    # e.g. "cover-A (svdot32...)"
+                    winners[mode] = line.split("cover-")[-1].split(" ")[0]
+                    break
+        print("[compare] kernel=%s" % args.kernel)
+        for mode in ("permute", "ago"):
+            print("  --rank-by %-8s -> cover-%s" % (
+                mode, winners.get(mode, "?")))
+        if winners.get("permute") != winners.get("ago"):
+            print("  ⚠ 不一致！permute 选 cover-%s，ago 选 cover-%s" % (
+                winners.get("permute", "?"), winners.get("ago", "?")))
+            print("  → 950 实测优先；permute 更重 permute 瓶颈，")
+            print("    ago 更重指令代价；需 Feedback Loop 校准")
+        else:
+            print("  ✓ 两种排序一致")
+        return 0
     return auto_search(args.kernel, args.rank_by, args.verify,
                        args.discover, args.march)
 

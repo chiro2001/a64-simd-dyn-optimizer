@@ -26,16 +26,19 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(
 
 
 _CLASSES = {
-    "ld_vec": re.compile(r"\b(ld1|ldr|ldp)\b"),
-    "st_vec": re.compile(r"\b(st1|str|stp)\b"),
-    "add": re.compile(r"\b(add|addl|addv|uaddlv|saddlv|paddl|padal)\w*\b"),
-    "sub": re.compile(r"\b(sub|subl|usubl|abd)\w*\b"),
+    "ld_vec": re.compile(r"\b(ld1|ldr|ldp)\w*\b"),
+    "st_vec": re.compile(r"\b(st1|str|stp)\w*\b"),
+    "add": re.compile(r"\b(add|addl|addv|uaddlv|uaddv|saddlv|saddv|paddl|padal|cadd|dup)\w*\b"),
+    "sub": re.compile(r"\b(sub|subl|usubl|abd|sshll|sshllb|sshllt|ushll)\w*\b"),
     "abs": re.compile(r"\b(abs)\w*\b"),
     "max": re.compile(r"\b(max|smax|umax)\w*\b"),
     "trn": re.compile(r"\b(trn1|trn2|uzp1|uzp2|zip1|zip2)\w*\b"),
-    "tbl": re.compile(r"\btbl\b"),
-    "mul": re.compile(r"\b(mul|mla|sdot|udot)\w*\b"),
-    "branch": re.compile(r"\b(bl|b\.)\b"),
+    "tbl": re.compile(r"\b(tbl|tbx)\b"),
+    "mul": re.compile(r"\b(mul|mla|sdot|udot|svdot|sqdmlal|sqdmull)\w*\b"),
+    "narrow": re.compile(r"\b(xtn|sqxtn|sqxtun|uqxtn|sqxtun2)\w*\b"),
+    "pred": re.compile(r"\b(whilelt|whilele|whilelo|whilels|ptrue|pfalse|sel)\w*\b"),
+    "movprfx": re.compile(r"\b(movprfx)\w*\b"),
+    "branch": re.compile(r"\b(bl|b\.|cbz|cbnz|tbz|tbnz|ret)\b"),
 }
 
 

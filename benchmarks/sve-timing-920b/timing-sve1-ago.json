@@ -18,7 +18,7 @@
   "latency_cyc": 24.03,
   "throughput_cyc_per_op": 0.5
  },
- "method": "CNTVCT min-of-7, dependent chain (lat) / 8 independent chains (tput), 2026-08-16, taskset -c 0",
+ "method": "CNTVCT min-of-7, dependent chain (lat) / 8 independent chains (tput), 2026-08-16, taskset -c 0. SVE2 entries (cadd/svdot/sqxtun/st1b/narrow/pred/movprfx) are architecture estimates pending 950 measurement; will be calibrated by feedback_calibrate.py when real data arrives.",
  "mla_s16": {
   "latency_cyc": 2.0,
   "throughput_cyc_per_op": 1.0
@@ -35,6 +35,10 @@
   "latency_cyc": 2.2,
   "throughput_cyc_per_op": 0.5
  },
+ "st1b_s8": {
+  "latency_cyc": 1.0,
+  "throughput_cyc_per_op": 0.5
+ },
  "sub_s16": {
   "latency_cyc": 2.28,
   "throughput_cyc_per_op": 0.5
@@ -46,5 +50,33 @@
  "uaddv_s32": {
   "latency_cyc": 13.02,
   "throughput_cyc_per_op": 1.89
+ },
+ "cadd_s16": {
+  "latency_cyc": 2.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "svdot_s32": {
+  "latency_cyc": 3.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "svdot_s64": {
+  "latency_cyc": 4.0,
+  "throughput_cyc_per_op": 1.0
+ },
+ "xtn_s16": {
+  "latency_cyc": 2.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "whilelt_s32": {
+  "latency_cyc": 1.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "sel_s16": {
+  "latency_cyc": 1.0,
+  "throughput_cyc_per_op": 0.5
+ },
+ "movprfx": {
+  "latency_cyc": 0.0,
+  "throughput_cyc_per_op": 0.0
  }
 }

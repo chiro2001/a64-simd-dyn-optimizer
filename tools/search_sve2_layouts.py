@@ -2649,7 +2649,7 @@ def main():
         if _opt not in sys.path:
             sys.path.insert(0, _opt)
         from ago.objfeatures import extract_features  # noqa: E402
-        from ago.predict import predict_from_features  # noqa: E402
+        from ago.predict import predict_from_features, predict_with_permute  # noqa: E402
         from ago.calibration import load_calibration, apply_calibration  # noqa: E402
         _calib = load_calibration()
         if args.kernel == "satd-8":
@@ -2945,6 +2945,8 @@ def main():
         table_path = {
             "920B": os.path.join(
                 ROOT, "benchmarks/sve-timing-920b/timing-sve1-ago.json"),
+            "950": os.path.join(
+                ROOT, "benchmarks/sve-timing-920b/timing-sve1-ago.json"),
             "NP1": os.path.join(
                 ROOT, "benchmarks/neon-timing-n1/timing-n1.json"),
         }.get(tgt, os.path.join(ROOT,
@@ -3086,7 +3088,7 @@ def main():
                     timeout=180, capture_output=True)
             feats = extract_features(obj, src)
             cover = r["tag"].split("-")[-1]
-            p = predict_from_features(meta, cover, table, feats)
+            p = predict_with_permute(meta, cover, table, feats)
             r["ago_pred"] = apply_calibration(p["predicted_cyc"],
                                                 args.kernel, _calib)
         print("rank by ago prediction (%s table):" % tgt)

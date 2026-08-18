@@ -79,11 +79,22 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--ingest", required=True,
                     help="measurements JSON (list of {kernel, cover, measured_cyc})")
-    ap.add_argument("--table", default=os.path.join(
-        ROOT, "benchmarks", "neon-timing-n1", "timing-n1.json"))
-    ap.add_argument("--out", default=os.path.join(ROOT, "build", "calibration.json"))
-    ap.add_argument("--march", default="armv8.2-a+sve2")
+    ap.add_argument("--table", default=None,
+                    help="cost table JSON (default: auto-select by --march; "
+                         "sve1/sve2 -> 920B SVE1 table, neon -> NP1 table)")
+    ap.add_argument("--out", default=os.path.join(ROOT, "build", "calibration.json"),
+                    help="output calibration JSON path")
+    ap.add_argument("--march", default="armv8.2-a+sve2",
+                    help="march string for compilation")
     args = ap.parse_args()
+
+    if args.table is None:
+        if "sve" in args.march:
+            args.table = os.path.join(
+                ROOT, "benchmarks", "sve-timing-920b", "timing-sve1-ago.json")
+        else:
+            args.table = os.path.join(
+                ROOT, "benchmarks", "neon-timing-n1", "timing-n1.json")
 
     with open(args.ingest) as f:
         measurements = json.load(f)
