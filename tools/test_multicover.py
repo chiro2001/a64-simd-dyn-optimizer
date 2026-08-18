@@ -105,6 +105,23 @@ class RuntimeCppTest(unittest.TestCase):
         self.assertIn("AGO_BENCH_MAXORD", src)
         self.assertIn("if (b >= 0) {", src)  # skip kernels w/o measured arm
         self.assertIn("ns/call", src)
+        self.assertIn("AGO_BENCH_ROUNDS", src)    # median-of-rounds
+        self.assertIn("med[nr / 2]", src)
+        self.assertIn("AGO_BENCH_BUDGET_MS", src)  # timebox
+        self.assertIn("upstream_ns", src)          # baseline pairing
+        # shape-aware buffers (dct16: src 576B, dst 16*64*2+64=2112B)
+        self.assertIn("dynopt_b0[576]", src)
+        self.assertIn("dynopt_b1[2112]", src)
+
+    def test_interception_contract(self):
+        src = self._gen(bench=[])
+        self.assertIn("dynopt_intercept_status", src)
+        self.assertIn("dynopt_mark_intercepted", src)
+
+    def test_bench_gate(self):
+        src = self._gen(bench=["dct16"])
+        self.assertIn("BENCH INVALID (interception failed)", src)
+        self.assertIn("dynopt_bench_all();", src)
 
     def test_debug_trace_is_env_gated(self):
         src = self._gen(bench=["dct16"])

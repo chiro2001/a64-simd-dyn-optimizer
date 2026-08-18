@@ -1816,6 +1816,7 @@ def main():
         lines.append(a)
         lines.append("    n++;")
     if mc_kernels:
+        lines.append("    dynopt_mark_intercepted();")
         lines.append("    dynopt_preset_and_bench();")
     lines += [
         "    fprintf(stderr, \"dynopt: patched %d x265 dispatch slot(s)\\n\","

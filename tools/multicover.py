@@ -30,6 +30,8 @@ if os.path.join(ROOT, "tools") not in sys.path:
 if os.path.join(ROOT, "optimizer") not in sys.path:
     sys.path.insert(0, os.path.join(ROOT, "optimizer"))
 
+from bench_specs import spec as _bench_spec
+
 # ---- cover planning ---------------------------------------------------------
 
 
@@ -156,13 +158,24 @@ def _arg_call(params):
                      for i, p in enumerate(_param_parts(params)))
 
 
-def _bench_buffers(params, size=4096):
+def _bench_buffers(params, spec=None):
+    """Shape-aware buffers + scalar call values (docs/87 step 3)."""
     decls, args = [], []
     idx = 0
+    bp = 0
+    sp = 0
     for p in _param_parts(params):
         if "*" not in p:
-            args.append("64")
+            scalar = "64"
+            if spec and spec.get("scalars") and sp < len(spec["scalars"]):
+                scalar = str(spec["scalars"][sp])
+            sp += 1
+            args.append(scalar)
             continue
+        size = 4096
+        if spec and spec.get("buffers") and bp < len(spec["buffers"]):
+            size = spec["buffers"][bp]
+        bp += 1
         typ = p[:p.rindex("*")].strip()
         decls.append("    alignas(64) static uint8_t dynopt_b%d[%d] = {0};"
                      % (idx, size))
@@ -310,6 +323,9 @@ def _runtime_utils():
         "    dynopt_sha256((const unsigned char*)mstr, strlen(mstr), h);",
         "    snprintf(out, n, \"m%02x%02x%02x%02x\", h[0], h[1], h[2], h[3]);",
         "}",
+        "static int dynopt_intercepted_ = 0;",
+        "extern \"C\" void dynopt_mark_intercepted(void) { dynopt_intercepted_ = 1; }",
+        "extern \"C\" int dynopt_intercept_status(void) { return dynopt_intercepted_; }",
         "static int dynopt_ord_ok(const char* s) {",
         "    if (!s || !*s) return 0;",
         "    for (; *s; s++) if (*s < '0' || *s > '9') return 0;",
@@ -318,34 +334,51 @@ def _runtime_utils():
     ]
 
 
-def _bench_block(k):
+def _bench_block(k, spec=None):
+    """Median-of-rounds bench with upstream pairing (docs/87 step 3)."""
     kn = rname(k["kernel"])
     n = max(k["cover_ids"]) + 1
-    decls, call = _bench_buffers(k["params"])
+    decls, call = _bench_buffers(k["params"], spec)
     parts = ["static uint64_t dynopt_%s_bench(void) {" % kn,
-             "    const int R = 2000, S = 6;",
-             "    int maxord = %d;" % n,
+             "    int R = 2000, rounds = 5, maxord = %d;" % n,
+             "    { const char* ir = getenv(\"AGO_BENCH_ITERS\");",
+             "      if (ir && atoi(ir) > 0) R = atoi(ir); }",
+             "    { const char* rr = getenv(\"AGO_BENCH_ROUNDS\");",
+             "      if (rr && atoi(rr) > 0 && atoi(rr) <= 8) rounds = atoi(rr); }",
              "    { const char* mo = getenv(\"AGO_BENCH_MAXORD\");",
              "      if (mo && atoi(mo) > 0 && atoi(mo) < maxord) maxord = atoi(mo); }"]
     parts += decls
     parts += [
-        "    int best = -1; uint64_t bc = ~0ULL;",
+        "    int best = -1; uint64_t bc = ~0ULL, up_ns = 0;",
         "    for (int ord = 0; ord < maxord; ord++) {",
         "        dynopt_%s_t fn = (ord == 0) ? dynopt_%s_up : dynopt_%s_fns[ord];"
         % (kn, kn, kn),
         "        if (!fn) continue;",
         "        for (int i = 0; i < 200; i++) fn(%s);" % call,
-        "        uint64_t t0 = dynopt_cnt();",
-        "        for (int s = 0; s < S; s++)",
+        "        uint64_t med[8]; int nr = 0;",
+        "        for (int r = 0; r < rounds; r++) {",
+        "            uint64_t t0 = dynopt_cnt();",
         "            for (int i = 0; i < R; i++) fn(%s);" % call,
-        "        uint64_t dt = (dynopt_cnt() - t0) / (uint64_t)(R * S);",
+        "            uint64_t t1 = dynopt_cnt();",
+        "            med[nr++] = (t1 - t0) / (uint64_t)R;",
+        "        }",
+        "        for (int i = 1; i < nr; i++) {",
+        "            uint64_t v = med[i]; int j = i - 1;",
+        "            while (j >= 0 && med[j] > v) { med[j + 1] = med[j]; j--; }",
+        "            med[j + 1] = v;",
+        "        }",
+        "        uint64_t dt = med[nr / 2];",
+        "        if (ord == 0) up_ns = dt;",
+        "        fprintf(stderr, \"dynopt: bench " + k["kernel"] +
+        " ord=%d ns/call=%llu\\n\", ord, dt);",
         "        if (dt < bc) { bc = dt; best = ord; }",
-    ]
-    parts.append('        fprintf(stderr, "dynopt: bench ' + k["kernel"] +
-                 ' ord=%d ns/call=%llu\\n", ord, dt);')
-    parts += [
         "    }",
-        "    return best < 0 ? 0 : (unsigned)best;",
+    ]
+    parts.append('    fprintf(stderr, "dynopt: bench ' + k["kernel"] +
+                 ' chosen=ord%d ns=%llu upstream_ns=%llu\\n",'
+                 ' best < 0 ? -1 : best, best < 0 ? 0ULL : bc, up_ns);')
+    parts += [
+        "    return best < 0 ? (unsigned)-1 : (unsigned)best;",
         "}",
     ]
     return parts
@@ -402,7 +435,7 @@ def runtime_cpp(kernels, bench_kernels=None):
         parts.append("    return 0;")
         parts.append("}")
         if k["kernel"] in bench_kernels:
-            parts += _bench_block(k)
+            parts += _bench_block(k, _bench_spec(k["kernel"]))
 
     lines = ["",
              "static int dynopt_select_kernel(const char* k, int ord) {"]
@@ -419,17 +452,27 @@ def runtime_cpp(kernels, bench_kernels=None):
         lines.append("    dynopt_%s_cur = dynopt_%s_fns[%d];" % (kn, kn, dflt))
     lines += ["}",
               "static void dynopt_bench_all(void) {",
+              "    uint64_t budget_ns = 4000000000ULL;",
+              "    { const char* bm = getenv(\"AGO_BENCH_BUDGET_MS\");",
+              "      if (bm && atoll(bm) > 0) budget_ns = (uint64_t)atoll(bm) * 1000000ULL; }",
+              "    uint64_t t0_all = dynopt_cnt();",
               "    char fp[16]; dynopt_host_fp(fp, sizeof(fp));",
               "    char preset[2048];",
               "    int off = snprintf(preset, sizeof(preset), "
               "\"AGO_PRESET=%s:\", fp);",
               "    if (getenv(\"AGO_DEBUG\")) fprintf(stderr, \"dynopt: dbg fp=%s off=%d\\n\", fp, off);",
-              "    int first = 1;"]
+              "    int first = 1;",
+              "    int stop = 0;"]
     for k in kernels:
         if k["kernel"] not in bench_kernels:
             continue
         kn = rname(k["kernel"])
-        lines.append("    { if (getenv(\"AGO_DEBUG\")) fprintf(stderr, \"dynopt: dbg before bench %s\\n\");" % k["kernel"])
+        lines.append("    if (dynopt_cnt() - t0_all >= budget_ns) {")
+        lines.append("        if (!stop) fprintf(stderr, \"dynopt: bench budget exhausted,"
+                     " skipping remaining kernels\\n\");")
+        lines.append("        stop = 1;")
+        lines.append("    }")
+        lines.append("    if (!stop) { if (getenv(\"AGO_DEBUG\")) fprintf(stderr, \"dynopt: dbg before bench %s\\n\");" % k["kernel"])
         lines.append("      int b = (int)dynopt_%s_bench();" % kn)
         lines.append("      if (getenv(\"AGO_DEBUG\")) fprintf(stderr, \"dynopt: dbg after bench %s b=%%d\\n\", b);" % k["kernel"])
         lines.append("      if (b >= 0) {")
@@ -491,7 +534,12 @@ def runtime_cpp(kernels, bench_kernels=None):
         "        }",
         "    }",
         "    const char* b = getenv(\"AGO_BENCH\");",
-        "    if (b && !strcmp(b, \"1\")) dynopt_bench_all();",
+        "    if (b && !strcmp(b, \"1\")) {",
+        "        if (!dynopt_intercepted_)",
+        "            fprintf(stderr, \"dynopt: BENCH INVALID (interception failed)\\n\");",
+        "        else",
+        "            dynopt_bench_all();",
+        "    }",
         "}",
     ]
     parts += lines

@@ -78,12 +78,12 @@ class MulticoverSoTest(unittest.TestCase):
                     "dynopt_dct16_cov3", "dynopt_preset_and_bench"):
             self.assertIn(" T %s" % sym, self.nm, sym)
 
-    def test_bench_produces_preset(self):
+    def test_bench_invalid_without_interception(self):
+        # docs/87 sec.2: no interception -> INVALID, no preset line.
         r = self._qemu({"AGO_BENCH": "1"})
         self.assertEqual(r.returncode, 0, r.stderr)
-        m = re.search(r"^AGO_PRESET=m[0-9a-f]{8}:dct16=[123]$",
-                      r.stdout.strip(), re.M)
-        self.assertTrue(m, "stdout=%r stderr=%r" % (r.stdout, r.stderr))
+        self.assertIn("BENCH INVALID", r.stderr)
+        self.assertNotIn("AGO_PRESET=", r.stdout)
 
     def test_fingerprint_mismatch_fallback(self):
         r = self._qemu({"AGO_PRESET": "v1:m00000000:dct16=3"}, cpu="max")
@@ -109,6 +109,30 @@ class MulticoverSoTest(unittest.TestCase):
             self.assertIn("ignored", r2.stderr, bad)
         r3 = self._qemu({"AGO_PRESET": "v0:m00000000:dct16=3"}, cpu="max")
         self.assertIn("bad version", r3.stderr)
+
+
+@unittest.skipUnless(
+    os.path.isdir(os.path.join(ROOT, "build", "x265-8-cross-sve2")),
+    "injected cross-built libx265 missing")
+class InterceptionE2ETest(unittest.TestCase):
+    """Real interception loop under qemu (docs/87 step 3)."""
+
+    def test_positive_and_negative(self):
+        r = subprocess.run(
+            [sys.executable,
+             os.path.join(ROOT, "tools", "verify_preload_local.py"),
+             "--kernels", "dct16", "--iters", "400", "--rounds", "3",
+             "--out", os.path.join(tempfile.mkdtemp(prefix="e2e-"),
+                                   "report.json")],
+            capture_output=True, text=True, timeout=600)
+        self.assertEqual(r.returncode, 0,
+                         "stdout=%s\nstderr=%s" % (r.stdout[-1500:],
+                                                    r.stderr[-1500:]))
+        self.assertIn("patched=1", r.stdout)
+        self.assertIn("ord=0", r.stdout)          # upstream arm competed
+        self.assertIn("AGO_PRESET=m", r.stdout)   # preset produced
+        self.assertIn("invalid=True", r.stdout)
+        self.assertIn("preset_leaked=False", r.stdout)
 
 
 if __name__ == "__main__":
