@@ -13,6 +13,9 @@
   （kernel 测试数据库）、docs/68（工具用法手册，含稳定性标注）、
   docs/69（契约语料库，round-0026 P2）、docs/70（遗留事项 backlog）、
   docs/71（ISA 转换能力：NEON→SVE 优化路径）、docs/52（AGO 规划）。
+- 08-17 后主线：docs/78（SVE2-256 优化交接）、docs/82–84（AGO
+  自动搜索语料）、docs/85（950 实机验证清单）、docs/86（SVE2 指令
+  分类 + 950 代价代理）、docs/87（运行时分派闭环 + 新门禁标准）。
 - 实测报告：`reports/`；顶级模型建议：`expert-advice/round-NNNN/`
   （含 `decision.md`，执行 agent 必须处理每条建议的 accept/reject/
   defer）。

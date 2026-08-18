@@ -42,6 +42,15 @@ k0_even_sdot 全 s16 方案被探针否决（§6.4）；DCT16 best 705；完整�
 见 [20-dct32-optimization-assessment.md](20-dct32-optimization-assessment.md) §6 与
 [10-agent-handoff.md](10-agent-handoff.md)。
 
+2026-08-19 状态速览（最新）：自动搜索 / 950 实机主线见
+[82-ago-auto-search-20260818.md](82-ago-auto-search-20260818.md)
+– [86-sve2-classification-950-proxy-20260820.md](86-sve2-classification-950-proxy-20260820.md)；
+双线开发方向与运行时分派闭环（benchmark+preset、新门禁标准
+TestBenchLite+视频 md5、非 bit-exact 偏差画像、cover 注册表 +
+build_release 目标 I/O）见
+[87-directions-runtime-arbitration-20260819.md](87-directions-runtime-arbitration-20260819.md)；
+权威交接仍以 docs/59 为准（其 2026-08-19 增补指向最新主线）。
+
 ## 一页执行摘要
 
 推荐的 v1 路径是“离线合成 + x265 运行时 ISA dispatch”，不是在编码热路径中 JIT：
