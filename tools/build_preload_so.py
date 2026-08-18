@@ -28,6 +28,7 @@ import os
 import re
 import subprocess
 import sys
+import multicover
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -1491,11 +1492,21 @@ def main():
     ap.add_argument("--skip-satd-small", action="store_true",
                     help="only inject satd 32x32/64x64 slots (skip "
                          "8x8/16x16/8x16/16x8) for A/B testing")
+    ap.add_argument("--multicover", action="store_true",
+                    help="runtime arbitration mode (docs/87 step 2): "
+                         "compile every AGO cover per kernel into the .so "
+                         "and generate AGO_PRESET/AGO_BENCH dispatch "
+                         "(sve2 LD_PRELOAD only)")
+    ap.add_argument("--bench-kernels", default="",
+                    help="kernels included in the AGO_BENCH=1 sweep "
+                         "(comma separated; subset of --multicover)")
     ap.add_argument("--json", default="",
                     help="write a build report JSON")
     args = ap.parse_args()
     if args.target and not args.isa:
         args.isa = "sve1" if args.target == "920B" else "sve2"
+    bench_set = set(x.strip() for x in args.bench_kernels.split(",")
+                    if x.strip())
 
     os.makedirs(args.workdir, exist_ok=True)
     cfg = next((d for d in CONFIG_DIRS if os.path.exists(
@@ -1524,6 +1535,7 @@ def main():
     saves = []
     report = {"isa": args.isa, "vl": args.vl, "patched": [], "skipped": []}
     used_syms = set()
+    mc_kernels = []
 
     for kernel in wanted:
         man_path = os.path.join(ROOT, "kernels", kernel, "manifest.yaml")
@@ -1549,6 +1561,74 @@ def main():
         if not entries:
             report["skipped"].append([kernel, "no dispatch mapping"])
             continue
+        if args.multicover and not args.inject_outdir and \
+                args.isa == "sve2" and len(entries) == 1 and \
+                kernel not in ADAPTERS and sym not in used_syms:
+            dflt_src = None
+            for dsrc in (candidate_sources(kernel, args.isa, args.vl) or []):
+                try:
+                    with open(dsrc, encoding="utf-8") as _f:
+                        dflt_src = _f.read()
+                    break
+                except OSError:
+                    continue
+            covers = []
+            try:
+                covers, dflt = multicover.plan_covers(
+                    kernel, sym, args.workdir, default_src=dflt_src)
+            except Exception as exc:
+                report["skipped"].append(
+                    [kernel, "multicover plan: %s" % exc])
+            cc = [args.cxx, "-fPIC"] + args.opt.split() + common + includes
+            cc += ["-march=" + ISA_MARCH[args.isa]]
+            mc_ids, mc_objs = [], []
+            for c in covers:
+                mc_obj = os.path.join(args.workdir,
+                                      "%s-mc%d.o" % (kernel.replace("/", "_"),
+                                                     c["id"]))
+                r = run(cc + ["-c", c["src"], "-o", mc_obj], timeout=180)
+                if r.returncode != 0:
+                    continue
+                if not args.no_isa_gate:
+                    g = run([sys.executable,
+                             os.path.join(ROOT, "tools/check_isa_level.py"),
+                             "--object", mc_obj, "--level", args.isa, "--json",
+                             "--objdump", "aarch64-linux-gnu-objdump"],
+                            timeout=120)
+                    try:
+                        gj = json.loads(g.stdout)
+                        viol = gj.get("violations") or []
+                    except (ValueError, KeyError):
+                        viol = [{"mnemonic": "unknown"}]
+                    if viol:
+                        continue
+                mc_ids.append(c["id"])
+                mc_objs.append(mc_obj)
+            if mc_ids:
+                used_syms.add(sym)
+                objs += mc_objs
+                slot, ret, params, _esym = entries[0]
+                kn = multicover.rname(kernel)
+                saves.append("    dynopt_%s_up = P->%s;" % (kn, slot))
+                assigns.append("    P->%s = %s;"
+                               % (slot, multicover.trampoline(kernel)))
+                decls.append(
+                    "    // multicover kernel %s: runtime-dispatched via "
+                    "trampoline" % kernel)
+                mc_kernels.append({
+                    "kernel": kernel, "sym": sym, "ret": ret,
+                    "params": params, "cover_ids": mc_ids,
+                    "default_id": dflt if dflt in mc_ids else mc_ids[0],
+                })
+                report["multicover_kernels"] = report.get(
+                    "multicover_kernels", []) + [
+                        {"kernel": kernel, "symbol": sym,
+                         "covers": mc_ids}]
+                report["patched"].append(
+                    {"kernel": kernel, "symbol": sym,
+                     "slots": [s for s, _, _, _ in entries],
+                     "runtime": "multicover"})
+                continue
         sources = candidate_sources(kernel, args.isa, args.vl)
         if not sources and args.vl == 16 and kernel in VL128_SKIP:
             report["skipped"].append(
@@ -1688,6 +1768,11 @@ def main():
         "",
     ]
     lines += decls
+    if mc_kernels:
+        bench = bench_set & {k["kernel"] for k in mc_kernels}
+        lines.append("")
+        lines += multicover.runtime_cpp(mc_kernels, bench).splitlines()
+        lines.append("")
     lines += [
         "",
         "static int dynopt_find_x265_cb(struct dl_phdr_info* info,",
@@ -1730,6 +1815,8 @@ def main():
     for a in assigns:
         lines.append(a)
         lines.append("    n++;")
+    if mc_kernels:
+        lines.append("    dynopt_preset_and_bench();")
     lines += [
         "    fprintf(stderr, \"dynopt: patched %d x265 dispatch slot(s)\\n\","
         " n);",
@@ -1776,6 +1863,9 @@ def main():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     link = ([args.cxx, "-shared", "-fPIC", "-o", out, wrapper] + common +
             includes + objs + ["-ldl"])
+    if mc_kernels and args.isa:
+        link.append("-march=" + ISA_MARCH[args.isa])
+        link.append('-DAGO_ISA_STR=\"%s\"' % args.isa)
     r = run(link, timeout=300)
     if r.returncode != 0:
         print(r.stdout[-4000:])
@@ -1786,6 +1876,9 @@ def main():
     for p in report["patched"]:
         print("  %-28s %-46s %s"
               % (p["kernel"], p["symbol"], "; ".join(p["slots"])))
+    for p in report.get("multicover_kernels", []):
+        print("  [multicover] %-22s covers=%s"
+              % (p["kernel"], p["covers"]))
     if report["skipped"]:
         print("skipped: %d" % len(report["skipped"]))
         for k, why in report["skipped"]:
