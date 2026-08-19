@@ -88,14 +88,23 @@ fp = sha256(machine|isa|vl|compiler|so_sha256|extra)[:8]
 - 单测覆盖：roundtrip、指纹敏感度、坏语法、未知 kernel、越界序号、
   指纹不匹配、schema 完整性、id0 约束、重复 id。
 
+## 5.5 有界字段（步骤 7）
+
+- cover 可选字段：`bound`（正整数，发布偏差上限；0/缺省=仅 exact）、
+  `deviation`（实测 max_abs，非负；画像工具回填）。
+- 校验：id 0=upstream 禁止携带 bound/deviation；bound<=0 非法；
+  deviation<0 非法（tools/test_cover_registry.py 覆盖）。
+
 ## 6. 与后续步骤的接口
+
+
 
 | 步骤 | 依赖本规格的接口 |
 | --- | --- |
 | 2 preset 协议进 .so | AGO_PRESET 解析/校验（可移植到 C++ 版实现；语义见 §2/§5） |
 | 3 benchmark 骨架 | AGO_BENCH 输出 = Preset.serialize()；参赛臂含 id0=upstream |
 | 4 build_release | manifest.json = 注册表 + 每条 cover 的编译/flag/哈希；序号生命周期规则 §1 生效 |
-| 5 偏差画像 | 每 cover 填 deviation 字段；非 bit-exact 候选记 `bit_exact=no (bounded: ...)` |
+| 5 偏差画像 | 每 cover 填 deviation 字段；非 bit-exact 候选记 `bit_exact=no (bounded: ...)`；发布上限存 cover 可选 `bound`（正整数，0/缺省=仅 exact），CLI `--bind-bound kernel=id:bound` |
 | 8 数据交换 | 内网 verdict 直接翻译为 {kernel: ordinal}，与 preset 同构 |
 
 ## 7. CLI 速查

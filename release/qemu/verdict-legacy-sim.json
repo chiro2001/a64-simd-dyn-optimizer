@@ -1,0 +1,109 @@
+{
+  "commit_external": "cf69379",
+  "date": "2026-08-19",
+  "db_rows": [
+    [
+      "dct16-upstream dispatch-final-2026-08-19-cf69379",
+      0
+    ],
+    [
+      "dct32-upstream dispatch-final-2026-08-19-cf69379",
+      0
+    ]
+  ],
+  "errors": [],
+  "fingerprint": "ma501c4d9",
+  "fingerprint_consistency": false,
+  "gates": {
+    "benchmark": {
+      "arms": {
+        "dct16": {
+          "0": 2386,
+          "1": 4536,
+          "2": 7059,
+          "3": 4495
+        },
+        "dct32": {
+          "0": 18045,
+          "1": 59543,
+          "2": 56220,
+          "3": 60326
+        }
+      },
+      "passed": true,
+      "rounds": 1
+    },
+    "interception": {
+      "passed": true,
+      "patched_slots": 2
+    },
+    "preset_runtime_policy": {
+      "applied": true,
+      "applied_kernels": 2,
+      "expected_kernels": 2,
+      "ignored_reason": null,
+      "runtime_preset": "AGO_PRESET=v1:mfd2a2bf4:dct16=0,dct32=0"
+    },
+    "video_md5": {
+      "base_md5": "60d7bdebd1b2887576dae276b131b73398aaeb35fbcb09e93e0d62ba9a96ac9f",
+      "clips": [
+        "final-clip.yuv"
+      ],
+      "frames": 24,
+      "injected_mode": "qemu-injected",
+      "passed": true,
+      "preset": "faster",
+      "release_md5": "60d7bdebd1b2887576dae276b131b73398aaeb35fbcb09e93e0d62ba9a96ac9f",
+      "res": "128x128"
+    }
+  },
+  "injected": {
+    "mode": "qemu-injected",
+    "stage": "/tmp/final-gate-r23qwnnn/x265-shared-injected"
+  },
+  "kernels": [
+    {
+      "arm_ns": 2386,
+      "cover": 0,
+      "kernel": "dct16",
+      "kind": "upstream",
+      "label": "upstream dispatch",
+      "speedup_vs_upstream": 1.0,
+      "upstream_ns": 2386
+    },
+    {
+      "arm_ns": 18045,
+      "cover": 0,
+      "kernel": "dct32",
+      "kind": "upstream",
+      "label": "upstream dispatch",
+      "speedup_vs_upstream": 1.0,
+      "upstream_ns": 18045
+    }
+  ],
+  "machine": {
+    "isa": "sve2",
+    "tag": "qemu",
+    "vl": 32
+  },
+  "pairwise": {
+    "dct16": [
+      "upstream",
+      "C",
+      "A",
+      "B"
+    ],
+    "dct32": [
+      "upstream",
+      "B",
+      "A",
+      "C"
+    ]
+  },
+  "passed": true,
+  "preset_fp": "mfd2a2bf4",
+  "preset_used": "v1:mfd2a2bf4:dct16=0,dct32=0",
+  "report_ref": "docs/95 + release/qemu",
+  "schema": "ago/exchange/verdict",
+  "version": 1
+}

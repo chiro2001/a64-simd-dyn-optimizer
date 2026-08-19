@@ -59,12 +59,24 @@ def rename_symbol(src, kernel_sym, new_sym):
     return src.replace(kernel_sym, new_sym)
 
 
-def plan_covers(kernel, kernel_sym, workdir, default_src=None):
+def plan_covers(kernel, kernel_sym, workdir, default_src=None,
+               allow_ids=None, extra_covers=None):
     """Return (covers, default_id) in registry order.
 
     default_id: the cover whose canonical source matches `default_src`
     (the build's current candidate_sources pick); falls back to a cover-
     identity scan, then to the first cover.
+
+    allow_ids: optional set of registry ordinals to keep (coarse-screen
+    exclusions from build_release P2); ordinals stay stable when
+    filtering.
+
+    extra_covers: optional list of {"src", "letter", "symbol"} checked-in
+    candidate sources to add after the module's generated covers (ordinal
+    ids continue).  "symbol" overrides the canonical kernel symbol used by
+    rename_symbol when the candidate exports its own (e.g. i8mm wrappers
+    named dynopt_interp8_hpp_*).  These are the non-bit-exact / scan-only
+    candidates re-arbitrated under docs/87 step 5.
     """
     os.makedirs(workdir, exist_ok=True)
     from ago_auto_search import KERNEL_COVERS
@@ -74,16 +86,25 @@ def plan_covers(kernel, kernel_sym, workdir, default_src=None):
     module = __import__(module_name, fromlist=["emit_cover", "cover_meta"])
     meta = module.cover_meta()
     out = []
-    for cid, letter in enumerate(meta.get("covers", []), start=1):
+
+    def _emit(letter, cid):
         func_name = cov_symbol(kernel, cid)
-        try:
-            src = module.emit_cover(letter, func_name)
-        except TypeError:
-            src = module.emit_cover(letter)
-        except Exception as exc:
-            raise RuntimeError("kernel %s cover %s emit failed: %s"
-                               % (kernel, letter, exc))
-        if kernel_sym in src:
+        src = None
+        extra = None
+        if isinstance(letter, dict):
+            extra = letter
+            with open(letter["src"], encoding="utf-8") as f:
+                src = f.read()
+        else:
+            try:
+                src = module.emit_cover(letter, func_name)
+            except TypeError:
+                src = module.emit_cover(letter)
+            except Exception as exc:
+                raise RuntimeError("kernel %s cover %s emit failed: %s"
+                                   % (kernel, letter, exc))
+        sym = (extra or {}).get("symbol") or kernel_sym
+        if sym in src:
             # Uniquify per-cover helper symbols (IR emission like
             # dynopt_dct16_op_pass1/2 is shared across covers and would
             # collide at link time). The exported wrapper symbol itself
@@ -93,23 +114,39 @@ def plan_covers(kernel, kernel_sym, workdir, default_src=None):
 
             def _uniq(m):
                 name = m.group(0)
-                if name == kernel_sym:
+                if name == sym:
                     return name
                 return name.replace('dynopt_%s_' % rname(kernel),
                                     'dynopt_%s_cov%d_'
                                     % (rname(kernel), cid))
 
             src = pat.sub(_uniq, src)
-            src = rename_symbol(src, kernel_sym, func_name)
-        path = os.path.join(workdir, "%s-cover-%d.cpp" % (rname(kernel), cid))
+            src = rename_symbol(src, sym, func_name)
+        elif extra:
+            raise ValueError(
+                "kernel %s extra cover %s: symbol %r not in source"
+                % (kernel, letter["letter"], sym))
+        path = os.path.join(workdir,
+                            "%s-cover-%d.cpp" % (rname(kernel), cid))
         with open(path, "w", encoding="utf-8") as f:
             f.write(src)
-        out.append({"id": cid, "letter": letter,
-                    "func_name": func_name, "src": path})
+        out.append({"id": cid, "letter": letter["letter"] if extra
+                    else letter, "func_name": func_name, "src": path})
+
+    for cid, letter in enumerate(meta.get("covers", []), start=1):
+        if allow_ids is not None and cid not in allow_ids:
+            continue
+        _emit(letter, cid)
+    n_meta = len(meta.get("covers", []))
+    for i, extra in enumerate(extra_covers or [], start=n_meta + 1):
+        if allow_ids is not None and i not in allow_ids:
+            continue
+        _emit(extra, i)
     dflt = out[0]["id"] if out else None
 
     def canon(c):
-        src = open(c["src"], encoding="utf-8").read()
+        with open(c["src"], encoding="utf-8") as f:
+            src = f.read()
         # Uniquified per-cover helper prefixes do not exist in the
         # pristine default source; strip cov<id>_ first (the wrapper
         # rename below must not catch their prefixes), then restore the
@@ -130,6 +167,8 @@ def plan_covers(kernel, kernel_sym, workdir, default_src=None):
             if canon(c) == first:
                 dflt = c["id"]
                 break
+    if allow_ids is not None and dflt not in allow_ids:
+        dflt = min(c["id"] for c in out)
     return out, dflt
 
 
@@ -410,8 +449,10 @@ def runtime_cpp(kernels, bench_kernels=None):
         for cid in covers:
             parts.append(_decl_for(ret, params,
                                    cov_symbol(k["kernel"], cid)))
-        init = ", ".join("0" if i == 0 else cov_symbol(k["kernel"], i)
-                         for i in range(n))
+        init = ", ".join(
+            "0" if (i == 0 or i not in covers)
+            else cov_symbol(k["kernel"], i)
+            for i in range(n))
         parts.append("static %s dynopt_%s_fns[%d] = {%s};" % (typ, kn, n, init))
         parts.append("static %s dynopt_%s_up = 0;" % (typ, kn))
         dflt = k["default_id"] if k["default_id"] in covers else min(covers)
@@ -459,7 +500,7 @@ def runtime_cpp(kernels, bench_kernels=None):
               "    char fp[16]; dynopt_host_fp(fp, sizeof(fp));",
               "    char preset[2048];",
               "    int off = snprintf(preset, sizeof(preset), "
-              "\"AGO_PRESET=%s:\", fp);",
+              "\"AGO_PRESET=v1:%s:\", fp);",
               "    if (getenv(\"AGO_DEBUG\")) fprintf(stderr, \"dynopt: dbg fp=%s off=%d\\n\", fp, off);",
               "    int first = 1;",
               "    int stop = 0;"]

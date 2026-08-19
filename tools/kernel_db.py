@@ -50,13 +50,48 @@ def save_rows(rows):
         w.writerows(rows)
 
 
+import re
+
+
+def parse_bit_exact(v):
+    """'yes' -> ('yes', None); 'no (bounded: ...)' -> ('bounded', body).
+
+    Bounded bodies may themselves contain parentheses (e.g. an envelope
+    reference), so parsing is prefix-based: strip the trailing ')' of the
+    whole value, not the first one.
+    """
+    v = (v or "").strip()
+    if v.lower() == "yes":
+        return ("yes", None)
+    if v.lower().startswith("no (bounded:"):
+        body = v[len("no (bounded:"):].rstrip(")").strip()
+        return ("bounded", body)
+    return ("no", v or "")
+
+
+def valid_bit_exact(v):
+    tag, _ = parse_bit_exact(v)
+    return tag in ("yes", "bounded", "no")
+
+
 def parse_kv(s):
+    """Whitespace key=value split where a '(' starts a value continuation:
+    bit_exact=no (bounded: max_abs<=32767; measured=12096) stays one value
+    under the 'bit_exact' key."""
     d = OrderedDict()
+    cur = None
+    dep = 0
     for part in s.split():
-        k, _, v = part.partition("=")
-        if not k:
+        was_inside = dep > 0
+        dep += part.count("(") - part.count(")")
+        if was_inside or part.lstrip().startswith("("):
+            if cur is not None:
+                d[cur] += " " + part
             continue
-        d[k] = v
+        k, _, v = part.partition("=")
+        if k:
+            d[k] = v
+            cur = k
     return d
 
 
@@ -69,6 +104,10 @@ def do_add(args):
                          row.get("machine", ""), row.get("date"),
                          row.get("commit", "")) if x)
         row["id"] = base
+    if "bit_exact" in row and not valid_bit_exact(row["bit_exact"]):
+        print("invalid bit_exact %r (use yes | no (bounded: ...))" % (
+            row["bit_exact"]), file=sys.stderr)
+        return 1
     for f in FIELDS:
         row.setdefault(f, "")
     rows = [r for r in rows if r.get("id") != row["id"]]
@@ -83,12 +122,16 @@ def do_query(args):
     rows = load_rows()
     for r in rows:
         ok = True
+        bounded_want = getattr(args, "bounded", False)
         for k in ("kernel", "family", "variant", "machine",
                   "output_isa", "input_isa"):
             v = getattr(args, k)
             if v and v not in r.get(k, ""):
                 ok = False
                 break
+        if bounded_want and parse_bit_exact(r.get("bit_exact"))[0] != \
+                "bounded":
+            ok = False
         if ok:
             print("\t".join(r.get(f, "") for f in FIELDS))
 
@@ -163,6 +206,8 @@ def main():
     for k in ("kernel", "family", "variant", "machine",
               "output_isa", "input_isa"):
         q.add_argument("--" + k, default="")
+    q.add_argument("--bounded", action="store_true",
+                   help="only rows whose bit_exact is no (bounded: ...)")
     q.set_defaults(fn=do_query)
     e = sub.add_parser("export-md")
     e.set_defaults(fn=do_export_md)

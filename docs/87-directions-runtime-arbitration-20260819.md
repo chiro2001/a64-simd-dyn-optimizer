@@ -27,6 +27,7 @@
   加强版过严，已撤回。
 - 推论 1：TBL ↔ 视频 md5 的关系需实验建立。做法：用真实视频编码录
   kernel 输入分布（注入器加录制模式），以真实输入构造 TBL 用例回放
+  实验证据：docs/93（qemu 代理：lite TBL 全 PASS、回放 3/666 调用偏差 max=2880、整段 md5 不变；门槛阶梯：加强版随机 > 回放 > lite TBL；同机包络 max<=2880/diff_calls<=3/diff_count<=16 → md5 不变）
   对比 upstream；或直接保持用 x265 自己的门控。
 - 推论 2：视频 md5 只能做**同机回归**（历史三机 md5 本就不同）；跨机
   安全门仍是 TestBenchLite。
@@ -107,8 +108,20 @@
 1. cover 注册表 schema（数字序号、偏差画像字段、preset 格式定义）。
 2. preset 协议进 .so（AGO_BENCH / AGO_PRESET、指纹、白名单）。
 3. interception 自检 + benchmark 骨架（920B 验证）。
-4. build_release.py 串 P1–P4。
-5. 偏差画像工具 + 重跑 op4032（新门禁下第一个高价值待决项）。
+4. build_release.py 串 P1–P4。 [DONE: docs/91; release/qemu 产物 + report 验证]
+5. 偏差画像工具 + 重跑 op4032/sao/i8mm 重新仲裁。 [DONE: docs/92; tools/dev_profile.py; release/step5-qemu + kernel-test-db 5 行]
+6. TBL↔视频 md5 关系实验（录制模式 + 真实输入回放）。
+   [DONE: docs/93; tools/tbl_md5.py; release/step6-qemu/report.json]
+7. 有界非 bit-exact 搜索轴（偏差上界 + DB 记 bit_exact=no (bounded...))。
+   [DONE: docs/94; tools/bounded_search.py; kernel-test-db bounded 行 + registry bound 字段]
+8. 内网↔外网数据交换协议（verdict/指令代价表/主动测量清单）与 950 终验闭环。
+   [DONE: docs/95; tools/exchange.py + tools/final_gate.py + scripts/run-final-gate.sh;
+    release/qemu/verdict.json（qemu 代理样本全绿：md5 门禁 base==release、
+    preset 2/2、8 臂；代理 md5 差异已根因闭环——legacy 注入 lib+interposer
+    双入口根因（hook 时机早于 setup 尾 lowpass/report）→ F1 守卫式 hook +
+    F2 幂等守卫双修复，现代/legacy 两形态代理实测与基线一致，950 复验降为
+    对照确认）；inbox 消费侧：exchange.py --ingest-inbox 把 950 verdict/
+    bone-cost 落 DB + pairwise + 刷新 measure-request（演练已通）]
 
 ## 8. 关联文档
 

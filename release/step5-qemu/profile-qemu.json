@@ -1,0 +1,195 @@
+{
+  "bench_iters": 150000,
+  "kernels": [
+    {
+      "covers": [
+        {
+          "arm_ns": 60287,
+          "bit_exact": true,
+          "bound": 32767,
+          "id": 1,
+          "letter": "A",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 0.2992,
+          "upstream_ns": 18040,
+          "verdict": "hold_exact"
+        },
+        {
+          "arm_ns": 57716,
+          "bit_exact": true,
+          "bound": 32767,
+          "id": 2,
+          "letter": "B",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 0.3126,
+          "upstream_ns": 18040,
+          "verdict": "hold_exact"
+        },
+        {
+          "arm_ns": 61062,
+          "bit_exact": true,
+          "bound": 32767,
+          "id": 3,
+          "letter": "C",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 0.2954,
+          "upstream_ns": 18040,
+          "verdict": "hold_exact"
+        },
+        {
+          "arm_ns": 30678,
+          "bit_exact": false,
+          "bound": 32767,
+          "id": 4,
+          "letter": "op4032",
+          "profile": {
+            "diff_count": 3304,
+            "iters": 300,
+            "l1": 8080384,
+            "l2_x1000": 3403365,
+            "max_abs": 12096,
+            "mean_abs_x1000": 2445637,
+            "status": "diff"
+          },
+          "speedup": 0.588,
+          "upstream_ns": 18040,
+          "verdict": "hold_bounded"
+        }
+      ],
+      "default_id": 1,
+      "domain": "resid9/pixel/int8 (spec-driven)",
+      "kernel": "dct32",
+      "shape": "32x32 int16, stride 128 (out 32*128)",
+      "symbol": "dynopt_dct32_sve2_shared",
+      "upstream": "P->cu[BLOCK_32x32].dct"
+    },
+    {
+      "covers": [
+        {
+          "arm_ns": 9654,
+          "bit_exact": true,
+          "bound": 0,
+          "id": 1,
+          "letter": "A",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 0.7487,
+          "upstream_ns": 7228,
+          "verdict": "hold_exact"
+        },
+        {
+          "arm_ns": 9020,
+          "bit_exact": true,
+          "bound": 0,
+          "id": 2,
+          "letter": "i8mm",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 0.8013,
+          "upstream_ns": 7228,
+          "verdict": "hold_exact"
+        }
+      ],
+      "default_id": 1,
+      "domain": "resid9/pixel/int8 (spec-driven)",
+      "kernel": "interp8-32",
+      "shape": "interp8 hpp 32x32, strides 64/64, coeffIdx 2 (luma_hpp xFrac&3 domain)",
+      "symbol": "dynopt_interp8_32x32_sve2",
+      "upstream": "P->pu[LUMA_32x32].luma_hpp"
+    },
+    {
+      "covers": [
+        {
+          "arm_ns": 902,
+          "bit_exact": true,
+          "bound": 0,
+          "id": 1,
+          "letter": "A",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 1.0011,
+          "upstream_ns": 903,
+          "verdict": "ship"
+        },
+        {
+          "arm_ns": 735,
+          "bit_exact": true,
+          "bound": 0,
+          "id": 2,
+          "letter": "B",
+          "profile": {
+            "diff_count": 0,
+            "iters": 300,
+            "l1": 0,
+            "l2_x1000": 0,
+            "max_abs": 0,
+            "mean_abs_x1000": 0,
+            "status": "exact"
+          },
+          "speedup": 1.2286,
+          "upstream_ns": 903,
+          "verdict": "ship"
+        }
+      ],
+      "default_id": 1,
+      "domain": "resid9/pixel/int8 (spec-driven)",
+      "kernel": "sao",
+      "shape": "sao E0 2x64 rows, stride 128",
+      "symbol": "dynopt_sao_e0_64_sve2",
+      "upstream": "P->saoCuOrgE0"
+    }
+  ],
+  "machine": {
+    "cpu": "max,sve-max-vq=2",
+    "native": false,
+    "qemu": true,
+    "tag": "qemu"
+  },
+  "samples": 300,
+  "skipped": []
+}

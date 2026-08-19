@@ -35,15 +35,25 @@ int main(int argc, char** argv)
     if (x265lib)
         lib = x265lib;
 
-    void* xh = dlopen(lib, RTLD_NOW | RTLD_LOCAL);
+    // RTLD_GLOBAL makes libx265 symbols globally visible so the
+    // preloaded multicover .so's x265_setup_primitives interposer
+    // wins the global PLT lookup (docs/95 §3).  Under RTLD_LOCAL the
+    // dlsym below would resolve to libx265's own setup and bypass the
+    // interposer entirely.
+    void* xh = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
     if (!xh)
     {
         fprintf(stderr, "ago_preload_selfcheck: dlopen %s failed: %s\n",
                 lib, dlerror());
         return 3;
     }
+    // Look up setup via the global namespace (RTLD_DEFAULT) so the
+    // preloaded interposer -- not libx265's local copy -- is returned.
     setup_t setup = (setup_t)dlsym(
-        xh, "_ZN4x26521x265_setup_primitivesEP10x265_param");
+        RTLD_DEFAULT, "_ZN4x26521x265_setup_primitivesEP10x265_param");
+    if (!setup)
+        setup = (setup_t)dlsym(
+            xh, "_ZN4x26521x265_setup_primitivesEP10x265_param");
     if (!setup)
     {
         fprintf(stderr, "ago_preload_selfcheck: setup symbol missing\n");
@@ -61,6 +71,16 @@ int main(int argc, char** argv)
     {
         fprintf(stderr, "ago_preload_selfcheck: primitives missing\n");
         return 5;
+    }
+    // Belt-and-suspenders: if the preloaded dynopt .so is present, invoke
+    // dynopt_patch_primitives() directly after setup so interception+bench
+    // work even when the injected libx265 lacks the setup hook (qemu
+    // proxies, or a clean lib built with a restored primitives.cpp).
+    {
+        void* dh = dlopen(NULL, RTLD_NOW | RTLD_GLOBAL);
+        void* pp = dh ? dlsym(dh, "dynopt_patch_primitives") : NULL;
+        if (pp)
+            ((void (*)(void))pp)();
     }
     void (*df)(const int16_t*, int16_t*, intptr_t) =
         P->cu[BLOCK_16x16].dct;

@@ -339,11 +339,21 @@ class TestMiscCovers(unittest.TestCase):
 
     KERNELS = ["mc", "ssd", "pu-addavg", "pu-copy-pp",
                "scan-pos-last", "sign", "scale2d",
-               "pel-filter-luma-strong", "find-pos-first-last", "sao"]
+               "pel-filter-luma-strong", "find-pos-first-last"]
 
     def test_sad32_multi_cover(self):
         # sad-32 gained cover B (round-34 uadalp wide-accumulate).
         mod = __import__("optimizer.ago.covers_sad_32",
+                         fromlist=["cover_meta", "emit_cover"])
+        m = mod.cover_meta()
+        self.assertEqual(m["covers"], ["A", "B"])
+        for c in ("A", "B"):
+            code = mod.emit_cover(c)
+            self.assertGreater(len(code), 100, c)
+
+    def test_sao_multi_cover(self):
+        # sao gained cover B (best_sve2_e0, SVE2 E0 width 64).
+        mod = __import__("optimizer.ago.covers_sao",
                          fromlist=["cover_meta", "emit_cover"])
         m = mod.cover_meta()
         self.assertEqual(m["covers"], ["A", "B"])

@@ -1,0 +1,7 @@
+{
+  "date": "2026-08-19",
+  "rationale": "ranking uncertainty: top-N kernels cover 78% of variance (see ranker_calibrate.py) (refreshed after verdict ingestion)",
+  "requests": [],
+  "schema": "ago/exchange/measure-request",
+  "version": 1
+}

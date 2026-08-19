@@ -1428,11 +1428,30 @@ def write_inject_patch(outdir, decls, saves, assigns, objs, cxx, common,
     for i, line in enumerate(mod):
         if line.strip() == "namespace X265_NS {" and \
                 mod[i + 1].strip().startswith("// x265 private namespace"):
-            mod.insert(i + 2, 'extern "C" void dynopt_patch_primitives();')
+            mod.insert(i + 2,
+                       'extern "C" void dynopt_patch_primitives();')
+            mod.insert(i + 3,
+                       '// Multicover release .so self-injects via its own')
+            mod.insert(i + 4,
+                       '// x265_setup_primitives interposer AFTER the lib')
+            mod.insert(i + 5,
+                       '// setup returns (late = safe vs the lowpass branch);')
+            mod.insert(i + 6,
+                       '// the legacy probe-era has no such marker and still')
+            mod.insert(i + 7,
+                       '// needs the setup-time hook (docs/95 §4).')
+            mod.insert(i + 8,
+                       'extern "C" void* dlsym(void*, const char*);')
+            mod.insert(i + 9, '#ifndef RTLD_DEFAULT')
+            mod.insert(i + 10, '#define RTLD_DEFAULT 0')
+            mod.insert(i + 11, '#endif')
             break
     for i, line in enumerate(mod):
         if line.strip() == "setupAliasPrimitives(primitives);":
-            mod.insert(i + 1, "        dynopt_patch_primitives();")
+            mod.insert(i + 1,
+                       "        if (!dlsym(RTLD_DEFAULT,"
+                       " \"dynopt_preset_and_bench\"))")
+            mod.insert(i + 2, "            dynopt_patch_primitives();")
             break
     diff = difflib.unified_diff(
         src, mod,
@@ -1500,6 +1519,10 @@ def main():
     ap.add_argument("--bench-kernels", default="",
                     help="kernels included in the AGO_BENCH=1 sweep "
                          "(comma separated; subset of --multicover)")
+    ap.add_argument("--cover-ids", default="",
+                    help="per-kernel ordinal allow-list for multicover, "
+                         "e.g. dct16=1,3;dct32=2 (coarse-screen "
+                         "exclusions from build_release P2)")
     ap.add_argument("--json", default="",
                     help="write a build report JSON")
     args = ap.parse_args()
@@ -1507,6 +1530,14 @@ def main():
         args.isa = "sve1" if args.target == "920B" else "sve2"
     bench_set = set(x.strip() for x in args.bench_kernels.split(",")
                     if x.strip())
+    allow_map = {}
+    if args.cover_ids:
+        for tok in args.cover_ids.split(";"):
+            if "=" not in tok:
+                raise SystemExit("--cover-ids: expected kernel=1,3,...")
+            k, _, ids = tok.partition("=")
+            allow_map[k.strip()] = set(int(x) for x in ids.split(",")
+                                       if x.strip())
 
     os.makedirs(args.workdir, exist_ok=True)
     cfg = next((d for d in CONFIG_DIRS if os.path.exists(
@@ -1575,7 +1606,8 @@ def main():
             covers = []
             try:
                 covers, dflt = multicover.plan_covers(
-                    kernel, sym, args.workdir, default_src=dflt_src)
+                    kernel, sym, args.workdir, default_src=dflt_src,
+                    allow_ids=allow_map.get(kernel))
             except Exception as exc:
                 report["skipped"].append(
                     [kernel, "multicover plan: %s" % exc])
@@ -1809,6 +1841,14 @@ def main():
         "    EncoderPrimitives* P = dynopt_primitives();",
         "    if (!P || !P->pu[0].sad)",
         "        return -1;",
+        "    // Idempotency guard (docs/95): an injected libx265 calls this"
+        " from",
+        "    // x265_setup_primitives, and the multicover .so interposes the",
+        "    // same setup symbol -- a second call would re-save the",
+        "    // trampolines as the 'upstream' pointers and silently change",
+        "    // the selected covers. One effective patch per process.",
+        "    static int done = 0;",
+        "    if (done) return 0;",
         "    int n = 0;",
     ]
     lines += saves
@@ -1821,6 +1861,7 @@ def main():
     lines += [
         "    fprintf(stderr, \"dynopt: patched %d x265 dispatch slot(s)\\n\","
         " n);",
+        "    done = 1;",
         "    return 0;",
         "}",
         "",

@@ -3,17 +3,23 @@
 
 Runs the real interception loop end to end:
 
-  positive: cross-built x265 (injected, calls dynopt_patch_primitives at
-            the end of x265_setup_primitives) + LD_PRELOAD of the
-            multicover .so + AGO_BENCH=1 -> "patched N x265 dispatch
-            slot(s)", per-arm ns lines, an AGO_PRESET=... line (ord 0
-            when upstream wins, i.e. explicit no-injection).
+  positive: cross-built x265 + multicover .so preload + AGO_BENCH=1 ->
+            "patched N x265 dispatch slot(s)", per-arm ns lines, an
+            AGO_PRESET=... line (ord 0 when upstream wins, i.e. explicit
+            no-injection).  The multicover .so ships its own
+            x265_setup_primitives interposer (docs/95 §3), so a plain
+            (non-source-injected) libx265 is sufficient.
   negative: the .so in a process with no x265 + AGO_BENCH=1 ->
             "BENCH INVALID (interception failed)" and no preset line.
 
 Default CPU pins qemu to sve-max-vq=2 (the repo-wide qemu SVE quirk at
 VL=256, see docs/89).  On real 920B/710/950 hardware pass --native
 (and optionally --cpu '') to execute on silicon.
+
+qemu note: qemu-user does not honour the LD_PRELOAD env var for the
+guest (the host ld.so rejects the aarch64 .so as "incompatible ELF
+machine").  Under qemu the loader is invoked directly with
+`--preload <abs so>` (docs/95 §3); --native still uses LD_PRELOAD.
 """
 
 import argparse
@@ -55,9 +61,15 @@ int main(int argc, char** argv) {
     const char* lib = (argc > 1) ? argv[1] : "libx265.so.216";
     const char* x265lib = getenv("X265_LIB");
     if (x265lib) lib = x265lib;
-    void* xh = dlopen(lib, RTLD_NOW | RTLD_LOCAL);
+    // RTLD_GLOBAL makes libx265 symbols globally visible so the
+    // preloaded multicover .so's x265_setup_primitives interposer
+    // wins the global PLT lookup (docs/95 §3).  Under RTLD_LOCAL the
+    // dlsym below would resolve to libx265's own setup and bypass the
+    // interposer entirely.
+    void* xh = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
     if (!xh) { fprintf(stderr, "selfcheck: dlopen %s failed: %s\\n", lib, dlerror()); return 3; }
-    setup_t setup = (setup_t)dlsym(xh, "_ZN4x26521x265_setup_primitivesEP10x265_param");
+    setup_t setup = (setup_t)dlsym(RTLD_DEFAULT, "_ZN4x26521x265_setup_primitivesEP10x265_param");
+    if (!setup) setup = (setup_t)dlsym(xh, "_ZN4x26521x265_setup_primitivesEP10x265_param");
     if (!setup) { fprintf(stderr, "selfcheck: setup symbol missing\\n"); return 4; }
     x265_param p; memset(&p, 0, sizeof(p)); p.internalBitDepth = 8; p.cpuid = 0;
     setup(&p);
@@ -78,10 +90,37 @@ def _run(cmd, env=None, cwd=None, timeout=600):
                           cwd=cwd, timeout=timeout)
 
 
+SYSROOT = "/usr/aarch64-linux-gnu"
+GUEST_LD = SYSROOT + "/lib/ld-linux-aarch64.so.1"
+
+
 def _qemu_prefix(cpu):
     if not cpu:
         return []
-    return ["qemu-aarch64", "-cpu", cpu, "-L", "/usr/aarch64-linux-gnu"]
+    return ["qemu-aarch64", "-cpu", cpu, "-L", SYSROOT]
+
+
+def _pos_cmd(args, so, host, lib):
+    """Build the positive-test command line.
+
+    qemu: invoke the guest loader directly with --preload so the
+    multicover .so is loaded into the guest (LD_PRELOAD env does not
+    work under qemu-user, docs/95 §3).  native: plain LD_PRELOAD.
+    """
+    if args.native:
+        return [host, lib]
+    libpath = ":".join([SYSROOT + "/lib", args.lib_dir,
+                       os.path.dirname(so) or "."])
+    return (["qemu-aarch64", "-cpu", args.cpu, "-L", SYSROOT,
+             GUEST_LD,
+             "--library-path", libpath,
+             "--preload", os.path.abspath(so),
+             host, lib])
+
+
+def _neg_cmd(args, driver, so):
+    """Negative test: driver dlopens the .so itself; no preload needed."""
+    return _qemu_prefix(args.cpu if not args.native else "") + [driver, so]
 
 
 def main():
@@ -156,18 +195,22 @@ def main():
 
     if not args.negative_only:
         env2 = dict(env)
-        env2["LD_PRELOAD"] = so
-        pos = _run(_qemu_prefix(args.cpu if not args.native else "")
-                   + [host, lib], env=env2)
+        # native uses LD_PRELOAD; qemu uses the loader --preload flag
+        # (built into _pos_cmd) and must not inherit LD_PRELOAD, or the
+        # host ld.so rejects the aarch64 .so as incompatible ELF.
+        if args.native:
+            env2["LD_PRELOAD"] = so
+        else:
+            env2.pop("LD_PRELOAD", None)
+        pos = _run(_pos_cmd(args, so, host, lib), env=env2)
         out = pos.stdout + pos.stderr
         m = re.search(r"patched (\d+) x265 dispatch slot\(s\)", out)
+        preset_match = re.search(r"^AGO_PRESET=.*$", pos.stdout, re.M)
         report["positive"] = {
             "returncode": pos.returncode,
             "intercepted": bool(m),
             "patched_slots": int(m.group(1)) if m else 0,
-            "preset": re.search(r"^AGO_PRESET=.*$", pos.stdout, re.M)
-                      .group(0) if re.search(r"^AGO_PRESET=.*$", pos.stdout,
-                                             re.M) else "",
+            "preset": preset_match.group(0) if preset_match else "",
             "arms": re.findall(r"dynopt: bench (\S+) ord=(\d+) ns/call=(\d+)",
                                out),
             "chosen": re.findall(r"dynopt: bench (\S+) chosen=ord(-?\d+) "
@@ -190,8 +233,7 @@ def main():
             return 1
 
     if not args.positive_only:
-        neg = _run(_qemu_prefix(args.cpu if not args.native else "")
-                   + [driver, so], env=env)
+        neg = _run(_neg_cmd(args, driver, so), env=env)
         report["negative"] = {
             "returncode": neg.returncode,
             "invalid": "BENCH INVALID" in neg.stderr,

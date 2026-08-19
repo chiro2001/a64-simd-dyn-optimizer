@@ -1,0 +1,79 @@
+{
+  "arms": {
+    "dct16": {
+      "0": 2420,
+      "1": 4709,
+      "2": 7071,
+      "3": 4457
+    },
+    "dct32": {
+      "0": 18077,
+      "1": 60614,
+      "2": 57405,
+      "3": 59354
+    }
+  },
+  "build_log": [
+    "wrote /home/chiro/projects/a64-simd-dyn-optimizer/release/qemu/release.so",
+    "patched kernels: 2",
+    "  dct16                        dynopt_dct16_sve2_shared                       cu[BLOCK_16x16].dct",
+    "  dct32                        dynopt_dct32_sve2_shared                       cu[BLOCK_32x32].dct",
+    "  [multicover] dct16                  covers=[1, 2, 3]",
+    "  [multicover] dct32                  covers=[1, 2, 3]"
+  ],
+  "chosen": {
+    "dct16": 0,
+    "dct32": 0
+  },
+  "cpu": "max,sve-max-vq=2",
+  "errors": [],
+  "excluded": {},
+  "gates": {
+    "dct16": {
+      "1": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      },
+      "2": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      },
+      "3": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      }
+    },
+    "dct32": {
+      "1": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      },
+      "2": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      },
+      "3": {
+        "iters": 500,
+        "mismatches": 0,
+        "status": "pass"
+      }
+    }
+  },
+  "kernels": [
+    "dct16",
+    "dct32"
+  ],
+  "phases": {
+    "p1": "registry + plans ok",
+    "p2": "differential gate done",
+    "p3": "release.so built",
+    "p4": "runtime arbitration done"
+  },
+  "preset": "v1:mfd2a2bf4:dct16=0,dct32=0",
+  "target": "qemu"
+}

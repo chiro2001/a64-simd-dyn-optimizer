@@ -1,0 +1,116 @@
+{
+  "phases": [
+    {
+      "kernel": "interp8-32",
+      "phase": 1,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 1,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 2,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 2,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 3,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 3,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": true,
+      "max_abs": 0
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 4,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 4,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 5,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 5,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 6,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 6,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 7,
+      "cover": "A",
+      "id": 1,
+      "bit_exact": false,
+      "max_abs": 255
+    },
+    {
+      "kernel": "interp8-32",
+      "phase": 7,
+      "cover": "i8mm",
+      "id": 2,
+      "bit_exact": false,
+      "max_abs": 255
+    }
+  ]
+}

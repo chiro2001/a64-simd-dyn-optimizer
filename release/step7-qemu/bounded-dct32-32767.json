@@ -1,0 +1,55 @@
+{
+  "axis": "bounded",
+  "bound": 32767,
+  "commit": "cf69379",
+  "covers": [
+    {
+      "class": "exact",
+      "diff_count": 0,
+      "id": 1,
+      "letter": "A",
+      "max_abs": 0,
+      "mean_abs_x1000": 0,
+      "name": null,
+      "source": "/tmp/bounded-ndrrb47h/dct32-cover-1.cpp",
+      "verdict": "hold_exact"
+    },
+    {
+      "class": "exact",
+      "diff_count": 0,
+      "id": 2,
+      "letter": "B",
+      "max_abs": 0,
+      "mean_abs_x1000": 0,
+      "name": null,
+      "source": "/tmp/bounded-ndrrb47h/dct32-cover-2.cpp",
+      "verdict": "hold_exact"
+    },
+    {
+      "class": "exact",
+      "diff_count": 0,
+      "id": 3,
+      "letter": "C",
+      "max_abs": 0,
+      "mean_abs_x1000": 0,
+      "name": null,
+      "source": "/tmp/bounded-ndrrb47h/dct32-cover-3.cpp",
+      "verdict": "hold_exact"
+    },
+    {
+      "class": "bounded",
+      "diff_count": 3304,
+      "id": 4,
+      "letter": "op4032",
+      "max_abs": 12096,
+      "mean_abs_x1000": 2445637,
+      "name": null,
+      "source": "/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct32/candidates/best_sve2_op4032.cpp",
+      "verdict": "hold_bounded"
+    }
+  ],
+  "date": "2026-08-19",
+  "kernel": "dct32",
+  "kernel_bound": 32767,
+  "samples": 300
+}

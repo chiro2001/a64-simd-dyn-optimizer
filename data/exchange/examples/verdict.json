@@ -1,0 +1,73 @@
+{
+  "commit_external": "cf69379",
+  "date": "2026-08-19",
+  "gates": {
+    "benchmark": {
+      "passed": true,
+      "rounds": 3
+    },
+    "interception": {
+      "passed": true,
+      "patched_slots": 2
+    },
+    "tbl": {
+      "cases": 1200,
+      "passed": true
+    },
+    "video_md5": {
+      "clips": [
+        "spec-8k-01"
+      ],
+      "passed": true,
+      "sampling": "full"
+    }
+  },
+  "kernels": [
+    {
+      "arm_ns": 92,
+      "cover": 2,
+      "kernel": "dct16",
+      "kind": "exact",
+      "md5_match": true,
+      "samples": 300,
+      "speedup_vs_upstream": 1.087,
+      "tbl": "pass",
+      "upstream_ns": 100
+    },
+    {
+      "arm_ns": 100,
+      "cover": 0,
+      "kernel": "dct32",
+      "kind": "upstream",
+      "md5_match": true,
+      "samples": 0,
+      "speedup_vs_upstream": 1.0,
+      "tbl": "n/a",
+      "upstream_ns": 100
+    }
+  ],
+  "machine": {
+    "isa": "sve2",
+    "note": "final gate host",
+    "tag": "950",
+    "vl": 32
+  },
+  "pairwise": {
+    "dct16": [
+      "upstream",
+      "C",
+      "B",
+      "A"
+    ],
+    "dct32": [
+      "upstream",
+      "C",
+      "B",
+      "A"
+    ]
+  },
+  "preset_used": "v1:m1a2b3c4d:dct16=2,dct32=0",
+  "report_ref": "reports/950-final-20260820.txt",
+  "schema": "ago/exchange/verdict",
+  "version": 1
+}

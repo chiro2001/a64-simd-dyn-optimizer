@@ -1,0 +1,31 @@
+{
+  "date": "2026-08-19",
+  "machine": {
+    "isa": "sve2",
+    "tag": "950",
+    "vl": 32
+  },
+  "rows": [
+    {
+      "class": "ALU",
+      "latency": 4,
+      "notes": "",
+      "op": "vadd.s8",
+      "tput_8way": 0.25,
+      "tput_vl128_ratio": 1.0,
+      "tput_vl256_ratio": 1.0
+    },
+    {
+      "class": "LD",
+      "latency": 8,
+      "notes": "",
+      "op": "svld1.s8",
+      "tput_8way": 0.5,
+      "tput_vl128_ratio": 1.1,
+      "tput_vl256_ratio": 1.0
+    }
+  ],
+  "schema": "ago/exchange/bone-cost",
+  "units": "ns per 1000 ops at VL256 throughput; ratios vs 8-way",
+  "version": 1
+}

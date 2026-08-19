@@ -85,6 +85,8 @@ dct16-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-cl
 dct16-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-clang22,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4864,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.2867,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct16-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct16,dct,sve16-gcc16,neon,sve2,kernels/dct16/candidates/best_ir_sve16.cpp,640,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.4567,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct16-950-2026-08-20-final,2026-08-20,cf69379,dct16,,upstream,,,,,,,,,,950,ns_per_call,2386,,0.0,,yes,reports/950-final-verify-20260820.txt
+dct16-upstream,2026-08-19,cf69379,dct16,,upstream,,,,,,,,,final-gate-md5+bench,qemu,ns_per_call,2386,,0.0,,yes,docs/95
 dct16-wide_sve2_neon_bridge,,,dct16,,wide_sve2_neon_bridge,,,,,,2,,,,,fused_uop,950,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct16-wide_sve2_neon_bridge_fused,,,dct16,,wide_sve2_neon_bridge_fused,,,,,,1;2,20000,0,QEMU\,,static_only,0,,,,no\,reports/sve2-wide-dct16-20260817.txt
 dct32-ago-auto-search,,,dct32,permute,ago-auto-search,,,optimizer/ago/covers_dct32.py,761,,,,,PASS,,ago_score,0.955,,,,yes,docs/82-ago-auto-search-20260818.md
@@ -95,17 +97,21 @@ dct32-best_ir_sve16,,,dct32,,best_ir_sve16,,,,,,2,40960,0,PASS,,,,,,,yes,docs/72
 dct32-best_ir_sve16-static-vq2,,,dct32,,best_ir_sve16-static-vq2,,,,897,,2,,,PASS,,,,,,,yes,docs/72-16lane-emitter-design-20260817.md
 dct32-best_sve2-sve256-2026-08-16-96bc310,2026-08-16,96bc310,dct32,dct,best_sve2-sve256,sve2,sve2,kernels/dct32/candidates/best_sve2.cpp,4014,1041,1;2,20000,0,,,,,,,,yes,docs/47-current-coverage-matrix-20260815.md
 dct32-composition-cert,2026-08-17,,dct32,,composition-cert,,,optimizer/ir/dct32_dual_sve_emit.py,,,,,,static-op-whitelist,,,,,,,,docs/75-two-group-equivalence-20260817.md
+dct32-4-bounded-axis-2026-08-19-cf69379,2026-08-19,cf69379,dct32,,cov4,neon,sve2,/home/chiro/projects/a64-simd-dyn-optimizer/kernels/dct32/candidates/best_sve2_op4032.cpp,,,300,1,3304,dev_profile-bounded-axis,qemu-cpuid0,profile_max_abs,12096,,,,no (bounded: max_abs<=32767; measured=12096; diff_count=3304; md5-envelope=clip128x128x24 preset=faster qemu max_abs<=2880 per docs/93),docs/94
 dct32-hand-sve128,2026-08-16,72c8a08,dct32,dct,hand-vl128,sve2,sve2,kernels/dct32/candidates/best_sve2_vl128.cpp,8421,11041,1;2,20000,0,PASS,710,ticks_pct,-6.8,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct32-ir-sve8-710,2026-08-16,72c8a08,dct32,dct,ir-fused8,sve2,sve2,kernels/dct32/candidates/best_ir_sve8.cpp,8398,11435,1;2,20000,0,PASS,710,ticks_pct,-13.6,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct32-ir-neon,2026-08-16,72c8a08,dct32,dct,ir-neon,sve2,neon,kernels/dct32/candidates/best_ir_neon8.cpp,11910,13658,1;2,20000,0,PASS,N1,ticks_pct,-6.9,,,,yes,docs/65-ir-granularity-audit-20260816.md
 dct32-op4032-950,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_sve,1.7143,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
 dct32-op4032-950-neon,2026-08-16,4bb48e3,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,4032,,1;2,20000,5300,PASS,950,ratio_vs_neon,1.4015,,,,no (policy),reports/950-quicktest-4bb48e3-20260816.txt
+dct32-op4032-arbitration,2026-08-19,cf69379,dct32,dct,op4032,sve2,sve2,kernels/dct32/candidates/best_sve2_op4032.cpp,2110,,,200,2176,dev_profile,qemu-cpuid0,profile_max_abs,12096,,,,no (bounded: max_abs<=32767),docs/92 + release/step5-qemu
 dct32-opbase-950,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_sve,1.0000,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-opbase-950-neon,2026-08-16,4bb48e3,dct32,dct,opbase,sve2,sve2,kernels/dct32/candidates/best_sve2_opbase.cpp,8114,,1;2,20000,0,PASS,950,ratio_vs_neon,0.8009,,,,yes,reports/950-quicktest-4bb48e3-20260816.txt
 dct32-sve16-clang22-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-clang22,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.5382,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-sve16-clang22-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-clang22,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.6733,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-sve16-gcc16-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_neon,0.4349,,,,,reports/950-sve16-dual-lane-20260817.txt
 dct32-sve16-gcc16-vs-sve-950-2026-08-17-65d3d23,2026-08-17,65d3d23,dct32,dct,sve16-gcc16,neon,sve2,kernels/dct32/candidates/best_ir_sve16.cpp,897,,2,20000,0,6-seed-PASS,950,ratio_vs_sve,0.5892,,,,,reports/950-sve16-dual-lane-20260817.txt
+dct32-950-2026-08-20-final,2026-08-20,cf69379,dct32,,upstream,,,,,,,,,,950,ns_per_call,18045,,0.0,,yes,reports/950-final-verify-20260820.txt
+dct32-upstream,2026-08-19,cf69379,dct32,,upstream,,,,,,,,,final-gate-md5+bench,qemu,ns_per_call,18045,,0.0,,yes,docs/95
 dct32-wide_sve2_loop,,,dct32,,wide_sve2_loop,,,,,,2,0,0,PENDING,,static_fused_uop,761,,,,yes,reports/sve2-wide-dct16-20260817.txt
 dct8-best_sve2-ago-pipeline,,,dct8,permute,best_sve2-ago-pipeline,neon,sve2,kernels/dct8/candidates/best_sve2.cpp,289,,2,2000,0,PASS,,permute_ratio,0.185,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 dct8+dct16+dct32-op895-opbase-950-2026-08-16-c06b638,2026-08-16,c06b638,dct8+dct16+dct32,,op895-opbase,sve2,sve2,build/dynopt-inject-dct,,,,,,,950,,,-0.79,,54..98,yes,reports/dct-950-e2e-20260816.txt
@@ -145,8 +151,10 @@ interp8-16x32-best_ir-ago-pipeline,,,interp8-16x32,permute,best_ir-ago-pipeline,
 interp8-16x32-best_ir_sve16,,,interp8-16x32,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x32/candidates/best_ir_sve16.cpp,7556,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
 interp8-16x8-best_ir-ago-pipeline,,,interp8-16x8,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-16x8/candidates/best_ir.cpp,831,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-16x8-best_ir_sve16,,,interp8-16x8,filter,best_ir_sve16,neon,sve2,kernels/interp8-16x8/candidates/best_ir_sve16.cpp,1836,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-32-best_ir-arbitration,2026-08-19,cf69379,interp8-32,interp8,best_ir,neon,sve2,kernels/interp8-32/candidates/best_ir.cpp,,,,200,0,dev_profile,qemu-cpuid0,phase-domain,phases 1..3 exact; 4..7 unreachable (luma_hpp xFrac&3),,,,yes,docs/92 + release/step5-qemu/interp8-32-phase-matrix.json
 interp8-32-best_ir-ago-pipeline,,,interp8-32,permute,best_ir-ago-pipeline,neon,sve2,kernels/interp8-32/candidates/best_ir.cpp,8743,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-32-best_ir_sve16,,,interp8-32,filter,best_ir_sve16,neon,sve2,kernels/interp8-32/candidates/best_ir_sve16.cpp,15156,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
+interp8-32-i8mm-arbitration,2026-08-19,cf69379,interp8-32,interp8,i8mm,neon,sve2,kernels/interp8-32/candidates/best_sve2_i8mm.cpp,,,,200,0,dev_profile,qemu-cpuid0,phase-domain,phases 1..3 exact; 4..7 unreachable (luma_hpp xFrac&3),,,,yes,docs/92 + release/step5-qemu/interp8-32-phase-matrix.json
 interp8-32-svdot32-sve2,,,interp8-32,,svdot32-sve2,sve2,sve2,kernels/interp8/candidates/best_wide_sve2_svdot32_32x32.cpp,47,,2,3600,0,PASS,,,,,,,yes,docs/80-p5-interp8-svdot32-20260818.md
 interp8-32x16-best-ago-pipeline,,,interp8-32x16,permute,best-ago-pipeline,neon,sve2,kernels/interp8-32x16/candidates/*.cpp,4537,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 interp8-32x16-best_ir_sve16,,,interp8-32x16,filter,best_ir_sve16,neon,sve2,kernels/interp8-32x16/candidates/best_ir_sve16.cpp,7538,,2,200,0,NEON-DAG-ref,,,,,,,,tools/test_dual_sve16.py
@@ -304,6 +312,8 @@ sad-32-cover-A-920b-920B-2026-08-18,2026-08-18,,sad-32,,cover-A-920b,,sve1,kerne
 sad-32-cover-B-adalp-ago-pipeline,,,sad-32,permute,cover-B-adalp-ago-pipeline,neon,sve2,kernels/sad-32/candidates/best_sve2_adalp.cpp,,,2,20000,0,PASS,,cp_latency,12,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sad-32-cover-B-vs-cover-A,,,sad-32,permute,cover-B-vs-cover-A,neon,sve2,kernels/sad-32/candidates/best_sve2_adalp.cpp,,,,,,,,ago_pred_ratio,0.754,,,,yes,docs/83-ago-autosearch-cont-20260818.md
 sao-best-ago-pipeline,,,sao,permute,best-ago-pipeline,neon,sve2,kernels/sao/candidates/*.cpp,269,,2,2000,0,PASS,,permute_ratio,0.0,,,,yes,docs/83-ago-autosearch-cont-20260818.md
+sao-best_sve2-arbitration,2026-08-19,cf69379,sao,sao,best_sve2,neon,sve2,kernels/sao/candidates/best_sve2.cpp,,,,300,0,dev_profile,qemu-cpuid0,profile_max_abs,0,,,,yes,docs/92 + release/step5-qemu
+sao-best_sve2_e0-arbitration,2026-08-19,cf69379,sao,sao,best_sve2_e0,sve2,sve2,kernels/sao/candidates/best_sve2_e0.cpp,,,,300,0,dev_profile,qemu-cpuid0,profile_max_abs,0,,,,yes,docs/92 + release/step5-qemu
 sao-layout-bb-accept,2026-08-17,,sao,sao,layout-bb,,,tools/lattice_bb.py,33,,,12,0,generic-accept-sao-layout,,,,,,,,docs/74-contract-grammar-bb-20260817.md
 sao-neon-bundle-710-30f,2026-08-17,,sao,bundle,neon-slot-710,,,,,,,,,,710,,,+0.15,,-22..50,yes,reports/sao-neon-710-e2e-20260817.txt
 sao-b0-best_sve2-ago-pipeline,,,sao-b0,permute,best_sve2-ago-pipeline,neon,sve2,kernels/sao-b0/candidates/best_sve2.cpp,132,,2,2000,0,PASS,,permute_ratio,0.333,,,,yes,docs/83-ago-autosearch-cont-20260818.md

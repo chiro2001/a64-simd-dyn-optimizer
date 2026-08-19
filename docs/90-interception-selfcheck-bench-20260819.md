@@ -41,30 +41,40 @@
 qemu 代理实测（最大 sve-max-vq=2，iters=400/rounds=3）：
 
 ```
-dynopt: patched 1 x265 dispatch slot(s)
-dynopt: bench dct16 ord=0 ns/call=2330   (upstream, 参赛臂)
-dynopt: bench dct16 ord=1 ns/call=4562
-dynopt: bench dct16 ord=3 ns/call=4475
-dynopt: bench dct16 chosen=ord0 ns=2330 upstream_ns=2330
-dynopt: bench dct32 ord=0 ns/call=17917
-dynopt: bench dct32 ord=3 ns/call=59937
-dynopt: bench dct32 chosen=ord0 ns=17917 upstream_ns=17917
-AGO_PRESET=m33837475:dct16=0,dct32=0
+dynopt: patched 2 x265 dispatch slot(s)
+dynopt: bench dct16 ord=0 ns/call=2294   (upstream, 参赛臂)
+dynopt: bench dct16 ord=1 ns/call=4552
+dynopt: bench dct16 ord=2 ns/call=7011
+dynopt: bench dct16 ord=3 ns/call=4483
+dynopt: bench dct16 chosen=ord0 ns=2294 upstream_ns=2294
+dynopt: bench dct32 ord=0 ns/call=17806
+dynopt: bench dct32 ord=1 ns/call=62131
+dynopt: bench dct32 ord=2 ns/call=58461
+dynopt: bench dct32 ord=3 ns/call=60587
+dynopt: bench dct32 chosen=ord0 ns=17806 upstream_ns=17806
+AGO_PRESET=v1:m4c6069ee:dct16=0,dct32=0
 ```
 
 （qemu 下 cover 全输 upstream，preset 双 0 = 显式不注入；920B/710 真机
- 重新仲裁后才会出现非 0 选择。）
+ 重新仲裁后才会出现非 0 选择。preset 行为 `v1:<fp>:<kernel>=<ord>,...`
+ 格式，可直接写回 `AGO_PRESET` 复用。）
 
 ## 4. 过程中发现的问题
 
 1. **spec 缓冲必须按 stride 定大小**：初版 dct32 输出缓冲 2112B，
    stride=128 写 32×128 int16（8192B）→ .bss 溢出 → 进程段错误。
    已修（`16*64*2+64` / `32*128*2+64`），并作为骨架回归用例。
-2. **纯 LD_PRELOAD 自拦截依赖注入构建**：plain 版 libx265 内部对
-   `x265_setup_primitives`/`primitives` 的引用不对外 preempt（实测
-   拦截数 0）；注入版（源码内调用 `dynopt_patch_primitives`）闭环
-   成立。920B/710 验证、build_release.py（步骤 4）与内网分发均走
-   注入构建路径；非注入场景的接缝进步骤 8 数据交换协议讨论。
+2. **qemu 下 LD_PRELOAD 不穿透 + interposer 机制**：qemu-user 下
+   guest 动态加载器不处理 env 传入的 `LD_PRELOAD`（host ld.so 把
+   aarch64 .so 当 "incompatible ELF machine" 拒绝）。初版以为需要
+   注入版 libx265（源码内调用 `dynopt_patch_primitives`）才能拦
+   截；实际 multicover .so 自带 `x265_setup_primitives` interposer
+   （docs/95 §3），plain 版 libx265 也能被拦截。`verify_preload_
+   local.py` 在 qemu 下改用
+   `ld-linux-aarch64.so.1 --preload <abs so>` 直接预载（绕过 env），
+   selfcheck host 用 `RTLD_GLOBAL` + `RTLD_DEFAULT` dlsym 让
+   interposer 赢得全局符号查找。`--native` 仍用 LD_PRELOAD env
+   （真机无此限制）。详见 docs/95 §3。
 3. bench 逐 arm 噪声：中位数值在 qemu 下稳定（±3%），真机由
    rounds/中位数继续兜底。
 

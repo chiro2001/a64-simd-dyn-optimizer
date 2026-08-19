@@ -1,0 +1,22 @@
+{
+  "date": "2026-08-19",
+  "rationale": "ranking uncertainty: top-N kernels cover 78% of variance (see ranker_calibrate.py)",
+  "requests": [
+    {
+      "cover_ids": [],
+      "kernel": "dct16",
+      "measure": "ns_per_call",
+      "priority": 1,
+      "samples": 300
+    },
+    {
+      "cover_ids": [],
+      "kernel": "dct32",
+      "measure": "ns_per_call",
+      "priority": 2,
+      "samples": 300
+    }
+  ],
+  "schema": "ago/exchange/measure-request",
+  "version": 1
+}

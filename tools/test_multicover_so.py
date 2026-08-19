@@ -130,7 +130,7 @@ class InterceptionE2ETest(unittest.TestCase):
                                                     r.stderr[-1500:]))
         self.assertIn("patched=1", r.stdout)
         self.assertIn("ord=0", r.stdout)          # upstream arm competed
-        self.assertIn("AGO_PRESET=m", r.stdout)   # preset produced
+        self.assertIn("AGO_PRESET=v1:m", r.stdout)  # preset produced (v1 grammar)
         self.assertIn("invalid=True", r.stdout)
         self.assertIn("preset_leaked=False", r.stdout)
 

@@ -136,15 +136,35 @@ class CoverRegistry:
             seen.add(k)
             ids = []
             for c in e.get("covers", []):
-                for f in CoverRegistry.REQUIRED_COVER:
-                    if f not in c:
+                missing = [f for f in CoverRegistry.REQUIRED_COVER
+                           if f not in c]
+                if missing:
+                    for f in missing:
                         errors.append("kernel %s cover missing %r" % (k, f))
-                        continue
-                ids.append(c["id"])
-                if c["kind"] not in ("upstream", "ago", "static"):
-                    errors.append("kernel %s: bad cover kind %r" % (k, c["kind"]))
-            if 0 in ids and [c for c in e.get("covers", ())
-                             if c["id"] == 0 and c["kind"] != "upstream"]:
+                    continue
+                cid = c["id"]
+                ckind = c["kind"]
+                ids.append(cid)
+                if ckind not in ("upstream", "ago", "static"):
+                    errors.append("kernel %s: bad cover kind %r" % (k, ckind))
+                if "bound" in c:
+                    b = c["bound"]
+                    if not isinstance(b, int) or isinstance(b, bool) or b <= 0:
+                        errors.append(
+                            "kernel %s cover %d: bound must be a positive "
+                            "int (0/absent = exact only)" % (k, cid))
+                if "deviation" in c:
+                    d = c["deviation"]
+                    if not isinstance(d, int) or isinstance(d, bool) or d < 0:
+                        errors.append(
+                            "kernel %s cover %d: deviation must be a "
+                            "non-negative int (measured max_abs)" % (k, cid))
+                if cid == 0 and ("bound" in c or "deviation" in c):
+                    errors.append(
+                        "kernel %s: upstream cover (id 0) must not carry "
+                        "bound/deviation" % k)
+            if 0 in ids and any(c.get("id") == 0 and c.get("kind") != "upstream"
+                                for c in e.get("covers", ())):
                 errors.append("kernel %s: id 0 must be kind=upstream" % k)
             if len(set(ids)) != len(ids):
                 errors.append("kernel %s: duplicate cover ids" % k)
@@ -246,6 +266,46 @@ def build_ago_registry(kernels=None, include_static=False):
     return registry
 
 
+def apply_bounds(registry, binds):
+    """bind spec 'kernel=coverid:bound' -> sets cover['bound'].
+
+    Example: "dct32=4:32767" sets the max allowed deviation for cover id 4.
+    Returns list of (kernel, id, bound) applied.
+    """
+    applied = []
+    for spec in binds or []:
+        k, _, rest = spec.partition("=")
+        cid_s, _, b_s = rest.partition(":")
+        entry = next((e for e in registry["kernels"]
+                      if e.get("kernel") == k), None)
+        if entry is None:
+            raise ValueError("apply_bounds: unknown kernel %r" % k)
+        cover = next((c for c in entry["covers"]
+                      if c.get("id") == int(cid_s)), None)
+        if cover is None:
+            raise ValueError("apply_bounds: kernel %s has no cover %s"
+                             % (k, cid_s))
+        bound = int(b_s)
+        if bound <= 0:
+            raise ValueError("apply_bounds: bound must be positive")
+        cover["bound"] = bound
+        applied.append((k, int(cid_s), bound))
+    return applied
+
+
+def cover_bound(registry, kernel, cover_id):
+    """Registry bound for a cover: 0 means exact-only (no bounded release)."""
+    entry = next((e for e in registry["kernels"]
+                  if e.get("kernel") == kernel), None)
+    if not entry:
+        return 0
+    cover = next((c for c in entry["covers"]
+                  if c.get("id") == cover_id), None)
+    if not cover:
+        return 0
+    return cover.get("bound", 0)
+
+
 def resolve_preset(text, registry, expect_fp=None):
     """Parse + validate a preset against a registry.
 
@@ -269,6 +329,9 @@ if __name__ == "__main__":
                     help="with --build: include static candidate files")
     ap.add_argument("--kernels", default="",
                     help="with --build: comma-separated kernel subset")
+    ap.add_argument("--bind-bound", action="append", default=[],
+                    metavar="kernel=coverid:bound",
+                    help="with --build: set bounded-release bound per cover")
     ap.add_argument("--check-preset", metavar="TEXT",
                     help="parse+validate a preset against a registry file")
     ap.add_argument("--registry", metavar="FILE",
@@ -282,6 +345,9 @@ if __name__ == "__main__":
     if args.build:
         ks = [k for k in args.kernels.split(",") if k] or None
         reg = build_ago_registry(kernels=ks, include_static=args.static)
+        if args.bind_bound:
+            applied = apply_bounds(reg, args.bind_bound)
+            print("bounds applied:", applied)
         CoverRegistry.save(reg, args.build)
         print("registry saved to", args.build, "(%d kernels)"
               % len(reg["kernels"]))

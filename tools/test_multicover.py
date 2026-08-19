@@ -27,7 +27,8 @@ class PlanCoversTest(unittest.TestCase):
             syms = [c["func_name"] for c in covers]
             self.assertEqual(len(set(syms)), 3)
             for c in covers:
-                src = open(c["src"], encoding="utf-8").read()
+                with open(c["src"], encoding="utf-8") as f:
+                    src = f.read()
                 self.assertIn(c["func_name"], src)
                 self.assertNotIn("dynopt_dct16_sve2_shared", src)
 
@@ -37,7 +38,8 @@ class PlanCoversTest(unittest.TestCase):
                 "dct16", "dynopt_dct16_sve2_shared", td)
             helper_sets = []
             for c in covers:
-                src = open(c["src"], encoding="utf-8").read()
+                with open(c["src"], encoding="utf-8") as f:
+                    src = f.read()
                 helper_sets.append(
                     {h for h in re.findall(r"\bdynopt_dct16_[A-Za-z0-9_]+",
                                            src)
@@ -132,6 +134,89 @@ class RuntimeCppTest(unittest.TestCase):
         self.assertIn("fingerprint mismatch", src)
         self.assertIn("out of whitelist", src)
         self.assertIn("bad fingerprint", src)
+
+
+class HoleyCoversTest(unittest.TestCase):
+    """Cover allow-list from build_release P2 leaves stable ordinal holes
+    (e.g. cov2 excluded): the fns table must zero them, not reference
+    undeclared symbols."""
+
+    def test_hole_is_zeroed(self):
+        k = [dict(kernel="dct16", ret="void",
+                  params="const int16_t*, int16_t*, intptr_t",
+                  cover_ids=[1, 3], default_id=3)]
+        src = multicover.runtime_cpp(k, bench_kernels=["dct16"])
+        self.assertIn("dynopt_dct16_fns[4] = {0, dynopt_dct16_cov1, 0,"
+                      " dynopt_dct16_cov3};", src)
+        self.assertIn("if (!dynopt_dct16_fns[ord]) return -1;", src)
+
+
+class PresetVersionTest(unittest.TestCase):
+    """AGO_PRESET emitted by the runtime must match the docs/88 grammar
+    (v1:<fp>:<kv>) so bench output can be re-fed as the env var."""
+
+    def test_emit_has_v1(self):
+        k = [dict(kernel="dct16", ret="void",
+                  params="const int16_t*, int16_t*, intptr_t",
+                  cover_ids=[1, 2, 3], default_id=1)]
+        src = multicover.runtime_cpp(k, bench_kernels=["dct16"])
+        self.assertIn('"AGO_PRESET=v1:%s:", fp', src)
+        self.assertIn('strcmp(v, "v1")', src)
+
+
+class PlanExtrasTest(unittest.TestCase):
+    """docs/87 step 5: checked-in scan-only candidates register as
+    extra cover arms (op4032 on dct32, i8mm on interp8-32)."""
+
+    def test_dct32_op4032_extra_cover_id4(self):
+        with tempfile.TemporaryDirectory() as td:
+            extra = [{"letter": "op4032", "src": os.path.join(
+                ROOT, "kernels/dct32/candidates/best_sve2_op4032.cpp")}]
+            covers, dflt = multicover.plan_covers(
+                "dct32", "dynopt_dct32_sve2_shared", td,
+                extra_covers=extra)
+            self.assertEqual([c["id"] for c in covers], [1, 2, 3, 4])
+            c4 = covers[3]
+            self.assertEqual(c4["letter"], "op4032")
+            self.assertEqual(c4["func_name"], "dynopt_dct32_cov4")
+            with open(c4["src"], encoding="utf-8") as f:
+                src = f.read()
+            self.assertIn("dynopt_dct32_cov4", src)
+
+    def test_interp8_32_i8mm_extra_cover_id2(self):
+        with tempfile.TemporaryDirectory() as td:
+            extra = [{"letter": "i8mm", "src": os.path.join(
+                ROOT, "kernels/interp8-32/candidates/best_sve2_i8mm.cpp")}]
+            covers, _ = multicover.plan_covers(
+                "interp8-32", "dynopt_interp8_32x32_sve2", td,
+                extra_covers=extra)
+            self.assertEqual([c["id"] for c in covers], [1, 2])
+            c2 = covers[1]
+            self.assertEqual(c2["letter"], "i8mm")
+            with open(c2["src"], encoding="utf-8") as f:
+                src = f.read()
+            self.assertIn("dynopt_interp8_32_cov2", src)
+            # the original i8mm exported symbol survives (unique)
+            self.assertIn("dynopt_interp8_hpp_32x32_i8mm", src)
+
+    def test_extra_respect_allow_ids(self):
+        with tempfile.TemporaryDirectory() as td:
+            extra = [{"letter": "op4032", "src": os.path.join(
+                ROOT, "kernels/dct32/candidates/best_sve2_op4032.cpp")}]
+            covers, _ = multicover.plan_covers(
+                "dct32", "dynopt_dct32_sve2_shared", td,
+                extra_covers=extra, allow_ids={4})
+            self.assertEqual([c["id"] for c in covers], [4])
+
+    def test_missing_symbol_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            src = os.path.join(td, "bad.cpp")
+            with open(src, "w", encoding="utf-8") as f:
+                f.write("extern \"C\" void dynopt_dct32_wrong(void) {}\n")
+            with self.assertRaises(ValueError):
+                multicover.plan_covers(
+                    "dct32", "dynopt_dct32_sve2_shared", td,
+                    extra_covers=[{"letter": "x", "src": src}])
 
 
 if __name__ == "__main__":

@@ -123,6 +123,59 @@ class SchemaTest(unittest.TestCase):
             {"id": 1, "kind": "ago", "label": "A2"})
         self.assertTrue(cr.CoverRegistry.validate(reg))
 
+    def test_cover_missing_fields_no_crash(self):
+        """A cover dict missing 'id' or 'kind' must produce a clean
+        validation error, not a KeyError (regression guard)."""
+        reg = self.make()
+        reg["kernels"][0]["covers"].append({"label": "no fields"})
+        errs = cr.CoverRegistry.validate(reg)
+        self.assertTrue(any("missing 'id'" in e for e in errs), errs)
+        self.assertTrue(any("missing 'kind'" in e for e in errs), errs)
+        # save() must refuse, not crash
+        with tempfile.TemporaryDirectory() as td:
+            path = os.path.join(td, "reg.json")
+            with self.assertRaises(ValueError):
+                cr.CoverRegistry.save(reg, path)
+
 
 if __name__ == "__main__":
     unittest.main()
+
+class BoundedFieldsTest(unittest.TestCase):
+    def test_bind_bound_and_cover_bound(self):
+        reg = cr.CoverRegistry.new()
+        reg["kernels"].append({
+            "kernel": "dct32",
+            "default_symbol": "dynopt_dct32",
+            "covers": [
+                {"id": 0, "kind": "upstream", "label": "upstream"},
+                {"id": 4, "kind": "static", "label": "op4032",
+                 "source_file": "kernels/dct32/candidates/best_sve2_op4032.cpp"},
+            ]})
+        applied = cr.apply_bounds(reg, ["dct32=4:32767"])
+        self.assertEqual(applied, [("dct32", 4, 32767)])
+        self.assertEqual(cr.cover_bound(reg, "dct32", 4), 32767)
+        self.assertEqual(cr.cover_bound(reg, "dct32", 0), 0)
+        self.assertEqual(cr.cover_bound(reg, "sao", 1), 0)
+        self.assertEqual(cr.CoverRegistry.validate(reg), [])
+
+    def test_bound_validation(self):
+        reg = cr.CoverRegistry.new()
+        reg["kernels"].append({
+            "kernel": "dct32",
+            "covers": [{"id": 4, "kind": "static",
+                        "bound": 0},  # 0 = exact only -> invalid explicit
+                       {"id": 0, "kind": "upstream", "bound": 1}]})
+        errs = cr.CoverRegistry.validate(reg)
+        self.assertTrue(any("bound must be a positive int" in e for e in errs))
+        self.assertTrue(any("id 0" in e and "bound" in e for e in errs))
+
+    def test_deviation_field(self):
+        reg = cr.CoverRegistry.new()
+        reg["kernels"].append({
+            "kernel": "dct32",
+            "covers": [{"id": 4, "kind": "static",
+                        "bound": 32767, "deviation": 12096}]})
+        self.assertEqual(cr.CoverRegistry.validate(reg), [])
+        reg["kernels"][0]["covers"][0]["deviation"] = -1
+        self.assertTrue(cr.CoverRegistry.validate(reg))

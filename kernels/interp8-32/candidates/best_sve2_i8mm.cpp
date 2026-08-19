@@ -114,3 +114,14 @@ extern "C" void dynopt_interp8_hpp_##W##x##H##_i8mm(                          \
 }
 
 I8MM_WRAPPER(32, 32)
+
+
+// docs/87 step 5: canonical-name alias so the multicover pipeline can
+// register this scan-only candidate as a first-class cover arm
+// (re-arbitration: profile + runtime timing vs upstream).
+extern "C" void dynopt_interp8_32x32_sve2(
+    const uint8_t* src, intptr_t srcStride, uint8_t* dst,
+    intptr_t dstStride, int coeffIdx)
+{
+    dynopt_interp8_hpp_32x32_i8mm(src, srcStride, dst, dstStride, coeffIdx);
+}

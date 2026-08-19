@@ -1,0 +1,44 @@
+{
+  "base_md5": "5f5771e201503a541634633d237817bb",
+  "cand_md5": "5f5771e201503a541634633d237817bb",
+  "candidate": "best_sve2_op4032",
+  "clip": "/home/chiro/projects/a64-simd-dyn-optimizer/build/step6/clip128.yuv",
+  "frames": 24,
+  "kernel": "dct32",
+  "machine": "qemu sve-max-vq=2 (proxy)",
+  "preset": "faster",
+  "rec_md5": "5f5771e201503a541634633d237817bb",
+  "recording_consistent": true,
+  "relation": "tbl_pass_md5_pass_replay_bounded",
+  "replay": {
+    "cnt_rec": 678560,
+    "diff_calls": 3,
+    "diff_count": 16,
+    "eq": 663,
+    "eq_rec": 0,
+    "max_abs": 2880,
+    "max_rec": 18575,
+    "total": 666,
+    "up_consistent": 0
+  },
+  "resolution": "128x128",
+  "tbl": [
+    {
+      "rc": 0,
+      "seed": 4660,
+      "summary": "TestBenchLite: seed=0x00001234 dct32 PASS"
+    },
+    {
+      "rc": 0,
+      "seed": 22136,
+      "summary": "TestBenchLite: seed=0x00005678 dct32 PASS"
+    },
+    {
+      "rc": 0,
+      "seed": 39612,
+      "summary": "TestBenchLite: seed=0x00009ABC dct32 PASS"
+    }
+  ],
+  "trace_bytes": 2794536,
+  "video_md5_changed": false
+}

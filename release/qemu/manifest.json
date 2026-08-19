@@ -1,0 +1,92 @@
+{
+  "build": {
+    "built_at": "2026-08-18T21:00:35Z",
+    "so": "release.so",
+    "so_sha256": "8d1904521b5b8f6995c8ba3c24c2a5b89cb83fac5c3f78f195ed0ee96e19d9fa"
+  },
+  "chosen": {
+    "dct16": 0,
+    "dct32": 0
+  },
+  "generated": "build_release",
+  "kernels": [
+    {
+      "covers": [
+        {
+          "id": 0,
+          "kind": "upstream",
+          "label": "upstream dispatch"
+        },
+        {
+          "expected_permute_ratio": 0.12,
+          "id": 1,
+          "kind": "ago",
+          "label": "A",
+          "name": "neon_bridge (SVE2+NEON vpaddq, permute=12.0%)",
+          "source_module": "optimizer.ago.covers_dct16"
+        },
+        {
+          "expected_permute_ratio": 0.434,
+          "id": 2,
+          "kind": "ago",
+          "label": "B",
+          "name": "pure_sve2 (addp_s32 RMW, permute=43.4%)",
+          "source_module": "optimizer.ago.covers_dct16"
+        },
+        {
+          "expected_permute_ratio": 0.185,
+          "id": 3,
+          "kind": "ago",
+          "label": "C",
+          "name": "op895 (hand-written reference, permute=18.5%)",
+          "source_module": "optimizer.ago.covers_dct16"
+        }
+      ],
+      "default_symbol": "dynopt_dct16_sve2_shared",
+      "kernel": "dct16"
+    },
+    {
+      "covers": [
+        {
+          "id": 0,
+          "kind": "upstream",
+          "label": "upstream dispatch"
+        },
+        {
+          "expected_permute_ratio": 0.194,
+          "id": 1,
+          "kind": "ago",
+          "label": "A",
+          "name": "loop (k-sections, permute=19.4%)",
+          "source_module": "optimizer.ago.covers_dct32"
+        },
+        {
+          "expected_permute_ratio": 0.212,
+          "id": 2,
+          "kind": "ago",
+          "label": "B",
+          "name": "opbase (hand-written reference, permute=21.2%)",
+          "source_module": "optimizer.ago.covers_dct32"
+        },
+        {
+          "expected_permute_ratio": 0.125,
+          "id": 3,
+          "kind": "ago",
+          "label": "C",
+          "name": "batch8 (8 rows/g, permute=12.5%)",
+          "source_module": "optimizer.ago.covers_dct32"
+        }
+      ],
+      "default_symbol": "dynopt_dct32_sve2_shared",
+      "kernel": "dct32"
+    }
+  ],
+  "machine": {
+    "cpu": "max,sve-max-vq=2",
+    "native": false,
+    "qemu": true,
+    "tag": "qemu"
+  },
+  "preset": "v1:mfd2a2bf4:dct16=0,dct32=0",
+  "schema_version": 1
+}
